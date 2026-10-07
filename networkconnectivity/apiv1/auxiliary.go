@@ -18,12 +18,14 @@ package networkconnectivity
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	networkconnectivitypb "cloud.google.com/go/networkconnectivity/apiv1/networkconnectivitypb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
@@ -1870,6 +1872,12 @@ func (op *UpdateSpokeOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DestinationIterator) All() iter.Seq2[*networkconnectivitypb.Destination, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // DestinationIterator manages a stream of *networkconnectivitypb.Destination.
 type DestinationIterator struct {
 	items    []*networkconnectivitypb.Destination
@@ -1915,6 +1923,12 @@ func (it *DestinationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *GroupIterator) All() iter.Seq2[*networkconnectivitypb.Group, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // GroupIterator manages a stream of *networkconnectivitypb.Group.
@@ -1964,6 +1978,12 @@ func (it *GroupIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *HubIterator) All() iter.Seq2[*networkconnectivitypb.Hub, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // HubIterator manages a stream of *networkconnectivitypb.Hub.
 type HubIterator struct {
 	items    []*networkconnectivitypb.Hub
@@ -2009,6 +2029,12 @@ func (it *HubIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *HubStatusEntryIterator) All() iter.Seq2[*networkconnectivitypb.HubStatusEntry, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // HubStatusEntryIterator manages a stream of *networkconnectivitypb.HubStatusEntry.
@@ -2058,6 +2084,12 @@ func (it *HubStatusEntryIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *InternalRangeIterator) All() iter.Seq2[*networkconnectivitypb.InternalRange, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // InternalRangeIterator manages a stream of *networkconnectivitypb.InternalRange.
 type InternalRangeIterator struct {
 	items    []*networkconnectivitypb.InternalRange
@@ -2103,6 +2135,12 @@ func (it *InternalRangeIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // LocationIterator manages a stream of *locationpb.Location.
@@ -2152,6 +2190,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *MulticloudDataTransferConfigIterator) All() iter.Seq2[*networkconnectivitypb.MulticloudDataTransferConfig, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // MulticloudDataTransferConfigIterator manages a stream of *networkconnectivitypb.MulticloudDataTransferConfig.
 type MulticloudDataTransferConfigIterator struct {
 	items    []*networkconnectivitypb.MulticloudDataTransferConfig
@@ -2197,6 +2241,12 @@ func (it *MulticloudDataTransferConfigIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *MulticloudDataTransferSupportedServiceIterator) All() iter.Seq2[*networkconnectivitypb.MulticloudDataTransferSupportedService, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // MulticloudDataTransferSupportedServiceIterator manages a stream of *networkconnectivitypb.MulticloudDataTransferSupportedService.
@@ -2246,6 +2296,12 @@ func (it *MulticloudDataTransferSupportedServiceIterator) takeBuf() interface{} 
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OperationIterator manages a stream of *longrunningpb.Operation.
 type OperationIterator struct {
 	items    []*longrunningpb.Operation
@@ -2291,6 +2347,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PolicyBasedRouteIterator) All() iter.Seq2[*networkconnectivitypb.PolicyBasedRoute, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // PolicyBasedRouteIterator manages a stream of *networkconnectivitypb.PolicyBasedRoute.
@@ -2340,6 +2402,12 @@ func (it *PolicyBasedRouteIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RouteIterator) All() iter.Seq2[*networkconnectivitypb.Route, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // RouteIterator manages a stream of *networkconnectivitypb.Route.
 type RouteIterator struct {
 	items    []*networkconnectivitypb.Route
@@ -2385,6 +2453,12 @@ func (it *RouteIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RouteTableIterator) All() iter.Seq2[*networkconnectivitypb.RouteTable, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // RouteTableIterator manages a stream of *networkconnectivitypb.RouteTable.
@@ -2434,6 +2508,12 @@ func (it *RouteTableIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ServiceClassIterator) All() iter.Seq2[*networkconnectivitypb.ServiceClass, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ServiceClassIterator manages a stream of *networkconnectivitypb.ServiceClass.
 type ServiceClassIterator struct {
 	items    []*networkconnectivitypb.ServiceClass
@@ -2479,6 +2559,12 @@ func (it *ServiceClassIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ServiceConnectionMapIterator) All() iter.Seq2[*networkconnectivitypb.ServiceConnectionMap, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ServiceConnectionMapIterator manages a stream of *networkconnectivitypb.ServiceConnectionMap.
@@ -2528,6 +2614,12 @@ func (it *ServiceConnectionMapIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ServiceConnectionPolicyIterator) All() iter.Seq2[*networkconnectivitypb.ServiceConnectionPolicy, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ServiceConnectionPolicyIterator manages a stream of *networkconnectivitypb.ServiceConnectionPolicy.
 type ServiceConnectionPolicyIterator struct {
 	items    []*networkconnectivitypb.ServiceConnectionPolicy
@@ -2575,6 +2667,12 @@ func (it *ServiceConnectionPolicyIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ServiceConnectionTokenIterator) All() iter.Seq2[*networkconnectivitypb.ServiceConnectionToken, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ServiceConnectionTokenIterator manages a stream of *networkconnectivitypb.ServiceConnectionToken.
 type ServiceConnectionTokenIterator struct {
 	items    []*networkconnectivitypb.ServiceConnectionToken
@@ -2620,6 +2718,12 @@ func (it *ServiceConnectionTokenIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SpokeIterator) All() iter.Seq2[*networkconnectivitypb.Spoke, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // SpokeIterator manages a stream of *networkconnectivitypb.Spoke.

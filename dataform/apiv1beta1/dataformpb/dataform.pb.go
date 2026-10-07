@@ -216,7 +216,7 @@ func (x ComputeRepositoryAccessTokenStatusResponse_TokenStatus) Number() protore
 
 // Deprecated: Use ComputeRepositoryAccessTokenStatusResponse_TokenStatus.Descriptor instead.
 func (ComputeRepositoryAccessTokenStatusResponse_TokenStatus) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{23, 0}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{24, 0}
 }
 
 // Indicates the status of an uncommitted file change.
@@ -277,7 +277,7 @@ func (x FetchFileGitStatusesResponse_UncommittedFileChange_State) Number() proto
 
 // Deprecated: Use FetchFileGitStatusesResponse_UncommittedFileChange_State.Descriptor instead.
 func (FetchFileGitStatusesResponse_UncommittedFileChange_State) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{43, 0, 0}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{44, 0, 0}
 }
 
 // The condition to use when triggering the workflow.
@@ -332,7 +332,7 @@ func (x WorkflowTriggerConfig_Condition) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use WorkflowTriggerConfig_Condition.Descriptor instead.
 func (WorkflowTriggerConfig_Condition) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{85, 0}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{86, 0}
 }
 
 // The type of the pipeline. This may be extended in the future.
@@ -390,7 +390,7 @@ func (x PipelineConfig_PipelineType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use PipelineConfig_PipelineType.Descriptor instead.
 func (PipelineConfig_PipelineType) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{93, 0}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{94, 0}
 }
 
 // Indicates the type of this relation.
@@ -451,7 +451,7 @@ func (x CompilationResultAction_Relation_RelationType) Number() protoreflect.Enu
 
 // Deprecated: Use CompilationResultAction_Relation_RelationType.Descriptor instead.
 func (CompilationResultAction_Relation_RelationType) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{100, 0, 0}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{101, 0, 0}
 }
 
 // Supported table formats for BigQuery tables.
@@ -500,7 +500,7 @@ func (x CompilationResultAction_Relation_TableFormat) Number() protoreflect.Enum
 
 // Deprecated: Use CompilationResultAction_Relation_TableFormat.Descriptor instead.
 func (CompilationResultAction_Relation_TableFormat) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{100, 0, 1}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{101, 0, 1}
 }
 
 // Supported file formats for BigQuery tables.
@@ -549,7 +549,7 @@ func (x CompilationResultAction_Relation_FileFormat) Number() protoreflect.EnumN
 
 // Deprecated: Use CompilationResultAction_Relation_FileFormat.Descriptor instead.
 func (CompilationResultAction_Relation_FileFormat) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{100, 0, 2}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{101, 0, 2}
 }
 
 // Types of priority for query execution in BigQuery.
@@ -606,7 +606,7 @@ func (x InvocationConfig_QueryPriority) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use InvocationConfig_QueryPriority.Descriptor instead.
 func (InvocationConfig_QueryPriority) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{104, 0}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{105, 0}
 }
 
 // Represents the current state of a workflow invocation.
@@ -672,7 +672,7 @@ func (x WorkflowInvocation_State) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use WorkflowInvocation_State.Descriptor instead.
 func (WorkflowInvocation_State) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{111, 0}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{112, 0}
 }
 
 // Represents the current state of a workflow invocation action.
@@ -743,7 +743,7 @@ func (x WorkflowInvocationAction_State) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use WorkflowInvocationAction_State.Descriptor instead.
 func (WorkflowInvocationAction_State) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{119, 0}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{120, 0}
 }
 
 // Different states of the DeleteFolderTree operation.
@@ -805,7 +805,7 @@ func (x DeleteFolderTreeMetadata_State) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use DeleteFolderTreeMetadata_State.Descriptor instead.
 func (DeleteFolderTreeMetadata_State) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{133, 0}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{134, 0}
 }
 
 // Different states of the move.
@@ -866,7 +866,7 @@ func (x MoveFolderMetadata_State) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use MoveFolderMetadata_State.Descriptor instead.
 func (MoveFolderMetadata_State) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{147, 0}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{148, 0}
 }
 
 // Different states of the move.
@@ -927,7 +927,7 @@ func (x MoveRepositoryMetadata_State) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use MoveRepositoryMetadata_State.Descriptor instead.
 func (MoveRepositoryMetadata_State) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{148, 0}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{149, 0}
 }
 
 // Different states of the DeleteRepositoryLongRunning operation.
@@ -984,7 +984,7 @@ func (x DeleteRepositoryLongRunningMetadata_State) Number() protoreflect.EnumNum
 
 // Deprecated: Use DeleteRepositoryLongRunningMetadata_State.Descriptor instead.
 func (DeleteRepositoryLongRunningMetadata_State) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{149, 0}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{150, 0}
 }
 
 // Filter for the returned list.
@@ -1041,7 +1041,7 @@ func (x FetchWorkspaceBranchesRequest_BranchFilter) Number() protoreflect.EnumNu
 
 // Deprecated: Use FetchWorkspaceBranchesRequest_BranchFilter.Descriptor instead.
 func (FetchWorkspaceBranchesRequest_BranchFilter) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{150, 0}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{151, 0}
 }
 
 // Describes encryption state of a resource.
@@ -1145,8 +1145,10 @@ type Repository struct {
 	// the resource. For example: timestamps, flags, status fields, etc. The
 	// format of this field is a JSON string.
 	InternalMetadata *string `protobuf:"bytes,15,opt,name=internal_metadata,json=internalMetadata,proto3,oneof" json:"internal_metadata,omitempty"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	// Optional. Includes configuration options for end user authentication.
+	EndUserAuthConfig *Repository_EndUserAuthConfig `protobuf:"bytes,28,opt,name=end_user_auth_config,json=endUserAuthConfig,proto3" json:"end_user_auth_config,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *Repository) Reset() {
@@ -1277,6 +1279,61 @@ func (x *Repository) GetInternalMetadata() string {
 	return ""
 }
 
+func (x *Repository) GetEndUserAuthConfig() *Repository_EndUserAuthConfig {
+	if x != nil {
+		return x.EndUserAuthConfig
+	}
+	return nil
+}
+
+// OAuth configuration for end user authentication.
+type OAuthConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. Additional OAuth scopes to use for BigQuery executions.
+	// Scopes always in use:
+	// `https://www.googleapis.com/auth/bigquery`
+	AdditionalOauthScopes []string `protobuf:"bytes,1,rep,name=additional_oauth_scopes,json=additionalOauthScopes,proto3" json:"additional_oauth_scopes,omitempty"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
+}
+
+func (x *OAuthConfig) Reset() {
+	*x = OAuthConfig{}
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *OAuthConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*OAuthConfig) ProtoMessage() {}
+
+func (x *OAuthConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use OAuthConfig.ProtoReflect.Descriptor instead.
+func (*OAuthConfig) Descriptor() ([]byte, []int) {
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *OAuthConfig) GetAdditionalOauthScopes() []string {
+	if x != nil {
+		return x.AdditionalOauthScopes
+	}
+	return nil
+}
+
 // Metadata used to identify if a resource is user scoped.
 type PrivateResourceMetadata struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -1289,7 +1346,7 @@ type PrivateResourceMetadata struct {
 
 func (x *PrivateResourceMetadata) Reset() {
 	*x = PrivateResourceMetadata{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[2]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1301,7 +1358,7 @@ func (x *PrivateResourceMetadata) String() string {
 func (*PrivateResourceMetadata) ProtoMessage() {}
 
 func (x *PrivateResourceMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[2]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1314,7 +1371,7 @@ func (x *PrivateResourceMetadata) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PrivateResourceMetadata.ProtoReflect.Descriptor instead.
 func (*PrivateResourceMetadata) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{2}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *PrivateResourceMetadata) GetUserScoped() bool {
@@ -1353,7 +1410,7 @@ type ListRepositoriesRequest struct {
 
 func (x *ListRepositoriesRequest) Reset() {
 	*x = ListRepositoriesRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[3]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1365,7 +1422,7 @@ func (x *ListRepositoriesRequest) String() string {
 func (*ListRepositoriesRequest) ProtoMessage() {}
 
 func (x *ListRepositoriesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[3]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1378,7 +1435,7 @@ func (x *ListRepositoriesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListRepositoriesRequest.ProtoReflect.Descriptor instead.
 func (*ListRepositoriesRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{3}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *ListRepositoriesRequest) GetParent() string {
@@ -1432,7 +1489,7 @@ type ListRepositoriesResponse struct {
 
 func (x *ListRepositoriesResponse) Reset() {
 	*x = ListRepositoriesResponse{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[4]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1444,7 +1501,7 @@ func (x *ListRepositoriesResponse) String() string {
 func (*ListRepositoriesResponse) ProtoMessage() {}
 
 func (x *ListRepositoriesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[4]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1457,7 +1514,7 @@ func (x *ListRepositoriesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListRepositoriesResponse.ProtoReflect.Descriptor instead.
 func (*ListRepositoriesResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{4}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *ListRepositoriesResponse) GetRepositories() []*Repository {
@@ -1497,7 +1554,7 @@ type MoveRepositoryRequest struct {
 
 func (x *MoveRepositoryRequest) Reset() {
 	*x = MoveRepositoryRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[5]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1509,7 +1566,7 @@ func (x *MoveRepositoryRequest) String() string {
 func (*MoveRepositoryRequest) ProtoMessage() {}
 
 func (x *MoveRepositoryRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[5]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1522,7 +1579,7 @@ func (x *MoveRepositoryRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MoveRepositoryRequest.ProtoReflect.Descriptor instead.
 func (*MoveRepositoryRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{5}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *MoveRepositoryRequest) GetName() string {
@@ -1550,7 +1607,7 @@ type GetRepositoryRequest struct {
 
 func (x *GetRepositoryRequest) Reset() {
 	*x = GetRepositoryRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[6]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1562,7 +1619,7 @@ func (x *GetRepositoryRequest) String() string {
 func (*GetRepositoryRequest) ProtoMessage() {}
 
 func (x *GetRepositoryRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[6]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1575,7 +1632,7 @@ func (x *GetRepositoryRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetRepositoryRequest.ProtoReflect.Descriptor instead.
 func (*GetRepositoryRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{6}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *GetRepositoryRequest) GetName() string {
@@ -1602,7 +1659,7 @@ type CreateRepositoryRequest struct {
 
 func (x *CreateRepositoryRequest) Reset() {
 	*x = CreateRepositoryRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[7]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1614,7 +1671,7 @@ func (x *CreateRepositoryRequest) String() string {
 func (*CreateRepositoryRequest) ProtoMessage() {}
 
 func (x *CreateRepositoryRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[7]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1627,7 +1684,7 @@ func (x *CreateRepositoryRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateRepositoryRequest.ProtoReflect.Descriptor instead.
 func (*CreateRepositoryRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{7}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *CreateRepositoryRequest) GetParent() string {
@@ -1665,7 +1722,7 @@ type UpdateRepositoryRequest struct {
 
 func (x *UpdateRepositoryRequest) Reset() {
 	*x = UpdateRepositoryRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[8]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1677,7 +1734,7 @@ func (x *UpdateRepositoryRequest) String() string {
 func (*UpdateRepositoryRequest) ProtoMessage() {}
 
 func (x *UpdateRepositoryRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[8]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1690,7 +1747,7 @@ func (x *UpdateRepositoryRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateRepositoryRequest.ProtoReflect.Descriptor instead.
 func (*UpdateRepositoryRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{8}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *UpdateRepositoryRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
@@ -1726,7 +1783,7 @@ type DeleteRepositoryRequest struct {
 
 func (x *DeleteRepositoryRequest) Reset() {
 	*x = DeleteRepositoryRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[9]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1738,7 +1795,7 @@ func (x *DeleteRepositoryRequest) String() string {
 func (*DeleteRepositoryRequest) ProtoMessage() {}
 
 func (x *DeleteRepositoryRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[9]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1751,7 +1808,7 @@ func (x *DeleteRepositoryRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteRepositoryRequest.ProtoReflect.Descriptor instead.
 func (*DeleteRepositoryRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{9}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *DeleteRepositoryRequest) GetName() string {
@@ -1777,7 +1834,7 @@ type DeleteRepositoryLongRunningResponse struct {
 
 func (x *DeleteRepositoryLongRunningResponse) Reset() {
 	*x = DeleteRepositoryLongRunningResponse{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[10]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1789,7 +1846,7 @@ func (x *DeleteRepositoryLongRunningResponse) String() string {
 func (*DeleteRepositoryLongRunningResponse) ProtoMessage() {}
 
 func (x *DeleteRepositoryLongRunningResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[10]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1802,7 +1859,7 @@ func (x *DeleteRepositoryLongRunningResponse) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use DeleteRepositoryLongRunningResponse.ProtoReflect.Descriptor instead.
 func (*DeleteRepositoryLongRunningResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{10}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{11}
 }
 
 // `DeleteRepositoryLongRunning` request message.
@@ -1824,7 +1881,7 @@ type DeleteRepositoryLongRunningRequest struct {
 
 func (x *DeleteRepositoryLongRunningRequest) Reset() {
 	*x = DeleteRepositoryLongRunningRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[11]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1836,7 +1893,7 @@ func (x *DeleteRepositoryLongRunningRequest) String() string {
 func (*DeleteRepositoryLongRunningRequest) ProtoMessage() {}
 
 func (x *DeleteRepositoryLongRunningRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[11]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1849,7 +1906,7 @@ func (x *DeleteRepositoryLongRunningRequest) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use DeleteRepositoryLongRunningRequest.ProtoReflect.Descriptor instead.
 func (*DeleteRepositoryLongRunningRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{11}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *DeleteRepositoryLongRunningRequest) GetName() string {
@@ -1886,7 +1943,7 @@ type CommitRepositoryChangesRequest struct {
 
 func (x *CommitRepositoryChangesRequest) Reset() {
 	*x = CommitRepositoryChangesRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[12]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1898,7 +1955,7 @@ func (x *CommitRepositoryChangesRequest) String() string {
 func (*CommitRepositoryChangesRequest) ProtoMessage() {}
 
 func (x *CommitRepositoryChangesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[12]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1911,7 +1968,7 @@ func (x *CommitRepositoryChangesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CommitRepositoryChangesRequest.ProtoReflect.Descriptor instead.
 func (*CommitRepositoryChangesRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{12}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *CommitRepositoryChangesRequest) GetName() string {
@@ -1953,7 +2010,7 @@ type CommitRepositoryChangesResponse struct {
 
 func (x *CommitRepositoryChangesResponse) Reset() {
 	*x = CommitRepositoryChangesResponse{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[13]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1965,7 +2022,7 @@ func (x *CommitRepositoryChangesResponse) String() string {
 func (*CommitRepositoryChangesResponse) ProtoMessage() {}
 
 func (x *CommitRepositoryChangesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[13]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1978,7 +2035,7 @@ func (x *CommitRepositoryChangesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CommitRepositoryChangesResponse.ProtoReflect.Descriptor instead.
 func (*CommitRepositoryChangesResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{13}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *CommitRepositoryChangesResponse) GetCommitSha() string {
@@ -2004,7 +2061,7 @@ type ReadRepositoryFileRequest struct {
 
 func (x *ReadRepositoryFileRequest) Reset() {
 	*x = ReadRepositoryFileRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[14]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2016,7 +2073,7 @@ func (x *ReadRepositoryFileRequest) String() string {
 func (*ReadRepositoryFileRequest) ProtoMessage() {}
 
 func (x *ReadRepositoryFileRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[14]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2029,7 +2086,7 @@ func (x *ReadRepositoryFileRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReadRepositoryFileRequest.ProtoReflect.Descriptor instead.
 func (*ReadRepositoryFileRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{14}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *ReadRepositoryFileRequest) GetName() string {
@@ -2064,7 +2121,7 @@ type ReadRepositoryFileResponse struct {
 
 func (x *ReadRepositoryFileResponse) Reset() {
 	*x = ReadRepositoryFileResponse{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[15]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2076,7 +2133,7 @@ func (x *ReadRepositoryFileResponse) String() string {
 func (*ReadRepositoryFileResponse) ProtoMessage() {}
 
 func (x *ReadRepositoryFileResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[15]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2089,7 +2146,7 @@ func (x *ReadRepositoryFileResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReadRepositoryFileResponse.ProtoReflect.Descriptor instead.
 func (*ReadRepositoryFileResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{15}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *ReadRepositoryFileResponse) GetContents() []byte {
@@ -2128,7 +2185,7 @@ type QueryRepositoryDirectoryContentsRequest struct {
 
 func (x *QueryRepositoryDirectoryContentsRequest) Reset() {
 	*x = QueryRepositoryDirectoryContentsRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[16]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2140,7 +2197,7 @@ func (x *QueryRepositoryDirectoryContentsRequest) String() string {
 func (*QueryRepositoryDirectoryContentsRequest) ProtoMessage() {}
 
 func (x *QueryRepositoryDirectoryContentsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[16]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2153,7 +2210,7 @@ func (x *QueryRepositoryDirectoryContentsRequest) ProtoReflect() protoreflect.Me
 
 // Deprecated: Use QueryRepositoryDirectoryContentsRequest.ProtoReflect.Descriptor instead.
 func (*QueryRepositoryDirectoryContentsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{16}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *QueryRepositoryDirectoryContentsRequest) GetName() string {
@@ -2205,7 +2262,7 @@ type QueryRepositoryDirectoryContentsResponse struct {
 
 func (x *QueryRepositoryDirectoryContentsResponse) Reset() {
 	*x = QueryRepositoryDirectoryContentsResponse{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[17]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2217,7 +2274,7 @@ func (x *QueryRepositoryDirectoryContentsResponse) String() string {
 func (*QueryRepositoryDirectoryContentsResponse) ProtoMessage() {}
 
 func (x *QueryRepositoryDirectoryContentsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[17]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2230,7 +2287,7 @@ func (x *QueryRepositoryDirectoryContentsResponse) ProtoReflect() protoreflect.M
 
 // Deprecated: Use QueryRepositoryDirectoryContentsResponse.ProtoReflect.Descriptor instead.
 func (*QueryRepositoryDirectoryContentsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{17}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *QueryRepositoryDirectoryContentsResponse) GetDirectoryEntries() []*DirectoryEntry {
@@ -2269,7 +2326,7 @@ type FetchRepositoryHistoryRequest struct {
 
 func (x *FetchRepositoryHistoryRequest) Reset() {
 	*x = FetchRepositoryHistoryRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[18]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2281,7 +2338,7 @@ func (x *FetchRepositoryHistoryRequest) String() string {
 func (*FetchRepositoryHistoryRequest) ProtoMessage() {}
 
 func (x *FetchRepositoryHistoryRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[18]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2294,7 +2351,7 @@ func (x *FetchRepositoryHistoryRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FetchRepositoryHistoryRequest.ProtoReflect.Descriptor instead.
 func (*FetchRepositoryHistoryRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{18}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *FetchRepositoryHistoryRequest) GetName() string {
@@ -2332,7 +2389,7 @@ type FetchRepositoryHistoryResponse struct {
 
 func (x *FetchRepositoryHistoryResponse) Reset() {
 	*x = FetchRepositoryHistoryResponse{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[19]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2344,7 +2401,7 @@ func (x *FetchRepositoryHistoryResponse) String() string {
 func (*FetchRepositoryHistoryResponse) ProtoMessage() {}
 
 func (x *FetchRepositoryHistoryResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[19]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2357,7 +2414,7 @@ func (x *FetchRepositoryHistoryResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FetchRepositoryHistoryResponse.ProtoReflect.Descriptor instead.
 func (*FetchRepositoryHistoryResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{19}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *FetchRepositoryHistoryResponse) GetCommits() []*CommitLogEntry {
@@ -2391,7 +2448,7 @@ type CommitLogEntry struct {
 
 func (x *CommitLogEntry) Reset() {
 	*x = CommitLogEntry{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[20]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2403,7 +2460,7 @@ func (x *CommitLogEntry) String() string {
 func (*CommitLogEntry) ProtoMessage() {}
 
 func (x *CommitLogEntry) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[20]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2416,7 +2473,7 @@ func (x *CommitLogEntry) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CommitLogEntry.ProtoReflect.Descriptor instead.
 func (*CommitLogEntry) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{20}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *CommitLogEntry) GetCommitTime() *timestamppb.Timestamp {
@@ -2460,7 +2517,7 @@ type CommitMetadata struct {
 
 func (x *CommitMetadata) Reset() {
 	*x = CommitMetadata{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[21]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2472,7 +2529,7 @@ func (x *CommitMetadata) String() string {
 func (*CommitMetadata) ProtoMessage() {}
 
 func (x *CommitMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[21]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2485,7 +2542,7 @@ func (x *CommitMetadata) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CommitMetadata.ProtoReflect.Descriptor instead.
 func (*CommitMetadata) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{21}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *CommitMetadata) GetAuthor() *CommitAuthor {
@@ -2513,7 +2570,7 @@ type ComputeRepositoryAccessTokenStatusRequest struct {
 
 func (x *ComputeRepositoryAccessTokenStatusRequest) Reset() {
 	*x = ComputeRepositoryAccessTokenStatusRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[22]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2525,7 +2582,7 @@ func (x *ComputeRepositoryAccessTokenStatusRequest) String() string {
 func (*ComputeRepositoryAccessTokenStatusRequest) ProtoMessage() {}
 
 func (x *ComputeRepositoryAccessTokenStatusRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[22]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2538,7 +2595,7 @@ func (x *ComputeRepositoryAccessTokenStatusRequest) ProtoReflect() protoreflect.
 
 // Deprecated: Use ComputeRepositoryAccessTokenStatusRequest.ProtoReflect.Descriptor instead.
 func (*ComputeRepositoryAccessTokenStatusRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{22}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *ComputeRepositoryAccessTokenStatusRequest) GetName() string {
@@ -2559,7 +2616,7 @@ type ComputeRepositoryAccessTokenStatusResponse struct {
 
 func (x *ComputeRepositoryAccessTokenStatusResponse) Reset() {
 	*x = ComputeRepositoryAccessTokenStatusResponse{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[23]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2571,7 +2628,7 @@ func (x *ComputeRepositoryAccessTokenStatusResponse) String() string {
 func (*ComputeRepositoryAccessTokenStatusResponse) ProtoMessage() {}
 
 func (x *ComputeRepositoryAccessTokenStatusResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[23]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2584,7 +2641,7 @@ func (x *ComputeRepositoryAccessTokenStatusResponse) ProtoReflect() protoreflect
 
 // Deprecated: Use ComputeRepositoryAccessTokenStatusResponse.ProtoReflect.Descriptor instead.
 func (*ComputeRepositoryAccessTokenStatusResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{23}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *ComputeRepositoryAccessTokenStatusResponse) GetTokenStatus() ComputeRepositoryAccessTokenStatusResponse_TokenStatus {
@@ -2605,7 +2662,7 @@ type FetchRemoteBranchesRequest struct {
 
 func (x *FetchRemoteBranchesRequest) Reset() {
 	*x = FetchRemoteBranchesRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[24]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2617,7 +2674,7 @@ func (x *FetchRemoteBranchesRequest) String() string {
 func (*FetchRemoteBranchesRequest) ProtoMessage() {}
 
 func (x *FetchRemoteBranchesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[24]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2630,7 +2687,7 @@ func (x *FetchRemoteBranchesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FetchRemoteBranchesRequest.ProtoReflect.Descriptor instead.
 func (*FetchRemoteBranchesRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{24}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *FetchRemoteBranchesRequest) GetName() string {
@@ -2651,7 +2708,7 @@ type FetchRemoteBranchesResponse struct {
 
 func (x *FetchRemoteBranchesResponse) Reset() {
 	*x = FetchRemoteBranchesResponse{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[25]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2663,7 +2720,7 @@ func (x *FetchRemoteBranchesResponse) String() string {
 func (*FetchRemoteBranchesResponse) ProtoMessage() {}
 
 func (x *FetchRemoteBranchesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[25]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2676,7 +2733,7 @@ func (x *FetchRemoteBranchesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FetchRemoteBranchesResponse.ProtoReflect.Descriptor instead.
 func (*FetchRemoteBranchesResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{25}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *FetchRemoteBranchesResponse) GetBranches() []string {
@@ -2731,7 +2788,7 @@ type Workspace struct {
 
 func (x *Workspace) Reset() {
 	*x = Workspace{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[26]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2743,7 +2800,7 @@ func (x *Workspace) String() string {
 func (*Workspace) ProtoMessage() {}
 
 func (x *Workspace) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[26]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2756,7 +2813,7 @@ func (x *Workspace) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Workspace.ProtoReflect.Descriptor instead.
 func (*Workspace) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{26}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *Workspace) GetName() string {
@@ -2858,7 +2915,7 @@ type ListWorkspacesRequest struct {
 
 func (x *ListWorkspacesRequest) Reset() {
 	*x = ListWorkspacesRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[27]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2870,7 +2927,7 @@ func (x *ListWorkspacesRequest) String() string {
 func (*ListWorkspacesRequest) ProtoMessage() {}
 
 func (x *ListWorkspacesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[27]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2883,7 +2940,7 @@ func (x *ListWorkspacesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListWorkspacesRequest.ProtoReflect.Descriptor instead.
 func (*ListWorkspacesRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{27}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *ListWorkspacesRequest) GetParent() string {
@@ -2937,7 +2994,7 @@ type ListWorkspacesResponse struct {
 
 func (x *ListWorkspacesResponse) Reset() {
 	*x = ListWorkspacesResponse{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[28]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2949,7 +3006,7 @@ func (x *ListWorkspacesResponse) String() string {
 func (*ListWorkspacesResponse) ProtoMessage() {}
 
 func (x *ListWorkspacesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[28]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2962,7 +3019,7 @@ func (x *ListWorkspacesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListWorkspacesResponse.ProtoReflect.Descriptor instead.
 func (*ListWorkspacesResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{28}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{29}
 }
 
 func (x *ListWorkspacesResponse) GetWorkspaces() []*Workspace {
@@ -2997,7 +3054,7 @@ type GetWorkspaceRequest struct {
 
 func (x *GetWorkspaceRequest) Reset() {
 	*x = GetWorkspaceRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[29]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3009,7 +3066,7 @@ func (x *GetWorkspaceRequest) String() string {
 func (*GetWorkspaceRequest) ProtoMessage() {}
 
 func (x *GetWorkspaceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[29]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3022,7 +3079,7 @@ func (x *GetWorkspaceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetWorkspaceRequest.ProtoReflect.Descriptor instead.
 func (*GetWorkspaceRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{29}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{30}
 }
 
 func (x *GetWorkspaceRequest) GetName() string {
@@ -3049,7 +3106,7 @@ type CreateWorkspaceRequest struct {
 
 func (x *CreateWorkspaceRequest) Reset() {
 	*x = CreateWorkspaceRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[30]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3061,7 +3118,7 @@ func (x *CreateWorkspaceRequest) String() string {
 func (*CreateWorkspaceRequest) ProtoMessage() {}
 
 func (x *CreateWorkspaceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[30]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3074,7 +3131,7 @@ func (x *CreateWorkspaceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateWorkspaceRequest.ProtoReflect.Descriptor instead.
 func (*CreateWorkspaceRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{30}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{31}
 }
 
 func (x *CreateWorkspaceRequest) GetParent() string {
@@ -3109,7 +3166,7 @@ type DeleteWorkspaceRequest struct {
 
 func (x *DeleteWorkspaceRequest) Reset() {
 	*x = DeleteWorkspaceRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[31]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3121,7 +3178,7 @@ func (x *DeleteWorkspaceRequest) String() string {
 func (*DeleteWorkspaceRequest) ProtoMessage() {}
 
 func (x *DeleteWorkspaceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[31]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3134,7 +3191,7 @@ func (x *DeleteWorkspaceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteWorkspaceRequest.ProtoReflect.Descriptor instead.
 func (*DeleteWorkspaceRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{31}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{32}
 }
 
 func (x *DeleteWorkspaceRequest) GetName() string {
@@ -3157,7 +3214,7 @@ type CommitAuthor struct {
 
 func (x *CommitAuthor) Reset() {
 	*x = CommitAuthor{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[32]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3169,7 +3226,7 @@ func (x *CommitAuthor) String() string {
 func (*CommitAuthor) ProtoMessage() {}
 
 func (x *CommitAuthor) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[32]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3182,7 +3239,7 @@ func (x *CommitAuthor) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CommitAuthor.ProtoReflect.Descriptor instead.
 func (*CommitAuthor) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{32}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{33}
 }
 
 func (x *CommitAuthor) GetName() string {
@@ -3216,7 +3273,7 @@ type PullGitCommitsRequest struct {
 
 func (x *PullGitCommitsRequest) Reset() {
 	*x = PullGitCommitsRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[33]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3228,7 +3285,7 @@ func (x *PullGitCommitsRequest) String() string {
 func (*PullGitCommitsRequest) ProtoMessage() {}
 
 func (x *PullGitCommitsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[33]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3241,7 +3298,7 @@ func (x *PullGitCommitsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PullGitCommitsRequest.ProtoReflect.Descriptor instead.
 func (*PullGitCommitsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{33}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{34}
 }
 
 func (x *PullGitCommitsRequest) GetName() string {
@@ -3274,7 +3331,7 @@ type PullGitCommitsResponse struct {
 
 func (x *PullGitCommitsResponse) Reset() {
 	*x = PullGitCommitsResponse{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[34]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3286,7 +3343,7 @@ func (x *PullGitCommitsResponse) String() string {
 func (*PullGitCommitsResponse) ProtoMessage() {}
 
 func (x *PullGitCommitsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[34]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3299,7 +3356,7 @@ func (x *PullGitCommitsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PullGitCommitsResponse.ProtoReflect.Descriptor instead.
 func (*PullGitCommitsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{34}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{35}
 }
 
 // `CheckoutWorkspaceBranch` request message.
@@ -3327,7 +3384,7 @@ type CheckoutWorkspaceBranchRequest struct {
 
 func (x *CheckoutWorkspaceBranchRequest) Reset() {
 	*x = CheckoutWorkspaceBranchRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[35]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3339,7 +3396,7 @@ func (x *CheckoutWorkspaceBranchRequest) String() string {
 func (*CheckoutWorkspaceBranchRequest) ProtoMessage() {}
 
 func (x *CheckoutWorkspaceBranchRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[35]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3352,7 +3409,7 @@ func (x *CheckoutWorkspaceBranchRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CheckoutWorkspaceBranchRequest.ProtoReflect.Descriptor instead.
 func (*CheckoutWorkspaceBranchRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{35}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{36}
 }
 
 func (x *CheckoutWorkspaceBranchRequest) GetName() string {
@@ -3403,7 +3460,7 @@ type SyncWorkspaceRefsRequest struct {
 
 func (x *SyncWorkspaceRefsRequest) Reset() {
 	*x = SyncWorkspaceRefsRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[36]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[37]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3415,7 +3472,7 @@ func (x *SyncWorkspaceRefsRequest) String() string {
 func (*SyncWorkspaceRefsRequest) ProtoMessage() {}
 
 func (x *SyncWorkspaceRefsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[36]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[37]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3428,7 +3485,7 @@ func (x *SyncWorkspaceRefsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SyncWorkspaceRefsRequest.ProtoReflect.Descriptor instead.
 func (*SyncWorkspaceRefsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{36}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{37}
 }
 
 func (x *SyncWorkspaceRefsRequest) GetName() string {
@@ -3461,7 +3518,7 @@ type SyncWorkspaceRefsResponse struct {
 
 func (x *SyncWorkspaceRefsResponse) Reset() {
 	*x = SyncWorkspaceRefsResponse{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[37]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[38]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3473,7 +3530,7 @@ func (x *SyncWorkspaceRefsResponse) String() string {
 func (*SyncWorkspaceRefsResponse) ProtoMessage() {}
 
 func (x *SyncWorkspaceRefsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[37]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[38]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3486,7 +3543,7 @@ func (x *SyncWorkspaceRefsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SyncWorkspaceRefsResponse.ProtoReflect.Descriptor instead.
 func (*SyncWorkspaceRefsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{37}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{38}
 }
 
 // `DeleteBranch` request message.
@@ -3507,7 +3564,7 @@ type DeleteBranchRequest struct {
 
 func (x *DeleteBranchRequest) Reset() {
 	*x = DeleteBranchRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[38]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[39]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3519,7 +3576,7 @@ func (x *DeleteBranchRequest) String() string {
 func (*DeleteBranchRequest) ProtoMessage() {}
 
 func (x *DeleteBranchRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[38]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[39]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3532,7 +3589,7 @@ func (x *DeleteBranchRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteBranchRequest.ProtoReflect.Descriptor instead.
 func (*DeleteBranchRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{38}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{39}
 }
 
 func (x *DeleteBranchRequest) GetName() string {
@@ -3565,7 +3622,7 @@ type DeleteBranchResponse struct {
 
 func (x *DeleteBranchResponse) Reset() {
 	*x = DeleteBranchResponse{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[39]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[40]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3577,7 +3634,7 @@ func (x *DeleteBranchResponse) String() string {
 func (*DeleteBranchResponse) ProtoMessage() {}
 
 func (x *DeleteBranchResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[39]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[40]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3590,7 +3647,7 @@ func (x *DeleteBranchResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteBranchResponse.ProtoReflect.Descriptor instead.
 func (*DeleteBranchResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{39}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{40}
 }
 
 // `PushGitCommits` request message.
@@ -3608,7 +3665,7 @@ type PushGitCommitsRequest struct {
 
 func (x *PushGitCommitsRequest) Reset() {
 	*x = PushGitCommitsRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[40]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[41]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3620,7 +3677,7 @@ func (x *PushGitCommitsRequest) String() string {
 func (*PushGitCommitsRequest) ProtoMessage() {}
 
 func (x *PushGitCommitsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[40]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[41]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3633,7 +3690,7 @@ func (x *PushGitCommitsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PushGitCommitsRequest.ProtoReflect.Descriptor instead.
 func (*PushGitCommitsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{40}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{41}
 }
 
 func (x *PushGitCommitsRequest) GetName() string {
@@ -3659,7 +3716,7 @@ type PushGitCommitsResponse struct {
 
 func (x *PushGitCommitsResponse) Reset() {
 	*x = PushGitCommitsResponse{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[41]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[42]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3671,7 +3728,7 @@ func (x *PushGitCommitsResponse) String() string {
 func (*PushGitCommitsResponse) ProtoMessage() {}
 
 func (x *PushGitCommitsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[41]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[42]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3684,7 +3741,7 @@ func (x *PushGitCommitsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PushGitCommitsResponse.ProtoReflect.Descriptor instead.
 func (*PushGitCommitsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{41}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{42}
 }
 
 // `FetchFileGitStatuses` request message.
@@ -3698,7 +3755,7 @@ type FetchFileGitStatusesRequest struct {
 
 func (x *FetchFileGitStatusesRequest) Reset() {
 	*x = FetchFileGitStatusesRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[42]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[43]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3710,7 +3767,7 @@ func (x *FetchFileGitStatusesRequest) String() string {
 func (*FetchFileGitStatusesRequest) ProtoMessage() {}
 
 func (x *FetchFileGitStatusesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[42]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[43]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3723,7 +3780,7 @@ func (x *FetchFileGitStatusesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FetchFileGitStatusesRequest.ProtoReflect.Descriptor instead.
 func (*FetchFileGitStatusesRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{42}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{43}
 }
 
 func (x *FetchFileGitStatusesRequest) GetName() string {
@@ -3745,7 +3802,7 @@ type FetchFileGitStatusesResponse struct {
 
 func (x *FetchFileGitStatusesResponse) Reset() {
 	*x = FetchFileGitStatusesResponse{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[43]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[44]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3757,7 +3814,7 @@ func (x *FetchFileGitStatusesResponse) String() string {
 func (*FetchFileGitStatusesResponse) ProtoMessage() {}
 
 func (x *FetchFileGitStatusesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[43]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[44]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3770,7 +3827,7 @@ func (x *FetchFileGitStatusesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FetchFileGitStatusesResponse.ProtoReflect.Descriptor instead.
 func (*FetchFileGitStatusesResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{43}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{44}
 }
 
 func (x *FetchFileGitStatusesResponse) GetUncommittedFileChanges() []*FetchFileGitStatusesResponse_UncommittedFileChange {
@@ -3795,7 +3852,7 @@ type FetchGitAheadBehindRequest struct {
 
 func (x *FetchGitAheadBehindRequest) Reset() {
 	*x = FetchGitAheadBehindRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[44]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[45]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3807,7 +3864,7 @@ func (x *FetchGitAheadBehindRequest) String() string {
 func (*FetchGitAheadBehindRequest) ProtoMessage() {}
 
 func (x *FetchGitAheadBehindRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[44]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[45]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3820,7 +3877,7 @@ func (x *FetchGitAheadBehindRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FetchGitAheadBehindRequest.ProtoReflect.Descriptor instead.
 func (*FetchGitAheadBehindRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{44}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{45}
 }
 
 func (x *FetchGitAheadBehindRequest) GetName() string {
@@ -3850,7 +3907,7 @@ type FetchGitAheadBehindResponse struct {
 
 func (x *FetchGitAheadBehindResponse) Reset() {
 	*x = FetchGitAheadBehindResponse{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[45]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[46]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3862,7 +3919,7 @@ func (x *FetchGitAheadBehindResponse) String() string {
 func (*FetchGitAheadBehindResponse) ProtoMessage() {}
 
 func (x *FetchGitAheadBehindResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[45]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[46]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3875,7 +3932,7 @@ func (x *FetchGitAheadBehindResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FetchGitAheadBehindResponse.ProtoReflect.Descriptor instead.
 func (*FetchGitAheadBehindResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{45}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{46}
 }
 
 func (x *FetchGitAheadBehindResponse) GetCommitsAhead() int32 {
@@ -3910,7 +3967,7 @@ type CommitWorkspaceChangesRequest struct {
 
 func (x *CommitWorkspaceChangesRequest) Reset() {
 	*x = CommitWorkspaceChangesRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[46]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[47]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3922,7 +3979,7 @@ func (x *CommitWorkspaceChangesRequest) String() string {
 func (*CommitWorkspaceChangesRequest) ProtoMessage() {}
 
 func (x *CommitWorkspaceChangesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[46]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[47]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3935,7 +3992,7 @@ func (x *CommitWorkspaceChangesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CommitWorkspaceChangesRequest.ProtoReflect.Descriptor instead.
 func (*CommitWorkspaceChangesRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{46}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{47}
 }
 
 func (x *CommitWorkspaceChangesRequest) GetName() string {
@@ -3975,7 +4032,7 @@ type CommitWorkspaceChangesResponse struct {
 
 func (x *CommitWorkspaceChangesResponse) Reset() {
 	*x = CommitWorkspaceChangesResponse{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[47]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[48]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3987,7 +4044,7 @@ func (x *CommitWorkspaceChangesResponse) String() string {
 func (*CommitWorkspaceChangesResponse) ProtoMessage() {}
 
 func (x *CommitWorkspaceChangesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[47]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[48]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4000,7 +4057,7 @@ func (x *CommitWorkspaceChangesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CommitWorkspaceChangesResponse.ProtoReflect.Descriptor instead.
 func (*CommitWorkspaceChangesResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{47}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{48}
 }
 
 // `ResetWorkspaceChanges` request message.
@@ -4019,7 +4076,7 @@ type ResetWorkspaceChangesRequest struct {
 
 func (x *ResetWorkspaceChangesRequest) Reset() {
 	*x = ResetWorkspaceChangesRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[48]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[49]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4031,7 +4088,7 @@ func (x *ResetWorkspaceChangesRequest) String() string {
 func (*ResetWorkspaceChangesRequest) ProtoMessage() {}
 
 func (x *ResetWorkspaceChangesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[48]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[49]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4044,7 +4101,7 @@ func (x *ResetWorkspaceChangesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResetWorkspaceChangesRequest.ProtoReflect.Descriptor instead.
 func (*ResetWorkspaceChangesRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{48}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{49}
 }
 
 func (x *ResetWorkspaceChangesRequest) GetName() string {
@@ -4077,7 +4134,7 @@ type ResetWorkspaceChangesResponse struct {
 
 func (x *ResetWorkspaceChangesResponse) Reset() {
 	*x = ResetWorkspaceChangesResponse{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[49]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[50]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4089,7 +4146,7 @@ func (x *ResetWorkspaceChangesResponse) String() string {
 func (*ResetWorkspaceChangesResponse) ProtoMessage() {}
 
 func (x *ResetWorkspaceChangesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[49]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[50]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4102,7 +4159,7 @@ func (x *ResetWorkspaceChangesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResetWorkspaceChangesResponse.ProtoReflect.Descriptor instead.
 func (*ResetWorkspaceChangesResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{49}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{50}
 }
 
 // `FetchFileDiff` request message.
@@ -4119,7 +4176,7 @@ type FetchFileDiffRequest struct {
 
 func (x *FetchFileDiffRequest) Reset() {
 	*x = FetchFileDiffRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[50]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[51]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4131,7 +4188,7 @@ func (x *FetchFileDiffRequest) String() string {
 func (*FetchFileDiffRequest) ProtoMessage() {}
 
 func (x *FetchFileDiffRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[50]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[51]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4144,7 +4201,7 @@ func (x *FetchFileDiffRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FetchFileDiffRequest.ProtoReflect.Descriptor instead.
 func (*FetchFileDiffRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{50}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{51}
 }
 
 func (x *FetchFileDiffRequest) GetWorkspace() string {
@@ -4172,7 +4229,7 @@ type FetchFileDiffResponse struct {
 
 func (x *FetchFileDiffResponse) Reset() {
 	*x = FetchFileDiffResponse{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[51]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[52]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4184,7 +4241,7 @@ func (x *FetchFileDiffResponse) String() string {
 func (*FetchFileDiffResponse) ProtoMessage() {}
 
 func (x *FetchFileDiffResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[51]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[52]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4197,7 +4254,7 @@ func (x *FetchFileDiffResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FetchFileDiffResponse.ProtoReflect.Descriptor instead.
 func (*FetchFileDiffResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{51}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{52}
 }
 
 func (x *FetchFileDiffResponse) GetFormattedDiff() string {
@@ -4237,7 +4294,7 @@ type QueryDirectoryContentsRequest struct {
 
 func (x *QueryDirectoryContentsRequest) Reset() {
 	*x = QueryDirectoryContentsRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[52]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[53]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4249,7 +4306,7 @@ func (x *QueryDirectoryContentsRequest) String() string {
 func (*QueryDirectoryContentsRequest) ProtoMessage() {}
 
 func (x *QueryDirectoryContentsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[52]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[53]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4262,7 +4319,7 @@ func (x *QueryDirectoryContentsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QueryDirectoryContentsRequest.ProtoReflect.Descriptor instead.
 func (*QueryDirectoryContentsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{52}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{53}
 }
 
 func (x *QueryDirectoryContentsRequest) GetWorkspace() string {
@@ -4314,7 +4371,7 @@ type QueryDirectoryContentsResponse struct {
 
 func (x *QueryDirectoryContentsResponse) Reset() {
 	*x = QueryDirectoryContentsResponse{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[53]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[54]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4326,7 +4383,7 @@ func (x *QueryDirectoryContentsResponse) String() string {
 func (*QueryDirectoryContentsResponse) ProtoMessage() {}
 
 func (x *QueryDirectoryContentsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[53]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[54]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4339,7 +4396,7 @@ func (x *QueryDirectoryContentsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QueryDirectoryContentsResponse.ProtoReflect.Descriptor instead.
 func (*QueryDirectoryContentsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{53}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{54}
 }
 
 func (x *QueryDirectoryContentsResponse) GetDirectoryEntries() []*DirectoryEntry {
@@ -4374,7 +4431,7 @@ type DirectoryEntry struct {
 
 func (x *DirectoryEntry) Reset() {
 	*x = DirectoryEntry{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[54]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[55]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4386,7 +4443,7 @@ func (x *DirectoryEntry) String() string {
 func (*DirectoryEntry) ProtoMessage() {}
 
 func (x *DirectoryEntry) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[54]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[55]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4399,7 +4456,7 @@ func (x *DirectoryEntry) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DirectoryEntry.ProtoReflect.Descriptor instead.
 func (*DirectoryEntry) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{54}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{55}
 }
 
 func (x *DirectoryEntry) GetEntry() isDirectoryEntry_Entry {
@@ -4468,7 +4525,7 @@ type FilesystemEntryMetadata struct {
 
 func (x *FilesystemEntryMetadata) Reset() {
 	*x = FilesystemEntryMetadata{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[55]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[56]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4480,7 +4537,7 @@ func (x *FilesystemEntryMetadata) String() string {
 func (*FilesystemEntryMetadata) ProtoMessage() {}
 
 func (x *FilesystemEntryMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[55]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[56]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4493,7 +4550,7 @@ func (x *FilesystemEntryMetadata) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FilesystemEntryMetadata.ProtoReflect.Descriptor instead.
 func (*FilesystemEntryMetadata) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{55}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{56}
 }
 
 func (x *FilesystemEntryMetadata) GetSizeBytes() int64 {
@@ -4536,7 +4593,7 @@ type SearchFilesRequest struct {
 
 func (x *SearchFilesRequest) Reset() {
 	*x = SearchFilesRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[56]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[57]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4548,7 +4605,7 @@ func (x *SearchFilesRequest) String() string {
 func (*SearchFilesRequest) ProtoMessage() {}
 
 func (x *SearchFilesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[56]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[57]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4561,7 +4618,7 @@ func (x *SearchFilesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchFilesRequest.ProtoReflect.Descriptor instead.
 func (*SearchFilesRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{56}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{57}
 }
 
 func (x *SearchFilesRequest) GetWorkspace() string {
@@ -4606,7 +4663,7 @@ type SearchFilesResponse struct {
 
 func (x *SearchFilesResponse) Reset() {
 	*x = SearchFilesResponse{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[57]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[58]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4618,7 +4675,7 @@ func (x *SearchFilesResponse) String() string {
 func (*SearchFilesResponse) ProtoMessage() {}
 
 func (x *SearchFilesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[57]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[58]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4631,7 +4688,7 @@ func (x *SearchFilesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchFilesResponse.ProtoReflect.Descriptor instead.
 func (*SearchFilesResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{57}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{58}
 }
 
 func (x *SearchFilesResponse) GetSearchResults() []*SearchResult {
@@ -4664,7 +4721,7 @@ type SearchResult struct {
 
 func (x *SearchResult) Reset() {
 	*x = SearchResult{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[58]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[59]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4676,7 +4733,7 @@ func (x *SearchResult) String() string {
 func (*SearchResult) ProtoMessage() {}
 
 func (x *SearchResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[58]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[59]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4689,7 +4746,7 @@ func (x *SearchResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchResult.ProtoReflect.Descriptor instead.
 func (*SearchResult) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{58}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{59}
 }
 
 func (x *SearchResult) GetEntry() isSearchResult_Entry {
@@ -4746,7 +4803,7 @@ type FileSearchResult struct {
 
 func (x *FileSearchResult) Reset() {
 	*x = FileSearchResult{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[59]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[60]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4758,7 +4815,7 @@ func (x *FileSearchResult) String() string {
 func (*FileSearchResult) ProtoMessage() {}
 
 func (x *FileSearchResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[59]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[60]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4771,7 +4828,7 @@ func (x *FileSearchResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FileSearchResult.ProtoReflect.Descriptor instead.
 func (*FileSearchResult) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{59}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{60}
 }
 
 func (x *FileSearchResult) GetPath() string {
@@ -4792,7 +4849,7 @@ type DirectorySearchResult struct {
 
 func (x *DirectorySearchResult) Reset() {
 	*x = DirectorySearchResult{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[60]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[61]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4804,7 +4861,7 @@ func (x *DirectorySearchResult) String() string {
 func (*DirectorySearchResult) ProtoMessage() {}
 
 func (x *DirectorySearchResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[60]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[61]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4817,7 +4874,7 @@ func (x *DirectorySearchResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DirectorySearchResult.ProtoReflect.Descriptor instead.
 func (*DirectorySearchResult) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{60}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{61}
 }
 
 func (x *DirectorySearchResult) GetPath() string {
@@ -4841,7 +4898,7 @@ type MakeDirectoryRequest struct {
 
 func (x *MakeDirectoryRequest) Reset() {
 	*x = MakeDirectoryRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[61]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[62]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4853,7 +4910,7 @@ func (x *MakeDirectoryRequest) String() string {
 func (*MakeDirectoryRequest) ProtoMessage() {}
 
 func (x *MakeDirectoryRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[61]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[62]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4866,7 +4923,7 @@ func (x *MakeDirectoryRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MakeDirectoryRequest.ProtoReflect.Descriptor instead.
 func (*MakeDirectoryRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{61}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{62}
 }
 
 func (x *MakeDirectoryRequest) GetWorkspace() string {
@@ -4892,7 +4949,7 @@ type MakeDirectoryResponse struct {
 
 func (x *MakeDirectoryResponse) Reset() {
 	*x = MakeDirectoryResponse{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[62]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[63]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4904,7 +4961,7 @@ func (x *MakeDirectoryResponse) String() string {
 func (*MakeDirectoryResponse) ProtoMessage() {}
 
 func (x *MakeDirectoryResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[62]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[63]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4917,7 +4974,7 @@ func (x *MakeDirectoryResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MakeDirectoryResponse.ProtoReflect.Descriptor instead.
 func (*MakeDirectoryResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{62}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{63}
 }
 
 // `RemoveDirectory` request message.
@@ -4934,7 +4991,7 @@ type RemoveDirectoryRequest struct {
 
 func (x *RemoveDirectoryRequest) Reset() {
 	*x = RemoveDirectoryRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[63]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[64]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4946,7 +5003,7 @@ func (x *RemoveDirectoryRequest) String() string {
 func (*RemoveDirectoryRequest) ProtoMessage() {}
 
 func (x *RemoveDirectoryRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[63]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[64]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4959,7 +5016,7 @@ func (x *RemoveDirectoryRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RemoveDirectoryRequest.ProtoReflect.Descriptor instead.
 func (*RemoveDirectoryRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{63}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{64}
 }
 
 func (x *RemoveDirectoryRequest) GetWorkspace() string {
@@ -4985,7 +5042,7 @@ type RemoveDirectoryResponse struct {
 
 func (x *RemoveDirectoryResponse) Reset() {
 	*x = RemoveDirectoryResponse{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[64]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[65]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4997,7 +5054,7 @@ func (x *RemoveDirectoryResponse) String() string {
 func (*RemoveDirectoryResponse) ProtoMessage() {}
 
 func (x *RemoveDirectoryResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[64]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[65]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5010,7 +5067,7 @@ func (x *RemoveDirectoryResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RemoveDirectoryResponse.ProtoReflect.Descriptor instead.
 func (*RemoveDirectoryResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{64}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{65}
 }
 
 // `MoveDirectory` request message.
@@ -5030,7 +5087,7 @@ type MoveDirectoryRequest struct {
 
 func (x *MoveDirectoryRequest) Reset() {
 	*x = MoveDirectoryRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[65]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[66]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5042,7 +5099,7 @@ func (x *MoveDirectoryRequest) String() string {
 func (*MoveDirectoryRequest) ProtoMessage() {}
 
 func (x *MoveDirectoryRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[65]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[66]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5055,7 +5112,7 @@ func (x *MoveDirectoryRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MoveDirectoryRequest.ProtoReflect.Descriptor instead.
 func (*MoveDirectoryRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{65}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{66}
 }
 
 func (x *MoveDirectoryRequest) GetWorkspace() string {
@@ -5088,7 +5145,7 @@ type MoveDirectoryResponse struct {
 
 func (x *MoveDirectoryResponse) Reset() {
 	*x = MoveDirectoryResponse{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[66]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[67]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5100,7 +5157,7 @@ func (x *MoveDirectoryResponse) String() string {
 func (*MoveDirectoryResponse) ProtoMessage() {}
 
 func (x *MoveDirectoryResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[66]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[67]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5113,7 +5170,7 @@ func (x *MoveDirectoryResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MoveDirectoryResponse.ProtoReflect.Descriptor instead.
 func (*MoveDirectoryResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{66}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{67}
 }
 
 // `ReadFile` request message.
@@ -5133,7 +5190,7 @@ type ReadFileRequest struct {
 
 func (x *ReadFileRequest) Reset() {
 	*x = ReadFileRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[67]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[68]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5145,7 +5202,7 @@ func (x *ReadFileRequest) String() string {
 func (*ReadFileRequest) ProtoMessage() {}
 
 func (x *ReadFileRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[67]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[68]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5158,7 +5215,7 @@ func (x *ReadFileRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReadFileRequest.ProtoReflect.Descriptor instead.
 func (*ReadFileRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{67}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{68}
 }
 
 func (x *ReadFileRequest) GetWorkspace() string {
@@ -5193,7 +5250,7 @@ type ReadFileResponse struct {
 
 func (x *ReadFileResponse) Reset() {
 	*x = ReadFileResponse{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[68]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[69]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5205,7 +5262,7 @@ func (x *ReadFileResponse) String() string {
 func (*ReadFileResponse) ProtoMessage() {}
 
 func (x *ReadFileResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[68]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[69]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5218,7 +5275,7 @@ func (x *ReadFileResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReadFileResponse.ProtoReflect.Descriptor instead.
 func (*ReadFileResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{68}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{69}
 }
 
 func (x *ReadFileResponse) GetFileContents() []byte {
@@ -5242,7 +5299,7 @@ type RemoveFileRequest struct {
 
 func (x *RemoveFileRequest) Reset() {
 	*x = RemoveFileRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[69]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[70]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5254,7 +5311,7 @@ func (x *RemoveFileRequest) String() string {
 func (*RemoveFileRequest) ProtoMessage() {}
 
 func (x *RemoveFileRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[69]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[70]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5267,7 +5324,7 @@ func (x *RemoveFileRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RemoveFileRequest.ProtoReflect.Descriptor instead.
 func (*RemoveFileRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{69}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{70}
 }
 
 func (x *RemoveFileRequest) GetWorkspace() string {
@@ -5293,7 +5350,7 @@ type RemoveFileResponse struct {
 
 func (x *RemoveFileResponse) Reset() {
 	*x = RemoveFileResponse{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[70]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[71]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5305,7 +5362,7 @@ func (x *RemoveFileResponse) String() string {
 func (*RemoveFileResponse) ProtoMessage() {}
 
 func (x *RemoveFileResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[70]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[71]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5318,7 +5375,7 @@ func (x *RemoveFileResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RemoveFileResponse.ProtoReflect.Descriptor instead.
 func (*RemoveFileResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{70}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{71}
 }
 
 // `MoveFile` request message.
@@ -5338,7 +5395,7 @@ type MoveFileRequest struct {
 
 func (x *MoveFileRequest) Reset() {
 	*x = MoveFileRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[71]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[72]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5350,7 +5407,7 @@ func (x *MoveFileRequest) String() string {
 func (*MoveFileRequest) ProtoMessage() {}
 
 func (x *MoveFileRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[71]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[72]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5363,7 +5420,7 @@ func (x *MoveFileRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MoveFileRequest.ProtoReflect.Descriptor instead.
 func (*MoveFileRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{71}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{72}
 }
 
 func (x *MoveFileRequest) GetWorkspace() string {
@@ -5396,7 +5453,7 @@ type MoveFileResponse struct {
 
 func (x *MoveFileResponse) Reset() {
 	*x = MoveFileResponse{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[72]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[73]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5408,7 +5465,7 @@ func (x *MoveFileResponse) String() string {
 func (*MoveFileResponse) ProtoMessage() {}
 
 func (x *MoveFileResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[72]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[73]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5421,7 +5478,7 @@ func (x *MoveFileResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MoveFileResponse.ProtoReflect.Descriptor instead.
 func (*MoveFileResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{72}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{73}
 }
 
 // `WriteFile` request message.
@@ -5439,7 +5496,7 @@ type WriteFileRequest struct {
 
 func (x *WriteFileRequest) Reset() {
 	*x = WriteFileRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[73]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[74]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5451,7 +5508,7 @@ func (x *WriteFileRequest) String() string {
 func (*WriteFileRequest) ProtoMessage() {}
 
 func (x *WriteFileRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[73]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[74]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5464,7 +5521,7 @@ func (x *WriteFileRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WriteFileRequest.ProtoReflect.Descriptor instead.
 func (*WriteFileRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{73}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{74}
 }
 
 func (x *WriteFileRequest) GetWorkspace() string {
@@ -5497,7 +5554,7 @@ type WriteFileResponse struct {
 
 func (x *WriteFileResponse) Reset() {
 	*x = WriteFileResponse{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[74]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[75]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5509,7 +5566,7 @@ func (x *WriteFileResponse) String() string {
 func (*WriteFileResponse) ProtoMessage() {}
 
 func (x *WriteFileResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[74]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[75]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5522,7 +5579,7 @@ func (x *WriteFileResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WriteFileResponse.ProtoReflect.Descriptor instead.
 func (*WriteFileResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{74}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{75}
 }
 
 // `InstallNpmPackages` request message.
@@ -5539,7 +5596,7 @@ type InstallNpmPackagesRequest struct {
 
 func (x *InstallNpmPackagesRequest) Reset() {
 	*x = InstallNpmPackagesRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[75]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[76]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5551,7 +5608,7 @@ func (x *InstallNpmPackagesRequest) String() string {
 func (*InstallNpmPackagesRequest) ProtoMessage() {}
 
 func (x *InstallNpmPackagesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[75]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[76]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5564,7 +5621,7 @@ func (x *InstallNpmPackagesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InstallNpmPackagesRequest.ProtoReflect.Descriptor instead.
 func (*InstallNpmPackagesRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{75}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{76}
 }
 
 func (x *InstallNpmPackagesRequest) GetWorkspace() string {
@@ -5590,7 +5647,7 @@ type InstallNpmPackagesResponse struct {
 
 func (x *InstallNpmPackagesResponse) Reset() {
 	*x = InstallNpmPackagesResponse{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[76]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[77]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5602,7 +5659,7 @@ func (x *InstallNpmPackagesResponse) String() string {
 func (*InstallNpmPackagesResponse) ProtoMessage() {}
 
 func (x *InstallNpmPackagesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[76]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[77]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5615,7 +5672,7 @@ func (x *InstallNpmPackagesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InstallNpmPackagesResponse.ProtoReflect.Descriptor instead.
 func (*InstallNpmPackagesResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{76}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{77}
 }
 
 // Represents a Dataform release configuration.
@@ -5664,7 +5721,7 @@ type ReleaseConfig struct {
 
 func (x *ReleaseConfig) Reset() {
 	*x = ReleaseConfig{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[77]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[78]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5676,7 +5733,7 @@ func (x *ReleaseConfig) String() string {
 func (*ReleaseConfig) ProtoMessage() {}
 
 func (x *ReleaseConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[77]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[78]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5689,7 +5746,7 @@ func (x *ReleaseConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReleaseConfig.ProtoReflect.Descriptor instead.
 func (*ReleaseConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{77}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{78}
 }
 
 func (x *ReleaseConfig) GetName() string {
@@ -5778,7 +5835,7 @@ type ListReleaseConfigsRequest struct {
 
 func (x *ListReleaseConfigsRequest) Reset() {
 	*x = ListReleaseConfigsRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[78]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[79]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5790,7 +5847,7 @@ func (x *ListReleaseConfigsRequest) String() string {
 func (*ListReleaseConfigsRequest) ProtoMessage() {}
 
 func (x *ListReleaseConfigsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[78]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[79]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5803,7 +5860,7 @@ func (x *ListReleaseConfigsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListReleaseConfigsRequest.ProtoReflect.Descriptor instead.
 func (*ListReleaseConfigsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{78}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{79}
 }
 
 func (x *ListReleaseConfigsRequest) GetParent() string {
@@ -5843,7 +5900,7 @@ type ListReleaseConfigsResponse struct {
 
 func (x *ListReleaseConfigsResponse) Reset() {
 	*x = ListReleaseConfigsResponse{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[79]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[80]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5855,7 +5912,7 @@ func (x *ListReleaseConfigsResponse) String() string {
 func (*ListReleaseConfigsResponse) ProtoMessage() {}
 
 func (x *ListReleaseConfigsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[79]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[80]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5868,7 +5925,7 @@ func (x *ListReleaseConfigsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListReleaseConfigsResponse.ProtoReflect.Descriptor instead.
 func (*ListReleaseConfigsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{79}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{80}
 }
 
 func (x *ListReleaseConfigsResponse) GetReleaseConfigs() []*ReleaseConfig {
@@ -5903,7 +5960,7 @@ type GetReleaseConfigRequest struct {
 
 func (x *GetReleaseConfigRequest) Reset() {
 	*x = GetReleaseConfigRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[80]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[81]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5915,7 +5972,7 @@ func (x *GetReleaseConfigRequest) String() string {
 func (*GetReleaseConfigRequest) ProtoMessage() {}
 
 func (x *GetReleaseConfigRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[80]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[81]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5928,7 +5985,7 @@ func (x *GetReleaseConfigRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetReleaseConfigRequest.ProtoReflect.Descriptor instead.
 func (*GetReleaseConfigRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{80}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{81}
 }
 
 func (x *GetReleaseConfigRequest) GetName() string {
@@ -5955,7 +6012,7 @@ type CreateReleaseConfigRequest struct {
 
 func (x *CreateReleaseConfigRequest) Reset() {
 	*x = CreateReleaseConfigRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[81]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[82]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5967,7 +6024,7 @@ func (x *CreateReleaseConfigRequest) String() string {
 func (*CreateReleaseConfigRequest) ProtoMessage() {}
 
 func (x *CreateReleaseConfigRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[81]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[82]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5980,7 +6037,7 @@ func (x *CreateReleaseConfigRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateReleaseConfigRequest.ProtoReflect.Descriptor instead.
 func (*CreateReleaseConfigRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{81}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{82}
 }
 
 func (x *CreateReleaseConfigRequest) GetParent() string {
@@ -6018,7 +6075,7 @@ type UpdateReleaseConfigRequest struct {
 
 func (x *UpdateReleaseConfigRequest) Reset() {
 	*x = UpdateReleaseConfigRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[82]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[83]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6030,7 +6087,7 @@ func (x *UpdateReleaseConfigRequest) String() string {
 func (*UpdateReleaseConfigRequest) ProtoMessage() {}
 
 func (x *UpdateReleaseConfigRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[82]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[83]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6043,7 +6100,7 @@ func (x *UpdateReleaseConfigRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateReleaseConfigRequest.ProtoReflect.Descriptor instead.
 func (*UpdateReleaseConfigRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{82}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{83}
 }
 
 func (x *UpdateReleaseConfigRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
@@ -6071,7 +6128,7 @@ type DeleteReleaseConfigRequest struct {
 
 func (x *DeleteReleaseConfigRequest) Reset() {
 	*x = DeleteReleaseConfigRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[83]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[84]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6083,7 +6140,7 @@ func (x *DeleteReleaseConfigRequest) String() string {
 func (*DeleteReleaseConfigRequest) ProtoMessage() {}
 
 func (x *DeleteReleaseConfigRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[83]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[84]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6096,7 +6153,7 @@ func (x *DeleteReleaseConfigRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteReleaseConfigRequest.ProtoReflect.Descriptor instead.
 func (*DeleteReleaseConfigRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{83}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{84}
 }
 
 func (x *DeleteReleaseConfigRequest) GetName() string {
@@ -6150,7 +6207,7 @@ type CompilationResult struct {
 
 func (x *CompilationResult) Reset() {
 	*x = CompilationResult{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[84]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[85]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6162,7 +6219,7 @@ func (x *CompilationResult) String() string {
 func (*CompilationResult) ProtoMessage() {}
 
 func (x *CompilationResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[84]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[85]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6175,7 +6232,7 @@ func (x *CompilationResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CompilationResult.ProtoReflect.Descriptor instead.
 func (*CompilationResult) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{84}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{85}
 }
 
 func (x *CompilationResult) GetSource() isCompilationResult_Source {
@@ -6341,7 +6398,7 @@ type WorkflowTriggerConfig struct {
 
 func (x *WorkflowTriggerConfig) Reset() {
 	*x = WorkflowTriggerConfig{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[85]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[86]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6353,7 +6410,7 @@ func (x *WorkflowTriggerConfig) String() string {
 func (*WorkflowTriggerConfig) ProtoMessage() {}
 
 func (x *WorkflowTriggerConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[85]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[86]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6366,7 +6423,7 @@ func (x *WorkflowTriggerConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WorkflowTriggerConfig.ProtoReflect.Descriptor instead.
 func (*WorkflowTriggerConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{85}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{86}
 }
 
 func (x *WorkflowTriggerConfig) GetCondition() WorkflowTriggerConfig_Condition {
@@ -6426,7 +6483,7 @@ type TriggerEvaluationRecord struct {
 
 func (x *TriggerEvaluationRecord) Reset() {
 	*x = TriggerEvaluationRecord{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[86]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[87]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6438,7 +6495,7 @@ func (x *TriggerEvaluationRecord) String() string {
 func (*TriggerEvaluationRecord) ProtoMessage() {}
 
 func (x *TriggerEvaluationRecord) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[86]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[87]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6451,7 +6508,7 @@ func (x *TriggerEvaluationRecord) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TriggerEvaluationRecord.ProtoReflect.Descriptor instead.
 func (*TriggerEvaluationRecord) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{86}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{87}
 }
 
 func (x *TriggerEvaluationRecord) GetEvaluationTime() *timestamppb.Timestamp {
@@ -6483,7 +6540,7 @@ type WorkflowTrigger struct {
 
 func (x *WorkflowTrigger) Reset() {
 	*x = WorkflowTrigger{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[87]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[88]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6495,7 +6552,7 @@ func (x *WorkflowTrigger) String() string {
 func (*WorkflowTrigger) ProtoMessage() {}
 
 func (x *WorkflowTrigger) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[87]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[88]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6508,7 +6565,7 @@ func (x *WorkflowTrigger) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WorkflowTrigger.ProtoReflect.Descriptor instead.
 func (*WorkflowTrigger) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{87}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{88}
 }
 
 func (x *WorkflowTrigger) GetTrigger() isWorkflowTrigger_Trigger {
@@ -6553,7 +6610,7 @@ type TableUpdateTrigger struct {
 
 func (x *TableUpdateTrigger) Reset() {
 	*x = TableUpdateTrigger{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[88]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[89]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6565,7 +6622,7 @@ func (x *TableUpdateTrigger) String() string {
 func (*TableUpdateTrigger) ProtoMessage() {}
 
 func (x *TableUpdateTrigger) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[88]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[89]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6578,7 +6635,7 @@ func (x *TableUpdateTrigger) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TableUpdateTrigger.ProtoReflect.Descriptor instead.
 func (*TableUpdateTrigger) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{88}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{89}
 }
 
 func (x *TableUpdateTrigger) GetTable() *Target {
@@ -6636,7 +6693,7 @@ type CodeCompilationConfig struct {
 
 func (x *CodeCompilationConfig) Reset() {
 	*x = CodeCompilationConfig{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[89]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[90]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6648,7 +6705,7 @@ func (x *CodeCompilationConfig) String() string {
 func (*CodeCompilationConfig) ProtoMessage() {}
 
 func (x *CodeCompilationConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[89]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[90]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6661,7 +6718,7 @@ func (x *CodeCompilationConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CodeCompilationConfig.ProtoReflect.Descriptor instead.
 func (*CodeCompilationConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{89}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{90}
 }
 
 func (x *CodeCompilationConfig) GetDefaultDatabase() string {
@@ -6765,7 +6822,7 @@ type GcsRepositorySnapshotMetadata struct {
 
 func (x *GcsRepositorySnapshotMetadata) Reset() {
 	*x = GcsRepositorySnapshotMetadata{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[90]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[91]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6777,7 +6834,7 @@ func (x *GcsRepositorySnapshotMetadata) String() string {
 func (*GcsRepositorySnapshotMetadata) ProtoMessage() {}
 
 func (x *GcsRepositorySnapshotMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[90]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[91]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6790,7 +6847,7 @@ func (x *GcsRepositorySnapshotMetadata) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GcsRepositorySnapshotMetadata.ProtoReflect.Descriptor instead.
 func (*GcsRepositorySnapshotMetadata) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{90}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{91}
 }
 
 func (x *GcsRepositorySnapshotMetadata) GetRepositorySnapshotUri() string {
@@ -6826,7 +6883,7 @@ type GcsRepositorySnapshotDestination struct {
 
 func (x *GcsRepositorySnapshotDestination) Reset() {
 	*x = GcsRepositorySnapshotDestination{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[91]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[92]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6838,7 +6895,7 @@ func (x *GcsRepositorySnapshotDestination) String() string {
 func (*GcsRepositorySnapshotDestination) ProtoMessage() {}
 
 func (x *GcsRepositorySnapshotDestination) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[91]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[92]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6851,7 +6908,7 @@ func (x *GcsRepositorySnapshotDestination) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GcsRepositorySnapshotDestination.ProtoReflect.Descriptor instead.
 func (*GcsRepositorySnapshotDestination) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{91}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{92}
 }
 
 func (x *GcsRepositorySnapshotDestination) GetRepositorySnapshotUri() string {
@@ -6888,7 +6945,7 @@ type NotebookRuntimeOptions struct {
 
 func (x *NotebookRuntimeOptions) Reset() {
 	*x = NotebookRuntimeOptions{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[92]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[93]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6900,7 +6957,7 @@ func (x *NotebookRuntimeOptions) String() string {
 func (*NotebookRuntimeOptions) ProtoMessage() {}
 
 func (x *NotebookRuntimeOptions) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[92]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[93]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6913,7 +6970,7 @@ func (x *NotebookRuntimeOptions) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NotebookRuntimeOptions.ProtoReflect.Descriptor instead.
 func (*NotebookRuntimeOptions) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{92}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{93}
 }
 
 func (x *NotebookRuntimeOptions) GetExecutionSink() isNotebookRuntimeOptions_ExecutionSink {
@@ -6996,7 +7053,7 @@ type PipelineConfig struct {
 
 func (x *PipelineConfig) Reset() {
 	*x = PipelineConfig{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[93]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[94]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7008,7 +7065,7 @@ func (x *PipelineConfig) String() string {
 func (*PipelineConfig) ProtoMessage() {}
 
 func (x *PipelineConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[93]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[94]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7021,7 +7078,7 @@ func (x *PipelineConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PipelineConfig.ProtoReflect.Descriptor instead.
 func (*PipelineConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{93}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{94}
 }
 
 func (x *PipelineConfig) GetPipelineType() PipelineConfig_PipelineType {
@@ -7067,7 +7124,7 @@ type ListCompilationResultsRequest struct {
 
 func (x *ListCompilationResultsRequest) Reset() {
 	*x = ListCompilationResultsRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[94]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[95]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7079,7 +7136,7 @@ func (x *ListCompilationResultsRequest) String() string {
 func (*ListCompilationResultsRequest) ProtoMessage() {}
 
 func (x *ListCompilationResultsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[94]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[95]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7092,7 +7149,7 @@ func (x *ListCompilationResultsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListCompilationResultsRequest.ProtoReflect.Descriptor instead.
 func (*ListCompilationResultsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{94}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{95}
 }
 
 func (x *ListCompilationResultsRequest) GetParent() string {
@@ -7146,7 +7203,7 @@ type ListCompilationResultsResponse struct {
 
 func (x *ListCompilationResultsResponse) Reset() {
 	*x = ListCompilationResultsResponse{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[95]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[96]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7158,7 +7215,7 @@ func (x *ListCompilationResultsResponse) String() string {
 func (*ListCompilationResultsResponse) ProtoMessage() {}
 
 func (x *ListCompilationResultsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[95]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[96]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7171,7 +7228,7 @@ func (x *ListCompilationResultsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListCompilationResultsResponse.ProtoReflect.Descriptor instead.
 func (*ListCompilationResultsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{95}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{96}
 }
 
 func (x *ListCompilationResultsResponse) GetCompilationResults() []*CompilationResult {
@@ -7206,7 +7263,7 @@ type GetCompilationResultRequest struct {
 
 func (x *GetCompilationResultRequest) Reset() {
 	*x = GetCompilationResultRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[96]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[97]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7218,7 +7275,7 @@ func (x *GetCompilationResultRequest) String() string {
 func (*GetCompilationResultRequest) ProtoMessage() {}
 
 func (x *GetCompilationResultRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[96]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[97]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7231,7 +7288,7 @@ func (x *GetCompilationResultRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetCompilationResultRequest.ProtoReflect.Descriptor instead.
 func (*GetCompilationResultRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{96}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{97}
 }
 
 func (x *GetCompilationResultRequest) GetName() string {
@@ -7255,7 +7312,7 @@ type CreateCompilationResultRequest struct {
 
 func (x *CreateCompilationResultRequest) Reset() {
 	*x = CreateCompilationResultRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[97]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[98]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7267,7 +7324,7 @@ func (x *CreateCompilationResultRequest) String() string {
 func (*CreateCompilationResultRequest) ProtoMessage() {}
 
 func (x *CreateCompilationResultRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[97]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[98]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7280,7 +7337,7 @@ func (x *CreateCompilationResultRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateCompilationResultRequest.ProtoReflect.Descriptor instead.
 func (*CreateCompilationResultRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{97}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{98}
 }
 
 func (x *CreateCompilationResultRequest) GetParent() string {
@@ -7313,7 +7370,7 @@ type Target struct {
 
 func (x *Target) Reset() {
 	*x = Target{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[98]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[99]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7325,7 +7382,7 @@ func (x *Target) String() string {
 func (*Target) ProtoMessage() {}
 
 func (x *Target) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[98]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[99]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7338,7 +7395,7 @@ func (x *Target) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Target.ProtoReflect.Descriptor instead.
 func (*Target) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{98}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{99}
 }
 
 func (x *Target) GetDatabase() string {
@@ -7377,7 +7434,7 @@ type RelationDescriptor struct {
 
 func (x *RelationDescriptor) Reset() {
 	*x = RelationDescriptor{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[99]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[100]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7389,7 +7446,7 @@ func (x *RelationDescriptor) String() string {
 func (*RelationDescriptor) ProtoMessage() {}
 
 func (x *RelationDescriptor) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[99]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[100]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7402,7 +7459,7 @@ func (x *RelationDescriptor) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RelationDescriptor.ProtoReflect.Descriptor instead.
 func (*RelationDescriptor) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{99}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{100}
 }
 
 func (x *RelationDescriptor) GetDescription() string {
@@ -7458,7 +7515,7 @@ type CompilationResultAction struct {
 
 func (x *CompilationResultAction) Reset() {
 	*x = CompilationResultAction{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[100]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[101]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7470,7 +7527,7 @@ func (x *CompilationResultAction) String() string {
 func (*CompilationResultAction) ProtoMessage() {}
 
 func (x *CompilationResultAction) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[100]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[101]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7483,7 +7540,7 @@ func (x *CompilationResultAction) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CompilationResultAction.ProtoReflect.Descriptor instead.
 func (*CompilationResultAction) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{100}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{101}
 }
 
 func (x *CompilationResultAction) GetCompiledObject() isCompilationResultAction_CompiledObject {
@@ -7647,7 +7704,7 @@ type QueryCompilationResultActionsRequest struct {
 
 func (x *QueryCompilationResultActionsRequest) Reset() {
 	*x = QueryCompilationResultActionsRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[101]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[102]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7659,7 +7716,7 @@ func (x *QueryCompilationResultActionsRequest) String() string {
 func (*QueryCompilationResultActionsRequest) ProtoMessage() {}
 
 func (x *QueryCompilationResultActionsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[101]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[102]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7672,7 +7729,7 @@ func (x *QueryCompilationResultActionsRequest) ProtoReflect() protoreflect.Messa
 
 // Deprecated: Use QueryCompilationResultActionsRequest.ProtoReflect.Descriptor instead.
 func (*QueryCompilationResultActionsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{101}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{102}
 }
 
 func (x *QueryCompilationResultActionsRequest) GetName() string {
@@ -7717,7 +7774,7 @@ type QueryCompilationResultActionsResponse struct {
 
 func (x *QueryCompilationResultActionsResponse) Reset() {
 	*x = QueryCompilationResultActionsResponse{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[102]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[103]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7729,7 +7786,7 @@ func (x *QueryCompilationResultActionsResponse) String() string {
 func (*QueryCompilationResultActionsResponse) ProtoMessage() {}
 
 func (x *QueryCompilationResultActionsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[102]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[103]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7742,7 +7799,7 @@ func (x *QueryCompilationResultActionsResponse) ProtoReflect() protoreflect.Mess
 
 // Deprecated: Use QueryCompilationResultActionsResponse.ProtoReflect.Descriptor instead.
 func (*QueryCompilationResultActionsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{102}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{103}
 }
 
 func (x *QueryCompilationResultActionsResponse) GetCompilationResultActions() []*CompilationResultAction {
@@ -7801,7 +7858,7 @@ type WorkflowConfig struct {
 
 func (x *WorkflowConfig) Reset() {
 	*x = WorkflowConfig{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[103]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[104]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7813,7 +7870,7 @@ func (x *WorkflowConfig) String() string {
 func (*WorkflowConfig) ProtoMessage() {}
 
 func (x *WorkflowConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[103]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[104]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7826,7 +7883,7 @@ func (x *WorkflowConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WorkflowConfig.ProtoReflect.Descriptor instead.
 func (*WorkflowConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{103}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{104}
 }
 
 func (x *WorkflowConfig) GetName() string {
@@ -7925,6 +7982,9 @@ type InvocationConfig struct {
 	FullyRefreshIncrementalTablesEnabled bool `protobuf:"varint,5,opt,name=fully_refresh_incremental_tables_enabled,json=fullyRefreshIncrementalTablesEnabled,proto3" json:"fully_refresh_incremental_tables_enabled,omitempty"`
 	// Optional. The service account to run workflow invocations under.
 	ServiceAccount string `protobuf:"bytes,6,opt,name=service_account,json=serviceAccount,proto3" json:"service_account,omitempty"`
+	// Optional. Configuration for end user authentication.
+	// Note that this should not be set when `service_account` is used.
+	EndUserAuthConfig *InvocationConfig_EndUserAuthenticationConfig `protobuf:"bytes,7,opt,name=end_user_auth_config,json=endUserAuthConfig,proto3" json:"end_user_auth_config,omitempty"`
 	// Optional. Specifies the priority for query execution in BigQuery.
 	// More information can be found at
 	// https://cloud.google.com/bigquery/docs/running-queries#queries.
@@ -7935,7 +7995,7 @@ type InvocationConfig struct {
 
 func (x *InvocationConfig) Reset() {
 	*x = InvocationConfig{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[104]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[105]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7947,7 +8007,7 @@ func (x *InvocationConfig) String() string {
 func (*InvocationConfig) ProtoMessage() {}
 
 func (x *InvocationConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[104]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[105]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7960,7 +8020,7 @@ func (x *InvocationConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InvocationConfig.ProtoReflect.Descriptor instead.
 func (*InvocationConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{104}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{105}
 }
 
 func (x *InvocationConfig) GetIncludedTargets() []*Target {
@@ -8005,6 +8065,13 @@ func (x *InvocationConfig) GetServiceAccount() string {
 	return ""
 }
 
+func (x *InvocationConfig) GetEndUserAuthConfig() *InvocationConfig_EndUserAuthenticationConfig {
+	if x != nil {
+		return x.EndUserAuthConfig
+	}
+	return nil
+}
+
 func (x *InvocationConfig) GetQueryPriority() InvocationConfig_QueryPriority {
 	if x != nil && x.QueryPriority != nil {
 		return *x.QueryPriority
@@ -8035,7 +8102,7 @@ type ListWorkflowConfigsRequest struct {
 
 func (x *ListWorkflowConfigsRequest) Reset() {
 	*x = ListWorkflowConfigsRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[105]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[106]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8047,7 +8114,7 @@ func (x *ListWorkflowConfigsRequest) String() string {
 func (*ListWorkflowConfigsRequest) ProtoMessage() {}
 
 func (x *ListWorkflowConfigsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[105]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[106]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8060,7 +8127,7 @@ func (x *ListWorkflowConfigsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListWorkflowConfigsRequest.ProtoReflect.Descriptor instead.
 func (*ListWorkflowConfigsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{105}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{106}
 }
 
 func (x *ListWorkflowConfigsRequest) GetParent() string {
@@ -8100,7 +8167,7 @@ type ListWorkflowConfigsResponse struct {
 
 func (x *ListWorkflowConfigsResponse) Reset() {
 	*x = ListWorkflowConfigsResponse{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[106]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[107]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8112,7 +8179,7 @@ func (x *ListWorkflowConfigsResponse) String() string {
 func (*ListWorkflowConfigsResponse) ProtoMessage() {}
 
 func (x *ListWorkflowConfigsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[106]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[107]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8125,7 +8192,7 @@ func (x *ListWorkflowConfigsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListWorkflowConfigsResponse.ProtoReflect.Descriptor instead.
 func (*ListWorkflowConfigsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{106}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{107}
 }
 
 func (x *ListWorkflowConfigsResponse) GetWorkflowConfigs() []*WorkflowConfig {
@@ -8160,7 +8227,7 @@ type GetWorkflowConfigRequest struct {
 
 func (x *GetWorkflowConfigRequest) Reset() {
 	*x = GetWorkflowConfigRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[107]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[108]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8172,7 +8239,7 @@ func (x *GetWorkflowConfigRequest) String() string {
 func (*GetWorkflowConfigRequest) ProtoMessage() {}
 
 func (x *GetWorkflowConfigRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[107]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[108]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8185,7 +8252,7 @@ func (x *GetWorkflowConfigRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetWorkflowConfigRequest.ProtoReflect.Descriptor instead.
 func (*GetWorkflowConfigRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{107}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{108}
 }
 
 func (x *GetWorkflowConfigRequest) GetName() string {
@@ -8212,7 +8279,7 @@ type CreateWorkflowConfigRequest struct {
 
 func (x *CreateWorkflowConfigRequest) Reset() {
 	*x = CreateWorkflowConfigRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[108]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[109]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8224,7 +8291,7 @@ func (x *CreateWorkflowConfigRequest) String() string {
 func (*CreateWorkflowConfigRequest) ProtoMessage() {}
 
 func (x *CreateWorkflowConfigRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[108]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[109]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8237,7 +8304,7 @@ func (x *CreateWorkflowConfigRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateWorkflowConfigRequest.ProtoReflect.Descriptor instead.
 func (*CreateWorkflowConfigRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{108}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{109}
 }
 
 func (x *CreateWorkflowConfigRequest) GetParent() string {
@@ -8275,7 +8342,7 @@ type UpdateWorkflowConfigRequest struct {
 
 func (x *UpdateWorkflowConfigRequest) Reset() {
 	*x = UpdateWorkflowConfigRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[109]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[110]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8287,7 +8354,7 @@ func (x *UpdateWorkflowConfigRequest) String() string {
 func (*UpdateWorkflowConfigRequest) ProtoMessage() {}
 
 func (x *UpdateWorkflowConfigRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[109]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[110]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8300,7 +8367,7 @@ func (x *UpdateWorkflowConfigRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateWorkflowConfigRequest.ProtoReflect.Descriptor instead.
 func (*UpdateWorkflowConfigRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{109}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{110}
 }
 
 func (x *UpdateWorkflowConfigRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
@@ -8328,7 +8395,7 @@ type DeleteWorkflowConfigRequest struct {
 
 func (x *DeleteWorkflowConfigRequest) Reset() {
 	*x = DeleteWorkflowConfigRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[110]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[111]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8340,7 +8407,7 @@ func (x *DeleteWorkflowConfigRequest) String() string {
 func (*DeleteWorkflowConfigRequest) ProtoMessage() {}
 
 func (x *DeleteWorkflowConfigRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[110]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[111]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8353,7 +8420,7 @@ func (x *DeleteWorkflowConfigRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteWorkflowConfigRequest.ProtoReflect.Descriptor instead.
 func (*DeleteWorkflowConfigRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{110}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{111}
 }
 
 func (x *DeleteWorkflowConfigRequest) GetName() string {
@@ -8404,7 +8471,7 @@ type WorkflowInvocation struct {
 
 func (x *WorkflowInvocation) Reset() {
 	*x = WorkflowInvocation{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[111]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[112]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8416,7 +8483,7 @@ func (x *WorkflowInvocation) String() string {
 func (*WorkflowInvocation) ProtoMessage() {}
 
 func (x *WorkflowInvocation) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[111]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[112]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8429,7 +8496,7 @@ func (x *WorkflowInvocation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WorkflowInvocation.ProtoReflect.Descriptor instead.
 func (*WorkflowInvocation) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{111}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{112}
 }
 
 func (x *WorkflowInvocation) GetCompilationSource() isWorkflowInvocation_CompilationSource {
@@ -8570,7 +8637,7 @@ type ListWorkflowInvocationsRequest struct {
 
 func (x *ListWorkflowInvocationsRequest) Reset() {
 	*x = ListWorkflowInvocationsRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[112]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[113]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8582,7 +8649,7 @@ func (x *ListWorkflowInvocationsRequest) String() string {
 func (*ListWorkflowInvocationsRequest) ProtoMessage() {}
 
 func (x *ListWorkflowInvocationsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[112]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[113]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8595,7 +8662,7 @@ func (x *ListWorkflowInvocationsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListWorkflowInvocationsRequest.ProtoReflect.Descriptor instead.
 func (*ListWorkflowInvocationsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{112}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{113}
 }
 
 func (x *ListWorkflowInvocationsRequest) GetParent() string {
@@ -8649,7 +8716,7 @@ type ListWorkflowInvocationsResponse struct {
 
 func (x *ListWorkflowInvocationsResponse) Reset() {
 	*x = ListWorkflowInvocationsResponse{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[113]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[114]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8661,7 +8728,7 @@ func (x *ListWorkflowInvocationsResponse) String() string {
 func (*ListWorkflowInvocationsResponse) ProtoMessage() {}
 
 func (x *ListWorkflowInvocationsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[113]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[114]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8674,7 +8741,7 @@ func (x *ListWorkflowInvocationsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListWorkflowInvocationsResponse.ProtoReflect.Descriptor instead.
 func (*ListWorkflowInvocationsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{113}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{114}
 }
 
 func (x *ListWorkflowInvocationsResponse) GetWorkflowInvocations() []*WorkflowInvocation {
@@ -8709,7 +8776,7 @@ type GetWorkflowInvocationRequest struct {
 
 func (x *GetWorkflowInvocationRequest) Reset() {
 	*x = GetWorkflowInvocationRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[114]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[115]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8721,7 +8788,7 @@ func (x *GetWorkflowInvocationRequest) String() string {
 func (*GetWorkflowInvocationRequest) ProtoMessage() {}
 
 func (x *GetWorkflowInvocationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[114]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[115]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8734,7 +8801,7 @@ func (x *GetWorkflowInvocationRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetWorkflowInvocationRequest.ProtoReflect.Descriptor instead.
 func (*GetWorkflowInvocationRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{114}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{115}
 }
 
 func (x *GetWorkflowInvocationRequest) GetName() string {
@@ -8758,7 +8825,7 @@ type CreateWorkflowInvocationRequest struct {
 
 func (x *CreateWorkflowInvocationRequest) Reset() {
 	*x = CreateWorkflowInvocationRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[115]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[116]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8770,7 +8837,7 @@ func (x *CreateWorkflowInvocationRequest) String() string {
 func (*CreateWorkflowInvocationRequest) ProtoMessage() {}
 
 func (x *CreateWorkflowInvocationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[115]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[116]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8783,7 +8850,7 @@ func (x *CreateWorkflowInvocationRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateWorkflowInvocationRequest.ProtoReflect.Descriptor instead.
 func (*CreateWorkflowInvocationRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{115}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{116}
 }
 
 func (x *CreateWorkflowInvocationRequest) GetParent() string {
@@ -8811,7 +8878,7 @@ type DeleteWorkflowInvocationRequest struct {
 
 func (x *DeleteWorkflowInvocationRequest) Reset() {
 	*x = DeleteWorkflowInvocationRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[116]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[117]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8823,7 +8890,7 @@ func (x *DeleteWorkflowInvocationRequest) String() string {
 func (*DeleteWorkflowInvocationRequest) ProtoMessage() {}
 
 func (x *DeleteWorkflowInvocationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[116]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[117]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8836,7 +8903,7 @@ func (x *DeleteWorkflowInvocationRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteWorkflowInvocationRequest.ProtoReflect.Descriptor instead.
 func (*DeleteWorkflowInvocationRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{116}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{117}
 }
 
 func (x *DeleteWorkflowInvocationRequest) GetName() string {
@@ -8857,7 +8924,7 @@ type CancelWorkflowInvocationRequest struct {
 
 func (x *CancelWorkflowInvocationRequest) Reset() {
 	*x = CancelWorkflowInvocationRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[117]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[118]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8869,7 +8936,7 @@ func (x *CancelWorkflowInvocationRequest) String() string {
 func (*CancelWorkflowInvocationRequest) ProtoMessage() {}
 
 func (x *CancelWorkflowInvocationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[117]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[118]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8882,7 +8949,7 @@ func (x *CancelWorkflowInvocationRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CancelWorkflowInvocationRequest.ProtoReflect.Descriptor instead.
 func (*CancelWorkflowInvocationRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{117}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{118}
 }
 
 func (x *CancelWorkflowInvocationRequest) GetName() string {
@@ -8901,7 +8968,7 @@ type CancelWorkflowInvocationResponse struct {
 
 func (x *CancelWorkflowInvocationResponse) Reset() {
 	*x = CancelWorkflowInvocationResponse{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[118]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[119]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8913,7 +8980,7 @@ func (x *CancelWorkflowInvocationResponse) String() string {
 func (*CancelWorkflowInvocationResponse) ProtoMessage() {}
 
 func (x *CancelWorkflowInvocationResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[118]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[119]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8926,7 +8993,7 @@ func (x *CancelWorkflowInvocationResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CancelWorkflowInvocationResponse.ProtoReflect.Descriptor instead.
 func (*CancelWorkflowInvocationResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{118}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{119}
 }
 
 // Represents a single action in a workflow invocation.
@@ -8967,7 +9034,7 @@ type WorkflowInvocationAction struct {
 
 func (x *WorkflowInvocationAction) Reset() {
 	*x = WorkflowInvocationAction{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[119]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[120]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8979,7 +9046,7 @@ func (x *WorkflowInvocationAction) String() string {
 func (*WorkflowInvocationAction) ProtoMessage() {}
 
 func (x *WorkflowInvocationAction) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[119]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[120]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8992,7 +9059,7 @@ func (x *WorkflowInvocationAction) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WorkflowInvocationAction.ProtoReflect.Descriptor instead.
 func (*WorkflowInvocationAction) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{119}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{120}
 }
 
 func (x *WorkflowInvocationAction) GetAction() isWorkflowInvocationAction_Action {
@@ -9119,7 +9186,7 @@ type QueryWorkflowInvocationActionsRequest struct {
 
 func (x *QueryWorkflowInvocationActionsRequest) Reset() {
 	*x = QueryWorkflowInvocationActionsRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[120]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[121]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9131,7 +9198,7 @@ func (x *QueryWorkflowInvocationActionsRequest) String() string {
 func (*QueryWorkflowInvocationActionsRequest) ProtoMessage() {}
 
 func (x *QueryWorkflowInvocationActionsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[120]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[121]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9144,7 +9211,7 @@ func (x *QueryWorkflowInvocationActionsRequest) ProtoReflect() protoreflect.Mess
 
 // Deprecated: Use QueryWorkflowInvocationActionsRequest.ProtoReflect.Descriptor instead.
 func (*QueryWorkflowInvocationActionsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{120}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{121}
 }
 
 func (x *QueryWorkflowInvocationActionsRequest) GetName() string {
@@ -9182,7 +9249,7 @@ type QueryWorkflowInvocationActionsResponse struct {
 
 func (x *QueryWorkflowInvocationActionsResponse) Reset() {
 	*x = QueryWorkflowInvocationActionsResponse{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[121]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[122]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9194,7 +9261,7 @@ func (x *QueryWorkflowInvocationActionsResponse) String() string {
 func (*QueryWorkflowInvocationActionsResponse) ProtoMessage() {}
 
 func (x *QueryWorkflowInvocationActionsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[121]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[122]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9207,7 +9274,7 @@ func (x *QueryWorkflowInvocationActionsResponse) ProtoReflect() protoreflect.Mes
 
 // Deprecated: Use QueryWorkflowInvocationActionsResponse.ProtoReflect.Descriptor instead.
 func (*QueryWorkflowInvocationActionsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{121}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{122}
 }
 
 func (x *QueryWorkflowInvocationActionsResponse) GetWorkflowInvocationActions() []*WorkflowInvocationAction {
@@ -9242,7 +9309,7 @@ type Config struct {
 
 func (x *Config) Reset() {
 	*x = Config{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[122]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[123]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9254,7 +9321,7 @@ func (x *Config) String() string {
 func (*Config) ProtoMessage() {}
 
 func (x *Config) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[122]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[123]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9267,7 +9334,7 @@ func (x *Config) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Config.ProtoReflect.Descriptor instead.
 func (*Config) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{122}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{123}
 }
 
 func (x *Config) GetName() string {
@@ -9302,7 +9369,7 @@ type GetConfigRequest struct {
 
 func (x *GetConfigRequest) Reset() {
 	*x = GetConfigRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[123]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[124]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9314,7 +9381,7 @@ func (x *GetConfigRequest) String() string {
 func (*GetConfigRequest) ProtoMessage() {}
 
 func (x *GetConfigRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[123]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[124]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9327,7 +9394,7 @@ func (x *GetConfigRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetConfigRequest.ProtoReflect.Descriptor instead.
 func (*GetConfigRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{123}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{124}
 }
 
 func (x *GetConfigRequest) GetName() string {
@@ -9350,7 +9417,7 @@ type UpdateConfigRequest struct {
 
 func (x *UpdateConfigRequest) Reset() {
 	*x = UpdateConfigRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[124]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[125]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9362,7 +9429,7 @@ func (x *UpdateConfigRequest) String() string {
 func (*UpdateConfigRequest) ProtoMessage() {}
 
 func (x *UpdateConfigRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[124]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[125]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9375,7 +9442,7 @@ func (x *UpdateConfigRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateConfigRequest.ProtoReflect.Descriptor instead.
 func (*UpdateConfigRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{124}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{125}
 }
 
 func (x *UpdateConfigRequest) GetConfig() *Config {
@@ -9428,7 +9495,7 @@ type Folder struct {
 
 func (x *Folder) Reset() {
 	*x = Folder{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[125]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[126]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9440,7 +9507,7 @@ func (x *Folder) String() string {
 func (*Folder) ProtoMessage() {}
 
 func (x *Folder) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[125]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[126]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9453,7 +9520,7 @@ func (x *Folder) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Folder.ProtoReflect.Descriptor instead.
 func (*Folder) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{125}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{126}
 }
 
 func (x *Folder) GetName() string {
@@ -9533,7 +9600,7 @@ type CreateFolderRequest struct {
 
 func (x *CreateFolderRequest) Reset() {
 	*x = CreateFolderRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[126]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[127]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9545,7 +9612,7 @@ func (x *CreateFolderRequest) String() string {
 func (*CreateFolderRequest) ProtoMessage() {}
 
 func (x *CreateFolderRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[126]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[127]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9558,7 +9625,7 @@ func (x *CreateFolderRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateFolderRequest.ProtoReflect.Descriptor instead.
 func (*CreateFolderRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{126}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{127}
 }
 
 func (x *CreateFolderRequest) GetParent() string {
@@ -9598,7 +9665,7 @@ type MoveFolderRequest struct {
 
 func (x *MoveFolderRequest) Reset() {
 	*x = MoveFolderRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[127]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[128]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9610,7 +9677,7 @@ func (x *MoveFolderRequest) String() string {
 func (*MoveFolderRequest) ProtoMessage() {}
 
 func (x *MoveFolderRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[127]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[128]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9623,7 +9690,7 @@ func (x *MoveFolderRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MoveFolderRequest.ProtoReflect.Descriptor instead.
 func (*MoveFolderRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{127}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{128}
 }
 
 func (x *MoveFolderRequest) GetName() string {
@@ -9651,7 +9718,7 @@ type GetFolderRequest struct {
 
 func (x *GetFolderRequest) Reset() {
 	*x = GetFolderRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[128]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[129]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9663,7 +9730,7 @@ func (x *GetFolderRequest) String() string {
 func (*GetFolderRequest) ProtoMessage() {}
 
 func (x *GetFolderRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[128]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[129]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9676,7 +9743,7 @@ func (x *GetFolderRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetFolderRequest.ProtoReflect.Descriptor instead.
 func (*GetFolderRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{128}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{129}
 }
 
 func (x *GetFolderRequest) GetName() string {
@@ -9702,7 +9769,7 @@ type UpdateFolderRequest struct {
 
 func (x *UpdateFolderRequest) Reset() {
 	*x = UpdateFolderRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[129]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[130]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9714,7 +9781,7 @@ func (x *UpdateFolderRequest) String() string {
 func (*UpdateFolderRequest) ProtoMessage() {}
 
 func (x *UpdateFolderRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[129]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[130]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9727,7 +9794,7 @@ func (x *UpdateFolderRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateFolderRequest.ProtoReflect.Descriptor instead.
 func (*UpdateFolderRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{129}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{130}
 }
 
 func (x *UpdateFolderRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
@@ -9755,7 +9822,7 @@ type DeleteFolderRequest struct {
 
 func (x *DeleteFolderRequest) Reset() {
 	*x = DeleteFolderRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[130]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[131]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9767,7 +9834,7 @@ func (x *DeleteFolderRequest) String() string {
 func (*DeleteFolderRequest) ProtoMessage() {}
 
 func (x *DeleteFolderRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[130]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[131]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9780,7 +9847,7 @@ func (x *DeleteFolderRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteFolderRequest.ProtoReflect.Descriptor instead.
 func (*DeleteFolderRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{130}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{131}
 }
 
 func (x *DeleteFolderRequest) GetName() string {
@@ -9810,7 +9877,7 @@ type DeleteFolderTreeRequest struct {
 
 func (x *DeleteFolderTreeRequest) Reset() {
 	*x = DeleteFolderTreeRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[131]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[132]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9822,7 +9889,7 @@ func (x *DeleteFolderTreeRequest) String() string {
 func (*DeleteFolderTreeRequest) ProtoMessage() {}
 
 func (x *DeleteFolderTreeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[131]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[132]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9835,7 +9902,7 @@ func (x *DeleteFolderTreeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteFolderTreeRequest.ProtoReflect.Descriptor instead.
 func (*DeleteFolderTreeRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{131}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{132}
 }
 
 func (x *DeleteFolderTreeRequest) GetName() string {
@@ -9872,7 +9939,7 @@ type DeleteTeamFolderTreeRequest struct {
 
 func (x *DeleteTeamFolderTreeRequest) Reset() {
 	*x = DeleteTeamFolderTreeRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[132]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[133]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9884,7 +9951,7 @@ func (x *DeleteTeamFolderTreeRequest) String() string {
 func (*DeleteTeamFolderTreeRequest) ProtoMessage() {}
 
 func (x *DeleteTeamFolderTreeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[132]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[133]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9897,7 +9964,7 @@ func (x *DeleteTeamFolderTreeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteTeamFolderTreeRequest.ProtoReflect.Descriptor instead.
 func (*DeleteTeamFolderTreeRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{132}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{133}
 }
 
 func (x *DeleteTeamFolderTreeRequest) GetName() string {
@@ -9936,7 +10003,7 @@ type DeleteFolderTreeMetadata struct {
 
 func (x *DeleteFolderTreeMetadata) Reset() {
 	*x = DeleteFolderTreeMetadata{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[133]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[134]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9948,7 +10015,7 @@ func (x *DeleteFolderTreeMetadata) String() string {
 func (*DeleteFolderTreeMetadata) ProtoMessage() {}
 
 func (x *DeleteFolderTreeMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[133]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[134]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9961,7 +10028,7 @@ func (x *DeleteFolderTreeMetadata) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteFolderTreeMetadata.ProtoReflect.Descriptor instead.
 func (*DeleteFolderTreeMetadata) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{133}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{134}
 }
 
 func (x *DeleteFolderTreeMetadata) GetCreateTime() *timestamppb.Timestamp {
@@ -10038,7 +10105,7 @@ type QueryFolderContentsRequest struct {
 
 func (x *QueryFolderContentsRequest) Reset() {
 	*x = QueryFolderContentsRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[134]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[135]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10050,7 +10117,7 @@ func (x *QueryFolderContentsRequest) String() string {
 func (*QueryFolderContentsRequest) ProtoMessage() {}
 
 func (x *QueryFolderContentsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[134]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[135]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10063,7 +10130,7 @@ func (x *QueryFolderContentsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QueryFolderContentsRequest.ProtoReflect.Descriptor instead.
 func (*QueryFolderContentsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{134}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{135}
 }
 
 func (x *QueryFolderContentsRequest) GetFolder() string {
@@ -10115,7 +10182,7 @@ type QueryFolderContentsResponse struct {
 
 func (x *QueryFolderContentsResponse) Reset() {
 	*x = QueryFolderContentsResponse{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[135]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[136]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10127,7 +10194,7 @@ func (x *QueryFolderContentsResponse) String() string {
 func (*QueryFolderContentsResponse) ProtoMessage() {}
 
 func (x *QueryFolderContentsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[135]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[136]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10140,7 +10207,7 @@ func (x *QueryFolderContentsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QueryFolderContentsResponse.ProtoReflect.Descriptor instead.
 func (*QueryFolderContentsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{135}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{136}
 }
 
 func (x *QueryFolderContentsResponse) GetEntries() []*QueryFolderContentsResponse_FolderContentsEntry {
@@ -10195,7 +10262,7 @@ type QueryUserRootContentsRequest struct {
 
 func (x *QueryUserRootContentsRequest) Reset() {
 	*x = QueryUserRootContentsRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[136]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[137]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10207,7 +10274,7 @@ func (x *QueryUserRootContentsRequest) String() string {
 func (*QueryUserRootContentsRequest) ProtoMessage() {}
 
 func (x *QueryUserRootContentsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[136]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[137]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10220,7 +10287,7 @@ func (x *QueryUserRootContentsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QueryUserRootContentsRequest.ProtoReflect.Descriptor instead.
 func (*QueryUserRootContentsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{136}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{137}
 }
 
 func (x *QueryUserRootContentsRequest) GetLocation() string {
@@ -10272,7 +10339,7 @@ type QueryUserRootContentsResponse struct {
 
 func (x *QueryUserRootContentsResponse) Reset() {
 	*x = QueryUserRootContentsResponse{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[137]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[138]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10284,7 +10351,7 @@ func (x *QueryUserRootContentsResponse) String() string {
 func (*QueryUserRootContentsResponse) ProtoMessage() {}
 
 func (x *QueryUserRootContentsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[137]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[138]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10297,7 +10364,7 @@ func (x *QueryUserRootContentsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QueryUserRootContentsResponse.ProtoReflect.Descriptor instead.
 func (*QueryUserRootContentsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{137}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{138}
 }
 
 func (x *QueryUserRootContentsResponse) GetEntries() []*QueryUserRootContentsResponse_RootContentsEntry {
@@ -10339,7 +10406,7 @@ type TeamFolder struct {
 
 func (x *TeamFolder) Reset() {
 	*x = TeamFolder{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[138]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[139]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10351,7 +10418,7 @@ func (x *TeamFolder) String() string {
 func (*TeamFolder) ProtoMessage() {}
 
 func (x *TeamFolder) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[138]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[139]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10364,7 +10431,7 @@ func (x *TeamFolder) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TeamFolder.ProtoReflect.Descriptor instead.
 func (*TeamFolder) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{138}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{139}
 }
 
 func (x *TeamFolder) GetName() string {
@@ -10430,7 +10497,7 @@ type CreateTeamFolderRequest struct {
 
 func (x *CreateTeamFolderRequest) Reset() {
 	*x = CreateTeamFolderRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[139]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[140]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10442,7 +10509,7 @@ func (x *CreateTeamFolderRequest) String() string {
 func (*CreateTeamFolderRequest) ProtoMessage() {}
 
 func (x *CreateTeamFolderRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[139]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[140]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10455,7 +10522,7 @@ func (x *CreateTeamFolderRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateTeamFolderRequest.ProtoReflect.Descriptor instead.
 func (*CreateTeamFolderRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{139}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{140}
 }
 
 func (x *CreateTeamFolderRequest) GetParent() string {
@@ -10491,7 +10558,7 @@ type GetTeamFolderRequest struct {
 
 func (x *GetTeamFolderRequest) Reset() {
 	*x = GetTeamFolderRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[140]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[141]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10503,7 +10570,7 @@ func (x *GetTeamFolderRequest) String() string {
 func (*GetTeamFolderRequest) ProtoMessage() {}
 
 func (x *GetTeamFolderRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[140]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[141]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10516,7 +10583,7 @@ func (x *GetTeamFolderRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetTeamFolderRequest.ProtoReflect.Descriptor instead.
 func (*GetTeamFolderRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{140}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{141}
 }
 
 func (x *GetTeamFolderRequest) GetName() string {
@@ -10540,7 +10607,7 @@ type UpdateTeamFolderRequest struct {
 
 func (x *UpdateTeamFolderRequest) Reset() {
 	*x = UpdateTeamFolderRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[141]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[142]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10552,7 +10619,7 @@ func (x *UpdateTeamFolderRequest) String() string {
 func (*UpdateTeamFolderRequest) ProtoMessage() {}
 
 func (x *UpdateTeamFolderRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[141]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[142]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10565,7 +10632,7 @@ func (x *UpdateTeamFolderRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateTeamFolderRequest.ProtoReflect.Descriptor instead.
 func (*UpdateTeamFolderRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{141}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{142}
 }
 
 func (x *UpdateTeamFolderRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
@@ -10593,7 +10660,7 @@ type DeleteTeamFolderRequest struct {
 
 func (x *DeleteTeamFolderRequest) Reset() {
 	*x = DeleteTeamFolderRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[142]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[143]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10605,7 +10672,7 @@ func (x *DeleteTeamFolderRequest) String() string {
 func (*DeleteTeamFolderRequest) ProtoMessage() {}
 
 func (x *DeleteTeamFolderRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[142]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[143]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10618,7 +10685,7 @@ func (x *DeleteTeamFolderRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteTeamFolderRequest.ProtoReflect.Descriptor instead.
 func (*DeleteTeamFolderRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{142}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{143}
 }
 
 func (x *DeleteTeamFolderRequest) GetName() string {
@@ -10667,7 +10734,7 @@ type QueryTeamFolderContentsRequest struct {
 
 func (x *QueryTeamFolderContentsRequest) Reset() {
 	*x = QueryTeamFolderContentsRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[143]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[144]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10679,7 +10746,7 @@ func (x *QueryTeamFolderContentsRequest) String() string {
 func (*QueryTeamFolderContentsRequest) ProtoMessage() {}
 
 func (x *QueryTeamFolderContentsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[143]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[144]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10692,7 +10759,7 @@ func (x *QueryTeamFolderContentsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QueryTeamFolderContentsRequest.ProtoReflect.Descriptor instead.
 func (*QueryTeamFolderContentsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{143}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{144}
 }
 
 func (x *QueryTeamFolderContentsRequest) GetTeamFolder() string {
@@ -10744,7 +10811,7 @@ type QueryTeamFolderContentsResponse struct {
 
 func (x *QueryTeamFolderContentsResponse) Reset() {
 	*x = QueryTeamFolderContentsResponse{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[144]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[145]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10756,7 +10823,7 @@ func (x *QueryTeamFolderContentsResponse) String() string {
 func (*QueryTeamFolderContentsResponse) ProtoMessage() {}
 
 func (x *QueryTeamFolderContentsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[144]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[145]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10769,7 +10836,7 @@ func (x *QueryTeamFolderContentsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QueryTeamFolderContentsResponse.ProtoReflect.Descriptor instead.
 func (*QueryTeamFolderContentsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{144}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{145}
 }
 
 func (x *QueryTeamFolderContentsResponse) GetEntries() []*QueryTeamFolderContentsResponse_TeamFolderContentsEntry {
@@ -10823,7 +10890,7 @@ type SearchTeamFoldersRequest struct {
 
 func (x *SearchTeamFoldersRequest) Reset() {
 	*x = SearchTeamFoldersRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[145]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[146]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10835,7 +10902,7 @@ func (x *SearchTeamFoldersRequest) String() string {
 func (*SearchTeamFoldersRequest) ProtoMessage() {}
 
 func (x *SearchTeamFoldersRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[145]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[146]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10848,7 +10915,7 @@ func (x *SearchTeamFoldersRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchTeamFoldersRequest.ProtoReflect.Descriptor instead.
 func (*SearchTeamFoldersRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{145}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{146}
 }
 
 func (x *SearchTeamFoldersRequest) GetLocation() string {
@@ -10900,7 +10967,7 @@ type SearchTeamFoldersResponse struct {
 
 func (x *SearchTeamFoldersResponse) Reset() {
 	*x = SearchTeamFoldersResponse{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[146]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[147]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10912,7 +10979,7 @@ func (x *SearchTeamFoldersResponse) String() string {
 func (*SearchTeamFoldersResponse) ProtoMessage() {}
 
 func (x *SearchTeamFoldersResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[146]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[147]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10925,7 +10992,7 @@ func (x *SearchTeamFoldersResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchTeamFoldersResponse.ProtoReflect.Descriptor instead.
 func (*SearchTeamFoldersResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{146}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{147}
 }
 
 func (x *SearchTeamFoldersResponse) GetResults() []*SearchTeamFoldersResponse_TeamFolderSearchResult {
@@ -10962,7 +11029,7 @@ type MoveFolderMetadata struct {
 
 func (x *MoveFolderMetadata) Reset() {
 	*x = MoveFolderMetadata{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[147]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[148]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10974,7 +11041,7 @@ func (x *MoveFolderMetadata) String() string {
 func (*MoveFolderMetadata) ProtoMessage() {}
 
 func (x *MoveFolderMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[147]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[148]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10987,7 +11054,7 @@ func (x *MoveFolderMetadata) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MoveFolderMetadata.ProtoReflect.Descriptor instead.
 func (*MoveFolderMetadata) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{147}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{148}
 }
 
 func (x *MoveFolderMetadata) GetCreateTime() *timestamppb.Timestamp {
@@ -11045,7 +11112,7 @@ type MoveRepositoryMetadata struct {
 
 func (x *MoveRepositoryMetadata) Reset() {
 	*x = MoveRepositoryMetadata{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[148]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[149]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11057,7 +11124,7 @@ func (x *MoveRepositoryMetadata) String() string {
 func (*MoveRepositoryMetadata) ProtoMessage() {}
 
 func (x *MoveRepositoryMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[148]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[149]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11070,7 +11137,7 @@ func (x *MoveRepositoryMetadata) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MoveRepositoryMetadata.ProtoReflect.Descriptor instead.
 func (*MoveRepositoryMetadata) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{148}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{149}
 }
 
 func (x *MoveRepositoryMetadata) GetCreateTime() *timestamppb.Timestamp {
@@ -11134,7 +11201,7 @@ type DeleteRepositoryLongRunningMetadata struct {
 
 func (x *DeleteRepositoryLongRunningMetadata) Reset() {
 	*x = DeleteRepositoryLongRunningMetadata{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[149]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[150]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11146,7 +11213,7 @@ func (x *DeleteRepositoryLongRunningMetadata) String() string {
 func (*DeleteRepositoryLongRunningMetadata) ProtoMessage() {}
 
 func (x *DeleteRepositoryLongRunningMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[149]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[150]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11159,7 +11226,7 @@ func (x *DeleteRepositoryLongRunningMetadata) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use DeleteRepositoryLongRunningMetadata.ProtoReflect.Descriptor instead.
 func (*DeleteRepositoryLongRunningMetadata) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{149}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{150}
 }
 
 func (x *DeleteRepositoryLongRunningMetadata) GetCreateTime() *timestamppb.Timestamp {
@@ -11238,7 +11305,7 @@ type FetchWorkspaceBranchesRequest struct {
 
 func (x *FetchWorkspaceBranchesRequest) Reset() {
 	*x = FetchWorkspaceBranchesRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[150]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[151]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11250,7 +11317,7 @@ func (x *FetchWorkspaceBranchesRequest) String() string {
 func (*FetchWorkspaceBranchesRequest) ProtoMessage() {}
 
 func (x *FetchWorkspaceBranchesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[150]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[151]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11263,7 +11330,7 @@ func (x *FetchWorkspaceBranchesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FetchWorkspaceBranchesRequest.ProtoReflect.Descriptor instead.
 func (*FetchWorkspaceBranchesRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{150}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{151}
 }
 
 func (x *FetchWorkspaceBranchesRequest) GetName() string {
@@ -11307,7 +11374,7 @@ type BranchMetadata struct {
 
 func (x *BranchMetadata) Reset() {
 	*x = BranchMetadata{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[151]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[152]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11319,7 +11386,7 @@ func (x *BranchMetadata) String() string {
 func (*BranchMetadata) ProtoMessage() {}
 
 func (x *BranchMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[151]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[152]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11332,7 +11399,7 @@ func (x *BranchMetadata) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BranchMetadata.ProtoReflect.Descriptor instead.
 func (*BranchMetadata) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{151}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{152}
 }
 
 func (x *BranchMetadata) GetBranchName() string {
@@ -11363,7 +11430,7 @@ type FetchWorkspaceBranchesResponse struct {
 
 func (x *FetchWorkspaceBranchesResponse) Reset() {
 	*x = FetchWorkspaceBranchesResponse{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[152]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[153]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11375,7 +11442,7 @@ func (x *FetchWorkspaceBranchesResponse) String() string {
 func (*FetchWorkspaceBranchesResponse) ProtoMessage() {}
 
 func (x *FetchWorkspaceBranchesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[152]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[153]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11388,7 +11455,7 @@ func (x *FetchWorkspaceBranchesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FetchWorkspaceBranchesResponse.ProtoReflect.Descriptor instead.
 func (*FetchWorkspaceBranchesResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{152}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{153}
 }
 
 func (x *FetchWorkspaceBranchesResponse) GetBranches() []*BranchMetadata {
@@ -11418,7 +11485,7 @@ type FetchCurrentWorkspaceBranchRequest struct {
 
 func (x *FetchCurrentWorkspaceBranchRequest) Reset() {
 	*x = FetchCurrentWorkspaceBranchRequest{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[153]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[154]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11430,7 +11497,7 @@ func (x *FetchCurrentWorkspaceBranchRequest) String() string {
 func (*FetchCurrentWorkspaceBranchRequest) ProtoMessage() {}
 
 func (x *FetchCurrentWorkspaceBranchRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[153]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[154]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11443,7 +11510,7 @@ func (x *FetchCurrentWorkspaceBranchRequest) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use FetchCurrentWorkspaceBranchRequest.ProtoReflect.Descriptor instead.
 func (*FetchCurrentWorkspaceBranchRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{153}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{154}
 }
 
 func (x *FetchCurrentWorkspaceBranchRequest) GetName() string {
@@ -11464,7 +11531,7 @@ type FetchCurrentWorkspaceBranchResponse struct {
 
 func (x *FetchCurrentWorkspaceBranchResponse) Reset() {
 	*x = FetchCurrentWorkspaceBranchResponse{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[154]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[155]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11476,7 +11543,7 @@ func (x *FetchCurrentWorkspaceBranchResponse) String() string {
 func (*FetchCurrentWorkspaceBranchResponse) ProtoMessage() {}
 
 func (x *FetchCurrentWorkspaceBranchResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[154]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[155]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11489,7 +11556,7 @@ func (x *FetchCurrentWorkspaceBranchResponse) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use FetchCurrentWorkspaceBranchResponse.ProtoReflect.Descriptor instead.
 func (*FetchCurrentWorkspaceBranchResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{154}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{155}
 }
 
 func (x *FetchCurrentWorkspaceBranchResponse) GetBranchName() string {
@@ -11533,7 +11600,7 @@ type Repository_GitRemoteSettings struct {
 
 func (x *Repository_GitRemoteSettings) Reset() {
 	*x = Repository_GitRemoteSettings{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[155]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[156]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11545,7 +11612,7 @@ func (x *Repository_GitRemoteSettings) String() string {
 func (*Repository_GitRemoteSettings) ProtoMessage() {}
 
 func (x *Repository_GitRemoteSettings) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[155]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[156]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11634,7 +11701,7 @@ type Repository_WorkspaceCompilationOverrides struct {
 
 func (x *Repository_WorkspaceCompilationOverrides) Reset() {
 	*x = Repository_WorkspaceCompilationOverrides{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[156]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[157]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11646,7 +11713,7 @@ func (x *Repository_WorkspaceCompilationOverrides) String() string {
 func (*Repository_WorkspaceCompilationOverrides) ProtoMessage() {}
 
 func (x *Repository_WorkspaceCompilationOverrides) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[156]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[157]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11683,6 +11750,52 @@ func (x *Repository_WorkspaceCompilationOverrides) GetTablePrefix() string {
 	return ""
 }
 
+// Includes configuration options for repository end user authentication.
+type Repository_EndUserAuthConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. OAuth configuration for repository end user authentication.
+	OauthConfig   *OAuthConfig `protobuf:"bytes,1,opt,name=oauth_config,json=oauthConfig,proto3" json:"oauth_config,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Repository_EndUserAuthConfig) Reset() {
+	*x = Repository_EndUserAuthConfig{}
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[158]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Repository_EndUserAuthConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Repository_EndUserAuthConfig) ProtoMessage() {}
+
+func (x *Repository_EndUserAuthConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[158]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Repository_EndUserAuthConfig.ProtoReflect.Descriptor instead.
+func (*Repository_EndUserAuthConfig) Descriptor() ([]byte, []int) {
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{1, 2}
+}
+
+func (x *Repository_EndUserAuthConfig) GetOauthConfig() *OAuthConfig {
+	if x != nil {
+		return x.OauthConfig
+	}
+	return nil
+}
+
 // Configures fields for performing SSH authentication.
 type Repository_GitRemoteSettings_SshAuthenticationConfig struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -11699,7 +11812,7 @@ type Repository_GitRemoteSettings_SshAuthenticationConfig struct {
 
 func (x *Repository_GitRemoteSettings_SshAuthenticationConfig) Reset() {
 	*x = Repository_GitRemoteSettings_SshAuthenticationConfig{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[158]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[160]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11711,7 +11824,7 @@ func (x *Repository_GitRemoteSettings_SshAuthenticationConfig) String() string {
 func (*Repository_GitRemoteSettings_SshAuthenticationConfig) ProtoMessage() {}
 
 func (x *Repository_GitRemoteSettings_SshAuthenticationConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[158]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[160]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11757,7 +11870,7 @@ type CommitRepositoryChangesRequest_FileOperation struct {
 
 func (x *CommitRepositoryChangesRequest_FileOperation) Reset() {
 	*x = CommitRepositoryChangesRequest_FileOperation{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[159]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[161]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11769,7 +11882,7 @@ func (x *CommitRepositoryChangesRequest_FileOperation) String() string {
 func (*CommitRepositoryChangesRequest_FileOperation) ProtoMessage() {}
 
 func (x *CommitRepositoryChangesRequest_FileOperation) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[159]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[161]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11782,7 +11895,7 @@ func (x *CommitRepositoryChangesRequest_FileOperation) ProtoReflect() protorefle
 
 // Deprecated: Use CommitRepositoryChangesRequest_FileOperation.ProtoReflect.Descriptor instead.
 func (*CommitRepositoryChangesRequest_FileOperation) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{12, 0}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{13, 0}
 }
 
 func (x *CommitRepositoryChangesRequest_FileOperation) GetOperation() isCommitRepositoryChangesRequest_FileOperation_Operation {
@@ -11841,7 +11954,7 @@ type CommitRepositoryChangesRequest_FileOperation_WriteFile struct {
 
 func (x *CommitRepositoryChangesRequest_FileOperation_WriteFile) Reset() {
 	*x = CommitRepositoryChangesRequest_FileOperation_WriteFile{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[161]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[163]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11853,7 +11966,7 @@ func (x *CommitRepositoryChangesRequest_FileOperation_WriteFile) String() string
 func (*CommitRepositoryChangesRequest_FileOperation_WriteFile) ProtoMessage() {}
 
 func (x *CommitRepositoryChangesRequest_FileOperation_WriteFile) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[161]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[163]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11866,7 +11979,7 @@ func (x *CommitRepositoryChangesRequest_FileOperation_WriteFile) ProtoReflect() 
 
 // Deprecated: Use CommitRepositoryChangesRequest_FileOperation_WriteFile.ProtoReflect.Descriptor instead.
 func (*CommitRepositoryChangesRequest_FileOperation_WriteFile) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{12, 0, 0}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{13, 0, 0}
 }
 
 func (x *CommitRepositoryChangesRequest_FileOperation_WriteFile) GetContents() []byte {
@@ -11885,7 +11998,7 @@ type CommitRepositoryChangesRequest_FileOperation_DeleteFile struct {
 
 func (x *CommitRepositoryChangesRequest_FileOperation_DeleteFile) Reset() {
 	*x = CommitRepositoryChangesRequest_FileOperation_DeleteFile{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[162]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[164]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11897,7 +12010,7 @@ func (x *CommitRepositoryChangesRequest_FileOperation_DeleteFile) String() strin
 func (*CommitRepositoryChangesRequest_FileOperation_DeleteFile) ProtoMessage() {}
 
 func (x *CommitRepositoryChangesRequest_FileOperation_DeleteFile) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[162]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[164]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11910,7 +12023,7 @@ func (x *CommitRepositoryChangesRequest_FileOperation_DeleteFile) ProtoReflect()
 
 // Deprecated: Use CommitRepositoryChangesRequest_FileOperation_DeleteFile.ProtoReflect.Descriptor instead.
 func (*CommitRepositoryChangesRequest_FileOperation_DeleteFile) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{12, 0, 1}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{13, 0, 1}
 }
 
 // Represents the Git state of a file with uncommitted changes.
@@ -11926,7 +12039,7 @@ type FetchFileGitStatusesResponse_UncommittedFileChange struct {
 
 func (x *FetchFileGitStatusesResponse_UncommittedFileChange) Reset() {
 	*x = FetchFileGitStatusesResponse_UncommittedFileChange{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[163]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[165]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11938,7 +12051,7 @@ func (x *FetchFileGitStatusesResponse_UncommittedFileChange) String() string {
 func (*FetchFileGitStatusesResponse_UncommittedFileChange) ProtoMessage() {}
 
 func (x *FetchFileGitStatusesResponse_UncommittedFileChange) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[163]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[165]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11951,7 +12064,7 @@ func (x *FetchFileGitStatusesResponse_UncommittedFileChange) ProtoReflect() prot
 
 // Deprecated: Use FetchFileGitStatusesResponse_UncommittedFileChange.ProtoReflect.Descriptor instead.
 func (*FetchFileGitStatusesResponse_UncommittedFileChange) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{43, 0}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{44, 0}
 }
 
 func (x *FetchFileGitStatusesResponse_UncommittedFileChange) GetPath() string {
@@ -11987,7 +12100,7 @@ type ReleaseConfig_ScheduledReleaseRecord struct {
 
 func (x *ReleaseConfig_ScheduledReleaseRecord) Reset() {
 	*x = ReleaseConfig_ScheduledReleaseRecord{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[164]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[166]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11999,7 +12112,7 @@ func (x *ReleaseConfig_ScheduledReleaseRecord) String() string {
 func (*ReleaseConfig_ScheduledReleaseRecord) ProtoMessage() {}
 
 func (x *ReleaseConfig_ScheduledReleaseRecord) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[164]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[166]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12012,7 +12125,7 @@ func (x *ReleaseConfig_ScheduledReleaseRecord) ProtoReflect() protoreflect.Messa
 
 // Deprecated: Use ReleaseConfig_ScheduledReleaseRecord.ProtoReflect.Descriptor instead.
 func (*ReleaseConfig_ScheduledReleaseRecord) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{77, 0}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{78, 0}
 }
 
 func (x *ReleaseConfig_ScheduledReleaseRecord) GetResult() isReleaseConfig_ScheduledReleaseRecord_Result {
@@ -12089,7 +12202,7 @@ type CompilationResult_CompilationError struct {
 
 func (x *CompilationResult_CompilationError) Reset() {
 	*x = CompilationResult_CompilationError{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[165]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[167]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12101,7 +12214,7 @@ func (x *CompilationResult_CompilationError) String() string {
 func (*CompilationResult_CompilationError) ProtoMessage() {}
 
 func (x *CompilationResult_CompilationError) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[165]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[167]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12114,7 +12227,7 @@ func (x *CompilationResult_CompilationError) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use CompilationResult_CompilationError.ProtoReflect.Descriptor instead.
 func (*CompilationResult_CompilationError) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{84, 0}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{85, 0}
 }
 
 func (x *CompilationResult_CompilationError) GetMessage() string {
@@ -12161,7 +12274,7 @@ type RelationDescriptor_ColumnDescriptor struct {
 
 func (x *RelationDescriptor_ColumnDescriptor) Reset() {
 	*x = RelationDescriptor_ColumnDescriptor{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[167]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[169]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12173,7 +12286,7 @@ func (x *RelationDescriptor_ColumnDescriptor) String() string {
 func (*RelationDescriptor_ColumnDescriptor) ProtoMessage() {}
 
 func (x *RelationDescriptor_ColumnDescriptor) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[167]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[169]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12186,7 +12299,7 @@ func (x *RelationDescriptor_ColumnDescriptor) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use RelationDescriptor_ColumnDescriptor.ProtoReflect.Descriptor instead.
 func (*RelationDescriptor_ColumnDescriptor) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{99, 0}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{100, 0}
 }
 
 func (x *RelationDescriptor_ColumnDescriptor) GetPath() []string {
@@ -12266,7 +12379,7 @@ type CompilationResultAction_Relation struct {
 
 func (x *CompilationResultAction_Relation) Reset() {
 	*x = CompilationResultAction_Relation{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[169]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[171]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12278,7 +12391,7 @@ func (x *CompilationResultAction_Relation) String() string {
 func (*CompilationResultAction_Relation) ProtoMessage() {}
 
 func (x *CompilationResultAction_Relation) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[169]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[171]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12291,7 +12404,7 @@ func (x *CompilationResultAction_Relation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CompilationResultAction_Relation.ProtoReflect.Descriptor instead.
 func (*CompilationResultAction_Relation) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{100, 0}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{101, 0}
 }
 
 func (x *CompilationResultAction_Relation) GetDependencyTargets() []*Target {
@@ -12443,7 +12556,7 @@ type CompilationResultAction_Operations struct {
 
 func (x *CompilationResultAction_Operations) Reset() {
 	*x = CompilationResultAction_Operations{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[170]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[172]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12455,7 +12568,7 @@ func (x *CompilationResultAction_Operations) String() string {
 func (*CompilationResultAction_Operations) ProtoMessage() {}
 
 func (x *CompilationResultAction_Operations) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[170]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[172]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12468,7 +12581,7 @@ func (x *CompilationResultAction_Operations) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use CompilationResultAction_Operations.ProtoReflect.Descriptor instead.
 func (*CompilationResultAction_Operations) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{100, 1}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{101, 1}
 }
 
 func (x *CompilationResultAction_Operations) GetDependencyTargets() []*Target {
@@ -12538,7 +12651,7 @@ type CompilationResultAction_Assertion struct {
 
 func (x *CompilationResultAction_Assertion) Reset() {
 	*x = CompilationResultAction_Assertion{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[171]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[173]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12550,7 +12663,7 @@ func (x *CompilationResultAction_Assertion) String() string {
 func (*CompilationResultAction_Assertion) ProtoMessage() {}
 
 func (x *CompilationResultAction_Assertion) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[171]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[173]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12563,7 +12676,7 @@ func (x *CompilationResultAction_Assertion) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use CompilationResultAction_Assertion.ProtoReflect.Descriptor instead.
 func (*CompilationResultAction_Assertion) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{100, 2}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{101, 2}
 }
 
 func (x *CompilationResultAction_Assertion) GetDependencyTargets() []*Target {
@@ -12621,7 +12734,7 @@ type CompilationResultAction_Declaration struct {
 
 func (x *CompilationResultAction_Declaration) Reset() {
 	*x = CompilationResultAction_Declaration{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[172]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[174]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12633,7 +12746,7 @@ func (x *CompilationResultAction_Declaration) String() string {
 func (*CompilationResultAction_Declaration) ProtoMessage() {}
 
 func (x *CompilationResultAction_Declaration) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[172]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[174]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12646,7 +12759,7 @@ func (x *CompilationResultAction_Declaration) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use CompilationResultAction_Declaration.ProtoReflect.Descriptor instead.
 func (*CompilationResultAction_Declaration) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{100, 3}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{101, 3}
 }
 
 func (x *CompilationResultAction_Declaration) GetRelationDescriptor() *RelationDescriptor {
@@ -12673,7 +12786,7 @@ type CompilationResultAction_Notebook struct {
 
 func (x *CompilationResultAction_Notebook) Reset() {
 	*x = CompilationResultAction_Notebook{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[173]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[175]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12685,7 +12798,7 @@ func (x *CompilationResultAction_Notebook) String() string {
 func (*CompilationResultAction_Notebook) ProtoMessage() {}
 
 func (x *CompilationResultAction_Notebook) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[173]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[175]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12698,7 +12811,7 @@ func (x *CompilationResultAction_Notebook) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CompilationResultAction_Notebook.ProtoReflect.Descriptor instead.
 func (*CompilationResultAction_Notebook) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{100, 4}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{101, 4}
 }
 
 func (x *CompilationResultAction_Notebook) GetDependencyTargets() []*Target {
@@ -12751,7 +12864,7 @@ type CompilationResultAction_DataPreparation struct {
 
 func (x *CompilationResultAction_DataPreparation) Reset() {
 	*x = CompilationResultAction_DataPreparation{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[174]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[176]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12763,7 +12876,7 @@ func (x *CompilationResultAction_DataPreparation) String() string {
 func (*CompilationResultAction_DataPreparation) ProtoMessage() {}
 
 func (x *CompilationResultAction_DataPreparation) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[174]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[176]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12776,7 +12889,7 @@ func (x *CompilationResultAction_DataPreparation) ProtoReflect() protoreflect.Me
 
 // Deprecated: Use CompilationResultAction_DataPreparation.ProtoReflect.Descriptor instead.
 func (*CompilationResultAction_DataPreparation) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{100, 5}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{101, 5}
 }
 
 func (x *CompilationResultAction_DataPreparation) GetDefinition() isCompilationResultAction_DataPreparation_Definition {
@@ -12864,7 +12977,7 @@ type CompilationResultAction_LoadConfig struct {
 
 func (x *CompilationResultAction_LoadConfig) Reset() {
 	*x = CompilationResultAction_LoadConfig{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[175]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[177]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12876,7 +12989,7 @@ func (x *CompilationResultAction_LoadConfig) String() string {
 func (*CompilationResultAction_LoadConfig) ProtoMessage() {}
 
 func (x *CompilationResultAction_LoadConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[175]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[177]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12889,7 +13002,7 @@ func (x *CompilationResultAction_LoadConfig) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use CompilationResultAction_LoadConfig.ProtoReflect.Descriptor instead.
 func (*CompilationResultAction_LoadConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{100, 6}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{101, 6}
 }
 
 func (x *CompilationResultAction_LoadConfig) GetMode() isCompilationResultAction_LoadConfig_Mode {
@@ -12978,7 +13091,7 @@ type CompilationResultAction_SimpleLoadMode struct {
 
 func (x *CompilationResultAction_SimpleLoadMode) Reset() {
 	*x = CompilationResultAction_SimpleLoadMode{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[176]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[178]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12990,7 +13103,7 @@ func (x *CompilationResultAction_SimpleLoadMode) String() string {
 func (*CompilationResultAction_SimpleLoadMode) ProtoMessage() {}
 
 func (x *CompilationResultAction_SimpleLoadMode) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[176]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[178]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13003,7 +13116,7 @@ func (x *CompilationResultAction_SimpleLoadMode) ProtoReflect() protoreflect.Mes
 
 // Deprecated: Use CompilationResultAction_SimpleLoadMode.ProtoReflect.Descriptor instead.
 func (*CompilationResultAction_SimpleLoadMode) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{100, 7}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{101, 7}
 }
 
 // Load definition for incremental load modes
@@ -13017,7 +13130,7 @@ type CompilationResultAction_IncrementalLoadMode struct {
 
 func (x *CompilationResultAction_IncrementalLoadMode) Reset() {
 	*x = CompilationResultAction_IncrementalLoadMode{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[177]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[179]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13029,7 +13142,7 @@ func (x *CompilationResultAction_IncrementalLoadMode) String() string {
 func (*CompilationResultAction_IncrementalLoadMode) ProtoMessage() {}
 
 func (x *CompilationResultAction_IncrementalLoadMode) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[177]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[179]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13042,7 +13155,7 @@ func (x *CompilationResultAction_IncrementalLoadMode) ProtoReflect() protoreflec
 
 // Deprecated: Use CompilationResultAction_IncrementalLoadMode.ProtoReflect.Descriptor instead.
 func (*CompilationResultAction_IncrementalLoadMode) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{100, 8}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{101, 8}
 }
 
 func (x *CompilationResultAction_IncrementalLoadMode) GetColumn() string {
@@ -13081,7 +13194,7 @@ type CompilationResultAction_Relation_IncrementalTableConfig struct {
 
 func (x *CompilationResultAction_Relation_IncrementalTableConfig) Reset() {
 	*x = CompilationResultAction_Relation_IncrementalTableConfig{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[178]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[180]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13093,7 +13206,7 @@ func (x *CompilationResultAction_Relation_IncrementalTableConfig) String() strin
 func (*CompilationResultAction_Relation_IncrementalTableConfig) ProtoMessage() {}
 
 func (x *CompilationResultAction_Relation_IncrementalTableConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[178]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[180]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13106,7 +13219,7 @@ func (x *CompilationResultAction_Relation_IncrementalTableConfig) ProtoReflect()
 
 // Deprecated: Use CompilationResultAction_Relation_IncrementalTableConfig.ProtoReflect.Descriptor instead.
 func (*CompilationResultAction_Relation_IncrementalTableConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{100, 0, 0}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{101, 0, 0}
 }
 
 func (x *CompilationResultAction_Relation_IncrementalTableConfig) GetIncrementalSelectQuery() string {
@@ -13167,7 +13280,7 @@ type CompilationResultAction_DataPreparation_SqlDefinition struct {
 
 func (x *CompilationResultAction_DataPreparation_SqlDefinition) Reset() {
 	*x = CompilationResultAction_DataPreparation_SqlDefinition{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[180]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[182]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13179,7 +13292,7 @@ func (x *CompilationResultAction_DataPreparation_SqlDefinition) String() string 
 func (*CompilationResultAction_DataPreparation_SqlDefinition) ProtoMessage() {}
 
 func (x *CompilationResultAction_DataPreparation_SqlDefinition) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[180]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[182]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13192,7 +13305,7 @@ func (x *CompilationResultAction_DataPreparation_SqlDefinition) ProtoReflect() p
 
 // Deprecated: Use CompilationResultAction_DataPreparation_SqlDefinition.ProtoReflect.Descriptor instead.
 func (*CompilationResultAction_DataPreparation_SqlDefinition) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{100, 5, 0}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{101, 5, 0}
 }
 
 func (x *CompilationResultAction_DataPreparation_SqlDefinition) GetQuery() string {
@@ -13231,7 +13344,7 @@ type CompilationResultAction_DataPreparation_ErrorTable struct {
 
 func (x *CompilationResultAction_DataPreparation_ErrorTable) Reset() {
 	*x = CompilationResultAction_DataPreparation_ErrorTable{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[181]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[183]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13243,7 +13356,7 @@ func (x *CompilationResultAction_DataPreparation_ErrorTable) String() string {
 func (*CompilationResultAction_DataPreparation_ErrorTable) ProtoMessage() {}
 
 func (x *CompilationResultAction_DataPreparation_ErrorTable) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[181]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[183]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13256,7 +13369,7 @@ func (x *CompilationResultAction_DataPreparation_ErrorTable) ProtoReflect() prot
 
 // Deprecated: Use CompilationResultAction_DataPreparation_ErrorTable.ProtoReflect.Descriptor instead.
 func (*CompilationResultAction_DataPreparation_ErrorTable) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{100, 5, 1}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{101, 5, 1}
 }
 
 func (x *CompilationResultAction_DataPreparation_ErrorTable) GetTarget() *Target {
@@ -13292,7 +13405,7 @@ type WorkflowConfig_ScheduledExecutionRecord struct {
 
 func (x *WorkflowConfig_ScheduledExecutionRecord) Reset() {
 	*x = WorkflowConfig_ScheduledExecutionRecord{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[182]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[184]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13304,7 +13417,7 @@ func (x *WorkflowConfig_ScheduledExecutionRecord) String() string {
 func (*WorkflowConfig_ScheduledExecutionRecord) ProtoMessage() {}
 
 func (x *WorkflowConfig_ScheduledExecutionRecord) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[182]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[184]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13317,7 +13430,7 @@ func (x *WorkflowConfig_ScheduledExecutionRecord) ProtoReflect() protoreflect.Me
 
 // Deprecated: Use WorkflowConfig_ScheduledExecutionRecord.ProtoReflect.Descriptor instead.
 func (*WorkflowConfig_ScheduledExecutionRecord) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{103, 0}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{104, 0}
 }
 
 func (x *WorkflowConfig_ScheduledExecutionRecord) GetResult() isWorkflowConfig_ScheduledExecutionRecord_Result {
@@ -13375,6 +13488,61 @@ func (*WorkflowConfig_ScheduledExecutionRecord_WorkflowInvocation) isWorkflowCon
 func (*WorkflowConfig_ScheduledExecutionRecord_ErrorStatus) isWorkflowConfig_ScheduledExecutionRecord_Result() {
 }
 
+// Includes configuration options for end user authentication.
+type InvocationConfig_EndUserAuthenticationConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. Email address of the user to run workflow invocations under.
+	UserEmail string `protobuf:"bytes,2,opt,name=user_email,json=userEmail,proto3" json:"user_email,omitempty"`
+	// Optional. OAuth configuration for end user authentication.
+	OauthConfig   *OAuthConfig `protobuf:"bytes,4,opt,name=oauth_config,json=oauthConfig,proto3" json:"oauth_config,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *InvocationConfig_EndUserAuthenticationConfig) Reset() {
+	*x = InvocationConfig_EndUserAuthenticationConfig{}
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[185]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *InvocationConfig_EndUserAuthenticationConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*InvocationConfig_EndUserAuthenticationConfig) ProtoMessage() {}
+
+func (x *InvocationConfig_EndUserAuthenticationConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[185]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use InvocationConfig_EndUserAuthenticationConfig.ProtoReflect.Descriptor instead.
+func (*InvocationConfig_EndUserAuthenticationConfig) Descriptor() ([]byte, []int) {
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{105, 0}
+}
+
+func (x *InvocationConfig_EndUserAuthenticationConfig) GetUserEmail() string {
+	if x != nil {
+		return x.UserEmail
+	}
+	return ""
+}
+
+func (x *InvocationConfig_EndUserAuthenticationConfig) GetOauthConfig() *OAuthConfig {
+	if x != nil {
+		return x.OauthConfig
+	}
+	return nil
+}
+
 // Represents a workflow action that will run against BigQuery.
 type WorkflowInvocationAction_BigQueryAction struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -13389,7 +13557,7 @@ type WorkflowInvocationAction_BigQueryAction struct {
 
 func (x *WorkflowInvocationAction_BigQueryAction) Reset() {
 	*x = WorkflowInvocationAction_BigQueryAction{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[183]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[186]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13401,7 +13569,7 @@ func (x *WorkflowInvocationAction_BigQueryAction) String() string {
 func (*WorkflowInvocationAction_BigQueryAction) ProtoMessage() {}
 
 func (x *WorkflowInvocationAction_BigQueryAction) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[183]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[186]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13414,7 +13582,7 @@ func (x *WorkflowInvocationAction_BigQueryAction) ProtoReflect() protoreflect.Me
 
 // Deprecated: Use WorkflowInvocationAction_BigQueryAction.ProtoReflect.Descriptor instead.
 func (*WorkflowInvocationAction_BigQueryAction) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{119, 0}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{120, 0}
 }
 
 func (x *WorkflowInvocationAction_BigQueryAction) GetSqlScript() string {
@@ -13449,7 +13617,7 @@ type WorkflowInvocationAction_NotebookAction struct {
 
 func (x *WorkflowInvocationAction_NotebookAction) Reset() {
 	*x = WorkflowInvocationAction_NotebookAction{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[184]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[187]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13461,7 +13629,7 @@ func (x *WorkflowInvocationAction_NotebookAction) String() string {
 func (*WorkflowInvocationAction_NotebookAction) ProtoMessage() {}
 
 func (x *WorkflowInvocationAction_NotebookAction) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[184]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[187]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13474,7 +13642,7 @@ func (x *WorkflowInvocationAction_NotebookAction) ProtoReflect() protoreflect.Me
 
 // Deprecated: Use WorkflowInvocationAction_NotebookAction.ProtoReflect.Descriptor instead.
 func (*WorkflowInvocationAction_NotebookAction) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{119, 1}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{120, 1}
 }
 
 func (x *WorkflowInvocationAction_NotebookAction) GetContents() string {
@@ -13520,7 +13688,7 @@ type WorkflowInvocationAction_DataPreparationAction struct {
 
 func (x *WorkflowInvocationAction_DataPreparationAction) Reset() {
 	*x = WorkflowInvocationAction_DataPreparationAction{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[185]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[188]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13532,7 +13700,7 @@ func (x *WorkflowInvocationAction_DataPreparationAction) String() string {
 func (*WorkflowInvocationAction_DataPreparationAction) ProtoMessage() {}
 
 func (x *WorkflowInvocationAction_DataPreparationAction) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[185]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[188]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13545,7 +13713,7 @@ func (x *WorkflowInvocationAction_DataPreparationAction) ProtoReflect() protoref
 
 // Deprecated: Use WorkflowInvocationAction_DataPreparationAction.ProtoReflect.Descriptor instead.
 func (*WorkflowInvocationAction_DataPreparationAction) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{119, 2}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{120, 2}
 }
 
 func (x *WorkflowInvocationAction_DataPreparationAction) GetDefinition() isWorkflowInvocationAction_DataPreparationAction_Definition {
@@ -13625,7 +13793,7 @@ type WorkflowInvocationAction_DataPreparationAction_ActionSqlDefinition struct {
 
 func (x *WorkflowInvocationAction_DataPreparationAction_ActionSqlDefinition) Reset() {
 	*x = WorkflowInvocationAction_DataPreparationAction_ActionSqlDefinition{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[186]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[189]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13637,7 +13805,7 @@ func (x *WorkflowInvocationAction_DataPreparationAction_ActionSqlDefinition) Str
 func (*WorkflowInvocationAction_DataPreparationAction_ActionSqlDefinition) ProtoMessage() {}
 
 func (x *WorkflowInvocationAction_DataPreparationAction_ActionSqlDefinition) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[186]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[189]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13650,7 +13818,7 @@ func (x *WorkflowInvocationAction_DataPreparationAction_ActionSqlDefinition) Pro
 
 // Deprecated: Use WorkflowInvocationAction_DataPreparationAction_ActionSqlDefinition.ProtoReflect.Descriptor instead.
 func (*WorkflowInvocationAction_DataPreparationAction_ActionSqlDefinition) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{119, 2, 0}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{120, 2, 0}
 }
 
 func (x *WorkflowInvocationAction_DataPreparationAction_ActionSqlDefinition) GetQuery() string {
@@ -13689,7 +13857,7 @@ type WorkflowInvocationAction_DataPreparationAction_ActionErrorTable struct {
 
 func (x *WorkflowInvocationAction_DataPreparationAction_ActionErrorTable) Reset() {
 	*x = WorkflowInvocationAction_DataPreparationAction_ActionErrorTable{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[187]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[190]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13701,7 +13869,7 @@ func (x *WorkflowInvocationAction_DataPreparationAction_ActionErrorTable) String
 func (*WorkflowInvocationAction_DataPreparationAction_ActionErrorTable) ProtoMessage() {}
 
 func (x *WorkflowInvocationAction_DataPreparationAction_ActionErrorTable) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[187]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[190]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13714,7 +13882,7 @@ func (x *WorkflowInvocationAction_DataPreparationAction_ActionErrorTable) ProtoR
 
 // Deprecated: Use WorkflowInvocationAction_DataPreparationAction_ActionErrorTable.ProtoReflect.Descriptor instead.
 func (*WorkflowInvocationAction_DataPreparationAction_ActionErrorTable) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{119, 2, 1}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{120, 2, 1}
 }
 
 func (x *WorkflowInvocationAction_DataPreparationAction_ActionErrorTable) GetTarget() *Target {
@@ -13749,7 +13917,7 @@ type WorkflowInvocationAction_DataPreparationAction_ActionLoadConfig struct {
 
 func (x *WorkflowInvocationAction_DataPreparationAction_ActionLoadConfig) Reset() {
 	*x = WorkflowInvocationAction_DataPreparationAction_ActionLoadConfig{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[188]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[191]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13761,7 +13929,7 @@ func (x *WorkflowInvocationAction_DataPreparationAction_ActionLoadConfig) String
 func (*WorkflowInvocationAction_DataPreparationAction_ActionLoadConfig) ProtoMessage() {}
 
 func (x *WorkflowInvocationAction_DataPreparationAction_ActionLoadConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[188]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[191]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13774,7 +13942,7 @@ func (x *WorkflowInvocationAction_DataPreparationAction_ActionLoadConfig) ProtoR
 
 // Deprecated: Use WorkflowInvocationAction_DataPreparationAction_ActionLoadConfig.ProtoReflect.Descriptor instead.
 func (*WorkflowInvocationAction_DataPreparationAction_ActionLoadConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{119, 2, 2}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{120, 2, 2}
 }
 
 func (x *WorkflowInvocationAction_DataPreparationAction_ActionLoadConfig) GetMode() isWorkflowInvocationAction_DataPreparationAction_ActionLoadConfig_Mode {
@@ -13867,7 +14035,7 @@ type WorkflowInvocationAction_DataPreparationAction_ActionSimpleLoadMode struct 
 
 func (x *WorkflowInvocationAction_DataPreparationAction_ActionSimpleLoadMode) Reset() {
 	*x = WorkflowInvocationAction_DataPreparationAction_ActionSimpleLoadMode{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[189]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[192]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13879,7 +14047,7 @@ func (x *WorkflowInvocationAction_DataPreparationAction_ActionSimpleLoadMode) St
 func (*WorkflowInvocationAction_DataPreparationAction_ActionSimpleLoadMode) ProtoMessage() {}
 
 func (x *WorkflowInvocationAction_DataPreparationAction_ActionSimpleLoadMode) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[189]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[192]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13892,7 +14060,7 @@ func (x *WorkflowInvocationAction_DataPreparationAction_ActionSimpleLoadMode) Pr
 
 // Deprecated: Use WorkflowInvocationAction_DataPreparationAction_ActionSimpleLoadMode.ProtoReflect.Descriptor instead.
 func (*WorkflowInvocationAction_DataPreparationAction_ActionSimpleLoadMode) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{119, 2, 3}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{120, 2, 3}
 }
 
 // Load definition for incremental load modes
@@ -13906,7 +14074,7 @@ type WorkflowInvocationAction_DataPreparationAction_ActionIncrementalLoadMode st
 
 func (x *WorkflowInvocationAction_DataPreparationAction_ActionIncrementalLoadMode) Reset() {
 	*x = WorkflowInvocationAction_DataPreparationAction_ActionIncrementalLoadMode{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[190]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[193]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13918,7 +14086,7 @@ func (x *WorkflowInvocationAction_DataPreparationAction_ActionIncrementalLoadMod
 func (*WorkflowInvocationAction_DataPreparationAction_ActionIncrementalLoadMode) ProtoMessage() {}
 
 func (x *WorkflowInvocationAction_DataPreparationAction_ActionIncrementalLoadMode) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[190]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[193]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13931,7 +14099,7 @@ func (x *WorkflowInvocationAction_DataPreparationAction_ActionIncrementalLoadMod
 
 // Deprecated: Use WorkflowInvocationAction_DataPreparationAction_ActionIncrementalLoadMode.ProtoReflect.Descriptor instead.
 func (*WorkflowInvocationAction_DataPreparationAction_ActionIncrementalLoadMode) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{119, 2, 4}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{120, 2, 4}
 }
 
 func (x *WorkflowInvocationAction_DataPreparationAction_ActionIncrementalLoadMode) GetColumn() string {
@@ -13957,7 +14125,7 @@ type QueryFolderContentsResponse_FolderContentsEntry struct {
 
 func (x *QueryFolderContentsResponse_FolderContentsEntry) Reset() {
 	*x = QueryFolderContentsResponse_FolderContentsEntry{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[191]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[194]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13969,7 +14137,7 @@ func (x *QueryFolderContentsResponse_FolderContentsEntry) String() string {
 func (*QueryFolderContentsResponse_FolderContentsEntry) ProtoMessage() {}
 
 func (x *QueryFolderContentsResponse_FolderContentsEntry) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[191]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[194]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13982,7 +14150,7 @@ func (x *QueryFolderContentsResponse_FolderContentsEntry) ProtoReflect() protore
 
 // Deprecated: Use QueryFolderContentsResponse_FolderContentsEntry.ProtoReflect.Descriptor instead.
 func (*QueryFolderContentsResponse_FolderContentsEntry) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{135, 0}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{136, 0}
 }
 
 func (x *QueryFolderContentsResponse_FolderContentsEntry) GetEntry() isQueryFolderContentsResponse_FolderContentsEntry_Entry {
@@ -14046,7 +14214,7 @@ type QueryUserRootContentsResponse_RootContentsEntry struct {
 
 func (x *QueryUserRootContentsResponse_RootContentsEntry) Reset() {
 	*x = QueryUserRootContentsResponse_RootContentsEntry{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[192]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[195]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14058,7 +14226,7 @@ func (x *QueryUserRootContentsResponse_RootContentsEntry) String() string {
 func (*QueryUserRootContentsResponse_RootContentsEntry) ProtoMessage() {}
 
 func (x *QueryUserRootContentsResponse_RootContentsEntry) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[192]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[195]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14071,7 +14239,7 @@ func (x *QueryUserRootContentsResponse_RootContentsEntry) ProtoReflect() protore
 
 // Deprecated: Use QueryUserRootContentsResponse_RootContentsEntry.ProtoReflect.Descriptor instead.
 func (*QueryUserRootContentsResponse_RootContentsEntry) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{137, 0}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{138, 0}
 }
 
 func (x *QueryUserRootContentsResponse_RootContentsEntry) GetEntry() isQueryUserRootContentsResponse_RootContentsEntry_Entry {
@@ -14135,7 +14303,7 @@ type QueryTeamFolderContentsResponse_TeamFolderContentsEntry struct {
 
 func (x *QueryTeamFolderContentsResponse_TeamFolderContentsEntry) Reset() {
 	*x = QueryTeamFolderContentsResponse_TeamFolderContentsEntry{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[193]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[196]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14147,7 +14315,7 @@ func (x *QueryTeamFolderContentsResponse_TeamFolderContentsEntry) String() strin
 func (*QueryTeamFolderContentsResponse_TeamFolderContentsEntry) ProtoMessage() {}
 
 func (x *QueryTeamFolderContentsResponse_TeamFolderContentsEntry) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[193]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[196]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14160,7 +14328,7 @@ func (x *QueryTeamFolderContentsResponse_TeamFolderContentsEntry) ProtoReflect()
 
 // Deprecated: Use QueryTeamFolderContentsResponse_TeamFolderContentsEntry.ProtoReflect.Descriptor instead.
 func (*QueryTeamFolderContentsResponse_TeamFolderContentsEntry) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{144, 0}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{145, 0}
 }
 
 func (x *QueryTeamFolderContentsResponse_TeamFolderContentsEntry) GetEntry() isQueryTeamFolderContentsResponse_TeamFolderContentsEntry_Entry {
@@ -14223,7 +14391,7 @@ type SearchTeamFoldersResponse_TeamFolderSearchResult struct {
 
 func (x *SearchTeamFoldersResponse_TeamFolderSearchResult) Reset() {
 	*x = SearchTeamFoldersResponse_TeamFolderSearchResult{}
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[194]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[197]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14235,7 +14403,7 @@ func (x *SearchTeamFoldersResponse_TeamFolderSearchResult) String() string {
 func (*SearchTeamFoldersResponse_TeamFolderSearchResult) ProtoMessage() {}
 
 func (x *SearchTeamFoldersResponse_TeamFolderSearchResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[194]
+	mi := &file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[197]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14248,7 +14416,7 @@ func (x *SearchTeamFoldersResponse_TeamFolderSearchResult) ProtoReflect() protor
 
 // Deprecated: Use SearchTeamFoldersResponse_TeamFolderSearchResult.ProtoReflect.Descriptor instead.
 func (*SearchTeamFoldersResponse_TeamFolderSearchResult) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{146, 0}
+	return file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP(), []int{147, 0}
 }
 
 func (x *SearchTeamFoldersResponse_TeamFolderSearchResult) GetEntry() isSearchTeamFoldersResponse_TeamFolderSearchResult_Entry {
@@ -14286,7 +14454,7 @@ const file_google_cloud_dataform_v1beta1_dataform_proto_rawDesc = "" +
 	",google/cloud/dataform/v1beta1/dataform.proto\x12\x1dgoogle.cloud.dataform.v1beta1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\x1a\x1agoogle/type/interval.proto\"x\n" +
 	"\x13DataEncryptionState\x12a\n" +
 	"\x14kms_key_version_name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(cloudkms.googleapis.com/CryptoKeyVersionR\x11kmsKeyVersionName\"\xbd\x13\n" +
+	"(cloudkms.googleapis.com/CryptoKeyVersionR\x11kmsKeyVersionName\"\x99\x15\n" +
 	"\n" +
 	"Repository\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x125\n" +
@@ -14307,7 +14475,8 @@ const file_google_cloud_dataform_v1beta1_dataform_proto_rawDesc = "" +
 	"!cloudkms.googleapis.com/CryptoKeyR\n" +
 	"kmsKeyName\x12k\n" +
 	"\x15data_encryption_state\x18\f \x01(\v22.google.cloud.dataform.v1beta1.DataEncryptionStateB\x03\xe0A\x03R\x13dataEncryptionState\x125\n" +
-	"\x11internal_metadata\x18\x0f \x01(\tB\x03\xe0A\x03H\x02R\x10internalMetadata\x88\x01\x01\x1a\xc2\a\n" +
+	"\x11internal_metadata\x18\x0f \x01(\tB\x03\xe0A\x03H\x02R\x10internalMetadata\x88\x01\x01\x12q\n" +
+	"\x14end_user_auth_config\x18\x1c \x01(\v2;.google.cloud.dataform.v1beta1.Repository.EndUserAuthConfigB\x03\xe0A\x01R\x11endUserAuthConfig\x1a\xc2\a\n" +
 	"\x11GitRemoteSettings\x12\x15\n" +
 	"\x03url\x18\x01 \x01(\tB\x03\xe0A\x02R\x03url\x12*\n" +
 	"\x0edefault_branch\x18\x02 \x01(\tB\x03\xe0A\x01R\rdefaultBranch\x12=\n" +
@@ -14331,7 +14500,9 @@ const file_google_cloud_dataform_v1beta1_dataform_proto_rawDesc = "" +
 	"\x1dWorkspaceCompilationOverrides\x12.\n" +
 	"\x10default_database\x18\x01 \x01(\tB\x03\xe0A\x01R\x0fdefaultDatabase\x12(\n" +
 	"\rschema_suffix\x18\x02 \x01(\tB\x03\xe0A\x01R\fschemaSuffix\x12&\n" +
-	"\ftable_prefix\x18\x03 \x01(\tB\x03\xe0A\x01R\vtablePrefix\x1a9\n" +
+	"\ftable_prefix\x18\x03 \x01(\tB\x03\xe0A\x01R\vtablePrefix\x1ag\n" +
+	"\x11EndUserAuthConfig\x12R\n" +
+	"\foauth_config\x18\x01 \x01(\v2*.google.cloud.dataform.v1beta1.OAuthConfigB\x03\xe0A\x01R\voauthConfig\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x85\x01\xeaA\x81\x01\n" +
@@ -14339,7 +14510,9 @@ const file_google_cloud_dataform_v1beta1_dataform_proto_rawDesc = "" +
 	"repositoryB\x14\n" +
 	"\x12_containing_folderB\x13\n" +
 	"\x11_team_folder_nameB\x14\n" +
-	"\x12_internal_metadata\"?\n" +
+	"\x12_internal_metadata\"J\n" +
+	"\vOAuthConfig\x12;\n" +
+	"\x17additional_oauth_scopes\x18\x01 \x03(\tB\x03\xe0A\x01R\x15additionalOauthScopes\"?\n" +
 	"\x17PrivateResourceMetadata\x12$\n" +
 	"\vuser_scoped\x18\x01 \x01(\bB\x03\xe0A\x03R\n" +
 	"userScoped\"\xdf\x01\n" +
@@ -14975,15 +15148,20 @@ const file_google_cloud_dataform_v1beta1_dataform_proto_rawDesc = "" +
 	"\x0eexecution_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\rexecutionTimeB\b\n" +
 	"\x06result:\xb2\x01\xeaA\xae\x01\n" +
 	"&dataform.googleapis.com/WorkflowConfig\x12cprojects/{project}/locations/{location}/repositories/{repository}/workflowConfigs/{workflow_config}*\x0fworkflowConfigs2\x0eworkflowConfigB\x14\n" +
-	"\x12_internal_metadata\"\x88\x05\n" +
+	"\x12_internal_metadata\"\xa4\a\n" +
 	"\x10InvocationConfig\x12U\n" +
 	"\x10included_targets\x18\x01 \x03(\v2%.google.cloud.dataform.v1beta1.TargetB\x03\xe0A\x01R\x0fincludedTargets\x12(\n" +
 	"\rincluded_tags\x18\x02 \x03(\tB\x03\xe0A\x01R\fincludedTags\x12M\n" +
 	" transitive_dependencies_included\x18\x03 \x01(\bB\x03\xe0A\x01R\x1etransitiveDependenciesIncluded\x12I\n" +
 	"\x1etransitive_dependents_included\x18\x04 \x01(\bB\x03\xe0A\x01R\x1ctransitiveDependentsIncluded\x12[\n" +
 	"(fully_refresh_incremental_tables_enabled\x18\x05 \x01(\bB\x03\xe0A\x01R$fullyRefreshIncrementalTablesEnabled\x12,\n" +
-	"\x0fservice_account\x18\x06 \x01(\tB\x03\xe0A\x01R\x0eserviceAccount\x12n\n" +
-	"\x0equery_priority\x18\t \x01(\x0e2=.google.cloud.dataform.v1beta1.InvocationConfig.QueryPriorityB\x03\xe0A\x01H\x00R\rqueryPriority\x88\x01\x01\"K\n" +
+	"\x0fservice_account\x18\x06 \x01(\tB\x03\xe0A\x01R\x0eserviceAccount\x12\x81\x01\n" +
+	"\x14end_user_auth_config\x18\a \x01(\v2K.google.cloud.dataform.v1beta1.InvocationConfig.EndUserAuthenticationConfigB\x03\xe0A\x01R\x11endUserAuthConfig\x12n\n" +
+	"\x0equery_priority\x18\t \x01(\x0e2=.google.cloud.dataform.v1beta1.InvocationConfig.QueryPriorityB\x03\xe0A\x01H\x00R\rqueryPriority\x88\x01\x01\x1a\x95\x01\n" +
+	"\x1bEndUserAuthenticationConfig\x12\"\n" +
+	"\n" +
+	"user_email\x18\x02 \x01(\tB\x03\xe0A\x03R\tuserEmail\x12R\n" +
+	"\foauth_config\x18\x04 \x01(\v2*.google.cloud.dataform.v1beta1.OAuthConfigB\x03\xe0A\x01R\voauthConfig\"K\n" +
 	"\rQueryPriority\x12\x1e\n" +
 	"\x1aQUERY_PRIORITY_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vINTERACTIVE\x10\x01\x12\t\n" +
@@ -15489,7 +15667,7 @@ func file_google_cloud_dataform_v1beta1_dataform_proto_rawDescGZIP() []byte {
 }
 
 var file_google_cloud_dataform_v1beta1_dataform_proto_enumTypes = make([]protoimpl.EnumInfo, 17)
-var file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes = make([]protoimpl.MessageInfo, 195)
+var file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes = make([]protoimpl.MessageInfo, 198)
 var file_google_cloud_dataform_v1beta1_dataform_proto_goTypes = []any{
 	(DirectoryContentsView)(0),                                    // 0: google.cloud.dataform.v1beta1.DirectoryContentsView
 	(Repository_GitRemoteSettings_TokenStatus)(0),                 // 1: google.cloud.dataform.v1beta1.Repository.GitRemoteSettings.TokenStatus
@@ -15510,557 +15688,564 @@ var file_google_cloud_dataform_v1beta1_dataform_proto_goTypes = []any{
 	(FetchWorkspaceBranchesRequest_BranchFilter)(0),               // 16: google.cloud.dataform.v1beta1.FetchWorkspaceBranchesRequest.BranchFilter
 	(*DataEncryptionState)(nil),                                   // 17: google.cloud.dataform.v1beta1.DataEncryptionState
 	(*Repository)(nil),                                            // 18: google.cloud.dataform.v1beta1.Repository
-	(*PrivateResourceMetadata)(nil),                               // 19: google.cloud.dataform.v1beta1.PrivateResourceMetadata
-	(*ListRepositoriesRequest)(nil),                               // 20: google.cloud.dataform.v1beta1.ListRepositoriesRequest
-	(*ListRepositoriesResponse)(nil),                              // 21: google.cloud.dataform.v1beta1.ListRepositoriesResponse
-	(*MoveRepositoryRequest)(nil),                                 // 22: google.cloud.dataform.v1beta1.MoveRepositoryRequest
-	(*GetRepositoryRequest)(nil),                                  // 23: google.cloud.dataform.v1beta1.GetRepositoryRequest
-	(*CreateRepositoryRequest)(nil),                               // 24: google.cloud.dataform.v1beta1.CreateRepositoryRequest
-	(*UpdateRepositoryRequest)(nil),                               // 25: google.cloud.dataform.v1beta1.UpdateRepositoryRequest
-	(*DeleteRepositoryRequest)(nil),                               // 26: google.cloud.dataform.v1beta1.DeleteRepositoryRequest
-	(*DeleteRepositoryLongRunningResponse)(nil),                   // 27: google.cloud.dataform.v1beta1.DeleteRepositoryLongRunningResponse
-	(*DeleteRepositoryLongRunningRequest)(nil),                    // 28: google.cloud.dataform.v1beta1.DeleteRepositoryLongRunningRequest
-	(*CommitRepositoryChangesRequest)(nil),                        // 29: google.cloud.dataform.v1beta1.CommitRepositoryChangesRequest
-	(*CommitRepositoryChangesResponse)(nil),                       // 30: google.cloud.dataform.v1beta1.CommitRepositoryChangesResponse
-	(*ReadRepositoryFileRequest)(nil),                             // 31: google.cloud.dataform.v1beta1.ReadRepositoryFileRequest
-	(*ReadRepositoryFileResponse)(nil),                            // 32: google.cloud.dataform.v1beta1.ReadRepositoryFileResponse
-	(*QueryRepositoryDirectoryContentsRequest)(nil),               // 33: google.cloud.dataform.v1beta1.QueryRepositoryDirectoryContentsRequest
-	(*QueryRepositoryDirectoryContentsResponse)(nil),              // 34: google.cloud.dataform.v1beta1.QueryRepositoryDirectoryContentsResponse
-	(*FetchRepositoryHistoryRequest)(nil),                         // 35: google.cloud.dataform.v1beta1.FetchRepositoryHistoryRequest
-	(*FetchRepositoryHistoryResponse)(nil),                        // 36: google.cloud.dataform.v1beta1.FetchRepositoryHistoryResponse
-	(*CommitLogEntry)(nil),                                        // 37: google.cloud.dataform.v1beta1.CommitLogEntry
-	(*CommitMetadata)(nil),                                        // 38: google.cloud.dataform.v1beta1.CommitMetadata
-	(*ComputeRepositoryAccessTokenStatusRequest)(nil),             // 39: google.cloud.dataform.v1beta1.ComputeRepositoryAccessTokenStatusRequest
-	(*ComputeRepositoryAccessTokenStatusResponse)(nil),            // 40: google.cloud.dataform.v1beta1.ComputeRepositoryAccessTokenStatusResponse
-	(*FetchRemoteBranchesRequest)(nil),                            // 41: google.cloud.dataform.v1beta1.FetchRemoteBranchesRequest
-	(*FetchRemoteBranchesResponse)(nil),                           // 42: google.cloud.dataform.v1beta1.FetchRemoteBranchesResponse
-	(*Workspace)(nil),                                             // 43: google.cloud.dataform.v1beta1.Workspace
-	(*ListWorkspacesRequest)(nil),                                 // 44: google.cloud.dataform.v1beta1.ListWorkspacesRequest
-	(*ListWorkspacesResponse)(nil),                                // 45: google.cloud.dataform.v1beta1.ListWorkspacesResponse
-	(*GetWorkspaceRequest)(nil),                                   // 46: google.cloud.dataform.v1beta1.GetWorkspaceRequest
-	(*CreateWorkspaceRequest)(nil),                                // 47: google.cloud.dataform.v1beta1.CreateWorkspaceRequest
-	(*DeleteWorkspaceRequest)(nil),                                // 48: google.cloud.dataform.v1beta1.DeleteWorkspaceRequest
-	(*CommitAuthor)(nil),                                          // 49: google.cloud.dataform.v1beta1.CommitAuthor
-	(*PullGitCommitsRequest)(nil),                                 // 50: google.cloud.dataform.v1beta1.PullGitCommitsRequest
-	(*PullGitCommitsResponse)(nil),                                // 51: google.cloud.dataform.v1beta1.PullGitCommitsResponse
-	(*CheckoutWorkspaceBranchRequest)(nil),                        // 52: google.cloud.dataform.v1beta1.CheckoutWorkspaceBranchRequest
-	(*SyncWorkspaceRefsRequest)(nil),                              // 53: google.cloud.dataform.v1beta1.SyncWorkspaceRefsRequest
-	(*SyncWorkspaceRefsResponse)(nil),                             // 54: google.cloud.dataform.v1beta1.SyncWorkspaceRefsResponse
-	(*DeleteBranchRequest)(nil),                                   // 55: google.cloud.dataform.v1beta1.DeleteBranchRequest
-	(*DeleteBranchResponse)(nil),                                  // 56: google.cloud.dataform.v1beta1.DeleteBranchResponse
-	(*PushGitCommitsRequest)(nil),                                 // 57: google.cloud.dataform.v1beta1.PushGitCommitsRequest
-	(*PushGitCommitsResponse)(nil),                                // 58: google.cloud.dataform.v1beta1.PushGitCommitsResponse
-	(*FetchFileGitStatusesRequest)(nil),                           // 59: google.cloud.dataform.v1beta1.FetchFileGitStatusesRequest
-	(*FetchFileGitStatusesResponse)(nil),                          // 60: google.cloud.dataform.v1beta1.FetchFileGitStatusesResponse
-	(*FetchGitAheadBehindRequest)(nil),                            // 61: google.cloud.dataform.v1beta1.FetchGitAheadBehindRequest
-	(*FetchGitAheadBehindResponse)(nil),                           // 62: google.cloud.dataform.v1beta1.FetchGitAheadBehindResponse
-	(*CommitWorkspaceChangesRequest)(nil),                         // 63: google.cloud.dataform.v1beta1.CommitWorkspaceChangesRequest
-	(*CommitWorkspaceChangesResponse)(nil),                        // 64: google.cloud.dataform.v1beta1.CommitWorkspaceChangesResponse
-	(*ResetWorkspaceChangesRequest)(nil),                          // 65: google.cloud.dataform.v1beta1.ResetWorkspaceChangesRequest
-	(*ResetWorkspaceChangesResponse)(nil),                         // 66: google.cloud.dataform.v1beta1.ResetWorkspaceChangesResponse
-	(*FetchFileDiffRequest)(nil),                                  // 67: google.cloud.dataform.v1beta1.FetchFileDiffRequest
-	(*FetchFileDiffResponse)(nil),                                 // 68: google.cloud.dataform.v1beta1.FetchFileDiffResponse
-	(*QueryDirectoryContentsRequest)(nil),                         // 69: google.cloud.dataform.v1beta1.QueryDirectoryContentsRequest
-	(*QueryDirectoryContentsResponse)(nil),                        // 70: google.cloud.dataform.v1beta1.QueryDirectoryContentsResponse
-	(*DirectoryEntry)(nil),                                        // 71: google.cloud.dataform.v1beta1.DirectoryEntry
-	(*FilesystemEntryMetadata)(nil),                               // 72: google.cloud.dataform.v1beta1.FilesystemEntryMetadata
-	(*SearchFilesRequest)(nil),                                    // 73: google.cloud.dataform.v1beta1.SearchFilesRequest
-	(*SearchFilesResponse)(nil),                                   // 74: google.cloud.dataform.v1beta1.SearchFilesResponse
-	(*SearchResult)(nil),                                          // 75: google.cloud.dataform.v1beta1.SearchResult
-	(*FileSearchResult)(nil),                                      // 76: google.cloud.dataform.v1beta1.FileSearchResult
-	(*DirectorySearchResult)(nil),                                 // 77: google.cloud.dataform.v1beta1.DirectorySearchResult
-	(*MakeDirectoryRequest)(nil),                                  // 78: google.cloud.dataform.v1beta1.MakeDirectoryRequest
-	(*MakeDirectoryResponse)(nil),                                 // 79: google.cloud.dataform.v1beta1.MakeDirectoryResponse
-	(*RemoveDirectoryRequest)(nil),                                // 80: google.cloud.dataform.v1beta1.RemoveDirectoryRequest
-	(*RemoveDirectoryResponse)(nil),                               // 81: google.cloud.dataform.v1beta1.RemoveDirectoryResponse
-	(*MoveDirectoryRequest)(nil),                                  // 82: google.cloud.dataform.v1beta1.MoveDirectoryRequest
-	(*MoveDirectoryResponse)(nil),                                 // 83: google.cloud.dataform.v1beta1.MoveDirectoryResponse
-	(*ReadFileRequest)(nil),                                       // 84: google.cloud.dataform.v1beta1.ReadFileRequest
-	(*ReadFileResponse)(nil),                                      // 85: google.cloud.dataform.v1beta1.ReadFileResponse
-	(*RemoveFileRequest)(nil),                                     // 86: google.cloud.dataform.v1beta1.RemoveFileRequest
-	(*RemoveFileResponse)(nil),                                    // 87: google.cloud.dataform.v1beta1.RemoveFileResponse
-	(*MoveFileRequest)(nil),                                       // 88: google.cloud.dataform.v1beta1.MoveFileRequest
-	(*MoveFileResponse)(nil),                                      // 89: google.cloud.dataform.v1beta1.MoveFileResponse
-	(*WriteFileRequest)(nil),                                      // 90: google.cloud.dataform.v1beta1.WriteFileRequest
-	(*WriteFileResponse)(nil),                                     // 91: google.cloud.dataform.v1beta1.WriteFileResponse
-	(*InstallNpmPackagesRequest)(nil),                             // 92: google.cloud.dataform.v1beta1.InstallNpmPackagesRequest
-	(*InstallNpmPackagesResponse)(nil),                            // 93: google.cloud.dataform.v1beta1.InstallNpmPackagesResponse
-	(*ReleaseConfig)(nil),                                         // 94: google.cloud.dataform.v1beta1.ReleaseConfig
-	(*ListReleaseConfigsRequest)(nil),                             // 95: google.cloud.dataform.v1beta1.ListReleaseConfigsRequest
-	(*ListReleaseConfigsResponse)(nil),                            // 96: google.cloud.dataform.v1beta1.ListReleaseConfigsResponse
-	(*GetReleaseConfigRequest)(nil),                               // 97: google.cloud.dataform.v1beta1.GetReleaseConfigRequest
-	(*CreateReleaseConfigRequest)(nil),                            // 98: google.cloud.dataform.v1beta1.CreateReleaseConfigRequest
-	(*UpdateReleaseConfigRequest)(nil),                            // 99: google.cloud.dataform.v1beta1.UpdateReleaseConfigRequest
-	(*DeleteReleaseConfigRequest)(nil),                            // 100: google.cloud.dataform.v1beta1.DeleteReleaseConfigRequest
-	(*CompilationResult)(nil),                                     // 101: google.cloud.dataform.v1beta1.CompilationResult
-	(*WorkflowTriggerConfig)(nil),                                 // 102: google.cloud.dataform.v1beta1.WorkflowTriggerConfig
-	(*TriggerEvaluationRecord)(nil),                               // 103: google.cloud.dataform.v1beta1.TriggerEvaluationRecord
-	(*WorkflowTrigger)(nil),                                       // 104: google.cloud.dataform.v1beta1.WorkflowTrigger
-	(*TableUpdateTrigger)(nil),                                    // 105: google.cloud.dataform.v1beta1.TableUpdateTrigger
-	(*CodeCompilationConfig)(nil),                                 // 106: google.cloud.dataform.v1beta1.CodeCompilationConfig
-	(*GcsRepositorySnapshotMetadata)(nil),                         // 107: google.cloud.dataform.v1beta1.GcsRepositorySnapshotMetadata
-	(*GcsRepositorySnapshotDestination)(nil),                      // 108: google.cloud.dataform.v1beta1.GcsRepositorySnapshotDestination
-	(*NotebookRuntimeOptions)(nil),                                // 109: google.cloud.dataform.v1beta1.NotebookRuntimeOptions
-	(*PipelineConfig)(nil),                                        // 110: google.cloud.dataform.v1beta1.PipelineConfig
-	(*ListCompilationResultsRequest)(nil),                         // 111: google.cloud.dataform.v1beta1.ListCompilationResultsRequest
-	(*ListCompilationResultsResponse)(nil),                        // 112: google.cloud.dataform.v1beta1.ListCompilationResultsResponse
-	(*GetCompilationResultRequest)(nil),                           // 113: google.cloud.dataform.v1beta1.GetCompilationResultRequest
-	(*CreateCompilationResultRequest)(nil),                        // 114: google.cloud.dataform.v1beta1.CreateCompilationResultRequest
-	(*Target)(nil),                                                // 115: google.cloud.dataform.v1beta1.Target
-	(*RelationDescriptor)(nil),                                    // 116: google.cloud.dataform.v1beta1.RelationDescriptor
-	(*CompilationResultAction)(nil),                               // 117: google.cloud.dataform.v1beta1.CompilationResultAction
-	(*QueryCompilationResultActionsRequest)(nil),                  // 118: google.cloud.dataform.v1beta1.QueryCompilationResultActionsRequest
-	(*QueryCompilationResultActionsResponse)(nil),                 // 119: google.cloud.dataform.v1beta1.QueryCompilationResultActionsResponse
-	(*WorkflowConfig)(nil),                                        // 120: google.cloud.dataform.v1beta1.WorkflowConfig
-	(*InvocationConfig)(nil),                                      // 121: google.cloud.dataform.v1beta1.InvocationConfig
-	(*ListWorkflowConfigsRequest)(nil),                            // 122: google.cloud.dataform.v1beta1.ListWorkflowConfigsRequest
-	(*ListWorkflowConfigsResponse)(nil),                           // 123: google.cloud.dataform.v1beta1.ListWorkflowConfigsResponse
-	(*GetWorkflowConfigRequest)(nil),                              // 124: google.cloud.dataform.v1beta1.GetWorkflowConfigRequest
-	(*CreateWorkflowConfigRequest)(nil),                           // 125: google.cloud.dataform.v1beta1.CreateWorkflowConfigRequest
-	(*UpdateWorkflowConfigRequest)(nil),                           // 126: google.cloud.dataform.v1beta1.UpdateWorkflowConfigRequest
-	(*DeleteWorkflowConfigRequest)(nil),                           // 127: google.cloud.dataform.v1beta1.DeleteWorkflowConfigRequest
-	(*WorkflowInvocation)(nil),                                    // 128: google.cloud.dataform.v1beta1.WorkflowInvocation
-	(*ListWorkflowInvocationsRequest)(nil),                        // 129: google.cloud.dataform.v1beta1.ListWorkflowInvocationsRequest
-	(*ListWorkflowInvocationsResponse)(nil),                       // 130: google.cloud.dataform.v1beta1.ListWorkflowInvocationsResponse
-	(*GetWorkflowInvocationRequest)(nil),                          // 131: google.cloud.dataform.v1beta1.GetWorkflowInvocationRequest
-	(*CreateWorkflowInvocationRequest)(nil),                       // 132: google.cloud.dataform.v1beta1.CreateWorkflowInvocationRequest
-	(*DeleteWorkflowInvocationRequest)(nil),                       // 133: google.cloud.dataform.v1beta1.DeleteWorkflowInvocationRequest
-	(*CancelWorkflowInvocationRequest)(nil),                       // 134: google.cloud.dataform.v1beta1.CancelWorkflowInvocationRequest
-	(*CancelWorkflowInvocationResponse)(nil),                      // 135: google.cloud.dataform.v1beta1.CancelWorkflowInvocationResponse
-	(*WorkflowInvocationAction)(nil),                              // 136: google.cloud.dataform.v1beta1.WorkflowInvocationAction
-	(*QueryWorkflowInvocationActionsRequest)(nil),                 // 137: google.cloud.dataform.v1beta1.QueryWorkflowInvocationActionsRequest
-	(*QueryWorkflowInvocationActionsResponse)(nil),                // 138: google.cloud.dataform.v1beta1.QueryWorkflowInvocationActionsResponse
-	(*Config)(nil),                                                // 139: google.cloud.dataform.v1beta1.Config
-	(*GetConfigRequest)(nil),                                      // 140: google.cloud.dataform.v1beta1.GetConfigRequest
-	(*UpdateConfigRequest)(nil),                                   // 141: google.cloud.dataform.v1beta1.UpdateConfigRequest
-	(*Folder)(nil),                                                // 142: google.cloud.dataform.v1beta1.Folder
-	(*CreateFolderRequest)(nil),                                   // 143: google.cloud.dataform.v1beta1.CreateFolderRequest
-	(*MoveFolderRequest)(nil),                                     // 144: google.cloud.dataform.v1beta1.MoveFolderRequest
-	(*GetFolderRequest)(nil),                                      // 145: google.cloud.dataform.v1beta1.GetFolderRequest
-	(*UpdateFolderRequest)(nil),                                   // 146: google.cloud.dataform.v1beta1.UpdateFolderRequest
-	(*DeleteFolderRequest)(nil),                                   // 147: google.cloud.dataform.v1beta1.DeleteFolderRequest
-	(*DeleteFolderTreeRequest)(nil),                               // 148: google.cloud.dataform.v1beta1.DeleteFolderTreeRequest
-	(*DeleteTeamFolderTreeRequest)(nil),                           // 149: google.cloud.dataform.v1beta1.DeleteTeamFolderTreeRequest
-	(*DeleteFolderTreeMetadata)(nil),                              // 150: google.cloud.dataform.v1beta1.DeleteFolderTreeMetadata
-	(*QueryFolderContentsRequest)(nil),                            // 151: google.cloud.dataform.v1beta1.QueryFolderContentsRequest
-	(*QueryFolderContentsResponse)(nil),                           // 152: google.cloud.dataform.v1beta1.QueryFolderContentsResponse
-	(*QueryUserRootContentsRequest)(nil),                          // 153: google.cloud.dataform.v1beta1.QueryUserRootContentsRequest
-	(*QueryUserRootContentsResponse)(nil),                         // 154: google.cloud.dataform.v1beta1.QueryUserRootContentsResponse
-	(*TeamFolder)(nil),                                            // 155: google.cloud.dataform.v1beta1.TeamFolder
-	(*CreateTeamFolderRequest)(nil),                               // 156: google.cloud.dataform.v1beta1.CreateTeamFolderRequest
-	(*GetTeamFolderRequest)(nil),                                  // 157: google.cloud.dataform.v1beta1.GetTeamFolderRequest
-	(*UpdateTeamFolderRequest)(nil),                               // 158: google.cloud.dataform.v1beta1.UpdateTeamFolderRequest
-	(*DeleteTeamFolderRequest)(nil),                               // 159: google.cloud.dataform.v1beta1.DeleteTeamFolderRequest
-	(*QueryTeamFolderContentsRequest)(nil),                        // 160: google.cloud.dataform.v1beta1.QueryTeamFolderContentsRequest
-	(*QueryTeamFolderContentsResponse)(nil),                       // 161: google.cloud.dataform.v1beta1.QueryTeamFolderContentsResponse
-	(*SearchTeamFoldersRequest)(nil),                              // 162: google.cloud.dataform.v1beta1.SearchTeamFoldersRequest
-	(*SearchTeamFoldersResponse)(nil),                             // 163: google.cloud.dataform.v1beta1.SearchTeamFoldersResponse
-	(*MoveFolderMetadata)(nil),                                    // 164: google.cloud.dataform.v1beta1.MoveFolderMetadata
-	(*MoveRepositoryMetadata)(nil),                                // 165: google.cloud.dataform.v1beta1.MoveRepositoryMetadata
-	(*DeleteRepositoryLongRunningMetadata)(nil),                   // 166: google.cloud.dataform.v1beta1.DeleteRepositoryLongRunningMetadata
-	(*FetchWorkspaceBranchesRequest)(nil),                         // 167: google.cloud.dataform.v1beta1.FetchWorkspaceBranchesRequest
-	(*BranchMetadata)(nil),                                        // 168: google.cloud.dataform.v1beta1.BranchMetadata
-	(*FetchWorkspaceBranchesResponse)(nil),                        // 169: google.cloud.dataform.v1beta1.FetchWorkspaceBranchesResponse
-	(*FetchCurrentWorkspaceBranchRequest)(nil),                    // 170: google.cloud.dataform.v1beta1.FetchCurrentWorkspaceBranchRequest
-	(*FetchCurrentWorkspaceBranchResponse)(nil),                   // 171: google.cloud.dataform.v1beta1.FetchCurrentWorkspaceBranchResponse
-	(*Repository_GitRemoteSettings)(nil),                          // 172: google.cloud.dataform.v1beta1.Repository.GitRemoteSettings
-	(*Repository_WorkspaceCompilationOverrides)(nil),              // 173: google.cloud.dataform.v1beta1.Repository.WorkspaceCompilationOverrides
-	nil, // 174: google.cloud.dataform.v1beta1.Repository.LabelsEntry
-	(*Repository_GitRemoteSettings_SshAuthenticationConfig)(nil), // 175: google.cloud.dataform.v1beta1.Repository.GitRemoteSettings.SshAuthenticationConfig
-	(*CommitRepositoryChangesRequest_FileOperation)(nil),         // 176: google.cloud.dataform.v1beta1.CommitRepositoryChangesRequest.FileOperation
-	nil, // 177: google.cloud.dataform.v1beta1.CommitRepositoryChangesRequest.FileOperationsEntry
-	(*CommitRepositoryChangesRequest_FileOperation_WriteFile)(nil),  // 178: google.cloud.dataform.v1beta1.CommitRepositoryChangesRequest.FileOperation.WriteFile
-	(*CommitRepositoryChangesRequest_FileOperation_DeleteFile)(nil), // 179: google.cloud.dataform.v1beta1.CommitRepositoryChangesRequest.FileOperation.DeleteFile
-	(*FetchFileGitStatusesResponse_UncommittedFileChange)(nil),      // 180: google.cloud.dataform.v1beta1.FetchFileGitStatusesResponse.UncommittedFileChange
-	(*ReleaseConfig_ScheduledReleaseRecord)(nil),                    // 181: google.cloud.dataform.v1beta1.ReleaseConfig.ScheduledReleaseRecord
-	(*CompilationResult_CompilationError)(nil),                      // 182: google.cloud.dataform.v1beta1.CompilationResult.CompilationError
-	nil, // 183: google.cloud.dataform.v1beta1.CodeCompilationConfig.VarsEntry
-	(*RelationDescriptor_ColumnDescriptor)(nil), // 184: google.cloud.dataform.v1beta1.RelationDescriptor.ColumnDescriptor
-	nil,                                      // 185: google.cloud.dataform.v1beta1.RelationDescriptor.BigqueryLabelsEntry
-	(*CompilationResultAction_Relation)(nil), // 186: google.cloud.dataform.v1beta1.CompilationResultAction.Relation
-	(*CompilationResultAction_Operations)(nil),                      // 187: google.cloud.dataform.v1beta1.CompilationResultAction.Operations
-	(*CompilationResultAction_Assertion)(nil),                       // 188: google.cloud.dataform.v1beta1.CompilationResultAction.Assertion
-	(*CompilationResultAction_Declaration)(nil),                     // 189: google.cloud.dataform.v1beta1.CompilationResultAction.Declaration
-	(*CompilationResultAction_Notebook)(nil),                        // 190: google.cloud.dataform.v1beta1.CompilationResultAction.Notebook
-	(*CompilationResultAction_DataPreparation)(nil),                 // 191: google.cloud.dataform.v1beta1.CompilationResultAction.DataPreparation
-	(*CompilationResultAction_LoadConfig)(nil),                      // 192: google.cloud.dataform.v1beta1.CompilationResultAction.LoadConfig
-	(*CompilationResultAction_SimpleLoadMode)(nil),                  // 193: google.cloud.dataform.v1beta1.CompilationResultAction.SimpleLoadMode
-	(*CompilationResultAction_IncrementalLoadMode)(nil),             // 194: google.cloud.dataform.v1beta1.CompilationResultAction.IncrementalLoadMode
-	(*CompilationResultAction_Relation_IncrementalTableConfig)(nil), // 195: google.cloud.dataform.v1beta1.CompilationResultAction.Relation.IncrementalTableConfig
-	nil, // 196: google.cloud.dataform.v1beta1.CompilationResultAction.Relation.AdditionalOptionsEntry
-	(*CompilationResultAction_DataPreparation_SqlDefinition)(nil),                    // 197: google.cloud.dataform.v1beta1.CompilationResultAction.DataPreparation.SqlDefinition
-	(*CompilationResultAction_DataPreparation_ErrorTable)(nil),                       // 198: google.cloud.dataform.v1beta1.CompilationResultAction.DataPreparation.ErrorTable
-	(*WorkflowConfig_ScheduledExecutionRecord)(nil),                                  // 199: google.cloud.dataform.v1beta1.WorkflowConfig.ScheduledExecutionRecord
-	(*WorkflowInvocationAction_BigQueryAction)(nil),                                  // 200: google.cloud.dataform.v1beta1.WorkflowInvocationAction.BigQueryAction
-	(*WorkflowInvocationAction_NotebookAction)(nil),                                  // 201: google.cloud.dataform.v1beta1.WorkflowInvocationAction.NotebookAction
-	(*WorkflowInvocationAction_DataPreparationAction)(nil),                           // 202: google.cloud.dataform.v1beta1.WorkflowInvocationAction.DataPreparationAction
-	(*WorkflowInvocationAction_DataPreparationAction_ActionSqlDefinition)(nil),       // 203: google.cloud.dataform.v1beta1.WorkflowInvocationAction.DataPreparationAction.ActionSqlDefinition
-	(*WorkflowInvocationAction_DataPreparationAction_ActionErrorTable)(nil),          // 204: google.cloud.dataform.v1beta1.WorkflowInvocationAction.DataPreparationAction.ActionErrorTable
-	(*WorkflowInvocationAction_DataPreparationAction_ActionLoadConfig)(nil),          // 205: google.cloud.dataform.v1beta1.WorkflowInvocationAction.DataPreparationAction.ActionLoadConfig
-	(*WorkflowInvocationAction_DataPreparationAction_ActionSimpleLoadMode)(nil),      // 206: google.cloud.dataform.v1beta1.WorkflowInvocationAction.DataPreparationAction.ActionSimpleLoadMode
-	(*WorkflowInvocationAction_DataPreparationAction_ActionIncrementalLoadMode)(nil), // 207: google.cloud.dataform.v1beta1.WorkflowInvocationAction.DataPreparationAction.ActionIncrementalLoadMode
-	(*QueryFolderContentsResponse_FolderContentsEntry)(nil),                          // 208: google.cloud.dataform.v1beta1.QueryFolderContentsResponse.FolderContentsEntry
-	(*QueryUserRootContentsResponse_RootContentsEntry)(nil),                          // 209: google.cloud.dataform.v1beta1.QueryUserRootContentsResponse.RootContentsEntry
-	(*QueryTeamFolderContentsResponse_TeamFolderContentsEntry)(nil),                  // 210: google.cloud.dataform.v1beta1.QueryTeamFolderContentsResponse.TeamFolderContentsEntry
-	(*SearchTeamFoldersResponse_TeamFolderSearchResult)(nil),                         // 211: google.cloud.dataform.v1beta1.SearchTeamFoldersResponse.TeamFolderSearchResult
-	(*timestamppb.Timestamp)(nil),                                                    // 212: google.protobuf.Timestamp
-	(*fieldmaskpb.FieldMask)(nil),                                                    // 213: google.protobuf.FieldMask
-	(*durationpb.Duration)(nil),                                                      // 214: google.protobuf.Duration
-	(*status.Status)(nil),                                                            // 215: google.rpc.Status
-	(*interval.Interval)(nil),                                                        // 216: google.type.Interval
-	(*iampb.GetIamPolicyRequest)(nil),                                                // 217: google.iam.v1.GetIamPolicyRequest
-	(*iampb.SetIamPolicyRequest)(nil),                                                // 218: google.iam.v1.SetIamPolicyRequest
-	(*iampb.TestIamPermissionsRequest)(nil),                                          // 219: google.iam.v1.TestIamPermissionsRequest
-	(*emptypb.Empty)(nil),                                                            // 220: google.protobuf.Empty
-	(*longrunningpb.Operation)(nil),                                                  // 221: google.longrunning.Operation
-	(*iampb.Policy)(nil),                                                             // 222: google.iam.v1.Policy
-	(*iampb.TestIamPermissionsResponse)(nil),                                         // 223: google.iam.v1.TestIamPermissionsResponse
+	(*OAuthConfig)(nil),                                           // 19: google.cloud.dataform.v1beta1.OAuthConfig
+	(*PrivateResourceMetadata)(nil),                               // 20: google.cloud.dataform.v1beta1.PrivateResourceMetadata
+	(*ListRepositoriesRequest)(nil),                               // 21: google.cloud.dataform.v1beta1.ListRepositoriesRequest
+	(*ListRepositoriesResponse)(nil),                              // 22: google.cloud.dataform.v1beta1.ListRepositoriesResponse
+	(*MoveRepositoryRequest)(nil),                                 // 23: google.cloud.dataform.v1beta1.MoveRepositoryRequest
+	(*GetRepositoryRequest)(nil),                                  // 24: google.cloud.dataform.v1beta1.GetRepositoryRequest
+	(*CreateRepositoryRequest)(nil),                               // 25: google.cloud.dataform.v1beta1.CreateRepositoryRequest
+	(*UpdateRepositoryRequest)(nil),                               // 26: google.cloud.dataform.v1beta1.UpdateRepositoryRequest
+	(*DeleteRepositoryRequest)(nil),                               // 27: google.cloud.dataform.v1beta1.DeleteRepositoryRequest
+	(*DeleteRepositoryLongRunningResponse)(nil),                   // 28: google.cloud.dataform.v1beta1.DeleteRepositoryLongRunningResponse
+	(*DeleteRepositoryLongRunningRequest)(nil),                    // 29: google.cloud.dataform.v1beta1.DeleteRepositoryLongRunningRequest
+	(*CommitRepositoryChangesRequest)(nil),                        // 30: google.cloud.dataform.v1beta1.CommitRepositoryChangesRequest
+	(*CommitRepositoryChangesResponse)(nil),                       // 31: google.cloud.dataform.v1beta1.CommitRepositoryChangesResponse
+	(*ReadRepositoryFileRequest)(nil),                             // 32: google.cloud.dataform.v1beta1.ReadRepositoryFileRequest
+	(*ReadRepositoryFileResponse)(nil),                            // 33: google.cloud.dataform.v1beta1.ReadRepositoryFileResponse
+	(*QueryRepositoryDirectoryContentsRequest)(nil),               // 34: google.cloud.dataform.v1beta1.QueryRepositoryDirectoryContentsRequest
+	(*QueryRepositoryDirectoryContentsResponse)(nil),              // 35: google.cloud.dataform.v1beta1.QueryRepositoryDirectoryContentsResponse
+	(*FetchRepositoryHistoryRequest)(nil),                         // 36: google.cloud.dataform.v1beta1.FetchRepositoryHistoryRequest
+	(*FetchRepositoryHistoryResponse)(nil),                        // 37: google.cloud.dataform.v1beta1.FetchRepositoryHistoryResponse
+	(*CommitLogEntry)(nil),                                        // 38: google.cloud.dataform.v1beta1.CommitLogEntry
+	(*CommitMetadata)(nil),                                        // 39: google.cloud.dataform.v1beta1.CommitMetadata
+	(*ComputeRepositoryAccessTokenStatusRequest)(nil),             // 40: google.cloud.dataform.v1beta1.ComputeRepositoryAccessTokenStatusRequest
+	(*ComputeRepositoryAccessTokenStatusResponse)(nil),            // 41: google.cloud.dataform.v1beta1.ComputeRepositoryAccessTokenStatusResponse
+	(*FetchRemoteBranchesRequest)(nil),                            // 42: google.cloud.dataform.v1beta1.FetchRemoteBranchesRequest
+	(*FetchRemoteBranchesResponse)(nil),                           // 43: google.cloud.dataform.v1beta1.FetchRemoteBranchesResponse
+	(*Workspace)(nil),                                             // 44: google.cloud.dataform.v1beta1.Workspace
+	(*ListWorkspacesRequest)(nil),                                 // 45: google.cloud.dataform.v1beta1.ListWorkspacesRequest
+	(*ListWorkspacesResponse)(nil),                                // 46: google.cloud.dataform.v1beta1.ListWorkspacesResponse
+	(*GetWorkspaceRequest)(nil),                                   // 47: google.cloud.dataform.v1beta1.GetWorkspaceRequest
+	(*CreateWorkspaceRequest)(nil),                                // 48: google.cloud.dataform.v1beta1.CreateWorkspaceRequest
+	(*DeleteWorkspaceRequest)(nil),                                // 49: google.cloud.dataform.v1beta1.DeleteWorkspaceRequest
+	(*CommitAuthor)(nil),                                          // 50: google.cloud.dataform.v1beta1.CommitAuthor
+	(*PullGitCommitsRequest)(nil),                                 // 51: google.cloud.dataform.v1beta1.PullGitCommitsRequest
+	(*PullGitCommitsResponse)(nil),                                // 52: google.cloud.dataform.v1beta1.PullGitCommitsResponse
+	(*CheckoutWorkspaceBranchRequest)(nil),                        // 53: google.cloud.dataform.v1beta1.CheckoutWorkspaceBranchRequest
+	(*SyncWorkspaceRefsRequest)(nil),                              // 54: google.cloud.dataform.v1beta1.SyncWorkspaceRefsRequest
+	(*SyncWorkspaceRefsResponse)(nil),                             // 55: google.cloud.dataform.v1beta1.SyncWorkspaceRefsResponse
+	(*DeleteBranchRequest)(nil),                                   // 56: google.cloud.dataform.v1beta1.DeleteBranchRequest
+	(*DeleteBranchResponse)(nil),                                  // 57: google.cloud.dataform.v1beta1.DeleteBranchResponse
+	(*PushGitCommitsRequest)(nil),                                 // 58: google.cloud.dataform.v1beta1.PushGitCommitsRequest
+	(*PushGitCommitsResponse)(nil),                                // 59: google.cloud.dataform.v1beta1.PushGitCommitsResponse
+	(*FetchFileGitStatusesRequest)(nil),                           // 60: google.cloud.dataform.v1beta1.FetchFileGitStatusesRequest
+	(*FetchFileGitStatusesResponse)(nil),                          // 61: google.cloud.dataform.v1beta1.FetchFileGitStatusesResponse
+	(*FetchGitAheadBehindRequest)(nil),                            // 62: google.cloud.dataform.v1beta1.FetchGitAheadBehindRequest
+	(*FetchGitAheadBehindResponse)(nil),                           // 63: google.cloud.dataform.v1beta1.FetchGitAheadBehindResponse
+	(*CommitWorkspaceChangesRequest)(nil),                         // 64: google.cloud.dataform.v1beta1.CommitWorkspaceChangesRequest
+	(*CommitWorkspaceChangesResponse)(nil),                        // 65: google.cloud.dataform.v1beta1.CommitWorkspaceChangesResponse
+	(*ResetWorkspaceChangesRequest)(nil),                          // 66: google.cloud.dataform.v1beta1.ResetWorkspaceChangesRequest
+	(*ResetWorkspaceChangesResponse)(nil),                         // 67: google.cloud.dataform.v1beta1.ResetWorkspaceChangesResponse
+	(*FetchFileDiffRequest)(nil),                                  // 68: google.cloud.dataform.v1beta1.FetchFileDiffRequest
+	(*FetchFileDiffResponse)(nil),                                 // 69: google.cloud.dataform.v1beta1.FetchFileDiffResponse
+	(*QueryDirectoryContentsRequest)(nil),                         // 70: google.cloud.dataform.v1beta1.QueryDirectoryContentsRequest
+	(*QueryDirectoryContentsResponse)(nil),                        // 71: google.cloud.dataform.v1beta1.QueryDirectoryContentsResponse
+	(*DirectoryEntry)(nil),                                        // 72: google.cloud.dataform.v1beta1.DirectoryEntry
+	(*FilesystemEntryMetadata)(nil),                               // 73: google.cloud.dataform.v1beta1.FilesystemEntryMetadata
+	(*SearchFilesRequest)(nil),                                    // 74: google.cloud.dataform.v1beta1.SearchFilesRequest
+	(*SearchFilesResponse)(nil),                                   // 75: google.cloud.dataform.v1beta1.SearchFilesResponse
+	(*SearchResult)(nil),                                          // 76: google.cloud.dataform.v1beta1.SearchResult
+	(*FileSearchResult)(nil),                                      // 77: google.cloud.dataform.v1beta1.FileSearchResult
+	(*DirectorySearchResult)(nil),                                 // 78: google.cloud.dataform.v1beta1.DirectorySearchResult
+	(*MakeDirectoryRequest)(nil),                                  // 79: google.cloud.dataform.v1beta1.MakeDirectoryRequest
+	(*MakeDirectoryResponse)(nil),                                 // 80: google.cloud.dataform.v1beta1.MakeDirectoryResponse
+	(*RemoveDirectoryRequest)(nil),                                // 81: google.cloud.dataform.v1beta1.RemoveDirectoryRequest
+	(*RemoveDirectoryResponse)(nil),                               // 82: google.cloud.dataform.v1beta1.RemoveDirectoryResponse
+	(*MoveDirectoryRequest)(nil),                                  // 83: google.cloud.dataform.v1beta1.MoveDirectoryRequest
+	(*MoveDirectoryResponse)(nil),                                 // 84: google.cloud.dataform.v1beta1.MoveDirectoryResponse
+	(*ReadFileRequest)(nil),                                       // 85: google.cloud.dataform.v1beta1.ReadFileRequest
+	(*ReadFileResponse)(nil),                                      // 86: google.cloud.dataform.v1beta1.ReadFileResponse
+	(*RemoveFileRequest)(nil),                                     // 87: google.cloud.dataform.v1beta1.RemoveFileRequest
+	(*RemoveFileResponse)(nil),                                    // 88: google.cloud.dataform.v1beta1.RemoveFileResponse
+	(*MoveFileRequest)(nil),                                       // 89: google.cloud.dataform.v1beta1.MoveFileRequest
+	(*MoveFileResponse)(nil),                                      // 90: google.cloud.dataform.v1beta1.MoveFileResponse
+	(*WriteFileRequest)(nil),                                      // 91: google.cloud.dataform.v1beta1.WriteFileRequest
+	(*WriteFileResponse)(nil),                                     // 92: google.cloud.dataform.v1beta1.WriteFileResponse
+	(*InstallNpmPackagesRequest)(nil),                             // 93: google.cloud.dataform.v1beta1.InstallNpmPackagesRequest
+	(*InstallNpmPackagesResponse)(nil),                            // 94: google.cloud.dataform.v1beta1.InstallNpmPackagesResponse
+	(*ReleaseConfig)(nil),                                         // 95: google.cloud.dataform.v1beta1.ReleaseConfig
+	(*ListReleaseConfigsRequest)(nil),                             // 96: google.cloud.dataform.v1beta1.ListReleaseConfigsRequest
+	(*ListReleaseConfigsResponse)(nil),                            // 97: google.cloud.dataform.v1beta1.ListReleaseConfigsResponse
+	(*GetReleaseConfigRequest)(nil),                               // 98: google.cloud.dataform.v1beta1.GetReleaseConfigRequest
+	(*CreateReleaseConfigRequest)(nil),                            // 99: google.cloud.dataform.v1beta1.CreateReleaseConfigRequest
+	(*UpdateReleaseConfigRequest)(nil),                            // 100: google.cloud.dataform.v1beta1.UpdateReleaseConfigRequest
+	(*DeleteReleaseConfigRequest)(nil),                            // 101: google.cloud.dataform.v1beta1.DeleteReleaseConfigRequest
+	(*CompilationResult)(nil),                                     // 102: google.cloud.dataform.v1beta1.CompilationResult
+	(*WorkflowTriggerConfig)(nil),                                 // 103: google.cloud.dataform.v1beta1.WorkflowTriggerConfig
+	(*TriggerEvaluationRecord)(nil),                               // 104: google.cloud.dataform.v1beta1.TriggerEvaluationRecord
+	(*WorkflowTrigger)(nil),                                       // 105: google.cloud.dataform.v1beta1.WorkflowTrigger
+	(*TableUpdateTrigger)(nil),                                    // 106: google.cloud.dataform.v1beta1.TableUpdateTrigger
+	(*CodeCompilationConfig)(nil),                                 // 107: google.cloud.dataform.v1beta1.CodeCompilationConfig
+	(*GcsRepositorySnapshotMetadata)(nil),                         // 108: google.cloud.dataform.v1beta1.GcsRepositorySnapshotMetadata
+	(*GcsRepositorySnapshotDestination)(nil),                      // 109: google.cloud.dataform.v1beta1.GcsRepositorySnapshotDestination
+	(*NotebookRuntimeOptions)(nil),                                // 110: google.cloud.dataform.v1beta1.NotebookRuntimeOptions
+	(*PipelineConfig)(nil),                                        // 111: google.cloud.dataform.v1beta1.PipelineConfig
+	(*ListCompilationResultsRequest)(nil),                         // 112: google.cloud.dataform.v1beta1.ListCompilationResultsRequest
+	(*ListCompilationResultsResponse)(nil),                        // 113: google.cloud.dataform.v1beta1.ListCompilationResultsResponse
+	(*GetCompilationResultRequest)(nil),                           // 114: google.cloud.dataform.v1beta1.GetCompilationResultRequest
+	(*CreateCompilationResultRequest)(nil),                        // 115: google.cloud.dataform.v1beta1.CreateCompilationResultRequest
+	(*Target)(nil),                                                // 116: google.cloud.dataform.v1beta1.Target
+	(*RelationDescriptor)(nil),                                    // 117: google.cloud.dataform.v1beta1.RelationDescriptor
+	(*CompilationResultAction)(nil),                               // 118: google.cloud.dataform.v1beta1.CompilationResultAction
+	(*QueryCompilationResultActionsRequest)(nil),                  // 119: google.cloud.dataform.v1beta1.QueryCompilationResultActionsRequest
+	(*QueryCompilationResultActionsResponse)(nil),                 // 120: google.cloud.dataform.v1beta1.QueryCompilationResultActionsResponse
+	(*WorkflowConfig)(nil),                                        // 121: google.cloud.dataform.v1beta1.WorkflowConfig
+	(*InvocationConfig)(nil),                                      // 122: google.cloud.dataform.v1beta1.InvocationConfig
+	(*ListWorkflowConfigsRequest)(nil),                            // 123: google.cloud.dataform.v1beta1.ListWorkflowConfigsRequest
+	(*ListWorkflowConfigsResponse)(nil),                           // 124: google.cloud.dataform.v1beta1.ListWorkflowConfigsResponse
+	(*GetWorkflowConfigRequest)(nil),                              // 125: google.cloud.dataform.v1beta1.GetWorkflowConfigRequest
+	(*CreateWorkflowConfigRequest)(nil),                           // 126: google.cloud.dataform.v1beta1.CreateWorkflowConfigRequest
+	(*UpdateWorkflowConfigRequest)(nil),                           // 127: google.cloud.dataform.v1beta1.UpdateWorkflowConfigRequest
+	(*DeleteWorkflowConfigRequest)(nil),                           // 128: google.cloud.dataform.v1beta1.DeleteWorkflowConfigRequest
+	(*WorkflowInvocation)(nil),                                    // 129: google.cloud.dataform.v1beta1.WorkflowInvocation
+	(*ListWorkflowInvocationsRequest)(nil),                        // 130: google.cloud.dataform.v1beta1.ListWorkflowInvocationsRequest
+	(*ListWorkflowInvocationsResponse)(nil),                       // 131: google.cloud.dataform.v1beta1.ListWorkflowInvocationsResponse
+	(*GetWorkflowInvocationRequest)(nil),                          // 132: google.cloud.dataform.v1beta1.GetWorkflowInvocationRequest
+	(*CreateWorkflowInvocationRequest)(nil),                       // 133: google.cloud.dataform.v1beta1.CreateWorkflowInvocationRequest
+	(*DeleteWorkflowInvocationRequest)(nil),                       // 134: google.cloud.dataform.v1beta1.DeleteWorkflowInvocationRequest
+	(*CancelWorkflowInvocationRequest)(nil),                       // 135: google.cloud.dataform.v1beta1.CancelWorkflowInvocationRequest
+	(*CancelWorkflowInvocationResponse)(nil),                      // 136: google.cloud.dataform.v1beta1.CancelWorkflowInvocationResponse
+	(*WorkflowInvocationAction)(nil),                              // 137: google.cloud.dataform.v1beta1.WorkflowInvocationAction
+	(*QueryWorkflowInvocationActionsRequest)(nil),                 // 138: google.cloud.dataform.v1beta1.QueryWorkflowInvocationActionsRequest
+	(*QueryWorkflowInvocationActionsResponse)(nil),                // 139: google.cloud.dataform.v1beta1.QueryWorkflowInvocationActionsResponse
+	(*Config)(nil),                                                // 140: google.cloud.dataform.v1beta1.Config
+	(*GetConfigRequest)(nil),                                      // 141: google.cloud.dataform.v1beta1.GetConfigRequest
+	(*UpdateConfigRequest)(nil),                                   // 142: google.cloud.dataform.v1beta1.UpdateConfigRequest
+	(*Folder)(nil),                                                // 143: google.cloud.dataform.v1beta1.Folder
+	(*CreateFolderRequest)(nil),                                   // 144: google.cloud.dataform.v1beta1.CreateFolderRequest
+	(*MoveFolderRequest)(nil),                                     // 145: google.cloud.dataform.v1beta1.MoveFolderRequest
+	(*GetFolderRequest)(nil),                                      // 146: google.cloud.dataform.v1beta1.GetFolderRequest
+	(*UpdateFolderRequest)(nil),                                   // 147: google.cloud.dataform.v1beta1.UpdateFolderRequest
+	(*DeleteFolderRequest)(nil),                                   // 148: google.cloud.dataform.v1beta1.DeleteFolderRequest
+	(*DeleteFolderTreeRequest)(nil),                               // 149: google.cloud.dataform.v1beta1.DeleteFolderTreeRequest
+	(*DeleteTeamFolderTreeRequest)(nil),                           // 150: google.cloud.dataform.v1beta1.DeleteTeamFolderTreeRequest
+	(*DeleteFolderTreeMetadata)(nil),                              // 151: google.cloud.dataform.v1beta1.DeleteFolderTreeMetadata
+	(*QueryFolderContentsRequest)(nil),                            // 152: google.cloud.dataform.v1beta1.QueryFolderContentsRequest
+	(*QueryFolderContentsResponse)(nil),                           // 153: google.cloud.dataform.v1beta1.QueryFolderContentsResponse
+	(*QueryUserRootContentsRequest)(nil),                          // 154: google.cloud.dataform.v1beta1.QueryUserRootContentsRequest
+	(*QueryUserRootContentsResponse)(nil),                         // 155: google.cloud.dataform.v1beta1.QueryUserRootContentsResponse
+	(*TeamFolder)(nil),                                            // 156: google.cloud.dataform.v1beta1.TeamFolder
+	(*CreateTeamFolderRequest)(nil),                               // 157: google.cloud.dataform.v1beta1.CreateTeamFolderRequest
+	(*GetTeamFolderRequest)(nil),                                  // 158: google.cloud.dataform.v1beta1.GetTeamFolderRequest
+	(*UpdateTeamFolderRequest)(nil),                               // 159: google.cloud.dataform.v1beta1.UpdateTeamFolderRequest
+	(*DeleteTeamFolderRequest)(nil),                               // 160: google.cloud.dataform.v1beta1.DeleteTeamFolderRequest
+	(*QueryTeamFolderContentsRequest)(nil),                        // 161: google.cloud.dataform.v1beta1.QueryTeamFolderContentsRequest
+	(*QueryTeamFolderContentsResponse)(nil),                       // 162: google.cloud.dataform.v1beta1.QueryTeamFolderContentsResponse
+	(*SearchTeamFoldersRequest)(nil),                              // 163: google.cloud.dataform.v1beta1.SearchTeamFoldersRequest
+	(*SearchTeamFoldersResponse)(nil),                             // 164: google.cloud.dataform.v1beta1.SearchTeamFoldersResponse
+	(*MoveFolderMetadata)(nil),                                    // 165: google.cloud.dataform.v1beta1.MoveFolderMetadata
+	(*MoveRepositoryMetadata)(nil),                                // 166: google.cloud.dataform.v1beta1.MoveRepositoryMetadata
+	(*DeleteRepositoryLongRunningMetadata)(nil),                   // 167: google.cloud.dataform.v1beta1.DeleteRepositoryLongRunningMetadata
+	(*FetchWorkspaceBranchesRequest)(nil),                         // 168: google.cloud.dataform.v1beta1.FetchWorkspaceBranchesRequest
+	(*BranchMetadata)(nil),                                        // 169: google.cloud.dataform.v1beta1.BranchMetadata
+	(*FetchWorkspaceBranchesResponse)(nil),                        // 170: google.cloud.dataform.v1beta1.FetchWorkspaceBranchesResponse
+	(*FetchCurrentWorkspaceBranchRequest)(nil),                    // 171: google.cloud.dataform.v1beta1.FetchCurrentWorkspaceBranchRequest
+	(*FetchCurrentWorkspaceBranchResponse)(nil),                   // 172: google.cloud.dataform.v1beta1.FetchCurrentWorkspaceBranchResponse
+	(*Repository_GitRemoteSettings)(nil),                          // 173: google.cloud.dataform.v1beta1.Repository.GitRemoteSettings
+	(*Repository_WorkspaceCompilationOverrides)(nil),              // 174: google.cloud.dataform.v1beta1.Repository.WorkspaceCompilationOverrides
+	(*Repository_EndUserAuthConfig)(nil),                          // 175: google.cloud.dataform.v1beta1.Repository.EndUserAuthConfig
+	nil,                                                           // 176: google.cloud.dataform.v1beta1.Repository.LabelsEntry
+	(*Repository_GitRemoteSettings_SshAuthenticationConfig)(nil),  // 177: google.cloud.dataform.v1beta1.Repository.GitRemoteSettings.SshAuthenticationConfig
+	(*CommitRepositoryChangesRequest_FileOperation)(nil),          // 178: google.cloud.dataform.v1beta1.CommitRepositoryChangesRequest.FileOperation
+	nil, // 179: google.cloud.dataform.v1beta1.CommitRepositoryChangesRequest.FileOperationsEntry
+	(*CommitRepositoryChangesRequest_FileOperation_WriteFile)(nil),  // 180: google.cloud.dataform.v1beta1.CommitRepositoryChangesRequest.FileOperation.WriteFile
+	(*CommitRepositoryChangesRequest_FileOperation_DeleteFile)(nil), // 181: google.cloud.dataform.v1beta1.CommitRepositoryChangesRequest.FileOperation.DeleteFile
+	(*FetchFileGitStatusesResponse_UncommittedFileChange)(nil),      // 182: google.cloud.dataform.v1beta1.FetchFileGitStatusesResponse.UncommittedFileChange
+	(*ReleaseConfig_ScheduledReleaseRecord)(nil),                    // 183: google.cloud.dataform.v1beta1.ReleaseConfig.ScheduledReleaseRecord
+	(*CompilationResult_CompilationError)(nil),                      // 184: google.cloud.dataform.v1beta1.CompilationResult.CompilationError
+	nil, // 185: google.cloud.dataform.v1beta1.CodeCompilationConfig.VarsEntry
+	(*RelationDescriptor_ColumnDescriptor)(nil), // 186: google.cloud.dataform.v1beta1.RelationDescriptor.ColumnDescriptor
+	nil,                                      // 187: google.cloud.dataform.v1beta1.RelationDescriptor.BigqueryLabelsEntry
+	(*CompilationResultAction_Relation)(nil), // 188: google.cloud.dataform.v1beta1.CompilationResultAction.Relation
+	(*CompilationResultAction_Operations)(nil),                      // 189: google.cloud.dataform.v1beta1.CompilationResultAction.Operations
+	(*CompilationResultAction_Assertion)(nil),                       // 190: google.cloud.dataform.v1beta1.CompilationResultAction.Assertion
+	(*CompilationResultAction_Declaration)(nil),                     // 191: google.cloud.dataform.v1beta1.CompilationResultAction.Declaration
+	(*CompilationResultAction_Notebook)(nil),                        // 192: google.cloud.dataform.v1beta1.CompilationResultAction.Notebook
+	(*CompilationResultAction_DataPreparation)(nil),                 // 193: google.cloud.dataform.v1beta1.CompilationResultAction.DataPreparation
+	(*CompilationResultAction_LoadConfig)(nil),                      // 194: google.cloud.dataform.v1beta1.CompilationResultAction.LoadConfig
+	(*CompilationResultAction_SimpleLoadMode)(nil),                  // 195: google.cloud.dataform.v1beta1.CompilationResultAction.SimpleLoadMode
+	(*CompilationResultAction_IncrementalLoadMode)(nil),             // 196: google.cloud.dataform.v1beta1.CompilationResultAction.IncrementalLoadMode
+	(*CompilationResultAction_Relation_IncrementalTableConfig)(nil), // 197: google.cloud.dataform.v1beta1.CompilationResultAction.Relation.IncrementalTableConfig
+	nil, // 198: google.cloud.dataform.v1beta1.CompilationResultAction.Relation.AdditionalOptionsEntry
+	(*CompilationResultAction_DataPreparation_SqlDefinition)(nil),                    // 199: google.cloud.dataform.v1beta1.CompilationResultAction.DataPreparation.SqlDefinition
+	(*CompilationResultAction_DataPreparation_ErrorTable)(nil),                       // 200: google.cloud.dataform.v1beta1.CompilationResultAction.DataPreparation.ErrorTable
+	(*WorkflowConfig_ScheduledExecutionRecord)(nil),                                  // 201: google.cloud.dataform.v1beta1.WorkflowConfig.ScheduledExecutionRecord
+	(*InvocationConfig_EndUserAuthenticationConfig)(nil),                             // 202: google.cloud.dataform.v1beta1.InvocationConfig.EndUserAuthenticationConfig
+	(*WorkflowInvocationAction_BigQueryAction)(nil),                                  // 203: google.cloud.dataform.v1beta1.WorkflowInvocationAction.BigQueryAction
+	(*WorkflowInvocationAction_NotebookAction)(nil),                                  // 204: google.cloud.dataform.v1beta1.WorkflowInvocationAction.NotebookAction
+	(*WorkflowInvocationAction_DataPreparationAction)(nil),                           // 205: google.cloud.dataform.v1beta1.WorkflowInvocationAction.DataPreparationAction
+	(*WorkflowInvocationAction_DataPreparationAction_ActionSqlDefinition)(nil),       // 206: google.cloud.dataform.v1beta1.WorkflowInvocationAction.DataPreparationAction.ActionSqlDefinition
+	(*WorkflowInvocationAction_DataPreparationAction_ActionErrorTable)(nil),          // 207: google.cloud.dataform.v1beta1.WorkflowInvocationAction.DataPreparationAction.ActionErrorTable
+	(*WorkflowInvocationAction_DataPreparationAction_ActionLoadConfig)(nil),          // 208: google.cloud.dataform.v1beta1.WorkflowInvocationAction.DataPreparationAction.ActionLoadConfig
+	(*WorkflowInvocationAction_DataPreparationAction_ActionSimpleLoadMode)(nil),      // 209: google.cloud.dataform.v1beta1.WorkflowInvocationAction.DataPreparationAction.ActionSimpleLoadMode
+	(*WorkflowInvocationAction_DataPreparationAction_ActionIncrementalLoadMode)(nil), // 210: google.cloud.dataform.v1beta1.WorkflowInvocationAction.DataPreparationAction.ActionIncrementalLoadMode
+	(*QueryFolderContentsResponse_FolderContentsEntry)(nil),                          // 211: google.cloud.dataform.v1beta1.QueryFolderContentsResponse.FolderContentsEntry
+	(*QueryUserRootContentsResponse_RootContentsEntry)(nil),                          // 212: google.cloud.dataform.v1beta1.QueryUserRootContentsResponse.RootContentsEntry
+	(*QueryTeamFolderContentsResponse_TeamFolderContentsEntry)(nil),                  // 213: google.cloud.dataform.v1beta1.QueryTeamFolderContentsResponse.TeamFolderContentsEntry
+	(*SearchTeamFoldersResponse_TeamFolderSearchResult)(nil),                         // 214: google.cloud.dataform.v1beta1.SearchTeamFoldersResponse.TeamFolderSearchResult
+	(*timestamppb.Timestamp)(nil),                                                    // 215: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil),                                                    // 216: google.protobuf.FieldMask
+	(*durationpb.Duration)(nil),                                                      // 217: google.protobuf.Duration
+	(*status.Status)(nil),                                                            // 218: google.rpc.Status
+	(*interval.Interval)(nil),                                                        // 219: google.type.Interval
+	(*iampb.GetIamPolicyRequest)(nil),                                                // 220: google.iam.v1.GetIamPolicyRequest
+	(*iampb.SetIamPolicyRequest)(nil),                                                // 221: google.iam.v1.SetIamPolicyRequest
+	(*iampb.TestIamPermissionsRequest)(nil),                                          // 222: google.iam.v1.TestIamPermissionsRequest
+	(*emptypb.Empty)(nil),                                                            // 223: google.protobuf.Empty
+	(*longrunningpb.Operation)(nil),                                                  // 224: google.longrunning.Operation
+	(*iampb.Policy)(nil),                                                             // 225: google.iam.v1.Policy
+	(*iampb.TestIamPermissionsResponse)(nil),                                         // 226: google.iam.v1.TestIamPermissionsResponse
 }
 var file_google_cloud_dataform_v1beta1_dataform_proto_depIdxs = []int32{
-	212, // 0: google.cloud.dataform.v1beta1.Repository.create_time:type_name -> google.protobuf.Timestamp
-	172, // 1: google.cloud.dataform.v1beta1.Repository.git_remote_settings:type_name -> google.cloud.dataform.v1beta1.Repository.GitRemoteSettings
-	173, // 2: google.cloud.dataform.v1beta1.Repository.workspace_compilation_overrides:type_name -> google.cloud.dataform.v1beta1.Repository.WorkspaceCompilationOverrides
-	174, // 3: google.cloud.dataform.v1beta1.Repository.labels:type_name -> google.cloud.dataform.v1beta1.Repository.LabelsEntry
+	215, // 0: google.cloud.dataform.v1beta1.Repository.create_time:type_name -> google.protobuf.Timestamp
+	173, // 1: google.cloud.dataform.v1beta1.Repository.git_remote_settings:type_name -> google.cloud.dataform.v1beta1.Repository.GitRemoteSettings
+	174, // 2: google.cloud.dataform.v1beta1.Repository.workspace_compilation_overrides:type_name -> google.cloud.dataform.v1beta1.Repository.WorkspaceCompilationOverrides
+	176, // 3: google.cloud.dataform.v1beta1.Repository.labels:type_name -> google.cloud.dataform.v1beta1.Repository.LabelsEntry
 	17,  // 4: google.cloud.dataform.v1beta1.Repository.data_encryption_state:type_name -> google.cloud.dataform.v1beta1.DataEncryptionState
-	18,  // 5: google.cloud.dataform.v1beta1.ListRepositoriesResponse.repositories:type_name -> google.cloud.dataform.v1beta1.Repository
-	18,  // 6: google.cloud.dataform.v1beta1.CreateRepositoryRequest.repository:type_name -> google.cloud.dataform.v1beta1.Repository
-	213, // 7: google.cloud.dataform.v1beta1.UpdateRepositoryRequest.update_mask:type_name -> google.protobuf.FieldMask
-	18,  // 8: google.cloud.dataform.v1beta1.UpdateRepositoryRequest.repository:type_name -> google.cloud.dataform.v1beta1.Repository
-	38,  // 9: google.cloud.dataform.v1beta1.CommitRepositoryChangesRequest.commit_metadata:type_name -> google.cloud.dataform.v1beta1.CommitMetadata
-	177, // 10: google.cloud.dataform.v1beta1.CommitRepositoryChangesRequest.file_operations:type_name -> google.cloud.dataform.v1beta1.CommitRepositoryChangesRequest.FileOperationsEntry
-	71,  // 11: google.cloud.dataform.v1beta1.QueryRepositoryDirectoryContentsResponse.directory_entries:type_name -> google.cloud.dataform.v1beta1.DirectoryEntry
-	37,  // 12: google.cloud.dataform.v1beta1.FetchRepositoryHistoryResponse.commits:type_name -> google.cloud.dataform.v1beta1.CommitLogEntry
-	212, // 13: google.cloud.dataform.v1beta1.CommitLogEntry.commit_time:type_name -> google.protobuf.Timestamp
-	49,  // 14: google.cloud.dataform.v1beta1.CommitLogEntry.author:type_name -> google.cloud.dataform.v1beta1.CommitAuthor
-	49,  // 15: google.cloud.dataform.v1beta1.CommitMetadata.author:type_name -> google.cloud.dataform.v1beta1.CommitAuthor
-	2,   // 16: google.cloud.dataform.v1beta1.ComputeRepositoryAccessTokenStatusResponse.token_status:type_name -> google.cloud.dataform.v1beta1.ComputeRepositoryAccessTokenStatusResponse.TokenStatus
-	212, // 17: google.cloud.dataform.v1beta1.Workspace.create_time:type_name -> google.protobuf.Timestamp
-	17,  // 18: google.cloud.dataform.v1beta1.Workspace.data_encryption_state:type_name -> google.cloud.dataform.v1beta1.DataEncryptionState
-	19,  // 19: google.cloud.dataform.v1beta1.Workspace.private_resource_metadata:type_name -> google.cloud.dataform.v1beta1.PrivateResourceMetadata
-	43,  // 20: google.cloud.dataform.v1beta1.ListWorkspacesResponse.workspaces:type_name -> google.cloud.dataform.v1beta1.Workspace
-	43,  // 21: google.cloud.dataform.v1beta1.CreateWorkspaceRequest.workspace:type_name -> google.cloud.dataform.v1beta1.Workspace
-	49,  // 22: google.cloud.dataform.v1beta1.PullGitCommitsRequest.author:type_name -> google.cloud.dataform.v1beta1.CommitAuthor
-	180, // 23: google.cloud.dataform.v1beta1.FetchFileGitStatusesResponse.uncommitted_file_changes:type_name -> google.cloud.dataform.v1beta1.FetchFileGitStatusesResponse.UncommittedFileChange
-	49,  // 24: google.cloud.dataform.v1beta1.CommitWorkspaceChangesRequest.author:type_name -> google.cloud.dataform.v1beta1.CommitAuthor
-	0,   // 25: google.cloud.dataform.v1beta1.QueryDirectoryContentsRequest.view:type_name -> google.cloud.dataform.v1beta1.DirectoryContentsView
-	71,  // 26: google.cloud.dataform.v1beta1.QueryDirectoryContentsResponse.directory_entries:type_name -> google.cloud.dataform.v1beta1.DirectoryEntry
-	72,  // 27: google.cloud.dataform.v1beta1.DirectoryEntry.metadata:type_name -> google.cloud.dataform.v1beta1.FilesystemEntryMetadata
-	212, // 28: google.cloud.dataform.v1beta1.FilesystemEntryMetadata.update_time:type_name -> google.protobuf.Timestamp
-	75,  // 29: google.cloud.dataform.v1beta1.SearchFilesResponse.search_results:type_name -> google.cloud.dataform.v1beta1.SearchResult
-	76,  // 30: google.cloud.dataform.v1beta1.SearchResult.file:type_name -> google.cloud.dataform.v1beta1.FileSearchResult
-	77,  // 31: google.cloud.dataform.v1beta1.SearchResult.directory:type_name -> google.cloud.dataform.v1beta1.DirectorySearchResult
-	110, // 32: google.cloud.dataform.v1beta1.InstallNpmPackagesRequest.pipeline_config:type_name -> google.cloud.dataform.v1beta1.PipelineConfig
-	106, // 33: google.cloud.dataform.v1beta1.ReleaseConfig.code_compilation_config:type_name -> google.cloud.dataform.v1beta1.CodeCompilationConfig
-	181, // 34: google.cloud.dataform.v1beta1.ReleaseConfig.recent_scheduled_release_records:type_name -> google.cloud.dataform.v1beta1.ReleaseConfig.ScheduledReleaseRecord
-	94,  // 35: google.cloud.dataform.v1beta1.ListReleaseConfigsResponse.release_configs:type_name -> google.cloud.dataform.v1beta1.ReleaseConfig
-	94,  // 36: google.cloud.dataform.v1beta1.CreateReleaseConfigRequest.release_config:type_name -> google.cloud.dataform.v1beta1.ReleaseConfig
-	213, // 37: google.cloud.dataform.v1beta1.UpdateReleaseConfigRequest.update_mask:type_name -> google.protobuf.FieldMask
-	94,  // 38: google.cloud.dataform.v1beta1.UpdateReleaseConfigRequest.release_config:type_name -> google.cloud.dataform.v1beta1.ReleaseConfig
-	106, // 39: google.cloud.dataform.v1beta1.CompilationResult.code_compilation_config:type_name -> google.cloud.dataform.v1beta1.CodeCompilationConfig
-	182, // 40: google.cloud.dataform.v1beta1.CompilationResult.compilation_errors:type_name -> google.cloud.dataform.v1beta1.CompilationResult.CompilationError
-	17,  // 41: google.cloud.dataform.v1beta1.CompilationResult.data_encryption_state:type_name -> google.cloud.dataform.v1beta1.DataEncryptionState
-	212, // 42: google.cloud.dataform.v1beta1.CompilationResult.create_time:type_name -> google.protobuf.Timestamp
-	19,  // 43: google.cloud.dataform.v1beta1.CompilationResult.private_resource_metadata:type_name -> google.cloud.dataform.v1beta1.PrivateResourceMetadata
-	107, // 44: google.cloud.dataform.v1beta1.CompilationResult.gcs_repository_snapshot_metadata:type_name -> google.cloud.dataform.v1beta1.GcsRepositorySnapshotMetadata
-	4,   // 45: google.cloud.dataform.v1beta1.WorkflowTriggerConfig.condition:type_name -> google.cloud.dataform.v1beta1.WorkflowTriggerConfig.Condition
-	104, // 46: google.cloud.dataform.v1beta1.WorkflowTriggerConfig.workflow_triggers:type_name -> google.cloud.dataform.v1beta1.WorkflowTrigger
-	214, // 47: google.cloud.dataform.v1beta1.WorkflowTriggerConfig.min_execution_duration:type_name -> google.protobuf.Duration
-	214, // 48: google.cloud.dataform.v1beta1.WorkflowTriggerConfig.max_wait_duration:type_name -> google.protobuf.Duration
-	103, // 49: google.cloud.dataform.v1beta1.WorkflowTriggerConfig.recent_trigger_evaluation_records:type_name -> google.cloud.dataform.v1beta1.TriggerEvaluationRecord
-	212, // 50: google.cloud.dataform.v1beta1.WorkflowTriggerConfig.last_successful_evaluation_time:type_name -> google.protobuf.Timestamp
-	212, // 51: google.cloud.dataform.v1beta1.TriggerEvaluationRecord.evaluation_time:type_name -> google.protobuf.Timestamp
-	215, // 52: google.cloud.dataform.v1beta1.TriggerEvaluationRecord.status:type_name -> google.rpc.Status
-	105, // 53: google.cloud.dataform.v1beta1.WorkflowTrigger.table_update_trigger:type_name -> google.cloud.dataform.v1beta1.TableUpdateTrigger
-	115, // 54: google.cloud.dataform.v1beta1.TableUpdateTrigger.table:type_name -> google.cloud.dataform.v1beta1.Target
-	212, // 55: google.cloud.dataform.v1beta1.TableUpdateTrigger.trigger_update_time:type_name -> google.protobuf.Timestamp
-	183, // 56: google.cloud.dataform.v1beta1.CodeCompilationConfig.vars:type_name -> google.cloud.dataform.v1beta1.CodeCompilationConfig.VarsEntry
-	109, // 57: google.cloud.dataform.v1beta1.CodeCompilationConfig.default_notebook_runtime_options:type_name -> google.cloud.dataform.v1beta1.NotebookRuntimeOptions
-	110, // 58: google.cloud.dataform.v1beta1.CodeCompilationConfig.pipeline_config:type_name -> google.cloud.dataform.v1beta1.PipelineConfig
-	108, // 59: google.cloud.dataform.v1beta1.NotebookRuntimeOptions.gcs_repository_snapshot_destination:type_name -> google.cloud.dataform.v1beta1.GcsRepositorySnapshotDestination
-	5,   // 60: google.cloud.dataform.v1beta1.PipelineConfig.pipeline_type:type_name -> google.cloud.dataform.v1beta1.PipelineConfig.PipelineType
-	101, // 61: google.cloud.dataform.v1beta1.ListCompilationResultsResponse.compilation_results:type_name -> google.cloud.dataform.v1beta1.CompilationResult
-	101, // 62: google.cloud.dataform.v1beta1.CreateCompilationResultRequest.compilation_result:type_name -> google.cloud.dataform.v1beta1.CompilationResult
-	184, // 63: google.cloud.dataform.v1beta1.RelationDescriptor.columns:type_name -> google.cloud.dataform.v1beta1.RelationDescriptor.ColumnDescriptor
-	185, // 64: google.cloud.dataform.v1beta1.RelationDescriptor.bigquery_labels:type_name -> google.cloud.dataform.v1beta1.RelationDescriptor.BigqueryLabelsEntry
-	186, // 65: google.cloud.dataform.v1beta1.CompilationResultAction.relation:type_name -> google.cloud.dataform.v1beta1.CompilationResultAction.Relation
-	187, // 66: google.cloud.dataform.v1beta1.CompilationResultAction.operations:type_name -> google.cloud.dataform.v1beta1.CompilationResultAction.Operations
-	188, // 67: google.cloud.dataform.v1beta1.CompilationResultAction.assertion:type_name -> google.cloud.dataform.v1beta1.CompilationResultAction.Assertion
-	189, // 68: google.cloud.dataform.v1beta1.CompilationResultAction.declaration:type_name -> google.cloud.dataform.v1beta1.CompilationResultAction.Declaration
-	190, // 69: google.cloud.dataform.v1beta1.CompilationResultAction.notebook:type_name -> google.cloud.dataform.v1beta1.CompilationResultAction.Notebook
-	191, // 70: google.cloud.dataform.v1beta1.CompilationResultAction.data_preparation:type_name -> google.cloud.dataform.v1beta1.CompilationResultAction.DataPreparation
-	115, // 71: google.cloud.dataform.v1beta1.CompilationResultAction.target:type_name -> google.cloud.dataform.v1beta1.Target
-	115, // 72: google.cloud.dataform.v1beta1.CompilationResultAction.canonical_target:type_name -> google.cloud.dataform.v1beta1.Target
-	117, // 73: google.cloud.dataform.v1beta1.QueryCompilationResultActionsResponse.compilation_result_actions:type_name -> google.cloud.dataform.v1beta1.CompilationResultAction
-	121, // 74: google.cloud.dataform.v1beta1.WorkflowConfig.invocation_config:type_name -> google.cloud.dataform.v1beta1.InvocationConfig
-	199, // 75: google.cloud.dataform.v1beta1.WorkflowConfig.recent_scheduled_execution_records:type_name -> google.cloud.dataform.v1beta1.WorkflowConfig.ScheduledExecutionRecord
-	212, // 76: google.cloud.dataform.v1beta1.WorkflowConfig.create_time:type_name -> google.protobuf.Timestamp
-	212, // 77: google.cloud.dataform.v1beta1.WorkflowConfig.update_time:type_name -> google.protobuf.Timestamp
-	102, // 78: google.cloud.dataform.v1beta1.WorkflowConfig.workflow_trigger_config:type_name -> google.cloud.dataform.v1beta1.WorkflowTriggerConfig
-	115, // 79: google.cloud.dataform.v1beta1.InvocationConfig.included_targets:type_name -> google.cloud.dataform.v1beta1.Target
-	9,   // 80: google.cloud.dataform.v1beta1.InvocationConfig.query_priority:type_name -> google.cloud.dataform.v1beta1.InvocationConfig.QueryPriority
-	120, // 81: google.cloud.dataform.v1beta1.ListWorkflowConfigsResponse.workflow_configs:type_name -> google.cloud.dataform.v1beta1.WorkflowConfig
-	120, // 82: google.cloud.dataform.v1beta1.CreateWorkflowConfigRequest.workflow_config:type_name -> google.cloud.dataform.v1beta1.WorkflowConfig
-	213, // 83: google.cloud.dataform.v1beta1.UpdateWorkflowConfigRequest.update_mask:type_name -> google.protobuf.FieldMask
-	120, // 84: google.cloud.dataform.v1beta1.UpdateWorkflowConfigRequest.workflow_config:type_name -> google.cloud.dataform.v1beta1.WorkflowConfig
-	121, // 85: google.cloud.dataform.v1beta1.WorkflowInvocation.invocation_config:type_name -> google.cloud.dataform.v1beta1.InvocationConfig
-	10,  // 86: google.cloud.dataform.v1beta1.WorkflowInvocation.state:type_name -> google.cloud.dataform.v1beta1.WorkflowInvocation.State
-	216, // 87: google.cloud.dataform.v1beta1.WorkflowInvocation.invocation_timing:type_name -> google.type.Interval
-	17,  // 88: google.cloud.dataform.v1beta1.WorkflowInvocation.data_encryption_state:type_name -> google.cloud.dataform.v1beta1.DataEncryptionState
-	19,  // 89: google.cloud.dataform.v1beta1.WorkflowInvocation.private_resource_metadata:type_name -> google.cloud.dataform.v1beta1.PrivateResourceMetadata
-	110, // 90: google.cloud.dataform.v1beta1.WorkflowInvocation.pipeline_config:type_name -> google.cloud.dataform.v1beta1.PipelineConfig
-	128, // 91: google.cloud.dataform.v1beta1.ListWorkflowInvocationsResponse.workflow_invocations:type_name -> google.cloud.dataform.v1beta1.WorkflowInvocation
-	128, // 92: google.cloud.dataform.v1beta1.CreateWorkflowInvocationRequest.workflow_invocation:type_name -> google.cloud.dataform.v1beta1.WorkflowInvocation
-	200, // 93: google.cloud.dataform.v1beta1.WorkflowInvocationAction.bigquery_action:type_name -> google.cloud.dataform.v1beta1.WorkflowInvocationAction.BigQueryAction
-	201, // 94: google.cloud.dataform.v1beta1.WorkflowInvocationAction.notebook_action:type_name -> google.cloud.dataform.v1beta1.WorkflowInvocationAction.NotebookAction
-	202, // 95: google.cloud.dataform.v1beta1.WorkflowInvocationAction.data_preparation_action:type_name -> google.cloud.dataform.v1beta1.WorkflowInvocationAction.DataPreparationAction
-	115, // 96: google.cloud.dataform.v1beta1.WorkflowInvocationAction.target:type_name -> google.cloud.dataform.v1beta1.Target
-	115, // 97: google.cloud.dataform.v1beta1.WorkflowInvocationAction.canonical_target:type_name -> google.cloud.dataform.v1beta1.Target
-	11,  // 98: google.cloud.dataform.v1beta1.WorkflowInvocationAction.state:type_name -> google.cloud.dataform.v1beta1.WorkflowInvocationAction.State
-	216, // 99: google.cloud.dataform.v1beta1.WorkflowInvocationAction.invocation_timing:type_name -> google.type.Interval
-	136, // 100: google.cloud.dataform.v1beta1.QueryWorkflowInvocationActionsResponse.workflow_invocation_actions:type_name -> google.cloud.dataform.v1beta1.WorkflowInvocationAction
-	139, // 101: google.cloud.dataform.v1beta1.UpdateConfigRequest.config:type_name -> google.cloud.dataform.v1beta1.Config
-	213, // 102: google.cloud.dataform.v1beta1.UpdateConfigRequest.update_mask:type_name -> google.protobuf.FieldMask
-	212, // 103: google.cloud.dataform.v1beta1.Folder.create_time:type_name -> google.protobuf.Timestamp
-	212, // 104: google.cloud.dataform.v1beta1.Folder.update_time:type_name -> google.protobuf.Timestamp
-	142, // 105: google.cloud.dataform.v1beta1.CreateFolderRequest.folder:type_name -> google.cloud.dataform.v1beta1.Folder
-	213, // 106: google.cloud.dataform.v1beta1.UpdateFolderRequest.update_mask:type_name -> google.protobuf.FieldMask
-	142, // 107: google.cloud.dataform.v1beta1.UpdateFolderRequest.folder:type_name -> google.cloud.dataform.v1beta1.Folder
-	212, // 108: google.cloud.dataform.v1beta1.DeleteFolderTreeMetadata.create_time:type_name -> google.protobuf.Timestamp
-	212, // 109: google.cloud.dataform.v1beta1.DeleteFolderTreeMetadata.end_time:type_name -> google.protobuf.Timestamp
-	12,  // 110: google.cloud.dataform.v1beta1.DeleteFolderTreeMetadata.state:type_name -> google.cloud.dataform.v1beta1.DeleteFolderTreeMetadata.State
-	208, // 111: google.cloud.dataform.v1beta1.QueryFolderContentsResponse.entries:type_name -> google.cloud.dataform.v1beta1.QueryFolderContentsResponse.FolderContentsEntry
-	209, // 112: google.cloud.dataform.v1beta1.QueryUserRootContentsResponse.entries:type_name -> google.cloud.dataform.v1beta1.QueryUserRootContentsResponse.RootContentsEntry
-	212, // 113: google.cloud.dataform.v1beta1.TeamFolder.create_time:type_name -> google.protobuf.Timestamp
-	212, // 114: google.cloud.dataform.v1beta1.TeamFolder.update_time:type_name -> google.protobuf.Timestamp
-	155, // 115: google.cloud.dataform.v1beta1.CreateTeamFolderRequest.team_folder:type_name -> google.cloud.dataform.v1beta1.TeamFolder
-	213, // 116: google.cloud.dataform.v1beta1.UpdateTeamFolderRequest.update_mask:type_name -> google.protobuf.FieldMask
-	155, // 117: google.cloud.dataform.v1beta1.UpdateTeamFolderRequest.team_folder:type_name -> google.cloud.dataform.v1beta1.TeamFolder
-	210, // 118: google.cloud.dataform.v1beta1.QueryTeamFolderContentsResponse.entries:type_name -> google.cloud.dataform.v1beta1.QueryTeamFolderContentsResponse.TeamFolderContentsEntry
-	211, // 119: google.cloud.dataform.v1beta1.SearchTeamFoldersResponse.results:type_name -> google.cloud.dataform.v1beta1.SearchTeamFoldersResponse.TeamFolderSearchResult
-	212, // 120: google.cloud.dataform.v1beta1.MoveFolderMetadata.create_time:type_name -> google.protobuf.Timestamp
-	212, // 121: google.cloud.dataform.v1beta1.MoveFolderMetadata.end_time:type_name -> google.protobuf.Timestamp
-	13,  // 122: google.cloud.dataform.v1beta1.MoveFolderMetadata.state:type_name -> google.cloud.dataform.v1beta1.MoveFolderMetadata.State
-	212, // 123: google.cloud.dataform.v1beta1.MoveRepositoryMetadata.create_time:type_name -> google.protobuf.Timestamp
-	212, // 124: google.cloud.dataform.v1beta1.MoveRepositoryMetadata.end_time:type_name -> google.protobuf.Timestamp
-	14,  // 125: google.cloud.dataform.v1beta1.MoveRepositoryMetadata.state:type_name -> google.cloud.dataform.v1beta1.MoveRepositoryMetadata.State
-	212, // 126: google.cloud.dataform.v1beta1.DeleteRepositoryLongRunningMetadata.create_time:type_name -> google.protobuf.Timestamp
-	212, // 127: google.cloud.dataform.v1beta1.DeleteRepositoryLongRunningMetadata.end_time:type_name -> google.protobuf.Timestamp
-	15,  // 128: google.cloud.dataform.v1beta1.DeleteRepositoryLongRunningMetadata.state:type_name -> google.cloud.dataform.v1beta1.DeleteRepositoryLongRunningMetadata.State
-	16,  // 129: google.cloud.dataform.v1beta1.FetchWorkspaceBranchesRequest.filter:type_name -> google.cloud.dataform.v1beta1.FetchWorkspaceBranchesRequest.BranchFilter
-	37,  // 130: google.cloud.dataform.v1beta1.BranchMetadata.last_commit:type_name -> google.cloud.dataform.v1beta1.CommitLogEntry
-	168, // 131: google.cloud.dataform.v1beta1.FetchWorkspaceBranchesResponse.branches:type_name -> google.cloud.dataform.v1beta1.BranchMetadata
-	175, // 132: google.cloud.dataform.v1beta1.Repository.GitRemoteSettings.ssh_authentication_config:type_name -> google.cloud.dataform.v1beta1.Repository.GitRemoteSettings.SshAuthenticationConfig
-	1,   // 133: google.cloud.dataform.v1beta1.Repository.GitRemoteSettings.token_status:type_name -> google.cloud.dataform.v1beta1.Repository.GitRemoteSettings.TokenStatus
-	178, // 134: google.cloud.dataform.v1beta1.CommitRepositoryChangesRequest.FileOperation.write_file:type_name -> google.cloud.dataform.v1beta1.CommitRepositoryChangesRequest.FileOperation.WriteFile
-	179, // 135: google.cloud.dataform.v1beta1.CommitRepositoryChangesRequest.FileOperation.delete_file:type_name -> google.cloud.dataform.v1beta1.CommitRepositoryChangesRequest.FileOperation.DeleteFile
-	176, // 136: google.cloud.dataform.v1beta1.CommitRepositoryChangesRequest.FileOperationsEntry.value:type_name -> google.cloud.dataform.v1beta1.CommitRepositoryChangesRequest.FileOperation
-	3,   // 137: google.cloud.dataform.v1beta1.FetchFileGitStatusesResponse.UncommittedFileChange.state:type_name -> google.cloud.dataform.v1beta1.FetchFileGitStatusesResponse.UncommittedFileChange.State
-	215, // 138: google.cloud.dataform.v1beta1.ReleaseConfig.ScheduledReleaseRecord.error_status:type_name -> google.rpc.Status
-	212, // 139: google.cloud.dataform.v1beta1.ReleaseConfig.ScheduledReleaseRecord.release_time:type_name -> google.protobuf.Timestamp
-	115, // 140: google.cloud.dataform.v1beta1.CompilationResult.CompilationError.action_target:type_name -> google.cloud.dataform.v1beta1.Target
-	115, // 141: google.cloud.dataform.v1beta1.CompilationResultAction.Relation.dependency_targets:type_name -> google.cloud.dataform.v1beta1.Target
-	116, // 142: google.cloud.dataform.v1beta1.CompilationResultAction.Relation.relation_descriptor:type_name -> google.cloud.dataform.v1beta1.RelationDescriptor
-	6,   // 143: google.cloud.dataform.v1beta1.CompilationResultAction.Relation.relation_type:type_name -> google.cloud.dataform.v1beta1.CompilationResultAction.Relation.RelationType
-	195, // 144: google.cloud.dataform.v1beta1.CompilationResultAction.Relation.incremental_table_config:type_name -> google.cloud.dataform.v1beta1.CompilationResultAction.Relation.IncrementalTableConfig
-	196, // 145: google.cloud.dataform.v1beta1.CompilationResultAction.Relation.additional_options:type_name -> google.cloud.dataform.v1beta1.CompilationResultAction.Relation.AdditionalOptionsEntry
-	7,   // 146: google.cloud.dataform.v1beta1.CompilationResultAction.Relation.table_format:type_name -> google.cloud.dataform.v1beta1.CompilationResultAction.Relation.TableFormat
-	8,   // 147: google.cloud.dataform.v1beta1.CompilationResultAction.Relation.file_format:type_name -> google.cloud.dataform.v1beta1.CompilationResultAction.Relation.FileFormat
-	115, // 148: google.cloud.dataform.v1beta1.CompilationResultAction.Operations.dependency_targets:type_name -> google.cloud.dataform.v1beta1.Target
-	116, // 149: google.cloud.dataform.v1beta1.CompilationResultAction.Operations.relation_descriptor:type_name -> google.cloud.dataform.v1beta1.RelationDescriptor
-	115, // 150: google.cloud.dataform.v1beta1.CompilationResultAction.Assertion.dependency_targets:type_name -> google.cloud.dataform.v1beta1.Target
-	115, // 151: google.cloud.dataform.v1beta1.CompilationResultAction.Assertion.parent_action:type_name -> google.cloud.dataform.v1beta1.Target
-	116, // 152: google.cloud.dataform.v1beta1.CompilationResultAction.Assertion.relation_descriptor:type_name -> google.cloud.dataform.v1beta1.RelationDescriptor
-	116, // 153: google.cloud.dataform.v1beta1.CompilationResultAction.Declaration.relation_descriptor:type_name -> google.cloud.dataform.v1beta1.RelationDescriptor
-	115, // 154: google.cloud.dataform.v1beta1.CompilationResultAction.Notebook.dependency_targets:type_name -> google.cloud.dataform.v1beta1.Target
-	197, // 155: google.cloud.dataform.v1beta1.CompilationResultAction.DataPreparation.contents_sql:type_name -> google.cloud.dataform.v1beta1.CompilationResultAction.DataPreparation.SqlDefinition
-	115, // 156: google.cloud.dataform.v1beta1.CompilationResultAction.DataPreparation.dependency_targets:type_name -> google.cloud.dataform.v1beta1.Target
-	193, // 157: google.cloud.dataform.v1beta1.CompilationResultAction.LoadConfig.replace:type_name -> google.cloud.dataform.v1beta1.CompilationResultAction.SimpleLoadMode
-	193, // 158: google.cloud.dataform.v1beta1.CompilationResultAction.LoadConfig.append:type_name -> google.cloud.dataform.v1beta1.CompilationResultAction.SimpleLoadMode
-	194, // 159: google.cloud.dataform.v1beta1.CompilationResultAction.LoadConfig.maximum:type_name -> google.cloud.dataform.v1beta1.CompilationResultAction.IncrementalLoadMode
-	194, // 160: google.cloud.dataform.v1beta1.CompilationResultAction.LoadConfig.unique:type_name -> google.cloud.dataform.v1beta1.CompilationResultAction.IncrementalLoadMode
-	198, // 161: google.cloud.dataform.v1beta1.CompilationResultAction.DataPreparation.SqlDefinition.error_table:type_name -> google.cloud.dataform.v1beta1.CompilationResultAction.DataPreparation.ErrorTable
-	192, // 162: google.cloud.dataform.v1beta1.CompilationResultAction.DataPreparation.SqlDefinition.load:type_name -> google.cloud.dataform.v1beta1.CompilationResultAction.LoadConfig
-	115, // 163: google.cloud.dataform.v1beta1.CompilationResultAction.DataPreparation.ErrorTable.target:type_name -> google.cloud.dataform.v1beta1.Target
-	215, // 164: google.cloud.dataform.v1beta1.WorkflowConfig.ScheduledExecutionRecord.error_status:type_name -> google.rpc.Status
-	212, // 165: google.cloud.dataform.v1beta1.WorkflowConfig.ScheduledExecutionRecord.execution_time:type_name -> google.protobuf.Timestamp
-	203, // 166: google.cloud.dataform.v1beta1.WorkflowInvocationAction.DataPreparationAction.contents_sql:type_name -> google.cloud.dataform.v1beta1.WorkflowInvocationAction.DataPreparationAction.ActionSqlDefinition
-	204, // 167: google.cloud.dataform.v1beta1.WorkflowInvocationAction.DataPreparationAction.ActionSqlDefinition.error_table:type_name -> google.cloud.dataform.v1beta1.WorkflowInvocationAction.DataPreparationAction.ActionErrorTable
-	205, // 168: google.cloud.dataform.v1beta1.WorkflowInvocationAction.DataPreparationAction.ActionSqlDefinition.load_config:type_name -> google.cloud.dataform.v1beta1.WorkflowInvocationAction.DataPreparationAction.ActionLoadConfig
-	115, // 169: google.cloud.dataform.v1beta1.WorkflowInvocationAction.DataPreparationAction.ActionErrorTable.target:type_name -> google.cloud.dataform.v1beta1.Target
-	206, // 170: google.cloud.dataform.v1beta1.WorkflowInvocationAction.DataPreparationAction.ActionLoadConfig.replace:type_name -> google.cloud.dataform.v1beta1.WorkflowInvocationAction.DataPreparationAction.ActionSimpleLoadMode
-	206, // 171: google.cloud.dataform.v1beta1.WorkflowInvocationAction.DataPreparationAction.ActionLoadConfig.append:type_name -> google.cloud.dataform.v1beta1.WorkflowInvocationAction.DataPreparationAction.ActionSimpleLoadMode
-	207, // 172: google.cloud.dataform.v1beta1.WorkflowInvocationAction.DataPreparationAction.ActionLoadConfig.maximum:type_name -> google.cloud.dataform.v1beta1.WorkflowInvocationAction.DataPreparationAction.ActionIncrementalLoadMode
-	207, // 173: google.cloud.dataform.v1beta1.WorkflowInvocationAction.DataPreparationAction.ActionLoadConfig.unique:type_name -> google.cloud.dataform.v1beta1.WorkflowInvocationAction.DataPreparationAction.ActionIncrementalLoadMode
-	142, // 174: google.cloud.dataform.v1beta1.QueryFolderContentsResponse.FolderContentsEntry.folder:type_name -> google.cloud.dataform.v1beta1.Folder
-	18,  // 175: google.cloud.dataform.v1beta1.QueryFolderContentsResponse.FolderContentsEntry.repository:type_name -> google.cloud.dataform.v1beta1.Repository
-	142, // 176: google.cloud.dataform.v1beta1.QueryUserRootContentsResponse.RootContentsEntry.folder:type_name -> google.cloud.dataform.v1beta1.Folder
-	18,  // 177: google.cloud.dataform.v1beta1.QueryUserRootContentsResponse.RootContentsEntry.repository:type_name -> google.cloud.dataform.v1beta1.Repository
-	142, // 178: google.cloud.dataform.v1beta1.QueryTeamFolderContentsResponse.TeamFolderContentsEntry.folder:type_name -> google.cloud.dataform.v1beta1.Folder
-	18,  // 179: google.cloud.dataform.v1beta1.QueryTeamFolderContentsResponse.TeamFolderContentsEntry.repository:type_name -> google.cloud.dataform.v1beta1.Repository
-	155, // 180: google.cloud.dataform.v1beta1.SearchTeamFoldersResponse.TeamFolderSearchResult.team_folder:type_name -> google.cloud.dataform.v1beta1.TeamFolder
-	157, // 181: google.cloud.dataform.v1beta1.Dataform.GetTeamFolder:input_type -> google.cloud.dataform.v1beta1.GetTeamFolderRequest
-	156, // 182: google.cloud.dataform.v1beta1.Dataform.CreateTeamFolder:input_type -> google.cloud.dataform.v1beta1.CreateTeamFolderRequest
-	158, // 183: google.cloud.dataform.v1beta1.Dataform.UpdateTeamFolder:input_type -> google.cloud.dataform.v1beta1.UpdateTeamFolderRequest
-	159, // 184: google.cloud.dataform.v1beta1.Dataform.DeleteTeamFolder:input_type -> google.cloud.dataform.v1beta1.DeleteTeamFolderRequest
-	149, // 185: google.cloud.dataform.v1beta1.Dataform.DeleteTeamFolderTree:input_type -> google.cloud.dataform.v1beta1.DeleteTeamFolderTreeRequest
-	160, // 186: google.cloud.dataform.v1beta1.Dataform.QueryTeamFolderContents:input_type -> google.cloud.dataform.v1beta1.QueryTeamFolderContentsRequest
-	162, // 187: google.cloud.dataform.v1beta1.Dataform.SearchTeamFolders:input_type -> google.cloud.dataform.v1beta1.SearchTeamFoldersRequest
-	145, // 188: google.cloud.dataform.v1beta1.Dataform.GetFolder:input_type -> google.cloud.dataform.v1beta1.GetFolderRequest
-	143, // 189: google.cloud.dataform.v1beta1.Dataform.CreateFolder:input_type -> google.cloud.dataform.v1beta1.CreateFolderRequest
-	146, // 190: google.cloud.dataform.v1beta1.Dataform.UpdateFolder:input_type -> google.cloud.dataform.v1beta1.UpdateFolderRequest
-	147, // 191: google.cloud.dataform.v1beta1.Dataform.DeleteFolder:input_type -> google.cloud.dataform.v1beta1.DeleteFolderRequest
-	148, // 192: google.cloud.dataform.v1beta1.Dataform.DeleteFolderTree:input_type -> google.cloud.dataform.v1beta1.DeleteFolderTreeRequest
-	151, // 193: google.cloud.dataform.v1beta1.Dataform.QueryFolderContents:input_type -> google.cloud.dataform.v1beta1.QueryFolderContentsRequest
-	153, // 194: google.cloud.dataform.v1beta1.Dataform.QueryUserRootContents:input_type -> google.cloud.dataform.v1beta1.QueryUserRootContentsRequest
-	144, // 195: google.cloud.dataform.v1beta1.Dataform.MoveFolder:input_type -> google.cloud.dataform.v1beta1.MoveFolderRequest
-	20,  // 196: google.cloud.dataform.v1beta1.Dataform.ListRepositories:input_type -> google.cloud.dataform.v1beta1.ListRepositoriesRequest
-	23,  // 197: google.cloud.dataform.v1beta1.Dataform.GetRepository:input_type -> google.cloud.dataform.v1beta1.GetRepositoryRequest
-	24,  // 198: google.cloud.dataform.v1beta1.Dataform.CreateRepository:input_type -> google.cloud.dataform.v1beta1.CreateRepositoryRequest
-	25,  // 199: google.cloud.dataform.v1beta1.Dataform.UpdateRepository:input_type -> google.cloud.dataform.v1beta1.UpdateRepositoryRequest
-	26,  // 200: google.cloud.dataform.v1beta1.Dataform.DeleteRepository:input_type -> google.cloud.dataform.v1beta1.DeleteRepositoryRequest
-	28,  // 201: google.cloud.dataform.v1beta1.Dataform.DeleteRepositoryLongRunning:input_type -> google.cloud.dataform.v1beta1.DeleteRepositoryLongRunningRequest
-	22,  // 202: google.cloud.dataform.v1beta1.Dataform.MoveRepository:input_type -> google.cloud.dataform.v1beta1.MoveRepositoryRequest
-	29,  // 203: google.cloud.dataform.v1beta1.Dataform.CommitRepositoryChanges:input_type -> google.cloud.dataform.v1beta1.CommitRepositoryChangesRequest
-	31,  // 204: google.cloud.dataform.v1beta1.Dataform.ReadRepositoryFile:input_type -> google.cloud.dataform.v1beta1.ReadRepositoryFileRequest
-	33,  // 205: google.cloud.dataform.v1beta1.Dataform.QueryRepositoryDirectoryContents:input_type -> google.cloud.dataform.v1beta1.QueryRepositoryDirectoryContentsRequest
-	35,  // 206: google.cloud.dataform.v1beta1.Dataform.FetchRepositoryHistory:input_type -> google.cloud.dataform.v1beta1.FetchRepositoryHistoryRequest
-	39,  // 207: google.cloud.dataform.v1beta1.Dataform.ComputeRepositoryAccessTokenStatus:input_type -> google.cloud.dataform.v1beta1.ComputeRepositoryAccessTokenStatusRequest
-	41,  // 208: google.cloud.dataform.v1beta1.Dataform.FetchRemoteBranches:input_type -> google.cloud.dataform.v1beta1.FetchRemoteBranchesRequest
-	44,  // 209: google.cloud.dataform.v1beta1.Dataform.ListWorkspaces:input_type -> google.cloud.dataform.v1beta1.ListWorkspacesRequest
-	46,  // 210: google.cloud.dataform.v1beta1.Dataform.GetWorkspace:input_type -> google.cloud.dataform.v1beta1.GetWorkspaceRequest
-	47,  // 211: google.cloud.dataform.v1beta1.Dataform.CreateWorkspace:input_type -> google.cloud.dataform.v1beta1.CreateWorkspaceRequest
-	48,  // 212: google.cloud.dataform.v1beta1.Dataform.DeleteWorkspace:input_type -> google.cloud.dataform.v1beta1.DeleteWorkspaceRequest
-	92,  // 213: google.cloud.dataform.v1beta1.Dataform.InstallNpmPackages:input_type -> google.cloud.dataform.v1beta1.InstallNpmPackagesRequest
-	50,  // 214: google.cloud.dataform.v1beta1.Dataform.PullGitCommits:input_type -> google.cloud.dataform.v1beta1.PullGitCommitsRequest
-	53,  // 215: google.cloud.dataform.v1beta1.Dataform.SyncWorkspaceRefs:input_type -> google.cloud.dataform.v1beta1.SyncWorkspaceRefsRequest
-	167, // 216: google.cloud.dataform.v1beta1.Dataform.FetchWorkspaceBranches:input_type -> google.cloud.dataform.v1beta1.FetchWorkspaceBranchesRequest
-	55,  // 217: google.cloud.dataform.v1beta1.Dataform.DeleteBranch:input_type -> google.cloud.dataform.v1beta1.DeleteBranchRequest
-	52,  // 218: google.cloud.dataform.v1beta1.Dataform.CheckoutWorkspaceBranch:input_type -> google.cloud.dataform.v1beta1.CheckoutWorkspaceBranchRequest
-	170, // 219: google.cloud.dataform.v1beta1.Dataform.FetchCurrentWorkspaceBranch:input_type -> google.cloud.dataform.v1beta1.FetchCurrentWorkspaceBranchRequest
-	57,  // 220: google.cloud.dataform.v1beta1.Dataform.PushGitCommits:input_type -> google.cloud.dataform.v1beta1.PushGitCommitsRequest
-	59,  // 221: google.cloud.dataform.v1beta1.Dataform.FetchFileGitStatuses:input_type -> google.cloud.dataform.v1beta1.FetchFileGitStatusesRequest
-	61,  // 222: google.cloud.dataform.v1beta1.Dataform.FetchGitAheadBehind:input_type -> google.cloud.dataform.v1beta1.FetchGitAheadBehindRequest
-	63,  // 223: google.cloud.dataform.v1beta1.Dataform.CommitWorkspaceChanges:input_type -> google.cloud.dataform.v1beta1.CommitWorkspaceChangesRequest
-	65,  // 224: google.cloud.dataform.v1beta1.Dataform.ResetWorkspaceChanges:input_type -> google.cloud.dataform.v1beta1.ResetWorkspaceChangesRequest
-	67,  // 225: google.cloud.dataform.v1beta1.Dataform.FetchFileDiff:input_type -> google.cloud.dataform.v1beta1.FetchFileDiffRequest
-	69,  // 226: google.cloud.dataform.v1beta1.Dataform.QueryDirectoryContents:input_type -> google.cloud.dataform.v1beta1.QueryDirectoryContentsRequest
-	73,  // 227: google.cloud.dataform.v1beta1.Dataform.SearchFiles:input_type -> google.cloud.dataform.v1beta1.SearchFilesRequest
-	78,  // 228: google.cloud.dataform.v1beta1.Dataform.MakeDirectory:input_type -> google.cloud.dataform.v1beta1.MakeDirectoryRequest
-	80,  // 229: google.cloud.dataform.v1beta1.Dataform.RemoveDirectory:input_type -> google.cloud.dataform.v1beta1.RemoveDirectoryRequest
-	82,  // 230: google.cloud.dataform.v1beta1.Dataform.MoveDirectory:input_type -> google.cloud.dataform.v1beta1.MoveDirectoryRequest
-	84,  // 231: google.cloud.dataform.v1beta1.Dataform.ReadFile:input_type -> google.cloud.dataform.v1beta1.ReadFileRequest
-	86,  // 232: google.cloud.dataform.v1beta1.Dataform.RemoveFile:input_type -> google.cloud.dataform.v1beta1.RemoveFileRequest
-	88,  // 233: google.cloud.dataform.v1beta1.Dataform.MoveFile:input_type -> google.cloud.dataform.v1beta1.MoveFileRequest
-	90,  // 234: google.cloud.dataform.v1beta1.Dataform.WriteFile:input_type -> google.cloud.dataform.v1beta1.WriteFileRequest
-	95,  // 235: google.cloud.dataform.v1beta1.Dataform.ListReleaseConfigs:input_type -> google.cloud.dataform.v1beta1.ListReleaseConfigsRequest
-	97,  // 236: google.cloud.dataform.v1beta1.Dataform.GetReleaseConfig:input_type -> google.cloud.dataform.v1beta1.GetReleaseConfigRequest
-	98,  // 237: google.cloud.dataform.v1beta1.Dataform.CreateReleaseConfig:input_type -> google.cloud.dataform.v1beta1.CreateReleaseConfigRequest
-	99,  // 238: google.cloud.dataform.v1beta1.Dataform.UpdateReleaseConfig:input_type -> google.cloud.dataform.v1beta1.UpdateReleaseConfigRequest
-	100, // 239: google.cloud.dataform.v1beta1.Dataform.DeleteReleaseConfig:input_type -> google.cloud.dataform.v1beta1.DeleteReleaseConfigRequest
-	111, // 240: google.cloud.dataform.v1beta1.Dataform.ListCompilationResults:input_type -> google.cloud.dataform.v1beta1.ListCompilationResultsRequest
-	113, // 241: google.cloud.dataform.v1beta1.Dataform.GetCompilationResult:input_type -> google.cloud.dataform.v1beta1.GetCompilationResultRequest
-	114, // 242: google.cloud.dataform.v1beta1.Dataform.CreateCompilationResult:input_type -> google.cloud.dataform.v1beta1.CreateCompilationResultRequest
-	118, // 243: google.cloud.dataform.v1beta1.Dataform.QueryCompilationResultActions:input_type -> google.cloud.dataform.v1beta1.QueryCompilationResultActionsRequest
-	122, // 244: google.cloud.dataform.v1beta1.Dataform.ListWorkflowConfigs:input_type -> google.cloud.dataform.v1beta1.ListWorkflowConfigsRequest
-	124, // 245: google.cloud.dataform.v1beta1.Dataform.GetWorkflowConfig:input_type -> google.cloud.dataform.v1beta1.GetWorkflowConfigRequest
-	125, // 246: google.cloud.dataform.v1beta1.Dataform.CreateWorkflowConfig:input_type -> google.cloud.dataform.v1beta1.CreateWorkflowConfigRequest
-	126, // 247: google.cloud.dataform.v1beta1.Dataform.UpdateWorkflowConfig:input_type -> google.cloud.dataform.v1beta1.UpdateWorkflowConfigRequest
-	127, // 248: google.cloud.dataform.v1beta1.Dataform.DeleteWorkflowConfig:input_type -> google.cloud.dataform.v1beta1.DeleteWorkflowConfigRequest
-	129, // 249: google.cloud.dataform.v1beta1.Dataform.ListWorkflowInvocations:input_type -> google.cloud.dataform.v1beta1.ListWorkflowInvocationsRequest
-	131, // 250: google.cloud.dataform.v1beta1.Dataform.GetWorkflowInvocation:input_type -> google.cloud.dataform.v1beta1.GetWorkflowInvocationRequest
-	132, // 251: google.cloud.dataform.v1beta1.Dataform.CreateWorkflowInvocation:input_type -> google.cloud.dataform.v1beta1.CreateWorkflowInvocationRequest
-	133, // 252: google.cloud.dataform.v1beta1.Dataform.DeleteWorkflowInvocation:input_type -> google.cloud.dataform.v1beta1.DeleteWorkflowInvocationRequest
-	134, // 253: google.cloud.dataform.v1beta1.Dataform.CancelWorkflowInvocation:input_type -> google.cloud.dataform.v1beta1.CancelWorkflowInvocationRequest
-	137, // 254: google.cloud.dataform.v1beta1.Dataform.QueryWorkflowInvocationActions:input_type -> google.cloud.dataform.v1beta1.QueryWorkflowInvocationActionsRequest
-	140, // 255: google.cloud.dataform.v1beta1.Dataform.GetConfig:input_type -> google.cloud.dataform.v1beta1.GetConfigRequest
-	141, // 256: google.cloud.dataform.v1beta1.Dataform.UpdateConfig:input_type -> google.cloud.dataform.v1beta1.UpdateConfigRequest
-	217, // 257: google.cloud.dataform.v1beta1.Dataform.GetIamPolicy:input_type -> google.iam.v1.GetIamPolicyRequest
-	218, // 258: google.cloud.dataform.v1beta1.Dataform.SetIamPolicy:input_type -> google.iam.v1.SetIamPolicyRequest
-	219, // 259: google.cloud.dataform.v1beta1.Dataform.TestIamPermissions:input_type -> google.iam.v1.TestIamPermissionsRequest
-	155, // 260: google.cloud.dataform.v1beta1.Dataform.GetTeamFolder:output_type -> google.cloud.dataform.v1beta1.TeamFolder
-	155, // 261: google.cloud.dataform.v1beta1.Dataform.CreateTeamFolder:output_type -> google.cloud.dataform.v1beta1.TeamFolder
-	155, // 262: google.cloud.dataform.v1beta1.Dataform.UpdateTeamFolder:output_type -> google.cloud.dataform.v1beta1.TeamFolder
-	220, // 263: google.cloud.dataform.v1beta1.Dataform.DeleteTeamFolder:output_type -> google.protobuf.Empty
-	221, // 264: google.cloud.dataform.v1beta1.Dataform.DeleteTeamFolderTree:output_type -> google.longrunning.Operation
-	161, // 265: google.cloud.dataform.v1beta1.Dataform.QueryTeamFolderContents:output_type -> google.cloud.dataform.v1beta1.QueryTeamFolderContentsResponse
-	163, // 266: google.cloud.dataform.v1beta1.Dataform.SearchTeamFolders:output_type -> google.cloud.dataform.v1beta1.SearchTeamFoldersResponse
-	142, // 267: google.cloud.dataform.v1beta1.Dataform.GetFolder:output_type -> google.cloud.dataform.v1beta1.Folder
-	142, // 268: google.cloud.dataform.v1beta1.Dataform.CreateFolder:output_type -> google.cloud.dataform.v1beta1.Folder
-	142, // 269: google.cloud.dataform.v1beta1.Dataform.UpdateFolder:output_type -> google.cloud.dataform.v1beta1.Folder
-	220, // 270: google.cloud.dataform.v1beta1.Dataform.DeleteFolder:output_type -> google.protobuf.Empty
-	221, // 271: google.cloud.dataform.v1beta1.Dataform.DeleteFolderTree:output_type -> google.longrunning.Operation
-	152, // 272: google.cloud.dataform.v1beta1.Dataform.QueryFolderContents:output_type -> google.cloud.dataform.v1beta1.QueryFolderContentsResponse
-	154, // 273: google.cloud.dataform.v1beta1.Dataform.QueryUserRootContents:output_type -> google.cloud.dataform.v1beta1.QueryUserRootContentsResponse
-	221, // 274: google.cloud.dataform.v1beta1.Dataform.MoveFolder:output_type -> google.longrunning.Operation
-	21,  // 275: google.cloud.dataform.v1beta1.Dataform.ListRepositories:output_type -> google.cloud.dataform.v1beta1.ListRepositoriesResponse
-	18,  // 276: google.cloud.dataform.v1beta1.Dataform.GetRepository:output_type -> google.cloud.dataform.v1beta1.Repository
-	18,  // 277: google.cloud.dataform.v1beta1.Dataform.CreateRepository:output_type -> google.cloud.dataform.v1beta1.Repository
-	18,  // 278: google.cloud.dataform.v1beta1.Dataform.UpdateRepository:output_type -> google.cloud.dataform.v1beta1.Repository
-	220, // 279: google.cloud.dataform.v1beta1.Dataform.DeleteRepository:output_type -> google.protobuf.Empty
-	221, // 280: google.cloud.dataform.v1beta1.Dataform.DeleteRepositoryLongRunning:output_type -> google.longrunning.Operation
-	221, // 281: google.cloud.dataform.v1beta1.Dataform.MoveRepository:output_type -> google.longrunning.Operation
-	30,  // 282: google.cloud.dataform.v1beta1.Dataform.CommitRepositoryChanges:output_type -> google.cloud.dataform.v1beta1.CommitRepositoryChangesResponse
-	32,  // 283: google.cloud.dataform.v1beta1.Dataform.ReadRepositoryFile:output_type -> google.cloud.dataform.v1beta1.ReadRepositoryFileResponse
-	34,  // 284: google.cloud.dataform.v1beta1.Dataform.QueryRepositoryDirectoryContents:output_type -> google.cloud.dataform.v1beta1.QueryRepositoryDirectoryContentsResponse
-	36,  // 285: google.cloud.dataform.v1beta1.Dataform.FetchRepositoryHistory:output_type -> google.cloud.dataform.v1beta1.FetchRepositoryHistoryResponse
-	40,  // 286: google.cloud.dataform.v1beta1.Dataform.ComputeRepositoryAccessTokenStatus:output_type -> google.cloud.dataform.v1beta1.ComputeRepositoryAccessTokenStatusResponse
-	42,  // 287: google.cloud.dataform.v1beta1.Dataform.FetchRemoteBranches:output_type -> google.cloud.dataform.v1beta1.FetchRemoteBranchesResponse
-	45,  // 288: google.cloud.dataform.v1beta1.Dataform.ListWorkspaces:output_type -> google.cloud.dataform.v1beta1.ListWorkspacesResponse
-	43,  // 289: google.cloud.dataform.v1beta1.Dataform.GetWorkspace:output_type -> google.cloud.dataform.v1beta1.Workspace
-	43,  // 290: google.cloud.dataform.v1beta1.Dataform.CreateWorkspace:output_type -> google.cloud.dataform.v1beta1.Workspace
-	220, // 291: google.cloud.dataform.v1beta1.Dataform.DeleteWorkspace:output_type -> google.protobuf.Empty
-	93,  // 292: google.cloud.dataform.v1beta1.Dataform.InstallNpmPackages:output_type -> google.cloud.dataform.v1beta1.InstallNpmPackagesResponse
-	51,  // 293: google.cloud.dataform.v1beta1.Dataform.PullGitCommits:output_type -> google.cloud.dataform.v1beta1.PullGitCommitsResponse
-	54,  // 294: google.cloud.dataform.v1beta1.Dataform.SyncWorkspaceRefs:output_type -> google.cloud.dataform.v1beta1.SyncWorkspaceRefsResponse
-	169, // 295: google.cloud.dataform.v1beta1.Dataform.FetchWorkspaceBranches:output_type -> google.cloud.dataform.v1beta1.FetchWorkspaceBranchesResponse
-	56,  // 296: google.cloud.dataform.v1beta1.Dataform.DeleteBranch:output_type -> google.cloud.dataform.v1beta1.DeleteBranchResponse
-	220, // 297: google.cloud.dataform.v1beta1.Dataform.CheckoutWorkspaceBranch:output_type -> google.protobuf.Empty
-	171, // 298: google.cloud.dataform.v1beta1.Dataform.FetchCurrentWorkspaceBranch:output_type -> google.cloud.dataform.v1beta1.FetchCurrentWorkspaceBranchResponse
-	58,  // 299: google.cloud.dataform.v1beta1.Dataform.PushGitCommits:output_type -> google.cloud.dataform.v1beta1.PushGitCommitsResponse
-	60,  // 300: google.cloud.dataform.v1beta1.Dataform.FetchFileGitStatuses:output_type -> google.cloud.dataform.v1beta1.FetchFileGitStatusesResponse
-	62,  // 301: google.cloud.dataform.v1beta1.Dataform.FetchGitAheadBehind:output_type -> google.cloud.dataform.v1beta1.FetchGitAheadBehindResponse
-	64,  // 302: google.cloud.dataform.v1beta1.Dataform.CommitWorkspaceChanges:output_type -> google.cloud.dataform.v1beta1.CommitWorkspaceChangesResponse
-	66,  // 303: google.cloud.dataform.v1beta1.Dataform.ResetWorkspaceChanges:output_type -> google.cloud.dataform.v1beta1.ResetWorkspaceChangesResponse
-	68,  // 304: google.cloud.dataform.v1beta1.Dataform.FetchFileDiff:output_type -> google.cloud.dataform.v1beta1.FetchFileDiffResponse
-	70,  // 305: google.cloud.dataform.v1beta1.Dataform.QueryDirectoryContents:output_type -> google.cloud.dataform.v1beta1.QueryDirectoryContentsResponse
-	74,  // 306: google.cloud.dataform.v1beta1.Dataform.SearchFiles:output_type -> google.cloud.dataform.v1beta1.SearchFilesResponse
-	79,  // 307: google.cloud.dataform.v1beta1.Dataform.MakeDirectory:output_type -> google.cloud.dataform.v1beta1.MakeDirectoryResponse
-	81,  // 308: google.cloud.dataform.v1beta1.Dataform.RemoveDirectory:output_type -> google.cloud.dataform.v1beta1.RemoveDirectoryResponse
-	83,  // 309: google.cloud.dataform.v1beta1.Dataform.MoveDirectory:output_type -> google.cloud.dataform.v1beta1.MoveDirectoryResponse
-	85,  // 310: google.cloud.dataform.v1beta1.Dataform.ReadFile:output_type -> google.cloud.dataform.v1beta1.ReadFileResponse
-	87,  // 311: google.cloud.dataform.v1beta1.Dataform.RemoveFile:output_type -> google.cloud.dataform.v1beta1.RemoveFileResponse
-	89,  // 312: google.cloud.dataform.v1beta1.Dataform.MoveFile:output_type -> google.cloud.dataform.v1beta1.MoveFileResponse
-	91,  // 313: google.cloud.dataform.v1beta1.Dataform.WriteFile:output_type -> google.cloud.dataform.v1beta1.WriteFileResponse
-	96,  // 314: google.cloud.dataform.v1beta1.Dataform.ListReleaseConfigs:output_type -> google.cloud.dataform.v1beta1.ListReleaseConfigsResponse
-	94,  // 315: google.cloud.dataform.v1beta1.Dataform.GetReleaseConfig:output_type -> google.cloud.dataform.v1beta1.ReleaseConfig
-	94,  // 316: google.cloud.dataform.v1beta1.Dataform.CreateReleaseConfig:output_type -> google.cloud.dataform.v1beta1.ReleaseConfig
-	94,  // 317: google.cloud.dataform.v1beta1.Dataform.UpdateReleaseConfig:output_type -> google.cloud.dataform.v1beta1.ReleaseConfig
-	220, // 318: google.cloud.dataform.v1beta1.Dataform.DeleteReleaseConfig:output_type -> google.protobuf.Empty
-	112, // 319: google.cloud.dataform.v1beta1.Dataform.ListCompilationResults:output_type -> google.cloud.dataform.v1beta1.ListCompilationResultsResponse
-	101, // 320: google.cloud.dataform.v1beta1.Dataform.GetCompilationResult:output_type -> google.cloud.dataform.v1beta1.CompilationResult
-	101, // 321: google.cloud.dataform.v1beta1.Dataform.CreateCompilationResult:output_type -> google.cloud.dataform.v1beta1.CompilationResult
-	119, // 322: google.cloud.dataform.v1beta1.Dataform.QueryCompilationResultActions:output_type -> google.cloud.dataform.v1beta1.QueryCompilationResultActionsResponse
-	123, // 323: google.cloud.dataform.v1beta1.Dataform.ListWorkflowConfigs:output_type -> google.cloud.dataform.v1beta1.ListWorkflowConfigsResponse
-	120, // 324: google.cloud.dataform.v1beta1.Dataform.GetWorkflowConfig:output_type -> google.cloud.dataform.v1beta1.WorkflowConfig
-	120, // 325: google.cloud.dataform.v1beta1.Dataform.CreateWorkflowConfig:output_type -> google.cloud.dataform.v1beta1.WorkflowConfig
-	120, // 326: google.cloud.dataform.v1beta1.Dataform.UpdateWorkflowConfig:output_type -> google.cloud.dataform.v1beta1.WorkflowConfig
-	220, // 327: google.cloud.dataform.v1beta1.Dataform.DeleteWorkflowConfig:output_type -> google.protobuf.Empty
-	130, // 328: google.cloud.dataform.v1beta1.Dataform.ListWorkflowInvocations:output_type -> google.cloud.dataform.v1beta1.ListWorkflowInvocationsResponse
-	128, // 329: google.cloud.dataform.v1beta1.Dataform.GetWorkflowInvocation:output_type -> google.cloud.dataform.v1beta1.WorkflowInvocation
-	128, // 330: google.cloud.dataform.v1beta1.Dataform.CreateWorkflowInvocation:output_type -> google.cloud.dataform.v1beta1.WorkflowInvocation
-	220, // 331: google.cloud.dataform.v1beta1.Dataform.DeleteWorkflowInvocation:output_type -> google.protobuf.Empty
-	135, // 332: google.cloud.dataform.v1beta1.Dataform.CancelWorkflowInvocation:output_type -> google.cloud.dataform.v1beta1.CancelWorkflowInvocationResponse
-	138, // 333: google.cloud.dataform.v1beta1.Dataform.QueryWorkflowInvocationActions:output_type -> google.cloud.dataform.v1beta1.QueryWorkflowInvocationActionsResponse
-	139, // 334: google.cloud.dataform.v1beta1.Dataform.GetConfig:output_type -> google.cloud.dataform.v1beta1.Config
-	139, // 335: google.cloud.dataform.v1beta1.Dataform.UpdateConfig:output_type -> google.cloud.dataform.v1beta1.Config
-	222, // 336: google.cloud.dataform.v1beta1.Dataform.GetIamPolicy:output_type -> google.iam.v1.Policy
-	222, // 337: google.cloud.dataform.v1beta1.Dataform.SetIamPolicy:output_type -> google.iam.v1.Policy
-	223, // 338: google.cloud.dataform.v1beta1.Dataform.TestIamPermissions:output_type -> google.iam.v1.TestIamPermissionsResponse
-	260, // [260:339] is the sub-list for method output_type
-	181, // [181:260] is the sub-list for method input_type
-	181, // [181:181] is the sub-list for extension type_name
-	181, // [181:181] is the sub-list for extension extendee
-	0,   // [0:181] is the sub-list for field type_name
+	175, // 5: google.cloud.dataform.v1beta1.Repository.end_user_auth_config:type_name -> google.cloud.dataform.v1beta1.Repository.EndUserAuthConfig
+	18,  // 6: google.cloud.dataform.v1beta1.ListRepositoriesResponse.repositories:type_name -> google.cloud.dataform.v1beta1.Repository
+	18,  // 7: google.cloud.dataform.v1beta1.CreateRepositoryRequest.repository:type_name -> google.cloud.dataform.v1beta1.Repository
+	216, // 8: google.cloud.dataform.v1beta1.UpdateRepositoryRequest.update_mask:type_name -> google.protobuf.FieldMask
+	18,  // 9: google.cloud.dataform.v1beta1.UpdateRepositoryRequest.repository:type_name -> google.cloud.dataform.v1beta1.Repository
+	39,  // 10: google.cloud.dataform.v1beta1.CommitRepositoryChangesRequest.commit_metadata:type_name -> google.cloud.dataform.v1beta1.CommitMetadata
+	179, // 11: google.cloud.dataform.v1beta1.CommitRepositoryChangesRequest.file_operations:type_name -> google.cloud.dataform.v1beta1.CommitRepositoryChangesRequest.FileOperationsEntry
+	72,  // 12: google.cloud.dataform.v1beta1.QueryRepositoryDirectoryContentsResponse.directory_entries:type_name -> google.cloud.dataform.v1beta1.DirectoryEntry
+	38,  // 13: google.cloud.dataform.v1beta1.FetchRepositoryHistoryResponse.commits:type_name -> google.cloud.dataform.v1beta1.CommitLogEntry
+	215, // 14: google.cloud.dataform.v1beta1.CommitLogEntry.commit_time:type_name -> google.protobuf.Timestamp
+	50,  // 15: google.cloud.dataform.v1beta1.CommitLogEntry.author:type_name -> google.cloud.dataform.v1beta1.CommitAuthor
+	50,  // 16: google.cloud.dataform.v1beta1.CommitMetadata.author:type_name -> google.cloud.dataform.v1beta1.CommitAuthor
+	2,   // 17: google.cloud.dataform.v1beta1.ComputeRepositoryAccessTokenStatusResponse.token_status:type_name -> google.cloud.dataform.v1beta1.ComputeRepositoryAccessTokenStatusResponse.TokenStatus
+	215, // 18: google.cloud.dataform.v1beta1.Workspace.create_time:type_name -> google.protobuf.Timestamp
+	17,  // 19: google.cloud.dataform.v1beta1.Workspace.data_encryption_state:type_name -> google.cloud.dataform.v1beta1.DataEncryptionState
+	20,  // 20: google.cloud.dataform.v1beta1.Workspace.private_resource_metadata:type_name -> google.cloud.dataform.v1beta1.PrivateResourceMetadata
+	44,  // 21: google.cloud.dataform.v1beta1.ListWorkspacesResponse.workspaces:type_name -> google.cloud.dataform.v1beta1.Workspace
+	44,  // 22: google.cloud.dataform.v1beta1.CreateWorkspaceRequest.workspace:type_name -> google.cloud.dataform.v1beta1.Workspace
+	50,  // 23: google.cloud.dataform.v1beta1.PullGitCommitsRequest.author:type_name -> google.cloud.dataform.v1beta1.CommitAuthor
+	182, // 24: google.cloud.dataform.v1beta1.FetchFileGitStatusesResponse.uncommitted_file_changes:type_name -> google.cloud.dataform.v1beta1.FetchFileGitStatusesResponse.UncommittedFileChange
+	50,  // 25: google.cloud.dataform.v1beta1.CommitWorkspaceChangesRequest.author:type_name -> google.cloud.dataform.v1beta1.CommitAuthor
+	0,   // 26: google.cloud.dataform.v1beta1.QueryDirectoryContentsRequest.view:type_name -> google.cloud.dataform.v1beta1.DirectoryContentsView
+	72,  // 27: google.cloud.dataform.v1beta1.QueryDirectoryContentsResponse.directory_entries:type_name -> google.cloud.dataform.v1beta1.DirectoryEntry
+	73,  // 28: google.cloud.dataform.v1beta1.DirectoryEntry.metadata:type_name -> google.cloud.dataform.v1beta1.FilesystemEntryMetadata
+	215, // 29: google.cloud.dataform.v1beta1.FilesystemEntryMetadata.update_time:type_name -> google.protobuf.Timestamp
+	76,  // 30: google.cloud.dataform.v1beta1.SearchFilesResponse.search_results:type_name -> google.cloud.dataform.v1beta1.SearchResult
+	77,  // 31: google.cloud.dataform.v1beta1.SearchResult.file:type_name -> google.cloud.dataform.v1beta1.FileSearchResult
+	78,  // 32: google.cloud.dataform.v1beta1.SearchResult.directory:type_name -> google.cloud.dataform.v1beta1.DirectorySearchResult
+	111, // 33: google.cloud.dataform.v1beta1.InstallNpmPackagesRequest.pipeline_config:type_name -> google.cloud.dataform.v1beta1.PipelineConfig
+	107, // 34: google.cloud.dataform.v1beta1.ReleaseConfig.code_compilation_config:type_name -> google.cloud.dataform.v1beta1.CodeCompilationConfig
+	183, // 35: google.cloud.dataform.v1beta1.ReleaseConfig.recent_scheduled_release_records:type_name -> google.cloud.dataform.v1beta1.ReleaseConfig.ScheduledReleaseRecord
+	95,  // 36: google.cloud.dataform.v1beta1.ListReleaseConfigsResponse.release_configs:type_name -> google.cloud.dataform.v1beta1.ReleaseConfig
+	95,  // 37: google.cloud.dataform.v1beta1.CreateReleaseConfigRequest.release_config:type_name -> google.cloud.dataform.v1beta1.ReleaseConfig
+	216, // 38: google.cloud.dataform.v1beta1.UpdateReleaseConfigRequest.update_mask:type_name -> google.protobuf.FieldMask
+	95,  // 39: google.cloud.dataform.v1beta1.UpdateReleaseConfigRequest.release_config:type_name -> google.cloud.dataform.v1beta1.ReleaseConfig
+	107, // 40: google.cloud.dataform.v1beta1.CompilationResult.code_compilation_config:type_name -> google.cloud.dataform.v1beta1.CodeCompilationConfig
+	184, // 41: google.cloud.dataform.v1beta1.CompilationResult.compilation_errors:type_name -> google.cloud.dataform.v1beta1.CompilationResult.CompilationError
+	17,  // 42: google.cloud.dataform.v1beta1.CompilationResult.data_encryption_state:type_name -> google.cloud.dataform.v1beta1.DataEncryptionState
+	215, // 43: google.cloud.dataform.v1beta1.CompilationResult.create_time:type_name -> google.protobuf.Timestamp
+	20,  // 44: google.cloud.dataform.v1beta1.CompilationResult.private_resource_metadata:type_name -> google.cloud.dataform.v1beta1.PrivateResourceMetadata
+	108, // 45: google.cloud.dataform.v1beta1.CompilationResult.gcs_repository_snapshot_metadata:type_name -> google.cloud.dataform.v1beta1.GcsRepositorySnapshotMetadata
+	4,   // 46: google.cloud.dataform.v1beta1.WorkflowTriggerConfig.condition:type_name -> google.cloud.dataform.v1beta1.WorkflowTriggerConfig.Condition
+	105, // 47: google.cloud.dataform.v1beta1.WorkflowTriggerConfig.workflow_triggers:type_name -> google.cloud.dataform.v1beta1.WorkflowTrigger
+	217, // 48: google.cloud.dataform.v1beta1.WorkflowTriggerConfig.min_execution_duration:type_name -> google.protobuf.Duration
+	217, // 49: google.cloud.dataform.v1beta1.WorkflowTriggerConfig.max_wait_duration:type_name -> google.protobuf.Duration
+	104, // 50: google.cloud.dataform.v1beta1.WorkflowTriggerConfig.recent_trigger_evaluation_records:type_name -> google.cloud.dataform.v1beta1.TriggerEvaluationRecord
+	215, // 51: google.cloud.dataform.v1beta1.WorkflowTriggerConfig.last_successful_evaluation_time:type_name -> google.protobuf.Timestamp
+	215, // 52: google.cloud.dataform.v1beta1.TriggerEvaluationRecord.evaluation_time:type_name -> google.protobuf.Timestamp
+	218, // 53: google.cloud.dataform.v1beta1.TriggerEvaluationRecord.status:type_name -> google.rpc.Status
+	106, // 54: google.cloud.dataform.v1beta1.WorkflowTrigger.table_update_trigger:type_name -> google.cloud.dataform.v1beta1.TableUpdateTrigger
+	116, // 55: google.cloud.dataform.v1beta1.TableUpdateTrigger.table:type_name -> google.cloud.dataform.v1beta1.Target
+	215, // 56: google.cloud.dataform.v1beta1.TableUpdateTrigger.trigger_update_time:type_name -> google.protobuf.Timestamp
+	185, // 57: google.cloud.dataform.v1beta1.CodeCompilationConfig.vars:type_name -> google.cloud.dataform.v1beta1.CodeCompilationConfig.VarsEntry
+	110, // 58: google.cloud.dataform.v1beta1.CodeCompilationConfig.default_notebook_runtime_options:type_name -> google.cloud.dataform.v1beta1.NotebookRuntimeOptions
+	111, // 59: google.cloud.dataform.v1beta1.CodeCompilationConfig.pipeline_config:type_name -> google.cloud.dataform.v1beta1.PipelineConfig
+	109, // 60: google.cloud.dataform.v1beta1.NotebookRuntimeOptions.gcs_repository_snapshot_destination:type_name -> google.cloud.dataform.v1beta1.GcsRepositorySnapshotDestination
+	5,   // 61: google.cloud.dataform.v1beta1.PipelineConfig.pipeline_type:type_name -> google.cloud.dataform.v1beta1.PipelineConfig.PipelineType
+	102, // 62: google.cloud.dataform.v1beta1.ListCompilationResultsResponse.compilation_results:type_name -> google.cloud.dataform.v1beta1.CompilationResult
+	102, // 63: google.cloud.dataform.v1beta1.CreateCompilationResultRequest.compilation_result:type_name -> google.cloud.dataform.v1beta1.CompilationResult
+	186, // 64: google.cloud.dataform.v1beta1.RelationDescriptor.columns:type_name -> google.cloud.dataform.v1beta1.RelationDescriptor.ColumnDescriptor
+	187, // 65: google.cloud.dataform.v1beta1.RelationDescriptor.bigquery_labels:type_name -> google.cloud.dataform.v1beta1.RelationDescriptor.BigqueryLabelsEntry
+	188, // 66: google.cloud.dataform.v1beta1.CompilationResultAction.relation:type_name -> google.cloud.dataform.v1beta1.CompilationResultAction.Relation
+	189, // 67: google.cloud.dataform.v1beta1.CompilationResultAction.operations:type_name -> google.cloud.dataform.v1beta1.CompilationResultAction.Operations
+	190, // 68: google.cloud.dataform.v1beta1.CompilationResultAction.assertion:type_name -> google.cloud.dataform.v1beta1.CompilationResultAction.Assertion
+	191, // 69: google.cloud.dataform.v1beta1.CompilationResultAction.declaration:type_name -> google.cloud.dataform.v1beta1.CompilationResultAction.Declaration
+	192, // 70: google.cloud.dataform.v1beta1.CompilationResultAction.notebook:type_name -> google.cloud.dataform.v1beta1.CompilationResultAction.Notebook
+	193, // 71: google.cloud.dataform.v1beta1.CompilationResultAction.data_preparation:type_name -> google.cloud.dataform.v1beta1.CompilationResultAction.DataPreparation
+	116, // 72: google.cloud.dataform.v1beta1.CompilationResultAction.target:type_name -> google.cloud.dataform.v1beta1.Target
+	116, // 73: google.cloud.dataform.v1beta1.CompilationResultAction.canonical_target:type_name -> google.cloud.dataform.v1beta1.Target
+	118, // 74: google.cloud.dataform.v1beta1.QueryCompilationResultActionsResponse.compilation_result_actions:type_name -> google.cloud.dataform.v1beta1.CompilationResultAction
+	122, // 75: google.cloud.dataform.v1beta1.WorkflowConfig.invocation_config:type_name -> google.cloud.dataform.v1beta1.InvocationConfig
+	201, // 76: google.cloud.dataform.v1beta1.WorkflowConfig.recent_scheduled_execution_records:type_name -> google.cloud.dataform.v1beta1.WorkflowConfig.ScheduledExecutionRecord
+	215, // 77: google.cloud.dataform.v1beta1.WorkflowConfig.create_time:type_name -> google.protobuf.Timestamp
+	215, // 78: google.cloud.dataform.v1beta1.WorkflowConfig.update_time:type_name -> google.protobuf.Timestamp
+	103, // 79: google.cloud.dataform.v1beta1.WorkflowConfig.workflow_trigger_config:type_name -> google.cloud.dataform.v1beta1.WorkflowTriggerConfig
+	116, // 80: google.cloud.dataform.v1beta1.InvocationConfig.included_targets:type_name -> google.cloud.dataform.v1beta1.Target
+	202, // 81: google.cloud.dataform.v1beta1.InvocationConfig.end_user_auth_config:type_name -> google.cloud.dataform.v1beta1.InvocationConfig.EndUserAuthenticationConfig
+	9,   // 82: google.cloud.dataform.v1beta1.InvocationConfig.query_priority:type_name -> google.cloud.dataform.v1beta1.InvocationConfig.QueryPriority
+	121, // 83: google.cloud.dataform.v1beta1.ListWorkflowConfigsResponse.workflow_configs:type_name -> google.cloud.dataform.v1beta1.WorkflowConfig
+	121, // 84: google.cloud.dataform.v1beta1.CreateWorkflowConfigRequest.workflow_config:type_name -> google.cloud.dataform.v1beta1.WorkflowConfig
+	216, // 85: google.cloud.dataform.v1beta1.UpdateWorkflowConfigRequest.update_mask:type_name -> google.protobuf.FieldMask
+	121, // 86: google.cloud.dataform.v1beta1.UpdateWorkflowConfigRequest.workflow_config:type_name -> google.cloud.dataform.v1beta1.WorkflowConfig
+	122, // 87: google.cloud.dataform.v1beta1.WorkflowInvocation.invocation_config:type_name -> google.cloud.dataform.v1beta1.InvocationConfig
+	10,  // 88: google.cloud.dataform.v1beta1.WorkflowInvocation.state:type_name -> google.cloud.dataform.v1beta1.WorkflowInvocation.State
+	219, // 89: google.cloud.dataform.v1beta1.WorkflowInvocation.invocation_timing:type_name -> google.type.Interval
+	17,  // 90: google.cloud.dataform.v1beta1.WorkflowInvocation.data_encryption_state:type_name -> google.cloud.dataform.v1beta1.DataEncryptionState
+	20,  // 91: google.cloud.dataform.v1beta1.WorkflowInvocation.private_resource_metadata:type_name -> google.cloud.dataform.v1beta1.PrivateResourceMetadata
+	111, // 92: google.cloud.dataform.v1beta1.WorkflowInvocation.pipeline_config:type_name -> google.cloud.dataform.v1beta1.PipelineConfig
+	129, // 93: google.cloud.dataform.v1beta1.ListWorkflowInvocationsResponse.workflow_invocations:type_name -> google.cloud.dataform.v1beta1.WorkflowInvocation
+	129, // 94: google.cloud.dataform.v1beta1.CreateWorkflowInvocationRequest.workflow_invocation:type_name -> google.cloud.dataform.v1beta1.WorkflowInvocation
+	203, // 95: google.cloud.dataform.v1beta1.WorkflowInvocationAction.bigquery_action:type_name -> google.cloud.dataform.v1beta1.WorkflowInvocationAction.BigQueryAction
+	204, // 96: google.cloud.dataform.v1beta1.WorkflowInvocationAction.notebook_action:type_name -> google.cloud.dataform.v1beta1.WorkflowInvocationAction.NotebookAction
+	205, // 97: google.cloud.dataform.v1beta1.WorkflowInvocationAction.data_preparation_action:type_name -> google.cloud.dataform.v1beta1.WorkflowInvocationAction.DataPreparationAction
+	116, // 98: google.cloud.dataform.v1beta1.WorkflowInvocationAction.target:type_name -> google.cloud.dataform.v1beta1.Target
+	116, // 99: google.cloud.dataform.v1beta1.WorkflowInvocationAction.canonical_target:type_name -> google.cloud.dataform.v1beta1.Target
+	11,  // 100: google.cloud.dataform.v1beta1.WorkflowInvocationAction.state:type_name -> google.cloud.dataform.v1beta1.WorkflowInvocationAction.State
+	219, // 101: google.cloud.dataform.v1beta1.WorkflowInvocationAction.invocation_timing:type_name -> google.type.Interval
+	137, // 102: google.cloud.dataform.v1beta1.QueryWorkflowInvocationActionsResponse.workflow_invocation_actions:type_name -> google.cloud.dataform.v1beta1.WorkflowInvocationAction
+	140, // 103: google.cloud.dataform.v1beta1.UpdateConfigRequest.config:type_name -> google.cloud.dataform.v1beta1.Config
+	216, // 104: google.cloud.dataform.v1beta1.UpdateConfigRequest.update_mask:type_name -> google.protobuf.FieldMask
+	215, // 105: google.cloud.dataform.v1beta1.Folder.create_time:type_name -> google.protobuf.Timestamp
+	215, // 106: google.cloud.dataform.v1beta1.Folder.update_time:type_name -> google.protobuf.Timestamp
+	143, // 107: google.cloud.dataform.v1beta1.CreateFolderRequest.folder:type_name -> google.cloud.dataform.v1beta1.Folder
+	216, // 108: google.cloud.dataform.v1beta1.UpdateFolderRequest.update_mask:type_name -> google.protobuf.FieldMask
+	143, // 109: google.cloud.dataform.v1beta1.UpdateFolderRequest.folder:type_name -> google.cloud.dataform.v1beta1.Folder
+	215, // 110: google.cloud.dataform.v1beta1.DeleteFolderTreeMetadata.create_time:type_name -> google.protobuf.Timestamp
+	215, // 111: google.cloud.dataform.v1beta1.DeleteFolderTreeMetadata.end_time:type_name -> google.protobuf.Timestamp
+	12,  // 112: google.cloud.dataform.v1beta1.DeleteFolderTreeMetadata.state:type_name -> google.cloud.dataform.v1beta1.DeleteFolderTreeMetadata.State
+	211, // 113: google.cloud.dataform.v1beta1.QueryFolderContentsResponse.entries:type_name -> google.cloud.dataform.v1beta1.QueryFolderContentsResponse.FolderContentsEntry
+	212, // 114: google.cloud.dataform.v1beta1.QueryUserRootContentsResponse.entries:type_name -> google.cloud.dataform.v1beta1.QueryUserRootContentsResponse.RootContentsEntry
+	215, // 115: google.cloud.dataform.v1beta1.TeamFolder.create_time:type_name -> google.protobuf.Timestamp
+	215, // 116: google.cloud.dataform.v1beta1.TeamFolder.update_time:type_name -> google.protobuf.Timestamp
+	156, // 117: google.cloud.dataform.v1beta1.CreateTeamFolderRequest.team_folder:type_name -> google.cloud.dataform.v1beta1.TeamFolder
+	216, // 118: google.cloud.dataform.v1beta1.UpdateTeamFolderRequest.update_mask:type_name -> google.protobuf.FieldMask
+	156, // 119: google.cloud.dataform.v1beta1.UpdateTeamFolderRequest.team_folder:type_name -> google.cloud.dataform.v1beta1.TeamFolder
+	213, // 120: google.cloud.dataform.v1beta1.QueryTeamFolderContentsResponse.entries:type_name -> google.cloud.dataform.v1beta1.QueryTeamFolderContentsResponse.TeamFolderContentsEntry
+	214, // 121: google.cloud.dataform.v1beta1.SearchTeamFoldersResponse.results:type_name -> google.cloud.dataform.v1beta1.SearchTeamFoldersResponse.TeamFolderSearchResult
+	215, // 122: google.cloud.dataform.v1beta1.MoveFolderMetadata.create_time:type_name -> google.protobuf.Timestamp
+	215, // 123: google.cloud.dataform.v1beta1.MoveFolderMetadata.end_time:type_name -> google.protobuf.Timestamp
+	13,  // 124: google.cloud.dataform.v1beta1.MoveFolderMetadata.state:type_name -> google.cloud.dataform.v1beta1.MoveFolderMetadata.State
+	215, // 125: google.cloud.dataform.v1beta1.MoveRepositoryMetadata.create_time:type_name -> google.protobuf.Timestamp
+	215, // 126: google.cloud.dataform.v1beta1.MoveRepositoryMetadata.end_time:type_name -> google.protobuf.Timestamp
+	14,  // 127: google.cloud.dataform.v1beta1.MoveRepositoryMetadata.state:type_name -> google.cloud.dataform.v1beta1.MoveRepositoryMetadata.State
+	215, // 128: google.cloud.dataform.v1beta1.DeleteRepositoryLongRunningMetadata.create_time:type_name -> google.protobuf.Timestamp
+	215, // 129: google.cloud.dataform.v1beta1.DeleteRepositoryLongRunningMetadata.end_time:type_name -> google.protobuf.Timestamp
+	15,  // 130: google.cloud.dataform.v1beta1.DeleteRepositoryLongRunningMetadata.state:type_name -> google.cloud.dataform.v1beta1.DeleteRepositoryLongRunningMetadata.State
+	16,  // 131: google.cloud.dataform.v1beta1.FetchWorkspaceBranchesRequest.filter:type_name -> google.cloud.dataform.v1beta1.FetchWorkspaceBranchesRequest.BranchFilter
+	38,  // 132: google.cloud.dataform.v1beta1.BranchMetadata.last_commit:type_name -> google.cloud.dataform.v1beta1.CommitLogEntry
+	169, // 133: google.cloud.dataform.v1beta1.FetchWorkspaceBranchesResponse.branches:type_name -> google.cloud.dataform.v1beta1.BranchMetadata
+	177, // 134: google.cloud.dataform.v1beta1.Repository.GitRemoteSettings.ssh_authentication_config:type_name -> google.cloud.dataform.v1beta1.Repository.GitRemoteSettings.SshAuthenticationConfig
+	1,   // 135: google.cloud.dataform.v1beta1.Repository.GitRemoteSettings.token_status:type_name -> google.cloud.dataform.v1beta1.Repository.GitRemoteSettings.TokenStatus
+	19,  // 136: google.cloud.dataform.v1beta1.Repository.EndUserAuthConfig.oauth_config:type_name -> google.cloud.dataform.v1beta1.OAuthConfig
+	180, // 137: google.cloud.dataform.v1beta1.CommitRepositoryChangesRequest.FileOperation.write_file:type_name -> google.cloud.dataform.v1beta1.CommitRepositoryChangesRequest.FileOperation.WriteFile
+	181, // 138: google.cloud.dataform.v1beta1.CommitRepositoryChangesRequest.FileOperation.delete_file:type_name -> google.cloud.dataform.v1beta1.CommitRepositoryChangesRequest.FileOperation.DeleteFile
+	178, // 139: google.cloud.dataform.v1beta1.CommitRepositoryChangesRequest.FileOperationsEntry.value:type_name -> google.cloud.dataform.v1beta1.CommitRepositoryChangesRequest.FileOperation
+	3,   // 140: google.cloud.dataform.v1beta1.FetchFileGitStatusesResponse.UncommittedFileChange.state:type_name -> google.cloud.dataform.v1beta1.FetchFileGitStatusesResponse.UncommittedFileChange.State
+	218, // 141: google.cloud.dataform.v1beta1.ReleaseConfig.ScheduledReleaseRecord.error_status:type_name -> google.rpc.Status
+	215, // 142: google.cloud.dataform.v1beta1.ReleaseConfig.ScheduledReleaseRecord.release_time:type_name -> google.protobuf.Timestamp
+	116, // 143: google.cloud.dataform.v1beta1.CompilationResult.CompilationError.action_target:type_name -> google.cloud.dataform.v1beta1.Target
+	116, // 144: google.cloud.dataform.v1beta1.CompilationResultAction.Relation.dependency_targets:type_name -> google.cloud.dataform.v1beta1.Target
+	117, // 145: google.cloud.dataform.v1beta1.CompilationResultAction.Relation.relation_descriptor:type_name -> google.cloud.dataform.v1beta1.RelationDescriptor
+	6,   // 146: google.cloud.dataform.v1beta1.CompilationResultAction.Relation.relation_type:type_name -> google.cloud.dataform.v1beta1.CompilationResultAction.Relation.RelationType
+	197, // 147: google.cloud.dataform.v1beta1.CompilationResultAction.Relation.incremental_table_config:type_name -> google.cloud.dataform.v1beta1.CompilationResultAction.Relation.IncrementalTableConfig
+	198, // 148: google.cloud.dataform.v1beta1.CompilationResultAction.Relation.additional_options:type_name -> google.cloud.dataform.v1beta1.CompilationResultAction.Relation.AdditionalOptionsEntry
+	7,   // 149: google.cloud.dataform.v1beta1.CompilationResultAction.Relation.table_format:type_name -> google.cloud.dataform.v1beta1.CompilationResultAction.Relation.TableFormat
+	8,   // 150: google.cloud.dataform.v1beta1.CompilationResultAction.Relation.file_format:type_name -> google.cloud.dataform.v1beta1.CompilationResultAction.Relation.FileFormat
+	116, // 151: google.cloud.dataform.v1beta1.CompilationResultAction.Operations.dependency_targets:type_name -> google.cloud.dataform.v1beta1.Target
+	117, // 152: google.cloud.dataform.v1beta1.CompilationResultAction.Operations.relation_descriptor:type_name -> google.cloud.dataform.v1beta1.RelationDescriptor
+	116, // 153: google.cloud.dataform.v1beta1.CompilationResultAction.Assertion.dependency_targets:type_name -> google.cloud.dataform.v1beta1.Target
+	116, // 154: google.cloud.dataform.v1beta1.CompilationResultAction.Assertion.parent_action:type_name -> google.cloud.dataform.v1beta1.Target
+	117, // 155: google.cloud.dataform.v1beta1.CompilationResultAction.Assertion.relation_descriptor:type_name -> google.cloud.dataform.v1beta1.RelationDescriptor
+	117, // 156: google.cloud.dataform.v1beta1.CompilationResultAction.Declaration.relation_descriptor:type_name -> google.cloud.dataform.v1beta1.RelationDescriptor
+	116, // 157: google.cloud.dataform.v1beta1.CompilationResultAction.Notebook.dependency_targets:type_name -> google.cloud.dataform.v1beta1.Target
+	199, // 158: google.cloud.dataform.v1beta1.CompilationResultAction.DataPreparation.contents_sql:type_name -> google.cloud.dataform.v1beta1.CompilationResultAction.DataPreparation.SqlDefinition
+	116, // 159: google.cloud.dataform.v1beta1.CompilationResultAction.DataPreparation.dependency_targets:type_name -> google.cloud.dataform.v1beta1.Target
+	195, // 160: google.cloud.dataform.v1beta1.CompilationResultAction.LoadConfig.replace:type_name -> google.cloud.dataform.v1beta1.CompilationResultAction.SimpleLoadMode
+	195, // 161: google.cloud.dataform.v1beta1.CompilationResultAction.LoadConfig.append:type_name -> google.cloud.dataform.v1beta1.CompilationResultAction.SimpleLoadMode
+	196, // 162: google.cloud.dataform.v1beta1.CompilationResultAction.LoadConfig.maximum:type_name -> google.cloud.dataform.v1beta1.CompilationResultAction.IncrementalLoadMode
+	196, // 163: google.cloud.dataform.v1beta1.CompilationResultAction.LoadConfig.unique:type_name -> google.cloud.dataform.v1beta1.CompilationResultAction.IncrementalLoadMode
+	200, // 164: google.cloud.dataform.v1beta1.CompilationResultAction.DataPreparation.SqlDefinition.error_table:type_name -> google.cloud.dataform.v1beta1.CompilationResultAction.DataPreparation.ErrorTable
+	194, // 165: google.cloud.dataform.v1beta1.CompilationResultAction.DataPreparation.SqlDefinition.load:type_name -> google.cloud.dataform.v1beta1.CompilationResultAction.LoadConfig
+	116, // 166: google.cloud.dataform.v1beta1.CompilationResultAction.DataPreparation.ErrorTable.target:type_name -> google.cloud.dataform.v1beta1.Target
+	218, // 167: google.cloud.dataform.v1beta1.WorkflowConfig.ScheduledExecutionRecord.error_status:type_name -> google.rpc.Status
+	215, // 168: google.cloud.dataform.v1beta1.WorkflowConfig.ScheduledExecutionRecord.execution_time:type_name -> google.protobuf.Timestamp
+	19,  // 169: google.cloud.dataform.v1beta1.InvocationConfig.EndUserAuthenticationConfig.oauth_config:type_name -> google.cloud.dataform.v1beta1.OAuthConfig
+	206, // 170: google.cloud.dataform.v1beta1.WorkflowInvocationAction.DataPreparationAction.contents_sql:type_name -> google.cloud.dataform.v1beta1.WorkflowInvocationAction.DataPreparationAction.ActionSqlDefinition
+	207, // 171: google.cloud.dataform.v1beta1.WorkflowInvocationAction.DataPreparationAction.ActionSqlDefinition.error_table:type_name -> google.cloud.dataform.v1beta1.WorkflowInvocationAction.DataPreparationAction.ActionErrorTable
+	208, // 172: google.cloud.dataform.v1beta1.WorkflowInvocationAction.DataPreparationAction.ActionSqlDefinition.load_config:type_name -> google.cloud.dataform.v1beta1.WorkflowInvocationAction.DataPreparationAction.ActionLoadConfig
+	116, // 173: google.cloud.dataform.v1beta1.WorkflowInvocationAction.DataPreparationAction.ActionErrorTable.target:type_name -> google.cloud.dataform.v1beta1.Target
+	209, // 174: google.cloud.dataform.v1beta1.WorkflowInvocationAction.DataPreparationAction.ActionLoadConfig.replace:type_name -> google.cloud.dataform.v1beta1.WorkflowInvocationAction.DataPreparationAction.ActionSimpleLoadMode
+	209, // 175: google.cloud.dataform.v1beta1.WorkflowInvocationAction.DataPreparationAction.ActionLoadConfig.append:type_name -> google.cloud.dataform.v1beta1.WorkflowInvocationAction.DataPreparationAction.ActionSimpleLoadMode
+	210, // 176: google.cloud.dataform.v1beta1.WorkflowInvocationAction.DataPreparationAction.ActionLoadConfig.maximum:type_name -> google.cloud.dataform.v1beta1.WorkflowInvocationAction.DataPreparationAction.ActionIncrementalLoadMode
+	210, // 177: google.cloud.dataform.v1beta1.WorkflowInvocationAction.DataPreparationAction.ActionLoadConfig.unique:type_name -> google.cloud.dataform.v1beta1.WorkflowInvocationAction.DataPreparationAction.ActionIncrementalLoadMode
+	143, // 178: google.cloud.dataform.v1beta1.QueryFolderContentsResponse.FolderContentsEntry.folder:type_name -> google.cloud.dataform.v1beta1.Folder
+	18,  // 179: google.cloud.dataform.v1beta1.QueryFolderContentsResponse.FolderContentsEntry.repository:type_name -> google.cloud.dataform.v1beta1.Repository
+	143, // 180: google.cloud.dataform.v1beta1.QueryUserRootContentsResponse.RootContentsEntry.folder:type_name -> google.cloud.dataform.v1beta1.Folder
+	18,  // 181: google.cloud.dataform.v1beta1.QueryUserRootContentsResponse.RootContentsEntry.repository:type_name -> google.cloud.dataform.v1beta1.Repository
+	143, // 182: google.cloud.dataform.v1beta1.QueryTeamFolderContentsResponse.TeamFolderContentsEntry.folder:type_name -> google.cloud.dataform.v1beta1.Folder
+	18,  // 183: google.cloud.dataform.v1beta1.QueryTeamFolderContentsResponse.TeamFolderContentsEntry.repository:type_name -> google.cloud.dataform.v1beta1.Repository
+	156, // 184: google.cloud.dataform.v1beta1.SearchTeamFoldersResponse.TeamFolderSearchResult.team_folder:type_name -> google.cloud.dataform.v1beta1.TeamFolder
+	158, // 185: google.cloud.dataform.v1beta1.Dataform.GetTeamFolder:input_type -> google.cloud.dataform.v1beta1.GetTeamFolderRequest
+	157, // 186: google.cloud.dataform.v1beta1.Dataform.CreateTeamFolder:input_type -> google.cloud.dataform.v1beta1.CreateTeamFolderRequest
+	159, // 187: google.cloud.dataform.v1beta1.Dataform.UpdateTeamFolder:input_type -> google.cloud.dataform.v1beta1.UpdateTeamFolderRequest
+	160, // 188: google.cloud.dataform.v1beta1.Dataform.DeleteTeamFolder:input_type -> google.cloud.dataform.v1beta1.DeleteTeamFolderRequest
+	150, // 189: google.cloud.dataform.v1beta1.Dataform.DeleteTeamFolderTree:input_type -> google.cloud.dataform.v1beta1.DeleteTeamFolderTreeRequest
+	161, // 190: google.cloud.dataform.v1beta1.Dataform.QueryTeamFolderContents:input_type -> google.cloud.dataform.v1beta1.QueryTeamFolderContentsRequest
+	163, // 191: google.cloud.dataform.v1beta1.Dataform.SearchTeamFolders:input_type -> google.cloud.dataform.v1beta1.SearchTeamFoldersRequest
+	146, // 192: google.cloud.dataform.v1beta1.Dataform.GetFolder:input_type -> google.cloud.dataform.v1beta1.GetFolderRequest
+	144, // 193: google.cloud.dataform.v1beta1.Dataform.CreateFolder:input_type -> google.cloud.dataform.v1beta1.CreateFolderRequest
+	147, // 194: google.cloud.dataform.v1beta1.Dataform.UpdateFolder:input_type -> google.cloud.dataform.v1beta1.UpdateFolderRequest
+	148, // 195: google.cloud.dataform.v1beta1.Dataform.DeleteFolder:input_type -> google.cloud.dataform.v1beta1.DeleteFolderRequest
+	149, // 196: google.cloud.dataform.v1beta1.Dataform.DeleteFolderTree:input_type -> google.cloud.dataform.v1beta1.DeleteFolderTreeRequest
+	152, // 197: google.cloud.dataform.v1beta1.Dataform.QueryFolderContents:input_type -> google.cloud.dataform.v1beta1.QueryFolderContentsRequest
+	154, // 198: google.cloud.dataform.v1beta1.Dataform.QueryUserRootContents:input_type -> google.cloud.dataform.v1beta1.QueryUserRootContentsRequest
+	145, // 199: google.cloud.dataform.v1beta1.Dataform.MoveFolder:input_type -> google.cloud.dataform.v1beta1.MoveFolderRequest
+	21,  // 200: google.cloud.dataform.v1beta1.Dataform.ListRepositories:input_type -> google.cloud.dataform.v1beta1.ListRepositoriesRequest
+	24,  // 201: google.cloud.dataform.v1beta1.Dataform.GetRepository:input_type -> google.cloud.dataform.v1beta1.GetRepositoryRequest
+	25,  // 202: google.cloud.dataform.v1beta1.Dataform.CreateRepository:input_type -> google.cloud.dataform.v1beta1.CreateRepositoryRequest
+	26,  // 203: google.cloud.dataform.v1beta1.Dataform.UpdateRepository:input_type -> google.cloud.dataform.v1beta1.UpdateRepositoryRequest
+	27,  // 204: google.cloud.dataform.v1beta1.Dataform.DeleteRepository:input_type -> google.cloud.dataform.v1beta1.DeleteRepositoryRequest
+	29,  // 205: google.cloud.dataform.v1beta1.Dataform.DeleteRepositoryLongRunning:input_type -> google.cloud.dataform.v1beta1.DeleteRepositoryLongRunningRequest
+	23,  // 206: google.cloud.dataform.v1beta1.Dataform.MoveRepository:input_type -> google.cloud.dataform.v1beta1.MoveRepositoryRequest
+	30,  // 207: google.cloud.dataform.v1beta1.Dataform.CommitRepositoryChanges:input_type -> google.cloud.dataform.v1beta1.CommitRepositoryChangesRequest
+	32,  // 208: google.cloud.dataform.v1beta1.Dataform.ReadRepositoryFile:input_type -> google.cloud.dataform.v1beta1.ReadRepositoryFileRequest
+	34,  // 209: google.cloud.dataform.v1beta1.Dataform.QueryRepositoryDirectoryContents:input_type -> google.cloud.dataform.v1beta1.QueryRepositoryDirectoryContentsRequest
+	36,  // 210: google.cloud.dataform.v1beta1.Dataform.FetchRepositoryHistory:input_type -> google.cloud.dataform.v1beta1.FetchRepositoryHistoryRequest
+	40,  // 211: google.cloud.dataform.v1beta1.Dataform.ComputeRepositoryAccessTokenStatus:input_type -> google.cloud.dataform.v1beta1.ComputeRepositoryAccessTokenStatusRequest
+	42,  // 212: google.cloud.dataform.v1beta1.Dataform.FetchRemoteBranches:input_type -> google.cloud.dataform.v1beta1.FetchRemoteBranchesRequest
+	45,  // 213: google.cloud.dataform.v1beta1.Dataform.ListWorkspaces:input_type -> google.cloud.dataform.v1beta1.ListWorkspacesRequest
+	47,  // 214: google.cloud.dataform.v1beta1.Dataform.GetWorkspace:input_type -> google.cloud.dataform.v1beta1.GetWorkspaceRequest
+	48,  // 215: google.cloud.dataform.v1beta1.Dataform.CreateWorkspace:input_type -> google.cloud.dataform.v1beta1.CreateWorkspaceRequest
+	49,  // 216: google.cloud.dataform.v1beta1.Dataform.DeleteWorkspace:input_type -> google.cloud.dataform.v1beta1.DeleteWorkspaceRequest
+	93,  // 217: google.cloud.dataform.v1beta1.Dataform.InstallNpmPackages:input_type -> google.cloud.dataform.v1beta1.InstallNpmPackagesRequest
+	51,  // 218: google.cloud.dataform.v1beta1.Dataform.PullGitCommits:input_type -> google.cloud.dataform.v1beta1.PullGitCommitsRequest
+	54,  // 219: google.cloud.dataform.v1beta1.Dataform.SyncWorkspaceRefs:input_type -> google.cloud.dataform.v1beta1.SyncWorkspaceRefsRequest
+	168, // 220: google.cloud.dataform.v1beta1.Dataform.FetchWorkspaceBranches:input_type -> google.cloud.dataform.v1beta1.FetchWorkspaceBranchesRequest
+	56,  // 221: google.cloud.dataform.v1beta1.Dataform.DeleteBranch:input_type -> google.cloud.dataform.v1beta1.DeleteBranchRequest
+	53,  // 222: google.cloud.dataform.v1beta1.Dataform.CheckoutWorkspaceBranch:input_type -> google.cloud.dataform.v1beta1.CheckoutWorkspaceBranchRequest
+	171, // 223: google.cloud.dataform.v1beta1.Dataform.FetchCurrentWorkspaceBranch:input_type -> google.cloud.dataform.v1beta1.FetchCurrentWorkspaceBranchRequest
+	58,  // 224: google.cloud.dataform.v1beta1.Dataform.PushGitCommits:input_type -> google.cloud.dataform.v1beta1.PushGitCommitsRequest
+	60,  // 225: google.cloud.dataform.v1beta1.Dataform.FetchFileGitStatuses:input_type -> google.cloud.dataform.v1beta1.FetchFileGitStatusesRequest
+	62,  // 226: google.cloud.dataform.v1beta1.Dataform.FetchGitAheadBehind:input_type -> google.cloud.dataform.v1beta1.FetchGitAheadBehindRequest
+	64,  // 227: google.cloud.dataform.v1beta1.Dataform.CommitWorkspaceChanges:input_type -> google.cloud.dataform.v1beta1.CommitWorkspaceChangesRequest
+	66,  // 228: google.cloud.dataform.v1beta1.Dataform.ResetWorkspaceChanges:input_type -> google.cloud.dataform.v1beta1.ResetWorkspaceChangesRequest
+	68,  // 229: google.cloud.dataform.v1beta1.Dataform.FetchFileDiff:input_type -> google.cloud.dataform.v1beta1.FetchFileDiffRequest
+	70,  // 230: google.cloud.dataform.v1beta1.Dataform.QueryDirectoryContents:input_type -> google.cloud.dataform.v1beta1.QueryDirectoryContentsRequest
+	74,  // 231: google.cloud.dataform.v1beta1.Dataform.SearchFiles:input_type -> google.cloud.dataform.v1beta1.SearchFilesRequest
+	79,  // 232: google.cloud.dataform.v1beta1.Dataform.MakeDirectory:input_type -> google.cloud.dataform.v1beta1.MakeDirectoryRequest
+	81,  // 233: google.cloud.dataform.v1beta1.Dataform.RemoveDirectory:input_type -> google.cloud.dataform.v1beta1.RemoveDirectoryRequest
+	83,  // 234: google.cloud.dataform.v1beta1.Dataform.MoveDirectory:input_type -> google.cloud.dataform.v1beta1.MoveDirectoryRequest
+	85,  // 235: google.cloud.dataform.v1beta1.Dataform.ReadFile:input_type -> google.cloud.dataform.v1beta1.ReadFileRequest
+	87,  // 236: google.cloud.dataform.v1beta1.Dataform.RemoveFile:input_type -> google.cloud.dataform.v1beta1.RemoveFileRequest
+	89,  // 237: google.cloud.dataform.v1beta1.Dataform.MoveFile:input_type -> google.cloud.dataform.v1beta1.MoveFileRequest
+	91,  // 238: google.cloud.dataform.v1beta1.Dataform.WriteFile:input_type -> google.cloud.dataform.v1beta1.WriteFileRequest
+	96,  // 239: google.cloud.dataform.v1beta1.Dataform.ListReleaseConfigs:input_type -> google.cloud.dataform.v1beta1.ListReleaseConfigsRequest
+	98,  // 240: google.cloud.dataform.v1beta1.Dataform.GetReleaseConfig:input_type -> google.cloud.dataform.v1beta1.GetReleaseConfigRequest
+	99,  // 241: google.cloud.dataform.v1beta1.Dataform.CreateReleaseConfig:input_type -> google.cloud.dataform.v1beta1.CreateReleaseConfigRequest
+	100, // 242: google.cloud.dataform.v1beta1.Dataform.UpdateReleaseConfig:input_type -> google.cloud.dataform.v1beta1.UpdateReleaseConfigRequest
+	101, // 243: google.cloud.dataform.v1beta1.Dataform.DeleteReleaseConfig:input_type -> google.cloud.dataform.v1beta1.DeleteReleaseConfigRequest
+	112, // 244: google.cloud.dataform.v1beta1.Dataform.ListCompilationResults:input_type -> google.cloud.dataform.v1beta1.ListCompilationResultsRequest
+	114, // 245: google.cloud.dataform.v1beta1.Dataform.GetCompilationResult:input_type -> google.cloud.dataform.v1beta1.GetCompilationResultRequest
+	115, // 246: google.cloud.dataform.v1beta1.Dataform.CreateCompilationResult:input_type -> google.cloud.dataform.v1beta1.CreateCompilationResultRequest
+	119, // 247: google.cloud.dataform.v1beta1.Dataform.QueryCompilationResultActions:input_type -> google.cloud.dataform.v1beta1.QueryCompilationResultActionsRequest
+	123, // 248: google.cloud.dataform.v1beta1.Dataform.ListWorkflowConfigs:input_type -> google.cloud.dataform.v1beta1.ListWorkflowConfigsRequest
+	125, // 249: google.cloud.dataform.v1beta1.Dataform.GetWorkflowConfig:input_type -> google.cloud.dataform.v1beta1.GetWorkflowConfigRequest
+	126, // 250: google.cloud.dataform.v1beta1.Dataform.CreateWorkflowConfig:input_type -> google.cloud.dataform.v1beta1.CreateWorkflowConfigRequest
+	127, // 251: google.cloud.dataform.v1beta1.Dataform.UpdateWorkflowConfig:input_type -> google.cloud.dataform.v1beta1.UpdateWorkflowConfigRequest
+	128, // 252: google.cloud.dataform.v1beta1.Dataform.DeleteWorkflowConfig:input_type -> google.cloud.dataform.v1beta1.DeleteWorkflowConfigRequest
+	130, // 253: google.cloud.dataform.v1beta1.Dataform.ListWorkflowInvocations:input_type -> google.cloud.dataform.v1beta1.ListWorkflowInvocationsRequest
+	132, // 254: google.cloud.dataform.v1beta1.Dataform.GetWorkflowInvocation:input_type -> google.cloud.dataform.v1beta1.GetWorkflowInvocationRequest
+	133, // 255: google.cloud.dataform.v1beta1.Dataform.CreateWorkflowInvocation:input_type -> google.cloud.dataform.v1beta1.CreateWorkflowInvocationRequest
+	134, // 256: google.cloud.dataform.v1beta1.Dataform.DeleteWorkflowInvocation:input_type -> google.cloud.dataform.v1beta1.DeleteWorkflowInvocationRequest
+	135, // 257: google.cloud.dataform.v1beta1.Dataform.CancelWorkflowInvocation:input_type -> google.cloud.dataform.v1beta1.CancelWorkflowInvocationRequest
+	138, // 258: google.cloud.dataform.v1beta1.Dataform.QueryWorkflowInvocationActions:input_type -> google.cloud.dataform.v1beta1.QueryWorkflowInvocationActionsRequest
+	141, // 259: google.cloud.dataform.v1beta1.Dataform.GetConfig:input_type -> google.cloud.dataform.v1beta1.GetConfigRequest
+	142, // 260: google.cloud.dataform.v1beta1.Dataform.UpdateConfig:input_type -> google.cloud.dataform.v1beta1.UpdateConfigRequest
+	220, // 261: google.cloud.dataform.v1beta1.Dataform.GetIamPolicy:input_type -> google.iam.v1.GetIamPolicyRequest
+	221, // 262: google.cloud.dataform.v1beta1.Dataform.SetIamPolicy:input_type -> google.iam.v1.SetIamPolicyRequest
+	222, // 263: google.cloud.dataform.v1beta1.Dataform.TestIamPermissions:input_type -> google.iam.v1.TestIamPermissionsRequest
+	156, // 264: google.cloud.dataform.v1beta1.Dataform.GetTeamFolder:output_type -> google.cloud.dataform.v1beta1.TeamFolder
+	156, // 265: google.cloud.dataform.v1beta1.Dataform.CreateTeamFolder:output_type -> google.cloud.dataform.v1beta1.TeamFolder
+	156, // 266: google.cloud.dataform.v1beta1.Dataform.UpdateTeamFolder:output_type -> google.cloud.dataform.v1beta1.TeamFolder
+	223, // 267: google.cloud.dataform.v1beta1.Dataform.DeleteTeamFolder:output_type -> google.protobuf.Empty
+	224, // 268: google.cloud.dataform.v1beta1.Dataform.DeleteTeamFolderTree:output_type -> google.longrunning.Operation
+	162, // 269: google.cloud.dataform.v1beta1.Dataform.QueryTeamFolderContents:output_type -> google.cloud.dataform.v1beta1.QueryTeamFolderContentsResponse
+	164, // 270: google.cloud.dataform.v1beta1.Dataform.SearchTeamFolders:output_type -> google.cloud.dataform.v1beta1.SearchTeamFoldersResponse
+	143, // 271: google.cloud.dataform.v1beta1.Dataform.GetFolder:output_type -> google.cloud.dataform.v1beta1.Folder
+	143, // 272: google.cloud.dataform.v1beta1.Dataform.CreateFolder:output_type -> google.cloud.dataform.v1beta1.Folder
+	143, // 273: google.cloud.dataform.v1beta1.Dataform.UpdateFolder:output_type -> google.cloud.dataform.v1beta1.Folder
+	223, // 274: google.cloud.dataform.v1beta1.Dataform.DeleteFolder:output_type -> google.protobuf.Empty
+	224, // 275: google.cloud.dataform.v1beta1.Dataform.DeleteFolderTree:output_type -> google.longrunning.Operation
+	153, // 276: google.cloud.dataform.v1beta1.Dataform.QueryFolderContents:output_type -> google.cloud.dataform.v1beta1.QueryFolderContentsResponse
+	155, // 277: google.cloud.dataform.v1beta1.Dataform.QueryUserRootContents:output_type -> google.cloud.dataform.v1beta1.QueryUserRootContentsResponse
+	224, // 278: google.cloud.dataform.v1beta1.Dataform.MoveFolder:output_type -> google.longrunning.Operation
+	22,  // 279: google.cloud.dataform.v1beta1.Dataform.ListRepositories:output_type -> google.cloud.dataform.v1beta1.ListRepositoriesResponse
+	18,  // 280: google.cloud.dataform.v1beta1.Dataform.GetRepository:output_type -> google.cloud.dataform.v1beta1.Repository
+	18,  // 281: google.cloud.dataform.v1beta1.Dataform.CreateRepository:output_type -> google.cloud.dataform.v1beta1.Repository
+	18,  // 282: google.cloud.dataform.v1beta1.Dataform.UpdateRepository:output_type -> google.cloud.dataform.v1beta1.Repository
+	223, // 283: google.cloud.dataform.v1beta1.Dataform.DeleteRepository:output_type -> google.protobuf.Empty
+	224, // 284: google.cloud.dataform.v1beta1.Dataform.DeleteRepositoryLongRunning:output_type -> google.longrunning.Operation
+	224, // 285: google.cloud.dataform.v1beta1.Dataform.MoveRepository:output_type -> google.longrunning.Operation
+	31,  // 286: google.cloud.dataform.v1beta1.Dataform.CommitRepositoryChanges:output_type -> google.cloud.dataform.v1beta1.CommitRepositoryChangesResponse
+	33,  // 287: google.cloud.dataform.v1beta1.Dataform.ReadRepositoryFile:output_type -> google.cloud.dataform.v1beta1.ReadRepositoryFileResponse
+	35,  // 288: google.cloud.dataform.v1beta1.Dataform.QueryRepositoryDirectoryContents:output_type -> google.cloud.dataform.v1beta1.QueryRepositoryDirectoryContentsResponse
+	37,  // 289: google.cloud.dataform.v1beta1.Dataform.FetchRepositoryHistory:output_type -> google.cloud.dataform.v1beta1.FetchRepositoryHistoryResponse
+	41,  // 290: google.cloud.dataform.v1beta1.Dataform.ComputeRepositoryAccessTokenStatus:output_type -> google.cloud.dataform.v1beta1.ComputeRepositoryAccessTokenStatusResponse
+	43,  // 291: google.cloud.dataform.v1beta1.Dataform.FetchRemoteBranches:output_type -> google.cloud.dataform.v1beta1.FetchRemoteBranchesResponse
+	46,  // 292: google.cloud.dataform.v1beta1.Dataform.ListWorkspaces:output_type -> google.cloud.dataform.v1beta1.ListWorkspacesResponse
+	44,  // 293: google.cloud.dataform.v1beta1.Dataform.GetWorkspace:output_type -> google.cloud.dataform.v1beta1.Workspace
+	44,  // 294: google.cloud.dataform.v1beta1.Dataform.CreateWorkspace:output_type -> google.cloud.dataform.v1beta1.Workspace
+	223, // 295: google.cloud.dataform.v1beta1.Dataform.DeleteWorkspace:output_type -> google.protobuf.Empty
+	94,  // 296: google.cloud.dataform.v1beta1.Dataform.InstallNpmPackages:output_type -> google.cloud.dataform.v1beta1.InstallNpmPackagesResponse
+	52,  // 297: google.cloud.dataform.v1beta1.Dataform.PullGitCommits:output_type -> google.cloud.dataform.v1beta1.PullGitCommitsResponse
+	55,  // 298: google.cloud.dataform.v1beta1.Dataform.SyncWorkspaceRefs:output_type -> google.cloud.dataform.v1beta1.SyncWorkspaceRefsResponse
+	170, // 299: google.cloud.dataform.v1beta1.Dataform.FetchWorkspaceBranches:output_type -> google.cloud.dataform.v1beta1.FetchWorkspaceBranchesResponse
+	57,  // 300: google.cloud.dataform.v1beta1.Dataform.DeleteBranch:output_type -> google.cloud.dataform.v1beta1.DeleteBranchResponse
+	223, // 301: google.cloud.dataform.v1beta1.Dataform.CheckoutWorkspaceBranch:output_type -> google.protobuf.Empty
+	172, // 302: google.cloud.dataform.v1beta1.Dataform.FetchCurrentWorkspaceBranch:output_type -> google.cloud.dataform.v1beta1.FetchCurrentWorkspaceBranchResponse
+	59,  // 303: google.cloud.dataform.v1beta1.Dataform.PushGitCommits:output_type -> google.cloud.dataform.v1beta1.PushGitCommitsResponse
+	61,  // 304: google.cloud.dataform.v1beta1.Dataform.FetchFileGitStatuses:output_type -> google.cloud.dataform.v1beta1.FetchFileGitStatusesResponse
+	63,  // 305: google.cloud.dataform.v1beta1.Dataform.FetchGitAheadBehind:output_type -> google.cloud.dataform.v1beta1.FetchGitAheadBehindResponse
+	65,  // 306: google.cloud.dataform.v1beta1.Dataform.CommitWorkspaceChanges:output_type -> google.cloud.dataform.v1beta1.CommitWorkspaceChangesResponse
+	67,  // 307: google.cloud.dataform.v1beta1.Dataform.ResetWorkspaceChanges:output_type -> google.cloud.dataform.v1beta1.ResetWorkspaceChangesResponse
+	69,  // 308: google.cloud.dataform.v1beta1.Dataform.FetchFileDiff:output_type -> google.cloud.dataform.v1beta1.FetchFileDiffResponse
+	71,  // 309: google.cloud.dataform.v1beta1.Dataform.QueryDirectoryContents:output_type -> google.cloud.dataform.v1beta1.QueryDirectoryContentsResponse
+	75,  // 310: google.cloud.dataform.v1beta1.Dataform.SearchFiles:output_type -> google.cloud.dataform.v1beta1.SearchFilesResponse
+	80,  // 311: google.cloud.dataform.v1beta1.Dataform.MakeDirectory:output_type -> google.cloud.dataform.v1beta1.MakeDirectoryResponse
+	82,  // 312: google.cloud.dataform.v1beta1.Dataform.RemoveDirectory:output_type -> google.cloud.dataform.v1beta1.RemoveDirectoryResponse
+	84,  // 313: google.cloud.dataform.v1beta1.Dataform.MoveDirectory:output_type -> google.cloud.dataform.v1beta1.MoveDirectoryResponse
+	86,  // 314: google.cloud.dataform.v1beta1.Dataform.ReadFile:output_type -> google.cloud.dataform.v1beta1.ReadFileResponse
+	88,  // 315: google.cloud.dataform.v1beta1.Dataform.RemoveFile:output_type -> google.cloud.dataform.v1beta1.RemoveFileResponse
+	90,  // 316: google.cloud.dataform.v1beta1.Dataform.MoveFile:output_type -> google.cloud.dataform.v1beta1.MoveFileResponse
+	92,  // 317: google.cloud.dataform.v1beta1.Dataform.WriteFile:output_type -> google.cloud.dataform.v1beta1.WriteFileResponse
+	97,  // 318: google.cloud.dataform.v1beta1.Dataform.ListReleaseConfigs:output_type -> google.cloud.dataform.v1beta1.ListReleaseConfigsResponse
+	95,  // 319: google.cloud.dataform.v1beta1.Dataform.GetReleaseConfig:output_type -> google.cloud.dataform.v1beta1.ReleaseConfig
+	95,  // 320: google.cloud.dataform.v1beta1.Dataform.CreateReleaseConfig:output_type -> google.cloud.dataform.v1beta1.ReleaseConfig
+	95,  // 321: google.cloud.dataform.v1beta1.Dataform.UpdateReleaseConfig:output_type -> google.cloud.dataform.v1beta1.ReleaseConfig
+	223, // 322: google.cloud.dataform.v1beta1.Dataform.DeleteReleaseConfig:output_type -> google.protobuf.Empty
+	113, // 323: google.cloud.dataform.v1beta1.Dataform.ListCompilationResults:output_type -> google.cloud.dataform.v1beta1.ListCompilationResultsResponse
+	102, // 324: google.cloud.dataform.v1beta1.Dataform.GetCompilationResult:output_type -> google.cloud.dataform.v1beta1.CompilationResult
+	102, // 325: google.cloud.dataform.v1beta1.Dataform.CreateCompilationResult:output_type -> google.cloud.dataform.v1beta1.CompilationResult
+	120, // 326: google.cloud.dataform.v1beta1.Dataform.QueryCompilationResultActions:output_type -> google.cloud.dataform.v1beta1.QueryCompilationResultActionsResponse
+	124, // 327: google.cloud.dataform.v1beta1.Dataform.ListWorkflowConfigs:output_type -> google.cloud.dataform.v1beta1.ListWorkflowConfigsResponse
+	121, // 328: google.cloud.dataform.v1beta1.Dataform.GetWorkflowConfig:output_type -> google.cloud.dataform.v1beta1.WorkflowConfig
+	121, // 329: google.cloud.dataform.v1beta1.Dataform.CreateWorkflowConfig:output_type -> google.cloud.dataform.v1beta1.WorkflowConfig
+	121, // 330: google.cloud.dataform.v1beta1.Dataform.UpdateWorkflowConfig:output_type -> google.cloud.dataform.v1beta1.WorkflowConfig
+	223, // 331: google.cloud.dataform.v1beta1.Dataform.DeleteWorkflowConfig:output_type -> google.protobuf.Empty
+	131, // 332: google.cloud.dataform.v1beta1.Dataform.ListWorkflowInvocations:output_type -> google.cloud.dataform.v1beta1.ListWorkflowInvocationsResponse
+	129, // 333: google.cloud.dataform.v1beta1.Dataform.GetWorkflowInvocation:output_type -> google.cloud.dataform.v1beta1.WorkflowInvocation
+	129, // 334: google.cloud.dataform.v1beta1.Dataform.CreateWorkflowInvocation:output_type -> google.cloud.dataform.v1beta1.WorkflowInvocation
+	223, // 335: google.cloud.dataform.v1beta1.Dataform.DeleteWorkflowInvocation:output_type -> google.protobuf.Empty
+	136, // 336: google.cloud.dataform.v1beta1.Dataform.CancelWorkflowInvocation:output_type -> google.cloud.dataform.v1beta1.CancelWorkflowInvocationResponse
+	139, // 337: google.cloud.dataform.v1beta1.Dataform.QueryWorkflowInvocationActions:output_type -> google.cloud.dataform.v1beta1.QueryWorkflowInvocationActionsResponse
+	140, // 338: google.cloud.dataform.v1beta1.Dataform.GetConfig:output_type -> google.cloud.dataform.v1beta1.Config
+	140, // 339: google.cloud.dataform.v1beta1.Dataform.UpdateConfig:output_type -> google.cloud.dataform.v1beta1.Config
+	225, // 340: google.cloud.dataform.v1beta1.Dataform.GetIamPolicy:output_type -> google.iam.v1.Policy
+	225, // 341: google.cloud.dataform.v1beta1.Dataform.SetIamPolicy:output_type -> google.iam.v1.Policy
+	226, // 342: google.cloud.dataform.v1beta1.Dataform.TestIamPermissions:output_type -> google.iam.v1.TestIamPermissionsResponse
+	264, // [264:343] is the sub-list for method output_type
+	185, // [185:264] is the sub-list for method input_type
+	185, // [185:185] is the sub-list for extension type_name
+	185, // [185:185] is the sub-list for extension extendee
+	0,   // [0:185] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_dataform_v1beta1_dataform_proto_init() }
@@ -16069,31 +16254,31 @@ func file_google_cloud_dataform_v1beta1_dataform_proto_init() {
 		return
 	}
 	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[1].OneofWrappers = []any{}
-	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[5].OneofWrappers = []any{}
-	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[26].OneofWrappers = []any{}
-	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[54].OneofWrappers = []any{
+	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[6].OneofWrappers = []any{}
+	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[27].OneofWrappers = []any{}
+	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[55].OneofWrappers = []any{
 		(*DirectoryEntry_File)(nil),
 		(*DirectoryEntry_Directory)(nil),
 	}
-	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[58].OneofWrappers = []any{
+	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[59].OneofWrappers = []any{
 		(*SearchResult_File)(nil),
 		(*SearchResult_Directory)(nil),
 	}
-	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[77].OneofWrappers = []any{}
-	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[84].OneofWrappers = []any{
+	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[78].OneofWrappers = []any{}
+	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[85].OneofWrappers = []any{
 		(*CompilationResult_GitCommitish)(nil),
 		(*CompilationResult_Workspace)(nil),
 		(*CompilationResult_ReleaseConfig)(nil),
 	}
-	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[87].OneofWrappers = []any{
+	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[88].OneofWrappers = []any{
 		(*WorkflowTrigger_TableUpdateTrigger)(nil),
 	}
-	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[89].OneofWrappers = []any{}
-	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[92].OneofWrappers = []any{
+	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[90].OneofWrappers = []any{}
+	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[93].OneofWrappers = []any{
 		(*NotebookRuntimeOptions_GcsOutputBucket)(nil),
 		(*NotebookRuntimeOptions_GcsRepositorySnapshotDestination)(nil),
 	}
-	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[100].OneofWrappers = []any{
+	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[101].OneofWrappers = []any{
 		(*CompilationResultAction_Relation_)(nil),
 		(*CompilationResultAction_Operations_)(nil),
 		(*CompilationResultAction_Assertion_)(nil),
@@ -16101,67 +16286,67 @@ func file_google_cloud_dataform_v1beta1_dataform_proto_init() {
 		(*CompilationResultAction_Notebook_)(nil),
 		(*CompilationResultAction_DataPreparation_)(nil),
 	}
-	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[103].OneofWrappers = []any{}
 	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[104].OneofWrappers = []any{}
-	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[111].OneofWrappers = []any{
+	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[105].OneofWrappers = []any{}
+	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[112].OneofWrappers = []any{
 		(*WorkflowInvocation_CompilationResult)(nil),
 		(*WorkflowInvocation_WorkflowConfig)(nil),
 	}
-	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[119].OneofWrappers = []any{
+	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[120].OneofWrappers = []any{
 		(*WorkflowInvocationAction_BigqueryAction)(nil),
 		(*WorkflowInvocationAction_NotebookAction_)(nil),
 		(*WorkflowInvocationAction_DataPreparationAction_)(nil),
 	}
-	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[122].OneofWrappers = []any{}
-	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[125].OneofWrappers = []any{}
-	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[127].OneofWrappers = []any{}
-	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[138].OneofWrappers = []any{}
-	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[155].OneofWrappers = []any{}
-	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[159].OneofWrappers = []any{
+	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[123].OneofWrappers = []any{}
+	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[126].OneofWrappers = []any{}
+	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[128].OneofWrappers = []any{}
+	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[139].OneofWrappers = []any{}
+	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[156].OneofWrappers = []any{}
+	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[161].OneofWrappers = []any{
 		(*CommitRepositoryChangesRequest_FileOperation_WriteFile_)(nil),
 		(*CommitRepositoryChangesRequest_FileOperation_DeleteFile_)(nil),
 	}
-	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[164].OneofWrappers = []any{
+	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[166].OneofWrappers = []any{
 		(*ReleaseConfig_ScheduledReleaseRecord_CompilationResult)(nil),
 		(*ReleaseConfig_ScheduledReleaseRecord_ErrorStatus)(nil),
 	}
-	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[174].OneofWrappers = []any{
+	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[176].OneofWrappers = []any{
 		(*CompilationResultAction_DataPreparation_ContentsYaml)(nil),
 		(*CompilationResultAction_DataPreparation_ContentsSql)(nil),
 	}
-	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[175].OneofWrappers = []any{
+	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[177].OneofWrappers = []any{
 		(*CompilationResultAction_LoadConfig_Replace)(nil),
 		(*CompilationResultAction_LoadConfig_Append)(nil),
 		(*CompilationResultAction_LoadConfig_Maximum)(nil),
 		(*CompilationResultAction_LoadConfig_Unique)(nil),
 	}
-	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[182].OneofWrappers = []any{
+	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[184].OneofWrappers = []any{
 		(*WorkflowConfig_ScheduledExecutionRecord_WorkflowInvocation)(nil),
 		(*WorkflowConfig_ScheduledExecutionRecord_ErrorStatus)(nil),
 	}
-	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[185].OneofWrappers = []any{
+	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[188].OneofWrappers = []any{
 		(*WorkflowInvocationAction_DataPreparationAction_ContentsYaml)(nil),
 		(*WorkflowInvocationAction_DataPreparationAction_ContentsSql)(nil),
 	}
-	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[188].OneofWrappers = []any{
+	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[191].OneofWrappers = []any{
 		(*WorkflowInvocationAction_DataPreparationAction_ActionLoadConfig_Replace)(nil),
 		(*WorkflowInvocationAction_DataPreparationAction_ActionLoadConfig_Append)(nil),
 		(*WorkflowInvocationAction_DataPreparationAction_ActionLoadConfig_Maximum)(nil),
 		(*WorkflowInvocationAction_DataPreparationAction_ActionLoadConfig_Unique)(nil),
 	}
-	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[191].OneofWrappers = []any{
+	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[194].OneofWrappers = []any{
 		(*QueryFolderContentsResponse_FolderContentsEntry_Folder)(nil),
 		(*QueryFolderContentsResponse_FolderContentsEntry_Repository)(nil),
 	}
-	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[192].OneofWrappers = []any{
+	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[195].OneofWrappers = []any{
 		(*QueryUserRootContentsResponse_RootContentsEntry_Folder)(nil),
 		(*QueryUserRootContentsResponse_RootContentsEntry_Repository)(nil),
 	}
-	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[193].OneofWrappers = []any{
+	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[196].OneofWrappers = []any{
 		(*QueryTeamFolderContentsResponse_TeamFolderContentsEntry_Folder)(nil),
 		(*QueryTeamFolderContentsResponse_TeamFolderContentsEntry_Repository)(nil),
 	}
-	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[194].OneofWrappers = []any{
+	file_google_cloud_dataform_v1beta1_dataform_proto_msgTypes[197].OneofWrappers = []any{
 		(*SearchTeamFoldersResponse_TeamFolderSearchResult_TeamFolder)(nil),
 	}
 	type x struct{}
@@ -16170,7 +16355,7 @@ func file_google_cloud_dataform_v1beta1_dataform_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_dataform_v1beta1_dataform_proto_rawDesc), len(file_google_cloud_dataform_v1beta1_dataform_proto_rawDesc)),
 			NumEnums:      17,
-			NumMessages:   195,
+			NumMessages:   198,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

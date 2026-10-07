@@ -17,7 +17,10 @@ limitations under the License.
 package spanner
 
 import (
+	"fmt"
+	"runtime"
 	"sync"
+	"sync/atomic"
 	"testing"
 	"time"
 )
@@ -59,7 +62,6 @@ func TestEndpointLatencyRegistryKeysByOperationUID(t *testing.T) {
 func TestEndpointLatencyRegistryLookupRefreshesAccess(t *testing.T) {
 	now := time.Unix(1_000, 0)
 	registry := newEndpointLatencyRegistry(func() time.Time { return now })
-	defer registry.close()
 
 	registry.recordLatency(7, false, "server-a:443", 25*time.Millisecond)
 	if !registry.hasScore(7, false, "server-a:443") {
@@ -98,23 +100,21 @@ func TestEndpointLatencyRegistryLookupRefreshesAccess(t *testing.T) {
 	}
 }
 
-func TestEndpointLatencyRegistryExpiredEntryIsHiddenBeforeCleanup(t *testing.T) {
+func TestEndpointLatencyRegistryExpiredEntryIsCleanedUpOnAccess(t *testing.T) {
 	now := time.Unix(1_500, 0)
 	registry := newEndpointLatencyRegistry(func() time.Time { return now })
-	defer registry.close()
 	registry.expireAfter = time.Minute
 
 	registry.recordLatency(7, false, "server-a:443", 25*time.Millisecond)
 	now = now.Add(2 * time.Minute)
 
 	if registry.hasScore(7, false, "server-a:443") {
-		t.Fatal("expected expired entry to be hidden before janitor cleanup")
+		t.Fatal("expected expired entry to be hidden")
 	}
 	if got := registry.selectionCost(7, false, nil, "server-a:443"); got == 0 {
 		t.Fatal("expected fallback selection cost after expiry")
 	}
 
-	registry.cleanup(now)
 	registry.mu.RLock()
 	_, ok := registry.trackers[endpointLatencyTrackerKey{
 		operationUID: 7,
@@ -123,14 +123,13 @@ func TestEndpointLatencyRegistryExpiredEntryIsHiddenBeforeCleanup(t *testing.T) 
 	}]
 	registry.mu.RUnlock()
 	if ok {
-		t.Fatal("expected cleanup to remove expired entry")
+		t.Fatal("expected access-driven cleanup to remove expired entry")
 	}
 }
 
 func TestEndpointLatencyRegistryCleanupEvictsLeastRecentlyAccessedWhenBounded(t *testing.T) {
 	now := time.Unix(2_000, 0)
 	registry := newEndpointLatencyRegistry(func() time.Time { return now })
-	defer registry.close()
 	registry.maxTrackers = 2
 	registry.expireAfter = 10 * time.Minute
 
@@ -155,5 +154,122 @@ func TestEndpointLatencyRegistryCleanupEvictsLeastRecentlyAccessedWhenBounded(t 
 	}
 	if !registry.hasScore(3, false, "server-c:443") {
 		t.Fatal("expected newly added tracker 3 to exist")
+	}
+}
+
+func TestEndpointLatencyRegistryRateLimitsCleanupWhenOverLimit(t *testing.T) {
+	now := time.Unix(3_000, 0)
+	registry := newEndpointLatencyRegistry(func() time.Time { return now })
+	registry.maxTrackers = 2
+
+	registry.recordLatency(1, false, "server-a:443", 10*time.Millisecond)
+	lastCleanupNanos := registry.lastCleanupNanos.Load()
+	registry.recordLatency(2, false, "server-b:443", 10*time.Millisecond)
+	registry.recordLatency(3, false, "server-c:443", 10*time.Millisecond)
+
+	registry.mu.RLock()
+	trackerCount := len(registry.trackers)
+	registry.mu.RUnlock()
+	if trackerCount != registry.maxTrackers {
+		t.Fatalf("tracker count after over-cap insert = %d, want %d", trackerCount, registry.maxTrackers)
+	}
+	if got := registry.lastCleanupNanos.Load(); got != lastCleanupNanos {
+		t.Fatalf("last cleanup timestamp after sampled eviction = %d, want %d", got, lastCleanupNanos)
+	}
+}
+
+func TestEndpointLatencyRegistryConcurrentAccessDuringEviction(t *testing.T) {
+	const (
+		hotTrackerCount  = 10
+		coldTrackerCount = 90
+		coldInsertCount  = 200
+	)
+
+	var currentTime atomic.Int64
+	currentTime.Store(int64(time.Hour))
+	nowFunc := func() time.Time {
+		return time.Unix(0, currentTime.Load())
+	}
+	registry := newEndpointLatencyRegistry(nowFunc)
+	registry.expireAfter = 24 * time.Hour
+	registry.maxTrackers = hotTrackerCount + coldTrackerCount
+
+	coldNow := time.Unix(0, 1)
+	for i := 0; i < coldTrackerCount; i++ {
+		key := endpointLatencyTrackerKey{
+			operationUID: uint64(1_000 + i),
+			address:      fmt.Sprintf("cold-%d:443", i),
+		}
+		registry.getOrCreateTracker(key, coldNow)
+	}
+	hotEntries := make([]*endpointLatencyTrackerEntry, hotTrackerCount)
+	for i := 0; i < hotTrackerCount; i++ {
+		key := endpointLatencyTrackerKey{
+			operationUID: uint64(i + 1),
+			address:      fmt.Sprintf("hot-%d:443", i),
+		}
+		registry.recordLatency(key.operationUID, false, key.address, time.Millisecond)
+		registry.mu.RLock()
+		hotEntries[i] = registry.trackers[key]
+		registry.mu.RUnlock()
+	}
+
+	stop := make(chan struct{})
+	var ready sync.WaitGroup
+	var workers sync.WaitGroup
+	ready.Add(hotTrackerCount)
+	workers.Add(hotTrackerCount)
+	for i := 0; i < hotTrackerCount; i++ {
+		operationUID := uint64(i + 1)
+		address := fmt.Sprintf("hot-%d:443", i)
+		go func() {
+			defer workers.Done()
+			currentTime.Add(int64(time.Nanosecond))
+			registry.hasScore(operationUID, false, address)
+			registry.recordLatency(operationUID, false, address, time.Millisecond)
+			ready.Done()
+			for {
+				select {
+				case <-stop:
+					return
+				default:
+					currentTime.Add(int64(time.Nanosecond))
+					registry.hasScore(operationUID, false, address)
+					registry.recordLatency(operationUID, false, address, time.Millisecond)
+				}
+			}
+		}()
+	}
+	ready.Wait()
+
+	for i := 0; i < coldInsertCount; i++ {
+		key := endpointLatencyTrackerKey{
+			operationUID: uint64(2_000 + i),
+			address:      fmt.Sprintf("cold-insert-%d:443", i),
+		}
+		registry.getOrCreateTracker(key, coldNow)
+		runtime.Gosched()
+	}
+	close(stop)
+	workers.Wait()
+
+	hotSurvivors := 0
+	for i := 0; i < hotTrackerCount; i++ {
+		key := endpointLatencyTrackerKey{
+			operationUID: uint64(i + 1),
+			address:      fmt.Sprintf("hot-%d:443", i),
+		}
+		registry.mu.RLock()
+		entry := registry.trackers[key]
+		registry.mu.RUnlock()
+		if entry == hotEntries[i] && registry.hasScore(key.operationUID, false, key.address) {
+			hotSurvivors++
+		}
+	}
+	// With 90 cold entries and a sample of 8, two hot evictions among 200
+	// insertions have probability below 1e-15. Allowing one avoids a flaky
+	// assertion while still detecting eviction that ignores concurrent access.
+	if hotSurvivors < hotTrackerCount-1 {
+		t.Fatalf("hot tracker survivors = %d, want at least %d", hotSurvivors, hotTrackerCount-1)
 	}
 }

@@ -918,6 +918,95 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "edgenetwork",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/edgenetwork/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "edgenetwork.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.InitializeZone = append(client.CallOptions.InitializeZone, gax.WithClientTracing(tracing))
+		client.CallOptions.ListZones = append(client.CallOptions.ListZones, gax.WithClientTracing(tracing))
+		client.CallOptions.GetZone = append(client.CallOptions.GetZone, gax.WithClientTracing(tracing))
+		client.CallOptions.ListNetworks = append(client.CallOptions.ListNetworks, gax.WithClientTracing(tracing))
+		client.CallOptions.GetNetwork = append(client.CallOptions.GetNetwork, gax.WithClientTracing(tracing))
+		client.CallOptions.DiagnoseNetwork = append(client.CallOptions.DiagnoseNetwork, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateNetwork = append(client.CallOptions.CreateNetwork, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteNetwork = append(client.CallOptions.DeleteNetwork, gax.WithClientTracing(tracing))
+		client.CallOptions.ListSubnets = append(client.CallOptions.ListSubnets, gax.WithClientTracing(tracing))
+		client.CallOptions.GetSubnet = append(client.CallOptions.GetSubnet, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateSubnet = append(client.CallOptions.CreateSubnet, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateSubnet = append(client.CallOptions.UpdateSubnet, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteSubnet = append(client.CallOptions.DeleteSubnet, gax.WithClientTracing(tracing))
+		client.CallOptions.ListInterconnects = append(client.CallOptions.ListInterconnects, gax.WithClientTracing(tracing))
+		client.CallOptions.GetInterconnect = append(client.CallOptions.GetInterconnect, gax.WithClientTracing(tracing))
+		client.CallOptions.DiagnoseInterconnect = append(client.CallOptions.DiagnoseInterconnect, gax.WithClientTracing(tracing))
+		client.CallOptions.ListInterconnectAttachments = append(client.CallOptions.ListInterconnectAttachments, gax.WithClientTracing(tracing))
+		client.CallOptions.GetInterconnectAttachment = append(client.CallOptions.GetInterconnectAttachment, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateInterconnectAttachment = append(client.CallOptions.CreateInterconnectAttachment, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteInterconnectAttachment = append(client.CallOptions.DeleteInterconnectAttachment, gax.WithClientTracing(tracing))
+		client.CallOptions.ListRouters = append(client.CallOptions.ListRouters, gax.WithClientTracing(tracing))
+		client.CallOptions.GetRouter = append(client.CallOptions.GetRouter, gax.WithClientTracing(tracing))
+		client.CallOptions.DiagnoseRouter = append(client.CallOptions.DiagnoseRouter, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateRouter = append(client.CallOptions.CreateRouter, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateRouter = append(client.CallOptions.UpdateRouter, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteRouter = append(client.CallOptions.DeleteRouter, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "edgenetwork",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/edgenetwork/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "edgenetwork.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.InitializeZone = append(client.CallOptions.InitializeZone, gax.WithClientLogging(logging))
+		client.CallOptions.ListZones = append(client.CallOptions.ListZones, gax.WithClientLogging(logging))
+		client.CallOptions.GetZone = append(client.CallOptions.GetZone, gax.WithClientLogging(logging))
+		client.CallOptions.ListNetworks = append(client.CallOptions.ListNetworks, gax.WithClientLogging(logging))
+		client.CallOptions.GetNetwork = append(client.CallOptions.GetNetwork, gax.WithClientLogging(logging))
+		client.CallOptions.DiagnoseNetwork = append(client.CallOptions.DiagnoseNetwork, gax.WithClientLogging(logging))
+		client.CallOptions.CreateNetwork = append(client.CallOptions.CreateNetwork, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteNetwork = append(client.CallOptions.DeleteNetwork, gax.WithClientLogging(logging))
+		client.CallOptions.ListSubnets = append(client.CallOptions.ListSubnets, gax.WithClientLogging(logging))
+		client.CallOptions.GetSubnet = append(client.CallOptions.GetSubnet, gax.WithClientLogging(logging))
+		client.CallOptions.CreateSubnet = append(client.CallOptions.CreateSubnet, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateSubnet = append(client.CallOptions.UpdateSubnet, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteSubnet = append(client.CallOptions.DeleteSubnet, gax.WithClientLogging(logging))
+		client.CallOptions.ListInterconnects = append(client.CallOptions.ListInterconnects, gax.WithClientLogging(logging))
+		client.CallOptions.GetInterconnect = append(client.CallOptions.GetInterconnect, gax.WithClientLogging(logging))
+		client.CallOptions.DiagnoseInterconnect = append(client.CallOptions.DiagnoseInterconnect, gax.WithClientLogging(logging))
+		client.CallOptions.ListInterconnectAttachments = append(client.CallOptions.ListInterconnectAttachments, gax.WithClientLogging(logging))
+		client.CallOptions.GetInterconnectAttachment = append(client.CallOptions.GetInterconnectAttachment, gax.WithClientLogging(logging))
+		client.CallOptions.CreateInterconnectAttachment = append(client.CallOptions.CreateInterconnectAttachment, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteInterconnectAttachment = append(client.CallOptions.DeleteInterconnectAttachment, gax.WithClientLogging(logging))
+		client.CallOptions.ListRouters = append(client.CallOptions.ListRouters, gax.WithClientLogging(logging))
+		client.CallOptions.GetRouter = append(client.CallOptions.GetRouter, gax.WithClientLogging(logging))
+		client.CallOptions.DiagnoseRouter = append(client.CallOptions.DiagnoseRouter, gax.WithClientLogging(logging))
+		client.CallOptions.CreateRouter = append(client.CallOptions.CreateRouter, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateRouter = append(client.CallOptions.UpdateRouter, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteRouter = append(client.CallOptions.DeleteRouter, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -1059,6 +1148,95 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "edgenetwork",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/edgenetwork/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "edgenetwork.googleapis.com",
+			}),
+		)
+
+		callOpts.InitializeZone = append(callOpts.InitializeZone, gax.WithClientTracing(tracing))
+		callOpts.ListZones = append(callOpts.ListZones, gax.WithClientTracing(tracing))
+		callOpts.GetZone = append(callOpts.GetZone, gax.WithClientTracing(tracing))
+		callOpts.ListNetworks = append(callOpts.ListNetworks, gax.WithClientTracing(tracing))
+		callOpts.GetNetwork = append(callOpts.GetNetwork, gax.WithClientTracing(tracing))
+		callOpts.DiagnoseNetwork = append(callOpts.DiagnoseNetwork, gax.WithClientTracing(tracing))
+		callOpts.CreateNetwork = append(callOpts.CreateNetwork, gax.WithClientTracing(tracing))
+		callOpts.DeleteNetwork = append(callOpts.DeleteNetwork, gax.WithClientTracing(tracing))
+		callOpts.ListSubnets = append(callOpts.ListSubnets, gax.WithClientTracing(tracing))
+		callOpts.GetSubnet = append(callOpts.GetSubnet, gax.WithClientTracing(tracing))
+		callOpts.CreateSubnet = append(callOpts.CreateSubnet, gax.WithClientTracing(tracing))
+		callOpts.UpdateSubnet = append(callOpts.UpdateSubnet, gax.WithClientTracing(tracing))
+		callOpts.DeleteSubnet = append(callOpts.DeleteSubnet, gax.WithClientTracing(tracing))
+		callOpts.ListInterconnects = append(callOpts.ListInterconnects, gax.WithClientTracing(tracing))
+		callOpts.GetInterconnect = append(callOpts.GetInterconnect, gax.WithClientTracing(tracing))
+		callOpts.DiagnoseInterconnect = append(callOpts.DiagnoseInterconnect, gax.WithClientTracing(tracing))
+		callOpts.ListInterconnectAttachments = append(callOpts.ListInterconnectAttachments, gax.WithClientTracing(tracing))
+		callOpts.GetInterconnectAttachment = append(callOpts.GetInterconnectAttachment, gax.WithClientTracing(tracing))
+		callOpts.CreateInterconnectAttachment = append(callOpts.CreateInterconnectAttachment, gax.WithClientTracing(tracing))
+		callOpts.DeleteInterconnectAttachment = append(callOpts.DeleteInterconnectAttachment, gax.WithClientTracing(tracing))
+		callOpts.ListRouters = append(callOpts.ListRouters, gax.WithClientTracing(tracing))
+		callOpts.GetRouter = append(callOpts.GetRouter, gax.WithClientTracing(tracing))
+		callOpts.DiagnoseRouter = append(callOpts.DiagnoseRouter, gax.WithClientTracing(tracing))
+		callOpts.CreateRouter = append(callOpts.CreateRouter, gax.WithClientTracing(tracing))
+		callOpts.UpdateRouter = append(callOpts.UpdateRouter, gax.WithClientTracing(tracing))
+		callOpts.DeleteRouter = append(callOpts.DeleteRouter, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "edgenetwork",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/edgenetwork/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "edgenetwork.googleapis.com",
+			}),
+		)
+
+		callOpts.InitializeZone = append(callOpts.InitializeZone, gax.WithClientLogging(logging))
+		callOpts.ListZones = append(callOpts.ListZones, gax.WithClientLogging(logging))
+		callOpts.GetZone = append(callOpts.GetZone, gax.WithClientLogging(logging))
+		callOpts.ListNetworks = append(callOpts.ListNetworks, gax.WithClientLogging(logging))
+		callOpts.GetNetwork = append(callOpts.GetNetwork, gax.WithClientLogging(logging))
+		callOpts.DiagnoseNetwork = append(callOpts.DiagnoseNetwork, gax.WithClientLogging(logging))
+		callOpts.CreateNetwork = append(callOpts.CreateNetwork, gax.WithClientLogging(logging))
+		callOpts.DeleteNetwork = append(callOpts.DeleteNetwork, gax.WithClientLogging(logging))
+		callOpts.ListSubnets = append(callOpts.ListSubnets, gax.WithClientLogging(logging))
+		callOpts.GetSubnet = append(callOpts.GetSubnet, gax.WithClientLogging(logging))
+		callOpts.CreateSubnet = append(callOpts.CreateSubnet, gax.WithClientLogging(logging))
+		callOpts.UpdateSubnet = append(callOpts.UpdateSubnet, gax.WithClientLogging(logging))
+		callOpts.DeleteSubnet = append(callOpts.DeleteSubnet, gax.WithClientLogging(logging))
+		callOpts.ListInterconnects = append(callOpts.ListInterconnects, gax.WithClientLogging(logging))
+		callOpts.GetInterconnect = append(callOpts.GetInterconnect, gax.WithClientLogging(logging))
+		callOpts.DiagnoseInterconnect = append(callOpts.DiagnoseInterconnect, gax.WithClientLogging(logging))
+		callOpts.ListInterconnectAttachments = append(callOpts.ListInterconnectAttachments, gax.WithClientLogging(logging))
+		callOpts.GetInterconnectAttachment = append(callOpts.GetInterconnectAttachment, gax.WithClientLogging(logging))
+		callOpts.CreateInterconnectAttachment = append(callOpts.CreateInterconnectAttachment, gax.WithClientLogging(logging))
+		callOpts.DeleteInterconnectAttachment = append(callOpts.DeleteInterconnectAttachment, gax.WithClientLogging(logging))
+		callOpts.ListRouters = append(callOpts.ListRouters, gax.WithClientLogging(logging))
+		callOpts.GetRouter = append(callOpts.GetRouter, gax.WithClientLogging(logging))
+		callOpts.DiagnoseRouter = append(callOpts.DiagnoseRouter, gax.WithClientLogging(logging))
+		callOpts.CreateRouter = append(callOpts.CreateRouter, gax.WithClientLogging(logging))
+		callOpts.UpdateRouter = append(callOpts.UpdateRouter, gax.WithClientLogging(logging))
+		callOpts.DeleteRouter = append(callOpts.DeleteRouter, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -1115,9 +1293,6 @@ func (c *gRPCClient) InitializeZone(ctx context.Context, req *edgenetworkpb.Init
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgenetwork.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgenetwork.v1.EdgeNetwork/InitializeZone")
 	}
@@ -1139,9 +1314,6 @@ func (c *gRPCClient) ListZones(ctx context.Context, req *edgenetworkpb.ListZones
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgenetwork.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgenetwork.v1.EdgeNetwork/ListZones")
 	}
@@ -1191,9 +1363,6 @@ func (c *gRPCClient) GetZone(ctx context.Context, req *edgenetworkpb.GetZoneRequ
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgenetwork.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgenetwork.v1.EdgeNetwork/GetZone")
 	}
@@ -1215,9 +1384,6 @@ func (c *gRPCClient) ListNetworks(ctx context.Context, req *edgenetworkpb.ListNe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgenetwork.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgenetwork.v1.EdgeNetwork/ListNetworks")
 	}
@@ -1267,9 +1433,6 @@ func (c *gRPCClient) GetNetwork(ctx context.Context, req *edgenetworkpb.GetNetwo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgenetwork.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgenetwork.v1.EdgeNetwork/GetNetwork")
 	}
@@ -1291,9 +1454,6 @@ func (c *gRPCClient) DiagnoseNetwork(ctx context.Context, req *edgenetworkpb.Dia
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgenetwork.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgenetwork.v1.EdgeNetwork/DiagnoseNetwork")
 	}
@@ -1315,9 +1475,6 @@ func (c *gRPCClient) CreateNetwork(ctx context.Context, req *edgenetworkpb.Creat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgenetwork.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgenetwork.v1.EdgeNetwork/CreateNetwork")
 	}
@@ -1345,9 +1502,6 @@ func (c *gRPCClient) DeleteNetwork(ctx context.Context, req *edgenetworkpb.Delet
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgenetwork.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgenetwork.v1.EdgeNetwork/DeleteNetwork")
 	}
@@ -1375,9 +1529,6 @@ func (c *gRPCClient) ListSubnets(ctx context.Context, req *edgenetworkpb.ListSub
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgenetwork.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgenetwork.v1.EdgeNetwork/ListSubnets")
 	}
@@ -1427,9 +1578,6 @@ func (c *gRPCClient) GetSubnet(ctx context.Context, req *edgenetworkpb.GetSubnet
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgenetwork.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgenetwork.v1.EdgeNetwork/GetSubnet")
 	}
@@ -1451,9 +1599,6 @@ func (c *gRPCClient) CreateSubnet(ctx context.Context, req *edgenetworkpb.Create
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgenetwork.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgenetwork.v1.EdgeNetwork/CreateSubnet")
 	}
@@ -1508,9 +1653,6 @@ func (c *gRPCClient) DeleteSubnet(ctx context.Context, req *edgenetworkpb.Delete
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgenetwork.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgenetwork.v1.EdgeNetwork/DeleteSubnet")
 	}
@@ -1538,9 +1680,6 @@ func (c *gRPCClient) ListInterconnects(ctx context.Context, req *edgenetworkpb.L
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgenetwork.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgenetwork.v1.EdgeNetwork/ListInterconnects")
 	}
@@ -1590,9 +1729,6 @@ func (c *gRPCClient) GetInterconnect(ctx context.Context, req *edgenetworkpb.Get
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgenetwork.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgenetwork.v1.EdgeNetwork/GetInterconnect")
 	}
@@ -1614,9 +1750,6 @@ func (c *gRPCClient) DiagnoseInterconnect(ctx context.Context, req *edgenetworkp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgenetwork.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgenetwork.v1.EdgeNetwork/DiagnoseInterconnect")
 	}
@@ -1638,9 +1771,6 @@ func (c *gRPCClient) ListInterconnectAttachments(ctx context.Context, req *edgen
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgenetwork.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgenetwork.v1.EdgeNetwork/ListInterconnectAttachments")
 	}
@@ -1690,9 +1820,6 @@ func (c *gRPCClient) GetInterconnectAttachment(ctx context.Context, req *edgenet
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgenetwork.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgenetwork.v1.EdgeNetwork/GetInterconnectAttachment")
 	}
@@ -1714,9 +1841,6 @@ func (c *gRPCClient) CreateInterconnectAttachment(ctx context.Context, req *edge
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgenetwork.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgenetwork.v1.EdgeNetwork/CreateInterconnectAttachment")
 	}
@@ -1744,9 +1868,6 @@ func (c *gRPCClient) DeleteInterconnectAttachment(ctx context.Context, req *edge
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgenetwork.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgenetwork.v1.EdgeNetwork/DeleteInterconnectAttachment")
 	}
@@ -1774,9 +1895,6 @@ func (c *gRPCClient) ListRouters(ctx context.Context, req *edgenetworkpb.ListRou
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgenetwork.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgenetwork.v1.EdgeNetwork/ListRouters")
 	}
@@ -1826,9 +1944,6 @@ func (c *gRPCClient) GetRouter(ctx context.Context, req *edgenetworkpb.GetRouter
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgenetwork.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgenetwork.v1.EdgeNetwork/GetRouter")
 	}
@@ -1850,9 +1965,6 @@ func (c *gRPCClient) DiagnoseRouter(ctx context.Context, req *edgenetworkpb.Diag
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgenetwork.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgenetwork.v1.EdgeNetwork/DiagnoseRouter")
 	}
@@ -1874,9 +1986,6 @@ func (c *gRPCClient) CreateRouter(ctx context.Context, req *edgenetworkpb.Create
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgenetwork.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgenetwork.v1.EdgeNetwork/CreateRouter")
 	}
@@ -1931,9 +2040,6 @@ func (c *gRPCClient) DeleteRouter(ctx context.Context, req *edgenetworkpb.Delete
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgenetwork.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgenetwork.v1.EdgeNetwork/DeleteRouter")
 	}
@@ -2155,9 +2261,6 @@ func (c *restClient) InitializeZone(ctx context.Context, req *edgenetworkpb.Init
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgenetwork.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgenetwork.v1.EdgeNetwork/InitializeZone")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/zones/*}:initialize")
@@ -2302,9 +2405,6 @@ func (c *restClient) GetZone(ctx context.Context, req *edgenetworkpb.GetZoneRequ
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgenetwork.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgenetwork.v1.EdgeNetwork/GetZone")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/zones/*}")
@@ -2443,9 +2543,6 @@ func (c *restClient) GetNetwork(ctx context.Context, req *edgenetworkpb.GetNetwo
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgenetwork.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgenetwork.v1.EdgeNetwork/GetNetwork")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/zones/*/networks/*}")
@@ -2500,9 +2597,6 @@ func (c *restClient) DiagnoseNetwork(ctx context.Context, req *edgenetworkpb.Dia
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgenetwork.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgenetwork.v1.EdgeNetwork/DiagnoseNetwork")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/zones/*/networks/*}:diagnose")
@@ -2568,9 +2662,6 @@ func (c *restClient) CreateNetwork(ctx context.Context, req *edgenetworkpb.Creat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgenetwork.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgenetwork.v1.EdgeNetwork/CreateNetwork")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/zones/*}/networks")
@@ -2635,9 +2726,6 @@ func (c *restClient) DeleteNetwork(ctx context.Context, req *edgenetworkpb.Delet
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgenetwork.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgenetwork.v1.EdgeNetwork/DeleteNetwork")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/zones/*/networks/*}")
@@ -2783,9 +2871,6 @@ func (c *restClient) GetSubnet(ctx context.Context, req *edgenetworkpb.GetSubnet
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgenetwork.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgenetwork.v1.EdgeNetwork/GetSubnet")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/zones/*/subnets/*}")
@@ -2851,9 +2936,6 @@ func (c *restClient) CreateSubnet(ctx context.Context, req *edgenetworkpb.Create
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgenetwork.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgenetwork.v1.EdgeNetwork/CreateSubnet")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/zones/*}/subnets")
@@ -2996,9 +3078,6 @@ func (c *restClient) DeleteSubnet(ctx context.Context, req *edgenetworkpb.Delete
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgenetwork.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgenetwork.v1.EdgeNetwork/DeleteSubnet")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/zones/*/subnets/*}")
@@ -3144,9 +3223,6 @@ func (c *restClient) GetInterconnect(ctx context.Context, req *edgenetworkpb.Get
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgenetwork.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgenetwork.v1.EdgeNetwork/GetInterconnect")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/zones/*/interconnects/*}")
@@ -3201,9 +3277,6 @@ func (c *restClient) DiagnoseInterconnect(ctx context.Context, req *edgenetworkp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgenetwork.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgenetwork.v1.EdgeNetwork/DiagnoseInterconnect")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/zones/*/interconnects/*}:diagnose")
@@ -3342,9 +3415,6 @@ func (c *restClient) GetInterconnectAttachment(ctx context.Context, req *edgenet
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgenetwork.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgenetwork.v1.EdgeNetwork/GetInterconnectAttachment")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/zones/*/interconnectAttachments/*}")
@@ -3410,9 +3480,6 @@ func (c *restClient) CreateInterconnectAttachment(ctx context.Context, req *edge
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgenetwork.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgenetwork.v1.EdgeNetwork/CreateInterconnectAttachment")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/zones/*}/interconnectAttachments")
@@ -3477,9 +3544,6 @@ func (c *restClient) DeleteInterconnectAttachment(ctx context.Context, req *edge
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgenetwork.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgenetwork.v1.EdgeNetwork/DeleteInterconnectAttachment")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/zones/*/interconnectAttachments/*}")
@@ -3625,9 +3689,6 @@ func (c *restClient) GetRouter(ctx context.Context, req *edgenetworkpb.GetRouter
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgenetwork.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgenetwork.v1.EdgeNetwork/GetRouter")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/zones/*/routers/*}")
@@ -3682,9 +3743,6 @@ func (c *restClient) DiagnoseRouter(ctx context.Context, req *edgenetworkpb.Diag
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgenetwork.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgenetwork.v1.EdgeNetwork/DiagnoseRouter")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/zones/*/routers/*}:diagnose")
@@ -3750,9 +3808,6 @@ func (c *restClient) CreateRouter(ctx context.Context, req *edgenetworkpb.Create
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgenetwork.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgenetwork.v1.EdgeNetwork/CreateRouter")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/zones/*}/routers")
@@ -3895,9 +3950,6 @@ func (c *restClient) DeleteRouter(ctx context.Context, req *edgenetworkpb.Delete
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//edgenetwork.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.edgenetwork.v1.EdgeNetwork/DeleteRouter")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/zones/*/routers/*}")

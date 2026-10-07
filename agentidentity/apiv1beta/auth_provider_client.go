@@ -768,6 +768,73 @@ func NewAuthProviderClient(ctx context.Context, opts ...option.ClientOption) (*A
 		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientMetrics(metrics))
 		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "agentidentity",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/agentidentity/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "agentidentity.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListAuthProviders = append(client.CallOptions.ListAuthProviders, gax.WithClientTracing(tracing))
+		client.CallOptions.GetAuthProvider = append(client.CallOptions.GetAuthProvider, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateAuthProvider = append(client.CallOptions.CreateAuthProvider, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateAuthProvider = append(client.CallOptions.UpdateAuthProvider, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteAuthProvider = append(client.CallOptions.DeleteAuthProvider, gax.WithClientTracing(tracing))
+		client.CallOptions.UndeleteAuthProvider = append(client.CallOptions.UndeleteAuthProvider, gax.WithClientTracing(tracing))
+		client.CallOptions.QueryAuthProviders = append(client.CallOptions.QueryAuthProviders, gax.WithClientTracing(tracing))
+		client.CallOptions.QueryWorkloads = append(client.CallOptions.QueryWorkloads, gax.WithClientTracing(tracing))
+		client.CallOptions.ListAuthorizations = append(client.CallOptions.ListAuthorizations, gax.WithClientTracing(tracing))
+		client.CallOptions.GetAuthorization = append(client.CallOptions.GetAuthorization, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteAuthorization = append(client.CallOptions.DeleteAuthorization, gax.WithClientTracing(tracing))
+		client.CallOptions.ListAccessSummaries = append(client.CallOptions.ListAccessSummaries, gax.WithClientTracing(tracing))
+		client.CallOptions.GetAccessSummary = append(client.CallOptions.GetAccessSummary, gax.WithClientTracing(tracing))
+		client.CallOptions.RevokeAuthorization = append(client.CallOptions.RevokeAuthorization, gax.WithClientTracing(tracing))
+		client.CallOptions.EnableAuthProvider = append(client.CallOptions.EnableAuthProvider, gax.WithClientTracing(tracing))
+		client.CallOptions.DisableAuthProvider = append(client.CallOptions.DisableAuthProvider, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "agentidentity",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/agentidentity/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "agentidentity.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListAuthProviders = append(client.CallOptions.ListAuthProviders, gax.WithClientLogging(logging))
+		client.CallOptions.GetAuthProvider = append(client.CallOptions.GetAuthProvider, gax.WithClientLogging(logging))
+		client.CallOptions.CreateAuthProvider = append(client.CallOptions.CreateAuthProvider, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateAuthProvider = append(client.CallOptions.UpdateAuthProvider, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteAuthProvider = append(client.CallOptions.DeleteAuthProvider, gax.WithClientLogging(logging))
+		client.CallOptions.UndeleteAuthProvider = append(client.CallOptions.UndeleteAuthProvider, gax.WithClientLogging(logging))
+		client.CallOptions.QueryAuthProviders = append(client.CallOptions.QueryAuthProviders, gax.WithClientLogging(logging))
+		client.CallOptions.QueryWorkloads = append(client.CallOptions.QueryWorkloads, gax.WithClientLogging(logging))
+		client.CallOptions.ListAuthorizations = append(client.CallOptions.ListAuthorizations, gax.WithClientLogging(logging))
+		client.CallOptions.GetAuthorization = append(client.CallOptions.GetAuthorization, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteAuthorization = append(client.CallOptions.DeleteAuthorization, gax.WithClientLogging(logging))
+		client.CallOptions.ListAccessSummaries = append(client.CallOptions.ListAccessSummaries, gax.WithClientLogging(logging))
+		client.CallOptions.GetAccessSummary = append(client.CallOptions.GetAccessSummary, gax.WithClientLogging(logging))
+		client.CallOptions.RevokeAuthorization = append(client.CallOptions.RevokeAuthorization, gax.WithClientLogging(logging))
+		client.CallOptions.EnableAuthProvider = append(client.CallOptions.EnableAuthProvider, gax.WithClientLogging(logging))
+		client.CallOptions.DisableAuthProvider = append(client.CallOptions.DisableAuthProvider, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -879,6 +946,73 @@ func NewAuthProviderRESTClient(ctx context.Context, opts ...option.ClientOption)
 		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientMetrics(metrics))
 		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "agentidentity",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/agentidentity/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "agentidentity.googleapis.com",
+			}),
+		)
+
+		callOpts.ListAuthProviders = append(callOpts.ListAuthProviders, gax.WithClientTracing(tracing))
+		callOpts.GetAuthProvider = append(callOpts.GetAuthProvider, gax.WithClientTracing(tracing))
+		callOpts.CreateAuthProvider = append(callOpts.CreateAuthProvider, gax.WithClientTracing(tracing))
+		callOpts.UpdateAuthProvider = append(callOpts.UpdateAuthProvider, gax.WithClientTracing(tracing))
+		callOpts.DeleteAuthProvider = append(callOpts.DeleteAuthProvider, gax.WithClientTracing(tracing))
+		callOpts.UndeleteAuthProvider = append(callOpts.UndeleteAuthProvider, gax.WithClientTracing(tracing))
+		callOpts.QueryAuthProviders = append(callOpts.QueryAuthProviders, gax.WithClientTracing(tracing))
+		callOpts.QueryWorkloads = append(callOpts.QueryWorkloads, gax.WithClientTracing(tracing))
+		callOpts.ListAuthorizations = append(callOpts.ListAuthorizations, gax.WithClientTracing(tracing))
+		callOpts.GetAuthorization = append(callOpts.GetAuthorization, gax.WithClientTracing(tracing))
+		callOpts.DeleteAuthorization = append(callOpts.DeleteAuthorization, gax.WithClientTracing(tracing))
+		callOpts.ListAccessSummaries = append(callOpts.ListAccessSummaries, gax.WithClientTracing(tracing))
+		callOpts.GetAccessSummary = append(callOpts.GetAccessSummary, gax.WithClientTracing(tracing))
+		callOpts.RevokeAuthorization = append(callOpts.RevokeAuthorization, gax.WithClientTracing(tracing))
+		callOpts.EnableAuthProvider = append(callOpts.EnableAuthProvider, gax.WithClientTracing(tracing))
+		callOpts.DisableAuthProvider = append(callOpts.DisableAuthProvider, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "agentidentity",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/agentidentity/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "agentidentity.googleapis.com",
+			}),
+		)
+
+		callOpts.ListAuthProviders = append(callOpts.ListAuthProviders, gax.WithClientLogging(logging))
+		callOpts.GetAuthProvider = append(callOpts.GetAuthProvider, gax.WithClientLogging(logging))
+		callOpts.CreateAuthProvider = append(callOpts.CreateAuthProvider, gax.WithClientLogging(logging))
+		callOpts.UpdateAuthProvider = append(callOpts.UpdateAuthProvider, gax.WithClientLogging(logging))
+		callOpts.DeleteAuthProvider = append(callOpts.DeleteAuthProvider, gax.WithClientLogging(logging))
+		callOpts.UndeleteAuthProvider = append(callOpts.UndeleteAuthProvider, gax.WithClientLogging(logging))
+		callOpts.QueryAuthProviders = append(callOpts.QueryAuthProviders, gax.WithClientLogging(logging))
+		callOpts.QueryWorkloads = append(callOpts.QueryWorkloads, gax.WithClientLogging(logging))
+		callOpts.ListAuthorizations = append(callOpts.ListAuthorizations, gax.WithClientLogging(logging))
+		callOpts.GetAuthorization = append(callOpts.GetAuthorization, gax.WithClientLogging(logging))
+		callOpts.DeleteAuthorization = append(callOpts.DeleteAuthorization, gax.WithClientLogging(logging))
+		callOpts.ListAccessSummaries = append(callOpts.ListAccessSummaries, gax.WithClientLogging(logging))
+		callOpts.GetAccessSummary = append(callOpts.GetAccessSummary, gax.WithClientLogging(logging))
+		callOpts.RevokeAuthorization = append(callOpts.RevokeAuthorization, gax.WithClientLogging(logging))
+		callOpts.EnableAuthProvider = append(callOpts.EnableAuthProvider, gax.WithClientLogging(logging))
+		callOpts.DisableAuthProvider = append(callOpts.DisableAuthProvider, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientLogging(logging))
+	}
 
 	return &AuthProviderClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -925,9 +1059,6 @@ func (c *authProviderGRPCClient) ListAuthProviders(ctx context.Context, req *age
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//agentidentity.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.agentidentity.v1beta.AuthProviderService/ListAuthProviders")
 	}
@@ -977,9 +1108,6 @@ func (c *authProviderGRPCClient) GetAuthProvider(ctx context.Context, req *agent
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//agentidentity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.agentidentity.v1beta.AuthProviderService/GetAuthProvider")
 	}
@@ -1001,9 +1129,6 @@ func (c *authProviderGRPCClient) CreateAuthProvider(ctx context.Context, req *ag
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//agentidentity.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.agentidentity.v1beta.AuthProviderService/CreateAuthProvider")
 	}
@@ -1046,9 +1171,6 @@ func (c *authProviderGRPCClient) DeleteAuthProvider(ctx context.Context, req *ag
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//agentidentity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.agentidentity.v1beta.AuthProviderService/DeleteAuthProvider")
 	}
@@ -1066,9 +1188,6 @@ func (c *authProviderGRPCClient) UndeleteAuthProvider(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//agentidentity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.agentidentity.v1beta.AuthProviderService/UndeleteAuthProvider")
 	}
@@ -1090,9 +1209,6 @@ func (c *authProviderGRPCClient) QueryAuthProviders(ctx context.Context, req *ag
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//agentidentity.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.agentidentity.v1beta.AuthProviderService/QueryAuthProviders")
 	}
@@ -1142,9 +1258,6 @@ func (c *authProviderGRPCClient) QueryWorkloads(ctx context.Context, req *agenti
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//agentidentity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.agentidentity.v1beta.AuthProviderService/QueryWorkloads")
 	}
@@ -1194,9 +1307,6 @@ func (c *authProviderGRPCClient) ListAuthorizations(ctx context.Context, req *ag
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//agentidentity.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.agentidentity.v1beta.AuthProviderService/ListAuthorizations")
 	}
@@ -1246,9 +1356,6 @@ func (c *authProviderGRPCClient) GetAuthorization(ctx context.Context, req *agen
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//agentidentity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.agentidentity.v1beta.AuthProviderService/GetAuthorization")
 	}
@@ -1270,9 +1377,6 @@ func (c *authProviderGRPCClient) DeleteAuthorization(ctx context.Context, req *a
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//agentidentity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.agentidentity.v1beta.AuthProviderService/DeleteAuthorization")
 	}
@@ -1290,9 +1394,6 @@ func (c *authProviderGRPCClient) ListAccessSummaries(ctx context.Context, req *a
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//agentidentity.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.agentidentity.v1beta.AuthProviderService/ListAccessSummaries")
 	}
@@ -1342,9 +1443,6 @@ func (c *authProviderGRPCClient) GetAccessSummary(ctx context.Context, req *agen
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//agentidentity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.agentidentity.v1beta.AuthProviderService/GetAccessSummary")
 	}
@@ -1366,9 +1464,6 @@ func (c *authProviderGRPCClient) RevokeAuthorization(ctx context.Context, req *a
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//agentidentity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.agentidentity.v1beta.AuthProviderService/RevokeAuthorization")
 	}
@@ -1390,9 +1485,6 @@ func (c *authProviderGRPCClient) EnableAuthProvider(ctx context.Context, req *ag
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//agentidentity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.agentidentity.v1beta.AuthProviderService/EnableAuthProvider")
 	}
@@ -1414,9 +1506,6 @@ func (c *authProviderGRPCClient) DisableAuthProvider(ctx context.Context, req *a
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//agentidentity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.agentidentity.v1beta.AuthProviderService/DisableAuthProvider")
 	}
@@ -1508,9 +1597,6 @@ func (c *authProviderGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.Ge
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
 	}
@@ -1532,9 +1618,6 @@ func (c *authProviderGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.Se
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
 	}
@@ -1556,9 +1639,6 @@ func (c *authProviderGRPCClient) TestIamPermissions(ctx context.Context, req *ia
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
 	}
@@ -1681,9 +1761,6 @@ func (c *authProviderRESTClient) GetAuthProvider(ctx context.Context, req *agent
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//agentidentity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.agentidentity.v1beta.AuthProviderService/GetAuthProvider")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/authProviders/*}")
@@ -1749,9 +1826,6 @@ func (c *authProviderRESTClient) CreateAuthProvider(ctx context.Context, req *ag
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//agentidentity.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.agentidentity.v1beta.AuthProviderService/CreateAuthProvider")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*}/authProviders")
@@ -1880,9 +1954,6 @@ func (c *authProviderRESTClient) DeleteAuthProvider(ctx context.Context, req *ag
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//agentidentity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.agentidentity.v1beta.AuthProviderService/DeleteAuthProvider")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/authProviders/*}")
@@ -1928,9 +1999,6 @@ func (c *authProviderRESTClient) UndeleteAuthProvider(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//agentidentity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.agentidentity.v1beta.AuthProviderService/UndeleteAuthProvider")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/authProviders/*}:undelete")
@@ -2226,9 +2294,6 @@ func (c *authProviderRESTClient) GetAuthorization(ctx context.Context, req *agen
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//agentidentity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.agentidentity.v1beta.AuthProviderService/GetAuthorization")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/authProviders/*/authorizations/*}")
@@ -2286,9 +2351,6 @@ func (c *authProviderRESTClient) DeleteAuthorization(ctx context.Context, req *a
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//agentidentity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.agentidentity.v1beta.AuthProviderService/DeleteAuthorization")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/authProviders/*/authorizations/*}")
@@ -2416,9 +2478,6 @@ func (c *authProviderRESTClient) GetAccessSummary(ctx context.Context, req *agen
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//agentidentity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.agentidentity.v1beta.AuthProviderService/GetAccessSummary")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/accessSummaries/*}")
@@ -2481,9 +2540,6 @@ func (c *authProviderRESTClient) RevokeAuthorization(ctx context.Context, req *a
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//agentidentity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.agentidentity.v1beta.AuthProviderService/RevokeAuthorization")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/authProviders/*}:revokeAuthorization")
@@ -2544,9 +2600,6 @@ func (c *authProviderRESTClient) EnableAuthProvider(ctx context.Context, req *ag
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//agentidentity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.agentidentity.v1beta.AuthProviderService/EnableAuthProvider")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/authProviders/*}:enable")
@@ -2607,9 +2660,6 @@ func (c *authProviderRESTClient) DisableAuthProvider(ctx context.Context, req *a
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//agentidentity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.agentidentity.v1beta.AuthProviderService/DisableAuthProvider")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/authProviders/*}:disable")
@@ -2818,9 +2868,6 @@ func (c *authProviderRESTClient) GetIamPolicy(ctx context.Context, req *iampb.Ge
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{resource=projects/*/locations/*/authProviders/*}:getIamPolicy")
@@ -2885,9 +2932,6 @@ func (c *authProviderRESTClient) SetIamPolicy(ctx context.Context, req *iampb.Se
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{resource=projects/*/locations/*/authProviders/*}:setIamPolicy")
@@ -2954,9 +2998,6 @@ func (c *authProviderRESTClient) TestIamPermissions(ctx context.Context, req *ia
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{resource=projects/*/locations/*/authProviders/*}:testIamPermissions")

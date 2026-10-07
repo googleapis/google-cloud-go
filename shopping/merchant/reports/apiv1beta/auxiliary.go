@@ -17,9 +17,18 @@
 package reports
 
 import (
+	"iter"
+
 	reportspb "cloud.google.com/go/shopping/merchant/reports/apiv1beta/reportspb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ReportRowIterator) All() iter.Seq2[*reportspb.ReportRow, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // ReportRowIterator manages a stream of *reportspb.ReportRow.
 type ReportRowIterator struct {

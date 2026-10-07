@@ -274,6 +274,37 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.GeocodeLocation = append(client.CallOptions.GeocodeLocation, gax.WithClientMetrics(metrics))
 		client.CallOptions.GeocodePlace = append(client.CallOptions.GeocodePlace, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "geocoding-backend",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/geocode/apiv4",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "geocoding-backend.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GeocodeAddress = append(client.CallOptions.GeocodeAddress, gax.WithClientTracing(tracing))
+		client.CallOptions.GeocodeLocation = append(client.CallOptions.GeocodeLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.GeocodePlace = append(client.CallOptions.GeocodePlace, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "geocoding-backend",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/geocode/apiv4",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "geocoding-backend.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GeocodeAddress = append(client.CallOptions.GeocodeAddress, gax.WithClientLogging(logging))
+		client.CallOptions.GeocodeLocation = append(client.CallOptions.GeocodeLocation, gax.WithClientLogging(logging))
+		client.CallOptions.GeocodePlace = append(client.CallOptions.GeocodePlace, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -366,6 +397,37 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.GeocodeAddress = append(callOpts.GeocodeAddress, gax.WithClientMetrics(metrics))
 		callOpts.GeocodeLocation = append(callOpts.GeocodeLocation, gax.WithClientMetrics(metrics))
 		callOpts.GeocodePlace = append(callOpts.GeocodePlace, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "geocoding-backend",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/geocode/apiv4",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "geocoding-backend.googleapis.com",
+			}),
+		)
+
+		callOpts.GeocodeAddress = append(callOpts.GeocodeAddress, gax.WithClientTracing(tracing))
+		callOpts.GeocodeLocation = append(callOpts.GeocodeLocation, gax.WithClientTracing(tracing))
+		callOpts.GeocodePlace = append(callOpts.GeocodePlace, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "geocoding-backend",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/geocode/apiv4",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "geocoding-backend.googleapis.com",
+			}),
+		)
+
+		callOpts.GeocodeAddress = append(callOpts.GeocodeAddress, gax.WithClientLogging(logging))
+		callOpts.GeocodeLocation = append(callOpts.GeocodeLocation, gax.WithClientLogging(logging))
+		callOpts.GeocodePlace = append(callOpts.GeocodePlace, gax.WithClientLogging(logging))
 	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil

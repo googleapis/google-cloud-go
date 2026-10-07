@@ -306,6 +306,55 @@ func NewAdaptationClient(ctx context.Context, opts ...option.ClientOption) (*Ada
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "speech",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/speech/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "speech.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreatePhraseSet = append(client.CallOptions.CreatePhraseSet, gax.WithClientTracing(tracing))
+		client.CallOptions.GetPhraseSet = append(client.CallOptions.GetPhraseSet, gax.WithClientTracing(tracing))
+		client.CallOptions.ListPhraseSet = append(client.CallOptions.ListPhraseSet, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdatePhraseSet = append(client.CallOptions.UpdatePhraseSet, gax.WithClientTracing(tracing))
+		client.CallOptions.DeletePhraseSet = append(client.CallOptions.DeletePhraseSet, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateCustomClass = append(client.CallOptions.CreateCustomClass, gax.WithClientTracing(tracing))
+		client.CallOptions.GetCustomClass = append(client.CallOptions.GetCustomClass, gax.WithClientTracing(tracing))
+		client.CallOptions.ListCustomClasses = append(client.CallOptions.ListCustomClasses, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateCustomClass = append(client.CallOptions.UpdateCustomClass, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteCustomClass = append(client.CallOptions.DeleteCustomClass, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "speech",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/speech/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "speech.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreatePhraseSet = append(client.CallOptions.CreatePhraseSet, gax.WithClientLogging(logging))
+		client.CallOptions.GetPhraseSet = append(client.CallOptions.GetPhraseSet, gax.WithClientLogging(logging))
+		client.CallOptions.ListPhraseSet = append(client.CallOptions.ListPhraseSet, gax.WithClientLogging(logging))
+		client.CallOptions.UpdatePhraseSet = append(client.CallOptions.UpdatePhraseSet, gax.WithClientLogging(logging))
+		client.CallOptions.DeletePhraseSet = append(client.CallOptions.DeletePhraseSet, gax.WithClientLogging(logging))
+		client.CallOptions.CreateCustomClass = append(client.CallOptions.CreateCustomClass, gax.WithClientLogging(logging))
+		client.CallOptions.GetCustomClass = append(client.CallOptions.GetCustomClass, gax.WithClientLogging(logging))
+		client.CallOptions.ListCustomClasses = append(client.CallOptions.ListCustomClasses, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateCustomClass = append(client.CallOptions.UpdateCustomClass, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteCustomClass = append(client.CallOptions.DeleteCustomClass, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -408,6 +457,55 @@ func NewAdaptationRESTClient(ctx context.Context, opts ...option.ClientOption) (
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "speech",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/speech/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "speech.googleapis.com",
+			}),
+		)
+
+		callOpts.CreatePhraseSet = append(callOpts.CreatePhraseSet, gax.WithClientTracing(tracing))
+		callOpts.GetPhraseSet = append(callOpts.GetPhraseSet, gax.WithClientTracing(tracing))
+		callOpts.ListPhraseSet = append(callOpts.ListPhraseSet, gax.WithClientTracing(tracing))
+		callOpts.UpdatePhraseSet = append(callOpts.UpdatePhraseSet, gax.WithClientTracing(tracing))
+		callOpts.DeletePhraseSet = append(callOpts.DeletePhraseSet, gax.WithClientTracing(tracing))
+		callOpts.CreateCustomClass = append(callOpts.CreateCustomClass, gax.WithClientTracing(tracing))
+		callOpts.GetCustomClass = append(callOpts.GetCustomClass, gax.WithClientTracing(tracing))
+		callOpts.ListCustomClasses = append(callOpts.ListCustomClasses, gax.WithClientTracing(tracing))
+		callOpts.UpdateCustomClass = append(callOpts.UpdateCustomClass, gax.WithClientTracing(tracing))
+		callOpts.DeleteCustomClass = append(callOpts.DeleteCustomClass, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "speech",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/speech/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "speech.googleapis.com",
+			}),
+		)
+
+		callOpts.CreatePhraseSet = append(callOpts.CreatePhraseSet, gax.WithClientLogging(logging))
+		callOpts.GetPhraseSet = append(callOpts.GetPhraseSet, gax.WithClientLogging(logging))
+		callOpts.ListPhraseSet = append(callOpts.ListPhraseSet, gax.WithClientLogging(logging))
+		callOpts.UpdatePhraseSet = append(callOpts.UpdatePhraseSet, gax.WithClientLogging(logging))
+		callOpts.DeletePhraseSet = append(callOpts.DeletePhraseSet, gax.WithClientLogging(logging))
+		callOpts.CreateCustomClass = append(callOpts.CreateCustomClass, gax.WithClientLogging(logging))
+		callOpts.GetCustomClass = append(callOpts.GetCustomClass, gax.WithClientLogging(logging))
+		callOpts.ListCustomClasses = append(callOpts.ListCustomClasses, gax.WithClientLogging(logging))
+		callOpts.UpdateCustomClass = append(callOpts.UpdateCustomClass, gax.WithClientLogging(logging))
+		callOpts.DeleteCustomClass = append(callOpts.DeleteCustomClass, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	return &AdaptationClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -454,9 +552,6 @@ func (c *adaptationGRPCClient) CreatePhraseSet(ctx context.Context, req *speechp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//speech.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.speech.v1.Adaptation/CreatePhraseSet")
 	}
@@ -478,9 +573,6 @@ func (c *adaptationGRPCClient) GetPhraseSet(ctx context.Context, req *speechpb.G
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//speech.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.speech.v1.Adaptation/GetPhraseSet")
 	}
@@ -502,9 +594,6 @@ func (c *adaptationGRPCClient) ListPhraseSet(ctx context.Context, req *speechpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//speech.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.speech.v1.Adaptation/ListPhraseSet")
 	}
@@ -575,9 +664,6 @@ func (c *adaptationGRPCClient) DeletePhraseSet(ctx context.Context, req *speechp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//speech.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.speech.v1.Adaptation/DeletePhraseSet")
 	}
@@ -595,9 +681,6 @@ func (c *adaptationGRPCClient) CreateCustomClass(ctx context.Context, req *speec
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//speech.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.speech.v1.Adaptation/CreateCustomClass")
 	}
@@ -619,9 +702,6 @@ func (c *adaptationGRPCClient) GetCustomClass(ctx context.Context, req *speechpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//speech.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.speech.v1.Adaptation/GetCustomClass")
 	}
@@ -643,9 +723,6 @@ func (c *adaptationGRPCClient) ListCustomClasses(ctx context.Context, req *speec
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//speech.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.speech.v1.Adaptation/ListCustomClasses")
 	}
@@ -716,9 +793,6 @@ func (c *adaptationGRPCClient) DeleteCustomClass(ctx context.Context, req *speec
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//speech.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.speech.v1.Adaptation/DeleteCustomClass")
 	}
@@ -825,9 +899,6 @@ func (c *adaptationRESTClient) CreatePhraseSet(ctx context.Context, req *speechp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//speech.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.speech.v1.Adaptation/CreatePhraseSet")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/phraseSets")
@@ -882,9 +953,6 @@ func (c *adaptationRESTClient) GetPhraseSet(ctx context.Context, req *speechpb.G
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//speech.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.speech.v1.Adaptation/GetPhraseSet")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/phraseSets/*}")
@@ -1085,9 +1153,6 @@ func (c *adaptationRESTClient) DeletePhraseSet(ctx context.Context, req *speechp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//speech.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.speech.v1.Adaptation/DeletePhraseSet")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/phraseSets/*}")
@@ -1133,9 +1198,6 @@ func (c *adaptationRESTClient) CreateCustomClass(ctx context.Context, req *speec
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//speech.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.speech.v1.Adaptation/CreateCustomClass")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/customClasses")
@@ -1190,9 +1252,6 @@ func (c *adaptationRESTClient) GetCustomClass(ctx context.Context, req *speechpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//speech.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.speech.v1.Adaptation/GetCustomClass")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/customClasses/*}")
@@ -1393,9 +1452,6 @@ func (c *adaptationRESTClient) DeleteCustomClass(ctx context.Context, req *speec
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//speech.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.speech.v1.Adaptation/DeleteCustomClass")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/customClasses/*}")

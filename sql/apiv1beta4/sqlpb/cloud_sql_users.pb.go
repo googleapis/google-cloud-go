@@ -238,7 +238,9 @@ type SqlUsersDeleteRequest struct {
 	// Name of the user in the instance.
 	Name string `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
 	// Project ID of the project that contains the instance.
-	Project       string `protobuf:"bytes,4,opt,name=project,proto3" json:"project,omitempty"`
+	Project string `protobuf:"bytes,4,opt,name=project,proto3" json:"project,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,5,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -301,6 +303,13 @@ func (x *SqlUsersDeleteRequest) GetProject() string {
 	return ""
 }
 
+func (x *SqlUsersDeleteRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 // Request message for Users Get RPC
 type SqlUsersGetRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -311,7 +320,9 @@ type SqlUsersGetRequest struct {
 	// Project ID of the project that contains the instance.
 	Project string `protobuf:"bytes,3,opt,name=project,proto3" json:"project,omitempty"`
 	// Host of a user of the instance.
-	Host          string `protobuf:"bytes,4,opt,name=host,proto3" json:"host,omitempty"`
+	Host string `protobuf:"bytes,4,opt,name=host,proto3" json:"host,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,5,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -374,13 +385,22 @@ func (x *SqlUsersGetRequest) GetHost() string {
 	return ""
 }
 
+func (x *SqlUsersGetRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 type SqlUsersInsertRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Database instance ID. This does not include the project ID.
 	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	// Project ID of the project that contains the instance.
-	Project       string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
-	Body          *User  `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	Project string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	Body    *User  `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -436,12 +456,21 @@ func (x *SqlUsersInsertRequest) GetBody() *User {
 	return nil
 }
 
+func (x *SqlUsersInsertRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 type SqlUsersListRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Database instance ID. This does not include the project ID.
 	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	// Project ID of the project that contains the instance.
-	Project       string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	Project string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -490,6 +519,13 @@ func (x *SqlUsersListRequest) GetProject() string {
 	return ""
 }
 
+func (x *SqlUsersListRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 type SqlUsersUpdateRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Optional. Host of the user in the instance.
@@ -516,8 +552,10 @@ type SqlUsersUpdateRequest struct {
 	// specified in `server_roles` are added to the user's existing server roles.
 	RevokeExistingServerRoles *bool `protobuf:"varint,8,opt,name=revoke_existing_server_roles,json=revokeExistingServerRoles,proto3,oneof" json:"revoke_existing_server_roles,omitempty"`
 	Body                      *User `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
-	unknownFields             protoimpl.UnknownFields
-	sizeCache                 protoimpl.SizeCache
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,9,opt,name=location,proto3" json:"location,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *SqlUsersUpdateRequest) Reset() {
@@ -611,6 +649,13 @@ func (x *SqlUsersUpdateRequest) GetBody() *User {
 		return x.Body
 	}
 	return nil
+}
+
+func (x *SqlUsersUpdateRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
 }
 
 // User level password validation policy.
@@ -1084,24 +1129,28 @@ var File_google_cloud_sql_v1beta4_cloud_sql_users_proto protoreflect.FileDescrip
 
 const file_google_cloud_sql_v1beta4_cloud_sql_users_proto_rawDesc = "" +
 	"\n" +
-	".google/cloud/sql/v1beta4/cloud_sql_users.proto\x12\x18google.cloud.sql.v1beta4\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a2google/cloud/sql/v1beta4/cloud_sql_resources.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"u\n" +
+	".google/cloud/sql/v1beta4/cloud_sql_users.proto\x12\x18google.cloud.sql.v1beta4\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a2google/cloud/sql/v1beta4/cloud_sql_resources.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x96\x01\n" +
 	"\x15SqlUsersDeleteRequest\x12\x12\n" +
 	"\x04host\x18\x01 \x01(\tR\x04host\x12\x1a\n" +
 	"\binstance\x18\x02 \x01(\tR\binstance\x12\x12\n" +
 	"\x04name\x18\x03 \x01(\tR\x04name\x12\x18\n" +
-	"\aproject\x18\x04 \x01(\tR\aproject\"r\n" +
+	"\aproject\x18\x04 \x01(\tR\aproject\x12\x1f\n" +
+	"\blocation\x18\x05 \x01(\tB\x03\xe0A\x01R\blocation\"\x93\x01\n" +
 	"\x12SqlUsersGetRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x18\n" +
 	"\aproject\x18\x03 \x01(\tR\aproject\x12\x12\n" +
-	"\x04host\x18\x04 \x01(\tR\x04host\"\x81\x01\n" +
+	"\x04host\x18\x04 \x01(\tR\x04host\x12\x1f\n" +
+	"\blocation\x18\x05 \x01(\tB\x03\xe0A\x01R\blocation\"\xa2\x01\n" +
 	"\x15SqlUsersInsertRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x122\n" +
-	"\x04body\x18d \x01(\v2\x1e.google.cloud.sql.v1beta4.UserR\x04body\"K\n" +
+	"\x04body\x18d \x01(\v2\x1e.google.cloud.sql.v1beta4.UserR\x04body\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"l\n" +
 	"\x13SqlUsersListRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
-	"\aproject\x18\x02 \x01(\tR\aproject\"\xc6\x03\n" +
+	"\aproject\x18\x02 \x01(\tR\aproject\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\xe7\x03\n" +
 	"\x15SqlUsersUpdateRequest\x12\x17\n" +
 	"\x04host\x18\x01 \x01(\tB\x03\xe0A\x01R\x04host\x12\x1a\n" +
 	"\binstance\x18\x02 \x01(\tR\binstance\x12\x12\n" +
@@ -1111,7 +1160,8 @@ const file_google_cloud_sql_v1beta4_cloud_sql_users_proto_rawDesc = "" +
 	"\x15revoke_existing_roles\x18\x06 \x01(\bB\x03\xe0A\x01H\x00R\x13revokeExistingRoles\x88\x01\x01\x12&\n" +
 	"\fserver_roles\x18\a \x03(\tB\x03\xe0A\x01R\vserverRoles\x12I\n" +
 	"\x1crevoke_existing_server_roles\x18\b \x01(\bB\x03\xe0A\x01H\x01R\x19revokeExistingServerRoles\x88\x01\x01\x122\n" +
-	"\x04body\x18d \x01(\v2\x1e.google.cloud.sql.v1beta4.UserR\x04bodyB\x18\n" +
+	"\x04body\x18d \x01(\v2\x1e.google.cloud.sql.v1beta4.UserR\x04body\x12\x1f\n" +
+	"\blocation\x18\t \x01(\tB\x03\xe0A\x01R\blocationB\x18\n" +
 	"\x16_revoke_existing_rolesB\x1f\n" +
 	"\x1d_revoke_existing_server_roles\"\xfd\x02\n" +
 	"\x1cUserPasswordValidationPolicy\x126\n" +

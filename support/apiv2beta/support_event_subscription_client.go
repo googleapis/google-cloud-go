@@ -256,6 +256,45 @@ func NewSupportEventSubscriptionClient(ctx context.Context, opts ...option.Clien
 		client.CallOptions.UndeleteSupportEventSubscription = append(client.CallOptions.UndeleteSupportEventSubscription, gax.WithClientMetrics(metrics))
 		client.CallOptions.ExpungeSupportEventSubscription = append(client.CallOptions.ExpungeSupportEventSubscription, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudsupport",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/support/apiv2beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudsupport.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateSupportEventSubscription = append(client.CallOptions.CreateSupportEventSubscription, gax.WithClientTracing(tracing))
+		client.CallOptions.GetSupportEventSubscription = append(client.CallOptions.GetSupportEventSubscription, gax.WithClientTracing(tracing))
+		client.CallOptions.ListSupportEventSubscriptions = append(client.CallOptions.ListSupportEventSubscriptions, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateSupportEventSubscription = append(client.CallOptions.UpdateSupportEventSubscription, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteSupportEventSubscription = append(client.CallOptions.DeleteSupportEventSubscription, gax.WithClientTracing(tracing))
+		client.CallOptions.UndeleteSupportEventSubscription = append(client.CallOptions.UndeleteSupportEventSubscription, gax.WithClientTracing(tracing))
+		client.CallOptions.ExpungeSupportEventSubscription = append(client.CallOptions.ExpungeSupportEventSubscription, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudsupport",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/support/apiv2beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudsupport.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateSupportEventSubscription = append(client.CallOptions.CreateSupportEventSubscription, gax.WithClientLogging(logging))
+		client.CallOptions.GetSupportEventSubscription = append(client.CallOptions.GetSupportEventSubscription, gax.WithClientLogging(logging))
+		client.CallOptions.ListSupportEventSubscriptions = append(client.CallOptions.ListSupportEventSubscriptions, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateSupportEventSubscription = append(client.CallOptions.UpdateSupportEventSubscription, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteSupportEventSubscription = append(client.CallOptions.DeleteSupportEventSubscription, gax.WithClientLogging(logging))
+		client.CallOptions.UndeleteSupportEventSubscription = append(client.CallOptions.UndeleteSupportEventSubscription, gax.WithClientLogging(logging))
+		client.CallOptions.ExpungeSupportEventSubscription = append(client.CallOptions.ExpungeSupportEventSubscription, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -353,6 +392,45 @@ func NewSupportEventSubscriptionRESTClient(ctx context.Context, opts ...option.C
 		callOpts.UndeleteSupportEventSubscription = append(callOpts.UndeleteSupportEventSubscription, gax.WithClientMetrics(metrics))
 		callOpts.ExpungeSupportEventSubscription = append(callOpts.ExpungeSupportEventSubscription, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudsupport",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/support/apiv2beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudsupport.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateSupportEventSubscription = append(callOpts.CreateSupportEventSubscription, gax.WithClientTracing(tracing))
+		callOpts.GetSupportEventSubscription = append(callOpts.GetSupportEventSubscription, gax.WithClientTracing(tracing))
+		callOpts.ListSupportEventSubscriptions = append(callOpts.ListSupportEventSubscriptions, gax.WithClientTracing(tracing))
+		callOpts.UpdateSupportEventSubscription = append(callOpts.UpdateSupportEventSubscription, gax.WithClientTracing(tracing))
+		callOpts.DeleteSupportEventSubscription = append(callOpts.DeleteSupportEventSubscription, gax.WithClientTracing(tracing))
+		callOpts.UndeleteSupportEventSubscription = append(callOpts.UndeleteSupportEventSubscription, gax.WithClientTracing(tracing))
+		callOpts.ExpungeSupportEventSubscription = append(callOpts.ExpungeSupportEventSubscription, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudsupport",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/support/apiv2beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudsupport.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateSupportEventSubscription = append(callOpts.CreateSupportEventSubscription, gax.WithClientLogging(logging))
+		callOpts.GetSupportEventSubscription = append(callOpts.GetSupportEventSubscription, gax.WithClientLogging(logging))
+		callOpts.ListSupportEventSubscriptions = append(callOpts.ListSupportEventSubscriptions, gax.WithClientLogging(logging))
+		callOpts.UpdateSupportEventSubscription = append(callOpts.UpdateSupportEventSubscription, gax.WithClientLogging(logging))
+		callOpts.DeleteSupportEventSubscription = append(callOpts.DeleteSupportEventSubscription, gax.WithClientLogging(logging))
+		callOpts.UndeleteSupportEventSubscription = append(callOpts.UndeleteSupportEventSubscription, gax.WithClientLogging(logging))
+		callOpts.ExpungeSupportEventSubscription = append(callOpts.ExpungeSupportEventSubscription, gax.WithClientLogging(logging))
+	}
 
 	return &SupportEventSubscriptionClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -399,9 +477,6 @@ func (c *supportEventSubscriptionGRPCClient) CreateSupportEventSubscription(ctx 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudsupport.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.support.v2beta.SupportEventSubscriptionService/CreateSupportEventSubscription")
 	}
@@ -423,9 +498,6 @@ func (c *supportEventSubscriptionGRPCClient) GetSupportEventSubscription(ctx con
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudsupport.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.support.v2beta.SupportEventSubscriptionService/GetSupportEventSubscription")
 	}
@@ -447,9 +519,6 @@ func (c *supportEventSubscriptionGRPCClient) ListSupportEventSubscriptions(ctx c
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudsupport.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.support.v2beta.SupportEventSubscriptionService/ListSupportEventSubscriptions")
 	}
@@ -520,9 +589,6 @@ func (c *supportEventSubscriptionGRPCClient) DeleteSupportEventSubscription(ctx 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudsupport.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.support.v2beta.SupportEventSubscriptionService/DeleteSupportEventSubscription")
 	}
@@ -544,9 +610,6 @@ func (c *supportEventSubscriptionGRPCClient) UndeleteSupportEventSubscription(ct
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudsupport.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.support.v2beta.SupportEventSubscriptionService/UndeleteSupportEventSubscription")
 	}
@@ -568,9 +631,6 @@ func (c *supportEventSubscriptionGRPCClient) ExpungeSupportEventSubscription(ctx
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudsupport.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.support.v2beta.SupportEventSubscriptionService/ExpungeSupportEventSubscription")
 	}
@@ -609,9 +669,6 @@ func (c *supportEventSubscriptionRESTClient) CreateSupportEventSubscription(ctx 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudsupport.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.support.v2beta.SupportEventSubscriptionService/CreateSupportEventSubscription")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta/{parent=organizations/*}/supportEventSubscriptions")
@@ -666,9 +723,6 @@ func (c *supportEventSubscriptionRESTClient) GetSupportEventSubscription(ctx con
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudsupport.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.support.v2beta.SupportEventSubscriptionService/GetSupportEventSubscription")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta/{name=organizations/*/supportEventSubscriptions/*}")
@@ -875,9 +929,6 @@ func (c *supportEventSubscriptionRESTClient) DeleteSupportEventSubscription(ctx 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudsupport.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.support.v2beta.SupportEventSubscriptionService/DeleteSupportEventSubscription")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta/{name=organizations/*/supportEventSubscriptions/*}")
@@ -938,9 +989,6 @@ func (c *supportEventSubscriptionRESTClient) UndeleteSupportEventSubscription(ct
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudsupport.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.support.v2beta.SupportEventSubscriptionService/UndeleteSupportEventSubscription")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta/{name=organizations/*/supportEventSubscriptions/*}:undelete")
@@ -1007,9 +1055,6 @@ func (c *supportEventSubscriptionRESTClient) ExpungeSupportEventSubscription(ctx
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudsupport.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.support.v2beta.SupportEventSubscriptionService/ExpungeSupportEventSubscription")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta/{name=organizations/*/supportEventSubscriptions/*}:expunge")

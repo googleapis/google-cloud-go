@@ -249,6 +249,35 @@ func NewCloudControlsPartnerMonitoringClient(ctx context.Context, opts ...option
 		client.CallOptions.ListViolations = append(client.CallOptions.ListViolations, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetViolation = append(client.CallOptions.GetViolation, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudcontrolspartner",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/cloudcontrolspartner/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudcontrolspartner.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListViolations = append(client.CallOptions.ListViolations, gax.WithClientTracing(tracing))
+		client.CallOptions.GetViolation = append(client.CallOptions.GetViolation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudcontrolspartner",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/cloudcontrolspartner/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudcontrolspartner.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListViolations = append(client.CallOptions.ListViolations, gax.WithClientLogging(logging))
+		client.CallOptions.GetViolation = append(client.CallOptions.GetViolation, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -341,6 +370,35 @@ func NewCloudControlsPartnerMonitoringRESTClient(ctx context.Context, opts ...op
 		callOpts.ListViolations = append(callOpts.ListViolations, gax.WithClientMetrics(metrics))
 		callOpts.GetViolation = append(callOpts.GetViolation, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudcontrolspartner",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/cloudcontrolspartner/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudcontrolspartner.googleapis.com",
+			}),
+		)
+
+		callOpts.ListViolations = append(callOpts.ListViolations, gax.WithClientTracing(tracing))
+		callOpts.GetViolation = append(callOpts.GetViolation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudcontrolspartner",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/cloudcontrolspartner/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudcontrolspartner.googleapis.com",
+			}),
+		)
+
+		callOpts.ListViolations = append(callOpts.ListViolations, gax.WithClientLogging(logging))
+		callOpts.GetViolation = append(callOpts.GetViolation, gax.WithClientLogging(logging))
+	}
 
 	return &CloudControlsPartnerMonitoringClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -387,9 +445,6 @@ func (c *cloudControlsPartnerMonitoringGRPCClient) ListViolations(ctx context.Co
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudcontrolspartner.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerMonitoring/ListViolations")
 	}
@@ -439,9 +494,6 @@ func (c *cloudControlsPartnerMonitoringGRPCClient) GetViolation(ctx context.Cont
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudcontrolspartner.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerMonitoring/GetViolation")
 	}
@@ -581,9 +633,6 @@ func (c *cloudControlsPartnerMonitoringRESTClient) GetViolation(ctx context.Cont
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudcontrolspartner.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerMonitoring/GetViolation")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=organizations/*/locations/*/customers/*/workloads/*/violations/*}")

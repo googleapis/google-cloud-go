@@ -544,6 +544,55 @@ func NewConversationProfilesClient(ctx context.Context, opts ...option.ClientOpt
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "dialogflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dialogflow/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "dialogflow.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListConversationProfiles = append(client.CallOptions.ListConversationProfiles, gax.WithClientTracing(tracing))
+		client.CallOptions.GetConversationProfile = append(client.CallOptions.GetConversationProfile, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateConversationProfile = append(client.CallOptions.CreateConversationProfile, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateConversationProfile = append(client.CallOptions.UpdateConversationProfile, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteConversationProfile = append(client.CallOptions.DeleteConversationProfile, gax.WithClientTracing(tracing))
+		client.CallOptions.SetSuggestionFeatureConfig = append(client.CallOptions.SetSuggestionFeatureConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.ClearSuggestionFeatureConfig = append(client.CallOptions.ClearSuggestionFeatureConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "dialogflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dialogflow/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "dialogflow.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListConversationProfiles = append(client.CallOptions.ListConversationProfiles, gax.WithClientLogging(logging))
+		client.CallOptions.GetConversationProfile = append(client.CallOptions.GetConversationProfile, gax.WithClientLogging(logging))
+		client.CallOptions.CreateConversationProfile = append(client.CallOptions.CreateConversationProfile, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateConversationProfile = append(client.CallOptions.UpdateConversationProfile, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteConversationProfile = append(client.CallOptions.DeleteConversationProfile, gax.WithClientLogging(logging))
+		client.CallOptions.SetSuggestionFeatureConfig = append(client.CallOptions.SetSuggestionFeatureConfig, gax.WithClientLogging(logging))
+		client.CallOptions.ClearSuggestionFeatureConfig = append(client.CallOptions.ClearSuggestionFeatureConfig, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -663,6 +712,55 @@ func NewConversationProfilesRESTClient(ctx context.Context, opts ...option.Clien
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "dialogflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dialogflow/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "dialogflow.googleapis.com",
+			}),
+		)
+
+		callOpts.ListConversationProfiles = append(callOpts.ListConversationProfiles, gax.WithClientTracing(tracing))
+		callOpts.GetConversationProfile = append(callOpts.GetConversationProfile, gax.WithClientTracing(tracing))
+		callOpts.CreateConversationProfile = append(callOpts.CreateConversationProfile, gax.WithClientTracing(tracing))
+		callOpts.UpdateConversationProfile = append(callOpts.UpdateConversationProfile, gax.WithClientTracing(tracing))
+		callOpts.DeleteConversationProfile = append(callOpts.DeleteConversationProfile, gax.WithClientTracing(tracing))
+		callOpts.SetSuggestionFeatureConfig = append(callOpts.SetSuggestionFeatureConfig, gax.WithClientTracing(tracing))
+		callOpts.ClearSuggestionFeatureConfig = append(callOpts.ClearSuggestionFeatureConfig, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "dialogflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dialogflow/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "dialogflow.googleapis.com",
+			}),
+		)
+
+		callOpts.ListConversationProfiles = append(callOpts.ListConversationProfiles, gax.WithClientLogging(logging))
+		callOpts.GetConversationProfile = append(callOpts.GetConversationProfile, gax.WithClientLogging(logging))
+		callOpts.CreateConversationProfile = append(callOpts.CreateConversationProfile, gax.WithClientLogging(logging))
+		callOpts.UpdateConversationProfile = append(callOpts.UpdateConversationProfile, gax.WithClientLogging(logging))
+		callOpts.DeleteConversationProfile = append(callOpts.DeleteConversationProfile, gax.WithClientLogging(logging))
+		callOpts.SetSuggestionFeatureConfig = append(callOpts.SetSuggestionFeatureConfig, gax.WithClientLogging(logging))
+		callOpts.ClearSuggestionFeatureConfig = append(callOpts.ClearSuggestionFeatureConfig, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -719,9 +817,6 @@ func (c *conversationProfilesGRPCClient) ListConversationProfiles(ctx context.Co
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2.ConversationProfiles/ListConversationProfiles")
 	}
@@ -771,9 +866,6 @@ func (c *conversationProfilesGRPCClient) GetConversationProfile(ctx context.Cont
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2.ConversationProfiles/GetConversationProfile")
 	}
@@ -795,9 +887,6 @@ func (c *conversationProfilesGRPCClient) CreateConversationProfile(ctx context.C
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2.ConversationProfiles/CreateConversationProfile")
 	}
@@ -840,9 +929,6 @@ func (c *conversationProfilesGRPCClient) DeleteConversationProfile(ctx context.C
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2.ConversationProfiles/DeleteConversationProfile")
 	}
@@ -1163,9 +1249,6 @@ func (c *conversationProfilesRESTClient) GetConversationProfile(ctx context.Cont
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2.ConversationProfiles/GetConversationProfile")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/conversationProfiles/*}")
@@ -1234,9 +1317,6 @@ func (c *conversationProfilesRESTClient) CreateConversationProfile(ctx context.C
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2.ConversationProfiles/CreateConversationProfile")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{parent=projects/*}/conversationProfiles")
@@ -1366,9 +1446,6 @@ func (c *conversationProfilesRESTClient) DeleteConversationProfile(ctx context.C
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2.ConversationProfiles/DeleteConversationProfile")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/conversationProfiles/*}")

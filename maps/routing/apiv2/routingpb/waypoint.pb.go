@@ -196,7 +196,7 @@ type Waypoint_Address struct {
 
 type Waypoint_NavigationPointToken struct {
 	// A token that identifies a
-	// [`NavigationPoint`](https://developers.google.com/maps/documentation/geocoding/reference/rest/v4alpha/geocode.destinations/searchDestinations#navigationpoint),
+	// [`NavigationPoint`](/maps/documentation/geocoding/reference/rest/v4alpha/geocode.destinations/searchDestinations#navigationpoint),
 	// obtained from the `SearchDestinations` method of the Geocoding API.
 	NavigationPointToken string `protobuf:"bytes,8,opt,name=navigation_point_token,json=navigationPointToken,proto3,oneof"`
 }

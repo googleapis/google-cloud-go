@@ -424,6 +424,71 @@ func NewApiHubPluginRESTClient(ctx context.Context, opts ...option.ClientOption)
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "apihub",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/apihub/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "apihub.googleapis.com",
+			}),
+		)
+
+		callOpts.GetPlugin = append(callOpts.GetPlugin, gax.WithClientTracing(tracing))
+		callOpts.EnablePlugin = append(callOpts.EnablePlugin, gax.WithClientTracing(tracing))
+		callOpts.DisablePlugin = append(callOpts.DisablePlugin, gax.WithClientTracing(tracing))
+		callOpts.CreatePlugin = append(callOpts.CreatePlugin, gax.WithClientTracing(tracing))
+		callOpts.ListPlugins = append(callOpts.ListPlugins, gax.WithClientTracing(tracing))
+		callOpts.DeletePlugin = append(callOpts.DeletePlugin, gax.WithClientTracing(tracing))
+		callOpts.CreatePluginInstance = append(callOpts.CreatePluginInstance, gax.WithClientTracing(tracing))
+		callOpts.ExecutePluginInstanceAction = append(callOpts.ExecutePluginInstanceAction, gax.WithClientTracing(tracing))
+		callOpts.GetPluginInstance = append(callOpts.GetPluginInstance, gax.WithClientTracing(tracing))
+		callOpts.ListPluginInstances = append(callOpts.ListPluginInstances, gax.WithClientTracing(tracing))
+		callOpts.EnablePluginInstanceAction = append(callOpts.EnablePluginInstanceAction, gax.WithClientTracing(tracing))
+		callOpts.DisablePluginInstanceAction = append(callOpts.DisablePluginInstanceAction, gax.WithClientTracing(tracing))
+		callOpts.UpdatePluginInstance = append(callOpts.UpdatePluginInstance, gax.WithClientTracing(tracing))
+		callOpts.DeletePluginInstance = append(callOpts.DeletePluginInstance, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "apihub",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/apihub/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "apihub.googleapis.com",
+			}),
+		)
+
+		callOpts.GetPlugin = append(callOpts.GetPlugin, gax.WithClientLogging(logging))
+		callOpts.EnablePlugin = append(callOpts.EnablePlugin, gax.WithClientLogging(logging))
+		callOpts.DisablePlugin = append(callOpts.DisablePlugin, gax.WithClientLogging(logging))
+		callOpts.CreatePlugin = append(callOpts.CreatePlugin, gax.WithClientLogging(logging))
+		callOpts.ListPlugins = append(callOpts.ListPlugins, gax.WithClientLogging(logging))
+		callOpts.DeletePlugin = append(callOpts.DeletePlugin, gax.WithClientLogging(logging))
+		callOpts.CreatePluginInstance = append(callOpts.CreatePluginInstance, gax.WithClientLogging(logging))
+		callOpts.ExecutePluginInstanceAction = append(callOpts.ExecutePluginInstanceAction, gax.WithClientLogging(logging))
+		callOpts.GetPluginInstance = append(callOpts.GetPluginInstance, gax.WithClientLogging(logging))
+		callOpts.ListPluginInstances = append(callOpts.ListPluginInstances, gax.WithClientLogging(logging))
+		callOpts.EnablePluginInstanceAction = append(callOpts.EnablePluginInstanceAction, gax.WithClientLogging(logging))
+		callOpts.DisablePluginInstanceAction = append(callOpts.DisablePluginInstanceAction, gax.WithClientLogging(logging))
+		callOpts.UpdatePluginInstance = append(callOpts.UpdatePluginInstance, gax.WithClientLogging(logging))
+		callOpts.DeletePluginInstance = append(callOpts.DeletePluginInstance, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -495,9 +560,6 @@ func (c *apiHubPluginRESTClient) GetPlugin(ctx context.Context, req *apihubpb.Ge
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apihub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHubPlugin/GetPlugin")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/plugins/*}")
@@ -559,9 +621,6 @@ func (c *apiHubPluginRESTClient) EnablePlugin(ctx context.Context, req *apihubpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apihub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHubPlugin/EnablePlugin")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/plugins/*}:enable")
@@ -623,9 +682,6 @@ func (c *apiHubPluginRESTClient) DisablePlugin(ctx context.Context, req *apihubp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apihub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHubPlugin/DisablePlugin")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/plugins/*}:disable")
@@ -691,9 +747,6 @@ func (c *apiHubPluginRESTClient) CreatePlugin(ctx context.Context, req *apihubpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apihub.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHubPlugin/CreatePlugin")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/plugins")
@@ -830,9 +883,6 @@ func (c *apiHubPluginRESTClient) DeletePlugin(ctx context.Context, req *apihubpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apihub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHubPlugin/DeletePlugin")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/plugins/*}")
@@ -904,9 +954,6 @@ func (c *apiHubPluginRESTClient) CreatePluginInstance(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apihub.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHubPlugin/CreatePluginInstance")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/plugins/*}/instances")
@@ -974,9 +1021,6 @@ func (c *apiHubPluginRESTClient) ExecutePluginInstanceAction(ctx context.Context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apihub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHubPlugin/ExecutePluginInstanceAction")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/plugins/*/instances/*}:executeAction")
@@ -1038,9 +1082,6 @@ func (c *apiHubPluginRESTClient) GetPluginInstance(ctx context.Context, req *api
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apihub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHubPlugin/GetPluginInstance")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/plugins/*/instances/*}")
@@ -1183,9 +1224,6 @@ func (c *apiHubPluginRESTClient) EnablePluginInstanceAction(ctx context.Context,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apihub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHubPlugin/EnablePluginInstanceAction")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/plugins/*/instances/*}:enableAction")
@@ -1253,9 +1291,6 @@ func (c *apiHubPluginRESTClient) DisablePluginInstanceAction(ctx context.Context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apihub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHubPlugin/DisablePluginInstanceAction")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/plugins/*/instances/*}:disableAction")
@@ -1403,9 +1438,6 @@ func (c *apiHubPluginRESTClient) DeletePluginInstance(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apihub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHubPlugin/DeletePluginInstance")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/plugins/*/instances/*}")

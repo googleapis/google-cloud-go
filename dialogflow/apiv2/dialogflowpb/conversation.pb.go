@@ -2626,8 +2626,7 @@ type Conversation_ContextReference_ContextContent struct {
 	// Output only. The time when this information was incorporated into the
 	// relevant context reference.
 	IngestionTime *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=ingestion_time,json=ingestionTime,proto3" json:"ingestion_time,omitempty"`
-	// If the context content was generated from a tool call, specify the
-	// answer record associated with the tool call.
+	// Optional. The answer record of the tool execution result.
 	// Format: `projects/<Project ID>/locations/<Location
 	// ID>/answerRecords/<Answer Record ID>`.
 	AnswerRecord  string `protobuf:"bytes,4,opt,name=answer_record,json=answerRecord,proto3" json:"answer_record,omitempty"`
@@ -3580,7 +3579,7 @@ var File_google_cloud_dialogflow_v2_conversation_proto protoreflect.FileDescript
 
 const file_google_cloud_dialogflow_v2_conversation_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/dialogflow/v2/conversation.proto\x12\x1agoogle.cloud.dialogflow.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a5google/cloud/dialogflow/v2/conversation_profile.proto\x1a*google/cloud/dialogflow/v2/generator.proto\x1a,google/cloud/dialogflow/v2/participant.proto\x1a(google/cloud/dialogflow/v2/session.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa9\x1a\n" +
+	"-google/cloud/dialogflow/v2/conversation.proto\x12\x1agoogle.cloud.dialogflow.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a5google/cloud/dialogflow/v2/conversation_profile.proto\x1a*google/cloud/dialogflow/v2/generator.proto\x1a,google/cloud/dialogflow/v2/participant.proto\x1a(google/cloud/dialogflow/v2/session.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd9\x1a\n" +
 	"\fConversation\x12\x1a\n" +
 	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x03\xe0A\bR\x04name\x12e\n" +
 	"\x0flifecycle_state\x18\x02 \x01(\x0e27.google.cloud.dialogflow.v2.Conversation.LifecycleStateB\x03\xe0A\x03R\x0elifecycleState\x12h\n" +
@@ -3607,19 +3606,20 @@ const file_google_cloud_dialogflow_v2_conversation_proto_rawDesc = "" +
 	"\x05value\x18\x02 \x01(\tB\x03\xe0A\x01R\x05value\x1aN\n" +
 	"\vMimeContent\x12 \n" +
 	"\tmime_type\x18\x01 \x01(\tB\x03\xe0A\x01R\bmimeType\x12\x1d\n" +
-	"\acontent\x18\x02 \x01(\fB\x03\xe0A\x01R\acontent\x1a\x99\x06\n" +
+	"\acontent\x18\x02 \x01(\fB\x03\xe0A\x01R\acontent\x1a\xc9\x06\n" +
 	"\x10ContextReference\x12x\n" +
 	"\x10context_contents\x18\x01 \x03(\v2H.google.cloud.dialogflow.v2.Conversation.ContextReference.ContextContentB\x03\xe0A\x02R\x0fcontextContents\x12j\n" +
 	"\vupdate_mode\x18\x02 \x01(\x0e2D.google.cloud.dialogflow.v2.Conversation.ContextReference.UpdateModeB\x03\xe0A\x02R\n" +
 	"updateMode\x12(\n" +
 	"\rlanguage_code\x18\x03 \x01(\tB\x03\xe0A\x01R\flanguageCode\x12@\n" +
 	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x1a\xec\x02\n" +
+	"createTime\x1a\x9c\x03\n" +
 	"\x0eContextContent\x12\x1d\n" +
 	"\acontent\x18\x01 \x01(\tB\x03\xe0A\x02R\acontent\x12\x82\x01\n" +
 	"\x0econtent_format\x18\x02 \x01(\x0e2V.google.cloud.dialogflow.v2.Conversation.ContextReference.ContextContent.ContentFormatB\x03\xe0A\x02R\rcontentFormat\x12F\n" +
-	"\x0eingestion_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\ringestionTime\x12#\n" +
-	"\ranswer_record\x18\x04 \x01(\tR\fanswerRecord\"I\n" +
+	"\x0eingestion_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\ringestionTime\x12S\n" +
+	"\ranswer_record\x18\x04 \x01(\tB.\xe0A\x01\xfaA(\n" +
+	"&dialogflow.googleapis.com/AnswerRecordR\fanswerRecord\"I\n" +
 	"\rContentFormat\x12\x1e\n" +
 	"\x1aCONTENT_FORMAT_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04JSON\x10\x01\x12\x0e\n" +

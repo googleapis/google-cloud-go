@@ -399,6 +399,49 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "webrisk",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/webrisk/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "webrisk.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ComputeThreatListDiff = append(client.CallOptions.ComputeThreatListDiff, gax.WithClientTracing(tracing))
+		client.CallOptions.SearchUris = append(client.CallOptions.SearchUris, gax.WithClientTracing(tracing))
+		client.CallOptions.SearchHashes = append(client.CallOptions.SearchHashes, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateSubmission = append(client.CallOptions.CreateSubmission, gax.WithClientTracing(tracing))
+		client.CallOptions.SubmitUri = append(client.CallOptions.SubmitUri, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "webrisk",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/webrisk/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "webrisk.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ComputeThreatListDiff = append(client.CallOptions.ComputeThreatListDiff, gax.WithClientLogging(logging))
+		client.CallOptions.SearchUris = append(client.CallOptions.SearchUris, gax.WithClientLogging(logging))
+		client.CallOptions.SearchHashes = append(client.CallOptions.SearchHashes, gax.WithClientLogging(logging))
+		client.CallOptions.CreateSubmission = append(client.CallOptions.CreateSubmission, gax.WithClientLogging(logging))
+		client.CallOptions.SubmitUri = append(client.CallOptions.SubmitUri, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -515,6 +558,49 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "webrisk",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/webrisk/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "webrisk.googleapis.com",
+			}),
+		)
+
+		callOpts.ComputeThreatListDiff = append(callOpts.ComputeThreatListDiff, gax.WithClientTracing(tracing))
+		callOpts.SearchUris = append(callOpts.SearchUris, gax.WithClientTracing(tracing))
+		callOpts.SearchHashes = append(callOpts.SearchHashes, gax.WithClientTracing(tracing))
+		callOpts.CreateSubmission = append(callOpts.CreateSubmission, gax.WithClientTracing(tracing))
+		callOpts.SubmitUri = append(callOpts.SubmitUri, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "webrisk",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/webrisk/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "webrisk.googleapis.com",
+			}),
+		)
+
+		callOpts.ComputeThreatListDiff = append(callOpts.ComputeThreatListDiff, gax.WithClientLogging(logging))
+		callOpts.SearchUris = append(callOpts.SearchUris, gax.WithClientLogging(logging))
+		callOpts.SearchHashes = append(callOpts.SearchHashes, gax.WithClientLogging(logging))
+		callOpts.CreateSubmission = append(callOpts.CreateSubmission, gax.WithClientLogging(logging))
+		callOpts.SubmitUri = append(callOpts.SubmitUri, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -625,9 +711,6 @@ func (c *gRPCClient) CreateSubmission(ctx context.Context, req *webriskpb.Create
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//webrisk.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.webrisk.v1.WebRiskService/CreateSubmission")
 	}
@@ -649,9 +732,6 @@ func (c *gRPCClient) SubmitUri(ctx context.Context, req *webriskpb.SubmitUriRequ
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//webrisk.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.webrisk.v1.WebRiskService/SubmitUri")
 	}
@@ -1005,9 +1085,6 @@ func (c *restClient) CreateSubmission(ctx context.Context, req *webriskpb.Create
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//webrisk.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.webrisk.v1.WebRiskService/CreateSubmission")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*}/submissions")
@@ -1077,9 +1154,6 @@ func (c *restClient) SubmitUri(ctx context.Context, req *webriskpb.SubmitUriRequ
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//webrisk.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.webrisk.v1.WebRiskService/SubmitUri")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*}/uris:submit")

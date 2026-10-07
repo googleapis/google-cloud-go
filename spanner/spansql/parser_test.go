@@ -496,8 +496,8 @@ func TestParseExpr(t *testing.T) {
 	}{
 		{`17`, IntegerLiteral(17)},
 		{`-1`, IntegerLiteral(-1)},
-		{fmt.Sprintf(`%d`, math.MaxInt64), IntegerLiteral(math.MaxInt64)},
-		{fmt.Sprintf(`%d`, math.MinInt64), IntegerLiteral(math.MinInt64)},
+		{fmt.Sprintf(`%d`, int64(math.MaxInt64)), IntegerLiteral(math.MaxInt64)},
+		{fmt.Sprintf(`%d`, int64(math.MinInt64)), IntegerLiteral(math.MinInt64)},
 		{"1.797693134862315708145274237317043567981e+308", FloatLiteral(math.MaxFloat64)},
 		{`4.940656458412465441765687928682213723651e-324`, FloatLiteral(math.SmallestNonzeroFloat64)},
 		{`0xf00d`, IntegerLiteral(0xf00d)},
@@ -2064,6 +2064,46 @@ func TestParseDDL(t *testing.T) {
 						Columns: []ColumnDef{
 							{Name: "id", Type: Type{Base: Int64}, Position: line(1)},
 							{Name: "name", Type: Type{Base: Proto, ProtoRef: "foo.bar.baz.ProtoName"}, Position: line(1)},
+						},
+						PrimaryKey: []KeyPart{
+							{Column: "id"},
+						},
+						Position: line(1),
+					},
+				},
+			},
+		},
+		{
+			"CREATE TABLE IF NOT EXISTS tname (id INT64, items ARRAY<foo.bar.baz.ProtoName>) PRIMARY KEY (id)",
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&CreateTable{
+						Name:        "tname",
+						IfNotExists: true,
+						Columns: []ColumnDef{
+							{Name: "id", Type: Type{Base: Int64}, Position: line(1)},
+							{Name: "items", Type: Type{Array: true, Base: Proto, ProtoRef: "foo.bar.baz.ProtoName"}, Position: line(1)},
+						},
+						PrimaryKey: []KeyPart{
+							{Column: "id"},
+						},
+						Position: line(1),
+					},
+				},
+			},
+		},
+		{
+			"CREATE TABLE IF NOT EXISTS tname (id INT64, items ARRAY<`foo.bar.baz.ProtoName`>) PRIMARY KEY (id)",
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&CreateTable{
+						Name:        "tname",
+						IfNotExists: true,
+						Columns: []ColumnDef{
+							{Name: "id", Type: Type{Base: Int64}, Position: line(1)},
+							{Name: "items", Type: Type{Array: true, Base: Proto, ProtoRef: "foo.bar.baz.ProtoName"}, Position: line(1)},
 						},
 						PrimaryKey: []KeyPart{
 							{Column: "id"},

@@ -17,9 +17,18 @@
 package errorreporting
 
 import (
+	"iter"
+
 	errorreportingpb "cloud.google.com/go/errorreporting/apiv1beta1/errorreportingpb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ErrorEventIterator) All() iter.Seq2[*errorreportingpb.ErrorEvent, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // ErrorEventIterator manages a stream of *errorreportingpb.ErrorEvent.
 type ErrorEventIterator struct {
@@ -66,6 +75,12 @@ func (it *ErrorEventIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ErrorGroupStatsIterator) All() iter.Seq2[*errorreportingpb.ErrorGroupStats, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ErrorGroupStatsIterator manages a stream of *errorreportingpb.ErrorGroupStats.

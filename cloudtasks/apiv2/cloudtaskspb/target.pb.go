@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -110,6 +110,511 @@ func (HttpMethod) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_tasks_v2_target_proto_rawDescGZIP(), []int{0}
 }
 
+// The Scheme for an HTTP request. By default, it is HTTPS.
+type UriOverride_Scheme int32
+
+const (
+	// Scheme unspecified. Defaults to HTTPS.
+	UriOverride_SCHEME_UNSPECIFIED UriOverride_Scheme = 0
+	// Convert the scheme to HTTP, e.g., "https://www.example.com" will change
+	// to "http://www.example.com".
+	UriOverride_HTTP UriOverride_Scheme = 1
+	// Convert the scheme to HTTPS, e.g., "http://www.example.com" will change
+	// to "https://www.example.com".
+	UriOverride_HTTPS UriOverride_Scheme = 2
+)
+
+// Enum value maps for UriOverride_Scheme.
+var (
+	UriOverride_Scheme_name = map[int32]string{
+		0: "SCHEME_UNSPECIFIED",
+		1: "HTTP",
+		2: "HTTPS",
+	}
+	UriOverride_Scheme_value = map[string]int32{
+		"SCHEME_UNSPECIFIED": 0,
+		"HTTP":               1,
+		"HTTPS":              2,
+	}
+)
+
+func (x UriOverride_Scheme) Enum() *UriOverride_Scheme {
+	p := new(UriOverride_Scheme)
+	*p = x
+	return p
+}
+
+func (x UriOverride_Scheme) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (UriOverride_Scheme) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_tasks_v2_target_proto_enumTypes[1].Descriptor()
+}
+
+func (UriOverride_Scheme) Type() protoreflect.EnumType {
+	return &file_google_cloud_tasks_v2_target_proto_enumTypes[1]
+}
+
+func (x UriOverride_Scheme) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use UriOverride_Scheme.Descriptor instead.
+func (UriOverride_Scheme) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_tasks_v2_target_proto_rawDescGZIP(), []int{2, 0}
+}
+
+// UriOverrideEnforceMode defines when the URI override is enforced.
+type UriOverride_UriOverrideEnforceMode int32
+
+const (
+	// UriOverrideEnforceMode Unspecified. Defaults to ALWAYS.
+	UriOverride_URI_OVERRIDE_ENFORCE_MODE_UNSPECIFIED UriOverride_UriOverrideEnforceMode = 0
+	// In the IF_NOT_EXISTS mode, queue-level configuration is only
+	// applied where task-level configuration does not exist.
+	UriOverride_IF_NOT_EXISTS UriOverride_UriOverrideEnforceMode = 1
+	// In the ALWAYS mode, queue-level configuration overrides all
+	// task-level configuration
+	UriOverride_ALWAYS UriOverride_UriOverrideEnforceMode = 2
+)
+
+// Enum value maps for UriOverride_UriOverrideEnforceMode.
+var (
+	UriOverride_UriOverrideEnforceMode_name = map[int32]string{
+		0: "URI_OVERRIDE_ENFORCE_MODE_UNSPECIFIED",
+		1: "IF_NOT_EXISTS",
+		2: "ALWAYS",
+	}
+	UriOverride_UriOverrideEnforceMode_value = map[string]int32{
+		"URI_OVERRIDE_ENFORCE_MODE_UNSPECIFIED": 0,
+		"IF_NOT_EXISTS":                         1,
+		"ALWAYS":                                2,
+	}
+)
+
+func (x UriOverride_UriOverrideEnforceMode) Enum() *UriOverride_UriOverrideEnforceMode {
+	p := new(UriOverride_UriOverrideEnforceMode)
+	*p = x
+	return p
+}
+
+func (x UriOverride_UriOverrideEnforceMode) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (UriOverride_UriOverrideEnforceMode) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_tasks_v2_target_proto_enumTypes[2].Descriptor()
+}
+
+func (UriOverride_UriOverrideEnforceMode) Type() protoreflect.EnumType {
+	return &file_google_cloud_tasks_v2_target_proto_enumTypes[2]
+}
+
+func (x UriOverride_UriOverrideEnforceMode) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use UriOverride_UriOverrideEnforceMode.Descriptor instead.
+func (UriOverride_UriOverrideEnforceMode) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_tasks_v2_target_proto_rawDescGZIP(), []int{2, 1}
+}
+
+// PathOverride.
+//
+// Path message defines path override for HTTP targets.
+type PathOverride struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The URI path (e.g., /users/1234). Default is an empty string.
+	Path          string `protobuf:"bytes,1,opt,name=path,proto3" json:"path,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PathOverride) Reset() {
+	*x = PathOverride{}
+	mi := &file_google_cloud_tasks_v2_target_proto_msgTypes[0]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PathOverride) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PathOverride) ProtoMessage() {}
+
+func (x *PathOverride) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_tasks_v2_target_proto_msgTypes[0]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PathOverride.ProtoReflect.Descriptor instead.
+func (*PathOverride) Descriptor() ([]byte, []int) {
+	return file_google_cloud_tasks_v2_target_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *PathOverride) GetPath() string {
+	if x != nil {
+		return x.Path
+	}
+	return ""
+}
+
+// QueryOverride.
+//
+// Query message defines query override for HTTP targets.
+type QueryOverride struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The query parameters (e.g., qparam1=123&qparam2=456). Default is an empty
+	// string.
+	QueryParams   string `protobuf:"bytes,1,opt,name=query_params,json=queryParams,proto3" json:"query_params,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *QueryOverride) Reset() {
+	*x = QueryOverride{}
+	mi := &file_google_cloud_tasks_v2_target_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *QueryOverride) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*QueryOverride) ProtoMessage() {}
+
+func (x *QueryOverride) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_tasks_v2_target_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use QueryOverride.ProtoReflect.Descriptor instead.
+func (*QueryOverride) Descriptor() ([]byte, []int) {
+	return file_google_cloud_tasks_v2_target_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *QueryOverride) GetQueryParams() string {
+	if x != nil {
+		return x.QueryParams
+	}
+	return ""
+}
+
+// URI Override.
+//
+// When specified, all the HTTP tasks inside the queue will be partially or
+// fully overridden depending on the configured values.
+type UriOverride struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Scheme override.
+	//
+	// When specified, the task URI scheme is replaced by the provided value (HTTP
+	// or HTTPS).
+	Scheme *UriOverride_Scheme `protobuf:"varint,1,opt,name=scheme,proto3,enum=google.cloud.tasks.v2.UriOverride_Scheme,oneof" json:"scheme,omitempty"`
+	// Host override.
+	//
+	// When specified, replaces the host part of the task URL. For example,
+	// if the task URL is "https://www.google.com," and host value is set to
+	// "example.net", the overridden URI will be changed to "https://example.net."
+	// Host value cannot be an empty string (INVALID_ARGUMENT).
+	Host *string `protobuf:"bytes,2,opt,name=host,proto3,oneof" json:"host,omitempty"`
+	// Port override.
+	//
+	// When specified, replaces the port part of the task URI. For instance,
+	// for a URI "https://www.example.com/example" and port=123, the overridden
+	// URI becomes "https://www.example.com:123/example". Note that the port value
+	// must be a positive integer. Setting the port to 0 (Zero) clears the URI
+	// port.
+	Port *int64 `protobuf:"varint,3,opt,name=port,proto3,oneof" json:"port,omitempty"`
+	// URI path.
+	//
+	// When specified, replaces the existing path of the task URL. Setting the
+	// path value to an empty string clears the URI path segment.
+	PathOverride *PathOverride `protobuf:"bytes,4,opt,name=path_override,json=pathOverride,proto3" json:"path_override,omitempty"`
+	// URI query.
+	//
+	// When specified, replaces the query part of the task URI. Setting the
+	// query value to an empty string clears the URI query segment.
+	QueryOverride *QueryOverride `protobuf:"bytes,5,opt,name=query_override,json=queryOverride,proto3" json:"query_override,omitempty"`
+	// URI Override Enforce Mode
+	//
+	// When specified, determines the Target UriOverride mode. If not specified,
+	// it defaults to ALWAYS.
+	UriOverrideEnforceMode UriOverride_UriOverrideEnforceMode `protobuf:"varint,6,opt,name=uri_override_enforce_mode,json=uriOverrideEnforceMode,proto3,enum=google.cloud.tasks.v2.UriOverride_UriOverrideEnforceMode" json:"uri_override_enforce_mode,omitempty"`
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *UriOverride) Reset() {
+	*x = UriOverride{}
+	mi := &file_google_cloud_tasks_v2_target_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UriOverride) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UriOverride) ProtoMessage() {}
+
+func (x *UriOverride) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_tasks_v2_target_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UriOverride.ProtoReflect.Descriptor instead.
+func (*UriOverride) Descriptor() ([]byte, []int) {
+	return file_google_cloud_tasks_v2_target_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *UriOverride) GetScheme() UriOverride_Scheme {
+	if x != nil && x.Scheme != nil {
+		return *x.Scheme
+	}
+	return UriOverride_SCHEME_UNSPECIFIED
+}
+
+func (x *UriOverride) GetHost() string {
+	if x != nil && x.Host != nil {
+		return *x.Host
+	}
+	return ""
+}
+
+func (x *UriOverride) GetPort() int64 {
+	if x != nil && x.Port != nil {
+		return *x.Port
+	}
+	return 0
+}
+
+func (x *UriOverride) GetPathOverride() *PathOverride {
+	if x != nil {
+		return x.PathOverride
+	}
+	return nil
+}
+
+func (x *UriOverride) GetQueryOverride() *QueryOverride {
+	if x != nil {
+		return x.QueryOverride
+	}
+	return nil
+}
+
+func (x *UriOverride) GetUriOverrideEnforceMode() UriOverride_UriOverrideEnforceMode {
+	if x != nil {
+		return x.UriOverrideEnforceMode
+	}
+	return UriOverride_URI_OVERRIDE_ENFORCE_MODE_UNSPECIFIED
+}
+
+// HTTP target.
+//
+// When specified at the [Queue][google.cloud.tasks.v2.Queue] level, all tasks
+// with [HttpRequest][google.cloud.tasks.v2.HttpRequest] are overridden
+// according to the target.
+type HttpTarget struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// URI override.
+	//
+	// When specified, overrides the execution URI for all the tasks in the queue.
+	UriOverride *UriOverride `protobuf:"bytes,1,opt,name=uri_override,json=uriOverride,proto3" json:"uri_override,omitempty"`
+	// The HTTP method to use for the request.
+	//
+	// When specified, it overrides
+	// [HttpRequest][google.cloud.tasks.v2.HttpTarget.http_method] for the task.
+	// Note that if the value is set to [HttpMethod][GET] the [HttpRequest][body]
+	// of the task will be ignored at execution time.
+	HttpMethod HttpMethod `protobuf:"varint,2,opt,name=http_method,json=httpMethod,proto3,enum=google.cloud.tasks.v2.HttpMethod" json:"http_method,omitempty"`
+	// HTTP target headers.
+	//
+	// This map contains the header field names and values.
+	// Headers will be set when running the
+	// [CreateTask][google.cloud.tasks.v2.CloudTasks.CreateTask] and/or
+	// [BufferTask][google.cloud.tasks.v2.CloudTasks.BufferTask].
+	//
+	// These headers represent a subset of the headers that will be configured for
+	// the task's HTTP request. Some HTTP request headers will be ignored or
+	// replaced.
+	//
+	// A partial list of headers that will be ignored or replaced is:
+	// * Several predefined headers, prefixed with "X-CloudTasks-", can
+	// be used to define properties of the task.
+	// * Host: This will be computed by Cloud Tasks and derived from
+	// [HttpRequest.url][google.cloud.tasks.v2.Target.HttpRequest.url].
+	// * Content-Length: This will be computed by Cloud Tasks.
+	//
+	// `Content-Type` won't be set by Cloud Tasks. You can explicitly set
+	// `Content-Type` to a media type when the
+	//
+	//	[task is created][google.cloud.tasks.v2.CloudTasks.CreateTask].
+	//	For example, `Content-Type` can be set to `"application/octet-stream"` or
+	//	`"application/json"`. The default value is set to `"application/json"`.
+	//
+	// * User-Agent: This will be set to `"Google-Cloud-Tasks"`.
+	//
+	// Headers which can have multiple values (according to RFC2616) can be
+	// specified using comma-separated values.
+	//
+	// The size of the headers must be less than 80KB.
+	// Queue-level headers to override headers of all the tasks in the queue.
+	//
+	// Do not put business sensitive or personally identifying data in the HTTP
+	// Header Override Configuration or other similar fields in accordance with
+	// Section 12 (Resource Fields) of the
+	// [Service Specific Terms](https://cloud.google.com/terms/service-terms).
+	HeaderOverrides []*HttpTarget_HeaderOverride `protobuf:"bytes,3,rep,name=header_overrides,json=headerOverrides,proto3" json:"header_overrides,omitempty"`
+	// The mode for generating an `Authorization` header for HTTP requests.
+	//
+	// If specified, all `Authorization` headers in the
+	// [HttpRequest.headers][google.cloud.tasks.v2.HttpRequest.headers] field are
+	// overridden.
+	//
+	// Types that are valid to be assigned to AuthorizationHeader:
+	//
+	//	*HttpTarget_OauthToken
+	//	*HttpTarget_OidcToken
+	AuthorizationHeader isHttpTarget_AuthorizationHeader `protobuf_oneof:"authorization_header"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
+}
+
+func (x *HttpTarget) Reset() {
+	*x = HttpTarget{}
+	mi := &file_google_cloud_tasks_v2_target_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *HttpTarget) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*HttpTarget) ProtoMessage() {}
+
+func (x *HttpTarget) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_tasks_v2_target_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use HttpTarget.ProtoReflect.Descriptor instead.
+func (*HttpTarget) Descriptor() ([]byte, []int) {
+	return file_google_cloud_tasks_v2_target_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *HttpTarget) GetUriOverride() *UriOverride {
+	if x != nil {
+		return x.UriOverride
+	}
+	return nil
+}
+
+func (x *HttpTarget) GetHttpMethod() HttpMethod {
+	if x != nil {
+		return x.HttpMethod
+	}
+	return HttpMethod_HTTP_METHOD_UNSPECIFIED
+}
+
+func (x *HttpTarget) GetHeaderOverrides() []*HttpTarget_HeaderOverride {
+	if x != nil {
+		return x.HeaderOverrides
+	}
+	return nil
+}
+
+func (x *HttpTarget) GetAuthorizationHeader() isHttpTarget_AuthorizationHeader {
+	if x != nil {
+		return x.AuthorizationHeader
+	}
+	return nil
+}
+
+func (x *HttpTarget) GetOauthToken() *OAuthToken {
+	if x != nil {
+		if x, ok := x.AuthorizationHeader.(*HttpTarget_OauthToken); ok {
+			return x.OauthToken
+		}
+	}
+	return nil
+}
+
+func (x *HttpTarget) GetOidcToken() *OidcToken {
+	if x != nil {
+		if x, ok := x.AuthorizationHeader.(*HttpTarget_OidcToken); ok {
+			return x.OidcToken
+		}
+	}
+	return nil
+}
+
+type isHttpTarget_AuthorizationHeader interface {
+	isHttpTarget_AuthorizationHeader()
+}
+
+type HttpTarget_OauthToken struct {
+	// If specified, an
+	// [OAuth token](https://developers.google.com/identity/protocols/OAuth2)
+	// is generated and attached as the `Authorization` header in the HTTP
+	// request.
+	//
+	// This type of authorization should generally be used only when calling
+	// Google APIs hosted on *.googleapis.com. Note that both the service
+	// account email and the scope MUST be specified when using the queue-level
+	// authorization override.
+	OauthToken *OAuthToken `protobuf:"bytes,5,opt,name=oauth_token,json=oauthToken,proto3,oneof"`
+}
+
+type HttpTarget_OidcToken struct {
+	// If specified, an
+	// [OIDC](https://developers.google.com/identity/protocols/OpenIDConnect)
+	// token is generated and attached as an `Authorization` header in the
+	// HTTP request.
+	//
+	// This type of authorization can be used for many scenarios, including
+	// calling Cloud Run, or endpoints where you intend to validate the token
+	// yourself. Note that both the service account email and the audience MUST
+	// be specified when using the queue-level authorization override.
+	OidcToken *OidcToken `protobuf:"bytes,6,opt,name=oidc_token,json=oidcToken,proto3,oneof"`
+}
+
+func (*HttpTarget_OauthToken) isHttpTarget_AuthorizationHeader() {}
+
+func (*HttpTarget_OidcToken) isHttpTarget_AuthorizationHeader() {}
+
 // HTTP request.
 //
 // The task will be pushed to the worker as an HTTP request. If the worker
@@ -160,7 +665,7 @@ type HttpRequest struct {
 	//
 	// This map contains the header field names and values.
 	// Headers can be set when the
-	// [task is created][google.cloud.tasks.v2beta3.CloudTasks.CreateTask].
+	// [task is created][google.cloud.tasks.v2.CloudTasks.CreateTask].
 	//
 	// These headers represent a subset of the headers that will accompany the
 	// task's HTTP request. Some HTTP request headers will be ignored or replaced.
@@ -177,7 +682,7 @@ type HttpRequest struct {
 	// `Content-Type` won't be set by Cloud Tasks. You can explicitly set
 	// `Content-Type` to a media type when the
 	//
-	//	[task is created][google.cloud.tasks.v2beta3.CloudTasks.CreateTask].
+	//	[task is created][google.cloud.tasks.v2.CloudTasks.CreateTask].
 	//	For example, `Content-Type` can be set to `"application/octet-stream"` or
 	//	`"application/json"`.
 	//
@@ -195,9 +700,10 @@ type HttpRequest struct {
 	Body []byte `protobuf:"bytes,4,opt,name=body,proto3" json:"body,omitempty"`
 	// The mode for generating an `Authorization` header for HTTP requests.
 	//
-	// If specified, all `Authorization` headers in the
-	// [HttpRequest.headers][google.cloud.tasks.v2.HttpRequest.headers] field will
-	// be overridden.
+	// If specified at the [Queue][google.cloud.tasks.v2.Queue] level, all
+	// `Authorization` headers in the
+	// [HttpRequest.headers][google.cloud.tasks.v2.HttpRequest.headers] field are
+	// overridden.
 	//
 	// Types that are valid to be assigned to AuthorizationHeader:
 	//
@@ -210,7 +716,7 @@ type HttpRequest struct {
 
 func (x *HttpRequest) Reset() {
 	*x = HttpRequest{}
-	mi := &file_google_cloud_tasks_v2_target_proto_msgTypes[0]
+	mi := &file_google_cloud_tasks_v2_target_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -222,7 +728,7 @@ func (x *HttpRequest) String() string {
 func (*HttpRequest) ProtoMessage() {}
 
 func (x *HttpRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_tasks_v2_target_proto_msgTypes[0]
+	mi := &file_google_cloud_tasks_v2_target_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -235,7 +741,7 @@ func (x *HttpRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HttpRequest.ProtoReflect.Descriptor instead.
 func (*HttpRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_tasks_v2_target_proto_rawDescGZIP(), []int{0}
+	return file_google_cloud_tasks_v2_target_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *HttpRequest) GetUrl() string {
@@ -467,7 +973,7 @@ type AppEngineHttpRequest struct {
 
 func (x *AppEngineHttpRequest) Reset() {
 	*x = AppEngineHttpRequest{}
-	mi := &file_google_cloud_tasks_v2_target_proto_msgTypes[1]
+	mi := &file_google_cloud_tasks_v2_target_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -479,7 +985,7 @@ func (x *AppEngineHttpRequest) String() string {
 func (*AppEngineHttpRequest) ProtoMessage() {}
 
 func (x *AppEngineHttpRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_tasks_v2_target_proto_msgTypes[1]
+	mi := &file_google_cloud_tasks_v2_target_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -492,7 +998,7 @@ func (x *AppEngineHttpRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AppEngineHttpRequest.ProtoReflect.Descriptor instead.
 func (*AppEngineHttpRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_tasks_v2_target_proto_rawDescGZIP(), []int{1}
+	return file_google_cloud_tasks_v2_target_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *AppEngineHttpRequest) GetHttpMethod() HttpMethod {
@@ -622,7 +1128,7 @@ type AppEngineRouting struct {
 
 func (x *AppEngineRouting) Reset() {
 	*x = AppEngineRouting{}
-	mi := &file_google_cloud_tasks_v2_target_proto_msgTypes[2]
+	mi := &file_google_cloud_tasks_v2_target_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -634,7 +1140,7 @@ func (x *AppEngineRouting) String() string {
 func (*AppEngineRouting) ProtoMessage() {}
 
 func (x *AppEngineRouting) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_tasks_v2_target_proto_msgTypes[2]
+	mi := &file_google_cloud_tasks_v2_target_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -647,7 +1153,7 @@ func (x *AppEngineRouting) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AppEngineRouting.ProtoReflect.Descriptor instead.
 func (*AppEngineRouting) Descriptor() ([]byte, []int) {
-	return file_google_cloud_tasks_v2_target_proto_rawDescGZIP(), []int{2}
+	return file_google_cloud_tasks_v2_target_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *AppEngineRouting) GetService() string {
@@ -700,7 +1206,7 @@ type OAuthToken struct {
 
 func (x *OAuthToken) Reset() {
 	*x = OAuthToken{}
-	mi := &file_google_cloud_tasks_v2_target_proto_msgTypes[3]
+	mi := &file_google_cloud_tasks_v2_target_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -712,7 +1218,7 @@ func (x *OAuthToken) String() string {
 func (*OAuthToken) ProtoMessage() {}
 
 func (x *OAuthToken) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_tasks_v2_target_proto_msgTypes[3]
+	mi := &file_google_cloud_tasks_v2_target_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -725,7 +1231,7 @@ func (x *OAuthToken) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OAuthToken.ProtoReflect.Descriptor instead.
 func (*OAuthToken) Descriptor() ([]byte, []int) {
-	return file_google_cloud_tasks_v2_target_proto_rawDescGZIP(), []int{3}
+	return file_google_cloud_tasks_v2_target_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *OAuthToken) GetServiceAccountEmail() string {
@@ -765,7 +1271,7 @@ type OidcToken struct {
 
 func (x *OidcToken) Reset() {
 	*x = OidcToken{}
-	mi := &file_google_cloud_tasks_v2_target_proto_msgTypes[4]
+	mi := &file_google_cloud_tasks_v2_target_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -777,7 +1283,7 @@ func (x *OidcToken) String() string {
 func (*OidcToken) ProtoMessage() {}
 
 func (x *OidcToken) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_tasks_v2_target_proto_msgTypes[4]
+	mi := &file_google_cloud_tasks_v2_target_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -790,7 +1296,7 @@ func (x *OidcToken) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OidcToken.ProtoReflect.Descriptor instead.
 func (*OidcToken) Descriptor() ([]byte, []int) {
-	return file_google_cloud_tasks_v2_target_proto_rawDescGZIP(), []int{4}
+	return file_google_cloud_tasks_v2_target_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *OidcToken) GetServiceAccountEmail() string {
@@ -807,11 +1313,156 @@ func (x *OidcToken) GetAudience() string {
 	return ""
 }
 
+// Defines a header message. A header can have a key and a value.
+type HttpTarget_Header struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The Key of the header.
+	Key string `protobuf:"bytes,1,opt,name=key,proto3" json:"key,omitempty"`
+	// The Value of the header.
+	Value         string `protobuf:"bytes,2,opt,name=value,proto3" json:"value,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *HttpTarget_Header) Reset() {
+	*x = HttpTarget_Header{}
+	mi := &file_google_cloud_tasks_v2_target_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *HttpTarget_Header) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*HttpTarget_Header) ProtoMessage() {}
+
+func (x *HttpTarget_Header) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_tasks_v2_target_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use HttpTarget_Header.ProtoReflect.Descriptor instead.
+func (*HttpTarget_Header) Descriptor() ([]byte, []int) {
+	return file_google_cloud_tasks_v2_target_proto_rawDescGZIP(), []int{3, 0}
+}
+
+func (x *HttpTarget_Header) GetKey() string {
+	if x != nil {
+		return x.Key
+	}
+	return ""
+}
+
+func (x *HttpTarget_Header) GetValue() string {
+	if x != nil {
+		return x.Value
+	}
+	return ""
+}
+
+// Wraps the Header object.
+type HttpTarget_HeaderOverride struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Header embodying a key and a value.
+	//
+	// Do not put business sensitive or personally identifying data in the HTTP
+	// Header Override Configuration or other similar fields in accordance with
+	// Section 12 (Resource Fields) of the
+	// [Service Specific Terms](https://cloud.google.com/terms/service-terms).
+	Header        *HttpTarget_Header `protobuf:"bytes,1,opt,name=header,proto3" json:"header,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *HttpTarget_HeaderOverride) Reset() {
+	*x = HttpTarget_HeaderOverride{}
+	mi := &file_google_cloud_tasks_v2_target_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *HttpTarget_HeaderOverride) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*HttpTarget_HeaderOverride) ProtoMessage() {}
+
+func (x *HttpTarget_HeaderOverride) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_tasks_v2_target_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use HttpTarget_HeaderOverride.ProtoReflect.Descriptor instead.
+func (*HttpTarget_HeaderOverride) Descriptor() ([]byte, []int) {
+	return file_google_cloud_tasks_v2_target_proto_rawDescGZIP(), []int{3, 1}
+}
+
+func (x *HttpTarget_HeaderOverride) GetHeader() *HttpTarget_Header {
+	if x != nil {
+		return x.Header
+	}
+	return nil
+}
+
 var File_google_cloud_tasks_v2_target_proto protoreflect.FileDescriptor
 
 const file_google_cloud_tasks_v2_target_proto_rawDesc = "" +
 	"\n" +
-	"\"google/cloud/tasks/v2/target.proto\x12\x15google.cloud.tasks.v2\x1a\x1fgoogle/api/field_behavior.proto\"\xa4\x03\n" +
+	"\"google/cloud/tasks/v2/target.proto\x12\x15google.cloud.tasks.v2\x1a\x1fgoogle/api/field_behavior.proto\"\"\n" +
+	"\fPathOverride\x12\x12\n" +
+	"\x04path\x18\x01 \x01(\tR\x04path\"2\n" +
+	"\rQueryOverride\x12!\n" +
+	"\fquery_params\x18\x01 \x01(\tR\vqueryParams\"\xcc\x04\n" +
+	"\vUriOverride\x12F\n" +
+	"\x06scheme\x18\x01 \x01(\x0e2).google.cloud.tasks.v2.UriOverride.SchemeH\x00R\x06scheme\x88\x01\x01\x12\x17\n" +
+	"\x04host\x18\x02 \x01(\tH\x01R\x04host\x88\x01\x01\x12\x17\n" +
+	"\x04port\x18\x03 \x01(\x03H\x02R\x04port\x88\x01\x01\x12H\n" +
+	"\rpath_override\x18\x04 \x01(\v2#.google.cloud.tasks.v2.PathOverrideR\fpathOverride\x12K\n" +
+	"\x0equery_override\x18\x05 \x01(\v2$.google.cloud.tasks.v2.QueryOverrideR\rqueryOverride\x12t\n" +
+	"\x19uri_override_enforce_mode\x18\x06 \x01(\x0e29.google.cloud.tasks.v2.UriOverride.UriOverrideEnforceModeR\x16uriOverrideEnforceMode\"5\n" +
+	"\x06Scheme\x12\x16\n" +
+	"\x12SCHEME_UNSPECIFIED\x10\x00\x12\b\n" +
+	"\x04HTTP\x10\x01\x12\t\n" +
+	"\x05HTTPS\x10\x02\"b\n" +
+	"\x16UriOverrideEnforceMode\x12)\n" +
+	"%URI_OVERRIDE_ENFORCE_MODE_UNSPECIFIED\x10\x00\x12\x11\n" +
+	"\rIF_NOT_EXISTS\x10\x01\x12\n" +
+	"\n" +
+	"\x06ALWAYS\x10\x02B\t\n" +
+	"\a_schemeB\a\n" +
+	"\x05_hostB\a\n" +
+	"\x05_port\"\x9b\x04\n" +
+	"\n" +
+	"HttpTarget\x12E\n" +
+	"\furi_override\x18\x01 \x01(\v2\".google.cloud.tasks.v2.UriOverrideR\vuriOverride\x12B\n" +
+	"\vhttp_method\x18\x02 \x01(\x0e2!.google.cloud.tasks.v2.HttpMethodR\n" +
+	"httpMethod\x12[\n" +
+	"\x10header_overrides\x18\x03 \x03(\v20.google.cloud.tasks.v2.HttpTarget.HeaderOverrideR\x0fheaderOverrides\x12D\n" +
+	"\voauth_token\x18\x05 \x01(\v2!.google.cloud.tasks.v2.OAuthTokenH\x00R\n" +
+	"oauthToken\x12A\n" +
+	"\n" +
+	"oidc_token\x18\x06 \x01(\v2 .google.cloud.tasks.v2.OidcTokenH\x00R\toidcToken\x1a0\n" +
+	"\x06Header\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value\x1aR\n" +
+	"\x0eHeaderOverride\x12@\n" +
+	"\x06header\x18\x01 \x01(\v2(.google.cloud.tasks.v2.HttpTarget.HeaderR\x06headerB\x16\n" +
+	"\x14authorization_header\"\xa4\x03\n" +
 	"\vHttpRequest\x12\x15\n" +
 	"\x03url\x18\x01 \x01(\tB\x03\xe0A\x02R\x03url\x12B\n" +
 	"\vhttp_method\x18\x02 \x01(\x0e2!.google.cloud.tasks.v2.HttpMethodR\n" +
@@ -873,31 +1524,49 @@ func file_google_cloud_tasks_v2_target_proto_rawDescGZIP() []byte {
 	return file_google_cloud_tasks_v2_target_proto_rawDescData
 }
 
-var file_google_cloud_tasks_v2_target_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_google_cloud_tasks_v2_target_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_google_cloud_tasks_v2_target_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
+var file_google_cloud_tasks_v2_target_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
 var file_google_cloud_tasks_v2_target_proto_goTypes = []any{
-	(HttpMethod)(0),              // 0: google.cloud.tasks.v2.HttpMethod
-	(*HttpRequest)(nil),          // 1: google.cloud.tasks.v2.HttpRequest
-	(*AppEngineHttpRequest)(nil), // 2: google.cloud.tasks.v2.AppEngineHttpRequest
-	(*AppEngineRouting)(nil),     // 3: google.cloud.tasks.v2.AppEngineRouting
-	(*OAuthToken)(nil),           // 4: google.cloud.tasks.v2.OAuthToken
-	(*OidcToken)(nil),            // 5: google.cloud.tasks.v2.OidcToken
-	nil,                          // 6: google.cloud.tasks.v2.HttpRequest.HeadersEntry
-	nil,                          // 7: google.cloud.tasks.v2.AppEngineHttpRequest.HeadersEntry
+	(HttpMethod)(0),                         // 0: google.cloud.tasks.v2.HttpMethod
+	(UriOverride_Scheme)(0),                 // 1: google.cloud.tasks.v2.UriOverride.Scheme
+	(UriOverride_UriOverrideEnforceMode)(0), // 2: google.cloud.tasks.v2.UriOverride.UriOverrideEnforceMode
+	(*PathOverride)(nil),                    // 3: google.cloud.tasks.v2.PathOverride
+	(*QueryOverride)(nil),                   // 4: google.cloud.tasks.v2.QueryOverride
+	(*UriOverride)(nil),                     // 5: google.cloud.tasks.v2.UriOverride
+	(*HttpTarget)(nil),                      // 6: google.cloud.tasks.v2.HttpTarget
+	(*HttpRequest)(nil),                     // 7: google.cloud.tasks.v2.HttpRequest
+	(*AppEngineHttpRequest)(nil),            // 8: google.cloud.tasks.v2.AppEngineHttpRequest
+	(*AppEngineRouting)(nil),                // 9: google.cloud.tasks.v2.AppEngineRouting
+	(*OAuthToken)(nil),                      // 10: google.cloud.tasks.v2.OAuthToken
+	(*OidcToken)(nil),                       // 11: google.cloud.tasks.v2.OidcToken
+	(*HttpTarget_Header)(nil),               // 12: google.cloud.tasks.v2.HttpTarget.Header
+	(*HttpTarget_HeaderOverride)(nil),       // 13: google.cloud.tasks.v2.HttpTarget.HeaderOverride
+	nil,                                     // 14: google.cloud.tasks.v2.HttpRequest.HeadersEntry
+	nil,                                     // 15: google.cloud.tasks.v2.AppEngineHttpRequest.HeadersEntry
 }
 var file_google_cloud_tasks_v2_target_proto_depIdxs = []int32{
-	0, // 0: google.cloud.tasks.v2.HttpRequest.http_method:type_name -> google.cloud.tasks.v2.HttpMethod
-	6, // 1: google.cloud.tasks.v2.HttpRequest.headers:type_name -> google.cloud.tasks.v2.HttpRequest.HeadersEntry
-	4, // 2: google.cloud.tasks.v2.HttpRequest.oauth_token:type_name -> google.cloud.tasks.v2.OAuthToken
-	5, // 3: google.cloud.tasks.v2.HttpRequest.oidc_token:type_name -> google.cloud.tasks.v2.OidcToken
-	0, // 4: google.cloud.tasks.v2.AppEngineHttpRequest.http_method:type_name -> google.cloud.tasks.v2.HttpMethod
-	3, // 5: google.cloud.tasks.v2.AppEngineHttpRequest.app_engine_routing:type_name -> google.cloud.tasks.v2.AppEngineRouting
-	7, // 6: google.cloud.tasks.v2.AppEngineHttpRequest.headers:type_name -> google.cloud.tasks.v2.AppEngineHttpRequest.HeadersEntry
-	7, // [7:7] is the sub-list for method output_type
-	7, // [7:7] is the sub-list for method input_type
-	7, // [7:7] is the sub-list for extension type_name
-	7, // [7:7] is the sub-list for extension extendee
-	0, // [0:7] is the sub-list for field type_name
+	1,  // 0: google.cloud.tasks.v2.UriOverride.scheme:type_name -> google.cloud.tasks.v2.UriOverride.Scheme
+	3,  // 1: google.cloud.tasks.v2.UriOverride.path_override:type_name -> google.cloud.tasks.v2.PathOverride
+	4,  // 2: google.cloud.tasks.v2.UriOverride.query_override:type_name -> google.cloud.tasks.v2.QueryOverride
+	2,  // 3: google.cloud.tasks.v2.UriOverride.uri_override_enforce_mode:type_name -> google.cloud.tasks.v2.UriOverride.UriOverrideEnforceMode
+	5,  // 4: google.cloud.tasks.v2.HttpTarget.uri_override:type_name -> google.cloud.tasks.v2.UriOverride
+	0,  // 5: google.cloud.tasks.v2.HttpTarget.http_method:type_name -> google.cloud.tasks.v2.HttpMethod
+	13, // 6: google.cloud.tasks.v2.HttpTarget.header_overrides:type_name -> google.cloud.tasks.v2.HttpTarget.HeaderOverride
+	10, // 7: google.cloud.tasks.v2.HttpTarget.oauth_token:type_name -> google.cloud.tasks.v2.OAuthToken
+	11, // 8: google.cloud.tasks.v2.HttpTarget.oidc_token:type_name -> google.cloud.tasks.v2.OidcToken
+	0,  // 9: google.cloud.tasks.v2.HttpRequest.http_method:type_name -> google.cloud.tasks.v2.HttpMethod
+	14, // 10: google.cloud.tasks.v2.HttpRequest.headers:type_name -> google.cloud.tasks.v2.HttpRequest.HeadersEntry
+	10, // 11: google.cloud.tasks.v2.HttpRequest.oauth_token:type_name -> google.cloud.tasks.v2.OAuthToken
+	11, // 12: google.cloud.tasks.v2.HttpRequest.oidc_token:type_name -> google.cloud.tasks.v2.OidcToken
+	0,  // 13: google.cloud.tasks.v2.AppEngineHttpRequest.http_method:type_name -> google.cloud.tasks.v2.HttpMethod
+	9,  // 14: google.cloud.tasks.v2.AppEngineHttpRequest.app_engine_routing:type_name -> google.cloud.tasks.v2.AppEngineRouting
+	15, // 15: google.cloud.tasks.v2.AppEngineHttpRequest.headers:type_name -> google.cloud.tasks.v2.AppEngineHttpRequest.HeadersEntry
+	12, // 16: google.cloud.tasks.v2.HttpTarget.HeaderOverride.header:type_name -> google.cloud.tasks.v2.HttpTarget.Header
+	17, // [17:17] is the sub-list for method output_type
+	17, // [17:17] is the sub-list for method input_type
+	17, // [17:17] is the sub-list for extension type_name
+	17, // [17:17] is the sub-list for extension extendee
+	0,  // [0:17] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_tasks_v2_target_proto_init() }
@@ -905,7 +1574,12 @@ func file_google_cloud_tasks_v2_target_proto_init() {
 	if File_google_cloud_tasks_v2_target_proto != nil {
 		return
 	}
-	file_google_cloud_tasks_v2_target_proto_msgTypes[0].OneofWrappers = []any{
+	file_google_cloud_tasks_v2_target_proto_msgTypes[2].OneofWrappers = []any{}
+	file_google_cloud_tasks_v2_target_proto_msgTypes[3].OneofWrappers = []any{
+		(*HttpTarget_OauthToken)(nil),
+		(*HttpTarget_OidcToken)(nil),
+	}
+	file_google_cloud_tasks_v2_target_proto_msgTypes[4].OneofWrappers = []any{
 		(*HttpRequest_OauthToken)(nil),
 		(*HttpRequest_OidcToken)(nil),
 	}
@@ -914,8 +1588,8 @@ func file_google_cloud_tasks_v2_target_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_tasks_v2_target_proto_rawDesc), len(file_google_cloud_tasks_v2_target_proto_rawDesc)),
-			NumEnums:      1,
-			NumMessages:   7,
+			NumEnums:      3,
+			NumMessages:   13,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

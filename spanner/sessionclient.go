@@ -179,7 +179,7 @@ func (sc *sessionClient) createSession(ctx context.Context) (*session, error) {
 	sid, err := client.CreateSession(contextWithOutgoingMetadata(ctx, sc.md, sc.disableRouteToLeader), &sppb.CreateSessionRequest{
 		Database: sc.database,
 		Session:  &sppb.Session{Labels: sc.sessionLabels, CreatorRole: sc.databaseRole},
-	}, gax.WithGRPCOptions(grpc.Header(&md)))
+	}, gfeLatencyHeaderOptions(&md, true, sc.otConfig)...)
 
 	if getGFELatencyMetricsFlag() && md != nil {
 		_, instance, database, err := parseDatabaseName(sc.database)
@@ -232,7 +232,7 @@ func (sc *sessionClient) executeCreateMultiplexedSession(ctx context.Context, cl
 		Database: sc.database,
 		// Multiplexed sessions do not support labels.
 		Session: &sppb.Session{CreatorRole: sc.databaseRole, Multiplexed: true},
-	}, gax.WithGRPCOptions(grpc.Header(&mdForGFELatency)))
+	}, gfeLatencyHeaderOptions(&mdForGFELatency, true, sc.otConfig)...)
 
 	if getGFELatencyMetricsFlag() && mdForGFELatency != nil {
 		_, instance, database, err := parseDatabaseName(sc.database)

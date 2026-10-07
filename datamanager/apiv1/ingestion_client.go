@@ -24,6 +24,7 @@ import (
 	"math"
 	"net/http"
 	"net/url"
+	"time"
 
 	datamanagerpb "cloud.google.com/go/datamanager/apiv1/datamanagerpb"
 	gax "github.com/googleapis/gax-go/v2"
@@ -33,6 +34,7 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
@@ -44,6 +46,8 @@ type IngestionCallOptions struct {
 	RemoveAudienceMembers    []gax.CallOption
 	RemoveAllAudienceMembers []gax.CallOption
 	IngestEvents             []gax.CallOption
+	IngestUsers              []gax.CallOption
+	RemoveUsers              []gax.CallOption
 	IngestAdEvents           []gax.CallOption
 	RetrieveRequestStatus    []gax.CallOption
 }
@@ -65,23 +69,165 @@ func defaultIngestionGRPCClientOptions() []option.ClientOption {
 
 func defaultIngestionCallOptions() *IngestionCallOptions {
 	return &IngestionCallOptions{
-		IngestAudienceMembers:    []gax.CallOption{},
-		RemoveAudienceMembers:    []gax.CallOption{},
+		IngestAudienceMembers: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    5000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		RemoveAudienceMembers: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    5000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		RemoveAllAudienceMembers: []gax.CallOption{},
-		IngestEvents:             []gax.CallOption{},
-		IngestAdEvents:           []gax.CallOption{},
-		RetrieveRequestStatus:    []gax.CallOption{},
+		IngestEvents: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    5000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		IngestUsers: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    5000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		RemoveUsers: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    5000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		IngestAdEvents: []gax.CallOption{},
+		RetrieveRequestStatus: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    5000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 	}
 }
 
 func defaultIngestionRESTCallOptions() *IngestionCallOptions {
 	return &IngestionCallOptions{
-		IngestAudienceMembers:    []gax.CallOption{},
-		RemoveAudienceMembers:    []gax.CallOption{},
+		IngestAudienceMembers: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    5000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		RemoveAudienceMembers: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    5000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
 		RemoveAllAudienceMembers: []gax.CallOption{},
-		IngestEvents:             []gax.CallOption{},
-		IngestAdEvents:           []gax.CallOption{},
-		RetrieveRequestStatus:    []gax.CallOption{},
+		IngestEvents: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    5000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		IngestUsers: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    5000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		RemoveUsers: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    5000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		IngestAdEvents: []gax.CallOption{},
+		RetrieveRequestStatus: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    5000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
 	}
 }
 
@@ -94,6 +240,8 @@ type internalIngestionClient interface {
 	RemoveAudienceMembers(context.Context, *datamanagerpb.RemoveAudienceMembersRequest, ...gax.CallOption) (*datamanagerpb.RemoveAudienceMembersResponse, error)
 	RemoveAllAudienceMembers(context.Context, *datamanagerpb.RemoveAllAudienceMembersRequest, ...gax.CallOption) (*datamanagerpb.RemoveAllAudienceMembersResponse, error)
 	IngestEvents(context.Context, *datamanagerpb.IngestEventsRequest, ...gax.CallOption) (*datamanagerpb.IngestEventsResponse, error)
+	IngestUsers(context.Context, *datamanagerpb.IngestUsersRequest, ...gax.CallOption) (*datamanagerpb.IngestUsersResponse, error)
+	RemoveUsers(context.Context, *datamanagerpb.RemoveUsersRequest, ...gax.CallOption) (*datamanagerpb.RemoveUsersResponse, error)
 	IngestAdEvents(context.Context, *datamanagerpb.IngestAdEventsRequest, ...gax.CallOption) (*datamanagerpb.IngestAdEventsResponse, error)
 	RetrieveRequestStatus(context.Context, *datamanagerpb.RetrieveRequestStatusRequest, ...gax.CallOption) (*datamanagerpb.RetrieveRequestStatusResponse, error)
 }
@@ -157,6 +305,25 @@ func (c *IngestionClient) RemoveAllAudienceMembers(ctx context.Context, req *dat
 // the provided Destination.
 func (c *IngestionClient) IngestEvents(ctx context.Context, req *datamanagerpb.IngestEventsRequest, opts ...gax.CallOption) (*datamanagerpb.IngestEventsResponse, error) {
 	return c.internalClient.IngestEvents(ctx, req, opts...)
+}
+
+// IngestUsers uploads a list of users to the provided destinations. Unlike
+// IngestAudienceMembers
+// (which adds users to specific advertiser audience lists for targeting),
+// IngestUsers ingests account level identity linkage data (for example,
+// user identifiers linked to mobile IDs) independent of specific audience
+// segments.
+//
+// This feature is only available to accounts on an allowlist.
+func (c *IngestionClient) IngestUsers(ctx context.Context, req *datamanagerpb.IngestUsersRequest, opts ...gax.CallOption) (*datamanagerpb.IngestUsersResponse, error) {
+	return c.internalClient.IngestUsers(ctx, req, opts...)
+}
+
+// RemoveUsers removes a list of users from the provided destinations.
+//
+// This feature is only available to accounts on an allowlist.
+func (c *IngestionClient) RemoveUsers(ctx context.Context, req *datamanagerpb.RemoveUsersRequest, opts ...gax.CallOption) (*datamanagerpb.RemoveUsersResponse, error) {
+	return c.internalClient.RemoveUsers(ctx, req, opts...)
 }
 
 // IngestAdEvents uploads a list of
@@ -245,8 +412,51 @@ func NewIngestionClient(ctx context.Context, opts ...option.ClientOption) (*Inge
 		client.CallOptions.RemoveAudienceMembers = append(client.CallOptions.RemoveAudienceMembers, gax.WithClientMetrics(metrics))
 		client.CallOptions.RemoveAllAudienceMembers = append(client.CallOptions.RemoveAllAudienceMembers, gax.WithClientMetrics(metrics))
 		client.CallOptions.IngestEvents = append(client.CallOptions.IngestEvents, gax.WithClientMetrics(metrics))
+		client.CallOptions.IngestUsers = append(client.CallOptions.IngestUsers, gax.WithClientMetrics(metrics))
+		client.CallOptions.RemoveUsers = append(client.CallOptions.RemoveUsers, gax.WithClientMetrics(metrics))
 		client.CallOptions.IngestAdEvents = append(client.CallOptions.IngestAdEvents, gax.WithClientMetrics(metrics))
 		client.CallOptions.RetrieveRequestStatus = append(client.CallOptions.RetrieveRequestStatus, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "datamanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datamanager/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "datamanager.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.IngestAudienceMembers = append(client.CallOptions.IngestAudienceMembers, gax.WithClientTracing(tracing))
+		client.CallOptions.RemoveAudienceMembers = append(client.CallOptions.RemoveAudienceMembers, gax.WithClientTracing(tracing))
+		client.CallOptions.RemoveAllAudienceMembers = append(client.CallOptions.RemoveAllAudienceMembers, gax.WithClientTracing(tracing))
+		client.CallOptions.IngestEvents = append(client.CallOptions.IngestEvents, gax.WithClientTracing(tracing))
+		client.CallOptions.IngestUsers = append(client.CallOptions.IngestUsers, gax.WithClientTracing(tracing))
+		client.CallOptions.RemoveUsers = append(client.CallOptions.RemoveUsers, gax.WithClientTracing(tracing))
+		client.CallOptions.IngestAdEvents = append(client.CallOptions.IngestAdEvents, gax.WithClientTracing(tracing))
+		client.CallOptions.RetrieveRequestStatus = append(client.CallOptions.RetrieveRequestStatus, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "datamanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datamanager/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "datamanager.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.IngestAudienceMembers = append(client.CallOptions.IngestAudienceMembers, gax.WithClientLogging(logging))
+		client.CallOptions.RemoveAudienceMembers = append(client.CallOptions.RemoveAudienceMembers, gax.WithClientLogging(logging))
+		client.CallOptions.RemoveAllAudienceMembers = append(client.CallOptions.RemoveAllAudienceMembers, gax.WithClientLogging(logging))
+		client.CallOptions.IngestEvents = append(client.CallOptions.IngestEvents, gax.WithClientLogging(logging))
+		client.CallOptions.IngestUsers = append(client.CallOptions.IngestUsers, gax.WithClientLogging(logging))
+		client.CallOptions.RemoveUsers = append(client.CallOptions.RemoveUsers, gax.WithClientLogging(logging))
+		client.CallOptions.IngestAdEvents = append(client.CallOptions.IngestAdEvents, gax.WithClientLogging(logging))
+		client.CallOptions.RetrieveRequestStatus = append(client.CallOptions.RetrieveRequestStatus, gax.WithClientLogging(logging))
 	}
 
 	client.internalClient = c
@@ -341,8 +551,51 @@ func NewIngestionRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 		callOpts.RemoveAudienceMembers = append(callOpts.RemoveAudienceMembers, gax.WithClientMetrics(metrics))
 		callOpts.RemoveAllAudienceMembers = append(callOpts.RemoveAllAudienceMembers, gax.WithClientMetrics(metrics))
 		callOpts.IngestEvents = append(callOpts.IngestEvents, gax.WithClientMetrics(metrics))
+		callOpts.IngestUsers = append(callOpts.IngestUsers, gax.WithClientMetrics(metrics))
+		callOpts.RemoveUsers = append(callOpts.RemoveUsers, gax.WithClientMetrics(metrics))
 		callOpts.IngestAdEvents = append(callOpts.IngestAdEvents, gax.WithClientMetrics(metrics))
 		callOpts.RetrieveRequestStatus = append(callOpts.RetrieveRequestStatus, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "datamanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datamanager/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "datamanager.googleapis.com",
+			}),
+		)
+
+		callOpts.IngestAudienceMembers = append(callOpts.IngestAudienceMembers, gax.WithClientTracing(tracing))
+		callOpts.RemoveAudienceMembers = append(callOpts.RemoveAudienceMembers, gax.WithClientTracing(tracing))
+		callOpts.RemoveAllAudienceMembers = append(callOpts.RemoveAllAudienceMembers, gax.WithClientTracing(tracing))
+		callOpts.IngestEvents = append(callOpts.IngestEvents, gax.WithClientTracing(tracing))
+		callOpts.IngestUsers = append(callOpts.IngestUsers, gax.WithClientTracing(tracing))
+		callOpts.RemoveUsers = append(callOpts.RemoveUsers, gax.WithClientTracing(tracing))
+		callOpts.IngestAdEvents = append(callOpts.IngestAdEvents, gax.WithClientTracing(tracing))
+		callOpts.RetrieveRequestStatus = append(callOpts.RetrieveRequestStatus, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "datamanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datamanager/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "datamanager.googleapis.com",
+			}),
+		)
+
+		callOpts.IngestAudienceMembers = append(callOpts.IngestAudienceMembers, gax.WithClientLogging(logging))
+		callOpts.RemoveAudienceMembers = append(callOpts.RemoveAudienceMembers, gax.WithClientLogging(logging))
+		callOpts.RemoveAllAudienceMembers = append(callOpts.RemoveAllAudienceMembers, gax.WithClientLogging(logging))
+		callOpts.IngestEvents = append(callOpts.IngestEvents, gax.WithClientLogging(logging))
+		callOpts.IngestUsers = append(callOpts.IngestUsers, gax.WithClientLogging(logging))
+		callOpts.RemoveUsers = append(callOpts.RemoveUsers, gax.WithClientLogging(logging))
+		callOpts.IngestAdEvents = append(callOpts.IngestAdEvents, gax.WithClientLogging(logging))
+		callOpts.RetrieveRequestStatus = append(callOpts.RetrieveRequestStatus, gax.WithClientLogging(logging))
 	}
 
 	return &IngestionClient{internalClient: c, CallOptions: callOpts}, nil
@@ -449,6 +702,42 @@ func (c *ingestionGRPCClient) IngestEvents(ctx context.Context, req *datamanager
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = executeRPC(ctx, c.ingestionClient.IngestEvents, req, settings.GRPC, c.logger, "IngestEvents")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *ingestionGRPCClient) IngestUsers(ctx context.Context, req *datamanagerpb.IngestUsersRequest, opts ...gax.CallOption) (*datamanagerpb.IngestUsersResponse, error) {
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ads.datamanager.v1.IngestionService/IngestUsers")
+	}
+	opts = append((*c.CallOptions).IngestUsers[0:len((*c.CallOptions).IngestUsers):len((*c.CallOptions).IngestUsers)], opts...)
+	var resp *datamanagerpb.IngestUsersResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.ingestionClient.IngestUsers, req, settings.GRPC, c.logger, "IngestUsers")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *ingestionGRPCClient) RemoveUsers(ctx context.Context, req *datamanagerpb.RemoveUsersRequest, opts ...gax.CallOption) (*datamanagerpb.RemoveUsersResponse, error) {
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ads.datamanager.v1.IngestionService/RemoveUsers")
+	}
+	opts = append((*c.CallOptions).RemoveUsers[0:len((*c.CallOptions).RemoveUsers):len((*c.CallOptions).RemoveUsers)], opts...)
+	var resp *datamanagerpb.RemoveUsersResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.ingestionClient.RemoveUsers, req, settings.GRPC, c.logger, "RemoveUsers")
 		return err
 	}, opts...)
 	if err != nil {
@@ -711,6 +1000,129 @@ func (c *ingestionRESTClient) IngestEvents(ctx context.Context, req *datamanager
 		httpReq.Header = headers
 
 		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "IngestEvents")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// IngestUsers uploads a list of users to the provided destinations. Unlike
+// IngestAudienceMembers
+// (which adds users to specific advertiser audience lists for targeting),
+// IngestUsers ingests account level identity linkage data (for example,
+// user identifiers linked to mobile IDs) independent of specific audience
+// segments.
+//
+// This feature is only available to accounts on an allowlist.
+func (c *ingestionRESTClient) IngestUsers(ctx context.Context, req *datamanagerpb.IngestUsersRequest, opts ...gax.CallOption) (*datamanagerpb.IngestUsersResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/users:ingest")
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ads.datamanager.v1.IngestionService/IngestUsers")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/users:ingest")
+	}
+	opts = append((*c.CallOptions).IngestUsers[0:len((*c.CallOptions).IngestUsers):len((*c.CallOptions).IngestUsers)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &datamanagerpb.IngestUsersResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "IngestUsers")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// RemoveUsers removes a list of users from the provided destinations.
+//
+// This feature is only available to accounts on an allowlist.
+func (c *ingestionRESTClient) RemoveUsers(ctx context.Context, req *datamanagerpb.RemoveUsersRequest, opts ...gax.CallOption) (*datamanagerpb.RemoveUsersResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/users:remove")
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ads.datamanager.v1.IngestionService/RemoveUsers")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/users:remove")
+	}
+	opts = append((*c.CallOptions).RemoveUsers[0:len((*c.CallOptions).RemoveUsers):len((*c.CallOptions).RemoveUsers)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &datamanagerpb.RemoveUsersResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RemoveUsers")
 		if err != nil {
 			return err
 		}

@@ -45,6 +45,14 @@ func (s *stubStream) Context() context.Context     { return s.ctx }
 
 // fakeStream implements Stream and exposes channels so tests can drive both
 // sides of the conversation. sendFn allows a test to inject Send failures.
+//
+// Recv selects on ctx.Done() alongside the recv channel — matching real gRPC
+// ClientStream semantics, where Recv returns as soon as the stream's context
+// cancels. Without this, a session pool test that only cancels poolCtx (and
+// forgets to also close every fakeStream) leaves readLoop parked forever, and
+// SessionPoolImpl.Close's Phase 5 spawns.Wait deadlocks. ctx defaults to
+// context.Background(); use bindCtx to link the stream to the dial ctx handed
+// in by the factory.
 type fakeStream struct {
 	sentMu    sync.Mutex
 	sent      []*spb.SessionRequest
@@ -53,6 +61,7 @@ type fakeStream struct {
 	hdrErr    error
 	sendFn    func(*spb.SessionRequest) error
 	closeOnce sync.Once
+	ctx       context.Context
 }
 
 type recvOp struct {
@@ -64,7 +73,19 @@ func newFakeStream() *fakeStream {
 	return &fakeStream{
 		recv: make(chan recvOp, 32),
 		hdr:  metadata.MD{},
+		ctx:  context.Background(),
 	}
+}
+
+// bindCtx links Recv to ctx so Recv unblocks with ctx.Err() when ctx cancels —
+// the fakeStream analogue of a real gRPC stream aborting on ctx cancellation.
+// No-op for nil ctx so callers can pass through the incoming factory ctx
+// unchecked.
+func (f *fakeStream) bindCtx(ctx context.Context) *fakeStream {
+	if ctx != nil {
+		f.ctx = ctx
+	}
+	return f
 }
 
 // Close unblocks Recv() by closing the recv channel. Idempotent so cleanup
@@ -86,15 +107,19 @@ func (f *fakeStream) Send(req *spb.SessionRequest) error {
 }
 
 func (f *fakeStream) Recv() (*spb.SessionResponse, error) {
-	op, ok := <-f.recv
-	if !ok {
-		return nil, fmt.Errorf("stream closed")
+	select {
+	case op, ok := <-f.recv:
+		if !ok {
+			return nil, fmt.Errorf("stream closed")
+		}
+		return op.resp, op.err
+	case <-f.ctx.Done():
+		return nil, f.ctx.Err()
 	}
-	return op.resp, op.err
 }
 
 func (f *fakeStream) Header() (metadata.MD, error) { return f.hdr, f.hdrErr }
-func (f *fakeStream) Context() context.Context     { return context.Background() }
+func (f *fakeStream) Context() context.Context     { return f.ctx }
 
 func (f *fakeStream) snapshotSent() []*spb.SessionRequest {
 	f.sentMu.Lock()

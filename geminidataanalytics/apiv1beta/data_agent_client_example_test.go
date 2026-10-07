@@ -291,6 +291,61 @@ func ExampleDataAgentClient_ListDataAgents() {
 	}
 }
 
+func ExampleDataAgentClient_RetrieveAgentOpsObservability() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := geminidataanalytics.NewDataAgentClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &geminidataanalyticspb.RetrieveAgentOpsObservabilityRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/geminidataanalytics/apiv1beta/geminidataanalyticspb#RetrieveAgentOpsObservabilityRequest.
+	}
+	resp, err := c.RetrieveAgentOpsObservability(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleDataAgentClient_SetAgentOpsObservability() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := geminidataanalytics.NewDataAgentClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &geminidataanalyticspb.SetAgentOpsObservabilityRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/geminidataanalytics/apiv1beta/geminidataanalyticspb#SetAgentOpsObservabilityRequest.
+	}
+	op, err := c.SetAgentOpsObservability(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleDataAgentClient_SetIamPolicy() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.

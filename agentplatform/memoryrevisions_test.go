@@ -46,8 +46,8 @@ func TestAgentEngineMemoryRevisions(t *testing.T) {
 				"my_timestamp_key": {TimestampValue: timestamp},
 			},
 		}
-		response := createAgentEngineMemoryAndWait(tt, client, re, want)
-		got, err := client.AgentEngines.Memories.Revisions.List(tt.Context(), response.Name, nil)
+		response := createMemoryAndWait(tt, client, re, want)
+		got, err := client.MemoryBanks.Memories.Revisions.List(tt.Context(), response.Name, nil)
 		if err != nil {
 			tt.Fatalf("list() failed unexpectedly: %v", err)
 		}

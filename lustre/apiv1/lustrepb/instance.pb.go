@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,6 +26,9 @@ import (
 	unsafe "unsafe"
 
 	_ "google.golang.org/genproto/googleapis/api/annotations"
+	date "google.golang.org/genproto/googleapis/type/date"
+	dayofweek "google.golang.org/genproto/googleapis/type/dayofweek"
+	timeofday "google.golang.org/genproto/googleapis/type/timeofday"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
@@ -58,7 +61,13 @@ const (
 	// The instance is stopped.
 	Instance_STOPPED Instance_State = 6
 	// The instance is being updated.
+	//
+	// Deprecated: Marked as deprecated in google/cloud/lustre/v1/instance.proto.
 	Instance_UPDATING Instance_State = 7
+	// The instance is suspended due to an issue related to Cloud KMS. The
+	// details are available in
+	// [state_reason][google.cloud.lustre.v1.Instance.state_reason].
+	Instance_SUSPENDED Instance_State = 8
 )
 
 // Enum value maps for Instance_State.
@@ -72,6 +81,7 @@ var (
 		5: "REPAIRING",
 		6: "STOPPED",
 		7: "UPDATING",
+		8: "SUSPENDED",
 	}
 	Instance_State_value = map[string]int32{
 		"STATE_UNSPECIFIED": 0,
@@ -82,6 +92,7 @@ var (
 		"REPAIRING":         5,
 		"STOPPED":           6,
 		"UPDATING":          7,
+		"SUSPENDED":         8,
 	}
 )
 
@@ -112,6 +123,199 @@ func (Instance_State) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_lustre_v1_instance_proto_rawDescGZIP(), []int{0, 0}
 }
 
+// Specifies the Dynamic performance tier for the instance.
+//
+// If this field is set to `DEFAULT_CACHE`, `per_unit_storage_throughput`
+// must not be set or must be set to zero.
+type DynamicTierOptions_Mode int32
+
+const (
+	// Unspecified dynamic tier mode.
+	DynamicTierOptions_MODE_UNSPECIFIED DynamicTierOptions_Mode = 0
+	// The dynamic tier is explicitly disabled.
+	DynamicTierOptions_DISABLED DynamicTierOptions_Mode = 1
+	// The dynamic tier is enabled.
+	DynamicTierOptions_DEFAULT_CACHE DynamicTierOptions_Mode = 2
+)
+
+// Enum value maps for DynamicTierOptions_Mode.
+var (
+	DynamicTierOptions_Mode_name = map[int32]string{
+		0: "MODE_UNSPECIFIED",
+		1: "DISABLED",
+		2: "DEFAULT_CACHE",
+	}
+	DynamicTierOptions_Mode_value = map[string]int32{
+		"MODE_UNSPECIFIED": 0,
+		"DISABLED":         1,
+		"DEFAULT_CACHE":    2,
+	}
+)
+
+func (x DynamicTierOptions_Mode) Enum() *DynamicTierOptions_Mode {
+	p := new(DynamicTierOptions_Mode)
+	*p = x
+	return p
+}
+
+func (x DynamicTierOptions_Mode) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (DynamicTierOptions_Mode) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_lustre_v1_instance_proto_enumTypes[1].Descriptor()
+}
+
+func (DynamicTierOptions_Mode) Type() protoreflect.EnumType {
+	return &file_google_cloud_lustre_v1_instance_proto_enumTypes[1]
+}
+
+func (x DynamicTierOptions_Mode) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use DynamicTierOptions_Mode.Descriptor instead.
+func (DynamicTierOptions_Mode) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_lustre_v1_instance_proto_rawDescGZIP(), []int{1, 0}
+}
+
+// Squash mode for an access rule.
+type AccessRulesOptions_SquashMode int32
+
+const (
+	// Unspecified squash mode.
+	AccessRulesOptions_SQUASH_MODE_UNSPECIFIED AccessRulesOptions_SquashMode = 0
+	// Squash is disabled.
+	//
+	// If set inside an
+	// [AccessRule][google.cloud.lustre.v1.AccessRulesOptions.AccessRule], root
+	// users matching the [ip_ranges][AccessRule.ip_ranges] are not squashed.
+	//
+	// If set as the
+	// [default_squash_mode][google.cloud.lustre.v1.AccessRulesOptions.default_squash_mode],
+	// root squash is disabled for this instance.
+	//
+	// If the default squash mode is `NO_SQUASH`, do not set the
+	// [default_squash_uid][google.cloud.lustre.v1.AccessRulesOptions.default_squash_uid]
+	// or
+	// [default_squash_gid][google.cloud.lustre.v1.AccessRulesOptions.default_squash_gid],
+	// or an `invalid argument` error is returned.
+	AccessRulesOptions_NO_SQUASH AccessRulesOptions_SquashMode = 1
+	// Root user squash is enabled.
+	//
+	// Not supported inside an
+	// [AccessRule][google.cloud.lustre.v1.AccessRulesOptions.AccessRule].
+	//
+	// If set as the
+	// [default_squash_mode][google.cloud.lustre.v1.AccessRulesOptions.default_squash_mode],
+	// root users not matching any of the
+	// [access_rules][google.cloud.lustre.v1.AccessRulesOptions.access_rules]
+	// are squashed to the
+	// [default_squash_uid][google.cloud.lustre.v1.AccessRulesOptions.default_squash_uid]
+	// and
+	// [default_squash_gid][google.cloud.lustre.v1.AccessRulesOptions.default_squash_gid].
+	AccessRulesOptions_ROOT_SQUASH AccessRulesOptions_SquashMode = 2
+)
+
+// Enum value maps for AccessRulesOptions_SquashMode.
+var (
+	AccessRulesOptions_SquashMode_name = map[int32]string{
+		0: "SQUASH_MODE_UNSPECIFIED",
+		1: "NO_SQUASH",
+		2: "ROOT_SQUASH",
+	}
+	AccessRulesOptions_SquashMode_value = map[string]int32{
+		"SQUASH_MODE_UNSPECIFIED": 0,
+		"NO_SQUASH":               1,
+		"ROOT_SQUASH":             2,
+	}
+)
+
+func (x AccessRulesOptions_SquashMode) Enum() *AccessRulesOptions_SquashMode {
+	p := new(AccessRulesOptions_SquashMode)
+	*p = x
+	return p
+}
+
+func (x AccessRulesOptions_SquashMode) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (AccessRulesOptions_SquashMode) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_lustre_v1_instance_proto_enumTypes[2].Descriptor()
+}
+
+func (AccessRulesOptions_SquashMode) Type() protoreflect.EnumType {
+	return &file_google_cloud_lustre_v1_instance_proto_enumTypes[2]
+}
+
+func (x AccessRulesOptions_SquashMode) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use AccessRulesOptions_SquashMode.Descriptor instead.
+func (AccessRulesOptions_SquashMode) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_lustre_v1_instance_proto_rawDescGZIP(), []int{2, 0}
+}
+
+// The type of rescheduling event. More reschedule types may be added in the
+// future.
+type RescheduleMaintenanceRequest_RescheduleType int32
+
+const (
+	// Unspecified schedule type.
+	RescheduleMaintenanceRequest_RESCHEDULE_TYPE_UNSPECIFIED RescheduleMaintenanceRequest_RescheduleType = 0
+	// Apply update immediately
+	RescheduleMaintenanceRequest_IMMEDIATE RescheduleMaintenanceRequest_RescheduleType = 1
+	// Reschedule to the next available window.
+	RescheduleMaintenanceRequest_NEXT_AVAILABLE_WINDOW RescheduleMaintenanceRequest_RescheduleType = 2
+	// Reschedule to a specific time.
+	RescheduleMaintenanceRequest_BY_TIME RescheduleMaintenanceRequest_RescheduleType = 3
+)
+
+// Enum value maps for RescheduleMaintenanceRequest_RescheduleType.
+var (
+	RescheduleMaintenanceRequest_RescheduleType_name = map[int32]string{
+		0: "RESCHEDULE_TYPE_UNSPECIFIED",
+		1: "IMMEDIATE",
+		2: "NEXT_AVAILABLE_WINDOW",
+		3: "BY_TIME",
+	}
+	RescheduleMaintenanceRequest_RescheduleType_value = map[string]int32{
+		"RESCHEDULE_TYPE_UNSPECIFIED": 0,
+		"IMMEDIATE":                   1,
+		"NEXT_AVAILABLE_WINDOW":       2,
+		"BY_TIME":                     3,
+	}
+)
+
+func (x RescheduleMaintenanceRequest_RescheduleType) Enum() *RescheduleMaintenanceRequest_RescheduleType {
+	p := new(RescheduleMaintenanceRequest_RescheduleType)
+	*p = x
+	return p
+}
+
+func (x RescheduleMaintenanceRequest_RescheduleType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (RescheduleMaintenanceRequest_RescheduleType) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_lustre_v1_instance_proto_enumTypes[3].Descriptor()
+}
+
+func (RescheduleMaintenanceRequest_RescheduleType) Type() protoreflect.EnumType {
+	return &file_google_cloud_lustre_v1_instance_proto_enumTypes[3]
+}
+
+func (x RescheduleMaintenanceRequest_RescheduleType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use RescheduleMaintenanceRequest_RescheduleType.Descriptor instead.
+func (RescheduleMaintenanceRequest_RescheduleType) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_lustre_v1_instance_proto_rawDescGZIP(), []int{12, 0}
+}
+
 // A Managed Lustre instance.
 type Instance struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -122,7 +326,9 @@ type Instance struct {
 	// eight characters or less and can only contain letters and numbers.
 	Filesystem string `protobuf:"bytes,10,opt,name=filesystem,proto3" json:"filesystem,omitempty"`
 	// Required. The storage capacity of the instance in gibibytes (GiB). Allowed
-	// values are from `18000` to `954000`, in increments of 9000.
+	// values depend on the `perUnitStorageThroughput`. See [Performance
+	// tiers](https://docs.cloud.google.com/managed-lustre/docs/performance-tiers)
+	// for specific minimums, maximums, and step sizes for each performance tier.
 	CapacityGib int64 `protobuf:"varint,2,opt,name=capacity_gib,json=capacityGib,proto3" json:"capacity_gib,omitempty"`
 	// Required. Immutable. The full name of the VPC network to which the instance
 	// is connected. Must be in the format
@@ -141,17 +347,62 @@ type Instance struct {
 	Description string `protobuf:"bytes,8,opt,name=description,proto3" json:"description,omitempty"`
 	// Optional. Labels as key value pairs.
 	Labels map[string]string `protobuf:"bytes,9,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	// Required. The throughput of the instance in MB/s/TiB.
-	// Valid values are 125, 250, 500, 1000.
+	// Optional. The throughput of the instance in MBps per TiB. Valid values are
+	// 0, 125, 250, 500, 1000. See [Performance
+	// tiers](https://docs.cloud.google.com/managed-lustre/docs/performance-tiers)
+	// for more information.
+	//
+	// If the instance is using the Dynamic tier, this field must not be set or
+	// must be set to zero.
 	PerUnitStorageThroughput int64 `protobuf:"varint,11,opt,name=per_unit_storage_throughput,json=perUnitStorageThroughput,proto3" json:"per_unit_storage_throughput,omitempty"`
-	// Optional. Indicates whether you want to enable support for GKE clients. By
-	// default, GKE clients are not supported. Deprecated. No longer required for
-	// GKE instance creation.
+	// Optional. Deprecated: No longer required for GKE instance creation.
+	// Indicates whether you want to enable support for GKE clients. By default,
+	// GKE clients are not supported.
 	//
 	// Deprecated: Marked as deprecated in google/cloud/lustre/v1/instance.proto.
 	GkeSupportEnabled bool `protobuf:"varint,12,opt,name=gke_support_enabled,json=gkeSupportEnabled,proto3" json:"gke_support_enabled,omitempty"`
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
+	// Optional. Immutable. The Cloud KMS key name to use for data encryption.
+	// If not set, the instance will use Google-managed encryption keys.
+	// If set, the instance will use customer-managed encryption keys.
+	// The key must be in the same region as the instance.
+	// The key format is:
+	// projects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{key}
+	KmsKey string `protobuf:"bytes,13,opt,name=kms_key,json=kmsKey,proto3" json:"kms_key,omitempty"`
+	// Output only. The reason why the instance is in a certain state (e.g.
+	// SUSPENDED).
+	StateReason string `protobuf:"bytes,14,opt,name=state_reason,json=stateReason,proto3" json:"state_reason,omitempty"`
+	// Optional. The placement policy name for the instance in the format of
+	// projects/{project}/locations/{location}/resourcePolicies/{resource_policy}
+	PlacementPolicy string `protobuf:"bytes,17,opt,name=placement_policy,json=placementPolicy,proto3" json:"placement_policy,omitempty"`
+	// Optional. The access rules options for the instance.
+	AccessRulesOptions *AccessRulesOptions `protobuf:"bytes,18,opt,name=access_rules_options,json=accessRulesOptions,proto3" json:"access_rules_options,omitempty"`
+	// Output only. Unique ID of the resource.
+	// This is unrelated to the access rules which allow specifying the root
+	// squash uid.
+	Uid string `protobuf:"bytes,19,opt,name=uid,proto3" json:"uid,omitempty"`
+	// Optional. The maintenance policy for the instance to determine when to
+	// allow or exclude the instance from maintenance updates.
+	MaintenancePolicy *MaintenancePolicy `protobuf:"bytes,20,opt,name=maintenance_policy,json=maintenancePolicy,proto3" json:"maintenance_policy,omitempty"`
+	// Output only. Date and time of upcoming maintenance for the instance, if a
+	// maintenance policy is set.
+	UpcomingMaintenanceSchedule *MaintenanceSchedule `protobuf:"bytes,21,opt,name=upcoming_maintenance_schedule,json=upcomingMaintenanceSchedule,proto3" json:"upcoming_maintenance_schedule,omitempty"`
+	// Optional. Immutable. Specifies whether the instance is on the Dynamic tier.
+	// See [Performance
+	// tiers](https://docs.cloud.google.com/managed-lustre/docs/performance-tiers)
+	// for more information.
+	DynamicTierOptions *DynamicTierOptions `protobuf:"bytes,24,opt,name=dynamic_tier_options,json=dynamicTierOptions,proto3" json:"dynamic_tier_options,omitempty"`
+	// Output only. The available version that this instance can be upgraded to.
+	// Format: `Lustre_YYYYMMDD.NN_pXX`
+	AvailableVersion *string `protobuf:"bytes,33,opt,name=available_version,json=availableVersion,proto3,oneof" json:"available_version,omitempty"`
+	// Optional. The target version of the instance. Setting this field triggers a
+	// self-service update to the specified version.
+	// Format: `Lustre_YYYYMMDD.NN_pXX` or `latest`
+	TargetVersion *string `protobuf:"bytes,34,opt,name=target_version,json=targetVersion,proto3,oneof" json:"target_version,omitempty"`
+	// Output only. The effective version of the instance.
+	// Format: `Lustre_YYYYMMDD.NN_pXX`
+	EffectiveVersion *string `protobuf:"bytes,35,opt,name=effective_version,json=effectiveVersion,proto3,oneof" json:"effective_version,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *Instance) Reset() {
@@ -269,6 +520,209 @@ func (x *Instance) GetGkeSupportEnabled() bool {
 	return false
 }
 
+func (x *Instance) GetKmsKey() string {
+	if x != nil {
+		return x.KmsKey
+	}
+	return ""
+}
+
+func (x *Instance) GetStateReason() string {
+	if x != nil {
+		return x.StateReason
+	}
+	return ""
+}
+
+func (x *Instance) GetPlacementPolicy() string {
+	if x != nil {
+		return x.PlacementPolicy
+	}
+	return ""
+}
+
+func (x *Instance) GetAccessRulesOptions() *AccessRulesOptions {
+	if x != nil {
+		return x.AccessRulesOptions
+	}
+	return nil
+}
+
+func (x *Instance) GetUid() string {
+	if x != nil {
+		return x.Uid
+	}
+	return ""
+}
+
+func (x *Instance) GetMaintenancePolicy() *MaintenancePolicy {
+	if x != nil {
+		return x.MaintenancePolicy
+	}
+	return nil
+}
+
+func (x *Instance) GetUpcomingMaintenanceSchedule() *MaintenanceSchedule {
+	if x != nil {
+		return x.UpcomingMaintenanceSchedule
+	}
+	return nil
+}
+
+func (x *Instance) GetDynamicTierOptions() *DynamicTierOptions {
+	if x != nil {
+		return x.DynamicTierOptions
+	}
+	return nil
+}
+
+func (x *Instance) GetAvailableVersion() string {
+	if x != nil && x.AvailableVersion != nil {
+		return *x.AvailableVersion
+	}
+	return ""
+}
+
+func (x *Instance) GetTargetVersion() string {
+	if x != nil && x.TargetVersion != nil {
+		return *x.TargetVersion
+	}
+	return ""
+}
+
+func (x *Instance) GetEffectiveVersion() string {
+	if x != nil && x.EffectiveVersion != nil {
+		return *x.EffectiveVersion
+	}
+	return ""
+}
+
+// Dynamic tier options for a Managed Lustre instance.
+type DynamicTierOptions struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Immutable. The dynamic tier mode of the instance.
+	Mode          DynamicTierOptions_Mode `protobuf:"varint,1,opt,name=mode,proto3,enum=google.cloud.lustre.v1.DynamicTierOptions_Mode" json:"mode,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DynamicTierOptions) Reset() {
+	*x = DynamicTierOptions{}
+	mi := &file_google_cloud_lustre_v1_instance_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DynamicTierOptions) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DynamicTierOptions) ProtoMessage() {}
+
+func (x *DynamicTierOptions) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_lustre_v1_instance_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DynamicTierOptions.ProtoReflect.Descriptor instead.
+func (*DynamicTierOptions) Descriptor() ([]byte, []int) {
+	return file_google_cloud_lustre_v1_instance_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *DynamicTierOptions) GetMode() DynamicTierOptions_Mode {
+	if x != nil {
+		return x.Mode
+	}
+	return DynamicTierOptions_MODE_UNSPECIFIED
+}
+
+// IP-based access rules for the Managed Lustre instance. These options
+// define the root user squash configuration.
+type AccessRulesOptions struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. The access rules for the instance.
+	AccessRules []*AccessRulesOptions_AccessRule `protobuf:"bytes,1,rep,name=access_rules,json=accessRules,proto3" json:"access_rules,omitempty"`
+	// Required. The squash mode for the default access rule.
+	DefaultSquashMode AccessRulesOptions_SquashMode `protobuf:"varint,2,opt,name=default_squash_mode,json=defaultSquashMode,proto3,enum=google.cloud.lustre.v1.AccessRulesOptions_SquashMode" json:"default_squash_mode,omitempty"`
+	// Optional. The user squash UID for the default access rule.
+	// This user squash UID applies to all root users connecting from clients
+	// that are not matched by any of the access rules. If not set, the default
+	// is 0 (no UID squash).
+	DefaultSquashUid int32 `protobuf:"varint,3,opt,name=default_squash_uid,json=defaultSquashUid,proto3" json:"default_squash_uid,omitempty"`
+	// Optional. The user squash GID for the default access rule.
+	// This user squash GID applies to all root users connecting from clients
+	// that are not matched by any of the access rules. If not set, the default
+	// is 0 (no GID squash).
+	DefaultSquashGid int32 `protobuf:"varint,4,opt,name=default_squash_gid,json=defaultSquashGid,proto3" json:"default_squash_gid,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *AccessRulesOptions) Reset() {
+	*x = AccessRulesOptions{}
+	mi := &file_google_cloud_lustre_v1_instance_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AccessRulesOptions) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AccessRulesOptions) ProtoMessage() {}
+
+func (x *AccessRulesOptions) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_lustre_v1_instance_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AccessRulesOptions.ProtoReflect.Descriptor instead.
+func (*AccessRulesOptions) Descriptor() ([]byte, []int) {
+	return file_google_cloud_lustre_v1_instance_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *AccessRulesOptions) GetAccessRules() []*AccessRulesOptions_AccessRule {
+	if x != nil {
+		return x.AccessRules
+	}
+	return nil
+}
+
+func (x *AccessRulesOptions) GetDefaultSquashMode() AccessRulesOptions_SquashMode {
+	if x != nil {
+		return x.DefaultSquashMode
+	}
+	return AccessRulesOptions_SQUASH_MODE_UNSPECIFIED
+}
+
+func (x *AccessRulesOptions) GetDefaultSquashUid() int32 {
+	if x != nil {
+		return x.DefaultSquashUid
+	}
+	return 0
+}
+
+func (x *AccessRulesOptions) GetDefaultSquashGid() int32 {
+	if x != nil {
+		return x.DefaultSquashGid
+	}
+	return 0
+}
+
 // Message for requesting list of Instances
 type ListInstancesRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -293,7 +747,7 @@ type ListInstancesRequest struct {
 
 func (x *ListInstancesRequest) Reset() {
 	*x = ListInstancesRequest{}
-	mi := &file_google_cloud_lustre_v1_instance_proto_msgTypes[1]
+	mi := &file_google_cloud_lustre_v1_instance_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -305,7 +759,7 @@ func (x *ListInstancesRequest) String() string {
 func (*ListInstancesRequest) ProtoMessage() {}
 
 func (x *ListInstancesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_lustre_v1_instance_proto_msgTypes[1]
+	mi := &file_google_cloud_lustre_v1_instance_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -318,7 +772,7 @@ func (x *ListInstancesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListInstancesRequest.ProtoReflect.Descriptor instead.
 func (*ListInstancesRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_lustre_v1_instance_proto_rawDescGZIP(), []int{1}
+	return file_google_cloud_lustre_v1_instance_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *ListInstancesRequest) GetParent() string {
@@ -371,7 +825,7 @@ type ListInstancesResponse struct {
 
 func (x *ListInstancesResponse) Reset() {
 	*x = ListInstancesResponse{}
-	mi := &file_google_cloud_lustre_v1_instance_proto_msgTypes[2]
+	mi := &file_google_cloud_lustre_v1_instance_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -383,7 +837,7 @@ func (x *ListInstancesResponse) String() string {
 func (*ListInstancesResponse) ProtoMessage() {}
 
 func (x *ListInstancesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_lustre_v1_instance_proto_msgTypes[2]
+	mi := &file_google_cloud_lustre_v1_instance_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -396,7 +850,7 @@ func (x *ListInstancesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListInstancesResponse.ProtoReflect.Descriptor instead.
 func (*ListInstancesResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_lustre_v1_instance_proto_rawDescGZIP(), []int{2}
+	return file_google_cloud_lustre_v1_instance_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *ListInstancesResponse) GetInstances() []*Instance {
@@ -432,7 +886,7 @@ type GetInstanceRequest struct {
 
 func (x *GetInstanceRequest) Reset() {
 	*x = GetInstanceRequest{}
-	mi := &file_google_cloud_lustre_v1_instance_proto_msgTypes[3]
+	mi := &file_google_cloud_lustre_v1_instance_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -444,7 +898,7 @@ func (x *GetInstanceRequest) String() string {
 func (*GetInstanceRequest) ProtoMessage() {}
 
 func (x *GetInstanceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_lustre_v1_instance_proto_msgTypes[3]
+	mi := &file_google_cloud_lustre_v1_instance_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -457,7 +911,7 @@ func (x *GetInstanceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetInstanceRequest.ProtoReflect.Descriptor instead.
 func (*GetInstanceRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_lustre_v1_instance_proto_rawDescGZIP(), []int{3}
+	return file_google_cloud_lustre_v1_instance_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *GetInstanceRequest) GetName() string {
@@ -503,7 +957,7 @@ type CreateInstanceRequest struct {
 
 func (x *CreateInstanceRequest) Reset() {
 	*x = CreateInstanceRequest{}
-	mi := &file_google_cloud_lustre_v1_instance_proto_msgTypes[4]
+	mi := &file_google_cloud_lustre_v1_instance_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -515,7 +969,7 @@ func (x *CreateInstanceRequest) String() string {
 func (*CreateInstanceRequest) ProtoMessage() {}
 
 func (x *CreateInstanceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_lustre_v1_instance_proto_msgTypes[4]
+	mi := &file_google_cloud_lustre_v1_instance_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -528,7 +982,7 @@ func (x *CreateInstanceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateInstanceRequest.ProtoReflect.Descriptor instead.
 func (*CreateInstanceRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_lustre_v1_instance_proto_rawDescGZIP(), []int{4}
+	return file_google_cloud_lustre_v1_instance_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *CreateInstanceRequest) GetParent() string {
@@ -593,7 +1047,7 @@ type UpdateInstanceRequest struct {
 
 func (x *UpdateInstanceRequest) Reset() {
 	*x = UpdateInstanceRequest{}
-	mi := &file_google_cloud_lustre_v1_instance_proto_msgTypes[5]
+	mi := &file_google_cloud_lustre_v1_instance_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -605,7 +1059,7 @@ func (x *UpdateInstanceRequest) String() string {
 func (*UpdateInstanceRequest) ProtoMessage() {}
 
 func (x *UpdateInstanceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_lustre_v1_instance_proto_msgTypes[5]
+	mi := &file_google_cloud_lustre_v1_instance_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -618,7 +1072,7 @@ func (x *UpdateInstanceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateInstanceRequest.ProtoReflect.Descriptor instead.
 func (*UpdateInstanceRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_lustre_v1_instance_proto_rawDescGZIP(), []int{5}
+	return file_google_cloud_lustre_v1_instance_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *UpdateInstanceRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
@@ -661,14 +1115,18 @@ type DeleteInstanceRequest struct {
 	//
 	// The request ID must be a valid UUID with the exception that zero UUID is
 	// not supported (00000000-0000-0000-0000-000000000000).
-	RequestId     string `protobuf:"bytes,2,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
+	RequestId string `protobuf:"bytes,2,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
+	// Optional. If set to true, any sub-resources from this instance will also be
+	// deleted. Otherwise, the request will only work if the instance has no
+	// sub-resources.
+	Force         bool `protobuf:"varint,3,opt,name=force,proto3" json:"force,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *DeleteInstanceRequest) Reset() {
 	*x = DeleteInstanceRequest{}
-	mi := &file_google_cloud_lustre_v1_instance_proto_msgTypes[6]
+	mi := &file_google_cloud_lustre_v1_instance_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -680,7 +1138,7 @@ func (x *DeleteInstanceRequest) String() string {
 func (*DeleteInstanceRequest) ProtoMessage() {}
 
 func (x *DeleteInstanceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_lustre_v1_instance_proto_msgTypes[6]
+	mi := &file_google_cloud_lustre_v1_instance_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -693,7 +1151,7 @@ func (x *DeleteInstanceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteInstanceRequest.ProtoReflect.Descriptor instead.
 func (*DeleteInstanceRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_lustre_v1_instance_proto_rawDescGZIP(), []int{6}
+	return file_google_cloud_lustre_v1_instance_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *DeleteInstanceRequest) GetName() string {
@@ -708,6 +1166,13 @@ func (x *DeleteInstanceRequest) GetRequestId() string {
 		return x.RequestId
 	}
 	return ""
+}
+
+func (x *DeleteInstanceRequest) GetForce() bool {
+	if x != nil {
+		return x.Force
+	}
+	return false
 }
 
 // Represents the metadata of a long-running operation.
@@ -737,7 +1202,7 @@ type OperationMetadata struct {
 
 func (x *OperationMetadata) Reset() {
 	*x = OperationMetadata{}
-	mi := &file_google_cloud_lustre_v1_instance_proto_msgTypes[7]
+	mi := &file_google_cloud_lustre_v1_instance_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -749,7 +1214,7 @@ func (x *OperationMetadata) String() string {
 func (*OperationMetadata) ProtoMessage() {}
 
 func (x *OperationMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_lustre_v1_instance_proto_msgTypes[7]
+	mi := &file_google_cloud_lustre_v1_instance_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -762,7 +1227,7 @@ func (x *OperationMetadata) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OperationMetadata.ProtoReflect.Descriptor instead.
 func (*OperationMetadata) Descriptor() ([]byte, []int) {
-	return file_google_cloud_lustre_v1_instance_proto_rawDescGZIP(), []int{7}
+	return file_google_cloud_lustre_v1_instance_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *OperationMetadata) GetCreateTime() *timestamppb.Timestamp {
@@ -814,11 +1279,446 @@ func (x *OperationMetadata) GetApiVersion() string {
 	return ""
 }
 
+// Defines a maintenance policy for a resource.
+type MaintenancePolicy struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The weekly maintenance windows for the instance. Currently
+	// limited to 1 window.
+	WeeklyMaintenanceWindows []*MaintenancePolicy_WeeklyMaintenanceWindow `protobuf:"bytes,3,rep,name=weekly_maintenance_windows,json=weeklyMaintenanceWindows,proto3" json:"weekly_maintenance_windows,omitempty"`
+	// Optional. The exclusion windows for the instance. Currently limited to 1
+	// window.
+	MaintenanceExclusionWindow []*MaintenancePolicy_MaintenanceExclusionWindow `protobuf:"bytes,4,rep,name=maintenance_exclusion_window,json=maintenanceExclusionWindow,proto3" json:"maintenance_exclusion_window,omitempty"`
+	unknownFields              protoimpl.UnknownFields
+	sizeCache                  protoimpl.SizeCache
+}
+
+func (x *MaintenancePolicy) Reset() {
+	*x = MaintenancePolicy{}
+	mi := &file_google_cloud_lustre_v1_instance_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MaintenancePolicy) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MaintenancePolicy) ProtoMessage() {}
+
+func (x *MaintenancePolicy) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_lustre_v1_instance_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MaintenancePolicy.ProtoReflect.Descriptor instead.
+func (*MaintenancePolicy) Descriptor() ([]byte, []int) {
+	return file_google_cloud_lustre_v1_instance_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *MaintenancePolicy) GetWeeklyMaintenanceWindows() []*MaintenancePolicy_WeeklyMaintenanceWindow {
+	if x != nil {
+		return x.WeeklyMaintenanceWindows
+	}
+	return nil
+}
+
+func (x *MaintenancePolicy) GetMaintenanceExclusionWindow() []*MaintenancePolicy_MaintenanceExclusionWindow {
+	if x != nil {
+		return x.MaintenanceExclusionWindow
+	}
+	return nil
+}
+
+// Represents a scheduled maintenance event.
+type MaintenanceSchedule struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. The scheduled start time for the maintenance.
+	StartTime *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=start_time,json=startTime,proto3" json:"start_time,omitempty"`
+	// Output only. The scheduled end time for the maintenance.
+	EndTime       *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=end_time,json=endTime,proto3" json:"end_time,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *MaintenanceSchedule) Reset() {
+	*x = MaintenanceSchedule{}
+	mi := &file_google_cloud_lustre_v1_instance_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MaintenanceSchedule) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MaintenanceSchedule) ProtoMessage() {}
+
+func (x *MaintenanceSchedule) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_lustre_v1_instance_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MaintenanceSchedule.ProtoReflect.Descriptor instead.
+func (*MaintenanceSchedule) Descriptor() ([]byte, []int) {
+	return file_google_cloud_lustre_v1_instance_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *MaintenanceSchedule) GetStartTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.StartTime
+	}
+	return nil
+}
+
+func (x *MaintenanceSchedule) GetEndTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.EndTime
+	}
+	return nil
+}
+
+// Message for requesting to reschedule a maintenance event for a specific
+// instance.
+type RescheduleMaintenanceRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Format:
+	// projects/{project}/locations/{location}/instances/{instance}
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Required. The desired reschedule settings.
+	Reschedule *RescheduleMaintenanceRequest_Reschedule `protobuf:"bytes,2,opt,name=reschedule,proto3" json:"reschedule,omitempty"`
+	// Optional. A unique identifier for this request. A random UUID is
+	// recommended. This request is only idempotent if a `request_id` is provided.
+	RequestId     string `protobuf:"bytes,3,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RescheduleMaintenanceRequest) Reset() {
+	*x = RescheduleMaintenanceRequest{}
+	mi := &file_google_cloud_lustre_v1_instance_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RescheduleMaintenanceRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RescheduleMaintenanceRequest) ProtoMessage() {}
+
+func (x *RescheduleMaintenanceRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_lustre_v1_instance_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RescheduleMaintenanceRequest.ProtoReflect.Descriptor instead.
+func (*RescheduleMaintenanceRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_lustre_v1_instance_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *RescheduleMaintenanceRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *RescheduleMaintenanceRequest) GetReschedule() *RescheduleMaintenanceRequest_Reschedule {
+	if x != nil {
+		return x.Reschedule
+	}
+	return nil
+}
+
+func (x *RescheduleMaintenanceRequest) GetRequestId() string {
+	if x != nil {
+		return x.RequestId
+	}
+	return ""
+}
+
+// A single policy group with IP-based access rules for the Managed
+// Lustre instance.
+type AccessRulesOptions_AccessRule struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The name of the access rule policy group.
+	// Must be 16 characters or less and include only alphanumeric characters
+	// or '_'.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Required. The IP address ranges to which to apply this access rule.
+	// Accepts non-overlapping CIDR ranges (e.g., `192.168.1.0/24`) and IP
+	// addresses (e.g., `192.168.1.0`).
+	IpAddressRanges []string `protobuf:"bytes,2,rep,name=ip_address_ranges,json=ipAddressRanges,proto3" json:"ip_address_ranges,omitempty"`
+	// Required. Squash mode for the access rule.
+	SquashMode    AccessRulesOptions_SquashMode `protobuf:"varint,6,opt,name=squash_mode,json=squashMode,proto3,enum=google.cloud.lustre.v1.AccessRulesOptions_SquashMode" json:"squash_mode,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AccessRulesOptions_AccessRule) Reset() {
+	*x = AccessRulesOptions_AccessRule{}
+	mi := &file_google_cloud_lustre_v1_instance_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AccessRulesOptions_AccessRule) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AccessRulesOptions_AccessRule) ProtoMessage() {}
+
+func (x *AccessRulesOptions_AccessRule) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_lustre_v1_instance_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AccessRulesOptions_AccessRule.ProtoReflect.Descriptor instead.
+func (*AccessRulesOptions_AccessRule) Descriptor() ([]byte, []int) {
+	return file_google_cloud_lustre_v1_instance_proto_rawDescGZIP(), []int{2, 0}
+}
+
+func (x *AccessRulesOptions_AccessRule) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *AccessRulesOptions_AccessRule) GetIpAddressRanges() []string {
+	if x != nil {
+		return x.IpAddressRanges
+	}
+	return nil
+}
+
+func (x *AccessRulesOptions_AccessRule) GetSquashMode() AccessRulesOptions_SquashMode {
+	if x != nil {
+		return x.SquashMode
+	}
+	return AccessRulesOptions_SQUASH_MODE_UNSPECIFIED
+}
+
+// Weekly time window in which maintenance updates may occur.
+// Duration of the window is currently fixed at 1 hour.
+// Time zone is UTC.
+type MaintenancePolicy_WeeklyMaintenanceWindow struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Day of the week for the maintenance window.
+	DayOfWeek dayofweek.DayOfWeek `protobuf:"varint,1,opt,name=day_of_week,json=dayOfWeek,proto3,enum=google.type.DayOfWeek" json:"day_of_week,omitempty"`
+	// Required. Start time of the maintenance window in UTC time zone.
+	StartTime     *timeofday.TimeOfDay `protobuf:"bytes,2,opt,name=start_time,json=startTime,proto3" json:"start_time,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *MaintenancePolicy_WeeklyMaintenanceWindow) Reset() {
+	*x = MaintenancePolicy_WeeklyMaintenanceWindow{}
+	mi := &file_google_cloud_lustre_v1_instance_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MaintenancePolicy_WeeklyMaintenanceWindow) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MaintenancePolicy_WeeklyMaintenanceWindow) ProtoMessage() {}
+
+func (x *MaintenancePolicy_WeeklyMaintenanceWindow) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_lustre_v1_instance_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MaintenancePolicy_WeeklyMaintenanceWindow.ProtoReflect.Descriptor instead.
+func (*MaintenancePolicy_WeeklyMaintenanceWindow) Descriptor() ([]byte, []int) {
+	return file_google_cloud_lustre_v1_instance_proto_rawDescGZIP(), []int{10, 0}
+}
+
+func (x *MaintenancePolicy_WeeklyMaintenanceWindow) GetDayOfWeek() dayofweek.DayOfWeek {
+	if x != nil {
+		return x.DayOfWeek
+	}
+	return dayofweek.DayOfWeek(0)
+}
+
+func (x *MaintenancePolicy_WeeklyMaintenanceWindow) GetStartTime() *timeofday.TimeOfDay {
+	if x != nil {
+		return x.StartTime
+	}
+	return nil
+}
+
+// Exclusion period when maintenance updates should not occur.
+// An exclusion window can be in either of the following two formats:
+// * Non-recurring : A full date, with non-zero year, month and day values.
+// * Recurring : A month and day value, with a zero year.
+// Time zone is UTC.
+type MaintenancePolicy_MaintenanceExclusionWindow struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Start date of the exclusion period in UTC time zone. This date
+	// is inclusive.
+	StartDate *date.Date `protobuf:"bytes,1,opt,name=start_date,json=startDate,proto3" json:"start_date,omitempty"`
+	// Required. End date of the exclusion period in UTC time zone. This date is
+	// inclusive.
+	EndDate *date.Date `protobuf:"bytes,2,opt,name=end_date,json=endDate,proto3" json:"end_date,omitempty"`
+	// Required. Time in UTC when the exclusion window starts on start_date and
+	// ends on end_date. This can be:
+	// * Full time OR
+	// * All zeros for 00:00:00 UTC
+	Time          *timeofday.TimeOfDay `protobuf:"bytes,3,opt,name=time,proto3" json:"time,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *MaintenancePolicy_MaintenanceExclusionWindow) Reset() {
+	*x = MaintenancePolicy_MaintenanceExclusionWindow{}
+	mi := &file_google_cloud_lustre_v1_instance_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MaintenancePolicy_MaintenanceExclusionWindow) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MaintenancePolicy_MaintenanceExclusionWindow) ProtoMessage() {}
+
+func (x *MaintenancePolicy_MaintenanceExclusionWindow) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_lustre_v1_instance_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MaintenancePolicy_MaintenanceExclusionWindow.ProtoReflect.Descriptor instead.
+func (*MaintenancePolicy_MaintenanceExclusionWindow) Descriptor() ([]byte, []int) {
+	return file_google_cloud_lustre_v1_instance_proto_rawDescGZIP(), []int{10, 1}
+}
+
+func (x *MaintenancePolicy_MaintenanceExclusionWindow) GetStartDate() *date.Date {
+	if x != nil {
+		return x.StartDate
+	}
+	return nil
+}
+
+func (x *MaintenancePolicy_MaintenanceExclusionWindow) GetEndDate() *date.Date {
+	if x != nil {
+		return x.EndDate
+	}
+	return nil
+}
+
+func (x *MaintenancePolicy_MaintenanceExclusionWindow) GetTime() *timeofday.TimeOfDay {
+	if x != nil {
+		return x.Time
+	}
+	return nil
+}
+
+// The desired reschedule settings.
+type RescheduleMaintenanceRequest_Reschedule struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The type of rescheduling.
+	RescheduleType RescheduleMaintenanceRequest_RescheduleType `protobuf:"varint,1,opt,name=reschedule_type,json=rescheduleType,proto3,enum=google.cloud.lustre.v1.RescheduleMaintenanceRequest_RescheduleType" json:"reschedule_type,omitempty"`
+	// Optional. Required if reschedule_type is BY_TIME. Timestamp when the
+	// maintenance shall be rescheduled to. This time must be within
+	// 28 days of the original scheduled maintenance start time.
+	ScheduleTime  *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=schedule_time,json=scheduleTime,proto3" json:"schedule_time,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RescheduleMaintenanceRequest_Reschedule) Reset() {
+	*x = RescheduleMaintenanceRequest_Reschedule{}
+	mi := &file_google_cloud_lustre_v1_instance_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RescheduleMaintenanceRequest_Reschedule) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RescheduleMaintenanceRequest_Reschedule) ProtoMessage() {}
+
+func (x *RescheduleMaintenanceRequest_Reschedule) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_lustre_v1_instance_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RescheduleMaintenanceRequest_Reschedule.ProtoReflect.Descriptor instead.
+func (*RescheduleMaintenanceRequest_Reschedule) Descriptor() ([]byte, []int) {
+	return file_google_cloud_lustre_v1_instance_proto_rawDescGZIP(), []int{12, 0}
+}
+
+func (x *RescheduleMaintenanceRequest_Reschedule) GetRescheduleType() RescheduleMaintenanceRequest_RescheduleType {
+	if x != nil {
+		return x.RescheduleType
+	}
+	return RescheduleMaintenanceRequest_RESCHEDULE_TYPE_UNSPECIFIED
+}
+
+func (x *RescheduleMaintenanceRequest_Reschedule) GetScheduleTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.ScheduleTime
+	}
+	return nil
+}
+
 var File_google_cloud_lustre_v1_instance_proto protoreflect.FileDescriptor
 
 const file_google_cloud_lustre_v1_instance_proto_rawDesc = "" +
 	"\n" +
-	"%google/cloud/lustre/v1/instance.proto\x12\x16google.cloud.lustre.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc6\a\n" +
+	"%google/cloud/lustre/v1/instance.proto\x12\x16google.cloud.lustre.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x16google/type/date.proto\x1a\x1bgoogle/type/dayofweek.proto\x1a\x1bgoogle/type/timeofday.proto\"\xbe\x0e\n" +
 	"\bInstance\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
 	"\n" +
@@ -837,11 +1737,24 @@ const file_google_cloud_lustre_v1_instance_proto_rawDesc = "" +
 	"updateTime\x12%\n" +
 	"\vdescription\x18\b \x01(\tB\x03\xe0A\x01R\vdescription\x12I\n" +
 	"\x06labels\x18\t \x03(\v2,.google.cloud.lustre.v1.Instance.LabelsEntryB\x03\xe0A\x01R\x06labels\x12B\n" +
-	"\x1bper_unit_storage_throughput\x18\v \x01(\x03B\x03\xe0A\x02R\x18perUnitStorageThroughput\x125\n" +
-	"\x13gke_support_enabled\x18\f \x01(\bB\x05\xe0A\x01\x18\x01R\x11gkeSupportEnabled\x1a9\n" +
+	"\x1bper_unit_storage_throughput\x18\v \x01(\x03B\x03\xe0A\x01R\x18perUnitStorageThroughput\x125\n" +
+	"\x13gke_support_enabled\x18\f \x01(\bB\x05\xe0A\x01\x18\x01R\x11gkeSupportEnabled\x12E\n" +
+	"\akms_key\x18\r \x01(\tB,\xe0A\x01\xe0A\x05\xfaA#\n" +
+	"!cloudkms.googleapis.com/CryptoKeyR\x06kmsKey\x12&\n" +
+	"\fstate_reason\x18\x0e \x01(\tB\x03\xe0A\x03R\vstateReason\x12X\n" +
+	"\x10placement_policy\x18\x11 \x01(\tB-\xe0A\x01\xfaA'\n" +
+	"%compute.googleapis.com/ResourcePolicyR\x0fplacementPolicy\x12a\n" +
+	"\x14access_rules_options\x18\x12 \x01(\v2*.google.cloud.lustre.v1.AccessRulesOptionsB\x03\xe0A\x01R\x12accessRulesOptions\x12\x1d\n" +
+	"\x03uid\x18\x13 \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12]\n" +
+	"\x12maintenance_policy\x18\x14 \x01(\v2).google.cloud.lustre.v1.MaintenancePolicyB\x03\xe0A\x01R\x11maintenancePolicy\x12t\n" +
+	"\x1dupcoming_maintenance_schedule\x18\x15 \x01(\v2+.google.cloud.lustre.v1.MaintenanceScheduleB\x03\xe0A\x03R\x1bupcomingMaintenanceSchedule\x12d\n" +
+	"\x14dynamic_tier_options\x18\x18 \x01(\v2*.google.cloud.lustre.v1.DynamicTierOptionsB\x06\xe0A\x05\xe0A\x01R\x12dynamicTierOptions\x125\n" +
+	"\x11available_version\x18! \x01(\tB\x03\xe0A\x03H\x00R\x10availableVersion\x88\x01\x01\x12/\n" +
+	"\x0etarget_version\x18\" \x01(\tB\x03\xe0A\x01H\x01R\rtargetVersion\x88\x01\x01\x125\n" +
+	"\x11effective_version\x18# \x01(\tB\x03\xe0A\x03H\x02R\x10effectiveVersion\x88\x01\x01\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x7f\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x92\x01\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
@@ -850,9 +1763,35 @@ const file_google_cloud_lustre_v1_instance_proto_rawDesc = "" +
 	"\bDELETING\x10\x03\x12\r\n" +
 	"\tUPGRADING\x10\x04\x12\r\n" +
 	"\tREPAIRING\x10\x05\x12\v\n" +
-	"\aSTOPPED\x10\x06\x12\f\n" +
-	"\bUPDATING\x10\a:v\xeaAs\n" +
-	"\x1elustre.googleapis.com/Instance\x12<projects/{project}/locations/{location}/instances/{instance}*\tinstances2\binstance\"\xd9\x01\n" +
+	"\aSTOPPED\x10\x06\x12\x10\n" +
+	"\bUPDATING\x10\a\x1a\x02\b\x01\x12\r\n" +
+	"\tSUSPENDED\x10\b:v\xeaAs\n" +
+	"\x1elustre.googleapis.com/Instance\x12<projects/{project}/locations/{location}/instances/{instance}*\tinstances2\binstanceB\x14\n" +
+	"\x12_available_versionB\x11\n" +
+	"\x0f_target_versionB\x14\n" +
+	"\x12_effective_version\"\xa0\x01\n" +
+	"\x12DynamicTierOptions\x12K\n" +
+	"\x04mode\x18\x01 \x01(\x0e2/.google.cloud.lustre.v1.DynamicTierOptions.ModeB\x06\xe0A\x05\xe0A\x02R\x04mode\"=\n" +
+	"\x04Mode\x12\x14\n" +
+	"\x10MODE_UNSPECIFIED\x10\x00\x12\f\n" +
+	"\bDISABLED\x10\x01\x12\x11\n" +
+	"\rDEFAULT_CACHE\x10\x02\"\xc6\x04\n" +
+	"\x12AccessRulesOptions\x12]\n" +
+	"\faccess_rules\x18\x01 \x03(\v25.google.cloud.lustre.v1.AccessRulesOptions.AccessRuleB\x03\xe0A\x01R\vaccessRules\x12j\n" +
+	"\x13default_squash_mode\x18\x02 \x01(\x0e25.google.cloud.lustre.v1.AccessRulesOptions.SquashModeB\x03\xe0A\x02R\x11defaultSquashMode\x121\n" +
+	"\x12default_squash_uid\x18\x03 \x01(\x05B\x03\xe0A\x01R\x10defaultSquashUid\x121\n" +
+	"\x12default_squash_gid\x18\x04 \x01(\x05B\x03\xe0A\x01R\x10defaultSquashGid\x1a\xb3\x01\n" +
+	"\n" +
+	"AccessRule\x12\x17\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12/\n" +
+	"\x11ip_address_ranges\x18\x02 \x03(\tB\x03\xe0A\x02R\x0fipAddressRanges\x12[\n" +
+	"\vsquash_mode\x18\x06 \x01(\x0e25.google.cloud.lustre.v1.AccessRulesOptions.SquashModeB\x03\xe0A\x02R\n" +
+	"squashMode\"I\n" +
+	"\n" +
+	"SquashMode\x12\x1b\n" +
+	"\x17SQUASH_MODE_UNSPECIFIED\x10\x00\x12\r\n" +
+	"\tNO_SQUASH\x10\x01\x12\x0f\n" +
+	"\vROOT_SQUASH\x10\x02\"\xd9\x01\n" +
 	"\x14ListInstancesRequest\x12>\n" +
 	"\x06parent\x18\x01 \x01(\tB&\xe0A\x02\xfaA \x12\x1elustre.googleapis.com/InstanceR\x06parent\x12 \n" +
 	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
@@ -879,12 +1818,13 @@ const file_google_cloud_lustre_v1_instance_proto_rawDesc = "" +
 	"updateMask\x12A\n" +
 	"\binstance\x18\x02 \x01(\v2 .google.cloud.lustre.v1.InstanceB\x03\xe0A\x02R\binstance\x12*\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x7f\n" +
+	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x9a\x01\n" +
 	"\x15DeleteInstanceRequest\x12:\n" +
 	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
 	"\x1elustre.googleapis.com/InstanceR\x04name\x12*\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xd5\x02\n" +
+	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12\x19\n" +
+	"\x05force\x18\x03 \x01(\bB\x03\xe0A\x01R\x05force\"\xd5\x02\n" +
 	"\x11OperationMetadata\x12@\n" +
 	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
 	"createTime\x12:\n" +
@@ -894,7 +1834,40 @@ const file_google_cloud_lustre_v1_instance_proto_rawDesc = "" +
 	"\x0estatus_message\x18\x05 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12:\n" +
 	"\x16requested_cancellation\x18\x06 \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
 	"\vapi_version\x18\a \x01(\tB\x03\xe0A\x03R\n" +
-	"apiVersionBa\n" +
+	"apiVersion\"\xf7\x04\n" +
+	"\x11MaintenancePolicy\x12\x84\x01\n" +
+	"\x1aweekly_maintenance_windows\x18\x03 \x03(\v2A.google.cloud.lustre.v1.MaintenancePolicy.WeeklyMaintenanceWindowB\x03\xe0A\x02R\x18weeklyMaintenanceWindows\x12\x8b\x01\n" +
+	"\x1cmaintenance_exclusion_window\x18\x04 \x03(\v2D.google.cloud.lustre.v1.MaintenancePolicy.MaintenanceExclusionWindowB\x03\xe0A\x01R\x1amaintenanceExclusionWindow\x1a\x92\x01\n" +
+	"\x17WeeklyMaintenanceWindow\x12;\n" +
+	"\vday_of_week\x18\x01 \x01(\x0e2\x16.google.type.DayOfWeekB\x03\xe0A\x02R\tdayOfWeek\x12:\n" +
+	"\n" +
+	"start_time\x18\x02 \x01(\v2\x16.google.type.TimeOfDayB\x03\xe0A\x02R\tstartTime\x1a\xb7\x01\n" +
+	"\x1aMaintenanceExclusionWindow\x125\n" +
+	"\n" +
+	"start_date\x18\x01 \x01(\v2\x11.google.type.DateB\x03\xe0A\x02R\tstartDate\x121\n" +
+	"\bend_date\x18\x02 \x01(\v2\x11.google.type.DateB\x03\xe0A\x02R\aendDate\x12/\n" +
+	"\x04time\x18\x03 \x01(\v2\x16.google.type.TimeOfDayB\x03\xe0A\x02R\x04time\"\x91\x01\n" +
+	"\x13MaintenanceSchedule\x12>\n" +
+	"\n" +
+	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12:\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\"\x9e\x04\n" +
+	"\x1cRescheduleMaintenanceRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
+	"\x1elustre.googleapis.com/InstanceR\x04name\x12d\n" +
+	"\n" +
+	"reschedule\x18\x02 \x01(\v2?.google.cloud.lustre.v1.RescheduleMaintenanceRequest.RescheduleB\x03\xe0A\x02R\n" +
+	"reschedule\x12*\n" +
+	"\n" +
+	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x1a\xc5\x01\n" +
+	"\n" +
+	"Reschedule\x12q\n" +
+	"\x0freschedule_type\x18\x01 \x01(\x0e2C.google.cloud.lustre.v1.RescheduleMaintenanceRequest.RescheduleTypeB\x03\xe0A\x02R\x0erescheduleType\x12D\n" +
+	"\rschedule_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\fscheduleTime\"h\n" +
+	"\x0eRescheduleType\x12\x1f\n" +
+	"\x1bRESCHEDULE_TYPE_UNSPECIFIED\x10\x00\x12\r\n" +
+	"\tIMMEDIATE\x10\x01\x12\x19\n" +
+	"\x15NEXT_AVAILABLE_WINDOW\x10\x02\x12\v\n" +
+	"\aBY_TIME\x10\x03Ba\n" +
 	"\x1acom.google.cloud.lustre.v1B\rInstanceProtoP\x01Z2cloud.google.com/go/lustre/apiv1/lustrepb;lustrepbb\x06proto3"
 
 var (
@@ -909,38 +1882,73 @@ func file_google_cloud_lustre_v1_instance_proto_rawDescGZIP() []byte {
 	return file_google_cloud_lustre_v1_instance_proto_rawDescData
 }
 
-var file_google_cloud_lustre_v1_instance_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_google_cloud_lustre_v1_instance_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
+var file_google_cloud_lustre_v1_instance_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
+var file_google_cloud_lustre_v1_instance_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
 var file_google_cloud_lustre_v1_instance_proto_goTypes = []any{
-	(Instance_State)(0),           // 0: google.cloud.lustre.v1.Instance.State
-	(*Instance)(nil),              // 1: google.cloud.lustre.v1.Instance
-	(*ListInstancesRequest)(nil),  // 2: google.cloud.lustre.v1.ListInstancesRequest
-	(*ListInstancesResponse)(nil), // 3: google.cloud.lustre.v1.ListInstancesResponse
-	(*GetInstanceRequest)(nil),    // 4: google.cloud.lustre.v1.GetInstanceRequest
-	(*CreateInstanceRequest)(nil), // 5: google.cloud.lustre.v1.CreateInstanceRequest
-	(*UpdateInstanceRequest)(nil), // 6: google.cloud.lustre.v1.UpdateInstanceRequest
-	(*DeleteInstanceRequest)(nil), // 7: google.cloud.lustre.v1.DeleteInstanceRequest
-	(*OperationMetadata)(nil),     // 8: google.cloud.lustre.v1.OperationMetadata
-	nil,                           // 9: google.cloud.lustre.v1.Instance.LabelsEntry
-	(*timestamppb.Timestamp)(nil), // 10: google.protobuf.Timestamp
-	(*fieldmaskpb.FieldMask)(nil), // 11: google.protobuf.FieldMask
+	(Instance_State)(0),                                  // 0: google.cloud.lustre.v1.Instance.State
+	(DynamicTierOptions_Mode)(0),                         // 1: google.cloud.lustre.v1.DynamicTierOptions.Mode
+	(AccessRulesOptions_SquashMode)(0),                   // 2: google.cloud.lustre.v1.AccessRulesOptions.SquashMode
+	(RescheduleMaintenanceRequest_RescheduleType)(0),     // 3: google.cloud.lustre.v1.RescheduleMaintenanceRequest.RescheduleType
+	(*Instance)(nil),                                     // 4: google.cloud.lustre.v1.Instance
+	(*DynamicTierOptions)(nil),                           // 5: google.cloud.lustre.v1.DynamicTierOptions
+	(*AccessRulesOptions)(nil),                           // 6: google.cloud.lustre.v1.AccessRulesOptions
+	(*ListInstancesRequest)(nil),                         // 7: google.cloud.lustre.v1.ListInstancesRequest
+	(*ListInstancesResponse)(nil),                        // 8: google.cloud.lustre.v1.ListInstancesResponse
+	(*GetInstanceRequest)(nil),                           // 9: google.cloud.lustre.v1.GetInstanceRequest
+	(*CreateInstanceRequest)(nil),                        // 10: google.cloud.lustre.v1.CreateInstanceRequest
+	(*UpdateInstanceRequest)(nil),                        // 11: google.cloud.lustre.v1.UpdateInstanceRequest
+	(*DeleteInstanceRequest)(nil),                        // 12: google.cloud.lustre.v1.DeleteInstanceRequest
+	(*OperationMetadata)(nil),                            // 13: google.cloud.lustre.v1.OperationMetadata
+	(*MaintenancePolicy)(nil),                            // 14: google.cloud.lustre.v1.MaintenancePolicy
+	(*MaintenanceSchedule)(nil),                          // 15: google.cloud.lustre.v1.MaintenanceSchedule
+	(*RescheduleMaintenanceRequest)(nil),                 // 16: google.cloud.lustre.v1.RescheduleMaintenanceRequest
+	nil,                                                  // 17: google.cloud.lustre.v1.Instance.LabelsEntry
+	(*AccessRulesOptions_AccessRule)(nil),                // 18: google.cloud.lustre.v1.AccessRulesOptions.AccessRule
+	(*MaintenancePolicy_WeeklyMaintenanceWindow)(nil),    // 19: google.cloud.lustre.v1.MaintenancePolicy.WeeklyMaintenanceWindow
+	(*MaintenancePolicy_MaintenanceExclusionWindow)(nil), // 20: google.cloud.lustre.v1.MaintenancePolicy.MaintenanceExclusionWindow
+	(*RescheduleMaintenanceRequest_Reschedule)(nil),      // 21: google.cloud.lustre.v1.RescheduleMaintenanceRequest.Reschedule
+	(*timestamppb.Timestamp)(nil),                        // 22: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil),                        // 23: google.protobuf.FieldMask
+	(dayofweek.DayOfWeek)(0),                             // 24: google.type.DayOfWeek
+	(*timeofday.TimeOfDay)(nil),                          // 25: google.type.TimeOfDay
+	(*date.Date)(nil),                                    // 26: google.type.Date
 }
 var file_google_cloud_lustre_v1_instance_proto_depIdxs = []int32{
 	0,  // 0: google.cloud.lustre.v1.Instance.state:type_name -> google.cloud.lustre.v1.Instance.State
-	10, // 1: google.cloud.lustre.v1.Instance.create_time:type_name -> google.protobuf.Timestamp
-	10, // 2: google.cloud.lustre.v1.Instance.update_time:type_name -> google.protobuf.Timestamp
-	9,  // 3: google.cloud.lustre.v1.Instance.labels:type_name -> google.cloud.lustre.v1.Instance.LabelsEntry
-	1,  // 4: google.cloud.lustre.v1.ListInstancesResponse.instances:type_name -> google.cloud.lustre.v1.Instance
-	1,  // 5: google.cloud.lustre.v1.CreateInstanceRequest.instance:type_name -> google.cloud.lustre.v1.Instance
-	11, // 6: google.cloud.lustre.v1.UpdateInstanceRequest.update_mask:type_name -> google.protobuf.FieldMask
-	1,  // 7: google.cloud.lustre.v1.UpdateInstanceRequest.instance:type_name -> google.cloud.lustre.v1.Instance
-	10, // 8: google.cloud.lustre.v1.OperationMetadata.create_time:type_name -> google.protobuf.Timestamp
-	10, // 9: google.cloud.lustre.v1.OperationMetadata.end_time:type_name -> google.protobuf.Timestamp
-	10, // [10:10] is the sub-list for method output_type
-	10, // [10:10] is the sub-list for method input_type
-	10, // [10:10] is the sub-list for extension type_name
-	10, // [10:10] is the sub-list for extension extendee
-	0,  // [0:10] is the sub-list for field type_name
+	22, // 1: google.cloud.lustre.v1.Instance.create_time:type_name -> google.protobuf.Timestamp
+	22, // 2: google.cloud.lustre.v1.Instance.update_time:type_name -> google.protobuf.Timestamp
+	17, // 3: google.cloud.lustre.v1.Instance.labels:type_name -> google.cloud.lustre.v1.Instance.LabelsEntry
+	6,  // 4: google.cloud.lustre.v1.Instance.access_rules_options:type_name -> google.cloud.lustre.v1.AccessRulesOptions
+	14, // 5: google.cloud.lustre.v1.Instance.maintenance_policy:type_name -> google.cloud.lustre.v1.MaintenancePolicy
+	15, // 6: google.cloud.lustre.v1.Instance.upcoming_maintenance_schedule:type_name -> google.cloud.lustre.v1.MaintenanceSchedule
+	5,  // 7: google.cloud.lustre.v1.Instance.dynamic_tier_options:type_name -> google.cloud.lustre.v1.DynamicTierOptions
+	1,  // 8: google.cloud.lustre.v1.DynamicTierOptions.mode:type_name -> google.cloud.lustre.v1.DynamicTierOptions.Mode
+	18, // 9: google.cloud.lustre.v1.AccessRulesOptions.access_rules:type_name -> google.cloud.lustre.v1.AccessRulesOptions.AccessRule
+	2,  // 10: google.cloud.lustre.v1.AccessRulesOptions.default_squash_mode:type_name -> google.cloud.lustre.v1.AccessRulesOptions.SquashMode
+	4,  // 11: google.cloud.lustre.v1.ListInstancesResponse.instances:type_name -> google.cloud.lustre.v1.Instance
+	4,  // 12: google.cloud.lustre.v1.CreateInstanceRequest.instance:type_name -> google.cloud.lustre.v1.Instance
+	23, // 13: google.cloud.lustre.v1.UpdateInstanceRequest.update_mask:type_name -> google.protobuf.FieldMask
+	4,  // 14: google.cloud.lustre.v1.UpdateInstanceRequest.instance:type_name -> google.cloud.lustre.v1.Instance
+	22, // 15: google.cloud.lustre.v1.OperationMetadata.create_time:type_name -> google.protobuf.Timestamp
+	22, // 16: google.cloud.lustre.v1.OperationMetadata.end_time:type_name -> google.protobuf.Timestamp
+	19, // 17: google.cloud.lustre.v1.MaintenancePolicy.weekly_maintenance_windows:type_name -> google.cloud.lustre.v1.MaintenancePolicy.WeeklyMaintenanceWindow
+	20, // 18: google.cloud.lustre.v1.MaintenancePolicy.maintenance_exclusion_window:type_name -> google.cloud.lustre.v1.MaintenancePolicy.MaintenanceExclusionWindow
+	22, // 19: google.cloud.lustre.v1.MaintenanceSchedule.start_time:type_name -> google.protobuf.Timestamp
+	22, // 20: google.cloud.lustre.v1.MaintenanceSchedule.end_time:type_name -> google.protobuf.Timestamp
+	21, // 21: google.cloud.lustre.v1.RescheduleMaintenanceRequest.reschedule:type_name -> google.cloud.lustre.v1.RescheduleMaintenanceRequest.Reschedule
+	2,  // 22: google.cloud.lustre.v1.AccessRulesOptions.AccessRule.squash_mode:type_name -> google.cloud.lustre.v1.AccessRulesOptions.SquashMode
+	24, // 23: google.cloud.lustre.v1.MaintenancePolicy.WeeklyMaintenanceWindow.day_of_week:type_name -> google.type.DayOfWeek
+	25, // 24: google.cloud.lustre.v1.MaintenancePolicy.WeeklyMaintenanceWindow.start_time:type_name -> google.type.TimeOfDay
+	26, // 25: google.cloud.lustre.v1.MaintenancePolicy.MaintenanceExclusionWindow.start_date:type_name -> google.type.Date
+	26, // 26: google.cloud.lustre.v1.MaintenancePolicy.MaintenanceExclusionWindow.end_date:type_name -> google.type.Date
+	25, // 27: google.cloud.lustre.v1.MaintenancePolicy.MaintenanceExclusionWindow.time:type_name -> google.type.TimeOfDay
+	3,  // 28: google.cloud.lustre.v1.RescheduleMaintenanceRequest.Reschedule.reschedule_type:type_name -> google.cloud.lustre.v1.RescheduleMaintenanceRequest.RescheduleType
+	22, // 29: google.cloud.lustre.v1.RescheduleMaintenanceRequest.Reschedule.schedule_time:type_name -> google.protobuf.Timestamp
+	30, // [30:30] is the sub-list for method output_type
+	30, // [30:30] is the sub-list for method input_type
+	30, // [30:30] is the sub-list for extension type_name
+	30, // [30:30] is the sub-list for extension extendee
+	0,  // [0:30] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_lustre_v1_instance_proto_init() }
@@ -948,13 +1956,14 @@ func file_google_cloud_lustre_v1_instance_proto_init() {
 	if File_google_cloud_lustre_v1_instance_proto != nil {
 		return
 	}
+	file_google_cloud_lustre_v1_instance_proto_msgTypes[0].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_lustre_v1_instance_proto_rawDesc), len(file_google_cloud_lustre_v1_instance_proto_rawDesc)),
-			NumEnums:      1,
-			NumMessages:   9,
+			NumEnums:      4,
+			NumMessages:   18,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

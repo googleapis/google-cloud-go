@@ -315,6 +315,41 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "speech",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/speech/apiv1p1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "speech.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.Recognize = append(client.CallOptions.Recognize, gax.WithClientTracing(tracing))
+		client.CallOptions.LongRunningRecognize = append(client.CallOptions.LongRunningRecognize, gax.WithClientTracing(tracing))
+		client.CallOptions.StreamingRecognize = append(client.CallOptions.StreamingRecognize, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "speech",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/speech/apiv1p1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "speech.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.Recognize = append(client.CallOptions.Recognize, gax.WithClientLogging(logging))
+		client.CallOptions.LongRunningRecognize = append(client.CallOptions.LongRunningRecognize, gax.WithClientLogging(logging))
+		client.CallOptions.StreamingRecognize = append(client.CallOptions.StreamingRecognize, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -425,6 +460,41 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.StreamingRecognize = append(callOpts.StreamingRecognize, gax.WithClientMetrics(metrics))
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "speech",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/speech/apiv1p1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "speech.googleapis.com",
+			}),
+		)
+
+		callOpts.Recognize = append(callOpts.Recognize, gax.WithClientTracing(tracing))
+		callOpts.LongRunningRecognize = append(callOpts.LongRunningRecognize, gax.WithClientTracing(tracing))
+		callOpts.StreamingRecognize = append(callOpts.StreamingRecognize, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "speech",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/speech/apiv1p1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "speech.googleapis.com",
+			}),
+		)
+
+		callOpts.Recognize = append(callOpts.Recognize, gax.WithClientLogging(logging))
+		callOpts.LongRunningRecognize = append(callOpts.LongRunningRecognize, gax.WithClientLogging(logging))
+		callOpts.StreamingRecognize = append(callOpts.StreamingRecognize, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
 	}
 
 	lroOpts := []option.ClientOption{

@@ -235,11 +235,15 @@ func (p *panickingTableAPI) ApplyReadModifyWrite(context.Context, string, *ReadM
 }
 
 // TestOpen_ClassicOnlyMethodsSkipDivertibleGate pins the invariant
-// that Table methods with no session equivalent (ReadRows, ApplyBulk,
+// that Table methods with no session equivalent (ApplyBulk,
 // SampleRowKeys, ApplyReadModifyWrite) MUST NOT gate on t.divertible.
 // They run the classic body directly — TableShim's own delegation
 // would just be pure indirection since the shim also always delegates
-// them to classic (see TableShim.ReadRows / ApplyBulk / etc).
+// them to classic (see TableShim.ApplyBulk / SampleRowKeys / etc).
+//
+// ReadRows is deliberately NOT in this list: it gained a partial
+// session equivalent (the single-key shape) and so does gate on
+// divertible. TestOpen_ReadRowsGatesOnDivertible covers it.
 //
 // Fixture matches a realistic session-wired client (session backend +
 // diverter with SessionLoad=1.0), then swaps divertible for the
@@ -270,10 +274,6 @@ func TestOpen_ClassicOnlyMethodsSkipDivertibleGate(t *testing.T) {
 		}
 	}
 
-	t.Run("ReadRows", func(t *testing.T) {
-		defer assertNotSpyPanic(t, "ReadRows")
-		_ = newTable().ReadRows(context.Background(), InfiniteRange(""), func(Row) bool { return true })
-	})
 	t.Run("ApplyBulk", func(t *testing.T) {
 		defer assertNotSpyPanic(t, "ApplyBulk")
 		_, _ = newTable().ApplyBulk(context.Background(), []string{"r"}, []*Mutation{NewMutation()})
@@ -286,6 +286,66 @@ func TestOpen_ClassicOnlyMethodsSkipDivertibleGate(t *testing.T) {
 		defer assertNotSpyPanic(t, "ApplyReadModifyWrite")
 		_, _ = newTable().ApplyReadModifyWrite(context.Background(), "r", &ReadModifyWrite{})
 	})
+}
+
+// TestOpen_ReadRowsGatesOnDivertible is the counterpart to
+// TestOpen_ClassicOnlyMethodsSkipDivertibleGate: Table.ReadRows DOES
+// hand off to the shim, which is what lets the single-key shape reach
+// the session data path. The gate is unconditional at the Table level —
+// shape inspection happens inside TableShim.ReadRows — so a multi-row
+// arg must reach the spy too.
+func TestOpen_ReadRowsGatesOnDivertible(t *testing.T) {
+	fsc := newFakeSessionClient()
+	c := newSessionWiredClient(t, fsc)
+	c.diverter.SetSessionLoad(1.0)
+
+	for _, tc := range []struct {
+		name string
+		arg  RowSet
+	}{
+		{"single-key", SingleRow("r")},
+		{"multi-row", InfiniteRange("")},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			defer func() {
+				r := recover()
+				if r == nil {
+					t.Errorf("Table.ReadRows did not reach divertible spy — the gate must dispatch to the shim")
+					return
+				}
+				if _, ok := r.(spyPanic); !ok {
+					t.Errorf("recovered %v, want spyPanic (ReadRows must gate on divertible)", r)
+				}
+			}()
+			tbl := &Table{c: c, table: "mytable", divertible: &panickingTableAPI{}}
+			_ = tbl.ReadRows(context.Background(), tc.arg, func(Row) bool { return true })
+		})
+	}
+}
+
+// TestTableImpl_ReadRow_StaysClassicUnderDivertible pins that the
+// classic single-row body never re-enters the divertible gate.
+// readRowClassic issues SingleRow(row) — precisely the shape
+// TableShim.ReadRows diverts — so if it went through the gated
+// Table.ReadRows, a divertible Table would bounce a classic read back
+// into the shim and on into TableShim.ReadRow, whose classic branch
+// re-enters readRowClassic.
+func TestTableImpl_ReadRow_StaysClassicUnderDivertible(t *testing.T) {
+	ti := &tableImpl{Table: Table{
+		c:          newBareClientForOpenTests(t, 1.0),
+		table:      "mytable",
+		divertible: &panickingTableAPI{},
+	}}
+
+	defer func() {
+		if r := recover(); r != nil {
+			if _, ok := r.(spyPanic); ok {
+				t.Errorf("tableImpl.ReadRow reached the divertible spy — the classic body must stay classic")
+			}
+			// Classic body panicking on the missing gRPC conn is expected.
+		}
+	}()
+	_, _ = ti.ReadRow(context.Background(), "row-1")
 }
 
 // TestOpenTable_ProducesNilSessionShim pins the shim shape returned by

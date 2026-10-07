@@ -17,9 +17,18 @@
 package iot
 
 import (
+	"iter"
+
 	iotpb "cloud.google.com/go/iot/apiv1/iotpb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DeviceIterator) All() iter.Seq2[*iotpb.Device, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // DeviceIterator manages a stream of *iotpb.Device.
 type DeviceIterator struct {
@@ -66,6 +75,12 @@ func (it *DeviceIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DeviceRegistryIterator) All() iter.Seq2[*iotpb.DeviceRegistry, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // DeviceRegistryIterator manages a stream of *iotpb.DeviceRegistry.

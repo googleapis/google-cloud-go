@@ -389,6 +389,41 @@ func NewUserEventClient(ctx context.Context, opts ...option.ClientOption) (*User
 		client.CallOptions.PurgeUserEvents = append(client.CallOptions.PurgeUserEvents, gax.WithClientMetrics(metrics))
 		client.CallOptions.ImportUserEvents = append(client.CallOptions.ImportUserEvents, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "recommendationengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/recommendationengine/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "recommendationengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.WriteUserEvent = append(client.CallOptions.WriteUserEvent, gax.WithClientTracing(tracing))
+		client.CallOptions.CollectUserEvent = append(client.CallOptions.CollectUserEvent, gax.WithClientTracing(tracing))
+		client.CallOptions.ListUserEvents = append(client.CallOptions.ListUserEvents, gax.WithClientTracing(tracing))
+		client.CallOptions.PurgeUserEvents = append(client.CallOptions.PurgeUserEvents, gax.WithClientTracing(tracing))
+		client.CallOptions.ImportUserEvents = append(client.CallOptions.ImportUserEvents, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "recommendationengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/recommendationengine/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "recommendationengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.WriteUserEvent = append(client.CallOptions.WriteUserEvent, gax.WithClientLogging(logging))
+		client.CallOptions.CollectUserEvent = append(client.CallOptions.CollectUserEvent, gax.WithClientLogging(logging))
+		client.CallOptions.ListUserEvents = append(client.CallOptions.ListUserEvents, gax.WithClientLogging(logging))
+		client.CallOptions.PurgeUserEvents = append(client.CallOptions.PurgeUserEvents, gax.WithClientLogging(logging))
+		client.CallOptions.ImportUserEvents = append(client.CallOptions.ImportUserEvents, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -500,6 +535,41 @@ func NewUserEventRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 		callOpts.PurgeUserEvents = append(callOpts.PurgeUserEvents, gax.WithClientMetrics(metrics))
 		callOpts.ImportUserEvents = append(callOpts.ImportUserEvents, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "recommendationengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/recommendationengine/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "recommendationengine.googleapis.com",
+			}),
+		)
+
+		callOpts.WriteUserEvent = append(callOpts.WriteUserEvent, gax.WithClientTracing(tracing))
+		callOpts.CollectUserEvent = append(callOpts.CollectUserEvent, gax.WithClientTracing(tracing))
+		callOpts.ListUserEvents = append(callOpts.ListUserEvents, gax.WithClientTracing(tracing))
+		callOpts.PurgeUserEvents = append(callOpts.PurgeUserEvents, gax.WithClientTracing(tracing))
+		callOpts.ImportUserEvents = append(callOpts.ImportUserEvents, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "recommendationengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/recommendationengine/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "recommendationengine.googleapis.com",
+			}),
+		)
+
+		callOpts.WriteUserEvent = append(callOpts.WriteUserEvent, gax.WithClientLogging(logging))
+		callOpts.CollectUserEvent = append(callOpts.CollectUserEvent, gax.WithClientLogging(logging))
+		callOpts.ListUserEvents = append(callOpts.ListUserEvents, gax.WithClientLogging(logging))
+		callOpts.PurgeUserEvents = append(callOpts.PurgeUserEvents, gax.WithClientLogging(logging))
+		callOpts.ImportUserEvents = append(callOpts.ImportUserEvents, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -556,9 +626,6 @@ func (c *userEventGRPCClient) WriteUserEvent(ctx context.Context, req *recommend
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//recommendationengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recommendationengine.v1beta1.UserEventService/WriteUserEvent")
 	}
@@ -580,9 +647,6 @@ func (c *userEventGRPCClient) CollectUserEvent(ctx context.Context, req *recomme
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//recommendationengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recommendationengine.v1beta1.UserEventService/CollectUserEvent")
 	}
@@ -604,9 +668,6 @@ func (c *userEventGRPCClient) ListUserEvents(ctx context.Context, req *recommend
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//recommendationengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recommendationengine.v1beta1.UserEventService/ListUserEvents")
 	}
@@ -656,9 +717,6 @@ func (c *userEventGRPCClient) PurgeUserEvents(ctx context.Context, req *recommen
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//recommendationengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recommendationengine.v1beta1.UserEventService/PurgeUserEvents")
 	}
@@ -686,9 +744,6 @@ func (c *userEventGRPCClient) ImportUserEvents(ctx context.Context, req *recomme
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//recommendationengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recommendationengine.v1beta1.UserEventService/ImportUserEvents")
 	}
@@ -737,9 +792,6 @@ func (c *userEventRESTClient) WriteUserEvent(ctx context.Context, req *recommend
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//recommendationengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recommendationengine.v1beta1.UserEventService/WriteUserEvent")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=projects/*/locations/*/catalogs/*/eventStores/*}/userEvents:write")
@@ -805,9 +857,6 @@ func (c *userEventRESTClient) CollectUserEvent(ctx context.Context, req *recomme
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//recommendationengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recommendationengine.v1beta1.UserEventService/CollectUserEvent")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=projects/*/locations/*/catalogs/*/eventStores/*}/userEvents:collect")
@@ -952,9 +1001,6 @@ func (c *userEventRESTClient) PurgeUserEvents(ctx context.Context, req *recommen
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//recommendationengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recommendationengine.v1beta1.UserEventService/PurgeUserEvents")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=projects/*/locations/*/catalogs/*/eventStores/*}/userEvents:purge")
@@ -1028,9 +1074,6 @@ func (c *userEventRESTClient) ImportUserEvents(ctx context.Context, req *recomme
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//recommendationengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recommendationengine.v1beta1.UserEventService/ImportUserEvents")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=projects/*/locations/*/catalogs/*/eventStores/*}/userEvents:import")

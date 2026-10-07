@@ -18,12 +18,14 @@ package clouddms
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	clouddmspb "cloud.google.com/go/clouddms/apiv1/clouddmspb"
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
@@ -1387,6 +1389,12 @@ func (op *VerifyMigrationJobOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ConnectionProfileIterator) All() iter.Seq2[*clouddmspb.ConnectionProfile, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ConnectionProfileIterator manages a stream of *clouddmspb.ConnectionProfile.
 type ConnectionProfileIterator struct {
 	items    []*clouddmspb.ConnectionProfile
@@ -1432,6 +1440,12 @@ func (it *ConnectionProfileIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ConversionWorkspaceIterator) All() iter.Seq2[*clouddmspb.ConversionWorkspace, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ConversionWorkspaceIterator manages a stream of *clouddmspb.ConversionWorkspace.
@@ -1481,6 +1495,12 @@ func (it *ConversionWorkspaceIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DatabaseEntityIterator) All() iter.Seq2[*clouddmspb.DatabaseEntity, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // DatabaseEntityIterator manages a stream of *clouddmspb.DatabaseEntity.
 type DatabaseEntityIterator struct {
 	items    []*clouddmspb.DatabaseEntity
@@ -1526,6 +1546,12 @@ func (it *DatabaseEntityIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // LocationIterator manages a stream of *locationpb.Location.
@@ -1575,6 +1601,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *MappingRuleIterator) All() iter.Seq2[*clouddmspb.MappingRule, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // MappingRuleIterator manages a stream of *clouddmspb.MappingRule.
 type MappingRuleIterator struct {
 	items    []*clouddmspb.MappingRule
@@ -1620,6 +1652,12 @@ func (it *MappingRuleIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *MigrationJobIterator) All() iter.Seq2[*clouddmspb.MigrationJob, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // MigrationJobIterator manages a stream of *clouddmspb.MigrationJob.
@@ -1669,6 +1707,12 @@ func (it *MigrationJobIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OperationIterator manages a stream of *longrunningpb.Operation.
 type OperationIterator struct {
 	items    []*longrunningpb.Operation
@@ -1716,6 +1760,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PrivateConnectionIterator) All() iter.Seq2[*clouddmspb.PrivateConnection, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // PrivateConnectionIterator manages a stream of *clouddmspb.PrivateConnection.
 type PrivateConnectionIterator struct {
 	items    []*clouddmspb.PrivateConnection
@@ -1761,6 +1811,12 @@ func (it *PrivateConnectionIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *StringIterator) All() iter.Seq2[string, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // StringIterator manages a stream of string.

@@ -18,11 +18,13 @@ package managedidentities
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	"cloud.google.com/go/longrunning"
 	managedidentitiespb "cloud.google.com/go/managedidentities/apiv1/managedidentitiespb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
 
@@ -440,6 +442,12 @@ func (op *ValidateTrustOperation) Done() bool {
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *ValidateTrustOperation) Name() string {
 	return op.lro.Name()
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DomainIterator) All() iter.Seq2[*managedidentitiespb.Domain, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // DomainIterator manages a stream of *managedidentitiespb.Domain.

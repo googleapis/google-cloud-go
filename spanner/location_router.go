@@ -123,10 +123,14 @@ func (r *locationRouter) prepareCommitRequestWithCooldownTracker(ctx context.Con
 }
 
 func (r *locationRouter) observePartialResultSet(prs *sppb.PartialResultSet) {
-	if r == nil || prs == nil || prs.GetCacheUpdate() == nil {
+	r.observeCacheUpdate(prs.GetCacheUpdate())
+}
+
+func (r *locationRouter) observeCacheUpdate(cacheUpdate *sppb.CacheUpdate) {
+	if r == nil || cacheUpdate == nil {
 		return
 	}
-	r.finder.updateAsync(prs.GetCacheUpdate())
+	r.finder.updateAsync(cacheUpdate)
 }
 
 func (r *locationRouter) observeResultSet(rs *sppb.ResultSet) {

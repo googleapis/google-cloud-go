@@ -308,6 +308,39 @@ func NewCheckoutSettingsClient(ctx context.Context, opts ...option.ClientOption)
 		client.CallOptions.UpdateCheckoutSettings = append(client.CallOptions.UpdateCheckoutSettings, gax.WithClientMetrics(metrics))
 		client.CallOptions.DeleteCheckoutSettings = append(client.CallOptions.DeleteCheckoutSettings, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetCheckoutSettings = append(client.CallOptions.GetCheckoutSettings, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateCheckoutSettings = append(client.CallOptions.CreateCheckoutSettings, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateCheckoutSettings = append(client.CallOptions.UpdateCheckoutSettings, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteCheckoutSettings = append(client.CallOptions.DeleteCheckoutSettings, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetCheckoutSettings = append(client.CallOptions.GetCheckoutSettings, gax.WithClientLogging(logging))
+		client.CallOptions.CreateCheckoutSettings = append(client.CallOptions.CreateCheckoutSettings, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateCheckoutSettings = append(client.CallOptions.UpdateCheckoutSettings, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteCheckoutSettings = append(client.CallOptions.DeleteCheckoutSettings, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -403,6 +436,39 @@ func NewCheckoutSettingsRESTClient(ctx context.Context, opts ...option.ClientOpt
 		callOpts.UpdateCheckoutSettings = append(callOpts.UpdateCheckoutSettings, gax.WithClientMetrics(metrics))
 		callOpts.DeleteCheckoutSettings = append(callOpts.DeleteCheckoutSettings, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.GetCheckoutSettings = append(callOpts.GetCheckoutSettings, gax.WithClientTracing(tracing))
+		callOpts.CreateCheckoutSettings = append(callOpts.CreateCheckoutSettings, gax.WithClientTracing(tracing))
+		callOpts.UpdateCheckoutSettings = append(callOpts.UpdateCheckoutSettings, gax.WithClientTracing(tracing))
+		callOpts.DeleteCheckoutSettings = append(callOpts.DeleteCheckoutSettings, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.GetCheckoutSettings = append(callOpts.GetCheckoutSettings, gax.WithClientLogging(logging))
+		callOpts.CreateCheckoutSettings = append(callOpts.CreateCheckoutSettings, gax.WithClientLogging(logging))
+		callOpts.UpdateCheckoutSettings = append(callOpts.UpdateCheckoutSettings, gax.WithClientLogging(logging))
+		callOpts.DeleteCheckoutSettings = append(callOpts.DeleteCheckoutSettings, gax.WithClientLogging(logging))
+	}
 
 	return &CheckoutSettingsClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -449,9 +515,6 @@ func (c *checkoutSettingsGRPCClient) GetCheckoutSettings(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.CheckoutSettingsService/GetCheckoutSettings")
 	}
@@ -473,9 +536,6 @@ func (c *checkoutSettingsGRPCClient) CreateCheckoutSettings(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.CheckoutSettingsService/CreateCheckoutSettings")
 	}
@@ -518,9 +578,6 @@ func (c *checkoutSettingsGRPCClient) DeleteCheckoutSettings(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.CheckoutSettingsService/DeleteCheckoutSettings")
 	}
@@ -553,9 +610,6 @@ func (c *checkoutSettingsRESTClient) GetCheckoutSettings(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.CheckoutSettingsService/GetCheckoutSettings")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/accounts/v1beta/{name=accounts/*/programs/*/checkoutSettings}")
@@ -617,9 +671,6 @@ func (c *checkoutSettingsRESTClient) CreateCheckoutSettings(ctx context.Context,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.CheckoutSettingsService/CreateCheckoutSettings")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/accounts/v1beta/{parent=accounts/*/programs/*}/checkoutSettings")
@@ -743,9 +794,6 @@ func (c *checkoutSettingsRESTClient) DeleteCheckoutSettings(ctx context.Context,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.CheckoutSettingsService/DeleteCheckoutSettings")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/accounts/v1beta/{name=accounts/*/programs/*/checkoutSettings}")

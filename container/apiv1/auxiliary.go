@@ -17,9 +17,18 @@
 package container
 
 import (
+	"iter"
+
 	containerpb "cloud.google.com/go/container/apiv1/containerpb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *UsableSubnetworkIterator) All() iter.Seq2[*containerpb.UsableSubnetwork, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // UsableSubnetworkIterator manages a stream of *containerpb.UsableSubnetwork.
 type UsableSubnetworkIterator struct {

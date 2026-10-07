@@ -30,6 +30,11 @@
                 "CreateMessage"
               ]
             },
+            "CreateMessagePin": {
+              "methods": [
+                "CreateMessagePin"
+              ]
+            },
             "CreateReaction": {
               "methods": [
                 "CreateReaction"
@@ -58,6 +63,11 @@
             "DeleteMessage": {
               "methods": [
                 "DeleteMessage"
+              ]
+            },
+            "DeleteMessagePin": {
+              "methods": [
+                "DeleteMessagePin"
               ]
             },
             "DeleteReaction": {
@@ -143,6 +153,11 @@
             "ListMemberships": {
               "methods": [
                 "ListMemberships"
+              ]
+            },
+            "ListMessagePins": {
+              "methods": [
+                "ListMessagePins"
               ]
             },
             "ListMessages": {
@@ -280,6 +295,11 @@
                 "CreateMessage"
               ]
             },
+            "CreateMessagePin": {
+              "methods": [
+                "CreateMessagePin"
+              ]
+            },
             "CreateReaction": {
               "methods": [
                 "CreateReaction"
@@ -308,6 +328,11 @@
             "DeleteMessage": {
               "methods": [
                 "DeleteMessage"
+              ]
+            },
+            "DeleteMessagePin": {
+              "methods": [
+                "DeleteMessagePin"
               ]
             },
             "DeleteReaction": {
@@ -393,6 +418,11 @@
             "ListMemberships": {
               "methods": [
                 "ListMemberships"
+              ]
+            },
+            "ListMessagePins": {
+              "methods": [
+                "ListMessagePins"
               ]
             },
             "ListMessages": {

@@ -1100,6 +1100,111 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "livestream",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/video/livestream/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "livestream.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateChannel = append(client.CallOptions.CreateChannel, gax.WithClientTracing(tracing))
+		client.CallOptions.ListChannels = append(client.CallOptions.ListChannels, gax.WithClientTracing(tracing))
+		client.CallOptions.GetChannel = append(client.CallOptions.GetChannel, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteChannel = append(client.CallOptions.DeleteChannel, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateChannel = append(client.CallOptions.UpdateChannel, gax.WithClientTracing(tracing))
+		client.CallOptions.StartChannel = append(client.CallOptions.StartChannel, gax.WithClientTracing(tracing))
+		client.CallOptions.StopChannel = append(client.CallOptions.StopChannel, gax.WithClientTracing(tracing))
+		client.CallOptions.StartDistribution = append(client.CallOptions.StartDistribution, gax.WithClientTracing(tracing))
+		client.CallOptions.StopDistribution = append(client.CallOptions.StopDistribution, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateInput = append(client.CallOptions.CreateInput, gax.WithClientTracing(tracing))
+		client.CallOptions.ListInputs = append(client.CallOptions.ListInputs, gax.WithClientTracing(tracing))
+		client.CallOptions.GetInput = append(client.CallOptions.GetInput, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteInput = append(client.CallOptions.DeleteInput, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateInput = append(client.CallOptions.UpdateInput, gax.WithClientTracing(tracing))
+		client.CallOptions.PreviewInput = append(client.CallOptions.PreviewInput, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateEvent = append(client.CallOptions.CreateEvent, gax.WithClientTracing(tracing))
+		client.CallOptions.ListEvents = append(client.CallOptions.ListEvents, gax.WithClientTracing(tracing))
+		client.CallOptions.GetEvent = append(client.CallOptions.GetEvent, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteEvent = append(client.CallOptions.DeleteEvent, gax.WithClientTracing(tracing))
+		client.CallOptions.ListClips = append(client.CallOptions.ListClips, gax.WithClientTracing(tracing))
+		client.CallOptions.GetClip = append(client.CallOptions.GetClip, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateClip = append(client.CallOptions.CreateClip, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteClip = append(client.CallOptions.DeleteClip, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateDvrSession = append(client.CallOptions.CreateDvrSession, gax.WithClientTracing(tracing))
+		client.CallOptions.ListDvrSessions = append(client.CallOptions.ListDvrSessions, gax.WithClientTracing(tracing))
+		client.CallOptions.GetDvrSession = append(client.CallOptions.GetDvrSession, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteDvrSession = append(client.CallOptions.DeleteDvrSession, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateDvrSession = append(client.CallOptions.UpdateDvrSession, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateAsset = append(client.CallOptions.CreateAsset, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteAsset = append(client.CallOptions.DeleteAsset, gax.WithClientTracing(tracing))
+		client.CallOptions.GetAsset = append(client.CallOptions.GetAsset, gax.WithClientTracing(tracing))
+		client.CallOptions.ListAssets = append(client.CallOptions.ListAssets, gax.WithClientTracing(tracing))
+		client.CallOptions.GetPool = append(client.CallOptions.GetPool, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdatePool = append(client.CallOptions.UpdatePool, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "livestream",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/video/livestream/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "livestream.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateChannel = append(client.CallOptions.CreateChannel, gax.WithClientLogging(logging))
+		client.CallOptions.ListChannels = append(client.CallOptions.ListChannels, gax.WithClientLogging(logging))
+		client.CallOptions.GetChannel = append(client.CallOptions.GetChannel, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteChannel = append(client.CallOptions.DeleteChannel, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateChannel = append(client.CallOptions.UpdateChannel, gax.WithClientLogging(logging))
+		client.CallOptions.StartChannel = append(client.CallOptions.StartChannel, gax.WithClientLogging(logging))
+		client.CallOptions.StopChannel = append(client.CallOptions.StopChannel, gax.WithClientLogging(logging))
+		client.CallOptions.StartDistribution = append(client.CallOptions.StartDistribution, gax.WithClientLogging(logging))
+		client.CallOptions.StopDistribution = append(client.CallOptions.StopDistribution, gax.WithClientLogging(logging))
+		client.CallOptions.CreateInput = append(client.CallOptions.CreateInput, gax.WithClientLogging(logging))
+		client.CallOptions.ListInputs = append(client.CallOptions.ListInputs, gax.WithClientLogging(logging))
+		client.CallOptions.GetInput = append(client.CallOptions.GetInput, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteInput = append(client.CallOptions.DeleteInput, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateInput = append(client.CallOptions.UpdateInput, gax.WithClientLogging(logging))
+		client.CallOptions.PreviewInput = append(client.CallOptions.PreviewInput, gax.WithClientLogging(logging))
+		client.CallOptions.CreateEvent = append(client.CallOptions.CreateEvent, gax.WithClientLogging(logging))
+		client.CallOptions.ListEvents = append(client.CallOptions.ListEvents, gax.WithClientLogging(logging))
+		client.CallOptions.GetEvent = append(client.CallOptions.GetEvent, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteEvent = append(client.CallOptions.DeleteEvent, gax.WithClientLogging(logging))
+		client.CallOptions.ListClips = append(client.CallOptions.ListClips, gax.WithClientLogging(logging))
+		client.CallOptions.GetClip = append(client.CallOptions.GetClip, gax.WithClientLogging(logging))
+		client.CallOptions.CreateClip = append(client.CallOptions.CreateClip, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteClip = append(client.CallOptions.DeleteClip, gax.WithClientLogging(logging))
+		client.CallOptions.CreateDvrSession = append(client.CallOptions.CreateDvrSession, gax.WithClientLogging(logging))
+		client.CallOptions.ListDvrSessions = append(client.CallOptions.ListDvrSessions, gax.WithClientLogging(logging))
+		client.CallOptions.GetDvrSession = append(client.CallOptions.GetDvrSession, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteDvrSession = append(client.CallOptions.DeleteDvrSession, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateDvrSession = append(client.CallOptions.UpdateDvrSession, gax.WithClientLogging(logging))
+		client.CallOptions.CreateAsset = append(client.CallOptions.CreateAsset, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteAsset = append(client.CallOptions.DeleteAsset, gax.WithClientLogging(logging))
+		client.CallOptions.GetAsset = append(client.CallOptions.GetAsset, gax.WithClientLogging(logging))
+		client.CallOptions.ListAssets = append(client.CallOptions.ListAssets, gax.WithClientLogging(logging))
+		client.CallOptions.GetPool = append(client.CallOptions.GetPool, gax.WithClientLogging(logging))
+		client.CallOptions.UpdatePool = append(client.CallOptions.UpdatePool, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -1250,6 +1355,111 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "livestream",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/video/livestream/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "livestream.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateChannel = append(callOpts.CreateChannel, gax.WithClientTracing(tracing))
+		callOpts.ListChannels = append(callOpts.ListChannels, gax.WithClientTracing(tracing))
+		callOpts.GetChannel = append(callOpts.GetChannel, gax.WithClientTracing(tracing))
+		callOpts.DeleteChannel = append(callOpts.DeleteChannel, gax.WithClientTracing(tracing))
+		callOpts.UpdateChannel = append(callOpts.UpdateChannel, gax.WithClientTracing(tracing))
+		callOpts.StartChannel = append(callOpts.StartChannel, gax.WithClientTracing(tracing))
+		callOpts.StopChannel = append(callOpts.StopChannel, gax.WithClientTracing(tracing))
+		callOpts.StartDistribution = append(callOpts.StartDistribution, gax.WithClientTracing(tracing))
+		callOpts.StopDistribution = append(callOpts.StopDistribution, gax.WithClientTracing(tracing))
+		callOpts.CreateInput = append(callOpts.CreateInput, gax.WithClientTracing(tracing))
+		callOpts.ListInputs = append(callOpts.ListInputs, gax.WithClientTracing(tracing))
+		callOpts.GetInput = append(callOpts.GetInput, gax.WithClientTracing(tracing))
+		callOpts.DeleteInput = append(callOpts.DeleteInput, gax.WithClientTracing(tracing))
+		callOpts.UpdateInput = append(callOpts.UpdateInput, gax.WithClientTracing(tracing))
+		callOpts.PreviewInput = append(callOpts.PreviewInput, gax.WithClientTracing(tracing))
+		callOpts.CreateEvent = append(callOpts.CreateEvent, gax.WithClientTracing(tracing))
+		callOpts.ListEvents = append(callOpts.ListEvents, gax.WithClientTracing(tracing))
+		callOpts.GetEvent = append(callOpts.GetEvent, gax.WithClientTracing(tracing))
+		callOpts.DeleteEvent = append(callOpts.DeleteEvent, gax.WithClientTracing(tracing))
+		callOpts.ListClips = append(callOpts.ListClips, gax.WithClientTracing(tracing))
+		callOpts.GetClip = append(callOpts.GetClip, gax.WithClientTracing(tracing))
+		callOpts.CreateClip = append(callOpts.CreateClip, gax.WithClientTracing(tracing))
+		callOpts.DeleteClip = append(callOpts.DeleteClip, gax.WithClientTracing(tracing))
+		callOpts.CreateDvrSession = append(callOpts.CreateDvrSession, gax.WithClientTracing(tracing))
+		callOpts.ListDvrSessions = append(callOpts.ListDvrSessions, gax.WithClientTracing(tracing))
+		callOpts.GetDvrSession = append(callOpts.GetDvrSession, gax.WithClientTracing(tracing))
+		callOpts.DeleteDvrSession = append(callOpts.DeleteDvrSession, gax.WithClientTracing(tracing))
+		callOpts.UpdateDvrSession = append(callOpts.UpdateDvrSession, gax.WithClientTracing(tracing))
+		callOpts.CreateAsset = append(callOpts.CreateAsset, gax.WithClientTracing(tracing))
+		callOpts.DeleteAsset = append(callOpts.DeleteAsset, gax.WithClientTracing(tracing))
+		callOpts.GetAsset = append(callOpts.GetAsset, gax.WithClientTracing(tracing))
+		callOpts.ListAssets = append(callOpts.ListAssets, gax.WithClientTracing(tracing))
+		callOpts.GetPool = append(callOpts.GetPool, gax.WithClientTracing(tracing))
+		callOpts.UpdatePool = append(callOpts.UpdatePool, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "livestream",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/video/livestream/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "livestream.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateChannel = append(callOpts.CreateChannel, gax.WithClientLogging(logging))
+		callOpts.ListChannels = append(callOpts.ListChannels, gax.WithClientLogging(logging))
+		callOpts.GetChannel = append(callOpts.GetChannel, gax.WithClientLogging(logging))
+		callOpts.DeleteChannel = append(callOpts.DeleteChannel, gax.WithClientLogging(logging))
+		callOpts.UpdateChannel = append(callOpts.UpdateChannel, gax.WithClientLogging(logging))
+		callOpts.StartChannel = append(callOpts.StartChannel, gax.WithClientLogging(logging))
+		callOpts.StopChannel = append(callOpts.StopChannel, gax.WithClientLogging(logging))
+		callOpts.StartDistribution = append(callOpts.StartDistribution, gax.WithClientLogging(logging))
+		callOpts.StopDistribution = append(callOpts.StopDistribution, gax.WithClientLogging(logging))
+		callOpts.CreateInput = append(callOpts.CreateInput, gax.WithClientLogging(logging))
+		callOpts.ListInputs = append(callOpts.ListInputs, gax.WithClientLogging(logging))
+		callOpts.GetInput = append(callOpts.GetInput, gax.WithClientLogging(logging))
+		callOpts.DeleteInput = append(callOpts.DeleteInput, gax.WithClientLogging(logging))
+		callOpts.UpdateInput = append(callOpts.UpdateInput, gax.WithClientLogging(logging))
+		callOpts.PreviewInput = append(callOpts.PreviewInput, gax.WithClientLogging(logging))
+		callOpts.CreateEvent = append(callOpts.CreateEvent, gax.WithClientLogging(logging))
+		callOpts.ListEvents = append(callOpts.ListEvents, gax.WithClientLogging(logging))
+		callOpts.GetEvent = append(callOpts.GetEvent, gax.WithClientLogging(logging))
+		callOpts.DeleteEvent = append(callOpts.DeleteEvent, gax.WithClientLogging(logging))
+		callOpts.ListClips = append(callOpts.ListClips, gax.WithClientLogging(logging))
+		callOpts.GetClip = append(callOpts.GetClip, gax.WithClientLogging(logging))
+		callOpts.CreateClip = append(callOpts.CreateClip, gax.WithClientLogging(logging))
+		callOpts.DeleteClip = append(callOpts.DeleteClip, gax.WithClientLogging(logging))
+		callOpts.CreateDvrSession = append(callOpts.CreateDvrSession, gax.WithClientLogging(logging))
+		callOpts.ListDvrSessions = append(callOpts.ListDvrSessions, gax.WithClientLogging(logging))
+		callOpts.GetDvrSession = append(callOpts.GetDvrSession, gax.WithClientLogging(logging))
+		callOpts.DeleteDvrSession = append(callOpts.DeleteDvrSession, gax.WithClientLogging(logging))
+		callOpts.UpdateDvrSession = append(callOpts.UpdateDvrSession, gax.WithClientLogging(logging))
+		callOpts.CreateAsset = append(callOpts.CreateAsset, gax.WithClientLogging(logging))
+		callOpts.DeleteAsset = append(callOpts.DeleteAsset, gax.WithClientLogging(logging))
+		callOpts.GetAsset = append(callOpts.GetAsset, gax.WithClientLogging(logging))
+		callOpts.ListAssets = append(callOpts.ListAssets, gax.WithClientLogging(logging))
+		callOpts.GetPool = append(callOpts.GetPool, gax.WithClientLogging(logging))
+		callOpts.UpdatePool = append(callOpts.UpdatePool, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -1306,9 +1516,6 @@ func (c *gRPCClient) CreateChannel(ctx context.Context, req *livestreampb.Create
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/CreateChannel")
 	}
@@ -1336,9 +1543,6 @@ func (c *gRPCClient) ListChannels(ctx context.Context, req *livestreampb.ListCha
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/ListChannels")
 	}
@@ -1388,9 +1592,6 @@ func (c *gRPCClient) GetChannel(ctx context.Context, req *livestreampb.GetChanne
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/GetChannel")
 	}
@@ -1412,9 +1613,6 @@ func (c *gRPCClient) DeleteChannel(ctx context.Context, req *livestreampb.Delete
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/DeleteChannel")
 	}
@@ -1469,9 +1667,6 @@ func (c *gRPCClient) StartChannel(ctx context.Context, req *livestreampb.StartCh
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/StartChannel")
 	}
@@ -1499,9 +1694,6 @@ func (c *gRPCClient) StopChannel(ctx context.Context, req *livestreampb.StopChan
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/StopChannel")
 	}
@@ -1529,9 +1721,6 @@ func (c *gRPCClient) StartDistribution(ctx context.Context, req *livestreampb.St
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/StartDistribution")
 	}
@@ -1559,9 +1748,6 @@ func (c *gRPCClient) StopDistribution(ctx context.Context, req *livestreampb.Sto
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/StopDistribution")
 	}
@@ -1589,9 +1775,6 @@ func (c *gRPCClient) CreateInput(ctx context.Context, req *livestreampb.CreateIn
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/CreateInput")
 	}
@@ -1619,9 +1802,6 @@ func (c *gRPCClient) ListInputs(ctx context.Context, req *livestreampb.ListInput
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/ListInputs")
 	}
@@ -1671,9 +1851,6 @@ func (c *gRPCClient) GetInput(ctx context.Context, req *livestreampb.GetInputReq
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/GetInput")
 	}
@@ -1695,9 +1872,6 @@ func (c *gRPCClient) DeleteInput(ctx context.Context, req *livestreampb.DeleteIn
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/DeleteInput")
 	}
@@ -1752,9 +1926,6 @@ func (c *gRPCClient) PreviewInput(ctx context.Context, req *livestreampb.Preview
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/PreviewInput")
 	}
@@ -1776,9 +1947,6 @@ func (c *gRPCClient) CreateEvent(ctx context.Context, req *livestreampb.CreateEv
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/CreateEvent")
 	}
@@ -1800,9 +1968,6 @@ func (c *gRPCClient) ListEvents(ctx context.Context, req *livestreampb.ListEvent
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/ListEvents")
 	}
@@ -1852,9 +2017,6 @@ func (c *gRPCClient) GetEvent(ctx context.Context, req *livestreampb.GetEventReq
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/GetEvent")
 	}
@@ -1876,9 +2038,6 @@ func (c *gRPCClient) DeleteEvent(ctx context.Context, req *livestreampb.DeleteEv
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/DeleteEvent")
 	}
@@ -1896,9 +2055,6 @@ func (c *gRPCClient) ListClips(ctx context.Context, req *livestreampb.ListClipsR
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/ListClips")
 	}
@@ -1948,9 +2104,6 @@ func (c *gRPCClient) GetClip(ctx context.Context, req *livestreampb.GetClipReque
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/GetClip")
 	}
@@ -1972,9 +2125,6 @@ func (c *gRPCClient) CreateClip(ctx context.Context, req *livestreampb.CreateCli
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/CreateClip")
 	}
@@ -2002,9 +2152,6 @@ func (c *gRPCClient) DeleteClip(ctx context.Context, req *livestreampb.DeleteCli
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/DeleteClip")
 	}
@@ -2032,9 +2179,6 @@ func (c *gRPCClient) CreateDvrSession(ctx context.Context, req *livestreampb.Cre
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/CreateDvrSession")
 	}
@@ -2062,9 +2206,6 @@ func (c *gRPCClient) ListDvrSessions(ctx context.Context, req *livestreampb.List
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/ListDvrSessions")
 	}
@@ -2114,9 +2255,6 @@ func (c *gRPCClient) GetDvrSession(ctx context.Context, req *livestreampb.GetDvr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/GetDvrSession")
 	}
@@ -2138,9 +2276,6 @@ func (c *gRPCClient) DeleteDvrSession(ctx context.Context, req *livestreampb.Del
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/DeleteDvrSession")
 	}
@@ -2195,9 +2330,6 @@ func (c *gRPCClient) CreateAsset(ctx context.Context, req *livestreampb.CreateAs
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/CreateAsset")
 	}
@@ -2225,9 +2357,6 @@ func (c *gRPCClient) DeleteAsset(ctx context.Context, req *livestreampb.DeleteAs
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/DeleteAsset")
 	}
@@ -2255,9 +2384,6 @@ func (c *gRPCClient) GetAsset(ctx context.Context, req *livestreampb.GetAssetReq
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/GetAsset")
 	}
@@ -2279,9 +2405,6 @@ func (c *gRPCClient) ListAssets(ctx context.Context, req *livestreampb.ListAsset
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/ListAssets")
 	}
@@ -2331,9 +2454,6 @@ func (c *gRPCClient) GetPool(ctx context.Context, req *livestreampb.GetPoolReque
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/GetPool")
 	}
@@ -2582,9 +2702,6 @@ func (c *restClient) CreateChannel(ctx context.Context, req *livestreampb.Create
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/CreateChannel")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/channels")
@@ -2730,9 +2847,6 @@ func (c *restClient) GetChannel(ctx context.Context, req *livestreampb.GetChanne
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/GetChannel")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/channels/*}")
@@ -2793,9 +2907,6 @@ func (c *restClient) DeleteChannel(ctx context.Context, req *livestreampb.Delete
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/DeleteChannel")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/channels/*}")
@@ -2942,9 +3053,6 @@ func (c *restClient) StartChannel(ctx context.Context, req *livestreampb.StartCh
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/StartChannel")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/channels/*}:start")
@@ -3013,9 +3121,6 @@ func (c *restClient) StopChannel(ctx context.Context, req *livestreampb.StopChan
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/StopChannel")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/channels/*}:stop")
@@ -3084,9 +3189,6 @@ func (c *restClient) StartDistribution(ctx context.Context, req *livestreampb.St
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/StartDistribution")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/channels/*}:startdistribution")
@@ -3154,9 +3256,6 @@ func (c *restClient) StopDistribution(ctx context.Context, req *livestreampb.Sto
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/StopDistribution")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/channels/*}:stopdistribution")
@@ -3229,9 +3328,6 @@ func (c *restClient) CreateInput(ctx context.Context, req *livestreampb.CreateIn
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/CreateInput")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/inputs")
@@ -3377,9 +3473,6 @@ func (c *restClient) GetInput(ctx context.Context, req *livestreampb.GetInputReq
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/GetInput")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/inputs/*}")
@@ -3437,9 +3530,6 @@ func (c *restClient) DeleteInput(ctx context.Context, req *livestreampb.DeleteIn
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/DeleteInput")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/inputs/*}")
@@ -3585,9 +3675,6 @@ func (c *restClient) PreviewInput(ctx context.Context, req *livestreampb.Preview
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/PreviewInput")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/inputs/*}:preview")
@@ -3653,9 +3740,6 @@ func (c *restClient) CreateEvent(ctx context.Context, req *livestreampb.CreateEv
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/CreateEvent")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/channels/*}/events")
@@ -3794,9 +3878,6 @@ func (c *restClient) GetEvent(ctx context.Context, req *livestreampb.GetEventReq
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/GetEvent")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/channels/*/events/*}")
@@ -3854,9 +3935,6 @@ func (c *restClient) DeleteEvent(ctx context.Context, req *livestreampb.DeleteEv
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/DeleteEvent")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/channels/*/events/*}")
@@ -3980,9 +4058,6 @@ func (c *restClient) GetClip(ctx context.Context, req *livestreampb.GetClipReque
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/GetClip")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/channels/*/clips/*}")
@@ -4048,9 +4123,6 @@ func (c *restClient) CreateClip(ctx context.Context, req *livestreampb.CreateCli
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/CreateClip")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/channels/*}/clips")
@@ -4116,9 +4188,6 @@ func (c *restClient) DeleteClip(ctx context.Context, req *livestreampb.DeleteCli
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/DeleteClip")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/channels/*/clips/*}")
@@ -4191,9 +4260,6 @@ func (c *restClient) CreateDvrSession(ctx context.Context, req *livestreampb.Cre
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/CreateDvrSession")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/channels/*}/dvrSessions")
@@ -4339,9 +4405,6 @@ func (c *restClient) GetDvrSession(ctx context.Context, req *livestreampb.GetDvr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/GetDvrSession")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/channels/*/dvrSessions/*}")
@@ -4399,9 +4462,6 @@ func (c *restClient) DeleteDvrSession(ctx context.Context, req *livestreampb.Del
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/DeleteDvrSession")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/channels/*/dvrSessions/*}")
@@ -4553,9 +4613,6 @@ func (c *restClient) CreateAsset(ctx context.Context, req *livestreampb.CreateAs
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/CreateAsset")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/assets")
@@ -4620,9 +4677,6 @@ func (c *restClient) DeleteAsset(ctx context.Context, req *livestreampb.DeleteAs
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/DeleteAsset")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/assets/*}")
@@ -4684,9 +4738,6 @@ func (c *restClient) GetAsset(ctx context.Context, req *livestreampb.GetAssetReq
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/GetAsset")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/assets/*}")
@@ -4825,9 +4876,6 @@ func (c *restClient) GetPool(ctx context.Context, req *livestreampb.GetPoolReque
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//livestream.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.livestream.v1.LivestreamService/GetPool")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/pools/*}")

@@ -18,12 +18,14 @@ package networksecurity
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	networksecuritypb "cloud.google.com/go/networksecurity/apiv1/networksecuritypb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
@@ -4617,6 +4619,12 @@ func (op *UpdateUrlListOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AddressGroupIterator) All() iter.Seq2[*networksecuritypb.AddressGroup, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // AddressGroupIterator manages a stream of *networksecuritypb.AddressGroup.
 type AddressGroupIterator struct {
 	items    []*networksecuritypb.AddressGroup
@@ -4662,6 +4670,12 @@ func (it *AddressGroupIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AuthorizationPolicyIterator) All() iter.Seq2[*networksecuritypb.AuthorizationPolicy, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // AuthorizationPolicyIterator manages a stream of *networksecuritypb.AuthorizationPolicy.
@@ -4711,6 +4725,12 @@ func (it *AuthorizationPolicyIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AuthzPolicyIterator) All() iter.Seq2[*networksecuritypb.AuthzPolicy, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // AuthzPolicyIterator manages a stream of *networksecuritypb.AuthzPolicy.
 type AuthzPolicyIterator struct {
 	items    []*networksecuritypb.AuthzPolicy
@@ -4756,6 +4776,12 @@ func (it *AuthzPolicyIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *BackendAuthenticationConfigIterator) All() iter.Seq2[*networksecuritypb.BackendAuthenticationConfig, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // BackendAuthenticationConfigIterator manages a stream of *networksecuritypb.BackendAuthenticationConfig.
@@ -4805,6 +4831,12 @@ func (it *BackendAuthenticationConfigIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ClientTlsPolicyIterator) All() iter.Seq2[*networksecuritypb.ClientTlsPolicy, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ClientTlsPolicyIterator manages a stream of *networksecuritypb.ClientTlsPolicy.
 type ClientTlsPolicyIterator struct {
 	items    []*networksecuritypb.ClientTlsPolicy
@@ -4850,6 +4882,12 @@ func (it *ClientTlsPolicyIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DnsThreatDetectorIterator) All() iter.Seq2[*networksecuritypb.DnsThreatDetector, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // DnsThreatDetectorIterator manages a stream of *networksecuritypb.DnsThreatDetector.
@@ -4899,6 +4937,12 @@ func (it *DnsThreatDetectorIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *FirewallEndpointAssociationIterator) All() iter.Seq2[*networksecuritypb.FirewallEndpointAssociation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // FirewallEndpointAssociationIterator manages a stream of *networksecuritypb.FirewallEndpointAssociation.
 type FirewallEndpointAssociationIterator struct {
 	items    []*networksecuritypb.FirewallEndpointAssociation
@@ -4944,6 +4988,12 @@ func (it *FirewallEndpointAssociationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *FirewallEndpointIterator) All() iter.Seq2[*networksecuritypb.FirewallEndpoint, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // FirewallEndpointIterator manages a stream of *networksecuritypb.FirewallEndpoint.
@@ -4993,6 +5043,12 @@ func (it *FirewallEndpointIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *GatewaySecurityPolicyIterator) All() iter.Seq2[*networksecuritypb.GatewaySecurityPolicy, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // GatewaySecurityPolicyIterator manages a stream of *networksecuritypb.GatewaySecurityPolicy.
 type GatewaySecurityPolicyIterator struct {
 	items    []*networksecuritypb.GatewaySecurityPolicy
@@ -5038,6 +5094,12 @@ func (it *GatewaySecurityPolicyIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *GatewaySecurityPolicyRuleIterator) All() iter.Seq2[*networksecuritypb.GatewaySecurityPolicyRule, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // GatewaySecurityPolicyRuleIterator manages a stream of *networksecuritypb.GatewaySecurityPolicyRule.
@@ -5087,6 +5149,12 @@ func (it *GatewaySecurityPolicyRuleIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *InterceptDeploymentGroupIterator) All() iter.Seq2[*networksecuritypb.InterceptDeploymentGroup, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // InterceptDeploymentGroupIterator manages a stream of *networksecuritypb.InterceptDeploymentGroup.
 type InterceptDeploymentGroupIterator struct {
 	items    []*networksecuritypb.InterceptDeploymentGroup
@@ -5132,6 +5200,12 @@ func (it *InterceptDeploymentGroupIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *InterceptDeploymentIterator) All() iter.Seq2[*networksecuritypb.InterceptDeployment, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // InterceptDeploymentIterator manages a stream of *networksecuritypb.InterceptDeployment.
@@ -5181,6 +5255,12 @@ func (it *InterceptDeploymentIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *InterceptEndpointGroupAssociationIterator) All() iter.Seq2[*networksecuritypb.InterceptEndpointGroupAssociation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // InterceptEndpointGroupAssociationIterator manages a stream of *networksecuritypb.InterceptEndpointGroupAssociation.
 type InterceptEndpointGroupAssociationIterator struct {
 	items    []*networksecuritypb.InterceptEndpointGroupAssociation
@@ -5226,6 +5306,12 @@ func (it *InterceptEndpointGroupAssociationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *InterceptEndpointGroupIterator) All() iter.Seq2[*networksecuritypb.InterceptEndpointGroup, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // InterceptEndpointGroupIterator manages a stream of *networksecuritypb.InterceptEndpointGroup.
@@ -5275,6 +5361,12 @@ func (it *InterceptEndpointGroupIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ListAddressGroupReferencesResponse_AddressGroupReferenceIterator) All() iter.Seq2[*networksecuritypb.ListAddressGroupReferencesResponse_AddressGroupReference, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ListAddressGroupReferencesResponse_AddressGroupReferenceIterator manages a stream of *networksecuritypb.ListAddressGroupReferencesResponse_AddressGroupReference.
 type ListAddressGroupReferencesResponse_AddressGroupReferenceIterator struct {
 	items    []*networksecuritypb.ListAddressGroupReferencesResponse_AddressGroupReference
@@ -5320,6 +5412,12 @@ func (it *ListAddressGroupReferencesResponse_AddressGroupReferenceIterator) take
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // LocationIterator manages a stream of *locationpb.Location.
@@ -5369,6 +5467,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *MirroringDeploymentGroupIterator) All() iter.Seq2[*networksecuritypb.MirroringDeploymentGroup, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // MirroringDeploymentGroupIterator manages a stream of *networksecuritypb.MirroringDeploymentGroup.
 type MirroringDeploymentGroupIterator struct {
 	items    []*networksecuritypb.MirroringDeploymentGroup
@@ -5414,6 +5518,12 @@ func (it *MirroringDeploymentGroupIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *MirroringDeploymentIterator) All() iter.Seq2[*networksecuritypb.MirroringDeployment, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // MirroringDeploymentIterator manages a stream of *networksecuritypb.MirroringDeployment.
@@ -5463,6 +5573,12 @@ func (it *MirroringDeploymentIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *MirroringEndpointGroupAssociationIterator) All() iter.Seq2[*networksecuritypb.MirroringEndpointGroupAssociation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // MirroringEndpointGroupAssociationIterator manages a stream of *networksecuritypb.MirroringEndpointGroupAssociation.
 type MirroringEndpointGroupAssociationIterator struct {
 	items    []*networksecuritypb.MirroringEndpointGroupAssociation
@@ -5508,6 +5624,12 @@ func (it *MirroringEndpointGroupAssociationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *MirroringEndpointGroupIterator) All() iter.Seq2[*networksecuritypb.MirroringEndpointGroup, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // MirroringEndpointGroupIterator manages a stream of *networksecuritypb.MirroringEndpointGroup.
@@ -5557,6 +5679,12 @@ func (it *MirroringEndpointGroupIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OperationIterator manages a stream of *longrunningpb.Operation.
 type OperationIterator struct {
 	items    []*longrunningpb.Operation
@@ -5602,6 +5730,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SACAttachmentIterator) All() iter.Seq2[*networksecuritypb.SACAttachment, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // SACAttachmentIterator manages a stream of *networksecuritypb.SACAttachment.
@@ -5651,6 +5785,12 @@ func (it *SACAttachmentIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SACRealmIterator) All() iter.Seq2[*networksecuritypb.SACRealm, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // SACRealmIterator manages a stream of *networksecuritypb.SACRealm.
 type SACRealmIterator struct {
 	items    []*networksecuritypb.SACRealm
@@ -5696,6 +5836,12 @@ func (it *SACRealmIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SecurityProfileGroupIterator) All() iter.Seq2[*networksecuritypb.SecurityProfileGroup, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // SecurityProfileGroupIterator manages a stream of *networksecuritypb.SecurityProfileGroup.
@@ -5745,6 +5891,12 @@ func (it *SecurityProfileGroupIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SecurityProfileIterator) All() iter.Seq2[*networksecuritypb.SecurityProfile, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // SecurityProfileIterator manages a stream of *networksecuritypb.SecurityProfile.
 type SecurityProfileIterator struct {
 	items    []*networksecuritypb.SecurityProfile
@@ -5790,6 +5942,12 @@ func (it *SecurityProfileIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ServerTlsPolicyIterator) All() iter.Seq2[*networksecuritypb.ServerTlsPolicy, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ServerTlsPolicyIterator manages a stream of *networksecuritypb.ServerTlsPolicy.
@@ -5839,6 +5997,12 @@ func (it *ServerTlsPolicyIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TlsInspectionPolicyIterator) All() iter.Seq2[*networksecuritypb.TlsInspectionPolicy, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // TlsInspectionPolicyIterator manages a stream of *networksecuritypb.TlsInspectionPolicy.
 type TlsInspectionPolicyIterator struct {
 	items    []*networksecuritypb.TlsInspectionPolicy
@@ -5884,6 +6048,12 @@ func (it *TlsInspectionPolicyIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *UrlListIterator) All() iter.Seq2[*networksecuritypb.UrlList, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // UrlListIterator manages a stream of *networksecuritypb.UrlList.
