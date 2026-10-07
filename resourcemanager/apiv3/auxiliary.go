@@ -18,11 +18,13 @@ package resourcemanager
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	"cloud.google.com/go/longrunning"
 	resourcemanagerpb "cloud.google.com/go/resourcemanager/apiv3/resourcemanagerpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
 
@@ -1284,6 +1286,12 @@ func (op *UpdateTagValueOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *EffectiveTagIterator) All() iter.Seq2[*resourcemanagerpb.EffectiveTag, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // EffectiveTagIterator manages a stream of *resourcemanagerpb.EffectiveTag.
 type EffectiveTagIterator struct {
 	items    []*resourcemanagerpb.EffectiveTag
@@ -1329,6 +1337,12 @@ func (it *EffectiveTagIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *FolderIterator) All() iter.Seq2[*resourcemanagerpb.Folder, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // FolderIterator manages a stream of *resourcemanagerpb.Folder.
@@ -1378,6 +1392,12 @@ func (it *FolderIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OrganizationIterator) All() iter.Seq2[*resourcemanagerpb.Organization, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OrganizationIterator manages a stream of *resourcemanagerpb.Organization.
 type OrganizationIterator struct {
 	items    []*resourcemanagerpb.Organization
@@ -1423,6 +1443,12 @@ func (it *OrganizationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ProjectIterator) All() iter.Seq2[*resourcemanagerpb.Project, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ProjectIterator manages a stream of *resourcemanagerpb.Project.
@@ -1472,6 +1498,12 @@ func (it *ProjectIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TagBindingIterator) All() iter.Seq2[*resourcemanagerpb.TagBinding, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // TagBindingIterator manages a stream of *resourcemanagerpb.TagBinding.
 type TagBindingIterator struct {
 	items    []*resourcemanagerpb.TagBinding
@@ -1517,6 +1549,12 @@ func (it *TagBindingIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TagHoldIterator) All() iter.Seq2[*resourcemanagerpb.TagHold, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // TagHoldIterator manages a stream of *resourcemanagerpb.TagHold.
@@ -1566,6 +1604,12 @@ func (it *TagHoldIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TagKeyIterator) All() iter.Seq2[*resourcemanagerpb.TagKey, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // TagKeyIterator manages a stream of *resourcemanagerpb.TagKey.
 type TagKeyIterator struct {
 	items    []*resourcemanagerpb.TagKey
@@ -1611,6 +1655,12 @@ func (it *TagKeyIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TagValueIterator) All() iter.Seq2[*resourcemanagerpb.TagValue, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // TagValueIterator manages a stream of *resourcemanagerpb.TagValue.

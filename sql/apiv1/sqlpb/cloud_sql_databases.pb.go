@@ -45,7 +45,9 @@ type SqlDatabasesDeleteRequest struct {
 	// Database instance ID. This does not include the project ID.
 	Instance string `protobuf:"bytes,2,opt,name=instance,proto3" json:"instance,omitempty"`
 	// Project ID of the project that contains the instance.
-	Project       string `protobuf:"bytes,3,opt,name=project,proto3" json:"project,omitempty"`
+	Project string `protobuf:"bytes,3,opt,name=project,proto3" json:"project,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,4,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -101,6 +103,13 @@ func (x *SqlDatabasesDeleteRequest) GetProject() string {
 	return ""
 }
 
+func (x *SqlDatabasesDeleteRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 // Database get request.
 type SqlDatabasesGetRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -109,7 +118,9 @@ type SqlDatabasesGetRequest struct {
 	// Database instance ID. This does not include the project ID.
 	Instance string `protobuf:"bytes,2,opt,name=instance,proto3" json:"instance,omitempty"`
 	// Project ID of the project that contains the instance.
-	Project       string `protobuf:"bytes,3,opt,name=project,proto3" json:"project,omitempty"`
+	Project string `protobuf:"bytes,3,opt,name=project,proto3" json:"project,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,4,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -165,14 +176,23 @@ func (x *SqlDatabasesGetRequest) GetProject() string {
 	return ""
 }
 
+func (x *SqlDatabasesGetRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 // Database insert request.
 type SqlDatabasesInsertRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Database instance ID. This does not include the project ID.
 	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	// Project ID of the project that contains the instance.
-	Project       string    `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
-	Body          *Database `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	Project string    `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	Body    *Database `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -228,13 +248,22 @@ func (x *SqlDatabasesInsertRequest) GetBody() *Database {
 	return nil
 }
 
+func (x *SqlDatabasesInsertRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 // Database list request.
 type SqlDatabasesListRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Cloud SQL instance ID. This does not include the project ID.
 	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	// Project ID of the project that contains the instance.
-	Project       string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	Project string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -283,6 +312,13 @@ func (x *SqlDatabasesListRequest) GetProject() string {
 	return ""
 }
 
+func (x *SqlDatabasesListRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 // Database update request.
 type SqlDatabasesUpdateRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -291,8 +327,10 @@ type SqlDatabasesUpdateRequest struct {
 	// Database instance ID. This does not include the project ID.
 	Instance string `protobuf:"bytes,2,opt,name=instance,proto3" json:"instance,omitempty"`
 	// Project ID of the project that contains the instance.
-	Project       string    `protobuf:"bytes,3,opt,name=project,proto3" json:"project,omitempty"`
-	Body          *Database `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	Project string    `protobuf:"bytes,3,opt,name=project,proto3" json:"project,omitempty"`
+	Body    *Database `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,4,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -355,6 +393,13 @@ func (x *SqlDatabasesUpdateRequest) GetBody() *Database {
 	return nil
 }
 
+func (x *SqlDatabasesUpdateRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 // Database list response.
 type DatabasesListResponse struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -414,27 +459,32 @@ var File_google_cloud_sql_v1_cloud_sql_databases_proto protoreflect.FileDescript
 
 const file_google_cloud_sql_v1_cloud_sql_databases_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/sql/v1/cloud_sql_databases.proto\x12\x13google.cloud.sql.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a-google/cloud/sql/v1/cloud_sql_resources.proto\"m\n" +
+	"-google/cloud/sql/v1/cloud_sql_databases.proto\x12\x13google.cloud.sql.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a-google/cloud/sql/v1/cloud_sql_resources.proto\"\x8e\x01\n" +
 	"\x19SqlDatabasesDeleteRequest\x12\x1a\n" +
 	"\bdatabase\x18\x01 \x01(\tR\bdatabase\x12\x1a\n" +
 	"\binstance\x18\x02 \x01(\tR\binstance\x12\x18\n" +
-	"\aproject\x18\x03 \x01(\tR\aproject\"j\n" +
+	"\aproject\x18\x03 \x01(\tR\aproject\x12\x1f\n" +
+	"\blocation\x18\x04 \x01(\tB\x03\xe0A\x01R\blocation\"\x8b\x01\n" +
 	"\x16SqlDatabasesGetRequest\x12\x1a\n" +
 	"\bdatabase\x18\x01 \x01(\tR\bdatabase\x12\x1a\n" +
 	"\binstance\x18\x02 \x01(\tR\binstance\x12\x18\n" +
-	"\aproject\x18\x03 \x01(\tR\aproject\"\x84\x01\n" +
+	"\aproject\x18\x03 \x01(\tR\aproject\x12\x1f\n" +
+	"\blocation\x18\x04 \x01(\tB\x03\xe0A\x01R\blocation\"\xa5\x01\n" +
 	"\x19SqlDatabasesInsertRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x121\n" +
-	"\x04body\x18d \x01(\v2\x1d.google.cloud.sql.v1.DatabaseR\x04body\"O\n" +
+	"\x04body\x18d \x01(\v2\x1d.google.cloud.sql.v1.DatabaseR\x04body\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"p\n" +
 	"\x17SqlDatabasesListRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
-	"\aproject\x18\x02 \x01(\tR\aproject\"\xa0\x01\n" +
+	"\aproject\x18\x02 \x01(\tR\aproject\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\xc1\x01\n" +
 	"\x19SqlDatabasesUpdateRequest\x12\x1a\n" +
 	"\bdatabase\x18\x01 \x01(\tR\bdatabase\x12\x1a\n" +
 	"\binstance\x18\x02 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x03 \x01(\tR\aproject\x121\n" +
-	"\x04body\x18d \x01(\v2\x1d.google.cloud.sql.v1.DatabaseR\x04body\"`\n" +
+	"\x04body\x18d \x01(\v2\x1d.google.cloud.sql.v1.DatabaseR\x04body\x12\x1f\n" +
+	"\blocation\x18\x04 \x01(\tB\x03\xe0A\x01R\blocation\"`\n" +
 	"\x15DatabasesListResponse\x12\x12\n" +
 	"\x04kind\x18\x01 \x01(\tR\x04kind\x123\n" +
 	"\x05items\x18\x02 \x03(\v2\x1d.google.cloud.sql.v1.DatabaseR\x05items2\xed\b\n" +

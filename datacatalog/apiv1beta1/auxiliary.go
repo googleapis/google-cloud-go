@@ -17,9 +17,18 @@
 package datacatalog
 
 import (
+	"iter"
+
 	datacatalogpb "cloud.google.com/go/datacatalog/apiv1beta1/datacatalogpb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *EntryGroupIterator) All() iter.Seq2[*datacatalogpb.EntryGroup, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // EntryGroupIterator manages a stream of *datacatalogpb.EntryGroup.
 type EntryGroupIterator struct {
@@ -66,6 +75,12 @@ func (it *EntryGroupIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *EntryIterator) All() iter.Seq2[*datacatalogpb.Entry, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // EntryIterator manages a stream of *datacatalogpb.Entry.
@@ -115,6 +130,12 @@ func (it *EntryIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PolicyTagIterator) All() iter.Seq2[*datacatalogpb.PolicyTag, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // PolicyTagIterator manages a stream of *datacatalogpb.PolicyTag.
 type PolicyTagIterator struct {
 	items    []*datacatalogpb.PolicyTag
@@ -160,6 +181,12 @@ func (it *PolicyTagIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SearchCatalogResultIterator) All() iter.Seq2[*datacatalogpb.SearchCatalogResult, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // SearchCatalogResultIterator manages a stream of *datacatalogpb.SearchCatalogResult.
@@ -209,6 +236,12 @@ func (it *SearchCatalogResultIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TagIterator) All() iter.Seq2[*datacatalogpb.Tag, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // TagIterator manages a stream of *datacatalogpb.Tag.
 type TagIterator struct {
 	items    []*datacatalogpb.Tag
@@ -254,6 +287,12 @@ func (it *TagIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TaxonomyIterator) All() iter.Seq2[*datacatalogpb.Taxonomy, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // TaxonomyIterator manages a stream of *datacatalogpb.Taxonomy.

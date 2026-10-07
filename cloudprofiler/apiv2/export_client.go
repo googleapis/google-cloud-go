@@ -215,6 +215,33 @@ func NewExportClient(ctx context.Context, opts ...option.ClientOption) (*ExportC
 
 		client.CallOptions.ListProfiles = append(client.CallOptions.ListProfiles, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudprofiler",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/cloudprofiler/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudprofiler.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListProfiles = append(client.CallOptions.ListProfiles, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudprofiler",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/cloudprofiler/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudprofiler.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListProfiles = append(client.CallOptions.ListProfiles, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -307,6 +334,33 @@ func NewExportRESTClient(ctx context.Context, opts ...option.ClientOption) (*Exp
 
 		callOpts.ListProfiles = append(callOpts.ListProfiles, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudprofiler",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/cloudprofiler/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudprofiler.googleapis.com",
+			}),
+		)
+
+		callOpts.ListProfiles = append(callOpts.ListProfiles, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudprofiler",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/cloudprofiler/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudprofiler.googleapis.com",
+			}),
+		)
+
+		callOpts.ListProfiles = append(callOpts.ListProfiles, gax.WithClientLogging(logging))
+	}
 
 	return &ExportClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -353,9 +407,6 @@ func (c *exportGRPCClient) ListProfiles(ctx context.Context, req *cloudprofilerp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudprofiler.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudprofiler.v2.ExportService/ListProfiles")
 	}

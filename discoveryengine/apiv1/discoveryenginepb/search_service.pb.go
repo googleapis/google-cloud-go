@@ -790,6 +790,59 @@ func (SearchResponse_SemanticState) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_discoveryengine_v1_search_service_proto_rawDescGZIP(), []int{1, 0}
 }
 
+// Indicates the source of the retrieval.
+type SearchResponse_SearchResult_RetrievalSignals_RetrievalSource int32
+
+const (
+	// Unspecified retrieval source.
+	SearchResponse_SearchResult_RetrievalSignals_RETRIEVAL_SOURCE_UNSPECIFIED SearchResponse_SearchResult_RetrievalSignals_RetrievalSource = 0
+	// Indicates the result was retrieved by keyword search.
+	SearchResponse_SearchResult_RetrievalSignals_KEYWORD_SEARCH SearchResponse_SearchResult_RetrievalSignals_RetrievalSource = 1
+	// Indicates the result was retrieved by semantic search.
+	SearchResponse_SearchResult_RetrievalSignals_SEMANTIC_SEARCH SearchResponse_SearchResult_RetrievalSignals_RetrievalSource = 2
+)
+
+// Enum value maps for SearchResponse_SearchResult_RetrievalSignals_RetrievalSource.
+var (
+	SearchResponse_SearchResult_RetrievalSignals_RetrievalSource_name = map[int32]string{
+		0: "RETRIEVAL_SOURCE_UNSPECIFIED",
+		1: "KEYWORD_SEARCH",
+		2: "SEMANTIC_SEARCH",
+	}
+	SearchResponse_SearchResult_RetrievalSignals_RetrievalSource_value = map[string]int32{
+		"RETRIEVAL_SOURCE_UNSPECIFIED": 0,
+		"KEYWORD_SEARCH":               1,
+		"SEMANTIC_SEARCH":              2,
+	}
+)
+
+func (x SearchResponse_SearchResult_RetrievalSignals_RetrievalSource) Enum() *SearchResponse_SearchResult_RetrievalSignals_RetrievalSource {
+	p := new(SearchResponse_SearchResult_RetrievalSignals_RetrievalSource)
+	*p = x
+	return p
+}
+
+func (x SearchResponse_SearchResult_RetrievalSignals_RetrievalSource) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (SearchResponse_SearchResult_RetrievalSignals_RetrievalSource) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_discoveryengine_v1_search_service_proto_enumTypes[13].Descriptor()
+}
+
+func (SearchResponse_SearchResult_RetrievalSignals_RetrievalSource) Type() protoreflect.EnumType {
+	return &file_google_cloud_discoveryengine_v1_search_service_proto_enumTypes[13]
+}
+
+func (x SearchResponse_SearchResult_RetrievalSignals_RetrievalSource) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use SearchResponse_SearchResult_RetrievalSignals_RetrievalSource.Descriptor instead.
+func (SearchResponse_SearchResult_RetrievalSignals_RetrievalSource) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_search_service_proto_rawDescGZIP(), []int{1, 0, 1, 0}
+}
+
 // An Enum for summary-skipped reasons.
 type SearchResponse_Summary_SummarySkippedReason int32
 
@@ -895,11 +948,11 @@ func (x SearchResponse_Summary_SummarySkippedReason) String() string {
 }
 
 func (SearchResponse_Summary_SummarySkippedReason) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_discoveryengine_v1_search_service_proto_enumTypes[13].Descriptor()
+	return file_google_cloud_discoveryengine_v1_search_service_proto_enumTypes[14].Descriptor()
 }
 
 func (SearchResponse_Summary_SummarySkippedReason) Type() protoreflect.EnumType {
-	return &file_google_cloud_discoveryengine_v1_search_service_proto_enumTypes[13]
+	return &file_google_cloud_discoveryengine_v1_search_service_proto_enumTypes[14]
 }
 
 func (x SearchResponse_Summary_SummarySkippedReason) Number() protoreflect.EnumNumber {
@@ -960,11 +1013,11 @@ func (x SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtracted
 }
 
 func (SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedFilter_NumberConstraint_Comparison) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_discoveryengine_v1_search_service_proto_enumTypes[14].Descriptor()
+	return file_google_cloud_discoveryengine_v1_search_service_proto_enumTypes[15].Descriptor()
 }
 
 func (SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedFilter_NumberConstraint_Comparison) Type() protoreflect.EnumType {
-	return &file_google_cloud_discoveryengine_v1_search_service_proto_enumTypes[14]
+	return &file_google_cloud_discoveryengine_v1_search_service_proto_enumTypes[15]
 }
 
 func (x SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedFilter_NumberConstraint_Comparison) Number() protoreflect.EnumNumber {
@@ -1059,6 +1112,11 @@ type SearchRequest struct {
 	// [SearchRequest][google.cloud.discoveryengine.v1.SearchRequest] should be
 	// used.
 	DataStoreSpecs []*SearchRequest_DataStoreSpec `protobuf:"bytes,32,rep,name=data_store_specs,json=dataStoreSpecs,proto3" json:"data_store_specs,omitempty"`
+	// Optional. The maximum number of results to retrieve from each data store.
+	// If not specified, it will use the
+	// [SearchRequest.DataStoreSpec.num_results][google.cloud.discoveryengine.v1.SearchRequest.DataStoreSpec.num_results]
+	// if provided, otherwise there is no limit.
+	NumResultsPerDataStore int32 `protobuf:"varint,65,opt,name=num_results_per_data_store,json=numResultsPerDataStore,proto3" json:"num_results_per_data_store,omitempty"`
 	// The filter syntax consists of an expression language for constructing a
 	// predicate from one or more fields of the documents being filtered. Filter
 	// expression is case-sensitive.
@@ -1260,6 +1318,15 @@ type SearchRequest struct {
 	//     Google model to determine the keyword-based overlap between the query and
 	//     the document.
 	//   - `base_rank`: the default rank of the result
+	//   - `media_actor_match`: whether the media actor matches the query
+	//   - `media_director_match`: whether the media director matches the query
+	//   - `media_genre_match`: whether the media genre matches the query
+	//   - `media_language_match`: whether the media language matches the query
+	//   - `media_title_match`: whether the media title matches the query
+	//   - `media_prefix_similarity_rank`: prefix similarity rank for media
+	//     results
+	//   - `media_semantic_similarity_rank`: semantic similarity rank for media
+	//     results
 	RankingExpression string `protobuf:"bytes,26,opt,name=ranking_expression,json=rankingExpression,proto3" json:"ranking_expression,omitempty"`
 	// Optional. The backend to use for the ranking expression evaluation.
 	RankingExpressionBackend SearchRequest_RankingExpressionBackend `protobuf:"varint,53,opt,name=ranking_expression_backend,json=rankingExpressionBackend,proto3,enum=google.cloud.discoveryengine.v1.SearchRequest_RankingExpressionBackend" json:"ranking_expression_backend,omitempty"`
@@ -1326,10 +1393,6 @@ type SearchRequest struct {
 	//	Call /answer API with the session ID generated in the first call.
 	//	Here, the answer generation happens in the context of the search
 	//	results from the first search call.
-	//
-	// Multi-turn Search feature is currently at private GA stage. Please use
-	// v1alpha or v1beta version instead before we launch this feature to public
-	// GA. Or ask for allowlisting through Google Support team.
 	Session string `protobuf:"bytes,41,opt,name=session,proto3" json:"session,omitempty"`
 	// Session specification.
 	//
@@ -1356,8 +1419,21 @@ type SearchRequest struct {
 	RelevanceFilterSpec *SearchRequest_RelevanceFilterSpec `protobuf:"bytes,86,opt,name=relevance_filter_spec,json=relevanceFilterSpec,proto3" json:"relevance_filter_spec,omitempty"`
 	// Optional. The specification for returning the relevance score.
 	RelevanceScoreSpec *SearchRequest_RelevanceScoreSpec `protobuf:"bytes,52,opt,name=relevance_score_spec,json=relevanceScoreSpec,proto3" json:"relevance_score_spec,omitempty"`
-	unknownFields      protoimpl.UnknownFields
-	sizeCache          protoimpl.SizeCache
+	// Optional. SearchAddonSpec is used to disable add-ons for search as per new
+	// repricing model.
+	// This field is only supported for search requests.
+	SearchAddonSpec *SearchRequest_SearchAddonSpec `protobuf:"bytes,62,opt,name=search_addon_spec,json=searchAddonSpec,proto3" json:"search_addon_spec,omitempty"`
+	// Optional. Optional configuration for the Custom Ranking feature.
+	CustomRankingParams *SearchRequest_CustomRankingParams `protobuf:"bytes,64,opt,name=custom_ranking_params,json=customRankingParams,proto3" json:"custom_ranking_params,omitempty"`
+	// Optional. The entity for customers that may run multiple different
+	// entities, domains, sites or regions, for example, "Google US", "Google
+	// Ads", "Waymo", "google.com", "youtube.com", etc. If this is set, it should
+	// be exactly matched with
+	// [UserEvent.entity][google.cloud.discoveryengine.v1.UserEvent.entity] to get
+	// search results boosted by entity.
+	Entity        string `protobuf:"bytes,66,opt,name=entity,proto3" json:"entity,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *SearchRequest) Reset() {
@@ -1458,6 +1534,13 @@ func (x *SearchRequest) GetDataStoreSpecs() []*SearchRequest_DataStoreSpec {
 		return x.DataStoreSpecs
 	}
 	return nil
+}
+
+func (x *SearchRequest) GetNumResultsPerDataStore() int32 {
+	if x != nil {
+		return x.NumResultsPerDataStore
+	}
+	return 0
 }
 
 func (x *SearchRequest) GetFilter() string {
@@ -1635,6 +1718,27 @@ func (x *SearchRequest) GetRelevanceScoreSpec() *SearchRequest_RelevanceScoreSpe
 	return nil
 }
 
+func (x *SearchRequest) GetSearchAddonSpec() *SearchRequest_SearchAddonSpec {
+	if x != nil {
+		return x.SearchAddonSpec
+	}
+	return nil
+}
+
+func (x *SearchRequest) GetCustomRankingParams() *SearchRequest_CustomRankingParams {
+	if x != nil {
+		return x.CustomRankingParams
+	}
+	return nil
+}
+
+func (x *SearchRequest) GetEntity() string {
+	if x != nil {
+		return x.Entity
+	}
+	return ""
+}
+
 // Response message for
 // [SearchService.Search][google.cloud.discoveryengine.v1.SearchService.Search]
 // method.
@@ -1677,6 +1781,8 @@ type SearchResponse struct {
 	// [SearchRequest.ContentSearchSpec.summary_spec][google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.summary_spec]
 	// is set.
 	Summary *SearchResponse_Summary `protobuf:"bytes,9,opt,name=summary,proto3" json:"summary,omitempty"`
+	// Optional. Controls applied as part of the Control service.
+	AppliedControls []string `protobuf:"bytes,10,rep,name=applied_controls,json=appliedControls,proto3" json:"applied_controls,omitempty"`
 	// Query expansion information for the returned results.
 	QueryExpansionInfo *SearchResponse_QueryExpansionInfo `protobuf:"bytes,14,opt,name=query_expansion_info,json=queryExpansionInfo,proto3" json:"query_expansion_info,omitempty"`
 	// Output only. Natural language query understanding information for the
@@ -1782,6 +1888,13 @@ func (x *SearchResponse) GetSummary() *SearchResponse_Summary {
 	return nil
 }
 
+func (x *SearchResponse) GetAppliedControls() []string {
+	if x != nil {
+		return x.AppliedControls
+	}
+	return nil
+}
+
 func (x *SearchResponse) GetQueryExpansionInfo() *SearchResponse_QueryExpansionInfo {
 	if x != nil {
 		return x.QueryExpansionInfo
@@ -1820,6 +1933,8 @@ func (x *SearchResponse) GetSemanticState() SearchResponse_SemanticState {
 // Specifies the image query input.
 type SearchRequest_ImageQuery struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
+	// Specifies the image bytes.
+	//
 	// Types that are valid to be assigned to Image:
 	//
 	//	*SearchRequest_ImageQuery_ImageBytes
@@ -1910,8 +2025,15 @@ type SearchRequest_DataStoreSpec struct {
 	// search operators, see
 	// [SearchOperators](https://support.google.com/cloudsearch/answer/6172299).
 	CustomSearchOperators string `protobuf:"bytes,7,opt,name=custom_search_operators,json=customSearchOperators,proto3" json:"custom_search_operators,omitempty"`
-	unknownFields         protoimpl.UnknownFields
-	sizeCache             protoimpl.SizeCache
+	// Optional. The maximum number of results to retrieve from this data store.
+	// If not specified, it will use the
+	// [SearchRequest.num_results_per_data_store][google.cloud.discoveryengine.v1.SearchRequest.num_results_per_data_store]
+	// if provided, otherwise there is no limit. If both this field and
+	// [SearchRequest.num_results_per_data_store][google.cloud.discoveryengine.v1.SearchRequest.num_results_per_data_store]
+	// are specified, this field will be used.
+	NumResults    int32 `protobuf:"varint,9,opt,name=num_results,json=numResults,proto3" json:"num_results,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *SearchRequest_DataStoreSpec) Reset() {
@@ -1970,6 +2092,13 @@ func (x *SearchRequest_DataStoreSpec) GetCustomSearchOperators() string {
 		return x.CustomSearchOperators
 	}
 	return ""
+}
+
+func (x *SearchRequest_DataStoreSpec) GetNumResults() int32 {
+	if x != nil {
+		return x.NumResults
+	}
+	return 0
 }
 
 // A facet specification to perform faceted search.
@@ -2361,9 +2490,6 @@ type SearchRequest_NaturalLanguageQueryUnderstandingSpec struct {
 	// Field names used for location-based filtering, where geolocation filters
 	// are detected in natural language search queries.
 	// Only valid when the FilterExtractionCondition is set to `ENABLED`.
-	//
-	// If this field is set, it overrides the field names set in
-	// [ServingConfig.geo_search_query_detection_field_names][google.cloud.discoveryengine.v1.ServingConfig.geo_search_query_detection_field_names].
 	GeoSearchQueryDetectionFieldNames []string `protobuf:"bytes,2,rep,name=geo_search_query_detection_field_names,json=geoSearchQueryDetectionFieldNames,proto3" json:"geo_search_query_detection_field_names,omitempty"`
 	// Optional. Controls behavior of how extracted filters are applied to the
 	// search. The default behavior depends on the request. For single datastore
@@ -2453,9 +2579,14 @@ type SearchRequest_SearchAsYouTypeSpec struct {
 	// The condition under which search as you type should occur.
 	// Default to
 	// [Condition.DISABLED][google.cloud.discoveryengine.v1.SearchRequest.SearchAsYouTypeSpec.Condition.DISABLED].
-	Condition     SearchRequest_SearchAsYouTypeSpec_Condition `protobuf:"varint,1,opt,name=condition,proto3,enum=google.cloud.discoveryengine.v1.SearchRequest_SearchAsYouTypeSpec_Condition" json:"condition,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Condition SearchRequest_SearchAsYouTypeSpec_Condition `protobuf:"varint,1,opt,name=condition,proto3,enum=google.cloud.discoveryengine.v1.SearchRequest_SearchAsYouTypeSpec_Condition" json:"condition,omitempty"`
+	// Optional. The list of fields to be used for Search As You Type scoring.
+	Fields []*SearchRequest_SearchAsYouTypeSpec_Field `protobuf:"bytes,2,rep,name=fields,proto3" json:"fields,omitempty"`
+	// Optional. Search As You Type score threshold for filtering purpose.
+	// We keep the result if `score` >= `score_threshold`.
+	ScoreThreshold *float64 `protobuf:"fixed64,3,opt,name=score_threshold,json=scoreThreshold,proto3,oneof" json:"score_threshold,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *SearchRequest_SearchAsYouTypeSpec) Reset() {
@@ -2493,6 +2624,20 @@ func (x *SearchRequest_SearchAsYouTypeSpec) GetCondition() SearchRequest_SearchA
 		return x.Condition
 	}
 	return SearchRequest_SearchAsYouTypeSpec_CONDITION_UNSPECIFIED
+}
+
+func (x *SearchRequest_SearchAsYouTypeSpec) GetFields() []*SearchRequest_SearchAsYouTypeSpec_Field {
+	if x != nil {
+		return x.Fields
+	}
+	return nil
+}
+
+func (x *SearchRequest_SearchAsYouTypeSpec) GetScoreThreshold() float64 {
+	if x != nil && x.ScoreThreshold != nil {
+		return *x.ScoreThreshold
+	}
+	return 0
 }
 
 // Specifies features for display, like match highlighting.
@@ -2616,10 +2761,6 @@ func (x *SearchRequest_CrowdingSpec) GetMode() SearchRequest_CrowdingSpec_Mode {
 }
 
 // Session specification.
-//
-// Multi-turn Search feature is currently at private GA stage. Please use
-// v1alpha or v1beta version instead before we launch this feature to public
-// GA. Or ask for allowlisting through Google Support team.
 type SearchRequest_SessionSpec struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// If set, the search result gets stored to the "turn" specified by this
@@ -2705,53 +2846,6 @@ func (x *SearchRequest_SessionSpec) GetSearchResultPersistenceCount() int32 {
 	return 0
 }
 
-// The specification for returning the document relevance score.
-type SearchRequest_RelevanceScoreSpec struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Optional. Whether to return the relevance score for search results.
-	// The higher the score, the more relevant the document is to the query.
-	ReturnRelevanceScore bool `protobuf:"varint,1,opt,name=return_relevance_score,json=returnRelevanceScore,proto3" json:"return_relevance_score,omitempty"`
-	unknownFields        protoimpl.UnknownFields
-	sizeCache            protoimpl.SizeCache
-}
-
-func (x *SearchRequest_RelevanceScoreSpec) Reset() {
-	*x = SearchRequest_RelevanceScoreSpec{}
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[14]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *SearchRequest_RelevanceScoreSpec) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*SearchRequest_RelevanceScoreSpec) ProtoMessage() {}
-
-func (x *SearchRequest_RelevanceScoreSpec) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[14]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use SearchRequest_RelevanceScoreSpec.ProtoReflect.Descriptor instead.
-func (*SearchRequest_RelevanceScoreSpec) Descriptor() ([]byte, []int) {
-	return file_google_cloud_discoveryengine_v1_search_service_proto_rawDescGZIP(), []int{0, 12}
-}
-
-func (x *SearchRequest_RelevanceScoreSpec) GetReturnRelevanceScore() bool {
-	if x != nil {
-		return x.ReturnRelevanceScore
-	}
-	return false
-}
-
 // Relevance filtering specification.
 type SearchRequest_RelevanceFilterSpec struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -2766,7 +2860,7 @@ type SearchRequest_RelevanceFilterSpec struct {
 
 func (x *SearchRequest_RelevanceFilterSpec) Reset() {
 	*x = SearchRequest_RelevanceFilterSpec{}
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[15]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2778,7 +2872,7 @@ func (x *SearchRequest_RelevanceFilterSpec) String() string {
 func (*SearchRequest_RelevanceFilterSpec) ProtoMessage() {}
 
 func (x *SearchRequest_RelevanceFilterSpec) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[15]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2791,7 +2885,7 @@ func (x *SearchRequest_RelevanceFilterSpec) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use SearchRequest_RelevanceFilterSpec.ProtoReflect.Descriptor instead.
 func (*SearchRequest_RelevanceFilterSpec) Descriptor() ([]byte, []int) {
-	return file_google_cloud_discoveryengine_v1_search_service_proto_rawDescGZIP(), []int{0, 13}
+	return file_google_cloud_discoveryengine_v1_search_service_proto_rawDescGZIP(), []int{0, 12}
 }
 
 func (x *SearchRequest_RelevanceFilterSpec) GetKeywordSearchThreshold() *SearchRequest_RelevanceFilterSpec_RelevanceThresholdSpec {
@@ -2804,6 +2898,172 @@ func (x *SearchRequest_RelevanceFilterSpec) GetKeywordSearchThreshold() *SearchR
 func (x *SearchRequest_RelevanceFilterSpec) GetSemanticSearchThreshold() *SearchRequest_RelevanceFilterSpec_RelevanceThresholdSpec {
 	if x != nil {
 		return x.SemanticSearchThreshold
+	}
+	return nil
+}
+
+// The specification for returning the document relevance score.
+type SearchRequest_RelevanceScoreSpec struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. Whether to return the relevance score for search results.
+	// The higher the score, the more relevant the document is to the query.
+	ReturnRelevanceScore bool `protobuf:"varint,1,opt,name=return_relevance_score,json=returnRelevanceScore,proto3" json:"return_relevance_score,omitempty"`
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
+}
+
+func (x *SearchRequest_RelevanceScoreSpec) Reset() {
+	*x = SearchRequest_RelevanceScoreSpec{}
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SearchRequest_RelevanceScoreSpec) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SearchRequest_RelevanceScoreSpec) ProtoMessage() {}
+
+func (x *SearchRequest_RelevanceScoreSpec) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SearchRequest_RelevanceScoreSpec.ProtoReflect.Descriptor instead.
+func (*SearchRequest_RelevanceScoreSpec) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_search_service_proto_rawDescGZIP(), []int{0, 13}
+}
+
+func (x *SearchRequest_RelevanceScoreSpec) GetReturnRelevanceScore() bool {
+	if x != nil {
+		return x.ReturnRelevanceScore
+	}
+	return false
+}
+
+// SearchAddonSpec is used to disable add-ons for search as per new
+// repricing model. By default if the SearchAddonSpec is not specified, we
+// consider that the customer wants to enable them wherever applicable.
+type SearchRequest_SearchAddonSpec struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. If true, semantic add-on is disabled. Semantic add-on includes
+	// embeddings and jetstream.
+	DisableSemanticAddOn bool `protobuf:"varint,1,opt,name=disable_semantic_add_on,json=disableSemanticAddOn,proto3" json:"disable_semantic_add_on,omitempty"`
+	// Optional. If true, disables event re-ranking and personalization to
+	// optimize KPIs & personalize results.
+	DisableKpiPersonalizationAddOn bool `protobuf:"varint,2,opt,name=disable_kpi_personalization_add_on,json=disableKpiPersonalizationAddOn,proto3" json:"disable_kpi_personalization_add_on,omitempty"`
+	// Optional. If true, generative answer add-on is disabled. Generative
+	// answer add-on includes natural language to filters and simple answers.
+	DisableGenerativeAnswerAddOn bool `protobuf:"varint,3,opt,name=disable_generative_answer_add_on,json=disableGenerativeAnswerAddOn,proto3" json:"disable_generative_answer_add_on,omitempty"`
+	unknownFields                protoimpl.UnknownFields
+	sizeCache                    protoimpl.SizeCache
+}
+
+func (x *SearchRequest_SearchAddonSpec) Reset() {
+	*x = SearchRequest_SearchAddonSpec{}
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SearchRequest_SearchAddonSpec) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SearchRequest_SearchAddonSpec) ProtoMessage() {}
+
+func (x *SearchRequest_SearchAddonSpec) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SearchRequest_SearchAddonSpec.ProtoReflect.Descriptor instead.
+func (*SearchRequest_SearchAddonSpec) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_search_service_proto_rawDescGZIP(), []int{0, 14}
+}
+
+func (x *SearchRequest_SearchAddonSpec) GetDisableSemanticAddOn() bool {
+	if x != nil {
+		return x.DisableSemanticAddOn
+	}
+	return false
+}
+
+func (x *SearchRequest_SearchAddonSpec) GetDisableKpiPersonalizationAddOn() bool {
+	if x != nil {
+		return x.DisableKpiPersonalizationAddOn
+	}
+	return false
+}
+
+func (x *SearchRequest_SearchAddonSpec) GetDisableGenerativeAnswerAddOn() bool {
+	if x != nil {
+		return x.DisableGenerativeAnswerAddOn
+	}
+	return false
+}
+
+// Configuration parameters for the Custom Ranking feature.
+type SearchRequest_CustomRankingParams struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. A list of ranking expressions (see `ranking_expression` for the
+	// syntax documentation) to evaluate. The evaluation results will be
+	// returned in
+	// `SearchResponse.SearchResult.rank_signals.precomputed_expression_values`
+	// field.
+	ExpressionsToPrecompute []string `protobuf:"bytes,1,rep,name=expressions_to_precompute,json=expressionsToPrecompute,proto3" json:"expressions_to_precompute,omitempty"`
+	unknownFields           protoimpl.UnknownFields
+	sizeCache               protoimpl.SizeCache
+}
+
+func (x *SearchRequest_CustomRankingParams) Reset() {
+	*x = SearchRequest_CustomRankingParams{}
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SearchRequest_CustomRankingParams) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SearchRequest_CustomRankingParams) ProtoMessage() {}
+
+func (x *SearchRequest_CustomRankingParams) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SearchRequest_CustomRankingParams.ProtoReflect.Descriptor instead.
+func (*SearchRequest_CustomRankingParams) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_search_service_proto_rawDescGZIP(), []int{0, 15}
+}
+
+func (x *SearchRequest_CustomRankingParams) GetExpressionsToPrecompute() []string {
+	if x != nil {
+		return x.ExpressionsToPrecompute
 	}
 	return nil
 }
@@ -2866,7 +3126,7 @@ type SearchRequest_FacetSpec_FacetKey struct {
 
 func (x *SearchRequest_FacetSpec_FacetKey) Reset() {
 	*x = SearchRequest_FacetSpec_FacetKey{}
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[18]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2878,7 +3138,7 @@ func (x *SearchRequest_FacetSpec_FacetKey) String() string {
 func (*SearchRequest_FacetSpec_FacetKey) ProtoMessage() {}
 
 func (x *SearchRequest_FacetSpec_FacetKey) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[18]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2986,7 +3246,7 @@ type SearchRequest_BoostSpec_ConditionBoostSpec struct {
 
 func (x *SearchRequest_BoostSpec_ConditionBoostSpec) Reset() {
 	*x = SearchRequest_BoostSpec_ConditionBoostSpec{}
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[19]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2998,7 +3258,7 @@ func (x *SearchRequest_BoostSpec_ConditionBoostSpec) String() string {
 func (*SearchRequest_BoostSpec_ConditionBoostSpec) ProtoMessage() {}
 
 func (x *SearchRequest_BoostSpec_ConditionBoostSpec) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[19]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3062,7 +3322,7 @@ type SearchRequest_BoostSpec_ConditionBoostSpec_BoostControlSpec struct {
 
 func (x *SearchRequest_BoostSpec_ConditionBoostSpec_BoostControlSpec) Reset() {
 	*x = SearchRequest_BoostSpec_ConditionBoostSpec_BoostControlSpec{}
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[20]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3074,7 +3334,7 @@ func (x *SearchRequest_BoostSpec_ConditionBoostSpec_BoostControlSpec) String() s
 func (*SearchRequest_BoostSpec_ConditionBoostSpec_BoostControlSpec) ProtoMessage() {}
 
 func (x *SearchRequest_BoostSpec_ConditionBoostSpec_BoostControlSpec) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[20]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3139,7 +3399,7 @@ type SearchRequest_BoostSpec_ConditionBoostSpec_BoostControlSpec_ControlPoint st
 
 func (x *SearchRequest_BoostSpec_ConditionBoostSpec_BoostControlSpec_ControlPoint) Reset() {
 	*x = SearchRequest_BoostSpec_ConditionBoostSpec_BoostControlSpec_ControlPoint{}
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[21]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3151,7 +3411,7 @@ func (x *SearchRequest_BoostSpec_ConditionBoostSpec_BoostControlSpec_ControlPoin
 func (*SearchRequest_BoostSpec_ConditionBoostSpec_BoostControlSpec_ControlPoint) ProtoMessage() {}
 
 func (x *SearchRequest_BoostSpec_ConditionBoostSpec_BoostControlSpec_ControlPoint) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[21]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3205,7 +3465,7 @@ type SearchRequest_ContentSearchSpec_SnippetSpec struct {
 
 func (x *SearchRequest_ContentSearchSpec_SnippetSpec) Reset() {
 	*x = SearchRequest_ContentSearchSpec_SnippetSpec{}
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[22]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3217,7 +3477,7 @@ func (x *SearchRequest_ContentSearchSpec_SnippetSpec) String() string {
 func (*SearchRequest_ContentSearchSpec_SnippetSpec) ProtoMessage() {}
 
 func (x *SearchRequest_ContentSearchSpec_SnippetSpec) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[22]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3353,7 +3613,7 @@ type SearchRequest_ContentSearchSpec_SummarySpec struct {
 
 func (x *SearchRequest_ContentSearchSpec_SummarySpec) Reset() {
 	*x = SearchRequest_ContentSearchSpec_SummarySpec{}
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[23]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3365,7 +3625,7 @@ func (x *SearchRequest_ContentSearchSpec_SummarySpec) String() string {
 func (*SearchRequest_ContentSearchSpec_SummarySpec) ProtoMessage() {}
 
 func (x *SearchRequest_ContentSearchSpec_SummarySpec) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[23]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3506,7 +3766,7 @@ type SearchRequest_ContentSearchSpec_ExtractiveContentSpec struct {
 
 func (x *SearchRequest_ContentSearchSpec_ExtractiveContentSpec) Reset() {
 	*x = SearchRequest_ContentSearchSpec_ExtractiveContentSpec{}
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[24]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3518,7 +3778,7 @@ func (x *SearchRequest_ContentSearchSpec_ExtractiveContentSpec) String() string 
 func (*SearchRequest_ContentSearchSpec_ExtractiveContentSpec) ProtoMessage() {}
 
 func (x *SearchRequest_ContentSearchSpec_ExtractiveContentSpec) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[24]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3590,7 +3850,7 @@ type SearchRequest_ContentSearchSpec_ChunkSpec struct {
 
 func (x *SearchRequest_ContentSearchSpec_ChunkSpec) Reset() {
 	*x = SearchRequest_ContentSearchSpec_ChunkSpec{}
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[25]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3602,7 +3862,7 @@ func (x *SearchRequest_ContentSearchSpec_ChunkSpec) String() string {
 func (*SearchRequest_ContentSearchSpec_ChunkSpec) ProtoMessage() {}
 
 func (x *SearchRequest_ContentSearchSpec_ChunkSpec) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[25]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3644,7 +3904,7 @@ type SearchRequest_ContentSearchSpec_SummarySpec_ModelPromptSpec struct {
 
 func (x *SearchRequest_ContentSearchSpec_SummarySpec_ModelPromptSpec) Reset() {
 	*x = SearchRequest_ContentSearchSpec_SummarySpec_ModelPromptSpec{}
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[26]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3656,7 +3916,7 @@ func (x *SearchRequest_ContentSearchSpec_SummarySpec_ModelPromptSpec) String() s
 func (*SearchRequest_ContentSearchSpec_SummarySpec_ModelPromptSpec) ProtoMessage() {}
 
 func (x *SearchRequest_ContentSearchSpec_SummarySpec_ModelPromptSpec) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[26]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3701,7 +3961,7 @@ type SearchRequest_ContentSearchSpec_SummarySpec_ModelSpec struct {
 
 func (x *SearchRequest_ContentSearchSpec_SummarySpec_ModelSpec) Reset() {
 	*x = SearchRequest_ContentSearchSpec_SummarySpec_ModelSpec{}
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[27]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3713,7 +3973,7 @@ func (x *SearchRequest_ContentSearchSpec_SummarySpec_ModelSpec) String() string 
 func (*SearchRequest_ContentSearchSpec_SummarySpec_ModelSpec) ProtoMessage() {}
 
 func (x *SearchRequest_ContentSearchSpec_SummarySpec_ModelSpec) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[27]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3736,6 +3996,64 @@ func (x *SearchRequest_ContentSearchSpec_SummarySpec_ModelSpec) GetVersion() str
 	return ""
 }
 
+// A schema field to be used for Search As You Type scoring on this
+// request. Overrides any data-store-level Search As You Type field
+// configuration for the duration of the request.
+type SearchRequest_SearchAsYouTypeSpec_Field struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. A field key that has been indexed for Search As You Type.
+	Key string `protobuf:"bytes,1,opt,name=key,proto3" json:"key,omitempty"`
+	// Optional. Weight for scores from this field. Defaults to 1.0 if not
+	// specified.
+	Weight        *float64 `protobuf:"fixed64,2,opt,name=weight,proto3,oneof" json:"weight,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SearchRequest_SearchAsYouTypeSpec_Field) Reset() {
+	*x = SearchRequest_SearchAsYouTypeSpec_Field{}
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[30]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SearchRequest_SearchAsYouTypeSpec_Field) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SearchRequest_SearchAsYouTypeSpec_Field) ProtoMessage() {}
+
+func (x *SearchRequest_SearchAsYouTypeSpec_Field) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[30]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SearchRequest_SearchAsYouTypeSpec_Field.ProtoReflect.Descriptor instead.
+func (*SearchRequest_SearchAsYouTypeSpec_Field) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_search_service_proto_rawDescGZIP(), []int{0, 8, 0}
+}
+
+func (x *SearchRequest_SearchAsYouTypeSpec_Field) GetKey() string {
+	if x != nil {
+		return x.Key
+	}
+	return ""
+}
+
+func (x *SearchRequest_SearchAsYouTypeSpec_Field) GetWeight() float64 {
+	if x != nil && x.Weight != nil {
+		return *x.Weight
+	}
+	return 0
+}
+
 // Specification for relevance filtering on a specific sub-search.
 type SearchRequest_RelevanceFilterSpec_RelevanceThresholdSpec struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -3752,7 +4070,7 @@ type SearchRequest_RelevanceFilterSpec_RelevanceThresholdSpec struct {
 
 func (x *SearchRequest_RelevanceFilterSpec_RelevanceThresholdSpec) Reset() {
 	*x = SearchRequest_RelevanceFilterSpec_RelevanceThresholdSpec{}
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[28]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3764,7 +4082,7 @@ func (x *SearchRequest_RelevanceFilterSpec_RelevanceThresholdSpec) String() stri
 func (*SearchRequest_RelevanceFilterSpec_RelevanceThresholdSpec) ProtoMessage() {}
 
 func (x *SearchRequest_RelevanceFilterSpec_RelevanceThresholdSpec) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[28]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3777,7 +4095,7 @@ func (x *SearchRequest_RelevanceFilterSpec_RelevanceThresholdSpec) ProtoReflect(
 
 // Deprecated: Use SearchRequest_RelevanceFilterSpec_RelevanceThresholdSpec.ProtoReflect.Descriptor instead.
 func (*SearchRequest_RelevanceFilterSpec_RelevanceThresholdSpec) Descriptor() ([]byte, []int) {
-	return file_google_cloud_discoveryengine_v1_search_service_proto_rawDescGZIP(), []int{0, 13, 0}
+	return file_google_cloud_discoveryengine_v1_search_service_proto_rawDescGZIP(), []int{0, 12, 0}
 }
 
 func (x *SearchRequest_RelevanceFilterSpec_RelevanceThresholdSpec) GetRelevanceThresholdSpec() isSearchRequest_RelevanceFilterSpec_RelevanceThresholdSpec_RelevanceThresholdSpec {
@@ -3843,14 +4161,17 @@ type SearchResponse_SearchResult struct {
 	// Output only. Google provided available scores.
 	ModelScores map[string]*DoubleList `protobuf:"bytes,4,rep,name=model_scores,json=modelScores,proto3" json:"model_scores,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	// Optional. A set of ranking signals associated with the result.
-	RankSignals   *SearchResponse_SearchResult_RankSignals `protobuf:"bytes,7,opt,name=rank_signals,json=rankSignals,proto3" json:"rank_signals,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	RankSignals *SearchResponse_SearchResult_RankSignals `protobuf:"bytes,7,opt,name=rank_signals,json=rankSignals,proto3" json:"rank_signals,omitempty"`
+	// Optional. A set of signals used by the relevance filter meant for use to
+	// fine-tune the relevance filter thresholds.
+	RetrievalSignals *SearchResponse_SearchResult_RetrievalSignals `protobuf:"bytes,11,opt,name=retrieval_signals,json=retrievalSignals,proto3" json:"retrieval_signals,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *SearchResponse_SearchResult) Reset() {
 	*x = SearchResponse_SearchResult{}
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[29]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3862,7 +4183,7 @@ func (x *SearchResponse_SearchResult) String() string {
 func (*SearchResponse_SearchResult) ProtoMessage() {}
 
 func (x *SearchResponse_SearchResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[29]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3913,6 +4234,13 @@ func (x *SearchResponse_SearchResult) GetRankSignals() *SearchResponse_SearchRes
 	return nil
 }
 
+func (x *SearchResponse_SearchResult) GetRetrievalSignals() *SearchResponse_SearchResult_RetrievalSignals {
+	if x != nil {
+		return x.RetrievalSignals
+	}
+	return nil
+}
+
 // A facet result.
 type SearchResponse_Facet struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -3929,7 +4257,7 @@ type SearchResponse_Facet struct {
 
 func (x *SearchResponse_Facet) Reset() {
 	*x = SearchResponse_Facet{}
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[30]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3941,7 +4269,7 @@ func (x *SearchResponse_Facet) String() string {
 func (*SearchResponse_Facet) ProtoMessage() {}
 
 func (x *SearchResponse_Facet) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[30]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3997,7 +4325,7 @@ type SearchResponse_Summary struct {
 
 func (x *SearchResponse_Summary) Reset() {
 	*x = SearchResponse_Summary{}
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[31]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4009,7 +4337,7 @@ func (x *SearchResponse_Summary) String() string {
 func (*SearchResponse_Summary) ProtoMessage() {}
 
 func (x *SearchResponse_Summary) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[31]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4070,7 +4398,7 @@ type SearchResponse_QueryExpansionInfo struct {
 
 func (x *SearchResponse_QueryExpansionInfo) Reset() {
 	*x = SearchResponse_QueryExpansionInfo{}
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[32]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4082,7 +4410,7 @@ func (x *SearchResponse_QueryExpansionInfo) String() string {
 func (*SearchResponse_QueryExpansionInfo) ProtoMessage() {}
 
 func (x *SearchResponse_QueryExpansionInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[32]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4131,7 +4459,7 @@ type SearchResponse_NaturalLanguageQueryUnderstandingInfo struct {
 
 func (x *SearchResponse_NaturalLanguageQueryUnderstandingInfo) Reset() {
 	*x = SearchResponse_NaturalLanguageQueryUnderstandingInfo{}
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[33]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4143,7 +4471,7 @@ func (x *SearchResponse_NaturalLanguageQueryUnderstandingInfo) String() string {
 func (*SearchResponse_NaturalLanguageQueryUnderstandingInfo) ProtoMessage() {}
 
 func (x *SearchResponse_NaturalLanguageQueryUnderstandingInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[33]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4208,7 +4536,7 @@ type SearchResponse_SessionInfo struct {
 
 func (x *SearchResponse_SessionInfo) Reset() {
 	*x = SearchResponse_SessionInfo{}
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[34]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[37]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4220,7 +4548,7 @@ func (x *SearchResponse_SessionInfo) String() string {
 func (*SearchResponse_SessionInfo) ProtoMessage() {}
 
 func (x *SearchResponse_SessionInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[34]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[37]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4271,13 +4599,17 @@ type SearchResponse_SearchResult_RankSignals struct {
 	DefaultRank float32 `protobuf:"fixed32,32,opt,name=default_rank,json=defaultRank,proto3" json:"default_rank,omitempty"`
 	// Optional. A list of custom clearbox signals.
 	CustomSignals []*SearchResponse_SearchResult_RankSignals_CustomSignal `protobuf:"bytes,33,rep,name=custom_signals,json=customSignals,proto3" json:"custom_signals,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	// Optional. A list of precomputed expression results for a given
+	// document, in the same order as requested in
+	// `SearchRequest.custom_ranking_params.expressions_to_precompute`.
+	PrecomputedExpressionValues []float32 `protobuf:"fixed32,34,rep,packed,name=precomputed_expression_values,json=precomputedExpressionValues,proto3" json:"precomputed_expression_values,omitempty"`
+	unknownFields               protoimpl.UnknownFields
+	sizeCache                   protoimpl.SizeCache
 }
 
 func (x *SearchResponse_SearchResult_RankSignals) Reset() {
 	*x = SearchResponse_SearchResult_RankSignals{}
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[35]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[38]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4289,7 +4621,7 @@ func (x *SearchResponse_SearchResult_RankSignals) String() string {
 func (*SearchResponse_SearchResult_RankSignals) ProtoMessage() {}
 
 func (x *SearchResponse_SearchResult_RankSignals) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[35]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[38]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4368,6 +4700,69 @@ func (x *SearchResponse_SearchResult_RankSignals) GetCustomSignals() []*SearchRe
 	return nil
 }
 
+func (x *SearchResponse_SearchResult_RankSignals) GetPrecomputedExpressionValues() []float32 {
+	if x != nil {
+		return x.PrecomputedExpressionValues
+	}
+	return nil
+}
+
+// Contains a set of signals used by the relevance filter.
+type SearchResponse_SearchResult_RetrievalSignals struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. Indicates how the result was retrieved.
+	RetrievalSources []SearchResponse_SearchResult_RetrievalSignals_RetrievalSource `protobuf:"varint,1,rep,packed,name=retrieval_sources,json=retrievalSources,proto3,enum=google.cloud.discoveryengine.v1.SearchResponse_SearchResult_RetrievalSignals_RetrievalSource" json:"retrieval_sources,omitempty"`
+	// Optional. Relevance score used by the filter when
+	// semantic_relevance_threshold is set.
+	SemanticRelevanceScore float32 `protobuf:"fixed32,2,opt,name=semantic_relevance_score,json=semanticRelevanceScore,proto3" json:"semantic_relevance_score,omitempty"`
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *SearchResponse_SearchResult_RetrievalSignals) Reset() {
+	*x = SearchResponse_SearchResult_RetrievalSignals{}
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[39]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SearchResponse_SearchResult_RetrievalSignals) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SearchResponse_SearchResult_RetrievalSignals) ProtoMessage() {}
+
+func (x *SearchResponse_SearchResult_RetrievalSignals) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[39]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SearchResponse_SearchResult_RetrievalSignals.ProtoReflect.Descriptor instead.
+func (*SearchResponse_SearchResult_RetrievalSignals) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1_search_service_proto_rawDescGZIP(), []int{1, 0, 1}
+}
+
+func (x *SearchResponse_SearchResult_RetrievalSignals) GetRetrievalSources() []SearchResponse_SearchResult_RetrievalSignals_RetrievalSource {
+	if x != nil {
+		return x.RetrievalSources
+	}
+	return nil
+}
+
+func (x *SearchResponse_SearchResult_RetrievalSignals) GetSemanticRelevanceScore() float32 {
+	if x != nil {
+		return x.SemanticRelevanceScore
+	}
+	return 0
+}
+
 // Custom clearbox signal represented by name and value pair.
 type SearchResponse_SearchResult_RankSignals_CustomSignal struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -4382,7 +4777,7 @@ type SearchResponse_SearchResult_RankSignals_CustomSignal struct {
 
 func (x *SearchResponse_SearchResult_RankSignals_CustomSignal) Reset() {
 	*x = SearchResponse_SearchResult_RankSignals_CustomSignal{}
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[37]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[41]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4394,7 +4789,7 @@ func (x *SearchResponse_SearchResult_RankSignals_CustomSignal) String() string {
 func (*SearchResponse_SearchResult_RankSignals_CustomSignal) ProtoMessage() {}
 
 func (x *SearchResponse_SearchResult_RankSignals_CustomSignal) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[37]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[41]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4442,7 +4837,7 @@ type SearchResponse_Facet_FacetValue struct {
 
 func (x *SearchResponse_Facet_FacetValue) Reset() {
 	*x = SearchResponse_Facet_FacetValue{}
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[38]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[42]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4454,7 +4849,7 @@ func (x *SearchResponse_Facet_FacetValue) String() string {
 func (*SearchResponse_Facet_FacetValue) ProtoMessage() {}
 
 func (x *SearchResponse_Facet_FacetValue) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[38]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[42]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4537,7 +4932,7 @@ type SearchResponse_Summary_SafetyAttributes struct {
 
 func (x *SearchResponse_Summary_SafetyAttributes) Reset() {
 	*x = SearchResponse_Summary_SafetyAttributes{}
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[39]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[43]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4549,7 +4944,7 @@ func (x *SearchResponse_Summary_SafetyAttributes) String() string {
 func (*SearchResponse_Summary_SafetyAttributes) ProtoMessage() {}
 
 func (x *SearchResponse_Summary_SafetyAttributes) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[39]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[43]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4590,7 +4985,7 @@ type SearchResponse_Summary_CitationMetadata struct {
 
 func (x *SearchResponse_Summary_CitationMetadata) Reset() {
 	*x = SearchResponse_Summary_CitationMetadata{}
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[40]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[44]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4602,7 +4997,7 @@ func (x *SearchResponse_Summary_CitationMetadata) String() string {
 func (*SearchResponse_Summary_CitationMetadata) ProtoMessage() {}
 
 func (x *SearchResponse_Summary_CitationMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[40]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[44]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4640,7 +5035,7 @@ type SearchResponse_Summary_Citation struct {
 
 func (x *SearchResponse_Summary_Citation) Reset() {
 	*x = SearchResponse_Summary_Citation{}
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[41]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[45]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4652,7 +5047,7 @@ func (x *SearchResponse_Summary_Citation) String() string {
 func (*SearchResponse_Summary_Citation) ProtoMessage() {}
 
 func (x *SearchResponse_Summary_Citation) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[41]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[45]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4702,7 +5097,7 @@ type SearchResponse_Summary_CitationSource struct {
 
 func (x *SearchResponse_Summary_CitationSource) Reset() {
 	*x = SearchResponse_Summary_CitationSource{}
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[42]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[46]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4714,7 +5109,7 @@ func (x *SearchResponse_Summary_CitationSource) String() string {
 func (*SearchResponse_Summary_CitationSource) ProtoMessage() {}
 
 func (x *SearchResponse_Summary_CitationSource) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[42]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[46]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4757,7 +5152,7 @@ type SearchResponse_Summary_Reference struct {
 
 func (x *SearchResponse_Summary_Reference) Reset() {
 	*x = SearchResponse_Summary_Reference{}
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[43]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[47]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4769,7 +5164,7 @@ func (x *SearchResponse_Summary_Reference) String() string {
 func (*SearchResponse_Summary_Reference) ProtoMessage() {}
 
 func (x *SearchResponse_Summary_Reference) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[43]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[47]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4828,7 +5223,7 @@ type SearchResponse_Summary_SummaryWithMetadata struct {
 
 func (x *SearchResponse_Summary_SummaryWithMetadata) Reset() {
 	*x = SearchResponse_Summary_SummaryWithMetadata{}
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[44]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[48]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4840,7 +5235,7 @@ func (x *SearchResponse_Summary_SummaryWithMetadata) String() string {
 func (*SearchResponse_Summary_SummaryWithMetadata) ProtoMessage() {}
 
 func (x *SearchResponse_Summary_SummaryWithMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[44]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[48]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4890,7 +5285,7 @@ type SearchResponse_Summary_Reference_ChunkContent struct {
 
 func (x *SearchResponse_Summary_Reference_ChunkContent) Reset() {
 	*x = SearchResponse_Summary_Reference_ChunkContent{}
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[45]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[49]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4902,7 +5297,7 @@ func (x *SearchResponse_Summary_Reference_ChunkContent) String() string {
 func (*SearchResponse_Summary_Reference_ChunkContent) ProtoMessage() {}
 
 func (x *SearchResponse_Summary_Reference_ChunkContent) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[45]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[49]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4948,7 +5343,7 @@ type SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedFil
 
 func (x *SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedFilter) Reset() {
 	*x = SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedFilter{}
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[46]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[50]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4961,7 +5356,7 @@ func (*SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedF
 }
 
 func (x *SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedFilter) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[46]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[50]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5000,7 +5395,7 @@ type SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedFil
 
 func (x *SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedFilter_StringConstraint) Reset() {
 	*x = SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedFilter_StringConstraint{}
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[47]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[51]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5013,7 +5408,7 @@ func (*SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedF
 }
 
 func (x *SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedFilter_StringConstraint) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[47]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[51]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5068,7 +5463,7 @@ type SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedFil
 
 func (x *SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedFilter_NumberConstraint) Reset() {
 	*x = SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedFilter_NumberConstraint{}
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[48]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[52]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5081,7 +5476,7 @@ func (*SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedF
 }
 
 func (x *SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedFilter_NumberConstraint) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[48]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[52]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5148,7 +5543,7 @@ type SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedFil
 
 func (x *SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedFilter_GeolocationConstraint) Reset() {
 	*x = SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedFilter_GeolocationConstraint{}
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[49]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[53]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5161,7 +5556,7 @@ func (*SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedF
 }
 
 func (x *SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedFilter_GeolocationConstraint) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[49]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[53]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5223,7 +5618,7 @@ type SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedFil
 
 func (x *SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedFilter_AndExpression) Reset() {
 	*x = SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedFilter_AndExpression{}
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[50]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[54]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5236,7 +5631,7 @@ func (*SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedF
 }
 
 func (x *SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedFilter_AndExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[50]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[54]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5270,7 +5665,7 @@ type SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedFil
 
 func (x *SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedFilter_OrExpression) Reset() {
 	*x = SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedFilter_OrExpression{}
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[51]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[55]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5283,7 +5678,7 @@ func (*SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedF
 }
 
 func (x *SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedFilter_OrExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[51]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[55]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5326,7 +5721,7 @@ type SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedFil
 
 func (x *SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedFilter_Expression) Reset() {
 	*x = SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedFilter_Expression{}
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[52]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[56]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5339,7 +5734,7 @@ func (*SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedF
 }
 
 func (x *SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedFilter_Expression) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[52]
+	mi := &file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[56]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5455,7 +5850,7 @@ var File_google_cloud_discoveryengine_v1_search_service_proto protoreflect.FileD
 
 const file_google_cloud_discoveryengine_v1_search_service_proto_rawDesc = "" +
 	"\n" +
-	"4google/cloud/discoveryengine/v1/search_service.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a+google/cloud/discoveryengine/v1/chunk.proto\x1a,google/cloud/discoveryengine/v1/common.proto\x1a.google/cloud/discoveryengine/v1/document.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xe5M\n" +
+	"4google/cloud/discoveryengine/v1/search_service.proto\x12\x1fgoogle.cloud.discoveryengine.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a+google/cloud/discoveryengine/v1/chunk.proto\x1a,google/cloud/discoveryengine/v1/common.proto\x1a.google/cloud/discoveryengine/v1/document.proto\x1a\x1cgoogle/protobuf/struct.proto\"\x98U\n" +
 	"\rSearchRequest\x12[\n" +
 	"\x0eserving_config\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
 	",discoveryengine.googleapis.com/ServingConfigR\rservingConfig\x12B\n" +
@@ -5470,7 +5865,8 @@ const file_google_cloud_discoveryengine_v1_search_service_proto_rawDesc = "" +
 	"page_token\x18\x05 \x01(\tR\tpageToken\x12\x16\n" +
 	"\x06offset\x18\x06 \x01(\x05R\x06offset\x12)\n" +
 	"\x11one_box_page_size\x18/ \x01(\x05R\x0eoneBoxPageSize\x12f\n" +
-	"\x10data_store_specs\x18  \x03(\v2<.google.cloud.discoveryengine.v1.SearchRequest.DataStoreSpecR\x0edataStoreSpecs\x12\x16\n" +
+	"\x10data_store_specs\x18  \x03(\v2<.google.cloud.discoveryengine.v1.SearchRequest.DataStoreSpecR\x0edataStoreSpecs\x12?\n" +
+	"\x1anum_results_per_data_store\x18A \x01(\x05B\x03\xe0A\x01R\x16numResultsPerDataStore\x12\x16\n" +
 	"\x06filter\x18\a \x01(\tR\x06filter\x12)\n" +
 	"\x10canonical_filter\x18\x1d \x01(\tR\x0fcanonicalFilter\x12\x19\n" +
 	"\border_by\x18\b \x01(\tR\aorderBy\x12F\n" +
@@ -5501,12 +5897,15 @@ const file_google_cloud_discoveryengine_v1_search_service_proto_rawDesc = "" +
 	"\fsession_spec\x18* \x01(\v2:.google.cloud.discoveryengine.v1.SearchRequest.SessionSpecR\vsessionSpec\x12r\n" +
 	"\x13relevance_threshold\x18, \x01(\x0e2A.google.cloud.discoveryengine.v1.SearchRequest.RelevanceThresholdR\x12relevanceThreshold\x12{\n" +
 	"\x15relevance_filter_spec\x18V \x01(\v2B.google.cloud.discoveryengine.v1.SearchRequest.RelevanceFilterSpecB\x03\xe0A\x01R\x13relevanceFilterSpec\x12x\n" +
-	"\x14relevance_score_spec\x184 \x01(\v2A.google.cloud.discoveryengine.v1.SearchRequest.RelevanceScoreSpecB\x03\xe0A\x01R\x12relevanceScoreSpec\x1a8\n" +
+	"\x14relevance_score_spec\x184 \x01(\v2A.google.cloud.discoveryengine.v1.SearchRequest.RelevanceScoreSpecB\x03\xe0A\x01R\x12relevanceScoreSpec\x12o\n" +
+	"\x11search_addon_spec\x18> \x01(\v2>.google.cloud.discoveryengine.v1.SearchRequest.SearchAddonSpecB\x03\xe0A\x01R\x0fsearchAddonSpec\x12{\n" +
+	"\x15custom_ranking_params\x18@ \x01(\v2B.google.cloud.discoveryengine.v1.SearchRequest.CustomRankingParamsB\x03\xe0A\x01R\x13customRankingParams\x12\x1b\n" +
+	"\x06entity\x18B \x01(\tB\x03\xe0A\x01R\x06entity\x1a8\n" +
 	"\n" +
 	"ImageQuery\x12!\n" +
 	"\vimage_bytes\x18\x01 \x01(\tH\x00R\n" +
 	"imageBytesB\a\n" +
-	"\x05image\x1a\x98\x02\n" +
+	"\x05image\x1a\xbe\x02\n" +
 	"\rDataStoreSpec\x12O\n" +
 	"\n" +
 	"data_store\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
@@ -5514,7 +5913,9 @@ const file_google_cloud_discoveryengine_v1_search_service_proto_rawDesc = "" +
 	"\x06filter\x18\x05 \x01(\tB\x03\xe0A\x01R\x06filter\x12\\\n" +
 	"\n" +
 	"boost_spec\x18\x06 \x01(\v28.google.cloud.discoveryengine.v1.SearchRequest.BoostSpecB\x03\xe0A\x01R\tboostSpec\x12;\n" +
-	"\x17custom_search_operators\x18\a \x01(\tB\x03\xe0A\x01R\x15customSearchOperators\x1a\x88\x04\n" +
+	"\x17custom_search_operators\x18\a \x01(\tB\x03\xe0A\x01R\x15customSearchOperators\x12$\n" +
+	"\vnum_results\x18\t \x01(\x05B\x03\xe0A\x01R\n" +
+	"numResults\x1a\x88\x04\n" +
 	"\tFacetSpec\x12c\n" +
 	"\tfacet_key\x18\x01 \x01(\v2A.google.cloud.discoveryengine.v1.SearchRequest.FacetSpec.FacetKeyB\x03\xe0A\x02R\bfacetKey\x12\x14\n" +
 	"\x05limit\x18\x02 \x01(\x05R\x05limit\x120\n" +
@@ -5619,14 +6020,21 @@ const file_google_cloud_discoveryengine_v1_search_service_proto_rawDesc = "" +
 	"%EXTRACTED_FILTER_BEHAVIOR_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vHARD_FILTER\x10\x01\x12\x0e\n" +
 	"\n" +
-	"SOFT_BOOST\x10\x02\x1a\xce\x01\n" +
+	"SOFT_BOOST\x10\x02\x1a\xc9\x03\n" +
 	"\x13SearchAsYouTypeSpec\x12j\n" +
-	"\tcondition\x18\x01 \x01(\x0e2L.google.cloud.discoveryengine.v1.SearchRequest.SearchAsYouTypeSpec.ConditionR\tcondition\"K\n" +
+	"\tcondition\x18\x01 \x01(\x0e2L.google.cloud.discoveryengine.v1.SearchRequest.SearchAsYouTypeSpec.ConditionR\tcondition\x12e\n" +
+	"\x06fields\x18\x02 \x03(\v2H.google.cloud.discoveryengine.v1.SearchRequest.SearchAsYouTypeSpec.FieldB\x03\xe0A\x01R\x06fields\x121\n" +
+	"\x0fscore_threshold\x18\x03 \x01(\x01B\x03\xe0A\x01H\x00R\x0escoreThreshold\x88\x01\x01\x1aK\n" +
+	"\x05Field\x12\x15\n" +
+	"\x03key\x18\x01 \x01(\tB\x03\xe0A\x02R\x03key\x12 \n" +
+	"\x06weight\x18\x02 \x01(\x01B\x03\xe0A\x01H\x00R\x06weight\x88\x01\x01B\t\n" +
+	"\a_weight\"K\n" +
 	"\tCondition\x12\x19\n" +
 	"\x15CONDITION_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bDISABLED\x10\x01\x12\v\n" +
 	"\aENABLED\x10\x02\x12\b\n" +
-	"\x04AUTO\x10\x03\x1a\xb5\x02\n" +
+	"\x04AUTO\x10\x03B\x12\n" +
+	"\x10_score_threshold\x1a\xb5\x02\n" +
 	"\vDisplaySpec\x12\x97\x01\n" +
 	"\x1cmatch_highlighting_condition\x18\x01 \x01(\x0e2U.google.cloud.discoveryengine.v1.SearchRequest.DisplaySpec.MatchHighlightingConditionR\x1amatchHighlightingCondition\"\x8b\x01\n" +
 	"\x1aMatchHighlightingCondition\x12,\n" +
@@ -5644,16 +6052,22 @@ const file_google_cloud_discoveryengine_v1_search_service_proto_rawDesc = "" +
 	"\vSessionSpec\x12\x19\n" +
 	"\bquery_id\x18\x01 \x01(\tR\aqueryId\x12J\n" +
 	"\x1fsearch_result_persistence_count\x18\x02 \x01(\x05H\x00R\x1csearchResultPersistenceCount\x88\x01\x01B\"\n" +
-	" _search_result_persistence_count\x1aO\n" +
-	"\x12RelevanceScoreSpec\x129\n" +
-	"\x16return_relevance_score\x18\x01 \x01(\bB\x03\xe0A\x01R\x14returnRelevanceScore\x1a\xbe\x04\n" +
+	" _search_result_persistence_count\x1a\xbe\x04\n" +
 	"\x13RelevanceFilterSpec\x12\x98\x01\n" +
 	"\x18keyword_search_threshold\x18\x01 \x01(\v2Y.google.cloud.discoveryengine.v1.SearchRequest.RelevanceFilterSpec.RelevanceThresholdSpecB\x03\xe0A\x01R\x16keywordSearchThreshold\x12\x9a\x01\n" +
 	"\x19semantic_search_threshold\x18\x02 \x01(\v2Y.google.cloud.discoveryengine.v1.SearchRequest.RelevanceFilterSpec.RelevanceThresholdSpecB\x03\xe0A\x01R\x17semanticSearchThreshold\x1a\xee\x01\n" +
 	"\x16RelevanceThresholdSpec\x12t\n" +
 	"\x13relevance_threshold\x18\x01 \x01(\x0e2A.google.cloud.discoveryengine.v1.SearchRequest.RelevanceThresholdH\x00R\x12relevanceThreshold\x12B\n" +
 	"\x1csemantic_relevance_threshold\x18\x02 \x01(\x02H\x00R\x1asemanticRelevanceThresholdB\x1a\n" +
-	"\x18relevance_threshold_spec\x1aQ\n" +
+	"\x18relevance_threshold_spec\x1aO\n" +
+	"\x12RelevanceScoreSpec\x129\n" +
+	"\x16return_relevance_score\x18\x01 \x01(\bB\x03\xe0A\x01R\x14returnRelevanceScore\x1a\xeb\x01\n" +
+	"\x0fSearchAddonSpec\x12:\n" +
+	"\x17disable_semantic_add_on\x18\x01 \x01(\bB\x03\xe0A\x01R\x14disableSemanticAddOn\x12O\n" +
+	"\"disable_kpi_personalization_add_on\x18\x02 \x01(\bB\x03\xe0A\x01R\x1edisableKpiPersonalizationAddOn\x12K\n" +
+	" disable_generative_answer_add_on\x18\x03 \x01(\bB\x03\xe0A\x01R\x1cdisableGenerativeAnswerAddOn\x1aV\n" +
+	"\x13CustomRankingParams\x12?\n" +
+	"\x19expressions_to_precompute\x18\x01 \x03(\tB\x03\xe0A\x01R\x17expressionsToPrecompute\x1aQ\n" +
 	"\vParamsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12,\n" +
 	"\x05value\x18\x02 \x01(\v2\x16.google.protobuf.ValueR\x05value:\x028\x01\x1a=\n" +
@@ -5673,7 +6087,7 @@ const file_google_cloud_discoveryengine_v1_search_service_proto_rawDesc = "" +
 	"\x03LOW\x10\x02\x12\n" +
 	"\n" +
 	"\x06MEDIUM\x10\x03\x12\b\n" +
-	"\x04HIGH\x10\x04\"\xc08\n" +
+	"\x04HIGH\x10\x04\"\xa9=\n" +
 	"\x0eSearchResponse\x12V\n" +
 	"\aresults\x18\x01 \x03(\v2<.google.cloud.discoveryengine.v1.SearchResponse.SearchResultR\aresults\x12M\n" +
 	"\x06facets\x18\x02 \x03(\v25.google.cloud.discoveryengine.v1.SearchResponse.FacetR\x06facets\x12\x1d\n" +
@@ -5683,19 +6097,22 @@ const file_google_cloud_discoveryengine_v1_search_service_proto_rawDesc = "" +
 	"\fredirect_uri\x18\f \x01(\tR\vredirectUri\x12&\n" +
 	"\x0fnext_page_token\x18\x05 \x01(\tR\rnextPageToken\x12'\n" +
 	"\x0fcorrected_query\x18\a \x01(\tR\x0ecorrectedQuery\x12Q\n" +
-	"\asummary\x18\t \x01(\v27.google.cloud.discoveryengine.v1.SearchResponse.SummaryR\asummary\x12t\n" +
+	"\asummary\x18\t \x01(\v27.google.cloud.discoveryengine.v1.SearchResponse.SummaryR\asummary\x12Y\n" +
+	"\x10applied_controls\x18\n" +
+	" \x03(\tB.\xe0A\x01\xfaA(\n" +
+	"&discoveryengine.googleapis.com/ControlR\x0fappliedControls\x12t\n" +
 	"\x14query_expansion_info\x18\x0e \x01(\v2B.google.cloud.discoveryengine.v1.SearchResponse.QueryExpansionInfoR\x12queryExpansionInfo\x12\xb4\x01\n" +
 	")natural_language_query_understanding_info\x18\x0f \x01(\v2U.google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfoB\x03\xe0A\x03R%naturalLanguageQueryUnderstandingInfo\x12^\n" +
 	"\fsession_info\x18\x13 \x01(\v2;.google.cloud.discoveryengine.v1.SearchResponse.SessionInfoR\vsessionInfo\x12j\n" +
 	"\x16search_link_promotions\x18\x17 \x03(\v24.google.cloud.discoveryengine.v1.SearchLinkPromotionR\x14searchLinkPromotions\x12i\n" +
-	"\x0esemantic_state\x18$ \x01(\x0e2=.google.cloud.discoveryengine.v1.SearchResponse.SemanticStateB\x03\xe0A\x03R\rsemanticState\x1a\x86\n" +
-	"\n" +
+	"\x0esemantic_state\x18$ \x01(\x0e2=.google.cloud.discoveryengine.v1.SearchResponse.SemanticStateB\x03\xe0A\x03R\rsemanticState\x1a\x94\x0e\n" +
 	"\fSearchResult\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12E\n" +
 	"\bdocument\x18\x02 \x01(\v2).google.cloud.discoveryengine.v1.DocumentR\bdocument\x12<\n" +
 	"\x05chunk\x18\x12 \x01(\v2&.google.cloud.discoveryengine.v1.ChunkR\x05chunk\x12u\n" +
 	"\fmodel_scores\x18\x04 \x03(\v2M.google.cloud.discoveryengine.v1.SearchResponse.SearchResult.ModelScoresEntryB\x03\xe0A\x03R\vmodelScores\x12p\n" +
-	"\frank_signals\x18\a \x01(\v2H.google.cloud.discoveryengine.v1.SearchResponse.SearchResult.RankSignalsB\x03\xe0A\x01R\vrankSignals\x1a\x8a\x06\n" +
+	"\frank_signals\x18\a \x01(\v2H.google.cloud.discoveryengine.v1.SearchResponse.SearchResult.RankSignalsB\x03\xe0A\x01R\vrankSignals\x12\x7f\n" +
+	"\x11retrieval_signals\x18\v \x01(\v2M.google.cloud.discoveryengine.v1.SearchResponse.SearchResult.RetrievalSignalsB\x03\xe0A\x01R\x10retrievalSignals\x1a\xd3\x06\n" +
 	"\vRankSignals\x12B\n" +
 	"\x18keyword_similarity_score\x18\x01 \x01(\x02B\x03\xe0A\x01H\x00R\x16keywordSimilarityScore\x88\x01\x01\x121\n" +
 	"\x0frelevance_score\x18\x02 \x01(\x02B\x03\xe0A\x01H\x01R\x0erelevanceScore\x88\x01\x01\x12D\n" +
@@ -5705,7 +6122,8 @@ const file_google_cloud_discoveryengine_v1_search_service_proto_rawDesc = "" +
 	"\fdocument_age\x18\a \x01(\x02B\x03\xe0A\x01H\x05R\vdocumentAge\x88\x01\x01\x121\n" +
 	"\x0fboosting_factor\x18\b \x01(\x02B\x03\xe0A\x01H\x06R\x0eboostingFactor\x88\x01\x01\x12&\n" +
 	"\fdefault_rank\x18  \x01(\x02B\x03\xe0A\x01R\vdefaultRank\x12\x81\x01\n" +
-	"\x0ecustom_signals\x18! \x03(\v2U.google.cloud.discoveryengine.v1.SearchResponse.SearchResult.RankSignals.CustomSignalB\x03\xe0A\x01R\rcustomSignals\x1aB\n" +
+	"\x0ecustom_signals\x18! \x03(\v2U.google.cloud.discoveryengine.v1.SearchResponse.SearchResult.RankSignals.CustomSignalB\x03\xe0A\x01R\rcustomSignals\x12G\n" +
+	"\x1dprecomputed_expression_values\x18\" \x03(\x02B\x03\xe0A\x01R\x1bprecomputedExpressionValues\x1aB\n" +
 	"\fCustomSignal\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x01R\x04name\x12\x19\n" +
 	"\x05value\x18\x02 \x01(\x02B\x03\xe0A\x01R\x05valueB\x1b\n" +
@@ -5716,7 +6134,14 @@ const file_google_cloud_discoveryengine_v1_search_service_proto_rawDesc = "" +
 	"_pctr_rankB\x12\n" +
 	"\x10_topicality_rankB\x0f\n" +
 	"\r_document_ageB\x12\n" +
-	"\x10_boosting_factor\x1ak\n" +
+	"\x10_boosting_factor\x1a\xc1\x02\n" +
+	"\x10RetrievalSignals\x12\x8f\x01\n" +
+	"\x11retrieval_sources\x18\x01 \x03(\x0e2].google.cloud.discoveryengine.v1.SearchResponse.SearchResult.RetrievalSignals.RetrievalSourceB\x03\xe0A\x01R\x10retrievalSources\x12=\n" +
+	"\x18semantic_relevance_score\x18\x02 \x01(\x02B\x03\xe0A\x01R\x16semanticRelevanceScore\"\\\n" +
+	"\x0fRetrievalSource\x12 \n" +
+	"\x1cRETRIEVAL_SOURCE_UNSPECIFIED\x10\x00\x12\x12\n" +
+	"\x0eKEYWORD_SEARCH\x10\x01\x12\x13\n" +
+	"\x0fSEMANTIC_SEARCH\x10\x02\x1ak\n" +
 	"\x10ModelScoresEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12A\n" +
 	"\x05value\x18\x02 \x01(\v2+.google.cloud.discoveryengine.v1.DoubleListR\x05value:\x028\x01\x1a\xad\x02\n" +
@@ -5836,11 +6261,11 @@ const file_google_cloud_discoveryengine_v1_search_service_proto_rawDesc = "" +
 	"\rSemanticState\x12\x1e\n" +
 	"\x1aSEMANTIC_STATE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bDISABLED\x10\x01\x12\v\n" +
-	"\aENABLED\x10\x022\x97\a\n" +
+	"\aENABLED\x10\x022\xd6\b\n" +
 	"\rSearchService\x12\x8f\x03\n" +
 	"\x06Search\x12..google.cloud.discoveryengine.v1.SearchRequest\x1a/.google.cloud.discoveryengine.v1.SearchResponse\"\xa3\x02\x82\xd3\xe4\x93\x02\x9c\x02:\x01*Zc:\x01*\"^/v1/{serving_config=projects/*/locations/*/collections/*/dataStores/*/servingConfigs/*}:searchZ`:\x01*\"[/v1/{serving_config=projects/*/locations/*/collections/*/engines/*/servingConfigs/*}:search\"P/v1/{serving_config=projects/*/locations/*/dataStores/*/servingConfigs/*}:search\x12\x9f\x03\n" +
 	"\n" +
-	"SearchLite\x12..google.cloud.discoveryengine.v1.SearchRequest\x1a/.google.cloud.discoveryengine.v1.SearchResponse\"\xaf\x02\x82\xd3\xe4\x93\x02\xa8\x02:\x01*Zg:\x01*\"b/v1/{serving_config=projects/*/locations/*/collections/*/dataStores/*/servingConfigs/*}:searchLiteZd:\x01*\"_/v1/{serving_config=projects/*/locations/*/collections/*/engines/*/servingConfigs/*}:searchLite\"T/v1/{serving_config=projects/*/locations/*/dataStores/*/servingConfigs/*}:searchLite\x1aR\xcaA\x1ediscoveryengine.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\x85\x02\n" +
+	"SearchLite\x12..google.cloud.discoveryengine.v1.SearchRequest\x1a/.google.cloud.discoveryengine.v1.SearchResponse\"\xaf\x02\x82\xd3\xe4\x93\x02\xa8\x02:\x01*Zg:\x01*\"b/v1/{serving_config=projects/*/locations/*/collections/*/dataStores/*/servingConfigs/*}:searchLiteZd:\x01*\"_/v1/{serving_config=projects/*/locations/*/collections/*/engines/*/servingConfigs/*}:searchLite\"T/v1/{serving_config=projects/*/locations/*/dataStores/*/servingConfigs/*}:searchLite\x1a\x90\x02\xcaA\x1ediscoveryengine.googleapis.com\xd2A\xeb\x01https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/discoveryengine.assist.readwrite,https://www.googleapis.com/auth/discoveryengine.readwrite,https://www.googleapis.com/auth/discoveryengine.serving.readwriteB\x85\x02\n" +
 	"#com.google.cloud.discoveryengine.v1B\x12SearchServiceProtoP\x01ZMcloud.google.com/go/discoveryengine/apiv1/discoveryenginepb;discoveryenginepb\xa2\x02\x0fDISCOVERYENGINE\xaa\x02\x1fGoogle.Cloud.DiscoveryEngine.V1\xca\x02\x1fGoogle\\Cloud\\DiscoveryEngine\\V1\xea\x02\"Google::Cloud::DiscoveryEngine::V1b\x06proto3"
 
 var (
@@ -5855,8 +6280,8 @@ func file_google_cloud_discoveryengine_v1_search_service_proto_rawDescGZIP() []b
 	return file_google_cloud_discoveryengine_v1_search_service_proto_rawDescData
 }
 
-var file_google_cloud_discoveryengine_v1_search_service_proto_enumTypes = make([]protoimpl.EnumInfo, 15)
-var file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes = make([]protoimpl.MessageInfo, 53)
+var file_google_cloud_discoveryengine_v1_search_service_proto_enumTypes = make([]protoimpl.EnumInfo, 16)
+var file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes = make([]protoimpl.MessageInfo, 57)
 var file_google_cloud_discoveryengine_v1_search_service_proto_goTypes = []any{
 	(SearchRequest_RankingExpressionBackend)(0),                                                                     // 0: google.cloud.discoveryengine.v1.SearchRequest.RankingExpressionBackend
 	(SearchRequest_RelevanceThreshold)(0),                                                                           // 1: google.cloud.discoveryengine.v1.SearchRequest.RelevanceThreshold
@@ -5871,158 +6296,168 @@ var file_google_cloud_discoveryengine_v1_search_service_proto_goTypes = []any{
 	(SearchRequest_DisplaySpec_MatchHighlightingCondition)(0),                                                       // 10: google.cloud.discoveryengine.v1.SearchRequest.DisplaySpec.MatchHighlightingCondition
 	(SearchRequest_CrowdingSpec_Mode)(0),                                                                            // 11: google.cloud.discoveryengine.v1.SearchRequest.CrowdingSpec.Mode
 	(SearchResponse_SemanticState)(0),                                                                               // 12: google.cloud.discoveryengine.v1.SearchResponse.SemanticState
-	(SearchResponse_Summary_SummarySkippedReason)(0),                                                                // 13: google.cloud.discoveryengine.v1.SearchResponse.Summary.SummarySkippedReason
-	(SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedFilter_NumberConstraint_Comparison)(0), // 14: google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo.StructuredExtractedFilter.NumberConstraint.Comparison
-	(*SearchRequest)(nil),                                       // 15: google.cloud.discoveryengine.v1.SearchRequest
-	(*SearchResponse)(nil),                                      // 16: google.cloud.discoveryengine.v1.SearchResponse
-	(*SearchRequest_ImageQuery)(nil),                            // 17: google.cloud.discoveryengine.v1.SearchRequest.ImageQuery
-	(*SearchRequest_DataStoreSpec)(nil),                         // 18: google.cloud.discoveryengine.v1.SearchRequest.DataStoreSpec
-	(*SearchRequest_FacetSpec)(nil),                             // 19: google.cloud.discoveryengine.v1.SearchRequest.FacetSpec
-	(*SearchRequest_BoostSpec)(nil),                             // 20: google.cloud.discoveryengine.v1.SearchRequest.BoostSpec
-	(*SearchRequest_QueryExpansionSpec)(nil),                    // 21: google.cloud.discoveryengine.v1.SearchRequest.QueryExpansionSpec
-	(*SearchRequest_SpellCorrectionSpec)(nil),                   // 22: google.cloud.discoveryengine.v1.SearchRequest.SpellCorrectionSpec
-	(*SearchRequest_ContentSearchSpec)(nil),                     // 23: google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec
-	(*SearchRequest_NaturalLanguageQueryUnderstandingSpec)(nil), // 24: google.cloud.discoveryengine.v1.SearchRequest.NaturalLanguageQueryUnderstandingSpec
-	(*SearchRequest_SearchAsYouTypeSpec)(nil),                   // 25: google.cloud.discoveryengine.v1.SearchRequest.SearchAsYouTypeSpec
-	(*SearchRequest_DisplaySpec)(nil),                           // 26: google.cloud.discoveryengine.v1.SearchRequest.DisplaySpec
-	(*SearchRequest_CrowdingSpec)(nil),                          // 27: google.cloud.discoveryengine.v1.SearchRequest.CrowdingSpec
-	(*SearchRequest_SessionSpec)(nil),                           // 28: google.cloud.discoveryengine.v1.SearchRequest.SessionSpec
-	(*SearchRequest_RelevanceScoreSpec)(nil),                    // 29: google.cloud.discoveryengine.v1.SearchRequest.RelevanceScoreSpec
+	(SearchResponse_SearchResult_RetrievalSignals_RetrievalSource)(0),                                               // 13: google.cloud.discoveryengine.v1.SearchResponse.SearchResult.RetrievalSignals.RetrievalSource
+	(SearchResponse_Summary_SummarySkippedReason)(0),                                                                // 14: google.cloud.discoveryengine.v1.SearchResponse.Summary.SummarySkippedReason
+	(SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedFilter_NumberConstraint_Comparison)(0), // 15: google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo.StructuredExtractedFilter.NumberConstraint.Comparison
+	(*SearchRequest)(nil),                                       // 16: google.cloud.discoveryengine.v1.SearchRequest
+	(*SearchResponse)(nil),                                      // 17: google.cloud.discoveryengine.v1.SearchResponse
+	(*SearchRequest_ImageQuery)(nil),                            // 18: google.cloud.discoveryengine.v1.SearchRequest.ImageQuery
+	(*SearchRequest_DataStoreSpec)(nil),                         // 19: google.cloud.discoveryengine.v1.SearchRequest.DataStoreSpec
+	(*SearchRequest_FacetSpec)(nil),                             // 20: google.cloud.discoveryengine.v1.SearchRequest.FacetSpec
+	(*SearchRequest_BoostSpec)(nil),                             // 21: google.cloud.discoveryengine.v1.SearchRequest.BoostSpec
+	(*SearchRequest_QueryExpansionSpec)(nil),                    // 22: google.cloud.discoveryengine.v1.SearchRequest.QueryExpansionSpec
+	(*SearchRequest_SpellCorrectionSpec)(nil),                   // 23: google.cloud.discoveryengine.v1.SearchRequest.SpellCorrectionSpec
+	(*SearchRequest_ContentSearchSpec)(nil),                     // 24: google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec
+	(*SearchRequest_NaturalLanguageQueryUnderstandingSpec)(nil), // 25: google.cloud.discoveryengine.v1.SearchRequest.NaturalLanguageQueryUnderstandingSpec
+	(*SearchRequest_SearchAsYouTypeSpec)(nil),                   // 26: google.cloud.discoveryengine.v1.SearchRequest.SearchAsYouTypeSpec
+	(*SearchRequest_DisplaySpec)(nil),                           // 27: google.cloud.discoveryengine.v1.SearchRequest.DisplaySpec
+	(*SearchRequest_CrowdingSpec)(nil),                          // 28: google.cloud.discoveryengine.v1.SearchRequest.CrowdingSpec
+	(*SearchRequest_SessionSpec)(nil),                           // 29: google.cloud.discoveryengine.v1.SearchRequest.SessionSpec
 	(*SearchRequest_RelevanceFilterSpec)(nil),                   // 30: google.cloud.discoveryengine.v1.SearchRequest.RelevanceFilterSpec
-	nil,                                      // 31: google.cloud.discoveryengine.v1.SearchRequest.ParamsEntry
-	nil,                                      // 32: google.cloud.discoveryengine.v1.SearchRequest.UserLabelsEntry
-	(*SearchRequest_FacetSpec_FacetKey)(nil), // 33: google.cloud.discoveryengine.v1.SearchRequest.FacetSpec.FacetKey
-	(*SearchRequest_BoostSpec_ConditionBoostSpec)(nil),                               // 34: google.cloud.discoveryengine.v1.SearchRequest.BoostSpec.ConditionBoostSpec
-	(*SearchRequest_BoostSpec_ConditionBoostSpec_BoostControlSpec)(nil),              // 35: google.cloud.discoveryengine.v1.SearchRequest.BoostSpec.ConditionBoostSpec.BoostControlSpec
-	(*SearchRequest_BoostSpec_ConditionBoostSpec_BoostControlSpec_ControlPoint)(nil), // 36: google.cloud.discoveryengine.v1.SearchRequest.BoostSpec.ConditionBoostSpec.BoostControlSpec.ControlPoint
-	(*SearchRequest_ContentSearchSpec_SnippetSpec)(nil),                              // 37: google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.SnippetSpec
-	(*SearchRequest_ContentSearchSpec_SummarySpec)(nil),                              // 38: google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.SummarySpec
-	(*SearchRequest_ContentSearchSpec_ExtractiveContentSpec)(nil),                    // 39: google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.ExtractiveContentSpec
-	(*SearchRequest_ContentSearchSpec_ChunkSpec)(nil),                                // 40: google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.ChunkSpec
-	(*SearchRequest_ContentSearchSpec_SummarySpec_ModelPromptSpec)(nil),              // 41: google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.SummarySpec.ModelPromptSpec
-	(*SearchRequest_ContentSearchSpec_SummarySpec_ModelSpec)(nil),                    // 42: google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.SummarySpec.ModelSpec
-	(*SearchRequest_RelevanceFilterSpec_RelevanceThresholdSpec)(nil),                 // 43: google.cloud.discoveryengine.v1.SearchRequest.RelevanceFilterSpec.RelevanceThresholdSpec
-	(*SearchResponse_SearchResult)(nil),                                              // 44: google.cloud.discoveryengine.v1.SearchResponse.SearchResult
-	(*SearchResponse_Facet)(nil),                                                     // 45: google.cloud.discoveryengine.v1.SearchResponse.Facet
-	(*SearchResponse_Summary)(nil),                                                   // 46: google.cloud.discoveryengine.v1.SearchResponse.Summary
-	(*SearchResponse_QueryExpansionInfo)(nil),                                        // 47: google.cloud.discoveryengine.v1.SearchResponse.QueryExpansionInfo
-	(*SearchResponse_NaturalLanguageQueryUnderstandingInfo)(nil),                     // 48: google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo
-	(*SearchResponse_SessionInfo)(nil),                                               // 49: google.cloud.discoveryengine.v1.SearchResponse.SessionInfo
-	(*SearchResponse_SearchResult_RankSignals)(nil),                                  // 50: google.cloud.discoveryengine.v1.SearchResponse.SearchResult.RankSignals
-	nil, // 51: google.cloud.discoveryengine.v1.SearchResponse.SearchResult.ModelScoresEntry
-	(*SearchResponse_SearchResult_RankSignals_CustomSignal)(nil),                                                 // 52: google.cloud.discoveryengine.v1.SearchResponse.SearchResult.RankSignals.CustomSignal
-	(*SearchResponse_Facet_FacetValue)(nil),                                                                      // 53: google.cloud.discoveryengine.v1.SearchResponse.Facet.FacetValue
-	(*SearchResponse_Summary_SafetyAttributes)(nil),                                                              // 54: google.cloud.discoveryengine.v1.SearchResponse.Summary.SafetyAttributes
-	(*SearchResponse_Summary_CitationMetadata)(nil),                                                              // 55: google.cloud.discoveryengine.v1.SearchResponse.Summary.CitationMetadata
-	(*SearchResponse_Summary_Citation)(nil),                                                                      // 56: google.cloud.discoveryengine.v1.SearchResponse.Summary.Citation
-	(*SearchResponse_Summary_CitationSource)(nil),                                                                // 57: google.cloud.discoveryengine.v1.SearchResponse.Summary.CitationSource
-	(*SearchResponse_Summary_Reference)(nil),                                                                     // 58: google.cloud.discoveryengine.v1.SearchResponse.Summary.Reference
-	(*SearchResponse_Summary_SummaryWithMetadata)(nil),                                                           // 59: google.cloud.discoveryengine.v1.SearchResponse.Summary.SummaryWithMetadata
-	(*SearchResponse_Summary_Reference_ChunkContent)(nil),                                                        // 60: google.cloud.discoveryengine.v1.SearchResponse.Summary.Reference.ChunkContent
-	(*SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedFilter)(nil),                       // 61: google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo.StructuredExtractedFilter
-	(*SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedFilter_StringConstraint)(nil),      // 62: google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo.StructuredExtractedFilter.StringConstraint
-	(*SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedFilter_NumberConstraint)(nil),      // 63: google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo.StructuredExtractedFilter.NumberConstraint
-	(*SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedFilter_GeolocationConstraint)(nil), // 64: google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo.StructuredExtractedFilter.GeolocationConstraint
-	(*SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedFilter_AndExpression)(nil),         // 65: google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo.StructuredExtractedFilter.AndExpression
-	(*SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedFilter_OrExpression)(nil),          // 66: google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo.StructuredExtractedFilter.OrExpression
-	(*SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedFilter_Expression)(nil),            // 67: google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo.StructuredExtractedFilter.Expression
-	(*UserInfo)(nil),            // 68: google.cloud.discoveryengine.v1.UserInfo
-	(*SearchLinkPromotion)(nil), // 69: google.cloud.discoveryengine.v1.SearchLinkPromotion
-	(*structpb.Value)(nil),      // 70: google.protobuf.Value
-	(*Interval)(nil),            // 71: google.cloud.discoveryengine.v1.Interval
-	(*Document)(nil),            // 72: google.cloud.discoveryengine.v1.Document
-	(*Chunk)(nil),               // 73: google.cloud.discoveryengine.v1.Chunk
-	(*DoubleList)(nil),          // 74: google.cloud.discoveryengine.v1.DoubleList
+	(*SearchRequest_RelevanceScoreSpec)(nil),                    // 31: google.cloud.discoveryengine.v1.SearchRequest.RelevanceScoreSpec
+	(*SearchRequest_SearchAddonSpec)(nil),                       // 32: google.cloud.discoveryengine.v1.SearchRequest.SearchAddonSpec
+	(*SearchRequest_CustomRankingParams)(nil),                   // 33: google.cloud.discoveryengine.v1.SearchRequest.CustomRankingParams
+	nil,                                      // 34: google.cloud.discoveryengine.v1.SearchRequest.ParamsEntry
+	nil,                                      // 35: google.cloud.discoveryengine.v1.SearchRequest.UserLabelsEntry
+	(*SearchRequest_FacetSpec_FacetKey)(nil), // 36: google.cloud.discoveryengine.v1.SearchRequest.FacetSpec.FacetKey
+	(*SearchRequest_BoostSpec_ConditionBoostSpec)(nil),                               // 37: google.cloud.discoveryengine.v1.SearchRequest.BoostSpec.ConditionBoostSpec
+	(*SearchRequest_BoostSpec_ConditionBoostSpec_BoostControlSpec)(nil),              // 38: google.cloud.discoveryengine.v1.SearchRequest.BoostSpec.ConditionBoostSpec.BoostControlSpec
+	(*SearchRequest_BoostSpec_ConditionBoostSpec_BoostControlSpec_ControlPoint)(nil), // 39: google.cloud.discoveryengine.v1.SearchRequest.BoostSpec.ConditionBoostSpec.BoostControlSpec.ControlPoint
+	(*SearchRequest_ContentSearchSpec_SnippetSpec)(nil),                              // 40: google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.SnippetSpec
+	(*SearchRequest_ContentSearchSpec_SummarySpec)(nil),                              // 41: google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.SummarySpec
+	(*SearchRequest_ContentSearchSpec_ExtractiveContentSpec)(nil),                    // 42: google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.ExtractiveContentSpec
+	(*SearchRequest_ContentSearchSpec_ChunkSpec)(nil),                                // 43: google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.ChunkSpec
+	(*SearchRequest_ContentSearchSpec_SummarySpec_ModelPromptSpec)(nil),              // 44: google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.SummarySpec.ModelPromptSpec
+	(*SearchRequest_ContentSearchSpec_SummarySpec_ModelSpec)(nil),                    // 45: google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.SummarySpec.ModelSpec
+	(*SearchRequest_SearchAsYouTypeSpec_Field)(nil),                                  // 46: google.cloud.discoveryengine.v1.SearchRequest.SearchAsYouTypeSpec.Field
+	(*SearchRequest_RelevanceFilterSpec_RelevanceThresholdSpec)(nil),                 // 47: google.cloud.discoveryengine.v1.SearchRequest.RelevanceFilterSpec.RelevanceThresholdSpec
+	(*SearchResponse_SearchResult)(nil),                                              // 48: google.cloud.discoveryengine.v1.SearchResponse.SearchResult
+	(*SearchResponse_Facet)(nil),                                                     // 49: google.cloud.discoveryengine.v1.SearchResponse.Facet
+	(*SearchResponse_Summary)(nil),                                                   // 50: google.cloud.discoveryengine.v1.SearchResponse.Summary
+	(*SearchResponse_QueryExpansionInfo)(nil),                                        // 51: google.cloud.discoveryengine.v1.SearchResponse.QueryExpansionInfo
+	(*SearchResponse_NaturalLanguageQueryUnderstandingInfo)(nil),                     // 52: google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo
+	(*SearchResponse_SessionInfo)(nil),                                               // 53: google.cloud.discoveryengine.v1.SearchResponse.SessionInfo
+	(*SearchResponse_SearchResult_RankSignals)(nil),                                  // 54: google.cloud.discoveryengine.v1.SearchResponse.SearchResult.RankSignals
+	(*SearchResponse_SearchResult_RetrievalSignals)(nil),                             // 55: google.cloud.discoveryengine.v1.SearchResponse.SearchResult.RetrievalSignals
+	nil, // 56: google.cloud.discoveryengine.v1.SearchResponse.SearchResult.ModelScoresEntry
+	(*SearchResponse_SearchResult_RankSignals_CustomSignal)(nil),                                                 // 57: google.cloud.discoveryengine.v1.SearchResponse.SearchResult.RankSignals.CustomSignal
+	(*SearchResponse_Facet_FacetValue)(nil),                                                                      // 58: google.cloud.discoveryengine.v1.SearchResponse.Facet.FacetValue
+	(*SearchResponse_Summary_SafetyAttributes)(nil),                                                              // 59: google.cloud.discoveryengine.v1.SearchResponse.Summary.SafetyAttributes
+	(*SearchResponse_Summary_CitationMetadata)(nil),                                                              // 60: google.cloud.discoveryengine.v1.SearchResponse.Summary.CitationMetadata
+	(*SearchResponse_Summary_Citation)(nil),                                                                      // 61: google.cloud.discoveryengine.v1.SearchResponse.Summary.Citation
+	(*SearchResponse_Summary_CitationSource)(nil),                                                                // 62: google.cloud.discoveryengine.v1.SearchResponse.Summary.CitationSource
+	(*SearchResponse_Summary_Reference)(nil),                                                                     // 63: google.cloud.discoveryengine.v1.SearchResponse.Summary.Reference
+	(*SearchResponse_Summary_SummaryWithMetadata)(nil),                                                           // 64: google.cloud.discoveryengine.v1.SearchResponse.Summary.SummaryWithMetadata
+	(*SearchResponse_Summary_Reference_ChunkContent)(nil),                                                        // 65: google.cloud.discoveryengine.v1.SearchResponse.Summary.Reference.ChunkContent
+	(*SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedFilter)(nil),                       // 66: google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo.StructuredExtractedFilter
+	(*SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedFilter_StringConstraint)(nil),      // 67: google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo.StructuredExtractedFilter.StringConstraint
+	(*SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedFilter_NumberConstraint)(nil),      // 68: google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo.StructuredExtractedFilter.NumberConstraint
+	(*SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedFilter_GeolocationConstraint)(nil), // 69: google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo.StructuredExtractedFilter.GeolocationConstraint
+	(*SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedFilter_AndExpression)(nil),         // 70: google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo.StructuredExtractedFilter.AndExpression
+	(*SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedFilter_OrExpression)(nil),          // 71: google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo.StructuredExtractedFilter.OrExpression
+	(*SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedFilter_Expression)(nil),            // 72: google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo.StructuredExtractedFilter.Expression
+	(*UserInfo)(nil),            // 73: google.cloud.discoveryengine.v1.UserInfo
+	(*SearchLinkPromotion)(nil), // 74: google.cloud.discoveryengine.v1.SearchLinkPromotion
+	(*structpb.Value)(nil),      // 75: google.protobuf.Value
+	(*Interval)(nil),            // 76: google.cloud.discoveryengine.v1.Interval
+	(*Document)(nil),            // 77: google.cloud.discoveryengine.v1.Document
+	(*Chunk)(nil),               // 78: google.cloud.discoveryengine.v1.Chunk
+	(*DoubleList)(nil),          // 79: google.cloud.discoveryengine.v1.DoubleList
 }
 var file_google_cloud_discoveryengine_v1_search_service_proto_depIdxs = []int32{
-	17, // 0: google.cloud.discoveryengine.v1.SearchRequest.image_query:type_name -> google.cloud.discoveryengine.v1.SearchRequest.ImageQuery
-	18, // 1: google.cloud.discoveryengine.v1.SearchRequest.data_store_specs:type_name -> google.cloud.discoveryengine.v1.SearchRequest.DataStoreSpec
-	68, // 2: google.cloud.discoveryengine.v1.SearchRequest.user_info:type_name -> google.cloud.discoveryengine.v1.UserInfo
-	19, // 3: google.cloud.discoveryengine.v1.SearchRequest.facet_specs:type_name -> google.cloud.discoveryengine.v1.SearchRequest.FacetSpec
-	20, // 4: google.cloud.discoveryengine.v1.SearchRequest.boost_spec:type_name -> google.cloud.discoveryengine.v1.SearchRequest.BoostSpec
-	31, // 5: google.cloud.discoveryengine.v1.SearchRequest.params:type_name -> google.cloud.discoveryengine.v1.SearchRequest.ParamsEntry
-	21, // 6: google.cloud.discoveryengine.v1.SearchRequest.query_expansion_spec:type_name -> google.cloud.discoveryengine.v1.SearchRequest.QueryExpansionSpec
-	22, // 7: google.cloud.discoveryengine.v1.SearchRequest.spell_correction_spec:type_name -> google.cloud.discoveryengine.v1.SearchRequest.SpellCorrectionSpec
-	23, // 8: google.cloud.discoveryengine.v1.SearchRequest.content_search_spec:type_name -> google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec
+	18, // 0: google.cloud.discoveryengine.v1.SearchRequest.image_query:type_name -> google.cloud.discoveryengine.v1.SearchRequest.ImageQuery
+	19, // 1: google.cloud.discoveryengine.v1.SearchRequest.data_store_specs:type_name -> google.cloud.discoveryengine.v1.SearchRequest.DataStoreSpec
+	73, // 2: google.cloud.discoveryengine.v1.SearchRequest.user_info:type_name -> google.cloud.discoveryengine.v1.UserInfo
+	20, // 3: google.cloud.discoveryengine.v1.SearchRequest.facet_specs:type_name -> google.cloud.discoveryengine.v1.SearchRequest.FacetSpec
+	21, // 4: google.cloud.discoveryengine.v1.SearchRequest.boost_spec:type_name -> google.cloud.discoveryengine.v1.SearchRequest.BoostSpec
+	34, // 5: google.cloud.discoveryengine.v1.SearchRequest.params:type_name -> google.cloud.discoveryengine.v1.SearchRequest.ParamsEntry
+	22, // 6: google.cloud.discoveryengine.v1.SearchRequest.query_expansion_spec:type_name -> google.cloud.discoveryengine.v1.SearchRequest.QueryExpansionSpec
+	23, // 7: google.cloud.discoveryengine.v1.SearchRequest.spell_correction_spec:type_name -> google.cloud.discoveryengine.v1.SearchRequest.SpellCorrectionSpec
+	24, // 8: google.cloud.discoveryengine.v1.SearchRequest.content_search_spec:type_name -> google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec
 	0,  // 9: google.cloud.discoveryengine.v1.SearchRequest.ranking_expression_backend:type_name -> google.cloud.discoveryengine.v1.SearchRequest.RankingExpressionBackend
-	32, // 10: google.cloud.discoveryengine.v1.SearchRequest.user_labels:type_name -> google.cloud.discoveryengine.v1.SearchRequest.UserLabelsEntry
-	24, // 11: google.cloud.discoveryengine.v1.SearchRequest.natural_language_query_understanding_spec:type_name -> google.cloud.discoveryengine.v1.SearchRequest.NaturalLanguageQueryUnderstandingSpec
-	25, // 12: google.cloud.discoveryengine.v1.SearchRequest.search_as_you_type_spec:type_name -> google.cloud.discoveryengine.v1.SearchRequest.SearchAsYouTypeSpec
-	26, // 13: google.cloud.discoveryengine.v1.SearchRequest.display_spec:type_name -> google.cloud.discoveryengine.v1.SearchRequest.DisplaySpec
-	27, // 14: google.cloud.discoveryengine.v1.SearchRequest.crowding_specs:type_name -> google.cloud.discoveryengine.v1.SearchRequest.CrowdingSpec
-	28, // 15: google.cloud.discoveryengine.v1.SearchRequest.session_spec:type_name -> google.cloud.discoveryengine.v1.SearchRequest.SessionSpec
+	35, // 10: google.cloud.discoveryengine.v1.SearchRequest.user_labels:type_name -> google.cloud.discoveryengine.v1.SearchRequest.UserLabelsEntry
+	25, // 11: google.cloud.discoveryengine.v1.SearchRequest.natural_language_query_understanding_spec:type_name -> google.cloud.discoveryengine.v1.SearchRequest.NaturalLanguageQueryUnderstandingSpec
+	26, // 12: google.cloud.discoveryengine.v1.SearchRequest.search_as_you_type_spec:type_name -> google.cloud.discoveryengine.v1.SearchRequest.SearchAsYouTypeSpec
+	27, // 13: google.cloud.discoveryengine.v1.SearchRequest.display_spec:type_name -> google.cloud.discoveryengine.v1.SearchRequest.DisplaySpec
+	28, // 14: google.cloud.discoveryengine.v1.SearchRequest.crowding_specs:type_name -> google.cloud.discoveryengine.v1.SearchRequest.CrowdingSpec
+	29, // 15: google.cloud.discoveryengine.v1.SearchRequest.session_spec:type_name -> google.cloud.discoveryengine.v1.SearchRequest.SessionSpec
 	1,  // 16: google.cloud.discoveryengine.v1.SearchRequest.relevance_threshold:type_name -> google.cloud.discoveryengine.v1.SearchRequest.RelevanceThreshold
 	30, // 17: google.cloud.discoveryengine.v1.SearchRequest.relevance_filter_spec:type_name -> google.cloud.discoveryengine.v1.SearchRequest.RelevanceFilterSpec
-	29, // 18: google.cloud.discoveryengine.v1.SearchRequest.relevance_score_spec:type_name -> google.cloud.discoveryengine.v1.SearchRequest.RelevanceScoreSpec
-	44, // 19: google.cloud.discoveryengine.v1.SearchResponse.results:type_name -> google.cloud.discoveryengine.v1.SearchResponse.SearchResult
-	45, // 20: google.cloud.discoveryengine.v1.SearchResponse.facets:type_name -> google.cloud.discoveryengine.v1.SearchResponse.Facet
-	46, // 21: google.cloud.discoveryengine.v1.SearchResponse.summary:type_name -> google.cloud.discoveryengine.v1.SearchResponse.Summary
-	47, // 22: google.cloud.discoveryengine.v1.SearchResponse.query_expansion_info:type_name -> google.cloud.discoveryengine.v1.SearchResponse.QueryExpansionInfo
-	48, // 23: google.cloud.discoveryengine.v1.SearchResponse.natural_language_query_understanding_info:type_name -> google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo
-	49, // 24: google.cloud.discoveryengine.v1.SearchResponse.session_info:type_name -> google.cloud.discoveryengine.v1.SearchResponse.SessionInfo
-	69, // 25: google.cloud.discoveryengine.v1.SearchResponse.search_link_promotions:type_name -> google.cloud.discoveryengine.v1.SearchLinkPromotion
-	12, // 26: google.cloud.discoveryengine.v1.SearchResponse.semantic_state:type_name -> google.cloud.discoveryengine.v1.SearchResponse.SemanticState
-	20, // 27: google.cloud.discoveryengine.v1.SearchRequest.DataStoreSpec.boost_spec:type_name -> google.cloud.discoveryengine.v1.SearchRequest.BoostSpec
-	33, // 28: google.cloud.discoveryengine.v1.SearchRequest.FacetSpec.facet_key:type_name -> google.cloud.discoveryengine.v1.SearchRequest.FacetSpec.FacetKey
-	34, // 29: google.cloud.discoveryengine.v1.SearchRequest.BoostSpec.condition_boost_specs:type_name -> google.cloud.discoveryengine.v1.SearchRequest.BoostSpec.ConditionBoostSpec
-	4,  // 30: google.cloud.discoveryengine.v1.SearchRequest.QueryExpansionSpec.condition:type_name -> google.cloud.discoveryengine.v1.SearchRequest.QueryExpansionSpec.Condition
-	5,  // 31: google.cloud.discoveryengine.v1.SearchRequest.SpellCorrectionSpec.mode:type_name -> google.cloud.discoveryengine.v1.SearchRequest.SpellCorrectionSpec.Mode
-	37, // 32: google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.snippet_spec:type_name -> google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.SnippetSpec
-	38, // 33: google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.summary_spec:type_name -> google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.SummarySpec
-	39, // 34: google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.extractive_content_spec:type_name -> google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.ExtractiveContentSpec
-	6,  // 35: google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.search_result_mode:type_name -> google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.SearchResultMode
-	40, // 36: google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.chunk_spec:type_name -> google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.ChunkSpec
-	7,  // 37: google.cloud.discoveryengine.v1.SearchRequest.NaturalLanguageQueryUnderstandingSpec.filter_extraction_condition:type_name -> google.cloud.discoveryengine.v1.SearchRequest.NaturalLanguageQueryUnderstandingSpec.FilterExtractionCondition
-	8,  // 38: google.cloud.discoveryengine.v1.SearchRequest.NaturalLanguageQueryUnderstandingSpec.extracted_filter_behavior:type_name -> google.cloud.discoveryengine.v1.SearchRequest.NaturalLanguageQueryUnderstandingSpec.ExtractedFilterBehavior
-	9,  // 39: google.cloud.discoveryengine.v1.SearchRequest.SearchAsYouTypeSpec.condition:type_name -> google.cloud.discoveryengine.v1.SearchRequest.SearchAsYouTypeSpec.Condition
-	10, // 40: google.cloud.discoveryengine.v1.SearchRequest.DisplaySpec.match_highlighting_condition:type_name -> google.cloud.discoveryengine.v1.SearchRequest.DisplaySpec.MatchHighlightingCondition
-	11, // 41: google.cloud.discoveryengine.v1.SearchRequest.CrowdingSpec.mode:type_name -> google.cloud.discoveryengine.v1.SearchRequest.CrowdingSpec.Mode
-	43, // 42: google.cloud.discoveryengine.v1.SearchRequest.RelevanceFilterSpec.keyword_search_threshold:type_name -> google.cloud.discoveryengine.v1.SearchRequest.RelevanceFilterSpec.RelevanceThresholdSpec
-	43, // 43: google.cloud.discoveryengine.v1.SearchRequest.RelevanceFilterSpec.semantic_search_threshold:type_name -> google.cloud.discoveryengine.v1.SearchRequest.RelevanceFilterSpec.RelevanceThresholdSpec
-	70, // 44: google.cloud.discoveryengine.v1.SearchRequest.ParamsEntry.value:type_name -> google.protobuf.Value
-	71, // 45: google.cloud.discoveryengine.v1.SearchRequest.FacetSpec.FacetKey.intervals:type_name -> google.cloud.discoveryengine.v1.Interval
-	35, // 46: google.cloud.discoveryengine.v1.SearchRequest.BoostSpec.ConditionBoostSpec.boost_control_spec:type_name -> google.cloud.discoveryengine.v1.SearchRequest.BoostSpec.ConditionBoostSpec.BoostControlSpec
-	2,  // 47: google.cloud.discoveryengine.v1.SearchRequest.BoostSpec.ConditionBoostSpec.BoostControlSpec.attribute_type:type_name -> google.cloud.discoveryengine.v1.SearchRequest.BoostSpec.ConditionBoostSpec.BoostControlSpec.AttributeType
-	3,  // 48: google.cloud.discoveryengine.v1.SearchRequest.BoostSpec.ConditionBoostSpec.BoostControlSpec.interpolation_type:type_name -> google.cloud.discoveryengine.v1.SearchRequest.BoostSpec.ConditionBoostSpec.BoostControlSpec.InterpolationType
-	36, // 49: google.cloud.discoveryengine.v1.SearchRequest.BoostSpec.ConditionBoostSpec.BoostControlSpec.control_points:type_name -> google.cloud.discoveryengine.v1.SearchRequest.BoostSpec.ConditionBoostSpec.BoostControlSpec.ControlPoint
-	41, // 50: google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.SummarySpec.model_prompt_spec:type_name -> google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.SummarySpec.ModelPromptSpec
-	42, // 51: google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.SummarySpec.model_spec:type_name -> google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.SummarySpec.ModelSpec
-	1,  // 52: google.cloud.discoveryengine.v1.SearchRequest.RelevanceFilterSpec.RelevanceThresholdSpec.relevance_threshold:type_name -> google.cloud.discoveryengine.v1.SearchRequest.RelevanceThreshold
-	72, // 53: google.cloud.discoveryengine.v1.SearchResponse.SearchResult.document:type_name -> google.cloud.discoveryengine.v1.Document
-	73, // 54: google.cloud.discoveryengine.v1.SearchResponse.SearchResult.chunk:type_name -> google.cloud.discoveryengine.v1.Chunk
-	51, // 55: google.cloud.discoveryengine.v1.SearchResponse.SearchResult.model_scores:type_name -> google.cloud.discoveryengine.v1.SearchResponse.SearchResult.ModelScoresEntry
-	50, // 56: google.cloud.discoveryengine.v1.SearchResponse.SearchResult.rank_signals:type_name -> google.cloud.discoveryengine.v1.SearchResponse.SearchResult.RankSignals
-	53, // 57: google.cloud.discoveryengine.v1.SearchResponse.Facet.values:type_name -> google.cloud.discoveryengine.v1.SearchResponse.Facet.FacetValue
-	13, // 58: google.cloud.discoveryengine.v1.SearchResponse.Summary.summary_skipped_reasons:type_name -> google.cloud.discoveryengine.v1.SearchResponse.Summary.SummarySkippedReason
-	54, // 59: google.cloud.discoveryengine.v1.SearchResponse.Summary.safety_attributes:type_name -> google.cloud.discoveryengine.v1.SearchResponse.Summary.SafetyAttributes
-	59, // 60: google.cloud.discoveryengine.v1.SearchResponse.Summary.summary_with_metadata:type_name -> google.cloud.discoveryengine.v1.SearchResponse.Summary.SummaryWithMetadata
-	61, // 61: google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo.structured_extracted_filter:type_name -> google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo.StructuredExtractedFilter
-	52, // 62: google.cloud.discoveryengine.v1.SearchResponse.SearchResult.RankSignals.custom_signals:type_name -> google.cloud.discoveryengine.v1.SearchResponse.SearchResult.RankSignals.CustomSignal
-	74, // 63: google.cloud.discoveryengine.v1.SearchResponse.SearchResult.ModelScoresEntry.value:type_name -> google.cloud.discoveryengine.v1.DoubleList
-	71, // 64: google.cloud.discoveryengine.v1.SearchResponse.Facet.FacetValue.interval:type_name -> google.cloud.discoveryengine.v1.Interval
-	56, // 65: google.cloud.discoveryengine.v1.SearchResponse.Summary.CitationMetadata.citations:type_name -> google.cloud.discoveryengine.v1.SearchResponse.Summary.Citation
-	57, // 66: google.cloud.discoveryengine.v1.SearchResponse.Summary.Citation.sources:type_name -> google.cloud.discoveryengine.v1.SearchResponse.Summary.CitationSource
-	60, // 67: google.cloud.discoveryengine.v1.SearchResponse.Summary.Reference.chunk_contents:type_name -> google.cloud.discoveryengine.v1.SearchResponse.Summary.Reference.ChunkContent
-	55, // 68: google.cloud.discoveryengine.v1.SearchResponse.Summary.SummaryWithMetadata.citation_metadata:type_name -> google.cloud.discoveryengine.v1.SearchResponse.Summary.CitationMetadata
-	58, // 69: google.cloud.discoveryengine.v1.SearchResponse.Summary.SummaryWithMetadata.references:type_name -> google.cloud.discoveryengine.v1.SearchResponse.Summary.Reference
-	67, // 70: google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo.StructuredExtractedFilter.expression:type_name -> google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo.StructuredExtractedFilter.Expression
-	14, // 71: google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo.StructuredExtractedFilter.NumberConstraint.comparison:type_name -> google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo.StructuredExtractedFilter.NumberConstraint.Comparison
-	67, // 72: google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo.StructuredExtractedFilter.AndExpression.expressions:type_name -> google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo.StructuredExtractedFilter.Expression
-	67, // 73: google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo.StructuredExtractedFilter.OrExpression.expressions:type_name -> google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo.StructuredExtractedFilter.Expression
-	62, // 74: google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo.StructuredExtractedFilter.Expression.string_constraint:type_name -> google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo.StructuredExtractedFilter.StringConstraint
-	63, // 75: google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo.StructuredExtractedFilter.Expression.number_constraint:type_name -> google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo.StructuredExtractedFilter.NumberConstraint
-	64, // 76: google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo.StructuredExtractedFilter.Expression.geolocation_constraint:type_name -> google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo.StructuredExtractedFilter.GeolocationConstraint
-	65, // 77: google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo.StructuredExtractedFilter.Expression.and_expr:type_name -> google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo.StructuredExtractedFilter.AndExpression
-	66, // 78: google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo.StructuredExtractedFilter.Expression.or_expr:type_name -> google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo.StructuredExtractedFilter.OrExpression
-	15, // 79: google.cloud.discoveryengine.v1.SearchService.Search:input_type -> google.cloud.discoveryengine.v1.SearchRequest
-	15, // 80: google.cloud.discoveryengine.v1.SearchService.SearchLite:input_type -> google.cloud.discoveryengine.v1.SearchRequest
-	16, // 81: google.cloud.discoveryengine.v1.SearchService.Search:output_type -> google.cloud.discoveryengine.v1.SearchResponse
-	16, // 82: google.cloud.discoveryengine.v1.SearchService.SearchLite:output_type -> google.cloud.discoveryengine.v1.SearchResponse
-	81, // [81:83] is the sub-list for method output_type
-	79, // [79:81] is the sub-list for method input_type
-	79, // [79:79] is the sub-list for extension type_name
-	79, // [79:79] is the sub-list for extension extendee
-	0,  // [0:79] is the sub-list for field type_name
+	31, // 18: google.cloud.discoveryengine.v1.SearchRequest.relevance_score_spec:type_name -> google.cloud.discoveryengine.v1.SearchRequest.RelevanceScoreSpec
+	32, // 19: google.cloud.discoveryengine.v1.SearchRequest.search_addon_spec:type_name -> google.cloud.discoveryengine.v1.SearchRequest.SearchAddonSpec
+	33, // 20: google.cloud.discoveryengine.v1.SearchRequest.custom_ranking_params:type_name -> google.cloud.discoveryengine.v1.SearchRequest.CustomRankingParams
+	48, // 21: google.cloud.discoveryengine.v1.SearchResponse.results:type_name -> google.cloud.discoveryengine.v1.SearchResponse.SearchResult
+	49, // 22: google.cloud.discoveryengine.v1.SearchResponse.facets:type_name -> google.cloud.discoveryengine.v1.SearchResponse.Facet
+	50, // 23: google.cloud.discoveryengine.v1.SearchResponse.summary:type_name -> google.cloud.discoveryengine.v1.SearchResponse.Summary
+	51, // 24: google.cloud.discoveryengine.v1.SearchResponse.query_expansion_info:type_name -> google.cloud.discoveryengine.v1.SearchResponse.QueryExpansionInfo
+	52, // 25: google.cloud.discoveryengine.v1.SearchResponse.natural_language_query_understanding_info:type_name -> google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo
+	53, // 26: google.cloud.discoveryengine.v1.SearchResponse.session_info:type_name -> google.cloud.discoveryengine.v1.SearchResponse.SessionInfo
+	74, // 27: google.cloud.discoveryengine.v1.SearchResponse.search_link_promotions:type_name -> google.cloud.discoveryengine.v1.SearchLinkPromotion
+	12, // 28: google.cloud.discoveryengine.v1.SearchResponse.semantic_state:type_name -> google.cloud.discoveryengine.v1.SearchResponse.SemanticState
+	21, // 29: google.cloud.discoveryengine.v1.SearchRequest.DataStoreSpec.boost_spec:type_name -> google.cloud.discoveryengine.v1.SearchRequest.BoostSpec
+	36, // 30: google.cloud.discoveryengine.v1.SearchRequest.FacetSpec.facet_key:type_name -> google.cloud.discoveryengine.v1.SearchRequest.FacetSpec.FacetKey
+	37, // 31: google.cloud.discoveryengine.v1.SearchRequest.BoostSpec.condition_boost_specs:type_name -> google.cloud.discoveryengine.v1.SearchRequest.BoostSpec.ConditionBoostSpec
+	4,  // 32: google.cloud.discoveryengine.v1.SearchRequest.QueryExpansionSpec.condition:type_name -> google.cloud.discoveryengine.v1.SearchRequest.QueryExpansionSpec.Condition
+	5,  // 33: google.cloud.discoveryengine.v1.SearchRequest.SpellCorrectionSpec.mode:type_name -> google.cloud.discoveryengine.v1.SearchRequest.SpellCorrectionSpec.Mode
+	40, // 34: google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.snippet_spec:type_name -> google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.SnippetSpec
+	41, // 35: google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.summary_spec:type_name -> google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.SummarySpec
+	42, // 36: google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.extractive_content_spec:type_name -> google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.ExtractiveContentSpec
+	6,  // 37: google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.search_result_mode:type_name -> google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.SearchResultMode
+	43, // 38: google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.chunk_spec:type_name -> google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.ChunkSpec
+	7,  // 39: google.cloud.discoveryengine.v1.SearchRequest.NaturalLanguageQueryUnderstandingSpec.filter_extraction_condition:type_name -> google.cloud.discoveryengine.v1.SearchRequest.NaturalLanguageQueryUnderstandingSpec.FilterExtractionCondition
+	8,  // 40: google.cloud.discoveryengine.v1.SearchRequest.NaturalLanguageQueryUnderstandingSpec.extracted_filter_behavior:type_name -> google.cloud.discoveryengine.v1.SearchRequest.NaturalLanguageQueryUnderstandingSpec.ExtractedFilterBehavior
+	9,  // 41: google.cloud.discoveryengine.v1.SearchRequest.SearchAsYouTypeSpec.condition:type_name -> google.cloud.discoveryengine.v1.SearchRequest.SearchAsYouTypeSpec.Condition
+	46, // 42: google.cloud.discoveryengine.v1.SearchRequest.SearchAsYouTypeSpec.fields:type_name -> google.cloud.discoveryengine.v1.SearchRequest.SearchAsYouTypeSpec.Field
+	10, // 43: google.cloud.discoveryengine.v1.SearchRequest.DisplaySpec.match_highlighting_condition:type_name -> google.cloud.discoveryengine.v1.SearchRequest.DisplaySpec.MatchHighlightingCondition
+	11, // 44: google.cloud.discoveryengine.v1.SearchRequest.CrowdingSpec.mode:type_name -> google.cloud.discoveryengine.v1.SearchRequest.CrowdingSpec.Mode
+	47, // 45: google.cloud.discoveryengine.v1.SearchRequest.RelevanceFilterSpec.keyword_search_threshold:type_name -> google.cloud.discoveryengine.v1.SearchRequest.RelevanceFilterSpec.RelevanceThresholdSpec
+	47, // 46: google.cloud.discoveryengine.v1.SearchRequest.RelevanceFilterSpec.semantic_search_threshold:type_name -> google.cloud.discoveryengine.v1.SearchRequest.RelevanceFilterSpec.RelevanceThresholdSpec
+	75, // 47: google.cloud.discoveryengine.v1.SearchRequest.ParamsEntry.value:type_name -> google.protobuf.Value
+	76, // 48: google.cloud.discoveryengine.v1.SearchRequest.FacetSpec.FacetKey.intervals:type_name -> google.cloud.discoveryengine.v1.Interval
+	38, // 49: google.cloud.discoveryengine.v1.SearchRequest.BoostSpec.ConditionBoostSpec.boost_control_spec:type_name -> google.cloud.discoveryengine.v1.SearchRequest.BoostSpec.ConditionBoostSpec.BoostControlSpec
+	2,  // 50: google.cloud.discoveryengine.v1.SearchRequest.BoostSpec.ConditionBoostSpec.BoostControlSpec.attribute_type:type_name -> google.cloud.discoveryengine.v1.SearchRequest.BoostSpec.ConditionBoostSpec.BoostControlSpec.AttributeType
+	3,  // 51: google.cloud.discoveryengine.v1.SearchRequest.BoostSpec.ConditionBoostSpec.BoostControlSpec.interpolation_type:type_name -> google.cloud.discoveryengine.v1.SearchRequest.BoostSpec.ConditionBoostSpec.BoostControlSpec.InterpolationType
+	39, // 52: google.cloud.discoveryengine.v1.SearchRequest.BoostSpec.ConditionBoostSpec.BoostControlSpec.control_points:type_name -> google.cloud.discoveryengine.v1.SearchRequest.BoostSpec.ConditionBoostSpec.BoostControlSpec.ControlPoint
+	44, // 53: google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.SummarySpec.model_prompt_spec:type_name -> google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.SummarySpec.ModelPromptSpec
+	45, // 54: google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.SummarySpec.model_spec:type_name -> google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.SummarySpec.ModelSpec
+	1,  // 55: google.cloud.discoveryengine.v1.SearchRequest.RelevanceFilterSpec.RelevanceThresholdSpec.relevance_threshold:type_name -> google.cloud.discoveryengine.v1.SearchRequest.RelevanceThreshold
+	77, // 56: google.cloud.discoveryengine.v1.SearchResponse.SearchResult.document:type_name -> google.cloud.discoveryengine.v1.Document
+	78, // 57: google.cloud.discoveryengine.v1.SearchResponse.SearchResult.chunk:type_name -> google.cloud.discoveryengine.v1.Chunk
+	56, // 58: google.cloud.discoveryengine.v1.SearchResponse.SearchResult.model_scores:type_name -> google.cloud.discoveryengine.v1.SearchResponse.SearchResult.ModelScoresEntry
+	54, // 59: google.cloud.discoveryengine.v1.SearchResponse.SearchResult.rank_signals:type_name -> google.cloud.discoveryengine.v1.SearchResponse.SearchResult.RankSignals
+	55, // 60: google.cloud.discoveryengine.v1.SearchResponse.SearchResult.retrieval_signals:type_name -> google.cloud.discoveryengine.v1.SearchResponse.SearchResult.RetrievalSignals
+	58, // 61: google.cloud.discoveryengine.v1.SearchResponse.Facet.values:type_name -> google.cloud.discoveryengine.v1.SearchResponse.Facet.FacetValue
+	14, // 62: google.cloud.discoveryengine.v1.SearchResponse.Summary.summary_skipped_reasons:type_name -> google.cloud.discoveryengine.v1.SearchResponse.Summary.SummarySkippedReason
+	59, // 63: google.cloud.discoveryengine.v1.SearchResponse.Summary.safety_attributes:type_name -> google.cloud.discoveryengine.v1.SearchResponse.Summary.SafetyAttributes
+	64, // 64: google.cloud.discoveryengine.v1.SearchResponse.Summary.summary_with_metadata:type_name -> google.cloud.discoveryengine.v1.SearchResponse.Summary.SummaryWithMetadata
+	66, // 65: google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo.structured_extracted_filter:type_name -> google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo.StructuredExtractedFilter
+	57, // 66: google.cloud.discoveryengine.v1.SearchResponse.SearchResult.RankSignals.custom_signals:type_name -> google.cloud.discoveryengine.v1.SearchResponse.SearchResult.RankSignals.CustomSignal
+	13, // 67: google.cloud.discoveryengine.v1.SearchResponse.SearchResult.RetrievalSignals.retrieval_sources:type_name -> google.cloud.discoveryengine.v1.SearchResponse.SearchResult.RetrievalSignals.RetrievalSource
+	79, // 68: google.cloud.discoveryengine.v1.SearchResponse.SearchResult.ModelScoresEntry.value:type_name -> google.cloud.discoveryengine.v1.DoubleList
+	76, // 69: google.cloud.discoveryengine.v1.SearchResponse.Facet.FacetValue.interval:type_name -> google.cloud.discoveryengine.v1.Interval
+	61, // 70: google.cloud.discoveryengine.v1.SearchResponse.Summary.CitationMetadata.citations:type_name -> google.cloud.discoveryengine.v1.SearchResponse.Summary.Citation
+	62, // 71: google.cloud.discoveryengine.v1.SearchResponse.Summary.Citation.sources:type_name -> google.cloud.discoveryengine.v1.SearchResponse.Summary.CitationSource
+	65, // 72: google.cloud.discoveryengine.v1.SearchResponse.Summary.Reference.chunk_contents:type_name -> google.cloud.discoveryengine.v1.SearchResponse.Summary.Reference.ChunkContent
+	60, // 73: google.cloud.discoveryengine.v1.SearchResponse.Summary.SummaryWithMetadata.citation_metadata:type_name -> google.cloud.discoveryengine.v1.SearchResponse.Summary.CitationMetadata
+	63, // 74: google.cloud.discoveryengine.v1.SearchResponse.Summary.SummaryWithMetadata.references:type_name -> google.cloud.discoveryengine.v1.SearchResponse.Summary.Reference
+	72, // 75: google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo.StructuredExtractedFilter.expression:type_name -> google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo.StructuredExtractedFilter.Expression
+	15, // 76: google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo.StructuredExtractedFilter.NumberConstraint.comparison:type_name -> google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo.StructuredExtractedFilter.NumberConstraint.Comparison
+	72, // 77: google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo.StructuredExtractedFilter.AndExpression.expressions:type_name -> google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo.StructuredExtractedFilter.Expression
+	72, // 78: google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo.StructuredExtractedFilter.OrExpression.expressions:type_name -> google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo.StructuredExtractedFilter.Expression
+	67, // 79: google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo.StructuredExtractedFilter.Expression.string_constraint:type_name -> google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo.StructuredExtractedFilter.StringConstraint
+	68, // 80: google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo.StructuredExtractedFilter.Expression.number_constraint:type_name -> google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo.StructuredExtractedFilter.NumberConstraint
+	69, // 81: google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo.StructuredExtractedFilter.Expression.geolocation_constraint:type_name -> google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo.StructuredExtractedFilter.GeolocationConstraint
+	70, // 82: google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo.StructuredExtractedFilter.Expression.and_expr:type_name -> google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo.StructuredExtractedFilter.AndExpression
+	71, // 83: google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo.StructuredExtractedFilter.Expression.or_expr:type_name -> google.cloud.discoveryengine.v1.SearchResponse.NaturalLanguageQueryUnderstandingInfo.StructuredExtractedFilter.OrExpression
+	16, // 84: google.cloud.discoveryengine.v1.SearchService.Search:input_type -> google.cloud.discoveryengine.v1.SearchRequest
+	16, // 85: google.cloud.discoveryengine.v1.SearchService.SearchLite:input_type -> google.cloud.discoveryengine.v1.SearchRequest
+	17, // 86: google.cloud.discoveryengine.v1.SearchService.Search:output_type -> google.cloud.discoveryengine.v1.SearchResponse
+	17, // 87: google.cloud.discoveryengine.v1.SearchService.SearchLite:output_type -> google.cloud.discoveryengine.v1.SearchResponse
+	86, // [86:88] is the sub-list for method output_type
+	84, // [84:86] is the sub-list for method input_type
+	84, // [84:84] is the sub-list for extension type_name
+	84, // [84:84] is the sub-list for extension extendee
+	0,  // [0:84] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_discoveryengine_v1_search_service_proto_init() }
@@ -6036,17 +6471,19 @@ func file_google_cloud_discoveryengine_v1_search_service_proto_init() {
 	file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[2].OneofWrappers = []any{
 		(*SearchRequest_ImageQuery_ImageBytes)(nil),
 	}
+	file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[10].OneofWrappers = []any{}
 	file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[13].OneofWrappers = []any{}
-	file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[28].OneofWrappers = []any{
+	file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[30].OneofWrappers = []any{}
+	file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[31].OneofWrappers = []any{
 		(*SearchRequest_RelevanceFilterSpec_RelevanceThresholdSpec_RelevanceThreshold)(nil),
 		(*SearchRequest_RelevanceFilterSpec_RelevanceThresholdSpec_SemanticRelevanceThreshold)(nil),
 	}
-	file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[35].OneofWrappers = []any{}
-	file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[38].OneofWrappers = []any{
+	file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[38].OneofWrappers = []any{}
+	file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[42].OneofWrappers = []any{
 		(*SearchResponse_Facet_FacetValue_Value)(nil),
 		(*SearchResponse_Facet_FacetValue_Interval)(nil),
 	}
-	file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[52].OneofWrappers = []any{
+	file_google_cloud_discoveryengine_v1_search_service_proto_msgTypes[56].OneofWrappers = []any{
 		(*SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedFilter_Expression_StringConstraint)(nil),
 		(*SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedFilter_Expression_NumberConstraint)(nil),
 		(*SearchResponse_NaturalLanguageQueryUnderstandingInfo_StructuredExtractedFilter_Expression_GeolocationConstraint)(nil),
@@ -6058,8 +6495,8 @@ func file_google_cloud_discoveryengine_v1_search_service_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_discoveryengine_v1_search_service_proto_rawDesc), len(file_google_cloud_discoveryengine_v1_search_service_proto_rawDesc)),
-			NumEnums:      15,
-			NumMessages:   53,
+			NumEnums:      16,
+			NumMessages:   57,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

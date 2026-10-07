@@ -909,6 +909,79 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.GetModelEvaluation = append(client.CallOptions.GetModelEvaluation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListModelEvaluations = append(client.CallOptions.ListModelEvaluations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "automl",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/automl/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "automl.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateDataset = append(client.CallOptions.CreateDataset, gax.WithClientTracing(tracing))
+		client.CallOptions.GetDataset = append(client.CallOptions.GetDataset, gax.WithClientTracing(tracing))
+		client.CallOptions.ListDatasets = append(client.CallOptions.ListDatasets, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateDataset = append(client.CallOptions.UpdateDataset, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteDataset = append(client.CallOptions.DeleteDataset, gax.WithClientTracing(tracing))
+		client.CallOptions.ImportData = append(client.CallOptions.ImportData, gax.WithClientTracing(tracing))
+		client.CallOptions.ExportData = append(client.CallOptions.ExportData, gax.WithClientTracing(tracing))
+		client.CallOptions.GetAnnotationSpec = append(client.CallOptions.GetAnnotationSpec, gax.WithClientTracing(tracing))
+		client.CallOptions.GetTableSpec = append(client.CallOptions.GetTableSpec, gax.WithClientTracing(tracing))
+		client.CallOptions.ListTableSpecs = append(client.CallOptions.ListTableSpecs, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateTableSpec = append(client.CallOptions.UpdateTableSpec, gax.WithClientTracing(tracing))
+		client.CallOptions.GetColumnSpec = append(client.CallOptions.GetColumnSpec, gax.WithClientTracing(tracing))
+		client.CallOptions.ListColumnSpecs = append(client.CallOptions.ListColumnSpecs, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateColumnSpec = append(client.CallOptions.UpdateColumnSpec, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateModel = append(client.CallOptions.CreateModel, gax.WithClientTracing(tracing))
+		client.CallOptions.GetModel = append(client.CallOptions.GetModel, gax.WithClientTracing(tracing))
+		client.CallOptions.ListModels = append(client.CallOptions.ListModels, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteModel = append(client.CallOptions.DeleteModel, gax.WithClientTracing(tracing))
+		client.CallOptions.DeployModel = append(client.CallOptions.DeployModel, gax.WithClientTracing(tracing))
+		client.CallOptions.UndeployModel = append(client.CallOptions.UndeployModel, gax.WithClientTracing(tracing))
+		client.CallOptions.ExportModel = append(client.CallOptions.ExportModel, gax.WithClientTracing(tracing))
+		client.CallOptions.ExportEvaluatedExamples = append(client.CallOptions.ExportEvaluatedExamples, gax.WithClientTracing(tracing))
+		client.CallOptions.GetModelEvaluation = append(client.CallOptions.GetModelEvaluation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListModelEvaluations = append(client.CallOptions.ListModelEvaluations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "automl",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/automl/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "automl.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateDataset = append(client.CallOptions.CreateDataset, gax.WithClientLogging(logging))
+		client.CallOptions.GetDataset = append(client.CallOptions.GetDataset, gax.WithClientLogging(logging))
+		client.CallOptions.ListDatasets = append(client.CallOptions.ListDatasets, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateDataset = append(client.CallOptions.UpdateDataset, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteDataset = append(client.CallOptions.DeleteDataset, gax.WithClientLogging(logging))
+		client.CallOptions.ImportData = append(client.CallOptions.ImportData, gax.WithClientLogging(logging))
+		client.CallOptions.ExportData = append(client.CallOptions.ExportData, gax.WithClientLogging(logging))
+		client.CallOptions.GetAnnotationSpec = append(client.CallOptions.GetAnnotationSpec, gax.WithClientLogging(logging))
+		client.CallOptions.GetTableSpec = append(client.CallOptions.GetTableSpec, gax.WithClientLogging(logging))
+		client.CallOptions.ListTableSpecs = append(client.CallOptions.ListTableSpecs, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateTableSpec = append(client.CallOptions.UpdateTableSpec, gax.WithClientLogging(logging))
+		client.CallOptions.GetColumnSpec = append(client.CallOptions.GetColumnSpec, gax.WithClientLogging(logging))
+		client.CallOptions.ListColumnSpecs = append(client.CallOptions.ListColumnSpecs, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateColumnSpec = append(client.CallOptions.UpdateColumnSpec, gax.WithClientLogging(logging))
+		client.CallOptions.CreateModel = append(client.CallOptions.CreateModel, gax.WithClientLogging(logging))
+		client.CallOptions.GetModel = append(client.CallOptions.GetModel, gax.WithClientLogging(logging))
+		client.CallOptions.ListModels = append(client.CallOptions.ListModels, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteModel = append(client.CallOptions.DeleteModel, gax.WithClientLogging(logging))
+		client.CallOptions.DeployModel = append(client.CallOptions.DeployModel, gax.WithClientLogging(logging))
+		client.CallOptions.UndeployModel = append(client.CallOptions.UndeployModel, gax.WithClientLogging(logging))
+		client.CallOptions.ExportModel = append(client.CallOptions.ExportModel, gax.WithClientLogging(logging))
+		client.CallOptions.ExportEvaluatedExamples = append(client.CallOptions.ExportEvaluatedExamples, gax.WithClientLogging(logging))
+		client.CallOptions.GetModelEvaluation = append(client.CallOptions.GetModelEvaluation, gax.WithClientLogging(logging))
+		client.CallOptions.ListModelEvaluations = append(client.CallOptions.ListModelEvaluations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -1052,6 +1125,79 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.GetModelEvaluation = append(callOpts.GetModelEvaluation, gax.WithClientMetrics(metrics))
 		callOpts.ListModelEvaluations = append(callOpts.ListModelEvaluations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "automl",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/automl/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "automl.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateDataset = append(callOpts.CreateDataset, gax.WithClientTracing(tracing))
+		callOpts.GetDataset = append(callOpts.GetDataset, gax.WithClientTracing(tracing))
+		callOpts.ListDatasets = append(callOpts.ListDatasets, gax.WithClientTracing(tracing))
+		callOpts.UpdateDataset = append(callOpts.UpdateDataset, gax.WithClientTracing(tracing))
+		callOpts.DeleteDataset = append(callOpts.DeleteDataset, gax.WithClientTracing(tracing))
+		callOpts.ImportData = append(callOpts.ImportData, gax.WithClientTracing(tracing))
+		callOpts.ExportData = append(callOpts.ExportData, gax.WithClientTracing(tracing))
+		callOpts.GetAnnotationSpec = append(callOpts.GetAnnotationSpec, gax.WithClientTracing(tracing))
+		callOpts.GetTableSpec = append(callOpts.GetTableSpec, gax.WithClientTracing(tracing))
+		callOpts.ListTableSpecs = append(callOpts.ListTableSpecs, gax.WithClientTracing(tracing))
+		callOpts.UpdateTableSpec = append(callOpts.UpdateTableSpec, gax.WithClientTracing(tracing))
+		callOpts.GetColumnSpec = append(callOpts.GetColumnSpec, gax.WithClientTracing(tracing))
+		callOpts.ListColumnSpecs = append(callOpts.ListColumnSpecs, gax.WithClientTracing(tracing))
+		callOpts.UpdateColumnSpec = append(callOpts.UpdateColumnSpec, gax.WithClientTracing(tracing))
+		callOpts.CreateModel = append(callOpts.CreateModel, gax.WithClientTracing(tracing))
+		callOpts.GetModel = append(callOpts.GetModel, gax.WithClientTracing(tracing))
+		callOpts.ListModels = append(callOpts.ListModels, gax.WithClientTracing(tracing))
+		callOpts.DeleteModel = append(callOpts.DeleteModel, gax.WithClientTracing(tracing))
+		callOpts.DeployModel = append(callOpts.DeployModel, gax.WithClientTracing(tracing))
+		callOpts.UndeployModel = append(callOpts.UndeployModel, gax.WithClientTracing(tracing))
+		callOpts.ExportModel = append(callOpts.ExportModel, gax.WithClientTracing(tracing))
+		callOpts.ExportEvaluatedExamples = append(callOpts.ExportEvaluatedExamples, gax.WithClientTracing(tracing))
+		callOpts.GetModelEvaluation = append(callOpts.GetModelEvaluation, gax.WithClientTracing(tracing))
+		callOpts.ListModelEvaluations = append(callOpts.ListModelEvaluations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "automl",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/automl/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "automl.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateDataset = append(callOpts.CreateDataset, gax.WithClientLogging(logging))
+		callOpts.GetDataset = append(callOpts.GetDataset, gax.WithClientLogging(logging))
+		callOpts.ListDatasets = append(callOpts.ListDatasets, gax.WithClientLogging(logging))
+		callOpts.UpdateDataset = append(callOpts.UpdateDataset, gax.WithClientLogging(logging))
+		callOpts.DeleteDataset = append(callOpts.DeleteDataset, gax.WithClientLogging(logging))
+		callOpts.ImportData = append(callOpts.ImportData, gax.WithClientLogging(logging))
+		callOpts.ExportData = append(callOpts.ExportData, gax.WithClientLogging(logging))
+		callOpts.GetAnnotationSpec = append(callOpts.GetAnnotationSpec, gax.WithClientLogging(logging))
+		callOpts.GetTableSpec = append(callOpts.GetTableSpec, gax.WithClientLogging(logging))
+		callOpts.ListTableSpecs = append(callOpts.ListTableSpecs, gax.WithClientLogging(logging))
+		callOpts.UpdateTableSpec = append(callOpts.UpdateTableSpec, gax.WithClientLogging(logging))
+		callOpts.GetColumnSpec = append(callOpts.GetColumnSpec, gax.WithClientLogging(logging))
+		callOpts.ListColumnSpecs = append(callOpts.ListColumnSpecs, gax.WithClientLogging(logging))
+		callOpts.UpdateColumnSpec = append(callOpts.UpdateColumnSpec, gax.WithClientLogging(logging))
+		callOpts.CreateModel = append(callOpts.CreateModel, gax.WithClientLogging(logging))
+		callOpts.GetModel = append(callOpts.GetModel, gax.WithClientLogging(logging))
+		callOpts.ListModels = append(callOpts.ListModels, gax.WithClientLogging(logging))
+		callOpts.DeleteModel = append(callOpts.DeleteModel, gax.WithClientLogging(logging))
+		callOpts.DeployModel = append(callOpts.DeployModel, gax.WithClientLogging(logging))
+		callOpts.UndeployModel = append(callOpts.UndeployModel, gax.WithClientLogging(logging))
+		callOpts.ExportModel = append(callOpts.ExportModel, gax.WithClientLogging(logging))
+		callOpts.ExportEvaluatedExamples = append(callOpts.ExportEvaluatedExamples, gax.WithClientLogging(logging))
+		callOpts.GetModelEvaluation = append(callOpts.GetModelEvaluation, gax.WithClientLogging(logging))
+		callOpts.ListModelEvaluations = append(callOpts.ListModelEvaluations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -1108,9 +1254,6 @@ func (c *gRPCClient) CreateDataset(ctx context.Context, req *automlpb.CreateData
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//automl.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1beta1.AutoMl/CreateDataset")
 	}
@@ -1132,9 +1275,6 @@ func (c *gRPCClient) GetDataset(ctx context.Context, req *automlpb.GetDatasetReq
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//automl.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1beta1.AutoMl/GetDataset")
 	}
@@ -1156,9 +1296,6 @@ func (c *gRPCClient) ListDatasets(ctx context.Context, req *automlpb.ListDataset
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//automl.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1beta1.AutoMl/ListDatasets")
 	}
@@ -1229,9 +1366,6 @@ func (c *gRPCClient) DeleteDataset(ctx context.Context, req *automlpb.DeleteData
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//automl.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1beta1.AutoMl/DeleteDataset")
 	}
@@ -1259,9 +1393,6 @@ func (c *gRPCClient) ImportData(ctx context.Context, req *automlpb.ImportDataReq
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//automl.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1beta1.AutoMl/ImportData")
 	}
@@ -1289,9 +1420,6 @@ func (c *gRPCClient) ExportData(ctx context.Context, req *automlpb.ExportDataReq
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//automl.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1beta1.AutoMl/ExportData")
 	}
@@ -1319,9 +1447,6 @@ func (c *gRPCClient) GetAnnotationSpec(ctx context.Context, req *automlpb.GetAnn
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//automl.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1beta1.AutoMl/GetAnnotationSpec")
 	}
@@ -1343,9 +1468,6 @@ func (c *gRPCClient) GetTableSpec(ctx context.Context, req *automlpb.GetTableSpe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//automl.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1beta1.AutoMl/GetTableSpec")
 	}
@@ -1367,9 +1489,6 @@ func (c *gRPCClient) ListTableSpecs(ctx context.Context, req *automlpb.ListTable
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//automl.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1beta1.AutoMl/ListTableSpecs")
 	}
@@ -1440,9 +1559,6 @@ func (c *gRPCClient) GetColumnSpec(ctx context.Context, req *automlpb.GetColumnS
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//automl.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1beta1.AutoMl/GetColumnSpec")
 	}
@@ -1464,9 +1580,6 @@ func (c *gRPCClient) ListColumnSpecs(ctx context.Context, req *automlpb.ListColu
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//automl.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1beta1.AutoMl/ListColumnSpecs")
 	}
@@ -1537,9 +1650,6 @@ func (c *gRPCClient) CreateModel(ctx context.Context, req *automlpb.CreateModelR
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//automl.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1beta1.AutoMl/CreateModel")
 	}
@@ -1567,9 +1677,6 @@ func (c *gRPCClient) GetModel(ctx context.Context, req *automlpb.GetModelRequest
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//automl.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1beta1.AutoMl/GetModel")
 	}
@@ -1591,9 +1698,6 @@ func (c *gRPCClient) ListModels(ctx context.Context, req *automlpb.ListModelsReq
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//automl.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1beta1.AutoMl/ListModels")
 	}
@@ -1643,9 +1747,6 @@ func (c *gRPCClient) DeleteModel(ctx context.Context, req *automlpb.DeleteModelR
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//automl.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1beta1.AutoMl/DeleteModel")
 	}
@@ -1673,9 +1774,6 @@ func (c *gRPCClient) DeployModel(ctx context.Context, req *automlpb.DeployModelR
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//automl.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1beta1.AutoMl/DeployModel")
 	}
@@ -1703,9 +1801,6 @@ func (c *gRPCClient) UndeployModel(ctx context.Context, req *automlpb.UndeployMo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//automl.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1beta1.AutoMl/UndeployModel")
 	}
@@ -1733,9 +1828,6 @@ func (c *gRPCClient) ExportModel(ctx context.Context, req *automlpb.ExportModelR
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//automl.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1beta1.AutoMl/ExportModel")
 	}
@@ -1763,9 +1855,6 @@ func (c *gRPCClient) ExportEvaluatedExamples(ctx context.Context, req *automlpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//automl.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1beta1.AutoMl/ExportEvaluatedExamples")
 	}
@@ -1793,9 +1882,6 @@ func (c *gRPCClient) GetModelEvaluation(ctx context.Context, req *automlpb.GetMo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//automl.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1beta1.AutoMl/GetModelEvaluation")
 	}
@@ -1817,9 +1903,6 @@ func (c *gRPCClient) ListModelEvaluations(ctx context.Context, req *automlpb.Lis
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//automl.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1beta1.AutoMl/ListModelEvaluations")
 	}
@@ -1890,9 +1973,6 @@ func (c *restClient) CreateDataset(ctx context.Context, req *automlpb.CreateData
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//automl.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1beta1.AutoMl/CreateDataset")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=projects/*/locations/*}/datasets")
@@ -1947,9 +2027,6 @@ func (c *restClient) GetDataset(ctx context.Context, req *automlpb.GetDatasetReq
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//automl.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1beta1.AutoMl/GetDataset")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/datasets/*}")
@@ -2157,9 +2234,6 @@ func (c *restClient) DeleteDataset(ctx context.Context, req *automlpb.DeleteData
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//automl.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1beta1.AutoMl/DeleteDataset")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/datasets/*}")
@@ -2236,9 +2310,6 @@ func (c *restClient) ImportData(ctx context.Context, req *automlpb.ImportDataReq
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//automl.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1beta1.AutoMl/ImportData")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/datasets/*}:importData")
@@ -2308,9 +2379,6 @@ func (c *restClient) ExportData(ctx context.Context, req *automlpb.ExportDataReq
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//automl.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1beta1.AutoMl/ExportData")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/datasets/*}:exportData")
@@ -2372,9 +2440,6 @@ func (c *restClient) GetAnnotationSpec(ctx context.Context, req *automlpb.GetAnn
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//automl.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1beta1.AutoMl/GetAnnotationSpec")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/datasets/*/annotationSpecs/*}")
@@ -2436,9 +2501,6 @@ func (c *restClient) GetTableSpec(ctx context.Context, req *automlpb.GetTableSpe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//automl.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1beta1.AutoMl/GetTableSpec")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/datasets/*/tableSpecs/*}")
@@ -2656,9 +2718,6 @@ func (c *restClient) GetColumnSpec(ctx context.Context, req *automlpb.GetColumnS
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//automl.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1beta1.AutoMl/GetColumnSpec")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/datasets/*/tableSpecs/*/columnSpecs/*}")
@@ -2880,9 +2939,6 @@ func (c *restClient) CreateModel(ctx context.Context, req *automlpb.CreateModelR
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//automl.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1beta1.AutoMl/CreateModel")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=projects/*/locations/*}/models")
@@ -2944,9 +3000,6 @@ func (c *restClient) GetModel(ctx context.Context, req *automlpb.GetModelRequest
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//automl.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1beta1.AutoMl/GetModel")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/models/*}")
@@ -3086,9 +3139,6 @@ func (c *restClient) DeleteModel(ctx context.Context, req *automlpb.DeleteModelR
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//automl.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1beta1.AutoMl/DeleteModel")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/models/*}")
@@ -3167,9 +3217,6 @@ func (c *restClient) DeployModel(ctx context.Context, req *automlpb.DeployModelR
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//automl.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1beta1.AutoMl/DeployModel")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/models/*}:deploy")
@@ -3243,9 +3290,6 @@ func (c *restClient) UndeployModel(ctx context.Context, req *automlpb.UndeployMo
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//automl.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1beta1.AutoMl/UndeployModel")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/models/*}:undeploy")
@@ -3320,9 +3364,6 @@ func (c *restClient) ExportModel(ctx context.Context, req *automlpb.ExportModelR
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//automl.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1beta1.AutoMl/ExportModel")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/models/*}:export")
@@ -3403,9 +3444,6 @@ func (c *restClient) ExportEvaluatedExamples(ctx context.Context, req *automlpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//automl.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1beta1.AutoMl/ExportEvaluatedExamples")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/models/*}:exportEvaluatedExamples")
@@ -3467,9 +3505,6 @@ func (c *restClient) GetModelEvaluation(ctx context.Context, req *automlpb.GetMo
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//automl.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1beta1.AutoMl/GetModelEvaluation")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/models/*/modelEvaluations/*}")

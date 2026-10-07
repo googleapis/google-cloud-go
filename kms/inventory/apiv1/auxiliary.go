@@ -17,10 +17,19 @@
 package inventory
 
 import (
+	"iter"
+
 	kmspb "cloud.google.com/go/kms/apiv1/kmspb"
 	inventorypb "cloud.google.com/go/kms/inventory/apiv1/inventorypb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CryptoKeyIterator) All() iter.Seq2[*kmspb.CryptoKey, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // CryptoKeyIterator manages a stream of *kmspb.CryptoKey.
 type CryptoKeyIterator struct {
@@ -67,6 +76,12 @@ func (it *CryptoKeyIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ProtectedResourceIterator) All() iter.Seq2[*inventorypb.ProtectedResource, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ProtectedResourceIterator manages a stream of *inventorypb.ProtectedResource.

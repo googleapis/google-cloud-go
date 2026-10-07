@@ -273,6 +273,37 @@ func NewPublisherClient(ctx context.Context, opts ...option.ClientOption) (*Publ
 		client.CallOptions.PublishEvents = append(client.CallOptions.PublishEvents, gax.WithClientMetrics(metrics))
 		client.CallOptions.Publish = append(client.CallOptions.Publish, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "eventarcpublishing",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/eventarc/publishing/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "eventarcpublishing.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.PublishChannelConnectionEvents = append(client.CallOptions.PublishChannelConnectionEvents, gax.WithClientTracing(tracing))
+		client.CallOptions.PublishEvents = append(client.CallOptions.PublishEvents, gax.WithClientTracing(tracing))
+		client.CallOptions.Publish = append(client.CallOptions.Publish, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "eventarcpublishing",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/eventarc/publishing/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "eventarcpublishing.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.PublishChannelConnectionEvents = append(client.CallOptions.PublishChannelConnectionEvents, gax.WithClientLogging(logging))
+		client.CallOptions.PublishEvents = append(client.CallOptions.PublishEvents, gax.WithClientLogging(logging))
+		client.CallOptions.Publish = append(client.CallOptions.Publish, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -393,6 +424,37 @@ func NewPublisherRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 		callOpts.PublishChannelConnectionEvents = append(callOpts.PublishChannelConnectionEvents, gax.WithClientMetrics(metrics))
 		callOpts.PublishEvents = append(callOpts.PublishEvents, gax.WithClientMetrics(metrics))
 		callOpts.Publish = append(callOpts.Publish, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "eventarcpublishing",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/eventarc/publishing/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "eventarcpublishing.googleapis.com",
+			}),
+		)
+
+		callOpts.PublishChannelConnectionEvents = append(callOpts.PublishChannelConnectionEvents, gax.WithClientTracing(tracing))
+		callOpts.PublishEvents = append(callOpts.PublishEvents, gax.WithClientTracing(tracing))
+		callOpts.Publish = append(callOpts.Publish, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "eventarcpublishing",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/eventarc/publishing/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "eventarcpublishing.googleapis.com",
+			}),
+		)
+
+		callOpts.PublishChannelConnectionEvents = append(callOpts.PublishChannelConnectionEvents, gax.WithClientLogging(logging))
+		callOpts.PublishEvents = append(callOpts.PublishEvents, gax.WithClientLogging(logging))
+		callOpts.Publish = append(callOpts.Publish, gax.WithClientLogging(logging))
 	}
 
 	return &PublisherClient{internalClient: c, CallOptions: callOpts}, nil

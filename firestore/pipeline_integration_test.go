@@ -3410,7 +3410,7 @@ func testIntegrationPipelineSubqueriesAndVariables(t *testing.T) {
 }
 
 func bsonPipelineFuncs(t *testing.T) {
-	t.Skip("Temporarily skipping BSON integration test. Not yet released to prod.")
+	skipIfEdition(t, "BSON pipeline functions", editionStandard)
 	t.Parallel()
 	h := testHelper{t}
 	client := integrationClient(t)

@@ -2,6 +2,28 @@
 
 
 
+## [1.35.0](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.34.0...discoveryengine/v1.35.0) (2026-09-23)
+
+
+### Features
+
+* **all:** Update supported go versions ([#20520](https://github.com/googleapis/google-cloud-go/issues/20520)) ([90413d3](https://github.com/googleapis/google-cloud-go/commit/90413d3e9d381ef4b92e3c496d98b023c5b2d8cc))
+
+## [1.34.0](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.33.0...discoveryengine/v1.34.0) (2026-09-17)
+
+
+### Features
+
+* Update API sources and regenerate ([#20526](https://github.com/googleapis/google-cloud-go/issues/20526)) ([e6f37a3](https://github.com/googleapis/google-cloud-go/commit/e6f37a362b6e37b0bc74e77b8d7f151dc7443fb8))
+* Update API sources and regenerate. ([e6f37a3](https://github.com/googleapis/google-cloud-go/commit/e6f37a362b6e37b0bc74e77b8d7f151dc7443fb8))
+
+## [1.33.0](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.32.0...discoveryengine/v1.33.0) (2026-08-26)
+
+
+### Features
+
+* Update API sources and regenerate ([#20427](https://github.com/googleapis/google-cloud-go/issues/20427)) ([eb07af9](https://github.com/googleapis/google-cloud-go/commit/eb07af97288cb3446ef50ff1806c7bc12d5c6350))
+
 ## [1.32.0](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.31.0...discoveryengine/v1.32.0) (2026-07-20)
 
 

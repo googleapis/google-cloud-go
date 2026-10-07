@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -187,10 +187,12 @@ func (*NotificationConfig_PubsubNotification) isNotificationConfig_Config() {}
 type ImageConfig struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The initial image the remote agent will attempt to run for the control
-	// plane.
+	// plane. Format would be a gcr image path, e.g.:
+	// gcr.io/PROJECT-ID/my-image:tag1
 	TargetImage string `protobuf:"bytes,1,opt,name=target_image,json=targetImage,proto3" json:"target_image,omitempty"`
 	// The stable image that the remote agent will fallback to if the target image
-	// fails.
+	// fails. Format would be a gcr image path, e.g.:
+	// gcr.io/PROJECT-ID/my-image:tag1
 	StableImage   string `protobuf:"bytes,2,opt,name=stable_image,json=stableImage,proto3" json:"stable_image,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache

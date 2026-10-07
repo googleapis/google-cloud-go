@@ -50,6 +50,7 @@ type InterconnectsCallOptions struct {
 	List               []gax.CallOption
 	Patch              []gax.CallOption
 	SetLabels          []gax.CallOption
+	SetName            []gax.CallOption
 	TestIamPermissions []gax.CallOption
 }
 
@@ -115,6 +116,9 @@ func defaultInterconnectsRESTCallOptions() *InterconnectsCallOptions {
 		SetLabels: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
+		SetName: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		TestIamPermissions: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
@@ -134,6 +138,7 @@ type internalInterconnectsClient interface {
 	List(context.Context, *computepb.ListInterconnectsRequest, ...gax.CallOption) *InterconnectIterator
 	Patch(context.Context, *computepb.PatchInterconnectRequest, ...gax.CallOption) (*Operation, error)
 	SetLabels(context.Context, *computepb.SetLabelsInterconnectRequest, ...gax.CallOption) (*Operation, error)
+	SetName(context.Context, *computepb.SetNameInterconnectRequest, ...gax.CallOption) (*Operation, error)
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsInterconnectRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 }
 
@@ -229,6 +234,11 @@ func (c *InterconnectsClient) SetLabels(ctx context.Context, req *computepb.SetL
 	return c.internalClient.SetLabels(ctx, req, opts...)
 }
 
+// SetName sets name of an interconnect.
+func (c *InterconnectsClient) SetName(ctx context.Context, req *computepb.SetNameInterconnectRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.SetName(ctx, req, opts...)
+}
+
 // TestIamPermissions returns permissions that a caller has on the specified resource.
 func (c *InterconnectsClient) TestIamPermissions(ctx context.Context, req *computepb.TestIamPermissionsInterconnectRequest, opts ...gax.CallOption) (*computepb.TestPermissionsResponse, error) {
 	return c.internalClient.TestIamPermissions(ctx, req, opts...)
@@ -303,7 +313,53 @@ func NewInterconnectsRESTClient(ctx context.Context, opts ...option.ClientOption
 		callOpts.List = append(callOpts.List, gax.WithClientMetrics(metrics))
 		callOpts.Patch = append(callOpts.Patch, gax.WithClientMetrics(metrics))
 		callOpts.SetLabels = append(callOpts.SetLabels, gax.WithClientMetrics(metrics))
+		callOpts.SetName = append(callOpts.SetName, gax.WithClientMetrics(metrics))
 		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientTracing(tracing))
+		callOpts.Get = append(callOpts.Get, gax.WithClientTracing(tracing))
+		callOpts.GetDiagnostics = append(callOpts.GetDiagnostics, gax.WithClientTracing(tracing))
+		callOpts.GetMacsecConfig = append(callOpts.GetMacsecConfig, gax.WithClientTracing(tracing))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientTracing(tracing))
+		callOpts.List = append(callOpts.List, gax.WithClientTracing(tracing))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientTracing(tracing))
+		callOpts.SetLabels = append(callOpts.SetLabels, gax.WithClientTracing(tracing))
+		callOpts.SetName = append(callOpts.SetName, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientLogging(logging))
+		callOpts.Get = append(callOpts.Get, gax.WithClientLogging(logging))
+		callOpts.GetDiagnostics = append(callOpts.GetDiagnostics, gax.WithClientLogging(logging))
+		callOpts.GetMacsecConfig = append(callOpts.GetMacsecConfig, gax.WithClientLogging(logging))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientLogging(logging))
+		callOpts.List = append(callOpts.List, gax.WithClientLogging(logging))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientLogging(logging))
+		callOpts.SetLabels = append(callOpts.SetLabels, gax.WithClientLogging(logging))
+		callOpts.SetName = append(callOpts.SetName, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientLogging(logging))
 	}
 
 	o := []option.ClientOption{
@@ -381,9 +437,6 @@ func (c *interconnectsRESTClient) Delete(ctx context.Context, req *computepb.Del
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v/global/interconnects/%v", req.GetProject(), req.GetInterconnect()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.Interconnects/Delete")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/global/interconnects/{interconnect}")
@@ -441,9 +494,6 @@ func (c *interconnectsRESTClient) Get(ctx context.Context, req *computepb.GetInt
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v/global/interconnects/%v", req.GetProject(), req.GetInterconnect()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.Interconnects/Get")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/global/interconnects/{interconnect}")
@@ -502,9 +552,6 @@ func (c *interconnectsRESTClient) GetDiagnostics(ctx context.Context, req *compu
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v/global/interconnects/%v", req.GetProject(), req.GetInterconnect()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.Interconnects/GetDiagnostics")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/global/interconnects/{interconnect}/getDiagnostics")
@@ -555,9 +602,6 @@ func (c *interconnectsRESTClient) GetMacsecConfig(ctx context.Context, req *comp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v/global/interconnects/%v", req.GetProject(), req.GetInterconnect()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.Interconnects/GetMacsecConfig")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/global/interconnects/{interconnect}/getMacsecConfig")
@@ -622,9 +666,6 @@ func (c *interconnectsRESTClient) Insert(ctx context.Context, req *computepb.Ins
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v", req.GetProject()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.Interconnects/Insert")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/global/interconnects")
@@ -784,9 +825,6 @@ func (c *interconnectsRESTClient) Patch(ctx context.Context, req *computepb.Patc
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v/global/interconnects/%v", req.GetProject(), req.GetInterconnect()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.Interconnects/Patch")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/global/interconnects/{interconnect}")
@@ -852,9 +890,6 @@ func (c *interconnectsRESTClient) SetLabels(ctx context.Context, req *computepb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v/global/interconnects/%v", req.GetProject(), req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.Interconnects/SetLabels")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/global/interconnects/{resource}/setLabels")
@@ -874,6 +909,76 @@ func (c *interconnectsRESTClient) SetLabels(ctx context.Context, req *computepb.
 		httpReq.Header = headers
 
 		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetLabels")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&globalOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+		},
+	}
+	return op, nil
+}
+
+// SetName sets name of an interconnect.
+func (c *interconnectsRESTClient) SetName(ctx context.Context, req *computepb.SetNameInterconnectRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetInterconnectsSetNameRequestResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/interconnects/%v/setName", req.GetProject(), req.GetInterconnect())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "interconnect", url.QueryEscape(req.GetInterconnect()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.Interconnects/SetName")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/global/interconnects/{interconnect}/setName")
+	}
+	opts = append((*c.CallOptions).SetName[0:len((*c.CallOptions).SetName):len((*c.CallOptions).SetName)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetName")
 		if err != nil {
 			return err
 		}
@@ -918,9 +1023,6 @@ func (c *interconnectsRESTClient) TestIamPermissions(ctx context.Context, req *c
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v/global/interconnects/%v", req.GetProject(), req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.Interconnects/TestIamPermissions")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/global/interconnects/{resource}/testIamPermissions")

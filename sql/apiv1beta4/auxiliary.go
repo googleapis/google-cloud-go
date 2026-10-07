@@ -17,9 +17,18 @@
 package sql
 
 import (
+	"iter"
+
 	sqlpb "cloud.google.com/go/sql/apiv1beta4/sqlpb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ApiWarningIterator) All() iter.Seq2[*sqlpb.ApiWarning, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // ApiWarningIterator manages a stream of *sqlpb.ApiWarning.
 type ApiWarningIterator struct {
@@ -66,6 +75,12 @@ func (it *ApiWarningIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *BackupIterator) All() iter.Seq2[*sqlpb.Backup, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // BackupIterator manages a stream of *sqlpb.Backup.
@@ -115,6 +130,12 @@ func (it *BackupIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *BackupRunIterator) All() iter.Seq2[*sqlpb.BackupRun, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // BackupRunIterator manages a stream of *sqlpb.BackupRun.
 type BackupRunIterator struct {
 	items    []*sqlpb.BackupRun
@@ -160,6 +181,65 @@ func (it *BackupRunIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *BlueGreenDeploymentIterator) All() iter.Seq2[*sqlpb.BlueGreenDeployment, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
+// BlueGreenDeploymentIterator manages a stream of *sqlpb.BlueGreenDeployment.
+type BlueGreenDeploymentIterator struct {
+	items    []*sqlpb.BlueGreenDeployment
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*sqlpb.BlueGreenDeployment, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *BlueGreenDeploymentIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *BlueGreenDeploymentIterator) Next() (*sqlpb.BlueGreenDeployment, error) {
+	var item *sqlpb.BlueGreenDeployment
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *BlueGreenDeploymentIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *BlueGreenDeploymentIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*sqlpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // OperationIterator manages a stream of *sqlpb.Operation.

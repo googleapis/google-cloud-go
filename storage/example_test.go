@@ -29,7 +29,6 @@ import (
 	"time"
 
 	"cloud.google.com/go/storage"
-	"cloud.google.com/go/storage/experimental"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -436,7 +435,7 @@ func ExampleObjectHandle_NewWriterFromAppendableObject() {
 	if err != nil {
 		// TODO: handle error.
 	}
-	bucketName := "my-rapid-bucket"
+	bucketName := "my-bucket"
 	objectName := "appendable-obj"
 	obj := client.Bucket(bucketName).Object(objectName)
 
@@ -510,7 +509,7 @@ func ExampleWriter_Flush() {
 	if err != nil {
 		// TODO: handle error.
 	}
-	bucketName := "my-rapid-bucket"
+	bucketName := "my-bucket"
 	objectName := "appendable-obj"
 	obj := client.Bucket(bucketName).Object(objectName)
 
@@ -1040,7 +1039,7 @@ func ExampleGenerateSignedPostPolicyV4() {
 func ExampleMultiRangeDownloader() {
 	ctx := context.Background()
 	// NewMultiRangeDownloader is only available on gRPC.
-	client, err := storage.NewGRPCClient(ctx, experimental.WithGRPCBidiReads())
+	client, err := storage.NewGRPCClient(ctx, storage.WithGRPCBidiReads())
 	if err != nil {
 		// TODO: handle error.
 	}

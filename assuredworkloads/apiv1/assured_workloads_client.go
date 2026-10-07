@@ -368,6 +368,53 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "assuredworkloads",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/assuredworkloads/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "assuredworkloads.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateWorkload = append(client.CallOptions.CreateWorkload, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateWorkload = append(client.CallOptions.UpdateWorkload, gax.WithClientTracing(tracing))
+		client.CallOptions.RestrictAllowedResources = append(client.CallOptions.RestrictAllowedResources, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteWorkload = append(client.CallOptions.DeleteWorkload, gax.WithClientTracing(tracing))
+		client.CallOptions.GetWorkload = append(client.CallOptions.GetWorkload, gax.WithClientTracing(tracing))
+		client.CallOptions.ListWorkloads = append(client.CallOptions.ListWorkloads, gax.WithClientTracing(tracing))
+		client.CallOptions.ListViolations = append(client.CallOptions.ListViolations, gax.WithClientTracing(tracing))
+		client.CallOptions.GetViolation = append(client.CallOptions.GetViolation, gax.WithClientTracing(tracing))
+		client.CallOptions.AcknowledgeViolation = append(client.CallOptions.AcknowledgeViolation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "assuredworkloads",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/assuredworkloads/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "assuredworkloads.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateWorkload = append(client.CallOptions.CreateWorkload, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateWorkload = append(client.CallOptions.UpdateWorkload, gax.WithClientLogging(logging))
+		client.CallOptions.RestrictAllowedResources = append(client.CallOptions.RestrictAllowedResources, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteWorkload = append(client.CallOptions.DeleteWorkload, gax.WithClientLogging(logging))
+		client.CallOptions.GetWorkload = append(client.CallOptions.GetWorkload, gax.WithClientLogging(logging))
+		client.CallOptions.ListWorkloads = append(client.CallOptions.ListWorkloads, gax.WithClientLogging(logging))
+		client.CallOptions.ListViolations = append(client.CallOptions.ListViolations, gax.WithClientLogging(logging))
+		client.CallOptions.GetViolation = append(client.CallOptions.GetViolation, gax.WithClientLogging(logging))
+		client.CallOptions.AcknowledgeViolation = append(client.CallOptions.AcknowledgeViolation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -485,6 +532,53 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "assuredworkloads",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/assuredworkloads/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "assuredworkloads.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateWorkload = append(callOpts.CreateWorkload, gax.WithClientTracing(tracing))
+		callOpts.UpdateWorkload = append(callOpts.UpdateWorkload, gax.WithClientTracing(tracing))
+		callOpts.RestrictAllowedResources = append(callOpts.RestrictAllowedResources, gax.WithClientTracing(tracing))
+		callOpts.DeleteWorkload = append(callOpts.DeleteWorkload, gax.WithClientTracing(tracing))
+		callOpts.GetWorkload = append(callOpts.GetWorkload, gax.WithClientTracing(tracing))
+		callOpts.ListWorkloads = append(callOpts.ListWorkloads, gax.WithClientTracing(tracing))
+		callOpts.ListViolations = append(callOpts.ListViolations, gax.WithClientTracing(tracing))
+		callOpts.GetViolation = append(callOpts.GetViolation, gax.WithClientTracing(tracing))
+		callOpts.AcknowledgeViolation = append(callOpts.AcknowledgeViolation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "assuredworkloads",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/assuredworkloads/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "assuredworkloads.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateWorkload = append(callOpts.CreateWorkload, gax.WithClientLogging(logging))
+		callOpts.UpdateWorkload = append(callOpts.UpdateWorkload, gax.WithClientLogging(logging))
+		callOpts.RestrictAllowedResources = append(callOpts.RestrictAllowedResources, gax.WithClientLogging(logging))
+		callOpts.DeleteWorkload = append(callOpts.DeleteWorkload, gax.WithClientLogging(logging))
+		callOpts.GetWorkload = append(callOpts.GetWorkload, gax.WithClientLogging(logging))
+		callOpts.ListWorkloads = append(callOpts.ListWorkloads, gax.WithClientLogging(logging))
+		callOpts.ListViolations = append(callOpts.ListViolations, gax.WithClientLogging(logging))
+		callOpts.GetViolation = append(callOpts.GetViolation, gax.WithClientLogging(logging))
+		callOpts.AcknowledgeViolation = append(callOpts.AcknowledgeViolation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -541,9 +635,6 @@ func (c *gRPCClient) CreateWorkload(ctx context.Context, req *assuredworkloadspb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//assuredworkloads.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.assuredworkloads.v1.AssuredWorkloadsService/CreateWorkload")
 	}
@@ -613,9 +704,6 @@ func (c *gRPCClient) DeleteWorkload(ctx context.Context, req *assuredworkloadspb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//assuredworkloads.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.assuredworkloads.v1.AssuredWorkloadsService/DeleteWorkload")
 	}
@@ -633,9 +721,6 @@ func (c *gRPCClient) GetWorkload(ctx context.Context, req *assuredworkloadspb.Ge
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//assuredworkloads.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.assuredworkloads.v1.AssuredWorkloadsService/GetWorkload")
 	}
@@ -657,9 +742,6 @@ func (c *gRPCClient) ListWorkloads(ctx context.Context, req *assuredworkloadspb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//assuredworkloads.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.assuredworkloads.v1.AssuredWorkloadsService/ListWorkloads")
 	}
@@ -885,9 +967,6 @@ func (c *restClient) CreateWorkload(ctx context.Context, req *assuredworkloadspb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//assuredworkloads.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.assuredworkloads.v1.AssuredWorkloadsService/CreateWorkload")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=organizations/*/locations/*}/workloads")
@@ -1090,9 +1169,6 @@ func (c *restClient) DeleteWorkload(ctx context.Context, req *assuredworkloadspb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//assuredworkloads.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.assuredworkloads.v1.AssuredWorkloadsService/DeleteWorkload")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=organizations/*/locations/*/workloads/*}")
@@ -1132,9 +1208,6 @@ func (c *restClient) GetWorkload(ctx context.Context, req *assuredworkloadspb.Ge
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//assuredworkloads.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.assuredworkloads.v1.AssuredWorkloadsService/GetWorkload")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=organizations/*/locations/*/workloads/*}")

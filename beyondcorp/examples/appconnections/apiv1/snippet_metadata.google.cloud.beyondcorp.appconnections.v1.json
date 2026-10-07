@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/beyondcorp/appconnections/apiv1",
-    "version": "1.8.0"
+    "version": "1.9.0"
   },
   "snippets": [
     {
@@ -88,7 +88,7 @@
         "resultType": "CreateAppConnectionOperation",
         "shortName": "CreateAppConnection"
       },
-      "description": "CreateAppConnection creates a new AppConnection in a given project and location.",
+      "description": "CreateAppConnection creates a new AppConnection in a given project and location.\n\n\nDeprecated: CreateAppConnection may be removed in a future version.",
       "file": "Client/CreateAppConnection/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -134,7 +134,7 @@
         "resultType": "DeleteAppConnectionOperation",
         "shortName": "DeleteAppConnection"
       },
-      "description": "DeleteAppConnection deletes a single AppConnection.",
+      "description": "DeleteAppConnection deletes a single AppConnection.\n\n\nDeprecated: DeleteAppConnection may be removed in a future version.",
       "file": "Client/DeleteAppConnection/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -225,7 +225,7 @@
         "resultType": "*appconnectionspb.AppConnection",
         "shortName": "GetAppConnection"
       },
-      "description": "GetAppConnection gets details of a single AppConnection.",
+      "description": "GetAppConnection gets details of a single AppConnection.\n\n\nDeprecated: GetAppConnection may be removed in a future version.",
       "file": "Client/GetAppConnection/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -409,7 +409,7 @@
         "resultType": "AppConnectionIterator",
         "shortName": "ListAppConnections"
       },
-      "description": "ListAppConnections lists AppConnections in a given project and location.",
+      "description": "ListAppConnections lists AppConnections in a given project and location.\n\n\nDeprecated: ListAppConnections may be removed in a future version.",
       "file": "Client/ListAppConnections/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -455,7 +455,7 @@
         "resultType": "LocationIterator",
         "shortName": "ListLocations"
       },
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name][google.cloud.location.ListLocationsRequest.name] field: *\n**Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
       "file": "Client/ListLocations/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -547,7 +547,7 @@
         "resultType": "ResolveAppConnectionsResponse_AppConnectionDetailsIterator",
         "shortName": "ResolveAppConnections"
       },
-      "description": "ResolveAppConnections resolves AppConnections details for a given AppConnector.\nAn internal method called by a connector to find AppConnections to connect\nto.",
+      "description": "ResolveAppConnections resolves AppConnections details for a given AppConnector.\nAn internal method called by a connector to find AppConnections to connect\nto.\n\n\nDeprecated: ResolveAppConnections may be removed in a future version.",
       "file": "Client/ResolveAppConnections/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -685,7 +685,7 @@
         "resultType": "UpdateAppConnectionOperation",
         "shortName": "UpdateAppConnection"
       },
-      "description": "UpdateAppConnection updates the parameters of a single AppConnection.",
+      "description": "UpdateAppConnection updates the parameters of a single AppConnection.\n\n\nDeprecated: UpdateAppConnection may be removed in a future version.",
       "file": "Client/UpdateAppConnection/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",

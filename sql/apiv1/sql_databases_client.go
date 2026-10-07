@@ -269,6 +269,43 @@ func NewSqlDatabasesClient(ctx context.Context, opts ...option.ClientOption) (*S
 		client.CallOptions.Patch = append(client.CallOptions.Patch, gax.WithClientMetrics(metrics))
 		client.CallOptions.Update = append(client.CallOptions.Update, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "sqladmin",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/sql/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "sqladmin.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.Delete = append(client.CallOptions.Delete, gax.WithClientTracing(tracing))
+		client.CallOptions.Get = append(client.CallOptions.Get, gax.WithClientTracing(tracing))
+		client.CallOptions.Insert = append(client.CallOptions.Insert, gax.WithClientTracing(tracing))
+		client.CallOptions.List = append(client.CallOptions.List, gax.WithClientTracing(tracing))
+		client.CallOptions.Patch = append(client.CallOptions.Patch, gax.WithClientTracing(tracing))
+		client.CallOptions.Update = append(client.CallOptions.Update, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "sqladmin",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/sql/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "sqladmin.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.Delete = append(client.CallOptions.Delete, gax.WithClientLogging(logging))
+		client.CallOptions.Get = append(client.CallOptions.Get, gax.WithClientLogging(logging))
+		client.CallOptions.Insert = append(client.CallOptions.Insert, gax.WithClientLogging(logging))
+		client.CallOptions.List = append(client.CallOptions.List, gax.WithClientLogging(logging))
+		client.CallOptions.Patch = append(client.CallOptions.Patch, gax.WithClientLogging(logging))
+		client.CallOptions.Update = append(client.CallOptions.Update, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -364,6 +401,43 @@ func NewSqlDatabasesRESTClient(ctx context.Context, opts ...option.ClientOption)
 		callOpts.List = append(callOpts.List, gax.WithClientMetrics(metrics))
 		callOpts.Patch = append(callOpts.Patch, gax.WithClientMetrics(metrics))
 		callOpts.Update = append(callOpts.Update, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "sqladmin",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/sql/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "sqladmin.googleapis.com",
+			}),
+		)
+
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientTracing(tracing))
+		callOpts.Get = append(callOpts.Get, gax.WithClientTracing(tracing))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientTracing(tracing))
+		callOpts.List = append(callOpts.List, gax.WithClientTracing(tracing))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientTracing(tracing))
+		callOpts.Update = append(callOpts.Update, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "sqladmin",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/sql/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "sqladmin.googleapis.com",
+			}),
+		)
+
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientLogging(logging))
+		callOpts.Get = append(callOpts.Get, gax.WithClientLogging(logging))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientLogging(logging))
+		callOpts.List = append(callOpts.List, gax.WithClientLogging(logging))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientLogging(logging))
+		callOpts.Update = append(callOpts.Update, gax.WithClientLogging(logging))
 	}
 
 	return &SqlDatabasesClient{internalClient: c, CallOptions: callOpts}, nil
@@ -542,6 +616,9 @@ func (c *sqlDatabasesRESTClient) Delete(ctx context.Context, req *sqlpb.SqlDatab
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -597,6 +674,9 @@ func (c *sqlDatabasesRESTClient) Get(ctx context.Context, req *sqlpb.SqlDatabase
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -661,6 +741,9 @@ func (c *sqlDatabasesRESTClient) Insert(ctx context.Context, req *sqlpb.SqlDatab
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -715,6 +798,9 @@ func (c *sqlDatabasesRESTClient) List(ctx context.Context, req *sqlpb.SqlDatabas
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -777,6 +863,9 @@ func (c *sqlDatabasesRESTClient) Patch(ctx context.Context, req *sqlpb.SqlDataba
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -839,6 +928,9 @@ func (c *sqlDatabasesRESTClient) Update(ctx context.Context, req *sqlpb.SqlDatab
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 

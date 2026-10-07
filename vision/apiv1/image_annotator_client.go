@@ -376,6 +376,41 @@ func NewImageAnnotatorClient(ctx context.Context, opts ...option.ClientOption) (
 		client.CallOptions.AsyncBatchAnnotateFiles = append(client.CallOptions.AsyncBatchAnnotateFiles, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "vision",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/vision/v2/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "vision.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.BatchAnnotateImages = append(client.CallOptions.BatchAnnotateImages, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchAnnotateFiles = append(client.CallOptions.BatchAnnotateFiles, gax.WithClientTracing(tracing))
+		client.CallOptions.AsyncBatchAnnotateImages = append(client.CallOptions.AsyncBatchAnnotateImages, gax.WithClientTracing(tracing))
+		client.CallOptions.AsyncBatchAnnotateFiles = append(client.CallOptions.AsyncBatchAnnotateFiles, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "vision",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/vision/v2/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "vision.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.BatchAnnotateImages = append(client.CallOptions.BatchAnnotateImages, gax.WithClientLogging(logging))
+		client.CallOptions.BatchAnnotateFiles = append(client.CallOptions.BatchAnnotateFiles, gax.WithClientLogging(logging))
+		client.CallOptions.AsyncBatchAnnotateImages = append(client.CallOptions.AsyncBatchAnnotateImages, gax.WithClientLogging(logging))
+		client.CallOptions.AsyncBatchAnnotateFiles = append(client.CallOptions.AsyncBatchAnnotateFiles, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -488,6 +523,41 @@ func NewImageAnnotatorRESTClient(ctx context.Context, opts ...option.ClientOptio
 		callOpts.AsyncBatchAnnotateImages = append(callOpts.AsyncBatchAnnotateImages, gax.WithClientMetrics(metrics))
 		callOpts.AsyncBatchAnnotateFiles = append(callOpts.AsyncBatchAnnotateFiles, gax.WithClientMetrics(metrics))
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "vision",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/vision/v2/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "vision.googleapis.com",
+			}),
+		)
+
+		callOpts.BatchAnnotateImages = append(callOpts.BatchAnnotateImages, gax.WithClientTracing(tracing))
+		callOpts.BatchAnnotateFiles = append(callOpts.BatchAnnotateFiles, gax.WithClientTracing(tracing))
+		callOpts.AsyncBatchAnnotateImages = append(callOpts.AsyncBatchAnnotateImages, gax.WithClientTracing(tracing))
+		callOpts.AsyncBatchAnnotateFiles = append(callOpts.AsyncBatchAnnotateFiles, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "vision",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/vision/v2/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "vision.googleapis.com",
+			}),
+		)
+
+		callOpts.BatchAnnotateImages = append(callOpts.BatchAnnotateImages, gax.WithClientLogging(logging))
+		callOpts.BatchAnnotateFiles = append(callOpts.BatchAnnotateFiles, gax.WithClientLogging(logging))
+		callOpts.AsyncBatchAnnotateImages = append(callOpts.AsyncBatchAnnotateImages, gax.WithClientLogging(logging))
+		callOpts.AsyncBatchAnnotateFiles = append(callOpts.AsyncBatchAnnotateFiles, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
 	}
 
 	lroOpts := []option.ClientOption{

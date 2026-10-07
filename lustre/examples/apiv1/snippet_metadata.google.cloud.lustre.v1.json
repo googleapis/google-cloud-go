@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/lustre/apiv1",
-    "version": "1.1.0"
+    "version": "1.2.0"
   },
   "snippets": [
     {
@@ -62,6 +62,52 @@
           "fullName": "google.cloud.lustre.v1.Client",
           "shortName": "Client"
         },
+        "fullName": "google.cloud.lustre.v1.Client.CreateDirectoryPolicy",
+        "method": {
+          "fullName": "google.cloud.lustre.v1.Lustre.CreateDirectoryPolicy",
+          "service": {
+            "fullName": "google.cloud.lustre.v1.Lustre",
+            "shortName": "Lustre"
+          },
+          "shortName": "CreateDirectoryPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "lustrepb.CreateDirectoryPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CreateDirectoryPolicyOperation",
+        "shortName": "CreateDirectoryPolicy"
+      },
+      "description": "CreateDirectoryPolicy creates a directory policy resource.",
+      "file": "Client/CreateDirectoryPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "lustre_v1_generated_Lustre_CreateDirectoryPolicy_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "lustre CreateDirectoryPolicy Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.lustre.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.lustre.v1.Client.CreateInstance",
         "method": {
           "fullName": "google.cloud.lustre.v1.Lustre.CreateInstance",
@@ -108,6 +154,98 @@
           "fullName": "google.cloud.lustre.v1.Client",
           "shortName": "Client"
         },
+        "fullName": "google.cloud.lustre.v1.Client.CreateMirror",
+        "method": {
+          "fullName": "google.cloud.lustre.v1.Lustre.CreateMirror",
+          "service": {
+            "fullName": "google.cloud.lustre.v1.Lustre",
+            "shortName": "Lustre"
+          },
+          "shortName": "CreateMirror"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "lustrepb.CreateMirrorRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CreateMirrorOperation",
+        "shortName": "CreateMirror"
+      },
+      "description": "CreateMirror creates a new mirror in a given instance.",
+      "file": "Client/CreateMirror/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "lustre_v1_generated_Lustre_CreateMirror_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "lustre CreateMirror Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.lustre.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.lustre.v1.Client.DeleteDirectoryPolicy",
+        "method": {
+          "fullName": "google.cloud.lustre.v1.Lustre.DeleteDirectoryPolicy",
+          "service": {
+            "fullName": "google.cloud.lustre.v1.Lustre",
+            "shortName": "Lustre"
+          },
+          "shortName": "DeleteDirectoryPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "lustrepb.DeleteDirectoryPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteDirectoryPolicyOperation",
+        "shortName": "DeleteDirectoryPolicy"
+      },
+      "description": "DeleteDirectoryPolicy deletes a directory policy resource.",
+      "file": "Client/DeleteDirectoryPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "lustre_v1_generated_Lustre_DeleteDirectoryPolicy_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "lustre DeleteDirectoryPolicy Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.lustre.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.lustre.v1.Client.DeleteInstance",
         "method": {
           "fullName": "google.cloud.lustre.v1.Lustre.DeleteInstance",
@@ -147,6 +285,52 @@
         }
       ],
       "title": "lustre DeleteInstance Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.lustre.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.lustre.v1.Client.DeleteMirror",
+        "method": {
+          "fullName": "google.cloud.lustre.v1.Lustre.DeleteMirror",
+          "service": {
+            "fullName": "google.cloud.lustre.v1.Lustre",
+            "shortName": "Lustre"
+          },
+          "shortName": "DeleteMirror"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "lustrepb.DeleteMirrorRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteMirrorOperation",
+        "shortName": "DeleteMirror"
+      },
+      "description": "DeleteMirror deletes a single mirror.",
+      "file": "Client/DeleteMirror/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "lustre_v1_generated_Lustre_DeleteMirror_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "lustre DeleteMirror Sample"
     },
     {
       "clientMethod": {
@@ -238,6 +422,98 @@
         }
       ],
       "title": "lustre ExportData Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.lustre.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.lustre.v1.Client.GetDirectoryPolicy",
+        "method": {
+          "fullName": "google.cloud.lustre.v1.Lustre.GetDirectoryPolicy",
+          "service": {
+            "fullName": "google.cloud.lustre.v1.Lustre",
+            "shortName": "Lustre"
+          },
+          "shortName": "GetDirectoryPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "lustrepb.GetDirectoryPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*lustrepb.DirectoryPolicy",
+        "shortName": "GetDirectoryPolicy"
+      },
+      "description": "GetDirectoryPolicy gets details of a single directory policy.",
+      "file": "Client/GetDirectoryPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "lustre_v1_generated_Lustre_GetDirectoryPolicy_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "lustre GetDirectoryPolicy Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.lustre.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.lustre.v1.Client.GetIamPolicy",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "GetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.GetIamPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "shortName": "GetIamPolicy"
+      },
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "Client/GetIamPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "lustre_v1_generated_Lustre_GetIamPolicy_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "lustre GetIamPolicy Sample"
     },
     {
       "clientMethod": {
@@ -337,6 +613,52 @@
           "fullName": "google.cloud.lustre.v1.Client",
           "shortName": "Client"
         },
+        "fullName": "google.cloud.lustre.v1.Client.GetMirror",
+        "method": {
+          "fullName": "google.cloud.lustre.v1.Lustre.GetMirror",
+          "service": {
+            "fullName": "google.cloud.lustre.v1.Lustre",
+            "shortName": "Lustre"
+          },
+          "shortName": "GetMirror"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "lustrepb.GetMirrorRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*lustrepb.Mirror",
+        "shortName": "GetMirror"
+      },
+      "description": "GetMirror gets details of a single mirror.",
+      "file": "Client/GetMirror/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "lustre_v1_generated_Lustre_GetMirror_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "lustre GetMirror Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.lustre.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.lustre.v1.Client.GetOperation",
         "method": {
           "fullName": "google.longrunning.Operations.GetOperation",
@@ -429,6 +751,52 @@
           "fullName": "google.cloud.lustre.v1.Client",
           "shortName": "Client"
         },
+        "fullName": "google.cloud.lustre.v1.Client.ListDirectoryPolicies",
+        "method": {
+          "fullName": "google.cloud.lustre.v1.Lustre.ListDirectoryPolicies",
+          "service": {
+            "fullName": "google.cloud.lustre.v1.Lustre",
+            "shortName": "Lustre"
+          },
+          "shortName": "ListDirectoryPolicies"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "lustrepb.ListDirectoryPoliciesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DirectoryPolicyIterator",
+        "shortName": "ListDirectoryPolicies"
+      },
+      "description": "ListDirectoryPolicies gets details of multiple directory policies under a given instance.",
+      "file": "Client/ListDirectoryPolicies/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "lustre_v1_generated_Lustre_ListDirectoryPolicies_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "lustre ListDirectoryPolicies Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.lustre.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.lustre.v1.Client.ListInstances",
         "method": {
           "fullName": "google.cloud.lustre.v1.Lustre.ListInstances",
@@ -501,7 +869,7 @@
         "resultType": "LocationIterator",
         "shortName": "ListLocations"
       },
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name][google.cloud.location.ListLocationsRequest.name] field: *\n**Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
       "file": "Client/ListLocations/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -514,6 +882,52 @@
         }
       ],
       "title": "lustre ListLocations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.lustre.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.lustre.v1.Client.ListMirrors",
+        "method": {
+          "fullName": "google.cloud.lustre.v1.Lustre.ListMirrors",
+          "service": {
+            "fullName": "google.cloud.lustre.v1.Lustre",
+            "shortName": "Lustre"
+          },
+          "shortName": "ListMirrors"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "lustrepb.ListMirrorsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "MirrorIterator",
+        "shortName": "ListMirrors"
+      },
+      "description": "ListMirrors gets details of multiple mirrors under a given instance.",
+      "file": "Client/ListMirrors/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "lustre_v1_generated_Lustre_ListMirrors_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "lustre ListMirrors Sample"
     },
     {
       "clientMethod": {
@@ -567,6 +981,144 @@
           "fullName": "google.cloud.lustre.v1.Client",
           "shortName": "Client"
         },
+        "fullName": "google.cloud.lustre.v1.Client.RescheduleMaintenance",
+        "method": {
+          "fullName": "google.cloud.lustre.v1.Lustre.RescheduleMaintenance",
+          "service": {
+            "fullName": "google.cloud.lustre.v1.Lustre",
+            "shortName": "Lustre"
+          },
+          "shortName": "RescheduleMaintenance"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "lustrepb.RescheduleMaintenanceRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "RescheduleMaintenanceOperation",
+        "shortName": "RescheduleMaintenance"
+      },
+      "description": "RescheduleMaintenance reschedules a planned maintenance event for a specific instance.",
+      "file": "Client/RescheduleMaintenance/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "lustre_v1_generated_Lustre_RescheduleMaintenance_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "lustre RescheduleMaintenance Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.lustre.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.lustre.v1.Client.SetIamPolicy",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "SetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.SetIamPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "shortName": "SetIamPolicy"
+      },
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "Client/SetIamPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "lustre_v1_generated_Lustre_SetIamPolicy_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "lustre SetIamPolicy Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.lustre.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.lustre.v1.Client.TestIamPermissions",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "TestIamPermissions"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.TestIamPermissionsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "shortName": "TestIamPermissions"
+      },
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "Client/TestIamPermissions/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "lustre_v1_generated_Lustre_TestIamPermissions_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "lustre TestIamPermissions Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.lustre.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.lustre.v1.Client.UpdateInstance",
         "method": {
           "fullName": "google.cloud.lustre.v1.Lustre.UpdateInstance",
@@ -606,6 +1158,52 @@
         }
       ],
       "title": "lustre UpdateInstance Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.lustre.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.lustre.v1.Client.UpdateMirror",
+        "method": {
+          "fullName": "google.cloud.lustre.v1.Lustre.UpdateMirror",
+          "service": {
+            "fullName": "google.cloud.lustre.v1.Lustre",
+            "shortName": "Lustre"
+          },
+          "shortName": "UpdateMirror"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "lustrepb.UpdateMirrorRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "UpdateMirrorOperation",
+        "shortName": "UpdateMirror"
+      },
+      "description": "UpdateMirror updates the parameters of a single mirror.",
+      "file": "Client/UpdateMirror/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "lustre_v1_generated_Lustre_UpdateMirror_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "lustre UpdateMirror Sample"
     }
   ]
 }

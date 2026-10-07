@@ -67,7 +67,18 @@ func defaultDeveloperKnowledgeGRPCClientOptions() []option.ClientOption {
 
 func defaultDeveloperKnowledgeCallOptions() *DeveloperKnowledgeCallOptions {
 	return &DeveloperKnowledgeCallOptions{
-		SearchDocumentChunks: []gax.CallOption{},
+		SearchDocumentChunks: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		GetDocument: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -98,7 +109,17 @@ func defaultDeveloperKnowledgeCallOptions() *DeveloperKnowledgeCallOptions {
 
 func defaultDeveloperKnowledgeRESTCallOptions() *DeveloperKnowledgeCallOptions {
 	return &DeveloperKnowledgeCallOptions{
-		SearchDocumentChunks: []gax.CallOption{},
+		SearchDocumentChunks: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		GetDocument: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -305,6 +326,39 @@ func NewDeveloperKnowledgeClient(ctx context.Context, opts ...option.ClientOptio
 		client.CallOptions.BatchGetDocuments = append(client.CallOptions.BatchGetDocuments, gax.WithClientMetrics(metrics))
 		client.CallOptions.AnswerQuery = append(client.CallOptions.AnswerQuery, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "developerknowledge",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/developerknowledge/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "developerknowledge.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.SearchDocumentChunks = append(client.CallOptions.SearchDocumentChunks, gax.WithClientTracing(tracing))
+		client.CallOptions.GetDocument = append(client.CallOptions.GetDocument, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchGetDocuments = append(client.CallOptions.BatchGetDocuments, gax.WithClientTracing(tracing))
+		client.CallOptions.AnswerQuery = append(client.CallOptions.AnswerQuery, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "developerknowledge",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/developerknowledge/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "developerknowledge.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.SearchDocumentChunks = append(client.CallOptions.SearchDocumentChunks, gax.WithClientLogging(logging))
+		client.CallOptions.GetDocument = append(client.CallOptions.GetDocument, gax.WithClientLogging(logging))
+		client.CallOptions.BatchGetDocuments = append(client.CallOptions.BatchGetDocuments, gax.WithClientLogging(logging))
+		client.CallOptions.AnswerQuery = append(client.CallOptions.AnswerQuery, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -414,6 +468,39 @@ func NewDeveloperKnowledgeRESTClient(ctx context.Context, opts ...option.ClientO
 		callOpts.BatchGetDocuments = append(callOpts.BatchGetDocuments, gax.WithClientMetrics(metrics))
 		callOpts.AnswerQuery = append(callOpts.AnswerQuery, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "developerknowledge",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/developerknowledge/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "developerknowledge.googleapis.com",
+			}),
+		)
+
+		callOpts.SearchDocumentChunks = append(callOpts.SearchDocumentChunks, gax.WithClientTracing(tracing))
+		callOpts.GetDocument = append(callOpts.GetDocument, gax.WithClientTracing(tracing))
+		callOpts.BatchGetDocuments = append(callOpts.BatchGetDocuments, gax.WithClientTracing(tracing))
+		callOpts.AnswerQuery = append(callOpts.AnswerQuery, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "developerknowledge",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/developerknowledge/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "developerknowledge.googleapis.com",
+			}),
+		)
+
+		callOpts.SearchDocumentChunks = append(callOpts.SearchDocumentChunks, gax.WithClientLogging(logging))
+		callOpts.GetDocument = append(callOpts.GetDocument, gax.WithClientLogging(logging))
+		callOpts.BatchGetDocuments = append(callOpts.BatchGetDocuments, gax.WithClientLogging(logging))
+		callOpts.AnswerQuery = append(callOpts.AnswerQuery, gax.WithClientLogging(logging))
+	}
 
 	return &DeveloperKnowledgeClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -506,9 +593,6 @@ func (c *developerKnowledgeGRPCClient) GetDocument(ctx context.Context, req *dev
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerknowledge.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.developers.knowledge.v1.DeveloperKnowledge/GetDocument")
 	}
@@ -676,9 +760,6 @@ func (c *developerKnowledgeRESTClient) GetDocument(ctx context.Context, req *dev
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerknowledge.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.developers.knowledge.v1.DeveloperKnowledge/GetDocument")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=documents/**}")

@@ -534,6 +534,51 @@ func NewDatastoreAdminClient(ctx context.Context, opts ...option.ClientOption) (
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "datastore",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datastore/admin/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "datastore.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ExportEntities = append(client.CallOptions.ExportEntities, gax.WithClientTracing(tracing))
+		client.CallOptions.ImportEntities = append(client.CallOptions.ImportEntities, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateIndex = append(client.CallOptions.CreateIndex, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteIndex = append(client.CallOptions.DeleteIndex, gax.WithClientTracing(tracing))
+		client.CallOptions.GetIndex = append(client.CallOptions.GetIndex, gax.WithClientTracing(tracing))
+		client.CallOptions.ListIndexes = append(client.CallOptions.ListIndexes, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "datastore",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datastore/admin/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "datastore.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ExportEntities = append(client.CallOptions.ExportEntities, gax.WithClientLogging(logging))
+		client.CallOptions.ImportEntities = append(client.CallOptions.ImportEntities, gax.WithClientLogging(logging))
+		client.CallOptions.CreateIndex = append(client.CallOptions.CreateIndex, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteIndex = append(client.CallOptions.DeleteIndex, gax.WithClientLogging(logging))
+		client.CallOptions.GetIndex = append(client.CallOptions.GetIndex, gax.WithClientLogging(logging))
+		client.CallOptions.ListIndexes = append(client.CallOptions.ListIndexes, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -703,6 +748,51 @@ func NewDatastoreAdminRESTClient(ctx context.Context, opts ...option.ClientOptio
 		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientMetrics(metrics))
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "datastore",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datastore/admin/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "datastore.googleapis.com",
+			}),
+		)
+
+		callOpts.ExportEntities = append(callOpts.ExportEntities, gax.WithClientTracing(tracing))
+		callOpts.ImportEntities = append(callOpts.ImportEntities, gax.WithClientTracing(tracing))
+		callOpts.CreateIndex = append(callOpts.CreateIndex, gax.WithClientTracing(tracing))
+		callOpts.DeleteIndex = append(callOpts.DeleteIndex, gax.WithClientTracing(tracing))
+		callOpts.GetIndex = append(callOpts.GetIndex, gax.WithClientTracing(tracing))
+		callOpts.ListIndexes = append(callOpts.ListIndexes, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "datastore",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datastore/admin/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "datastore.googleapis.com",
+			}),
+		)
+
+		callOpts.ExportEntities = append(callOpts.ExportEntities, gax.WithClientLogging(logging))
+		callOpts.ImportEntities = append(callOpts.ImportEntities, gax.WithClientLogging(logging))
+		callOpts.CreateIndex = append(callOpts.CreateIndex, gax.WithClientLogging(logging))
+		callOpts.DeleteIndex = append(callOpts.DeleteIndex, gax.WithClientLogging(logging))
+		callOpts.GetIndex = append(callOpts.GetIndex, gax.WithClientLogging(logging))
+		callOpts.ListIndexes = append(callOpts.ListIndexes, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
 	}
 
 	lroOpts := []option.ClientOption{

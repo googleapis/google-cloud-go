@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/auditmanager/apiv1",
-    "version": "1.3.0"
+    "version": "1.5.0"
   },
   "snippets": [
     {
@@ -55,6 +55,52 @@
         }
       ],
       "title": "auditmanager CancelOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.auditmanager.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.auditmanager.v1.Client.CreateAuditSchedule",
+        "method": {
+          "fullName": "google.cloud.auditmanager.v1.AuditManager.CreateAuditSchedule",
+          "service": {
+            "fullName": "google.cloud.auditmanager.v1.AuditManager",
+            "shortName": "AuditManager"
+          },
+          "shortName": "CreateAuditSchedule"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "auditmanagerpb.CreateAuditScheduleRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*auditmanagerpb.AuditSchedule",
+        "shortName": "CreateAuditSchedule"
+      },
+      "description": "CreateAuditSchedule creates a new audit schedule in a given project and location.",
+      "file": "Client/CreateAuditSchedule/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "auditmanager_v1_generated_AuditManager_CreateAuditSchedule_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "auditmanager CreateAuditSchedule Sample"
     },
     {
       "clientMethod": {
@@ -291,6 +337,52 @@
           "fullName": "google.cloud.auditmanager.v1.Client",
           "shortName": "Client"
         },
+        "fullName": "google.cloud.auditmanager.v1.Client.GetAuditSchedule",
+        "method": {
+          "fullName": "google.cloud.auditmanager.v1.AuditManager.GetAuditSchedule",
+          "service": {
+            "fullName": "google.cloud.auditmanager.v1.AuditManager",
+            "shortName": "AuditManager"
+          },
+          "shortName": "GetAuditSchedule"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "auditmanagerpb.GetAuditScheduleRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*auditmanagerpb.AuditSchedule",
+        "shortName": "GetAuditSchedule"
+      },
+      "description": "GetAuditSchedule gets details of a single audit schedule.",
+      "file": "Client/GetAuditSchedule/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "auditmanager_v1_generated_AuditManager_GetAuditSchedule_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "auditmanager GetAuditSchedule Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.auditmanager.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.auditmanager.v1.Client.GetLocation",
         "method": {
           "fullName": "google.cloud.location.Locations.GetLocation",
@@ -475,6 +567,52 @@
           "fullName": "google.cloud.auditmanager.v1.Client",
           "shortName": "Client"
         },
+        "fullName": "google.cloud.auditmanager.v1.Client.ListAuditSchedules",
+        "method": {
+          "fullName": "google.cloud.auditmanager.v1.AuditManager.ListAuditSchedules",
+          "service": {
+            "fullName": "google.cloud.auditmanager.v1.AuditManager",
+            "shortName": "AuditManager"
+          },
+          "shortName": "ListAuditSchedules"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "auditmanagerpb.ListAuditSchedulesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "AuditScheduleIterator",
+        "shortName": "ListAuditSchedules"
+      },
+      "description": "ListAuditSchedules lists audit schedules in a given project and location.",
+      "file": "Client/ListAuditSchedules/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "auditmanager_v1_generated_AuditManager_ListAuditSchedules_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "auditmanager ListAuditSchedules Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.auditmanager.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.auditmanager.v1.Client.ListControls",
         "method": {
           "fullName": "google.cloud.auditmanager.v1.AuditManager.ListControls",
@@ -652,6 +790,52 @@
         }
       ],
       "title": "auditmanager ListResourceEnrollmentStatuses Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.auditmanager.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.auditmanager.v1.Client.UpdateAuditSchedule",
+        "method": {
+          "fullName": "google.cloud.auditmanager.v1.AuditManager.UpdateAuditSchedule",
+          "service": {
+            "fullName": "google.cloud.auditmanager.v1.AuditManager",
+            "shortName": "AuditManager"
+          },
+          "shortName": "UpdateAuditSchedule"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "auditmanagerpb.UpdateAuditScheduleRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*auditmanagerpb.AuditSchedule",
+        "shortName": "UpdateAuditSchedule"
+      },
+      "description": "UpdateAuditSchedule updates an existing audit schedule.",
+      "file": "Client/UpdateAuditSchedule/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "auditmanager_v1_generated_AuditManager_UpdateAuditSchedule_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "auditmanager UpdateAuditSchedule Sample"
     }
   ]
 }

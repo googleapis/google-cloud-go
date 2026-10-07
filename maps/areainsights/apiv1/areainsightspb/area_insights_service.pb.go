@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -971,7 +971,14 @@ type isLocationFilter_Region_Region interface {
 }
 
 type LocationFilter_Region_Place struct {
-	// The unique identifier of a specific geographic region.
+	// The [place
+	// ID](https://developers.google.com/maps/documentation/places/web-service/place-id)
+	// of the geographic region. Not all region types are supported; see
+	// documentation for details.
+	//
+	// **Format:**  Must be in the format `places/PLACE_ID`, where `PLACE_ID`
+	// is the unique identifier of a place. For example:
+	// `places/ChIJPV4oX_65j4ARVW8IJ6IJUYs`.
 	Place string `protobuf:"bytes,1,opt,name=place,proto3,oneof"`
 }
 

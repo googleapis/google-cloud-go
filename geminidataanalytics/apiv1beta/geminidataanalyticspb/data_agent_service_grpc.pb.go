@@ -37,17 +37,19 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	DataAgentService_ListDataAgents_FullMethodName           = "/google.cloud.geminidataanalytics.v1beta.DataAgentService/ListDataAgents"
-	DataAgentService_ListAccessibleDataAgents_FullMethodName = "/google.cloud.geminidataanalytics.v1beta.DataAgentService/ListAccessibleDataAgents"
-	DataAgentService_GetDataAgent_FullMethodName             = "/google.cloud.geminidataanalytics.v1beta.DataAgentService/GetDataAgent"
-	DataAgentService_CreateDataAgent_FullMethodName          = "/google.cloud.geminidataanalytics.v1beta.DataAgentService/CreateDataAgent"
-	DataAgentService_CreateDataAgentSync_FullMethodName      = "/google.cloud.geminidataanalytics.v1beta.DataAgentService/CreateDataAgentSync"
-	DataAgentService_UpdateDataAgent_FullMethodName          = "/google.cloud.geminidataanalytics.v1beta.DataAgentService/UpdateDataAgent"
-	DataAgentService_UpdateDataAgentSync_FullMethodName      = "/google.cloud.geminidataanalytics.v1beta.DataAgentService/UpdateDataAgentSync"
-	DataAgentService_DeleteDataAgent_FullMethodName          = "/google.cloud.geminidataanalytics.v1beta.DataAgentService/DeleteDataAgent"
-	DataAgentService_DeleteDataAgentSync_FullMethodName      = "/google.cloud.geminidataanalytics.v1beta.DataAgentService/DeleteDataAgentSync"
-	DataAgentService_GetIamPolicy_FullMethodName             = "/google.cloud.geminidataanalytics.v1beta.DataAgentService/GetIamPolicy"
-	DataAgentService_SetIamPolicy_FullMethodName             = "/google.cloud.geminidataanalytics.v1beta.DataAgentService/SetIamPolicy"
+	DataAgentService_ListDataAgents_FullMethodName                = "/google.cloud.geminidataanalytics.v1beta.DataAgentService/ListDataAgents"
+	DataAgentService_ListAccessibleDataAgents_FullMethodName      = "/google.cloud.geminidataanalytics.v1beta.DataAgentService/ListAccessibleDataAgents"
+	DataAgentService_GetDataAgent_FullMethodName                  = "/google.cloud.geminidataanalytics.v1beta.DataAgentService/GetDataAgent"
+	DataAgentService_CreateDataAgent_FullMethodName               = "/google.cloud.geminidataanalytics.v1beta.DataAgentService/CreateDataAgent"
+	DataAgentService_CreateDataAgentSync_FullMethodName           = "/google.cloud.geminidataanalytics.v1beta.DataAgentService/CreateDataAgentSync"
+	DataAgentService_UpdateDataAgent_FullMethodName               = "/google.cloud.geminidataanalytics.v1beta.DataAgentService/UpdateDataAgent"
+	DataAgentService_UpdateDataAgentSync_FullMethodName           = "/google.cloud.geminidataanalytics.v1beta.DataAgentService/UpdateDataAgentSync"
+	DataAgentService_DeleteDataAgent_FullMethodName               = "/google.cloud.geminidataanalytics.v1beta.DataAgentService/DeleteDataAgent"
+	DataAgentService_DeleteDataAgentSync_FullMethodName           = "/google.cloud.geminidataanalytics.v1beta.DataAgentService/DeleteDataAgentSync"
+	DataAgentService_GetIamPolicy_FullMethodName                  = "/google.cloud.geminidataanalytics.v1beta.DataAgentService/GetIamPolicy"
+	DataAgentService_SetIamPolicy_FullMethodName                  = "/google.cloud.geminidataanalytics.v1beta.DataAgentService/SetIamPolicy"
+	DataAgentService_SetAgentOpsObservability_FullMethodName      = "/google.cloud.geminidataanalytics.v1beta.DataAgentService/SetAgentOpsObservability"
+	DataAgentService_RetrieveAgentOpsObservability_FullMethodName = "/google.cloud.geminidataanalytics.v1beta.DataAgentService/RetrieveAgentOpsObservability"
 )
 
 // DataAgentServiceClient is the client API for DataAgentService service.
@@ -77,6 +79,12 @@ type DataAgentServiceClient interface {
 	GetIamPolicy(ctx context.Context, in *iampb.GetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error)
 	// Sets the IAM policy for a DataAgent.
 	SetIamPolicy(ctx context.Context, in *iampb.SetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error)
+	// Enables/Disables required GCP services and configures AgentOps
+	// observability settings calling the Admin Settings executable node to
+	// update the AgentOps Observability feature.
+	SetAgentOpsObservability(ctx context.Context, in *SetAgentOpsObservabilityRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Gets AgentOps observability settings and status of required services.
+	RetrieveAgentOpsObservability(ctx context.Context, in *RetrieveAgentOpsObservabilityRequest, opts ...grpc.CallOption) (*RetrieveAgentOpsObservabilityResponse, error)
 }
 
 type dataAgentServiceClient struct {
@@ -186,6 +194,24 @@ func (c *dataAgentServiceClient) SetIamPolicy(ctx context.Context, in *iampb.Set
 	return out, nil
 }
 
+func (c *dataAgentServiceClient) SetAgentOpsObservability(ctx context.Context, in *SetAgentOpsObservabilityRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, DataAgentService_SetAgentOpsObservability_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *dataAgentServiceClient) RetrieveAgentOpsObservability(ctx context.Context, in *RetrieveAgentOpsObservabilityRequest, opts ...grpc.CallOption) (*RetrieveAgentOpsObservabilityResponse, error) {
+	out := new(RetrieveAgentOpsObservabilityResponse)
+	err := c.cc.Invoke(ctx, DataAgentService_RetrieveAgentOpsObservability_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // DataAgentServiceServer is the server API for DataAgentService service.
 // All implementations should embed UnimplementedDataAgentServiceServer
 // for forward compatibility
@@ -213,6 +239,12 @@ type DataAgentServiceServer interface {
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest) (*iampb.Policy, error)
 	// Sets the IAM policy for a DataAgent.
 	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest) (*iampb.Policy, error)
+	// Enables/Disables required GCP services and configures AgentOps
+	// observability settings calling the Admin Settings executable node to
+	// update the AgentOps Observability feature.
+	SetAgentOpsObservability(context.Context, *SetAgentOpsObservabilityRequest) (*longrunningpb.Operation, error)
+	// Gets AgentOps observability settings and status of required services.
+	RetrieveAgentOpsObservability(context.Context, *RetrieveAgentOpsObservabilityRequest) (*RetrieveAgentOpsObservabilityResponse, error)
 }
 
 // UnimplementedDataAgentServiceServer should be embedded to have forward compatible implementations.
@@ -251,6 +283,12 @@ func (UnimplementedDataAgentServiceServer) GetIamPolicy(context.Context, *iampb.
 }
 func (UnimplementedDataAgentServiceServer) SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest) (*iampb.Policy, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetIamPolicy not implemented")
+}
+func (UnimplementedDataAgentServiceServer) SetAgentOpsObservability(context.Context, *SetAgentOpsObservabilityRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetAgentOpsObservability not implemented")
+}
+func (UnimplementedDataAgentServiceServer) RetrieveAgentOpsObservability(context.Context, *RetrieveAgentOpsObservabilityRequest) (*RetrieveAgentOpsObservabilityResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RetrieveAgentOpsObservability not implemented")
 }
 
 // UnsafeDataAgentServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -462,6 +500,42 @@ func _DataAgentService_SetIamPolicy_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _DataAgentService_SetAgentOpsObservability_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetAgentOpsObservabilityRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataAgentServiceServer).SetAgentOpsObservability(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DataAgentService_SetAgentOpsObservability_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataAgentServiceServer).SetAgentOpsObservability(ctx, req.(*SetAgentOpsObservabilityRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DataAgentService_RetrieveAgentOpsObservability_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RetrieveAgentOpsObservabilityRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataAgentServiceServer).RetrieveAgentOpsObservability(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DataAgentService_RetrieveAgentOpsObservability_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataAgentServiceServer).RetrieveAgentOpsObservability(ctx, req.(*RetrieveAgentOpsObservabilityRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // DataAgentService_ServiceDesc is the grpc.ServiceDesc for DataAgentService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -512,6 +586,14 @@ var DataAgentService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SetIamPolicy",
 			Handler:    _DataAgentService_SetIamPolicy_Handler,
+		},
+		{
+			MethodName: "SetAgentOpsObservability",
+			Handler:    _DataAgentService_SetAgentOpsObservability_Handler,
+		},
+		{
+			MethodName: "RetrieveAgentOpsObservability",
+			Handler:    _DataAgentService_RetrieveAgentOpsObservability_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

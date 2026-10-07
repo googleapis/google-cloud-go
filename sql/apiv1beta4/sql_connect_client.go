@@ -212,6 +212,37 @@ func NewSqlConnectClient(ctx context.Context, opts ...option.ClientOption) (*Sql
 		client.CallOptions.ResolveConnectSettings = append(client.CallOptions.ResolveConnectSettings, gax.WithClientMetrics(metrics))
 		client.CallOptions.GenerateEphemeralCert = append(client.CallOptions.GenerateEphemeralCert, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "sqladmin",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/sql/apiv1beta4",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "sqladmin.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetConnectSettings = append(client.CallOptions.GetConnectSettings, gax.WithClientTracing(tracing))
+		client.CallOptions.ResolveConnectSettings = append(client.CallOptions.ResolveConnectSettings, gax.WithClientTracing(tracing))
+		client.CallOptions.GenerateEphemeralCert = append(client.CallOptions.GenerateEphemeralCert, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "sqladmin",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/sql/apiv1beta4",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "sqladmin.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetConnectSettings = append(client.CallOptions.GetConnectSettings, gax.WithClientLogging(logging))
+		client.CallOptions.ResolveConnectSettings = append(client.CallOptions.ResolveConnectSettings, gax.WithClientLogging(logging))
+		client.CallOptions.GenerateEphemeralCert = append(client.CallOptions.GenerateEphemeralCert, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -304,6 +335,37 @@ func NewSqlConnectRESTClient(ctx context.Context, opts ...option.ClientOption) (
 		callOpts.GetConnectSettings = append(callOpts.GetConnectSettings, gax.WithClientMetrics(metrics))
 		callOpts.ResolveConnectSettings = append(callOpts.ResolveConnectSettings, gax.WithClientMetrics(metrics))
 		callOpts.GenerateEphemeralCert = append(callOpts.GenerateEphemeralCert, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "sqladmin",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/sql/apiv1beta4",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "sqladmin.googleapis.com",
+			}),
+		)
+
+		callOpts.GetConnectSettings = append(callOpts.GetConnectSettings, gax.WithClientTracing(tracing))
+		callOpts.ResolveConnectSettings = append(callOpts.ResolveConnectSettings, gax.WithClientTracing(tracing))
+		callOpts.GenerateEphemeralCert = append(callOpts.GenerateEphemeralCert, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "sqladmin",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/sql/apiv1beta4",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "sqladmin.googleapis.com",
+			}),
+		)
+
+		callOpts.GetConnectSettings = append(callOpts.GetConnectSettings, gax.WithClientLogging(logging))
+		callOpts.ResolveConnectSettings = append(callOpts.ResolveConnectSettings, gax.WithClientLogging(logging))
+		callOpts.GenerateEphemeralCert = append(callOpts.GenerateEphemeralCert, gax.WithClientLogging(logging))
 	}
 
 	return &SqlConnectClient{internalClient: c, CallOptions: callOpts}, nil

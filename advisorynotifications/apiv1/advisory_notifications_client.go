@@ -264,6 +264,39 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.GetSettings = append(client.CallOptions.GetSettings, gax.WithClientMetrics(metrics))
 		client.CallOptions.UpdateSettings = append(client.CallOptions.UpdateSettings, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "advisorynotifications",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/advisorynotifications/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "advisorynotifications.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListNotifications = append(client.CallOptions.ListNotifications, gax.WithClientTracing(tracing))
+		client.CallOptions.GetNotification = append(client.CallOptions.GetNotification, gax.WithClientTracing(tracing))
+		client.CallOptions.GetSettings = append(client.CallOptions.GetSettings, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateSettings = append(client.CallOptions.UpdateSettings, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "advisorynotifications",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/advisorynotifications/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "advisorynotifications.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListNotifications = append(client.CallOptions.ListNotifications, gax.WithClientLogging(logging))
+		client.CallOptions.GetNotification = append(client.CallOptions.GetNotification, gax.WithClientLogging(logging))
+		client.CallOptions.GetSettings = append(client.CallOptions.GetSettings, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateSettings = append(client.CallOptions.UpdateSettings, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -358,6 +391,39 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.GetSettings = append(callOpts.GetSettings, gax.WithClientMetrics(metrics))
 		callOpts.UpdateSettings = append(callOpts.UpdateSettings, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "advisorynotifications",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/advisorynotifications/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "advisorynotifications.googleapis.com",
+			}),
+		)
+
+		callOpts.ListNotifications = append(callOpts.ListNotifications, gax.WithClientTracing(tracing))
+		callOpts.GetNotification = append(callOpts.GetNotification, gax.WithClientTracing(tracing))
+		callOpts.GetSettings = append(callOpts.GetSettings, gax.WithClientTracing(tracing))
+		callOpts.UpdateSettings = append(callOpts.UpdateSettings, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "advisorynotifications",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/advisorynotifications/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "advisorynotifications.googleapis.com",
+			}),
+		)
+
+		callOpts.ListNotifications = append(callOpts.ListNotifications, gax.WithClientLogging(logging))
+		callOpts.GetNotification = append(callOpts.GetNotification, gax.WithClientLogging(logging))
+		callOpts.GetSettings = append(callOpts.GetSettings, gax.WithClientLogging(logging))
+		callOpts.UpdateSettings = append(callOpts.UpdateSettings, gax.WithClientLogging(logging))
+	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -404,9 +470,6 @@ func (c *gRPCClient) ListNotifications(ctx context.Context, req *advisorynotific
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//advisorynotifications.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.advisorynotifications.v1.AdvisoryNotificationsService/ListNotifications")
 	}
@@ -456,9 +519,6 @@ func (c *gRPCClient) GetNotification(ctx context.Context, req *advisorynotificat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//advisorynotifications.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.advisorynotifications.v1.AdvisoryNotificationsService/GetNotification")
 	}
@@ -480,9 +540,6 @@ func (c *gRPCClient) GetSettings(ctx context.Context, req *advisorynotifications
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//advisorynotifications.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.advisorynotifications.v1.AdvisoryNotificationsService/GetSettings")
 	}
@@ -626,9 +683,6 @@ func (c *restClient) GetNotification(ctx context.Context, req *advisorynotificat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//advisorynotifications.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.advisorynotifications.v1.AdvisoryNotificationsService/GetNotification")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=organizations/*/locations/*/notifications/*}")
@@ -683,9 +737,6 @@ func (c *restClient) GetSettings(ctx context.Context, req *advisorynotifications
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//advisorynotifications.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.advisorynotifications.v1.AdvisoryNotificationsService/GetSettings")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=organizations/*/locations/*/settings}")

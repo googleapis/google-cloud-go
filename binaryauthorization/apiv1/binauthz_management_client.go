@@ -479,6 +479,51 @@ func NewBinauthzManagementClient(ctx context.Context, opts ...option.ClientOptio
 		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientMetrics(metrics))
 		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "binaryauthorization",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/binaryauthorization/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "binaryauthorization.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetPolicy = append(client.CallOptions.GetPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdatePolicy = append(client.CallOptions.UpdatePolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateAttestor = append(client.CallOptions.CreateAttestor, gax.WithClientTracing(tracing))
+		client.CallOptions.GetAttestor = append(client.CallOptions.GetAttestor, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateAttestor = append(client.CallOptions.UpdateAttestor, gax.WithClientTracing(tracing))
+		client.CallOptions.ListAttestors = append(client.CallOptions.ListAttestors, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteAttestor = append(client.CallOptions.DeleteAttestor, gax.WithClientTracing(tracing))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "binaryauthorization",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/binaryauthorization/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "binaryauthorization.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetPolicy = append(client.CallOptions.GetPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.UpdatePolicy = append(client.CallOptions.UpdatePolicy, gax.WithClientLogging(logging))
+		client.CallOptions.CreateAttestor = append(client.CallOptions.CreateAttestor, gax.WithClientLogging(logging))
+		client.CallOptions.GetAttestor = append(client.CallOptions.GetAttestor, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateAttestor = append(client.CallOptions.UpdateAttestor, gax.WithClientLogging(logging))
+		client.CallOptions.ListAttestors = append(client.CallOptions.ListAttestors, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteAttestor = append(client.CallOptions.DeleteAttestor, gax.WithClientLogging(logging))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -586,6 +631,51 @@ func NewBinauthzManagementRESTClient(ctx context.Context, opts ...option.ClientO
 		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientMetrics(metrics))
 		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "binaryauthorization",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/binaryauthorization/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "binaryauthorization.googleapis.com",
+			}),
+		)
+
+		callOpts.GetPolicy = append(callOpts.GetPolicy, gax.WithClientTracing(tracing))
+		callOpts.UpdatePolicy = append(callOpts.UpdatePolicy, gax.WithClientTracing(tracing))
+		callOpts.CreateAttestor = append(callOpts.CreateAttestor, gax.WithClientTracing(tracing))
+		callOpts.GetAttestor = append(callOpts.GetAttestor, gax.WithClientTracing(tracing))
+		callOpts.UpdateAttestor = append(callOpts.UpdateAttestor, gax.WithClientTracing(tracing))
+		callOpts.ListAttestors = append(callOpts.ListAttestors, gax.WithClientTracing(tracing))
+		callOpts.DeleteAttestor = append(callOpts.DeleteAttestor, gax.WithClientTracing(tracing))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "binaryauthorization",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/binaryauthorization/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "binaryauthorization.googleapis.com",
+			}),
+		)
+
+		callOpts.GetPolicy = append(callOpts.GetPolicy, gax.WithClientLogging(logging))
+		callOpts.UpdatePolicy = append(callOpts.UpdatePolicy, gax.WithClientLogging(logging))
+		callOpts.CreateAttestor = append(callOpts.CreateAttestor, gax.WithClientLogging(logging))
+		callOpts.GetAttestor = append(callOpts.GetAttestor, gax.WithClientLogging(logging))
+		callOpts.UpdateAttestor = append(callOpts.UpdateAttestor, gax.WithClientLogging(logging))
+		callOpts.ListAttestors = append(callOpts.ListAttestors, gax.WithClientLogging(logging))
+		callOpts.DeleteAttestor = append(callOpts.DeleteAttestor, gax.WithClientLogging(logging))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientLogging(logging))
+	}
 
 	return &BinauthzManagementClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -632,9 +722,6 @@ func (c *binauthzManagementGRPCClient) GetPolicy(ctx context.Context, req *binar
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//binaryauthorization.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.binaryauthorization.v1.BinauthzManagementServiceV1/GetPolicy")
 	}
@@ -677,9 +764,6 @@ func (c *binauthzManagementGRPCClient) CreateAttestor(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//binaryauthorization.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.binaryauthorization.v1.BinauthzManagementServiceV1/CreateAttestor")
 	}
@@ -701,9 +785,6 @@ func (c *binauthzManagementGRPCClient) GetAttestor(ctx context.Context, req *bin
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//binaryauthorization.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.binaryauthorization.v1.BinauthzManagementServiceV1/GetAttestor")
 	}
@@ -746,9 +827,6 @@ func (c *binauthzManagementGRPCClient) ListAttestors(ctx context.Context, req *b
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//binaryauthorization.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.binaryauthorization.v1.BinauthzManagementServiceV1/ListAttestors")
 	}
@@ -798,9 +876,6 @@ func (c *binauthzManagementGRPCClient) DeleteAttestor(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//binaryauthorization.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.binaryauthorization.v1.BinauthzManagementServiceV1/DeleteAttestor")
 	}
@@ -818,9 +893,6 @@ func (c *binauthzManagementGRPCClient) GetIamPolicy(ctx context.Context, req *ia
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
 	}
@@ -842,9 +914,6 @@ func (c *binauthzManagementGRPCClient) SetIamPolicy(ctx context.Context, req *ia
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
 	}
@@ -866,9 +935,6 @@ func (c *binauthzManagementGRPCClient) TestIamPermissions(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
 	}
@@ -913,9 +979,6 @@ func (c *binauthzManagementRESTClient) GetPolicy(ctx context.Context, req *binar
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//binaryauthorization.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.binaryauthorization.v1.BinauthzManagementServiceV1/GetPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/policy}")
@@ -1049,9 +1112,6 @@ func (c *binauthzManagementRESTClient) CreateAttestor(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//binaryauthorization.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.binaryauthorization.v1.BinauthzManagementServiceV1/CreateAttestor")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*}/attestors")
@@ -1108,9 +1168,6 @@ func (c *binauthzManagementRESTClient) GetAttestor(ctx context.Context, req *bin
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//binaryauthorization.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.binaryauthorization.v1.BinauthzManagementServiceV1/GetAttestor")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/attestors/*}")
@@ -1309,9 +1366,6 @@ func (c *binauthzManagementRESTClient) DeleteAttestor(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//binaryauthorization.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.binaryauthorization.v1.BinauthzManagementServiceV1/DeleteAttestor")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/attestors/*}")
@@ -1355,9 +1409,6 @@ func (c *binauthzManagementRESTClient) GetIamPolicy(ctx context.Context, req *ia
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/policy}:getIamPolicy")
@@ -1422,9 +1473,6 @@ func (c *binauthzManagementRESTClient) SetIamPolicy(ctx context.Context, req *ia
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/policy}:setIamPolicy")
@@ -1491,9 +1539,6 @@ func (c *binauthzManagementRESTClient) TestIamPermissions(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/policy}:testIamPermissions")

@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -500,8 +500,10 @@ type DeviceSession struct {
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
 	// Output only. The timestamp that the session first became ACTIVE.
 	ActiveStartTime *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=active_start_time,json=activeStartTime,proto3" json:"active_start_time,omitempty"`
-	// Required. The requested device
+	// Required. The requested device.
 	AndroidDevice *AndroidDevice `protobuf:"bytes,15,opt,name=android_device,json=androidDevice,proto3" json:"android_device,omitempty"`
+	// Optional. Information about the client which invoked the device session.
+	ClientInfo    *ClientInfo `protobuf:"bytes,21,opt,name=client_info,json=clientInfo,proto3" json:"client_info,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -617,6 +619,13 @@ func (x *DeviceSession) GetAndroidDevice() *AndroidDevice {
 	return nil
 }
 
+func (x *DeviceSession) GetClientInfo() *ClientInfo {
+	if x != nil {
+		return x.ClientInfo
+	}
+	return nil
+}
+
 type isDeviceSession_Expiration interface {
 	isDeviceSession_Expiration()
 }
@@ -639,6 +648,61 @@ func (*DeviceSession_Ttl) isDeviceSession_Expiration() {}
 
 func (*DeviceSession_ExpireTime) isDeviceSession_Expiration() {}
 
+// Information about the client which invoked the device session.
+type ClientInfo struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Client name, such as gcloud. The maximum length is 64 characters.
+	Client string `protobuf:"bytes,1,opt,name=client,proto3" json:"client,omitempty"`
+	// Optional. Client version. The maximum length is 64 characters.
+	Version       string `protobuf:"bytes,2,opt,name=version,proto3" json:"version,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ClientInfo) Reset() {
+	*x = ClientInfo{}
+	mi := &file_google_cloud_devicestreaming_v1_service_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ClientInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ClientInfo) ProtoMessage() {}
+
+func (x *ClientInfo) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_devicestreaming_v1_service_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ClientInfo.ProtoReflect.Descriptor instead.
+func (*ClientInfo) Descriptor() ([]byte, []int) {
+	return file_google_cloud_devicestreaming_v1_service_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *ClientInfo) GetClient() string {
+	if x != nil {
+		return x.Client
+	}
+	return ""
+}
+
+func (x *ClientInfo) GetVersion() string {
+	if x != nil {
+		return x.Version
+	}
+	return ""
+}
+
 // A single Android device.
 type AndroidDevice struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -660,7 +724,7 @@ type AndroidDevice struct {
 
 func (x *AndroidDevice) Reset() {
 	*x = AndroidDevice{}
-	mi := &file_google_cloud_devicestreaming_v1_service_proto_msgTypes[7]
+	mi := &file_google_cloud_devicestreaming_v1_service_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -672,7 +736,7 @@ func (x *AndroidDevice) String() string {
 func (*AndroidDevice) ProtoMessage() {}
 
 func (x *AndroidDevice) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_devicestreaming_v1_service_proto_msgTypes[7]
+	mi := &file_google_cloud_devicestreaming_v1_service_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -685,7 +749,7 @@ func (x *AndroidDevice) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AndroidDevice.ProtoReflect.Descriptor instead.
 func (*AndroidDevice) Descriptor() ([]byte, []int) {
-	return file_google_cloud_devicestreaming_v1_service_proto_rawDescGZIP(), []int{7}
+	return file_google_cloud_devicestreaming_v1_service_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *AndroidDevice) GetAndroidModelId() string {
@@ -733,7 +797,7 @@ type DeviceSession_SessionStateEvent struct {
 
 func (x *DeviceSession_SessionStateEvent) Reset() {
 	*x = DeviceSession_SessionStateEvent{}
-	mi := &file_google_cloud_devicestreaming_v1_service_proto_msgTypes[8]
+	mi := &file_google_cloud_devicestreaming_v1_service_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -745,7 +809,7 @@ func (x *DeviceSession_SessionStateEvent) String() string {
 func (*DeviceSession_SessionStateEvent) ProtoMessage() {}
 
 func (x *DeviceSession_SessionStateEvent) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_devicestreaming_v1_service_proto_msgTypes[8]
+	mi := &file_google_cloud_devicestreaming_v1_service_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -811,7 +875,8 @@ const file_google_cloud_devicestreaming_v1_service_proto_rawDesc = "" +
 	"\x1aUpdateDeviceSessionRequest\x12Z\n" +
 	"\x0edevice_session\x18\x01 \x01(\v2..google.cloud.devicestreaming.v1.DeviceSessionB\x03\xe0A\x02R\rdeviceSession\x12@\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"\xd6\t\n" +
+	"updateMask\"\xa9\n" +
+	"\n" +
 	"\rDeviceSession\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x01R\x04name\x12&\n" +
 	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x03R\vdisplayName\x12V\n" +
@@ -824,7 +889,9 @@ const file_google_cloud_devicestreaming_v1_service_proto_rawDesc = "" +
 	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
 	"createTime\x12K\n" +
 	"\x11active_start_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x0factiveStartTime\x12Z\n" +
-	"\x0eandroid_device\x18\x0f \x01(\v2..google.cloud.devicestreaming.v1.AndroidDeviceB\x03\xe0A\x02R\randroidDevice\x1a\xe4\x01\n" +
+	"\x0eandroid_device\x18\x0f \x01(\v2..google.cloud.devicestreaming.v1.AndroidDeviceB\x03\xe0A\x02R\randroidDevice\x12Q\n" +
+	"\vclient_info\x18\x15 \x01(\v2+.google.cloud.devicestreaming.v1.ClientInfoB\x03\xe0A\x01R\n" +
+	"clientInfo\x1a\xe4\x01\n" +
 	"\x11SessionStateEvent\x12e\n" +
 	"\rsession_state\x18\x01 \x01(\x0e2;.google.cloud.devicestreaming.v1.DeviceSession.SessionStateB\x03\xe0A\x03R\fsessionState\x12>\n" +
 	"\n" +
@@ -842,7 +909,11 @@ const file_google_cloud_devicestreaming_v1_service_proto_rawDesc = "" +
 	"\x05ERROR\x10\a:\x85\x01\xeaA\x81\x01\n" +
 	",devicestreaming.googleapis.com/DeviceSession\x122projects/{project}/deviceSessions/{device_session}*\x0edeviceSessions2\rdeviceSessionB\f\n" +
 	"\n" +
-	"expiration\"\xb5\x01\n" +
+	"expiration\"H\n" +
+	"\n" +
+	"ClientInfo\x12\x1b\n" +
+	"\x06client\x18\x01 \x01(\tB\x03\xe0A\x02R\x06client\x12\x1d\n" +
+	"\aversion\x18\x02 \x01(\tB\x03\xe0A\x01R\aversion\"\xb5\x01\n" +
 	"\rAndroidDevice\x12-\n" +
 	"\x10android_model_id\x18\x01 \x01(\tB\x03\xe0A\x02R\x0eandroidModelId\x121\n" +
 	"\x12android_version_id\x18\x02 \x01(\tB\x03\xe0A\x02R\x10androidVersionId\x12\x1b\n" +
@@ -871,7 +942,7 @@ func file_google_cloud_devicestreaming_v1_service_proto_rawDescGZIP() []byte {
 }
 
 var file_google_cloud_devicestreaming_v1_service_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_google_cloud_devicestreaming_v1_service_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
+var file_google_cloud_devicestreaming_v1_service_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
 var file_google_cloud_devicestreaming_v1_service_proto_goTypes = []any{
 	(DeviceSession_SessionState)(0),         // 0: google.cloud.devicestreaming.v1.DeviceSession.SessionState
 	(*CreateDeviceSessionRequest)(nil),      // 1: google.cloud.devicestreaming.v1.CreateDeviceSessionRequest
@@ -881,47 +952,49 @@ var file_google_cloud_devicestreaming_v1_service_proto_goTypes = []any{
 	(*CancelDeviceSessionRequest)(nil),      // 5: google.cloud.devicestreaming.v1.CancelDeviceSessionRequest
 	(*UpdateDeviceSessionRequest)(nil),      // 6: google.cloud.devicestreaming.v1.UpdateDeviceSessionRequest
 	(*DeviceSession)(nil),                   // 7: google.cloud.devicestreaming.v1.DeviceSession
-	(*AndroidDevice)(nil),                   // 8: google.cloud.devicestreaming.v1.AndroidDevice
-	(*DeviceSession_SessionStateEvent)(nil), // 9: google.cloud.devicestreaming.v1.DeviceSession.SessionStateEvent
-	(*fieldmaskpb.FieldMask)(nil),           // 10: google.protobuf.FieldMask
-	(*durationpb.Duration)(nil),             // 11: google.protobuf.Duration
-	(*timestamppb.Timestamp)(nil),           // 12: google.protobuf.Timestamp
-	(*AdbMessage)(nil),                      // 13: google.cloud.devicestreaming.v1.AdbMessage
-	(*emptypb.Empty)(nil),                   // 14: google.protobuf.Empty
-	(*DeviceMessage)(nil),                   // 15: google.cloud.devicestreaming.v1.DeviceMessage
+	(*ClientInfo)(nil),                      // 8: google.cloud.devicestreaming.v1.ClientInfo
+	(*AndroidDevice)(nil),                   // 9: google.cloud.devicestreaming.v1.AndroidDevice
+	(*DeviceSession_SessionStateEvent)(nil), // 10: google.cloud.devicestreaming.v1.DeviceSession.SessionStateEvent
+	(*fieldmaskpb.FieldMask)(nil),           // 11: google.protobuf.FieldMask
+	(*durationpb.Duration)(nil),             // 12: google.protobuf.Duration
+	(*timestamppb.Timestamp)(nil),           // 13: google.protobuf.Timestamp
+	(*AdbMessage)(nil),                      // 14: google.cloud.devicestreaming.v1.AdbMessage
+	(*emptypb.Empty)(nil),                   // 15: google.protobuf.Empty
+	(*DeviceMessage)(nil),                   // 16: google.cloud.devicestreaming.v1.DeviceMessage
 }
 var file_google_cloud_devicestreaming_v1_service_proto_depIdxs = []int32{
 	7,  // 0: google.cloud.devicestreaming.v1.CreateDeviceSessionRequest.device_session:type_name -> google.cloud.devicestreaming.v1.DeviceSession
 	7,  // 1: google.cloud.devicestreaming.v1.ListDeviceSessionsResponse.device_sessions:type_name -> google.cloud.devicestreaming.v1.DeviceSession
 	7,  // 2: google.cloud.devicestreaming.v1.UpdateDeviceSessionRequest.device_session:type_name -> google.cloud.devicestreaming.v1.DeviceSession
-	10, // 3: google.cloud.devicestreaming.v1.UpdateDeviceSessionRequest.update_mask:type_name -> google.protobuf.FieldMask
+	11, // 3: google.cloud.devicestreaming.v1.UpdateDeviceSessionRequest.update_mask:type_name -> google.protobuf.FieldMask
 	0,  // 4: google.cloud.devicestreaming.v1.DeviceSession.state:type_name -> google.cloud.devicestreaming.v1.DeviceSession.SessionState
-	9,  // 5: google.cloud.devicestreaming.v1.DeviceSession.state_histories:type_name -> google.cloud.devicestreaming.v1.DeviceSession.SessionStateEvent
-	11, // 6: google.cloud.devicestreaming.v1.DeviceSession.ttl:type_name -> google.protobuf.Duration
-	12, // 7: google.cloud.devicestreaming.v1.DeviceSession.expire_time:type_name -> google.protobuf.Timestamp
-	11, // 8: google.cloud.devicestreaming.v1.DeviceSession.inactivity_timeout:type_name -> google.protobuf.Duration
-	12, // 9: google.cloud.devicestreaming.v1.DeviceSession.create_time:type_name -> google.protobuf.Timestamp
-	12, // 10: google.cloud.devicestreaming.v1.DeviceSession.active_start_time:type_name -> google.protobuf.Timestamp
-	8,  // 11: google.cloud.devicestreaming.v1.DeviceSession.android_device:type_name -> google.cloud.devicestreaming.v1.AndroidDevice
-	0,  // 12: google.cloud.devicestreaming.v1.DeviceSession.SessionStateEvent.session_state:type_name -> google.cloud.devicestreaming.v1.DeviceSession.SessionState
-	12, // 13: google.cloud.devicestreaming.v1.DeviceSession.SessionStateEvent.event_time:type_name -> google.protobuf.Timestamp
-	1,  // 14: google.cloud.devicestreaming.v1.DirectAccessService.CreateDeviceSession:input_type -> google.cloud.devicestreaming.v1.CreateDeviceSessionRequest
-	2,  // 15: google.cloud.devicestreaming.v1.DirectAccessService.ListDeviceSessions:input_type -> google.cloud.devicestreaming.v1.ListDeviceSessionsRequest
-	4,  // 16: google.cloud.devicestreaming.v1.DirectAccessService.GetDeviceSession:input_type -> google.cloud.devicestreaming.v1.GetDeviceSessionRequest
-	5,  // 17: google.cloud.devicestreaming.v1.DirectAccessService.CancelDeviceSession:input_type -> google.cloud.devicestreaming.v1.CancelDeviceSessionRequest
-	6,  // 18: google.cloud.devicestreaming.v1.DirectAccessService.UpdateDeviceSession:input_type -> google.cloud.devicestreaming.v1.UpdateDeviceSessionRequest
-	13, // 19: google.cloud.devicestreaming.v1.DirectAccessService.AdbConnect:input_type -> google.cloud.devicestreaming.v1.AdbMessage
-	7,  // 20: google.cloud.devicestreaming.v1.DirectAccessService.CreateDeviceSession:output_type -> google.cloud.devicestreaming.v1.DeviceSession
-	3,  // 21: google.cloud.devicestreaming.v1.DirectAccessService.ListDeviceSessions:output_type -> google.cloud.devicestreaming.v1.ListDeviceSessionsResponse
-	7,  // 22: google.cloud.devicestreaming.v1.DirectAccessService.GetDeviceSession:output_type -> google.cloud.devicestreaming.v1.DeviceSession
-	14, // 23: google.cloud.devicestreaming.v1.DirectAccessService.CancelDeviceSession:output_type -> google.protobuf.Empty
-	7,  // 24: google.cloud.devicestreaming.v1.DirectAccessService.UpdateDeviceSession:output_type -> google.cloud.devicestreaming.v1.DeviceSession
-	15, // 25: google.cloud.devicestreaming.v1.DirectAccessService.AdbConnect:output_type -> google.cloud.devicestreaming.v1.DeviceMessage
-	20, // [20:26] is the sub-list for method output_type
-	14, // [14:20] is the sub-list for method input_type
-	14, // [14:14] is the sub-list for extension type_name
-	14, // [14:14] is the sub-list for extension extendee
-	0,  // [0:14] is the sub-list for field type_name
+	10, // 5: google.cloud.devicestreaming.v1.DeviceSession.state_histories:type_name -> google.cloud.devicestreaming.v1.DeviceSession.SessionStateEvent
+	12, // 6: google.cloud.devicestreaming.v1.DeviceSession.ttl:type_name -> google.protobuf.Duration
+	13, // 7: google.cloud.devicestreaming.v1.DeviceSession.expire_time:type_name -> google.protobuf.Timestamp
+	12, // 8: google.cloud.devicestreaming.v1.DeviceSession.inactivity_timeout:type_name -> google.protobuf.Duration
+	13, // 9: google.cloud.devicestreaming.v1.DeviceSession.create_time:type_name -> google.protobuf.Timestamp
+	13, // 10: google.cloud.devicestreaming.v1.DeviceSession.active_start_time:type_name -> google.protobuf.Timestamp
+	9,  // 11: google.cloud.devicestreaming.v1.DeviceSession.android_device:type_name -> google.cloud.devicestreaming.v1.AndroidDevice
+	8,  // 12: google.cloud.devicestreaming.v1.DeviceSession.client_info:type_name -> google.cloud.devicestreaming.v1.ClientInfo
+	0,  // 13: google.cloud.devicestreaming.v1.DeviceSession.SessionStateEvent.session_state:type_name -> google.cloud.devicestreaming.v1.DeviceSession.SessionState
+	13, // 14: google.cloud.devicestreaming.v1.DeviceSession.SessionStateEvent.event_time:type_name -> google.protobuf.Timestamp
+	1,  // 15: google.cloud.devicestreaming.v1.DirectAccessService.CreateDeviceSession:input_type -> google.cloud.devicestreaming.v1.CreateDeviceSessionRequest
+	2,  // 16: google.cloud.devicestreaming.v1.DirectAccessService.ListDeviceSessions:input_type -> google.cloud.devicestreaming.v1.ListDeviceSessionsRequest
+	4,  // 17: google.cloud.devicestreaming.v1.DirectAccessService.GetDeviceSession:input_type -> google.cloud.devicestreaming.v1.GetDeviceSessionRequest
+	5,  // 18: google.cloud.devicestreaming.v1.DirectAccessService.CancelDeviceSession:input_type -> google.cloud.devicestreaming.v1.CancelDeviceSessionRequest
+	6,  // 19: google.cloud.devicestreaming.v1.DirectAccessService.UpdateDeviceSession:input_type -> google.cloud.devicestreaming.v1.UpdateDeviceSessionRequest
+	14, // 20: google.cloud.devicestreaming.v1.DirectAccessService.AdbConnect:input_type -> google.cloud.devicestreaming.v1.AdbMessage
+	7,  // 21: google.cloud.devicestreaming.v1.DirectAccessService.CreateDeviceSession:output_type -> google.cloud.devicestreaming.v1.DeviceSession
+	3,  // 22: google.cloud.devicestreaming.v1.DirectAccessService.ListDeviceSessions:output_type -> google.cloud.devicestreaming.v1.ListDeviceSessionsResponse
+	7,  // 23: google.cloud.devicestreaming.v1.DirectAccessService.GetDeviceSession:output_type -> google.cloud.devicestreaming.v1.DeviceSession
+	15, // 24: google.cloud.devicestreaming.v1.DirectAccessService.CancelDeviceSession:output_type -> google.protobuf.Empty
+	7,  // 25: google.cloud.devicestreaming.v1.DirectAccessService.UpdateDeviceSession:output_type -> google.cloud.devicestreaming.v1.DeviceSession
+	16, // 26: google.cloud.devicestreaming.v1.DirectAccessService.AdbConnect:output_type -> google.cloud.devicestreaming.v1.DeviceMessage
+	21, // [21:27] is the sub-list for method output_type
+	15, // [15:21] is the sub-list for method input_type
+	15, // [15:15] is the sub-list for extension type_name
+	15, // [15:15] is the sub-list for extension extendee
+	0,  // [0:15] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_devicestreaming_v1_service_proto_init() }
@@ -940,7 +1013,7 @@ func file_google_cloud_devicestreaming_v1_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_devicestreaming_v1_service_proto_rawDesc), len(file_google_cloud_devicestreaming_v1_service_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   9,
+			NumMessages:   10,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
