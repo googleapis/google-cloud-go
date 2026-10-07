@@ -16,10 +16,11 @@
 
 package spanner
 
-// This file is compiled only with the spanner_vtproto build tag. Every
-// streaming query and read receives its PartialResultSets into the private
-// vtprotobuf copy of google.spanner.v1 in internal/vtpb, with a gRPC codec
-// that is installed for the streams of each RowIterator.
+// This file is compiled only with the spanner_vtproto build tag. A streaming
+// query or read that sets ExperimentalBorrowRows receives its
+// PartialResultSets into the private vtprotobuf copy of google.spanner.v1 in
+// internal/vtpb, with a gRPC codec that is installed for the streams of its
+// RowIterator.
 //
 // Only ExecuteStreamingSql and StreamingRead use internal/vtpb. They are the
 // RPCs that the client reads rows with, and their cost grows with the number of
@@ -41,9 +42,17 @@ package spanner
 //     precommit token are converted to the public types, once per
 //     PartialResultSet.
 //
-// The RowIterator returns the same *Row from every call to Next. The row, its
-// values and everything decoded from them are only valid until the next call
-// to Next or Stop. ReadRow, ReadRowUsingIndex and SelectAll return copies.
+// Only the RowIterators of the queries and reads that set
+// ExperimentalBorrowRows in their QueryOptions or ReadOptions use the codec.
+// The others receive public sppb.PartialResultSets, like a client that is
+// built without the tag.
+//
+// A RowIterator that uses the codec returns the same *Row from every call to
+// Next. The row, its values and everything decoded from them are only valid
+// until the next call to Next or Stop. ReadRow, ReadRowUsingIndex, SelectAll
+// and Row.Detach return copies. When SPANNER_VTPROTO_POISON_RELEASED_BUFFERS
+// is true, released receive buffers are overwritten, so that applications can
+// test that they do not use released data.
 //
 // The values are decoded like the vtprotobuf UnmarshalVTUnsafe methods, which
 // differ from proto.Unmarshal in these accepted ways: they do not check that
@@ -58,6 +67,8 @@ import (
 	"context"
 	"math"
 	"math/bits"
+	"os"
+	"strconv"
 	"strings"
 	"sync"
 	"unsafe"
@@ -219,10 +230,24 @@ type vtPartialResultSet struct {
 	size           int
 }
 
-// overwriteReleasedBuffers makes tests overwrite each receive buffer when it is
-// released, so that data used after its PartialResultSet was released is
-// detected.
-var overwriteReleasedBuffers bool
+// poisonReleasedBuffersEnv is the environment variable that makes the client
+// overwrite each receive buffer when it is released. Applications set it to
+// true in their tests to find strings that they use after the RowIterator
+// released them. It is read once, when the program starts.
+const poisonReleasedBuffersEnv = "SPANNER_VTPROTO_POISON_RELEASED_BUFFERS"
+
+// overwriteReleasedBuffers makes the client overwrite each receive buffer when
+// it is released, so that data used after its PartialResultSet was released
+// reads 0xAA bytes instead of passing by chance. The tests of this package
+// always set it.
+var overwriteReleasedBuffers = poisonReleasedBuffers(os.Getenv(poisonReleasedBuffersEnv))
+
+// poisonReleasedBuffers reports whether the value of poisonReleasedBuffersEnv
+// turns the overwriting of released receive buffers on.
+func poisonReleasedBuffers(value string) bool {
+	on, err := strconv.ParseBool(value)
+	return err == nil && on
+}
 
 // maxPooledValues bounds the size of the PartialResultSets that are reused.
 const maxPooledValues = 1 << 16

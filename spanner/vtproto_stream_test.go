@@ -144,7 +144,7 @@ func codecFromOptions(t *testing.T, opts []gax.CallOption) encoding.CodecV2 {
 // streams, one per stream that it starts.
 func codecStreamIterator(t *testing.T, streams ...*codecStream) *RowIterator {
 	t.Helper()
-	return stream(context.Background(), nil, nil,
+	return streamWithTransactionCallbacks(context.Background(), nil, nil,
 		func(ctx context.Context, resumeToken []byte, opts ...gax.CallOption) (streamingReceiver, error) {
 			if len(streams) == 0 {
 				t.Fatal("the iterator started too many streams")
@@ -156,9 +156,15 @@ func codecStreamIterator(t *testing.T, streams ...*codecStream) *RowIterator {
 			s.resumeToken = resumeToken
 			return s, nil
 		},
-		nil,
-		func(error) {}, &grpcSpannerClient{nthRequest: new(atomic.Uint32)})
+		nil, func(err error) error { return err }, nil, nil,
+		func(error) {}, &grpcSpannerClient{nthRequest: new(atomic.Uint32)}, true, false, true)
 }
+
+// borrowRows are the options of the queries and reads that borrow rows.
+var (
+	borrowRowsQuery = QueryOptions{ExperimentalBorrowRows: true}
+	borrowRowsRead  = &ReadOptions{ExperimentalBorrowRows: true}
+)
 
 // readDetachedRows returns copies of the rows of iter and the error that ended
 // it.
@@ -718,14 +724,15 @@ func TestVTQueryAndRead(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("Query", func(t *testing.T) {
-		checkVTTypesRows(t, client.Single().Query(ctx, NewStatement(vtTypesStatement)), want)
+		checkVTTypesRows(t, client.Single().QueryWithOptions(ctx, NewStatement(vtTypesStatement), borrowRowsQuery), want)
 	})
 	t.Run("Read", func(t *testing.T) {
-		checkVTTypesRows(t, client.Single().Read(ctx, "VTTypes", AllKeys(), []string{"S", "I", "F", "B", "A"}), want)
+		checkVTTypesRows(t, client.Single().ReadWithOptions(ctx, "VTTypes", AllKeys(), []string{"S", "I", "F", "B", "A"}, borrowRowsRead), want)
 	})
 	t.Run("ReadWriteTransaction", func(t *testing.T) {
 		_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
-			checkVTTypesRows(t, tx.Query(ctx, NewStatement(vtTypesStatement)), want)
+			checkVTTypesRows(t, tx.QueryWithOptions(ctx, NewStatement(vtTypesStatement), borrowRowsQuery), want)
+			checkVTTypesRows(t, tx.ReadWithOptions(ctx, "VTTypes", AllKeys(), []string{"S", "I", "F", "B", "A"}, borrowRowsRead), want)
 			return nil
 		})
 		if err != nil {
@@ -743,7 +750,7 @@ func TestVTQueryResumes(t *testing.T) {
 		ResumeToken: EncodeResumeToken(4),
 		Err:         status.Error(codes.Unavailable, "retry"),
 	})
-	checkVTTypesRows(t, client.Single().Query(context.Background(), NewStatement(vtTypesStatement)), want)
+	checkVTTypesRows(t, client.Single().QueryWithOptions(context.Background(), NewStatement(vtTypesStatement), borrowRowsQuery), want)
 
 	var resumeTokens [][]byte
 	for _, req := range drainRequestsFromServer(server.TestSpanner) {
@@ -764,12 +771,16 @@ func TestVTReadRowAndSelectAllReturnCopies(t *testing.T) {
 	ctx := context.Background()
 	columns := []string{"S", "I", "F", "B", "A"}
 
-	row, err := client.Single().ReadRow(ctx, "VTTypes", Key{"k"}, columns)
+	opts := &ReadOptions{ExperimentalBorrowRows: true}
+	row, err := client.Single().ReadRowWithOptions(ctx, "VTTypes", Key{"k"}, columns, opts)
 	if err != nil {
-		t.Fatalf("ReadRow failed: %v", err)
+		t.Fatalf("ReadRowWithOptions failed: %v", err)
+	}
+	if !opts.ExperimentalBorrowRows {
+		t.Error("ReadRowWithOptions changed the options of the caller")
 	}
 	// Overwrite the receive buffers of later responses.
-	if _, err := readDetachedRows(client.Single().Query(ctx, NewStatement(vtTypesStatement))); err != nil {
+	if _, err := readDetachedRows(client.Single().QueryWithOptions(ctx, NewStatement(vtTypesStatement), borrowRowsQuery)); err != nil {
 		t.Fatal(err)
 	}
 	var got vtTypesRow
@@ -781,7 +792,7 @@ func TestVTReadRowAndSelectAllReturnCopies(t *testing.T) {
 	}
 
 	var all []vtTypesRow
-	if err := SelectAll(client.Single().Query(ctx, NewStatement(vtTypesStatement)), &all); err != nil {
+	if err := SelectAll(client.Single().QueryWithOptions(ctx, NewStatement(vtTypesStatement), borrowRowsQuery), &all); err != nil {
 		t.Fatalf("SelectAll failed: %v", err)
 	}
 	if diff := cmpDiff(all, want); diff != "" {
@@ -819,7 +830,14 @@ func TestVTConcurrentQueries(t *testing.T) {
 		go func() {
 			defer wg.Done()
 			for j := 0; j < 5; j++ {
-				got, err := readVTTypesRows(client.Single().Query(context.Background(), NewStatement(vtTypesStatement)))
+				var got []vtTypesRow
+				var err error
+				if i%2 == 0 {
+					got, err = readVTTypesRows(client.Single().QueryWithOptions(context.Background(), NewStatement(vtTypesStatement), borrowRowsQuery))
+				} else {
+					// Queries that do not borrow rows share the client.
+					got, err = readSafeVTTypesRows(client.Single().Query(context.Background(), NewStatement(vtTypesStatement)))
+				}
 				if err == nil && !reflect.DeepEqual(got, want) {
 					err = fmt.Errorf("rows mismatch:\n%s", cmpDiff(got, want))
 				}
@@ -1225,5 +1243,166 @@ func TestVTMultiStageChunkedRows(t *testing.T) {
 	wOutstanding, gOutstanding := int64(0), pool.outstanding.Load()
 	if wOutstanding != gOutstanding {
 		t.Errorf("outstanding buffers mismatch after consuming multi-chunk row:\n Want: %v\n  Got: %v", wOutstanding, gOutstanding)
+	}
+}
+
+// readSafeVTTypesRows reads the rows of iter, and checks that the iterator
+// neither reuses rows nor decodes them with the codec. It keeps the strings
+// without copying them.
+func readSafeVTTypesRows(iter *RowIterator) ([]vtTypesRow, error) {
+	defer iter.Stop()
+	var rows []vtTypesRow
+	var prev *Row
+	for {
+		row, err := iter.Next()
+		if err == iterator.Done {
+			return rows, nil
+		}
+		if err != nil {
+			return rows, err
+		}
+		if iter.streamd.vt != nil {
+			return rows, fmt.Errorf("the iterator decodes with the codec")
+		}
+		if row == prev {
+			return rows, fmt.Errorf("Next returned the same *Row twice")
+		}
+		prev = row
+		var r vtTypesRow
+		if err := row.ToStruct(&r); err != nil {
+			return rows, err
+		}
+		rows = append(rows, r)
+	}
+}
+
+func TestVTBorrowRowsOnlyWhenSetOnTheCall(t *testing.T) {
+	// Defaults that borrow rows must not make the calls borrow them.
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		DisableNativeMetrics: true,
+		QueryOptions:         QueryOptions{ExperimentalBorrowRows: true},
+		ReadOptions:          ReadOptions{ExperimentalBorrowRows: true},
+	})
+	defer teardown()
+	want := vtTypesRows(10)
+	putVTTypesResult(t, server, want)
+	ctx := context.Background()
+	columns := []string{"S", "I", "F", "B", "A"}
+	stmt := NewStatement(vtTypesStatement)
+
+	for _, tc := range []struct {
+		name  string
+		iter  func() *RowIterator
+		reuse bool
+	}{
+		{"Query", func() *RowIterator { return client.Single().Query(ctx, stmt) }, false},
+		{"QueryWithOptions", func() *RowIterator { return client.Single().QueryWithOptions(ctx, stmt, QueryOptions{}) }, false},
+		{"QueryWithStats", func() *RowIterator { return client.Single().QueryWithStats(ctx, stmt) }, false},
+		{"QueryWithOptionsBorrowRows", func() *RowIterator { return client.Single().QueryWithOptions(ctx, stmt, borrowRowsQuery) }, true},
+		{"Read", func() *RowIterator { return client.Single().Read(ctx, "VTTypes", AllKeys(), columns) }, false},
+		{"ReadWithNilOptions", func() *RowIterator { return client.Single().ReadWithOptions(ctx, "VTTypes", AllKeys(), columns, nil) }, false},
+		{"ReadWithOptions", func() *RowIterator {
+			return client.Single().ReadWithOptions(ctx, "VTTypes", AllKeys(), columns, &ReadOptions{})
+		}, false},
+		{"ReadWithOptionsBorrowRows", func() *RowIterator {
+			return client.Single().ReadWithOptions(ctx, "VTTypes", AllKeys(), columns, borrowRowsRead)
+		}, true},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			read := readSafeVTTypesRows
+			if tc.reuse {
+				read = readVTTypesRows
+			}
+			got, err := read(tc.iter())
+			if err != nil {
+				t.Fatal(err)
+			}
+			if diff := cmpDiff(got, want); diff != "" {
+				t.Errorf("rows mismatch (-got +want):\n%s", diff)
+			}
+		})
+	}
+}
+
+func TestVTOptionsMergeDoesNotInheritBorrowRows(t *testing.T) {
+	for _, tc := range []struct {
+		name                string
+		defaults, call      bool
+		wantQuery, wantRead bool
+	}{
+		{name: "neither"},
+		{name: "default", defaults: true},
+		{name: "call", call: true, wantQuery: true, wantRead: true},
+		{name: "both", defaults: true, call: true, wantQuery: true, wantRead: true},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			qo := QueryOptions{ExperimentalBorrowRows: tc.defaults}.merge(QueryOptions{ExperimentalBorrowRows: tc.call})
+			if qo.ExperimentalBorrowRows != tc.wantQuery {
+				t.Errorf("QueryOptions.merge: ExperimentalBorrowRows = %v, want %v", qo.ExperimentalBorrowRows, tc.wantQuery)
+			}
+			ro := ReadOptions{ExperimentalBorrowRows: tc.defaults}.merge(ReadOptions{ExperimentalBorrowRows: tc.call})
+			if ro.ExperimentalBorrowRows != tc.wantRead {
+				t.Errorf("ReadOptions.merge: ExperimentalBorrowRows = %v, want %v", ro.ExperimentalBorrowRows, tc.wantRead)
+			}
+		})
+	}
+}
+
+func TestVTRowDetach(t *testing.T) {
+	s := &codecStream{prs: []*sppb.PartialResultSet{
+		{Metadata: kvMeta, Values: []*structpb.Value{
+			structpb.NewStringValue(keyStr(0)), structpb.NewStringValue(valStr(0)),
+		}, ResumeToken: EncodeResumeToken(1)},
+		{Values: []*structpb.Value{
+			structpb.NewStringValue(keyStr(1)), structpb.NewStringValue(valStr(1)),
+		}, ResumeToken: EncodeResumeToken(2)},
+		{Values: []*structpb.Value{
+			structpb.NewStringValue(keyStr(2)), structpb.NewStringValue(valStr(2)),
+		}, ResumeToken: EncodeResumeToken(3)},
+	}}
+	iter := codecStreamIterator(t, s)
+	var detached []*Row
+	err := iter.Do(func(row *Row) error {
+		d := row.Detach()
+		if d == row {
+			t.Error("Detach returned the reused row")
+		}
+		detached = append(detached, d)
+		return nil
+	})
+	if err != nil {
+		t.Fatalf("iter.Do failed: %v", err)
+	}
+	// The receive buffers of all rows were released and overwritten.
+	for i, row := range detached {
+		var k, v string
+		if err := row.Columns(&k, &v); err != nil {
+			t.Fatal(err)
+		}
+		if k != keyStr(i) || v != valStr(i) {
+			t.Errorf("detached row %d = (%q, %q), want (%q, %q)", i, k, v, keyStr(i), valStr(i))
+		}
+	}
+	if got := (*Row)(nil).Detach(); got != nil {
+		t.Errorf("(*Row)(nil).Detach() = %v, want nil", got)
+	}
+}
+
+func TestVTPoisonReleasedBuffers(t *testing.T) {
+	for _, tc := range []struct {
+		value string
+		want  bool
+	}{
+		{"", false},
+		{"false", false},
+		{"0", false},
+		{"no", false},
+		{"true", true},
+		{"TRUE", true},
+		{"1", true},
+	} {
+		if got := poisonReleasedBuffers(tc.value); got != tc.want {
+			t.Errorf("poisonReleasedBuffers(%q) = %v, want %v", tc.value, got, tc.want)
+		}
 	}
 }

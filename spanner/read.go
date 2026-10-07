@@ -103,11 +103,14 @@ func stream(
 		reqIDProvider,
 		true,
 		false,
+		false,
 	)
 }
 
 // streamWithTransactionCallbacks creates a RowIterator for streaming results with
 // transaction-specific callbacks for setting transaction ID, updating state, and precommit tokens.
+// With borrowRows, a client built with the spanner_vtproto build tag decodes the
+// results with vtprotobuf and reuses the rows. See vtproto_stream.go.
 func streamWithTransactionCallbacks(
 	ctx context.Context,
 	logger *log.Logger,
@@ -121,10 +124,14 @@ func streamWithTransactionCallbacks(
 	reqIDProvider requestIDHeaderProvider,
 	retryResourceExhausted bool,
 	allowRetryResourceExhaustedWithoutDelay bool,
+	borrowRows bool,
 ) *RowIterator {
 	ctx, cancel := context.WithCancel(ctx)
 	ctx, _ = startSpan(ctx, "RowIterator")
-	vt := newVTStream()
+	var vt *vtStream
+	if borrowRows {
+		vt = newVTStream()
+	}
 	if vt != nil {
 		rpc = vt.withCodec(rpc)
 	}
@@ -323,6 +330,15 @@ func (r *RowIterator) Do(f func(r *Row) error) error {
 			return err
 		}
 	}
+}
+
+// detach returns row, or a copy of it if r reuses its rows, so that the result
+// stays valid after the next call to Next or Stop.
+func (r *RowIterator) detach(row *Row) *Row {
+	if r.streamd == nil || r.streamd.vt == nil {
+		return row
+	}
+	return detachRow(row)
 }
 
 // Stop terminates the iteration. It should be called after you finish using the

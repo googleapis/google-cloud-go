@@ -132,6 +132,21 @@ func NewRow(columnNames []string, columnValues []interface{}) (*Row, error) {
 	return &r, nil
 }
 
+// Detach returns a row that stays valid after the next call to Next or Stop on
+// the RowIterator that returned r, and after the function passed to Do returns.
+// Call it before the iterator moves on, and use the returned row instead of r.
+//
+// Rows only need it when they come from a query or read that sets
+// ExperimentalBorrowRows, and the client is built with the spanner_vtproto
+// build tag. With the tag, Detach copies the values of r and their strings.
+// Without the tag, it returns r.
+func (r *Row) Detach() *Row {
+	if r == nil {
+		return nil
+	}
+	return detachRow(r)
+}
+
 // Size is the number of columns in the row.
 func (r *Row) Size() int {
 	return len(r.fields)
@@ -467,7 +482,11 @@ func SelectAll(rows rowIterator, destination interface{}, options ...DecodeOptio
 	var err error
 	return rows.Do(func(row *Row) error {
 		// The destination keeps the decoded values after the iterator moved on.
-		row = detachRow(row)
+		if ri, ok := rows.(*RowIterator); ok {
+			row = ri.detach(row)
+		} else {
+			row = detachRow(row)
+		}
 		sliceItem := reflect.New(itemType)
 		if !isPrimitive {
 			if isFirstRow {
