@@ -1,5 +1,27 @@
 # Changes
 
+## [1.96.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.95.1...spanner/v1.96.0) (2026-10-07)
+
+
+### Features
+
+* **all:** Update supported go versions ([#20520](https://github.com/googleapis/google-cloud-go/issues/20520)) ([90413d3](https://github.com/googleapis/google-cloud-go/commit/90413d3e9d381ef4b92e3c496d98b023c5b2d8cc))
+* **spanner:** Add experimental vtprotobuf decoding  with ExperimentalBorrowRows under the spanner_vtproto build tag ([#20642](https://github.com/googleapis/google-cloud-go/issues/20642)) ([fdbd4f4](https://github.com/googleapis/google-cloud-go/commit/fdbd4f4f05e8782966bb8bb537f8a2ca96aef815))
+
+
+### Bug Fixes
+
+* **spanner:** Keep DCP transaction on its channel while it drains ([#20618](https://github.com/googleapis/google-cloud-go/issues/20618)) ([93dfc20](https://github.com/googleapis/google-cloud-go/commit/93dfc20d4fbecd0af253bad0a714e1fb693eb452))
+* **spanner:** Prioritize leader replica for read-write transactions in location-aware routing ([#20620](https://github.com/googleapis/google-cloud-go/issues/20620)) ([a524d66](https://github.com/googleapis/google-cloud-go/commit/a524d66ac4ba3aab6b5ccf5e2310d76d6f32b7fe))
+* **spanner:** Record streaming built-in metrics per result stream ([#20596](https://github.com/googleapis/google-cloud-go/issues/20596)) ([be75f7e](https://github.com/googleapis/google-cloud-go/commit/be75f7e1de9e42685bc12eb9adc8d2fb61a75911))
+* **spanner:** Retry and resume BatchWrite streams on UNAVAILABLE  ([#20623](https://github.com/googleapis/google-cloud-go/issues/20623)) ([a302277](https://github.com/googleapis/google-cloud-go/commit/a302277410f1b89d66dddd7f7559825742dcb79f))
+
+
+### Performance Improvements
+
+* **spanner:** Skip builtin metrics tracer allocation when metrics are disabled ([#20582](https://github.com/googleapis/google-cloud-go/issues/20582)) ([9971a0c](https://github.com/googleapis/google-cloud-go/commit/9971a0c2b414ca671ab1b83ca7cba6c3cc96f00f))
+* **spanner:** Skip reading response headers when no latency sink is enabled ([#20583](https://github.com/googleapis/google-cloud-go/issues/20583)) ([3dcc2c3](https://github.com/googleapis/google-cloud-go/commit/3dcc2c30f99b6d2aa51143dfb8e2eecac2f3f99d))
+
 ## [1.95.1](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.95.0...spanner/v1.95.1) (2026-09-10)
 
 
