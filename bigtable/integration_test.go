@@ -222,31 +222,24 @@ func cleanup(c IntegrationTestConfig) error {
 func TestIntegration_Pinger(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	testEnv, client, _, _, _, cleanup, err := setupIntegration(ctx, t)
+	// PingAndWarm is instance-scoped, so skip the shared setupIntegration cost
+	// (table create + 10 column families + readiness poll) and only build the
+	// data client we actually need.
+	testEnv, err := NewIntegrationEnv()
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("NewIntegrationEnv: %v", err)
 	}
-	t.Cleanup(func() { cleanup() })
+	t.Cleanup(func() { testEnv.Close() })
 	if !testEnv.Config().UseProd {
 		t.Skip("emulator doesn't support PingAndWarm")
 	}
-	err = internal.Retry(ctx, gax.Backoff{
-		Initial:    2 * time.Second,
-		Max:        30 * time.Second,
-		Multiplier: 2.0,
-	}, func() (bool, error) {
-		err := client.PingAndWarm(ctx)
-		if err != nil {
-			s, ok := status.FromError(err)
-			if ok && s.Code() == codes.FailedPrecondition {
-				return false, err // retry
-			}
-			return true, err // stop and return other errors
-		}
-		return true, nil // success
-	})
+	client, err := testEnv.NewClient()
 	if err != nil {
-		t.Fatalf("pinger failed. got %v, want %v", err, nil)
+		t.Fatalf("NewClient: %v", err)
+	}
+	t.Cleanup(func() { client.Close() })
+	if err := client.PingAndWarm(ctx); err != nil {
+		t.Fatalf("PingAndWarm: %v", err)
 	}
 }
 
