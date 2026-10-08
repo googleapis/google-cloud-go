@@ -44,19 +44,19 @@ func TestCancellationSharer(t *testing.T) {
 	hedgedCtx, hedgedCancel := context.WithCancel(ctx)
 
 	cs := newCancellationSharer(&hedgeBatch{ctx: ctx})
-	mainID := cs.add(mainCancel)
-	cs.add(hedgedCancel)
+	mainID := cs.registerAttempt(mainCancel)
+	cs.registerAttempt(hedgedCancel)
 
 	// Winning main cancels hedged and releases the shared batch, leaving main active.
-	cs.win(mainID)
+	cs.cancelOthers(mainID)
 	if hedgedCtx.Err() == nil {
-		t.Error("expected hedgedCtx to be cancelled when win(mainID) is called")
+		t.Error("expected hedgedCtx to be cancelled when cancelOthers(mainID) is called")
 	}
 	if mainCtx.Err() != nil {
 		t.Error("expected mainCtx to not be cancelled yet")
 	}
 	if cs.batch != nil {
-		t.Error("win did not release the shared batch payload")
+		t.Error("cancelOthers did not release the shared batch payload")
 	}
 
 	cs.cancelAll()
@@ -64,13 +64,13 @@ func TestCancellationSharer(t *testing.T) {
 		t.Error("expected mainCtx to be cancelled after cancelAll()")
 	}
 
-	// Adding after done returns -1 and cancels immediately.
+	// Registering after done returns -1 and cancels immediately.
 	lateCtx, lateCancel := context.WithCancel(ctx)
-	if got := cs.add(lateCancel); got != -1 {
-		t.Errorf("add after done: got %d, want -1", got)
+	if got := cs.registerAttempt(lateCancel); got != -1 {
+		t.Errorf("registerAttempt after done: got %d, want -1", got)
 	}
 	if lateCtx.Err() == nil {
-		t.Error("expected lateCtx to be cancelled immediately upon add after done")
+		t.Error("expected lateCtx to be cancelled immediately upon registerAttempt after done")
 	}
 }
 

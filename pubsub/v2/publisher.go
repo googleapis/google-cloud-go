@@ -90,10 +90,11 @@ type Publisher struct {
 	hedgingRefillMilliTokens int64
 	hedgingSettingsErr       error
 	hedgingTokenBucket       atomic.Int64 // scaled by tokenScaleFactor; starts empty
-	hedgingMu                sync.Mutex
-	hedgingQueue             []*hedgedRequest
-	hedgingTimer             *time.Timer
-	hedgingStopped           bool
+
+	hedgingMu      sync.Mutex
+	hedgingQueue   []*hedgedRequest
+	hedgingTimer   *time.Timer
+	hedgingStopped bool
 }
 
 // PublishSettings control the bundling of published messages.

@@ -122,9 +122,9 @@ type hedgeBatch struct {
 }
 
 // cancellationSharer coordinates cancellation across publish attempts and owns
-// the shared batch payload. The payload is cleared on win or cancelAll, and
-// inflight tracks active hedged attempts so publishHedged can wait for them to
-// exit before returning results to the caller.
+// the shared batch payload. The payload is cleared on cancelOthers or cancelAll,
+// and inflight tracks active hedged attempts so publishHedged can wait for them
+// to exit before returning results to the caller.
 type cancellationSharer struct {
 	mu       sync.Mutex
 	cancels  map[int]context.CancelFunc
@@ -147,8 +147,9 @@ func (cs *cancellationSharer) isDone() bool {
 	return cs.done
 }
 
-// add registers a cancel function and returns its ID. Returns -1 if already done.
-func (cs *cancellationSharer) add(cancel context.CancelFunc) int {
+// registerAttempt registers a cancel function and returns its ID.
+// Returns -1 if the cancellationSharer is already done.
+func (cs *cancellationSharer) registerAttempt(cancel context.CancelFunc) int {
 	cs.mu.Lock()
 	defer cs.mu.Unlock()
 	if cs.done {
@@ -183,8 +184,9 @@ func (cs *cancellationSharer) releaseHedge() {
 	cs.inflight.Done()
 }
 
-// win marks the coordinator as resolved by winnerID and cancels all other attempts.
-func (cs *cancellationSharer) win(winnerID int) {
+// cancelOthers marks the coordinator as done, releases the shared batch, and
+// cancels all attempts except winnerID. Subsequent calls are no-ops.
+func (cs *cancellationSharer) cancelOthers(winnerID int) {
 	cs.mu.Lock()
 	defer cs.mu.Unlock()
 	if cs.done {
@@ -239,7 +241,7 @@ func (t *Publisher) publishHedged(ctx context.Context, start time.Time, pbMsgs [
 	})
 
 	mainCtx, mainCancel := context.WithCancel(ctx)
-	mainID := cs.add(mainCancel)
+	mainID := cs.registerAttempt(mainCancel)
 	mainCtx = metadata.AppendToOutgoingContext(
 		mainCtx,
 		pubsubClientTelemetryHeader,
@@ -253,12 +255,11 @@ func (t *Publisher) publishHedged(ctx context.Context, start time.Time, pbMsgs [
 	if e == nil {
 		select {
 		case resCh <- r:
-			cs.win(mainID)
+			cs.cancelOthers(mainID)
 		default:
 		}
 	} else {
-		// Terminal error on original attempt cancels any pending hedged attempts
-		// unless a hedged attempt has already succeeded.
+		// Terminal error on original attempt cancels any pending hedged attempts.
 		cs.cancelAll()
 	}
 
@@ -281,13 +282,13 @@ func (t *Publisher) publishHedged(ctx context.Context, start time.Time, pbMsgs [
 
 func (t *Publisher) stopHedging() {
 	t.hedgingMu.Lock()
+	defer t.hedgingMu.Unlock()
 	t.hedgingStopped = true
 	if t.hedgingTimer != nil {
 		t.hedgingTimer.Stop()
 		t.hedgingTimer = nil
 	}
 	t.hedgingQueue = nil
-	t.hedgingMu.Unlock()
 }
 
 func (t *Publisher) enqueueHedgedRequest(req *hedgedRequest) {
@@ -396,7 +397,7 @@ func (t *Publisher) fireHedgedAttempt(req *hedgedRequest) {
 	if e == nil {
 		select {
 		case b.resCh <- r:
-			req.cs.win(id)
+			req.cs.cancelOthers(id)
 		default:
 		}
 	}
