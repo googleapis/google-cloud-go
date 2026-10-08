@@ -228,6 +228,8 @@ type dynamicChannelPool struct {
 	sc     *sessionClient
 
 	dial             func(context.Context) (gtransport.ConnPool, error)
+	fallback         *directPathFallback // shared by every entry's slot, or nil
+	dialCloud        func(context.Context) (gtransport.ConnPool, error)
 	rrIndex          atomic.Uint64
 	nextID           atomic.Uint64
 	totalRPCLoad     atomic.Int32
@@ -244,11 +246,21 @@ type dynamicChannelPool struct {
 
 	drainingCount  atomic.Int64
 	drainIdleFloor time.Duration // dcpDrainIdleFloor when the pool was created
+
+	// fixed marks a pool in fixed mode: a constant set of entries over
+	// borrowed connections, picked round robin, that never scales, primes or
+	// records pool metrics.
+	fixed bool
+	// shared is the dialed pool whose connections fixed-mode entries borrow.
+	// The pool closes it once, on Close.
+	shared gtransport.ConnPool
 }
 
 // dcpEntry represents one logical DCP slot.
 type dcpEntry struct {
-	id            uint64
+	id uint64
+	// pool is the entry's channelSlot. With DirectPath fallback it switches
+	// the entry's RPCs from DirectPath to CloudPath.
 	pool          gtransport.ConnPool
 	delegate      spannerClient
 	client        spannerClient
@@ -261,17 +273,84 @@ type dcpEntry struct {
 	penaltyExpiry atomic.Int64 // UnixNano penalty expiry; zero means no penalty
 	penaltyLoad   atomic.Int32 // Accumulated error penalty, capped by config
 	penaltyMu     sync.Mutex   // Serializes rare penalty updates and removal
+	penaltyGen    uint64       // Fallback generation the penalty was earned under; guarded by penaltyMu
 	refs          atomic.Int64 // RPCs keeping the channel open; negative once closed
 }
 
 // newDynamicChannelPool creates the initial channel set and starts scale workers.
-func newDynamicChannelPool(ctx context.Context, sc *sessionClient, cfg DynamicChannelPoolConfig, mp metric.MeterProvider, dial func(context.Context) (gtransport.ConnPool, error)) (*dynamicChannelPool, error) {
+// With a non-nil fallback, which needs a non-nil dialCloud, every entry falls
+// back to a CloudPath connection that dialCloud dials on first use, and the
+// pool owns the fallback state.
+func newDynamicChannelPool(ctx context.Context, sc *sessionClient, cfg DynamicChannelPoolConfig, mp metric.MeterProvider, dial func(context.Context) (gtransport.ConnPool, error), fallback *directPathFallback, dialCloud func(context.Context) (gtransport.ConnPool, error)) (*dynamicChannelPool, error) {
 	cfg, err := normalizeDCPConfig(cfg)
 	if err != nil {
 		return nil, err
 	}
+	p := newDCPCore(ctx, sc, cfg, dial, fallback, dialCloud)
+	if err := p.createInitialEntries(ctx); err != nil {
+		return nil, err
+	}
+	p.metrics = newDCPMetrics(p, mp)
+	go p.scaleUpWorker()
+	go p.scaleDownMonitor()
+	return p, nil
+}
+
+// newFixedChannelPool returns the dynamic channel pool in fixed mode, the
+// client's default pool: one entry per connection of direct, which the
+// entries borrow and the pool closes once. An entry for a connection that
+// direct does not expose sends its RPCs through direct. Session handles bind
+// to entries round robin, and entry ids, which are the request-id channel
+// ids, are 1..direct.Num(). A fixed pool never scales, never primes a
+// channel, and records no pool metrics. With a non-nil fallback, which needs
+// a non-nil dialCloud, every entry falls back to a CloudPath connection that
+// dialCloud dials on first use.
+func newFixedChannelPool(ctx context.Context, sc *sessionClient, direct gtransport.ConnPool, fallback *directPathFallback, dialCloud func(context.Context) (gtransport.ConnPool, error)) (*dynamicChannelPool, error) {
+	n := direct.Num()
+	if n <= 0 {
+		return nil, spannerErrorf(codes.InvalidArgument, "spanner: the gRPC connection pool has no connections")
+	}
+	// Conn round-robins over the dialed pool, so n calls visit every
+	// connection once.
+	conns := make([]*grpc.ClientConn, n)
+	for i := range conns {
+		conns[i] = direct.Conn()
+	}
+	cfg, err := normalizeDCPConfig(DynamicChannelPoolConfig{
+		DCPInitialChannels:   n,
+		DCPMinChannels:       n,
+		DCPMaxChannels:       n,
+		DCPSelectionStrategy: DCPRoundRobin,
+		// Error penalties only steer power-of-two picks and scale-up.
+		DCPErrorPenaltyDuration: -1,
+	})
+	if err != nil {
+		return nil, err
+	}
+	next := 0
+	dial := func(context.Context) (gtransport.ConnPool, error) {
+		c := conns[next]
+		next++
+		if c == nil {
+			// A pool that does not expose its connections, such as a
+			// GCPMultiEndpoint, sends the entry's RPCs itself.
+			return unownedPool{direct}, nil
+		}
+		return borrowedConn{c}, nil
+	}
+	p := newDCPCore(ctx, sc, cfg, dial, fallback, dialCloud)
+	p.fixed = true
+	p.shared = direct
+	if err := p.createInitialEntries(ctx); err != nil {
+		return nil, err
+	}
+	return p, nil
+}
+
+// newDCPCore returns a pool with no entries and no background work.
+func newDCPCore(ctx context.Context, sc *sessionClient, cfg DynamicChannelPoolConfig, dial func(context.Context) (gtransport.ConnPool, error), fallback *directPathFallback, dialCloud func(context.Context) (gtransport.ConnPool, error)) *dynamicChannelPool {
 	poolCtx, cancel := context.WithCancel(ctx)
-	p := &dynamicChannelPool{
+	return &dynamicChannelPool{
 		cfg:                 cfg,
 		targetRPCPerChannel: math.Max(1, math.Floor((cfg.DCPMinRPCPerChannel+cfg.DCPMaxRPCPerChannel)/2)),
 		penaltyMax:          int32(math.Ceil(cfg.DCPMaxRPCPerChannel)),
@@ -279,27 +358,34 @@ func newDynamicChannelPool(ctx context.Context, sc *sessionClient, cfg DynamicCh
 		cancel:              cancel,
 		sc:                  sc,
 		dial:                dial,
+		fallback:            fallback,
+		dialCloud:           dialCloud,
 		scaleUpSignal:       make(chan struct{}, 1),
 		done:                make(chan struct{}),
 		drainIdleFloor:      dcpDrainIdleFloor,
 	}
-	entries := make([]*dcpEntry, 0, cfg.DCPInitialChannels)
-	for i := 0; i < cfg.DCPInitialChannels; i++ {
+}
+
+// createInitialEntries creates the pool's initial entries. On error it closes
+// the entries it created and cancels the pool.
+func (p *dynamicChannelPool) createInitialEntries(ctx context.Context) error {
+	entries := make([]*dcpEntry, 0, p.cfg.DCPInitialChannels)
+	for i := 0; i < p.cfg.DCPInitialChannels; i++ {
 		e, err := p.newEntry(ctx, false)
 		if err != nil {
 			for _, entry := range entries {
 				entry.close()
 			}
-			cancel()
-			return nil, err
+			p.cancel()
+			return err
 		}
 		entries = append(entries, e)
 	}
 	p.entries.Store(&entries)
-	p.metrics = newDCPMetrics(p, mp)
-	go p.scaleUpWorker()
-	go p.scaleDownMonitor()
-	return p, nil
+	if p.fallback != nil {
+		p.fallback.addSwitchHook(p.clearErrorPenalties)
+	}
+	return nil
 }
 
 func (p *dynamicChannelPool) Num() int { return len(p.getEntries()) }
@@ -325,8 +411,9 @@ func (p *dynamicChannelPool) Invoke(ctx context.Context, method string, args, re
 		p.totalRPCLoad.Add(-1)
 		e.lastActivity.Store(time.Now().UnixNano())
 	}()
+	ctx, attempt := p.trackAttempt(ctx)
 	err = e.pool.Invoke(ctx, method, args, reply, opts...)
-	e.applyErrorPenalty(err)
+	e.applyErrorPenaltyAt(p.attemptGeneration(attempt), err)
 	return err
 }
 
@@ -339,14 +426,15 @@ func (p *dynamicChannelPool) NewStream(ctx context.Context, desc *grpc.StreamDes
 	p.totalRPCLoad.Add(1)
 	p.maybeSignalScaleUp(e)
 	e.lastActivity.Store(time.Now().UnixNano())
+	ctx, attempt := p.trackAttempt(ctx)
 	stream, err := e.pool.NewStream(ctx, desc, method, opts...)
 	if err != nil {
-		e.applyErrorPenalty(err)
+		e.applyErrorPenaltyAt(p.attemptGeneration(attempt), err)
 		e.streamLoad.Add(-1)
 		p.totalRPCLoad.Add(-1)
 		return nil, err
 	}
-	return &dcpConnPoolTrackedStream{ClientStream: stream, entry: e}, nil
+	return &dcpConnPoolTrackedStream{ClientStream: stream, entry: e, attempt: attempt}, nil
 }
 
 func (p *dynamicChannelPool) Close() error {
@@ -354,16 +442,27 @@ func (p *dynamicChannelPool) Close() error {
 		p.metrics.close(p.sc.logger)
 		p.cancel()
 		close(p.done)
+		if p.fallback != nil {
+			p.fallback.close()
+		}
 	})
 	p.dialMu.Lock()
 	defer p.dialMu.Unlock()
 	entries := p.getEntries()
-	p.entries.Store(&[]*dcpEntry{})
+	// A fixed pool keeps its closed entries, so that an RPC on a client picked
+	// after Close fails on a closed gRPC connection, with CANCELED.
+	if !p.fixed {
+		p.entries.Store(&[]*dcpEntry{})
+	}
 	var errs []error
 	for _, e := range entries {
 		if err := e.close(); err != nil {
 			errs = append(errs, err)
 		}
+	}
+	if p.shared != nil {
+		errs = append(errs, p.shared.Close())
+		p.shared = nil
 	}
 	return errors.Join(errs...)
 }
@@ -380,7 +479,7 @@ func (p *dynamicChannelPool) getEntries() []*dcpEntry {
 // priming. Initial channels are created during client startup and are not
 // primed through this path.
 func (p *dynamicChannelPool) setPrimeSession(id string) {
-	if id != "" {
+	if id != "" && !p.fixed {
 		p.primeSession.Store(id)
 		select {
 		case p.scaleUpSignal <- struct{}{}:
@@ -402,9 +501,40 @@ func (p *dynamicChannelPool) hasPrimeSession() bool {
 // newEntry dials one DCP entry.
 func (p *dynamicChannelPool) newEntry(ctx context.Context, prime bool) (*dcpEntry, error) {
 	id := p.nextID.Add(1)
-	entryPool, err := p.dial(ctx)
-	if err != nil {
-		return nil, err
+	var entryPool *channelSlot
+	if p.fallback != nil && p.fallback.current().fallback {
+		// Fallback is one way: an entry created after the switch only ever
+		// uses CloudPath, so it does not dial DirectPath at all. The dial is
+		// bounded like priming, so that a blocking dial to an unreachable
+		// CloudPath cannot hold up scale-up. A dial that completes in time
+		// keeps its context until its connection closes, as some credentials
+		// refresh tokens with it. A caller-supplied pool has no separate
+		// CloudPath, so the entry uses its direct side.
+		dialCtx, cancel := context.WithCancel(ctx)
+		timeout := time.AfterFunc(p.cfg.DCPPrimeTimeout, cancel)
+		cloud, err := p.dialCloud(dialCtx)
+		if !timeout.Stop() {
+			if err == nil {
+				cloud.Close()
+			}
+			return nil, spannerErrorf(codes.DeadlineExceeded, "spanner: CloudPath dial for channel %d did not complete within %v", id, p.cfg.DCPPrimeTimeout)
+		}
+		switch {
+		case err == nil:
+			entryPool = newCloudPathSlot(id, cloudPathConn{ConnPool: cloud, cancel: cancel}, p.fallback)
+		case errors.Is(err, errNoCloudPath):
+			cancel()
+		default:
+			cancel()
+			return nil, ToSpannerError(err)
+		}
+	}
+	if entryPool == nil {
+		direct, err := p.dial(ctx)
+		if err != nil {
+			return nil, err
+		}
+		entryPool = newChannelSlot(id, direct, p.fallback, p.dialCloud)
 	}
 	e := &dcpEntry{id: id, pool: entryPool, parent: p}
 	now := time.Now().UnixNano()
@@ -416,7 +546,13 @@ func (p *dynamicChannelPool) newEntry(ctx context.Context, prime bool) (*dcpEntr
 		return nil, err
 	}
 	e.delegate = client
-	e.client = &dcpSpannerClient{entry: e, delegate: client}
+	if p.fixed {
+		// A fixed pool never scales, drains or picks by load, so its RPCs
+		// need no load accounting and use the entry's gRPC client directly.
+		e.client = client
+	} else {
+		e.client = &dcpSpannerClient{entry: e, delegate: client}
+	}
 	if prime {
 		if err := p.prime(ctx, e); err != nil {
 			e.close()
@@ -441,7 +577,7 @@ func (p *dynamicChannelPool) prime(ctx context.Context, e *dcpEntry) error {
 	stmt := &spannerpb.ExecuteSqlRequest{Session: sid, Sql: "SELECT 1"}
 	var last error
 	for i := 0; i < p.cfg.DCPPrimeMaxAttempts; i++ {
-		primeCtx, cancel := context.WithTimeout(ctx, p.cfg.DCPPrimeTimeout)
+		primeCtx, cancel := context.WithTimeout(withoutFallbackAccounting(ctx), p.cfg.DCPPrimeTimeout)
 		_, last = e.delegate.ExecuteSql(contextWithOutgoingMetadata(primeCtx, p.sc.md, p.sc.disableRouteToLeader), stmt)
 		cancel()
 		if last == nil {
@@ -470,6 +606,11 @@ func (p *dynamicChannelPool) pick(ctx context.Context) (*dcpEntry, error) {
 		e, err = p.pickPowerOfTwo()
 	}
 	if err != nil {
+		select {
+		case <-p.done:
+			return nil, errDCPClosed
+		default:
+		}
 		return nil, err
 	}
 	e.lastActivity.Store(time.Now().UnixNano())
@@ -480,8 +621,9 @@ func (p *dynamicChannelPool) pick(ctx context.Context) (*dcpEntry, error) {
 // and decrements stream load when the stream finishes.
 type dcpConnPoolTrackedStream struct {
 	grpc.ClientStream
-	entry *dcpEntry
-	once  sync.Once
+	entry   *dcpEntry
+	attempt *slotAttempt
+	once    sync.Once
 }
 
 func (s *dcpConnPoolTrackedStream) RecvMsg(m interface{}) error {
@@ -502,7 +644,7 @@ func (s *dcpConnPoolTrackedStream) CloseSend() error {
 
 func (s *dcpConnPoolTrackedStream) finish(err error) {
 	s.once.Do(func() {
-		s.entry.applyErrorPenalty(err)
+		s.entry.applyErrorPenaltyAt(s.entry.parent.attemptGeneration(s.attempt), err)
 		s.entry.streamLoad.Add(-1)
 		s.entry.parent.totalRPCLoad.Add(-1)
 		s.entry.lastActivity.Store(time.Now().UnixNano())
@@ -510,6 +652,10 @@ func (s *dcpConnPoolTrackedStream) finish(err error) {
 }
 
 var errDCPNoEntries = spannerErrorf(codes.Unavailable, "spanner_dcp: no available channels")
+
+// errDCPClosed is returned by a pick from a closed pool. Like an RPC on a
+// closed gRPC connection, it fails with CANCELED, which callers do not retry.
+var errDCPClosed = spannerErrorf(codes.Canceled, "spanner: the client is closed")
 
 // pickPowerOfTwo selects the lower picker-load entry from two random active
 // entries. It retries when either random choice is draining and falls back to a
@@ -580,6 +726,9 @@ func (p *dynamicChannelPool) pickLeastLoaded() (*dcpEntry, error) {
 // average pool load exceeds DCPMaxRPCPerChannel. The signal channel is buffered
 // so many hot requests collapse into one scale-up evaluation.
 func (p *dynamicChannelPool) maybeSignalScaleUp(e *dcpEntry) {
+	if p.fixed {
+		return
+	}
 	active := p.Num()
 	avg := float64(0)
 	if active > 0 {
@@ -950,12 +1099,23 @@ func (e *dcpEntry) rpcLoad() int32 { return e.unaryLoad.Load() + e.streamLoad.Lo
 // weightedLoad returns the current in-flight RPC load for this entry.
 func (e *dcpEntry) weightedLoad() int32 { return e.rpcLoad() }
 
-// applyErrorPenalty accumulates load for errors that indicate channel-specific
+// applyErrorPenalty penalizes the entry for err, an error of an attempt sent
+// on the entry's current path.
+func (e *dcpEntry) applyErrorPenalty(err error) {
+	e.applyErrorPenaltyAt(e.parent.fallbackGeneration(), err)
+}
+
+// applyErrorPenaltyAt accumulates load for errors that indicate channel-specific
 // health or capacity trouble. Internal is deliberately excluded: only
 // Unavailable and ResourceExhausted steer subsequent picks away from a channel.
 // Updates are serialized because they are rare and must keep the pool aggregate
 // consistent. The hot pick path remains lock-free while the penalty is active.
-func (e *dcpEntry) applyErrorPenalty(err error) {
+//
+// gen is the DirectPath fallback generation the failed attempt was dispatched
+// under. An error of an attempt sent on a path the pool has since left says
+// nothing about the entry's current path and is ignored, and a penalty earned
+// on the old path does not accumulate into one on the new path.
+func (e *dcpEntry) applyErrorPenaltyAt(gen uint64, err error) {
 	if err == nil || e.parent.cfg.DCPErrorPenaltyDuration < 0 {
 		return
 	}
@@ -968,13 +1128,16 @@ func (e *dcpEntry) applyErrorPenalty(err error) {
 	if e.state.Load() != dcpStateActive {
 		return
 	}
+	if gen != e.parent.fallbackGeneration() {
+		return
+	}
 	now := time.Now()
 	expiry := e.penaltyExpiry.Load()
 	current := int32(0)
 	oldContribution := int32(0)
 	if expiry != 0 {
 		oldContribution = e.penaltyLoad.Load()
-		if now.UnixNano() < expiry {
+		if now.UnixNano() < expiry && e.penaltyGen == gen {
 			current = oldContribution
 		}
 	}
@@ -987,6 +1150,7 @@ func (e *dcpEntry) applyErrorPenalty(err error) {
 			load = current + e.parent.cfg.DCPErrorPenaltyStep
 		}
 	}
+	e.penaltyGen = gen
 	e.penaltyLoad.Store(load)
 	e.penaltyExpiry.Store(now.Add(e.parent.cfg.DCPErrorPenaltyDuration).UnixNano())
 	e.parent.totalPenaltyLoad.Add(int64(load - oldContribution))
@@ -1017,6 +1181,51 @@ func (e *dcpEntry) currentPenalty() int32 {
 	return 0
 }
 
+// clearErrorPenalties drops the penalties active entries earned before the
+// current fallback generation. The pool calls it when it falls back to
+// CloudPath: those penalties were earned on DirectPath and say nothing about
+// the entries' CloudPath connections. A penalty a CloudPath attempt earned
+// between the switch and this call is kept.
+func (p *dynamicChannelPool) clearErrorPenalties() {
+	gen := p.fallbackGeneration()
+	for _, e := range p.getEntries() {
+		e.penaltyMu.Lock()
+		if e.penaltyGen < gen && e.penaltyExpiry.Swap(0) != 0 {
+			p.totalPenaltyLoad.Add(-int64(e.penaltyLoad.Load()))
+		}
+		e.penaltyMu.Unlock()
+	}
+}
+
+// fallbackGeneration returns the pool's DirectPath fallback generation, or 0
+// without fallback.
+func (p *dynamicChannelPool) fallbackGeneration() uint64 {
+	if p.fallback == nil {
+		return 0
+	}
+	return p.fallback.current().generation
+}
+
+// trackAttempt returns a context in which the entry's slot records the
+// fallback window of each attempt, when the pool has fallback.
+func (p *dynamicChannelPool) trackAttempt(ctx context.Context) (context.Context, *slotAttempt) {
+	if p.fallback == nil || ctx == nil {
+		return ctx, nil
+	}
+	return withSlotAttempt(ctx)
+}
+
+// attemptGeneration returns the fallback generation the last attempt tracked
+// by a was dispatched under, or the current generation if a tracked none.
+func (p *dynamicChannelPool) attemptGeneration(a *slotAttempt) uint64 {
+	if a != nil {
+		if w := a.window.Load(); w != nil {
+			return w.generation
+		}
+	}
+	return p.fallbackGeneration()
+}
+
 // clearErrorPenalty removes an entry's aggregate contribution when the entry
 // leaves the live pool. The expiry swap makes repeated close paths harmless.
 func (e *dcpEntry) clearErrorPenalty() {
@@ -1043,13 +1252,17 @@ func (c *dcpSpannerClient) CallOptions() *vkit.CallOptions { return c.delegate.C
 func (c *dcpSpannerClient) Close() error                   { return c.delegate.Close() }
 func (c *dcpSpannerClient) Connection() *grpc.ClientConn   { return c.delegate.Connection() }
 
-func (c *dcpSpannerClient) startUnary(ctx context.Context) func(error) {
+// startUnary accounts for a unary operation on the entry. The operation must
+// use the returned context, through which its attempts report the path they
+// took, and call the returned function with its outcome.
+func (c *dcpSpannerClient) startUnary(ctx context.Context) (context.Context, func(error)) {
+	ctx, attempt := c.entry.parent.trackAttempt(ctx)
 	c.entry.unaryLoad.Add(1)
 	c.entry.parent.totalRPCLoad.Add(1)
 	c.entry.parent.maybeSignalScaleUp(c.entry)
 	c.entry.lastActivity.Store(time.Now().UnixNano())
-	return func(err error) {
-		c.entry.applyErrorPenalty(err)
+	return ctx, func(err error) {
+		c.entry.applyErrorPenaltyAt(c.entry.parent.attemptGeneration(attempt), err)
 		c.entry.unaryLoad.Add(-1)
 		c.entry.parent.totalRPCLoad.Add(-1)
 		c.entry.lastActivity.Store(time.Now().UnixNano())
@@ -1089,7 +1302,11 @@ func (r *dcpStreamRef) setStop(stop func() bool) {
 	}
 }
 
-func (c *dcpSpannerClient) startStream(ctx context.Context) *dcpStreamRef {
+// startStream accounts for a stream on the entry. The stream must be opened
+// with the returned context, through which its attempt reports the path it
+// took.
+func (c *dcpSpannerClient) startStream(ctx context.Context) (context.Context, *dcpStreamRef) {
+	ctx, attempt := c.entry.parent.trackAttempt(ctx)
 	// A stream outlives the call that starts it, so it holds its own reference.
 	c.entry.refs.Add(1)
 	c.entry.streamLoad.Add(1)
@@ -1097,7 +1314,7 @@ func (c *dcpSpannerClient) startStream(ctx context.Context) *dcpStreamRef {
 	c.entry.parent.maybeSignalScaleUp(c.entry)
 	c.entry.lastActivity.Store(time.Now().UnixNano())
 	ref := &dcpStreamRef{finish: func(err error) {
-		c.entry.applyErrorPenalty(err)
+		c.entry.applyErrorPenaltyAt(c.entry.parent.attemptGeneration(attempt), err)
 		c.entry.streamLoad.Add(-1)
 		c.entry.parent.totalRPCLoad.Add(-1)
 		c.entry.lastActivity.Store(time.Now().UnixNano())
@@ -1106,31 +1323,31 @@ func (c *dcpSpannerClient) startStream(ctx context.Context) *dcpStreamRef {
 	if ctx != nil && ctx.Done() != nil {
 		if err := ctx.Err(); err != nil {
 			ref.done(err)
-			return ref
+			return ctx, ref
 		}
 		ref.setStop(context.AfterFunc(ctx, func() {
 			ref.done(ctx.Err())
 		}))
 	}
-	return ref
+	return ctx, ref
 }
 
 func (c *dcpSpannerClient) CreateSession(ctx context.Context, req *spannerpb.CreateSessionRequest, opts ...gax.CallOption) (*spannerpb.Session, error) {
-	done := c.startUnary(ctx)
+	ctx, done := c.startUnary(ctx)
 	resp, err := c.delegate.CreateSession(ctx, req, opts...)
 	done(err)
 	return resp, err
 }
 
 func (c *dcpSpannerClient) BatchCreateSessions(ctx context.Context, req *spannerpb.BatchCreateSessionsRequest, opts ...gax.CallOption) (*spannerpb.BatchCreateSessionsResponse, error) {
-	done := c.startUnary(ctx)
+	ctx, done := c.startUnary(ctx)
 	resp, err := c.delegate.BatchCreateSessions(ctx, req, opts...)
 	done(err)
 	return resp, err
 }
 
 func (c *dcpSpannerClient) GetSession(ctx context.Context, req *spannerpb.GetSessionRequest, opts ...gax.CallOption) (*spannerpb.Session, error) {
-	done := c.startUnary(ctx)
+	ctx, done := c.startUnary(ctx)
 	resp, err := c.delegate.GetSession(ctx, req, opts...)
 	done(err)
 	return resp, err
@@ -1146,7 +1363,9 @@ func (c *dcpSpannerClient) ListSessions(ctx context.Context, req *spannerpb.List
 				return nil, "", errDCPNoEntries
 			}
 			defer c.entry.release()
-			done := c.startUnary(ctx)
+			// The fetch runs with the context the iterator was built with, so
+			// it reports no attempt; its outcome counts for the current path.
+			_, done := c.startUnary(ctx)
 			results, nextPageToken, err := fetch(pageSize, pageToken)
 			done(err)
 			return results, nextPageToken, err
@@ -1156,21 +1375,21 @@ func (c *dcpSpannerClient) ListSessions(ctx context.Context, req *spannerpb.List
 }
 
 func (c *dcpSpannerClient) DeleteSession(ctx context.Context, req *spannerpb.DeleteSessionRequest, opts ...gax.CallOption) error {
-	done := c.startUnary(ctx)
+	ctx, done := c.startUnary(ctx)
 	err := c.delegate.DeleteSession(ctx, req, opts...)
 	done(err)
 	return err
 }
 
 func (c *dcpSpannerClient) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlRequest, opts ...gax.CallOption) (*spannerpb.ResultSet, error) {
-	done := c.startUnary(ctx)
+	ctx, done := c.startUnary(ctx)
 	resp, err := c.delegate.ExecuteSql(ctx, req, opts...)
 	done(err)
 	return resp, err
 }
 
 func (c *dcpSpannerClient) ExecuteStreamingSql(ctx context.Context, req *spannerpb.ExecuteSqlRequest, opts ...gax.CallOption) (spannerpb.Spanner_ExecuteStreamingSqlClient, error) {
-	ref := c.startStream(ctx)
+	ctx, ref := c.startStream(ctx)
 	stream, err := c.delegate.ExecuteStreamingSql(ctx, req, opts...)
 	if err != nil {
 		ref.done(err)
@@ -1180,21 +1399,21 @@ func (c *dcpSpannerClient) ExecuteStreamingSql(ctx context.Context, req *spanner
 }
 
 func (c *dcpSpannerClient) ExecuteBatchDml(ctx context.Context, req *spannerpb.ExecuteBatchDmlRequest, opts ...gax.CallOption) (*spannerpb.ExecuteBatchDmlResponse, error) {
-	done := c.startUnary(ctx)
+	ctx, done := c.startUnary(ctx)
 	resp, err := c.delegate.ExecuteBatchDml(ctx, req, opts...)
 	done(err)
 	return resp, err
 }
 
 func (c *dcpSpannerClient) Read(ctx context.Context, req *spannerpb.ReadRequest, opts ...gax.CallOption) (*spannerpb.ResultSet, error) {
-	done := c.startUnary(ctx)
+	ctx, done := c.startUnary(ctx)
 	resp, err := c.delegate.Read(ctx, req, opts...)
 	done(err)
 	return resp, err
 }
 
 func (c *dcpSpannerClient) StreamingRead(ctx context.Context, req *spannerpb.ReadRequest, opts ...gax.CallOption) (spannerpb.Spanner_StreamingReadClient, error) {
-	ref := c.startStream(ctx)
+	ctx, ref := c.startStream(ctx)
 	stream, err := c.delegate.StreamingRead(ctx, req, opts...)
 	if err != nil {
 		ref.done(err)
@@ -1204,42 +1423,42 @@ func (c *dcpSpannerClient) StreamingRead(ctx context.Context, req *spannerpb.Rea
 }
 
 func (c *dcpSpannerClient) BeginTransaction(ctx context.Context, req *spannerpb.BeginTransactionRequest, opts ...gax.CallOption) (*spannerpb.Transaction, error) {
-	done := c.startUnary(ctx)
+	ctx, done := c.startUnary(ctx)
 	resp, err := c.delegate.BeginTransaction(ctx, req, opts...)
 	done(err)
 	return resp, err
 }
 
 func (c *dcpSpannerClient) Commit(ctx context.Context, req *spannerpb.CommitRequest, opts ...gax.CallOption) (*spannerpb.CommitResponse, error) {
-	done := c.startUnary(ctx)
+	ctx, done := c.startUnary(ctx)
 	resp, err := c.delegate.Commit(ctx, req, opts...)
 	done(err)
 	return resp, err
 }
 
 func (c *dcpSpannerClient) Rollback(ctx context.Context, req *spannerpb.RollbackRequest, opts ...gax.CallOption) error {
-	done := c.startUnary(ctx)
+	ctx, done := c.startUnary(ctx)
 	err := c.delegate.Rollback(ctx, req, opts...)
 	done(err)
 	return err
 }
 
 func (c *dcpSpannerClient) PartitionQuery(ctx context.Context, req *spannerpb.PartitionQueryRequest, opts ...gax.CallOption) (*spannerpb.PartitionResponse, error) {
-	done := c.startUnary(ctx)
+	ctx, done := c.startUnary(ctx)
 	resp, err := c.delegate.PartitionQuery(ctx, req, opts...)
 	done(err)
 	return resp, err
 }
 
 func (c *dcpSpannerClient) PartitionRead(ctx context.Context, req *spannerpb.PartitionReadRequest, opts ...gax.CallOption) (*spannerpb.PartitionResponse, error) {
-	done := c.startUnary(ctx)
+	ctx, done := c.startUnary(ctx)
 	resp, err := c.delegate.PartitionRead(ctx, req, opts...)
 	done(err)
 	return resp, err
 }
 
 func (c *dcpSpannerClient) BatchWrite(ctx context.Context, req *spannerpb.BatchWriteRequest, opts ...gax.CallOption) (spannerpb.Spanner_BatchWriteClient, error) {
-	ref := c.startStream(ctx)
+	ctx, ref := c.startStream(ctx)
 	stream, err := c.delegate.BatchWrite(ctx, req, opts...)
 	if err != nil {
 		ref.done(err)
