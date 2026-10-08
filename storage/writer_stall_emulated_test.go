@@ -134,6 +134,20 @@ func TestGRPCWriterStallEmulated(t *testing.T) {
 			wantStreams:  2,
 		},
 		{
+			// With a 4 MiB ChunkSize (two 2 MiB BidiWriteObjectRequest messages per
+			// chunk), stalling at 3072 KiB means the first 2 MiB message is already
+			// persisted on the server without a flush ack when the second message
+			// stalls. On atomic retry (without QueryWriteStatus), the client replays
+			// from offset 0 and the server ignores the already-persisted 2 MiB prefix.
+			name:         "StallMidMultiMessageChunk_Recovers",
+			instructions: []string{stallAfter(3072)},
+			budget:       stallEmuRecoverBudget,
+			configure: func(w *Writer) {
+				w.ChunkSize = 2 * stallEmuChunkSize
+			},
+			wantStreams: 2,
+		},
+		{
 			// The 1 MiB tail is sent by Close as the final request.
 			name:         "StallInFinalRequest_Recovers",
 			instructions: []string{stallAfter(4608)},
