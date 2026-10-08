@@ -1,5 +1,12 @@
 # Changes
 
+## [1.88.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.87.0...dialogflow/v1.88.0) (2026-10-08)
+
+
+### Features
+
+* Update API sources and regenerate ([#20646](https://github.com/googleapis/google-cloud-go/issues/20646)) ([4ad5d50](https://github.com/googleapis/google-cloud-go/commit/4ad5d50aaf4392d19fd391ee71eec1c5029ecd1d))
+
 ## [1.87.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.86.0...dialogflow/v1.87.0) (2026-10-01)
 
 
