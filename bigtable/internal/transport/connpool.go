@@ -660,6 +660,22 @@ func (p *BigtableChannelPool) Num() int {
 	return len(p.getConns())
 }
 
+// TotalStreamCount returns the total number of in-flight streaming RPCs
+// across every channel in the pool — the sum of each connEntry's
+// streamingLoad. Sessions are bidi streams (one streaming RPC per open
+// session), so on session-mode traffic this equals the total session
+// count riding on the pool. SessionAwareScaleMonitor uses this as its
+// input signal, avoiding the need to reach across the session pool
+// boundary to sum per-resource session counts.
+func (p *BigtableChannelPool) TotalStreamCount() int {
+	conns := p.getConns()
+	total := int32(0)
+	for _, entry := range conns {
+		total += entry.streamingLoad.Load()
+	}
+	return int(total)
+}
+
 // Close closes all connections in the pool.
 func (p *BigtableChannelPool) Close() error {
 	p.poolCancel() // Cancel the context for background tasks
