@@ -58,7 +58,6 @@ var errStallTimeout = errors.New("storage: chunk transfer timeout")
 // stallTimeoutError and the rpc.method attribute of the stall metric.
 const (
 	rpcStartResumableWrite = "StartResumableWrite"
-	rpcQueryWriteStatus    = "QueryWriteStatus"
 	rpcBidiWriteObject     = "BidiWriteObject"
 )
 
@@ -645,7 +644,7 @@ func (w *gRPCWriter) writeLoop(ctx context.Context) (retErr error) {
 			}
 			w.watchdog = nil
 		}()
-		// Stage 1: StartResumableWrite, QueryWriteStatus, and initial BidiWriteObject
+		// Stage 1: StartResumableWrite and initial BidiWriteObject
 		// stream connection share the ChunkTransferTimeout duration.
 		watchdog.resume()
 	}
@@ -655,7 +654,7 @@ func (w *gRPCWriter) writeLoop(ctx context.Context) (retErr error) {
 		w.watchdog.setStage(rpcBidiWriteObject)
 	}
 
-	// Drain any initial completions (like QueryWriteStatus results).
+	// Drain any initial completions.
 Loop:
 	for {
 		select {
@@ -1541,7 +1540,7 @@ func (s *gRPCResumableBidiWriteBufferSender) connectStage() string {
 	if s.startWriteRequest != nil {
 		return rpcStartResumableWrite
 	}
-	return rpcQueryWriteStatus
+	return rpcBidiWriteObject
 }
 
 func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRPCBufSenderChans, opts ...gax.CallOption) {
@@ -1557,14 +1556,6 @@ func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRP
 		}
 		s.upid = upres.GetUploadId()
 		s.startWriteRequest = nil
-	} else {
-		q, err := s.raw.QueryWriteStatus(ctx, &storagepb.QueryWriteStatusRequest{UploadId: s.upid}, opts...)
-		if err != nil {
-			s.streamErr = err
-			close(cs.completions)
-			return
-		}
-		cs.completions <- gRPCBidiWriteCompletion{flushOffset: q.GetPersistedSize()}
 	}
 
 	stream, err := s.raw.BidiWriteObject(ctx, opts...)

@@ -355,13 +355,19 @@ func TestGRPCWriterStallEmulated(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			var streams atomic.Int32
-			interceptor := grpc.WithStreamInterceptor(func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+			streamInterceptor := grpc.WithStreamInterceptor(func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
 				if method == "/google.storage.v2.Storage/BidiWriteObject" {
 					streams.Add(1)
 				}
 				return streamer(ctx, desc, cc, method, opts...)
 			})
-			client, err := NewGRPCClient(context.Background(), option.WithGRPCDialOption(interceptor))
+			unaryInterceptor := grpc.WithUnaryInterceptor(func(ctx context.Context, method string, req, reply any, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
+				if method == "/google.storage.v2.Storage/QueryWriteStatus" {
+					t.Errorf("unexpected QueryWriteStatus call during resumable upload retry")
+				}
+				return invoker(ctx, method, req, reply, cc, opts...)
+			})
+			client, err := NewGRPCClient(context.Background(), option.WithGRPCDialOption(streamInterceptor), option.WithGRPCDialOption(unaryInterceptor))
 			if err != nil {
 				t.Fatalf("NewGRPCClient: %v", err)
 			}

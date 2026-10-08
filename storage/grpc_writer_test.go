@@ -19,16 +19,21 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net"
 	"strings"
 	"sync"
 	"testing"
 	"time"
 
+	gapic "cloud.google.com/go/storage/internal/apiv2"
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	gax "github.com/googleapis/gax-go/v2"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/metric/metricdata"
+	"google.golang.org/api/option"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 )
@@ -1326,7 +1331,7 @@ func TestGRPCWriter_ChunkRetryDeadline_NoResetOnUnchangedOffsetAfterPartialShift
 		setObj:           func(*ObjectAttrs) {},
 	}
 
-	// Attempt 1: QueryWriteStatus reports 50 bytes persisted (strict progress
+	// Attempt 1: Reconnect reports 50 bytes persisted (strict progress
 	// from 0 -> 50). writeLoop drains the completion, restarts the stopwatch,
 	// shifts w.buf by 50 bytes (bufBaseOffset = 50, bufFlushedIdx = 0), and
 	// then returns the transport error.
@@ -1878,8 +1883,8 @@ func TestGRPCResumableBidiWriteBufferSender_ConnectStage(t *testing.T) {
 		t.Errorf("new session: connectStage() = %q, want StartResumableWrite", got)
 	}
 	resume := &gRPCResumableBidiWriteBufferSender{upid: "upload-id"}
-	if got := resume.connectStage(); got != "QueryWriteStatus" {
-		t.Errorf("resumed session: connectStage() = %q, want QueryWriteStatus", got)
+	if got := resume.connectStage(); got != "BidiWriteObject" {
+		t.Errorf("resumed session: connectStage() = %q, want BidiWriteObject", got)
 	}
 }
 
@@ -3004,4 +3009,137 @@ func TestGRPCWriter_TwoLayerStallAndRetryDeadline(t *testing.T) {
 			t.Fatalf("expected user cancellation not to be masked as errStallTimeout, got: %v", err)
 		}
 	})
+}
+
+type atomicRetryStorageServer struct {
+	storagepb.UnimplementedStorageServer
+	mu               sync.Mutex
+	startCalls       int
+	queryStatusCalls int
+	bidiStreams      int
+	receivedOffsets  []int64
+	receivedUploadID []string
+}
+
+func (s *atomicRetryStorageServer) StartResumableWrite(ctx context.Context, req *storagepb.StartResumableWriteRequest) (*storagepb.StartResumableWriteResponse, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.startCalls++
+	return &storagepb.StartResumableWriteResponse{UploadId: "upload-atomic-1"}, nil
+}
+
+func (s *atomicRetryStorageServer) QueryWriteStatus(ctx context.Context, req *storagepb.QueryWriteStatusRequest) (*storagepb.QueryWriteStatusResponse, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.queryStatusCalls++
+	return nil, status.Error(codes.Internal, "QueryWriteStatus should not be called on resumable retry")
+}
+
+func (s *atomicRetryStorageServer) BidiWriteObject(stream storagepb.Storage_BidiWriteObjectServer) error {
+	s.mu.Lock()
+	s.bidiStreams++
+	streamNum := s.bidiStreams
+	s.mu.Unlock()
+
+	req, err := stream.Recv()
+	if err != nil {
+		return err
+	}
+	s.mu.Lock()
+	s.receivedOffsets = append(s.receivedOffsets, req.GetWriteOffset())
+	s.receivedUploadID = append(s.receivedUploadID, req.GetUploadId())
+	s.mu.Unlock()
+
+	if streamNum == 1 {
+		// Simulate a stall on the first stream until the client watchdog cancels it.
+		<-stream.Context().Done()
+		return stream.Context().Err()
+	}
+
+	size := req.GetWriteOffset() + int64(len(req.GetChecksummedData().GetContent()))
+	return stream.Send(&storagepb.BidiWriteObjectResponse{
+		WriteStatus: &storagepb.BidiWriteObjectResponse_Resource{
+			Resource: &storagepb.Object{
+				Bucket: req.GetUploadId(),
+				Name:   "obj",
+				Size:   size,
+			},
+		},
+	})
+}
+
+func TestGRPCResumableBidiWriteBufferSender_AtomicRetryWithoutQueryWriteStatus(t *testing.T) {
+	ctx := context.Background()
+	lis, err := net.Listen("tcp", "localhost:0")
+	if err != nil {
+		t.Fatalf("net.Listen: %v", err)
+	}
+	srv := grpc.NewServer()
+	fakeSrv := &atomicRetryStorageServer{}
+	storagepb.RegisterStorageServer(srv, fakeSrv)
+	go srv.Serve(lis)
+	defer srv.Stop()
+
+	rawClient, err := gapic.NewClient(ctx,
+		option.WithEndpoint(lis.Addr().String()),
+		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+		option.WithoutAuthentication(),
+	)
+	if err != nil {
+		t.Fatalf("gapic.NewClient: %v", err)
+	}
+	defer rawClient.Close()
+
+	w := &gRPCWriter{
+		preRunCtx:            ctx,
+		c:                    &grpcStorageClient{raw: rawClient},
+		bucket:               "b",
+		attrs:                &ObjectAttrs{Name: "obj"},
+		spec:                 &storagepb.WriteObjectSpec{Resource: &storagepb.Object{Bucket: "projects/_/buckets/b", Name: "obj"}},
+		chunkTransferTimeout: 40 * time.Millisecond,
+		budget:               chunkRetryBudget{deadline: 500 * time.Millisecond},
+		settings: &settings{
+			retry:      &retryConfig{backoff: &gax.Backoff{Initial: 5 * time.Millisecond}},
+			idempotent: true,
+		},
+		chunkSize:        100,
+		writeQuantum:     100,
+		buf:              make([]byte, 100),
+		bufBaseOffset:    0,
+		bufUnsentIdx:     0,
+		awaitingFirstAck: true,
+		sendableUnits:    1,
+		writesChan:       make(chan gRPCWriterCommand, 2),
+		setSize:          func(int64) {},
+		progress:         func(int64) {},
+		setObj:           func(*ObjectAttrs) {},
+	}
+	w.streamSender = w.newGRPCResumableBidiWriteBufferSender()
+	w.writesChan <- &gRPCWriterCommandClose{err: nil}
+
+	err = run(w.preRunCtx, func(ctx context.Context) error {
+		w.lastErr = w.writeLoop(ctx)
+		return w.lastErr
+	}, w.writerRetryConfig(), w.settings.idempotent, withOperation("WriteObject"))
+	if err != nil {
+		t.Fatalf("expected atomic retry to succeed without QueryWriteStatus, got: %v", err)
+	}
+
+	fakeSrv.mu.Lock()
+	defer fakeSrv.mu.Unlock()
+	if fakeSrv.startCalls != 1 {
+		t.Errorf("StartResumableWrite calls = %d, want 1", fakeSrv.startCalls)
+	}
+	if fakeSrv.queryStatusCalls != 0 {
+		t.Errorf("QueryWriteStatus calls = %d, want 0", fakeSrv.queryStatusCalls)
+	}
+	if fakeSrv.bidiStreams != 2 {
+		t.Errorf("BidiWriteObject streams = %d, want 2", fakeSrv.bidiStreams)
+	}
+	if len(fakeSrv.receivedOffsets) != 2 || fakeSrv.receivedOffsets[0] != 0 || fakeSrv.receivedOffsets[1] != 0 {
+		t.Errorf("received write_offsets = %v, want [0, 0]", fakeSrv.receivedOffsets)
+	}
+	if len(fakeSrv.receivedUploadID) != 2 || fakeSrv.receivedUploadID[0] != "upload-atomic-1" || fakeSrv.receivedUploadID[1] != "upload-atomic-1" {
+		t.Errorf("received upload_ids = %v, want [upload-atomic-1, upload-atomic-1]", fakeSrv.receivedUploadID)
+	}
 }
