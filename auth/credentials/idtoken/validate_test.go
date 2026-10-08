@@ -29,6 +29,7 @@ import (
 	"io"
 	"math/big"
 	"net/http"
+	"strings"
 	"testing"
 	"time"
 
@@ -188,6 +189,7 @@ func TestValidateES256(t *testing.T) {
 		x            *big.Int
 		y            *big.Int
 		nowFunc      func() time.Time
+		signature    []byte
 		wantErr      bool
 		wantCertsURL string
 	}{
@@ -209,6 +211,15 @@ func TestValidateES256(t *testing.T) {
 			nowFunc:      beforeExp,
 			wantErr:      false,
 			wantCertsURL: "http://example.com",
+		},
+		{
+			name:      "invalid signature length",
+			keyID:     keyID,
+			x:         pk.X,
+			y:         pk.Y,
+			nowFunc:   beforeExp,
+			signature: make([]byte, es256SignatureSize-1),
+			wantErr:   true,
 		},
 		{
 			name:         "no matching key",
@@ -276,9 +287,15 @@ func TestValidateES256(t *testing.T) {
 			if err != nil {
 				t.Fatalf("NewValidator(...) = %q, want nil", err)
 			}
-			payload, err := v.Validate(context.Background(), idToken, testAudience)
+
+			token := idToken
+			if tt.signature != nil {
+				i := strings.LastIndexByte(token, '.')
+				token = token[:i+1] + base64.RawURLEncoding.EncodeToString(tt.signature)
+			}
+			payload, err := v.Validate(context.Background(), token, testAudience)
 			if !tt.wantErr && err != nil {
-				t.Fatalf("Validate(ctx, %s, %s) = %q, want nil", idToken, testAudience, err)
+				t.Fatalf("Validate(ctx, %s, %s) = %q, want nil", token, testAudience, err)
 			}
 			if !tt.wantErr && payload.Audience != testAudience {
 				t.Fatalf("got %v, want %v", payload.Audience, testAudience)

@@ -36,7 +36,8 @@ import (
 )
 
 const (
-	es256KeySize int = 32
+	es256KeySize       int = 32
+	es256SignatureSize     = 2 * es256KeySize
 	// googleIAPCertsURL is used for ES256 Certs.
 	googleIAPCertsURL string = "https://www.gstatic.com/iap/verify/public_key-jwk"
 	// googleSACertsURL is used for RS256 Certs.
@@ -215,6 +216,9 @@ func (v *Validator) rs256CertsURL() string {
 }
 
 func (v *Validator) validateES256(ctx context.Context, keyID string, hashedContent []byte, sig []byte) error {
+	if len(sig) != es256SignatureSize {
+		return fmt.Errorf("idtoken: invalid ES256 signature length: got %d, want %d", len(sig), es256SignatureSize)
+	}
 	certResp, err := v.client.getCert(ctx, v.es256CertsURL())
 	if err != nil {
 		return err
