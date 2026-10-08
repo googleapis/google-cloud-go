@@ -126,7 +126,11 @@ func streamWithTransactionCallbacks(
 	allowRetryResourceExhaustedWithoutDelay bool,
 	borrowRows bool,
 ) *RowIterator {
-	ctx, cancel := context.WithCancel(ctx)
+	// Stopping the iterator ends its stream with errStreamStoppedByReader,
+	// which tells DirectPath fallback that a stream that delivered data before
+	// it ended was not cancelled work.
+	ctx, cancelCause := context.WithCancelCause(ctx)
+	cancel := func() { cancelCause(errStreamStoppedByReader) }
 	ctx, _ = startSpan(ctx, "RowIterator")
 	var vt *vtStream
 	if borrowRows {
