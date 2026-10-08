@@ -58,7 +58,6 @@ var errStallTimeout = errors.New("storage: chunk transfer timeout")
 // stallTimeoutError and the rpc.method attribute of the stall metric.
 const (
 	rpcStartResumableWrite = "StartResumableWrite"
-	rpcQueryWriteStatus    = "QueryWriteStatus"
 	rpcBidiWriteObject     = "BidiWriteObject"
 )
 
@@ -645,7 +644,7 @@ func (w *gRPCWriter) writeLoop(ctx context.Context) (retErr error) {
 			}
 			w.watchdog = nil
 		}()
-		// Stage 1: StartResumableWrite, QueryWriteStatus, and initial BidiWriteObject
+		// Stage 1: StartResumableWrite and initial BidiWriteObject
 		// stream connection share the ChunkTransferTimeout duration.
 		watchdog.resume()
 	}
@@ -655,7 +654,7 @@ func (w *gRPCWriter) writeLoop(ctx context.Context) (retErr error) {
 		w.watchdog.setStage(rpcBidiWriteObject)
 	}
 
-	// Drain any initial completions (like QueryWriteStatus results).
+	// Drain any initial completions.
 Loop:
 	for {
 		select {
@@ -1501,8 +1500,9 @@ type gRPCResumableBidiWriteBufferSender struct {
 	raw    *gapic.Client
 	bucket string
 
-	startWriteRequest *storagepb.StartResumableWriteRequest
-	upid              string
+	startWriteRequest    *storagepb.StartResumableWriteRequest
+	upid                 string
+	rotateStreamPerChunk bool
 
 	// Checksum related settings.
 	sendCRC32C          bool
@@ -1522,9 +1522,10 @@ func (w *gRPCWriter) newGRPCResumableBidiWriteBufferSender() *gRPCResumableBidiW
 			CommonObjectRequestParams: toProtoCommonObjectRequestParams(w.encryptionKey),
 			ObjectChecksums:           toProtoChecksums(w.sendCRC32C, w.attrs),
 		},
-		sendCRC32C:          w.sendCRC32C,
-		disableAutoChecksum: w.disableAutoChecksum,
-		objectAttrs:         w.attrs,
+		rotateStreamPerChunk: w.chunkTransferTimeout > 0,
+		sendCRC32C:           w.sendCRC32C,
+		disableAutoChecksum:  w.disableAutoChecksum,
+		objectAttrs:          w.attrs,
 		fullObjectChecksum: func() *uint32 {
 			checksum := w.fullObjectChecksum
 			return &checksum
@@ -1541,7 +1542,7 @@ func (s *gRPCResumableBidiWriteBufferSender) connectStage() string {
 	if s.startWriteRequest != nil {
 		return rpcStartResumableWrite
 	}
-	return rpcQueryWriteStatus
+	return rpcBidiWriteObject
 }
 
 func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRPCBufSenderChans, opts ...gax.CallOption) {
@@ -1557,14 +1558,6 @@ func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRP
 		}
 		s.upid = upres.GetUploadId()
 		s.startWriteRequest = nil
-	} else {
-		q, err := s.raw.QueryWriteStatus(ctx, &storagepb.QueryWriteStatusRequest{UploadId: s.upid}, opts...)
-		if err != nil {
-			s.streamErr = err
-			close(cs.completions)
-			return
-		}
-		cs.completions <- gRPCBidiWriteCompletion{flushOffset: q.GetPersistedSize()}
 	}
 
 	stream, err := s.raw.BidiWriteObject(ctx, opts...)
@@ -1574,14 +1567,54 @@ func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRP
 		return
 	}
 
-	go func() {
+	sendChunk := func(stream storagepb.Storage_BidiWriteObjectClient, initialReq *gRPCBidiWriteRequest) (bool, error) {
 		var sendErr, recvErr error
+		var uploadDone bool
 		sendDone := make(chan struct{})
 		recvDone := make(chan struct{})
+
+		sendOne := func(r gRPCBidiWriteRequest, firstSend *bool) (bool, error) {
+			var bufChecksum *uint32
+			if !s.disableAutoChecksum {
+				bufChecksum = proto.Uint32(crc32.Checksum(r.buf, crc32cTable))
+			}
+			objectChecksums := getObjectChecksums(&getObjectChecksumsParams{
+				sendCRC32C:          s.sendCRC32C,
+				objectAttrs:         s.objectAttrs,
+				fullObjectChecksum:  s.fullObjectChecksum,
+				disableAutoChecksum: s.disableAutoChecksum,
+				finishWrite:         r.finishWrite,
+			})
+			req := bidiWriteObjectRequest(r, bufChecksum, objectChecksums)
+
+			if *firstSend {
+				req.FirstMessage = &storagepb.BidiWriteObjectRequest_UploadId{UploadId: s.upid}
+				*firstSend = false
+			}
+			if err := stream.Send(req); err != nil {
+				return false, err
+			}
+			if r.finishWrite {
+				uploadDone = true
+				stream.CloseSend()
+				return true, nil
+			}
+			if r.flush && s.rotateStreamPerChunk {
+				stream.CloseSend()
+				return true, nil
+			}
+			return false, nil
+		}
 
 		go func() {
 			sendErr = func() error {
 				firstSend := true
+				if initialReq != nil {
+					chunkDone, err := sendOne(*initialReq, &firstSend)
+					if err != nil || chunkDone {
+						return err
+					}
+				}
 				for {
 					select {
 					case <-recvDone:
@@ -1590,6 +1623,7 @@ func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRP
 						return nil
 					case r, ok := <-cs.requests:
 						if !ok {
+							uploadDone = true
 							stream.CloseSend()
 							return nil
 						}
@@ -1597,30 +1631,9 @@ func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRP
 							cs.requestAcks <- struct{}{}
 							continue
 						}
-
-						var bufChecksum *uint32
-						if !s.disableAutoChecksum {
-							bufChecksum = proto.Uint32(crc32.Checksum(r.buf, crc32cTable))
-						}
-						objectChecksums := getObjectChecksums(&getObjectChecksumsParams{
-							sendCRC32C:          s.sendCRC32C,
-							objectAttrs:         s.objectAttrs,
-							fullObjectChecksum:  s.fullObjectChecksum,
-							disableAutoChecksum: s.disableAutoChecksum,
-							finishWrite:         r.finishWrite,
-						})
-						req := bidiWriteObjectRequest(r, bufChecksum, objectChecksums)
-
-						if firstSend {
-							req.FirstMessage = &storagepb.BidiWriteObjectRequest_UploadId{UploadId: s.upid}
-							firstSend = false
-						}
-						if err := stream.Send(req); err != nil {
+						chunkDone, err := sendOne(r, &firstSend)
+						if err != nil || chunkDone {
 							return err
-						}
-						if r.finishWrite {
-							stream.CloseSend()
-							return nil
 						}
 					}
 				}
@@ -1649,8 +1662,39 @@ func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRP
 
 		<-sendDone
 		<-recvDone
-		s.streamErr = pickStreamError(recvErr, sendErr)
-		close(cs.completions)
+		return uploadDone, pickStreamError(recvErr, sendErr)
+	}
+
+	go func() {
+		defer close(cs.completions)
+
+		uploadDone, err := sendChunk(stream, nil)
+		if err != nil || uploadDone {
+			s.streamErr = err
+			return
+		}
+
+		for {
+			r, ok := <-cs.requests
+			if !ok {
+				return
+			}
+			if r.requestAck {
+				cs.requestAcks <- struct{}{}
+				continue
+			}
+
+			nextStream, err := s.raw.BidiWriteObject(ctx, opts...)
+			if err != nil {
+				s.streamErr = err
+				return
+			}
+			uploadDone, err = sendChunk(nextStream, &r)
+			if err != nil || uploadDone {
+				s.streamErr = err
+				return
+			}
+		}
 	}()
 }
 

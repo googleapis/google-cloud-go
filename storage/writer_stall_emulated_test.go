@@ -125,33 +125,47 @@ func TestGRPCWriterStallEmulated(t *testing.T) {
 			name:         "StallInFirstChunk_Recovers",
 			instructions: []string{stallAfter(1024)},
 			budget:       stallEmuRecoverBudget,
-			wantStreams:  2,
+			wantStreams:  4,
 		},
 		{
 			name:         "StallInSecondChunk_Recovers",
 			instructions: []string{stallAfter(3072)},
 			budget:       stallEmuRecoverBudget,
-			wantStreams:  2,
+			wantStreams:  4,
+		},
+		{
+			// With a 4 MiB ChunkSize (two 2 MiB BidiWriteObjectRequest messages per
+			// chunk), stalling at 3072 KiB means the first 2 MiB message is already
+			// persisted on the server without a flush ack when the second message
+			// stalls. On atomic retry (without QueryWriteStatus), the client replays
+			// from offset 0 and the server ignores the already-persisted 2 MiB prefix.
+			name:         "StallMidMultiMessageChunk_Recovers",
+			instructions: []string{stallAfter(3072)},
+			budget:       stallEmuRecoverBudget,
+			configure: func(w *Writer) {
+				w.ChunkSize = 2 * stallEmuChunkSize
+			},
+			wantStreams: 3,
 		},
 		{
 			// The 1 MiB tail is sent by Close as the final request.
 			name:         "StallInFinalRequest_Recovers",
 			instructions: []string{stallAfter(4608)},
 			budget:       stallEmuRecoverBudget,
-			wantStreams:  2,
+			wantStreams:  4,
 		},
 		{
 			name:         "ConsecutiveStalls_Recover",
 			instructions: []string{stallAfter(1024), stallAfter(1024)},
 			budget:       stallEmuRecoverBudget,
-			wantStreams:  3,
+			wantStreams:  5,
 		},
 		{
 			name:         "CustomErrorFuncRejectingStall_Recovers",
 			instructions: []string{stallAfter(1024)},
 			budget:       stallEmuRecoverBudget,
 			retry:        []RetryOption{WithErrorFunc(func(error) bool { return false })},
-			wantStreams:  2,
+			wantStreams:  4,
 		},
 		{
 			// The stall hits the first message, before the server returns a
@@ -260,7 +274,7 @@ func TestGRPCWriterStallEmulated(t *testing.T) {
 				return err
 			},
 			size:        7 * 1024 * 1024,
-			wantStreams: 1,
+			wantStreams: 2,
 		},
 		{
 			name:   "AppendableFlushThenIdle_NoFalseStall",
@@ -355,13 +369,19 @@ func TestGRPCWriterStallEmulated(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			var streams atomic.Int32
-			interceptor := grpc.WithStreamInterceptor(func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+			streamInterceptor := grpc.WithStreamInterceptor(func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
 				if method == "/google.storage.v2.Storage/BidiWriteObject" {
 					streams.Add(1)
 				}
 				return streamer(ctx, desc, cc, method, opts...)
 			})
-			client, err := NewGRPCClient(context.Background(), option.WithGRPCDialOption(interceptor))
+			unaryInterceptor := grpc.WithUnaryInterceptor(func(ctx context.Context, method string, req, reply any, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
+				if method == "/google.storage.v2.Storage/QueryWriteStatus" {
+					t.Errorf("unexpected QueryWriteStatus call during resumable upload retry")
+				}
+				return invoker(ctx, method, req, reply, cc, opts...)
+			})
+			client, err := NewGRPCClient(context.Background(), option.WithGRPCDialOption(streamInterceptor), option.WithGRPCDialOption(unaryInterceptor))
 			if err != nil {
 				t.Fatalf("NewGRPCClient: %v", err)
 			}
