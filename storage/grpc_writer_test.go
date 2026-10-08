@@ -3041,38 +3041,49 @@ func (s *atomicRetryStorageServer) BidiWriteObject(stream storagepb.Storage_Bidi
 	streamNum := s.bidiStreams
 	s.mu.Unlock()
 
-	req, err := stream.Recv()
-	if err != nil {
-		return err
-	}
-	s.mu.Lock()
-	s.receivedOffsets = append(s.receivedOffsets, req.GetWriteOffset())
-	s.receivedUploadID = append(s.receivedUploadID, req.GetUploadId())
-	s.mu.Unlock()
+	for {
+		req, err := stream.Recv()
+		if err == io.EOF {
+			return nil
+		}
+		if err != nil {
+			return err
+		}
+		s.mu.Lock()
+		s.receivedOffsets = append(s.receivedOffsets, req.GetWriteOffset())
+		if req.GetUploadId() != "" {
+			s.receivedUploadID = append(s.receivedUploadID, req.GetUploadId())
+		}
+		s.mu.Unlock()
 
-	if streamNum == 1 {
-		// Simulate a stall on the first stream until the client watchdog cancels it.
-		<-stream.Context().Done()
-		return stream.Context().Err()
-	}
+		if streamNum == 1 {
+			// Simulate a stall on the first stream until the client watchdog cancels it.
+			<-stream.Context().Done()
+			return stream.Context().Err()
+		}
 
-	size := req.GetWriteOffset() + int64(len(req.GetChecksummedData().GetContent()))
-	if !req.GetFinishWrite() {
-		return stream.Send(&storagepb.BidiWriteObjectResponse{
-			WriteStatus: &storagepb.BidiWriteObjectResponse_PersistedSize{
-				PersistedSize: size,
-			},
-		})
+		size := req.GetWriteOffset() + int64(len(req.GetChecksummedData().GetContent()))
+		if req.GetFinishWrite() {
+			return stream.Send(&storagepb.BidiWriteObjectResponse{
+				WriteStatus: &storagepb.BidiWriteObjectResponse_Resource{
+					Resource: &storagepb.Object{
+						Bucket: "b",
+						Name:   "obj",
+						Size:   size,
+					},
+				},
+			})
+		}
+		if req.GetStateLookup() {
+			if err := stream.Send(&storagepb.BidiWriteObjectResponse{
+				WriteStatus: &storagepb.BidiWriteObjectResponse_PersistedSize{
+					PersistedSize: size,
+				},
+			}); err != nil {
+				return err
+			}
+		}
 	}
-	return stream.Send(&storagepb.BidiWriteObjectResponse{
-		WriteStatus: &storagepb.BidiWriteObjectResponse_Resource{
-			Resource: &storagepb.Object{
-				Bucket: req.GetUploadId(),
-				Name:   "obj",
-				Size:   size,
-			},
-		},
-	})
 }
 
 func TestGRPCResumableBidiWriteBufferSender_AtomicRetryWithoutQueryWriteStatus(t *testing.T) {
@@ -3153,5 +3164,86 @@ func TestGRPCResumableBidiWriteBufferSender_AtomicRetryWithoutQueryWriteStatus(t
 		if upid != "upload-atomic-1" {
 			t.Errorf("received upload_ids[%d] = %q, want upload-atomic-1", i, upid)
 		}
+	}
+}
+
+func TestGRPCResumableBidiWriteBufferSender_StreamRotationOnlyWhenChunkTransferTimeoutSet(t *testing.T) {
+	for _, tc := range []struct {
+		name                 string
+		chunkTransferTimeout time.Duration
+		wantBidiStreams      int
+	}{
+		{
+			name:                 "ChunkTransferTimeoutZero_SingleStream",
+			chunkTransferTimeout: 0,
+			wantBidiStreams:      1,
+		},
+		{
+			name:                 "ChunkTransferTimeoutSet_StreamPerChunk",
+			chunkTransferTimeout: 100 * time.Millisecond,
+			wantBidiStreams:      2,
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			ctx := context.Background()
+			lis, err := net.Listen("tcp", "localhost:0")
+			if err != nil {
+				t.Fatalf("net.Listen: %v", err)
+			}
+			srv := grpc.NewServer()
+			// Start bidiStreams at 1 so atomicRetryStorageServer does not stall the first stream.
+			fakeSrv := &atomicRetryStorageServer{bidiStreams: 1}
+			storagepb.RegisterStorageServer(srv, fakeSrv)
+			go srv.Serve(lis)
+			defer srv.Stop()
+
+			rawClient, err := gapic.NewClient(ctx,
+				option.WithEndpoint(lis.Addr().String()),
+				option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+				option.WithoutAuthentication(),
+			)
+			if err != nil {
+				t.Fatalf("gapic.NewClient: %v", err)
+			}
+			defer rawClient.Close()
+
+			w := &gRPCWriter{
+				preRunCtx:            ctx,
+				c:                    &grpcStorageClient{raw: rawClient},
+				bucket:               "b",
+				attrs:                &ObjectAttrs{Name: "obj"},
+				spec:                 &storagepb.WriteObjectSpec{Resource: &storagepb.Object{Bucket: "projects/_/buckets/b", Name: "obj"}},
+				chunkTransferTimeout: tc.chunkTransferTimeout,
+				budget:               chunkRetryBudget{deadline: 500 * time.Millisecond},
+				settings: &settings{
+					retry:      &retryConfig{backoff: &gax.Backoff{Initial: 5 * time.Millisecond}},
+					idempotent: true,
+				},
+				chunkSize:        100,
+				writeQuantum:     100,
+				buf:              make([]byte, 100),
+				bufBaseOffset:    0,
+				bufUnsentIdx:     0,
+				awaitingFirstAck: true,
+				sendableUnits:    1,
+				writesChan:       make(chan gRPCWriterCommand, 2),
+				setSize:          func(int64) {},
+				progress:         func(int64) {},
+				setObj:           func(*ObjectAttrs) {},
+			}
+			w.streamSender = w.newGRPCResumableBidiWriteBufferSender()
+			w.writesChan <- &gRPCWriterCommandClose{err: nil}
+
+			if err := w.writeLoop(ctx); err != nil {
+				t.Fatalf("writeLoop: %v", err)
+			}
+
+			fakeSrv.mu.Lock()
+			defer fakeSrv.mu.Unlock()
+			gotStreams := fakeSrv.bidiStreams - 1
+			if gotStreams != tc.wantBidiStreams {
+				t.Errorf("BidiWriteObject streams = %d, want %d", gotStreams, tc.wantBidiStreams)
+			}
+		})
 	}
 }

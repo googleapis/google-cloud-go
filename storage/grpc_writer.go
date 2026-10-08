@@ -1500,8 +1500,9 @@ type gRPCResumableBidiWriteBufferSender struct {
 	raw    *gapic.Client
 	bucket string
 
-	startWriteRequest *storagepb.StartResumableWriteRequest
-	upid              string
+	startWriteRequest    *storagepb.StartResumableWriteRequest
+	upid                 string
+	rotateStreamPerChunk bool
 
 	// Checksum related settings.
 	sendCRC32C          bool
@@ -1521,9 +1522,10 @@ func (w *gRPCWriter) newGRPCResumableBidiWriteBufferSender() *gRPCResumableBidiW
 			CommonObjectRequestParams: toProtoCommonObjectRequestParams(w.encryptionKey),
 			ObjectChecksums:           toProtoChecksums(w.sendCRC32C, w.attrs),
 		},
-		sendCRC32C:          w.sendCRC32C,
-		disableAutoChecksum: w.disableAutoChecksum,
-		objectAttrs:         w.attrs,
+		rotateStreamPerChunk: w.chunkTransferTimeout > 0,
+		sendCRC32C:           w.sendCRC32C,
+		disableAutoChecksum:  w.disableAutoChecksum,
+		objectAttrs:          w.attrs,
 		fullObjectChecksum: func() *uint32 {
 			checksum := w.fullObjectChecksum
 			return &checksum
@@ -1597,7 +1599,7 @@ func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRP
 				stream.CloseSend()
 				return true, nil
 			}
-			if r.flush {
+			if r.flush && s.rotateStreamPerChunk {
 				stream.CloseSend()
 				return true, nil
 			}
