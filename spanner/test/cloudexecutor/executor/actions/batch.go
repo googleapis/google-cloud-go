@@ -40,6 +40,7 @@ type StartBatchTxnHandler struct {
 // ExecuteAction that starts a batch transaction
 func (h *StartBatchTxnHandler) ExecuteAction(ctx context.Context) error {
 	log.Printf("starting batch transaction %v", h.Action)
+	var err error
 	h.FlowContext.mu.Lock()
 	defer h.FlowContext.mu.Unlock()
 	if h.FlowContext.isTransactionActiveLocked() {
@@ -50,10 +51,7 @@ func (h *StartBatchTxnHandler) ExecuteAction(ctx context.Context) error {
 		return h.OutcomeSender.FinishWithError(spanner.ToSpannerError(status.Error(codes.InvalidArgument, "database path must be set for this action")))
 	}
 
-	client, err := spanner.NewClient(ctx, h.FlowContext.Database, h.Options...)
-	if err != nil {
-		return h.OutcomeSender.FinishWithError(err)
-	}
+	client := h.FlowContext.DbClient
 	var txn *spanner.BatchReadOnlyTransaction
 	if h.Action.GetBatchTxnTime() != nil {
 		timestamp := time.Unix(h.Action.GetBatchTxnTime().Seconds, int64(h.Action.GetBatchTxnTime().Nanos))
