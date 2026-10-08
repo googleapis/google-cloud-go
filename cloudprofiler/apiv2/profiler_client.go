@@ -261,6 +261,37 @@ func NewProfilerClient(ctx context.Context, opts ...option.ClientOption) (*Profi
 		client.CallOptions.CreateOfflineProfile = append(client.CallOptions.CreateOfflineProfile, gax.WithClientMetrics(metrics))
 		client.CallOptions.UpdateProfile = append(client.CallOptions.UpdateProfile, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudprofiler",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/cloudprofiler/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudprofiler.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateProfile = append(client.CallOptions.CreateProfile, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateOfflineProfile = append(client.CallOptions.CreateOfflineProfile, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateProfile = append(client.CallOptions.UpdateProfile, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudprofiler",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/cloudprofiler/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudprofiler.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateProfile = append(client.CallOptions.CreateProfile, gax.WithClientLogging(logging))
+		client.CallOptions.CreateOfflineProfile = append(client.CallOptions.CreateOfflineProfile, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateProfile = append(client.CallOptions.UpdateProfile, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -358,6 +389,37 @@ func NewProfilerRESTClient(ctx context.Context, opts ...option.ClientOption) (*P
 		callOpts.CreateOfflineProfile = append(callOpts.CreateOfflineProfile, gax.WithClientMetrics(metrics))
 		callOpts.UpdateProfile = append(callOpts.UpdateProfile, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudprofiler",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/cloudprofiler/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudprofiler.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateProfile = append(callOpts.CreateProfile, gax.WithClientTracing(tracing))
+		callOpts.CreateOfflineProfile = append(callOpts.CreateOfflineProfile, gax.WithClientTracing(tracing))
+		callOpts.UpdateProfile = append(callOpts.UpdateProfile, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudprofiler",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/cloudprofiler/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudprofiler.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateProfile = append(callOpts.CreateProfile, gax.WithClientLogging(logging))
+		callOpts.CreateOfflineProfile = append(callOpts.CreateOfflineProfile, gax.WithClientLogging(logging))
+		callOpts.UpdateProfile = append(callOpts.UpdateProfile, gax.WithClientLogging(logging))
+	}
 
 	return &ProfilerClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -404,9 +466,6 @@ func (c *profilerGRPCClient) CreateProfile(ctx context.Context, req *cloudprofil
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudprofiler.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudprofiler.v2.ProfilerService/CreateProfile")
 	}
@@ -428,9 +487,6 @@ func (c *profilerGRPCClient) CreateOfflineProfile(ctx context.Context, req *clou
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudprofiler.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudprofiler.v2.ProfilerService/CreateOfflineProfile")
 	}
@@ -510,9 +566,6 @@ func (c *profilerRESTClient) CreateProfile(ctx context.Context, req *cloudprofil
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudprofiler.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudprofiler.v2.ProfilerService/CreateProfile")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{parent=projects/*}/profiles")
@@ -581,9 +634,6 @@ func (c *profilerRESTClient) CreateOfflineProfile(ctx context.Context, req *clou
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudprofiler.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudprofiler.v2.ProfilerService/CreateOfflineProfile")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{parent=projects/*}/profiles:createOffline")

@@ -300,6 +300,41 @@ func NewTagBindingsClient(ctx context.Context, opts ...option.ClientOption) (*Ta
 		client.CallOptions.ListEffectiveTags = append(client.CallOptions.ListEffectiveTags, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudresourcemanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/resourcemanager/apiv3",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudresourcemanager.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListTagBindings = append(client.CallOptions.ListTagBindings, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateTagBinding = append(client.CallOptions.CreateTagBinding, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteTagBinding = append(client.CallOptions.DeleteTagBinding, gax.WithClientTracing(tracing))
+		client.CallOptions.ListEffectiveTags = append(client.CallOptions.ListEffectiveTags, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudresourcemanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/resourcemanager/apiv3",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudresourcemanager.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListTagBindings = append(client.CallOptions.ListTagBindings, gax.WithClientLogging(logging))
+		client.CallOptions.CreateTagBinding = append(client.CallOptions.CreateTagBinding, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteTagBinding = append(client.CallOptions.DeleteTagBinding, gax.WithClientLogging(logging))
+		client.CallOptions.ListEffectiveTags = append(client.CallOptions.ListEffectiveTags, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -411,6 +446,41 @@ func NewTagBindingsRESTClient(ctx context.Context, opts ...option.ClientOption) 
 		callOpts.DeleteTagBinding = append(callOpts.DeleteTagBinding, gax.WithClientMetrics(metrics))
 		callOpts.ListEffectiveTags = append(callOpts.ListEffectiveTags, gax.WithClientMetrics(metrics))
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudresourcemanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/resourcemanager/apiv3",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudresourcemanager.googleapis.com",
+			}),
+		)
+
+		callOpts.ListTagBindings = append(callOpts.ListTagBindings, gax.WithClientTracing(tracing))
+		callOpts.CreateTagBinding = append(callOpts.CreateTagBinding, gax.WithClientTracing(tracing))
+		callOpts.DeleteTagBinding = append(callOpts.DeleteTagBinding, gax.WithClientTracing(tracing))
+		callOpts.ListEffectiveTags = append(callOpts.ListEffectiveTags, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudresourcemanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/resourcemanager/apiv3",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudresourcemanager.googleapis.com",
+			}),
+		)
+
+		callOpts.ListTagBindings = append(callOpts.ListTagBindings, gax.WithClientLogging(logging))
+		callOpts.CreateTagBinding = append(callOpts.CreateTagBinding, gax.WithClientLogging(logging))
+		callOpts.DeleteTagBinding = append(callOpts.DeleteTagBinding, gax.WithClientLogging(logging))
+		callOpts.ListEffectiveTags = append(callOpts.ListEffectiveTags, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
 	}
 
 	lroOpts := []option.ClientOption{
@@ -538,9 +608,6 @@ func (c *tagBindingsGRPCClient) DeleteTagBinding(ctx context.Context, req *resou
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudresourcemanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.TagBindings/DeleteTagBinding")
 	}
@@ -800,9 +867,6 @@ func (c *tagBindingsRESTClient) DeleteTagBinding(ctx context.Context, req *resou
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudresourcemanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.TagBindings/DeleteTagBinding")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{name=tagBindings/**}")

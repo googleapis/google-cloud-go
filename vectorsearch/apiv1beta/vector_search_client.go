@@ -672,6 +672,67 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "vectorsearch",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/vectorsearch/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "vectorsearch.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListCollections = append(client.CallOptions.ListCollections, gax.WithClientTracing(tracing))
+		client.CallOptions.GetCollection = append(client.CallOptions.GetCollection, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateCollection = append(client.CallOptions.CreateCollection, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateCollection = append(client.CallOptions.UpdateCollection, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteCollection = append(client.CallOptions.DeleteCollection, gax.WithClientTracing(tracing))
+		client.CallOptions.ListIndexes = append(client.CallOptions.ListIndexes, gax.WithClientTracing(tracing))
+		client.CallOptions.GetIndex = append(client.CallOptions.GetIndex, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateIndex = append(client.CallOptions.CreateIndex, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateIndex = append(client.CallOptions.UpdateIndex, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteIndex = append(client.CallOptions.DeleteIndex, gax.WithClientTracing(tracing))
+		client.CallOptions.ImportDataObjects = append(client.CallOptions.ImportDataObjects, gax.WithClientTracing(tracing))
+		client.CallOptions.ExportDataObjects = append(client.CallOptions.ExportDataObjects, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "vectorsearch",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/vectorsearch/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "vectorsearch.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListCollections = append(client.CallOptions.ListCollections, gax.WithClientLogging(logging))
+		client.CallOptions.GetCollection = append(client.CallOptions.GetCollection, gax.WithClientLogging(logging))
+		client.CallOptions.CreateCollection = append(client.CallOptions.CreateCollection, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateCollection = append(client.CallOptions.UpdateCollection, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteCollection = append(client.CallOptions.DeleteCollection, gax.WithClientLogging(logging))
+		client.CallOptions.ListIndexes = append(client.CallOptions.ListIndexes, gax.WithClientLogging(logging))
+		client.CallOptions.GetIndex = append(client.CallOptions.GetIndex, gax.WithClientLogging(logging))
+		client.CallOptions.CreateIndex = append(client.CallOptions.CreateIndex, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateIndex = append(client.CallOptions.UpdateIndex, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteIndex = append(client.CallOptions.DeleteIndex, gax.WithClientLogging(logging))
+		client.CallOptions.ImportDataObjects = append(client.CallOptions.ImportDataObjects, gax.WithClientLogging(logging))
+		client.CallOptions.ExportDataObjects = append(client.CallOptions.ExportDataObjects, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -800,6 +861,67 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "vectorsearch",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/vectorsearch/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "vectorsearch.googleapis.com",
+			}),
+		)
+
+		callOpts.ListCollections = append(callOpts.ListCollections, gax.WithClientTracing(tracing))
+		callOpts.GetCollection = append(callOpts.GetCollection, gax.WithClientTracing(tracing))
+		callOpts.CreateCollection = append(callOpts.CreateCollection, gax.WithClientTracing(tracing))
+		callOpts.UpdateCollection = append(callOpts.UpdateCollection, gax.WithClientTracing(tracing))
+		callOpts.DeleteCollection = append(callOpts.DeleteCollection, gax.WithClientTracing(tracing))
+		callOpts.ListIndexes = append(callOpts.ListIndexes, gax.WithClientTracing(tracing))
+		callOpts.GetIndex = append(callOpts.GetIndex, gax.WithClientTracing(tracing))
+		callOpts.CreateIndex = append(callOpts.CreateIndex, gax.WithClientTracing(tracing))
+		callOpts.UpdateIndex = append(callOpts.UpdateIndex, gax.WithClientTracing(tracing))
+		callOpts.DeleteIndex = append(callOpts.DeleteIndex, gax.WithClientTracing(tracing))
+		callOpts.ImportDataObjects = append(callOpts.ImportDataObjects, gax.WithClientTracing(tracing))
+		callOpts.ExportDataObjects = append(callOpts.ExportDataObjects, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "vectorsearch",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/vectorsearch/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "vectorsearch.googleapis.com",
+			}),
+		)
+
+		callOpts.ListCollections = append(callOpts.ListCollections, gax.WithClientLogging(logging))
+		callOpts.GetCollection = append(callOpts.GetCollection, gax.WithClientLogging(logging))
+		callOpts.CreateCollection = append(callOpts.CreateCollection, gax.WithClientLogging(logging))
+		callOpts.UpdateCollection = append(callOpts.UpdateCollection, gax.WithClientLogging(logging))
+		callOpts.DeleteCollection = append(callOpts.DeleteCollection, gax.WithClientLogging(logging))
+		callOpts.ListIndexes = append(callOpts.ListIndexes, gax.WithClientLogging(logging))
+		callOpts.GetIndex = append(callOpts.GetIndex, gax.WithClientLogging(logging))
+		callOpts.CreateIndex = append(callOpts.CreateIndex, gax.WithClientLogging(logging))
+		callOpts.UpdateIndex = append(callOpts.UpdateIndex, gax.WithClientLogging(logging))
+		callOpts.DeleteIndex = append(callOpts.DeleteIndex, gax.WithClientLogging(logging))
+		callOpts.ImportDataObjects = append(callOpts.ImportDataObjects, gax.WithClientLogging(logging))
+		callOpts.ExportDataObjects = append(callOpts.ExportDataObjects, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -856,9 +978,6 @@ func (c *gRPCClient) ListCollections(ctx context.Context, req *vectorsearchpb.Li
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vectorsearch.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vectorsearch.v1beta.VectorSearchService/ListCollections")
 	}
@@ -908,9 +1027,6 @@ func (c *gRPCClient) GetCollection(ctx context.Context, req *vectorsearchpb.GetC
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vectorsearch.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vectorsearch.v1beta.VectorSearchService/GetCollection")
 	}
@@ -932,9 +1048,6 @@ func (c *gRPCClient) CreateCollection(ctx context.Context, req *vectorsearchpb.C
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vectorsearch.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vectorsearch.v1beta.VectorSearchService/CreateCollection")
 	}
@@ -989,9 +1102,6 @@ func (c *gRPCClient) DeleteCollection(ctx context.Context, req *vectorsearchpb.D
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vectorsearch.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vectorsearch.v1beta.VectorSearchService/DeleteCollection")
 	}
@@ -1019,9 +1129,6 @@ func (c *gRPCClient) ListIndexes(ctx context.Context, req *vectorsearchpb.ListIn
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vectorsearch.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vectorsearch.v1beta.VectorSearchService/ListIndexes")
 	}
@@ -1071,9 +1178,6 @@ func (c *gRPCClient) GetIndex(ctx context.Context, req *vectorsearchpb.GetIndexR
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vectorsearch.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vectorsearch.v1beta.VectorSearchService/GetIndex")
 	}
@@ -1095,9 +1199,6 @@ func (c *gRPCClient) CreateIndex(ctx context.Context, req *vectorsearchpb.Create
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vectorsearch.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vectorsearch.v1beta.VectorSearchService/CreateIndex")
 	}
@@ -1152,9 +1253,6 @@ func (c *gRPCClient) DeleteIndex(ctx context.Context, req *vectorsearchpb.Delete
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vectorsearch.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vectorsearch.v1beta.VectorSearchService/DeleteIndex")
 	}
@@ -1182,9 +1280,6 @@ func (c *gRPCClient) ImportDataObjects(ctx context.Context, req *vectorsearchpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vectorsearch.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vectorsearch.v1beta.VectorSearchService/ImportDataObjects")
 	}
@@ -1212,9 +1307,6 @@ func (c *gRPCClient) ExportDataObjects(ctx context.Context, req *vectorsearchpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vectorsearch.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vectorsearch.v1beta.VectorSearchService/ExportDataObjects")
 	}
@@ -1514,9 +1606,6 @@ func (c *restClient) GetCollection(ctx context.Context, req *vectorsearchpb.GetC
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vectorsearch.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vectorsearch.v1beta.VectorSearchService/GetCollection")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/collections/*}")
@@ -1582,9 +1671,6 @@ func (c *restClient) CreateCollection(ctx context.Context, req *vectorsearchpb.C
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vectorsearch.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vectorsearch.v1beta.VectorSearchService/CreateCollection")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*}/collections")
@@ -1730,9 +1816,6 @@ func (c *restClient) DeleteCollection(ctx context.Context, req *vectorsearchpb.D
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vectorsearch.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vectorsearch.v1beta.VectorSearchService/DeleteCollection")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/collections/*}")
@@ -1878,9 +1961,6 @@ func (c *restClient) GetIndex(ctx context.Context, req *vectorsearchpb.GetIndexR
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vectorsearch.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vectorsearch.v1beta.VectorSearchService/GetIndex")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/collections/*/indexes/*}")
@@ -1946,9 +2026,6 @@ func (c *restClient) CreateIndex(ctx context.Context, req *vectorsearchpb.Create
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vectorsearch.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vectorsearch.v1beta.VectorSearchService/CreateIndex")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*/collections/*}/indexes")
@@ -2091,9 +2168,6 @@ func (c *restClient) DeleteIndex(ctx context.Context, req *vectorsearchpb.Delete
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vectorsearch.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vectorsearch.v1beta.VectorSearchService/DeleteIndex")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/collections/*/indexes/*}")
@@ -2161,9 +2235,6 @@ func (c *restClient) ImportDataObjects(ctx context.Context, req *vectorsearchpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vectorsearch.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vectorsearch.v1beta.VectorSearchService/ImportDataObjects")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/collections/*}:importDataObjects")
@@ -2231,9 +2302,6 @@ func (c *restClient) ExportDataObjects(ctx context.Context, req *vectorsearchpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vectorsearch.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vectorsearch.v1beta.VectorSearchService/ExportDataObjects")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/collections/*}:exportDataObjects")

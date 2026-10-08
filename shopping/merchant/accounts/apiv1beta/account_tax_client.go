@@ -286,6 +286,37 @@ func NewAccountTaxClient(ctx context.Context, opts ...option.ClientOption) (*Acc
 		client.CallOptions.ListAccountTax = append(client.CallOptions.ListAccountTax, gax.WithClientMetrics(metrics))
 		client.CallOptions.UpdateAccountTax = append(client.CallOptions.UpdateAccountTax, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetAccountTax = append(client.CallOptions.GetAccountTax, gax.WithClientTracing(tracing))
+		client.CallOptions.ListAccountTax = append(client.CallOptions.ListAccountTax, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateAccountTax = append(client.CallOptions.UpdateAccountTax, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetAccountTax = append(client.CallOptions.GetAccountTax, gax.WithClientLogging(logging))
+		client.CallOptions.ListAccountTax = append(client.CallOptions.ListAccountTax, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateAccountTax = append(client.CallOptions.UpdateAccountTax, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -383,6 +414,37 @@ func NewAccountTaxRESTClient(ctx context.Context, opts ...option.ClientOption) (
 		callOpts.ListAccountTax = append(callOpts.ListAccountTax, gax.WithClientMetrics(metrics))
 		callOpts.UpdateAccountTax = append(callOpts.UpdateAccountTax, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.GetAccountTax = append(callOpts.GetAccountTax, gax.WithClientTracing(tracing))
+		callOpts.ListAccountTax = append(callOpts.ListAccountTax, gax.WithClientTracing(tracing))
+		callOpts.UpdateAccountTax = append(callOpts.UpdateAccountTax, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.GetAccountTax = append(callOpts.GetAccountTax, gax.WithClientLogging(logging))
+		callOpts.ListAccountTax = append(callOpts.ListAccountTax, gax.WithClientLogging(logging))
+		callOpts.UpdateAccountTax = append(callOpts.UpdateAccountTax, gax.WithClientLogging(logging))
+	}
 
 	return &AccountTaxClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -429,9 +491,6 @@ func (c *accountTaxGRPCClient) GetAccountTax(ctx context.Context, req *accountsp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.AccountTaxService/GetAccountTax")
 	}
@@ -453,9 +512,6 @@ func (c *accountTaxGRPCClient) ListAccountTax(ctx context.Context, req *accounts
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.AccountTaxService/ListAccountTax")
 	}
@@ -540,9 +596,6 @@ func (c *accountTaxRESTClient) GetAccountTax(ctx context.Context, req *accountsp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.AccountTaxService/GetAccountTax")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/accounts/v1beta/{name=accounts/*/accounttax/*}")

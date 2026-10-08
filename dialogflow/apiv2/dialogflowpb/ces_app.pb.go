@@ -37,7 +37,10 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// Deprecated: Use `CesToolSpec` instead.
 // Spec of CES app that the generator can choose from.
+//
+// Deprecated: Marked as deprecated in google/cloud/dialogflow/v2/ces_app.proto.
 type CesAppSpec struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Optional. Format: `projects/<Project ID>/locations/<Location ID>/apps/<app
@@ -121,14 +124,14 @@ var File_google_cloud_dialogflow_v2_ces_app_proto protoreflect.FileDescriptor
 
 const file_google_cloud_dialogflow_v2_ces_app_proto_rawDesc = "" +
 	"\n" +
-	"(google/cloud/dialogflow/v2/ces_app.proto\x12\x1agoogle.cloud.dialogflow.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a%google/cloud/dialogflow/v2/tool.proto\"\xd6\x02\n" +
+	"(google/cloud/dialogflow/v2/ces_app.proto\x12\x1agoogle.cloud.dialogflow.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a%google/cloud/dialogflow/v2/tool.proto\"\xda\x02\n" +
 	"\n" +
 	"CesAppSpec\x127\n" +
 	"\aces_app\x18\x01 \x01(\tB\x1e\xe0A\x01\xfaA\x18\n" +
 	"\x16ces.googleapis.com/AppR\x06cesApp\x12x\n" +
 	"\x18confirmation_requirement\x18\x02 \x01(\x0e28.google.cloud.dialogflow.v2.Tool.ConfirmationRequirementB\x03\xe0A\x01R\x17confirmationRequirement\x125\n" +
 	"\x11proactive_enabled\x18\x03 \x01(\bB\x03\xe0A\x01H\x00R\x10proactiveEnabled\x88\x01\x01\x123\n" +
-	"\x10reactive_enabled\x18\x04 \x01(\bB\x03\xe0A\x01H\x01R\x0freactiveEnabled\x88\x01\x01B\x14\n" +
+	"\x10reactive_enabled\x18\x04 \x01(\bB\x03\xe0A\x01H\x01R\x0freactiveEnabled\x88\x01\x01:\x02\x18\x01B\x14\n" +
 	"\x12_proactive_enabledB\x13\n" +
 	"\x11_reactive_enabledB\xe0\x01\xeaAL\n" +
 	"\x16ces.googleapis.com/App\x122projects/{project}/locations/{location}/apps/{app}\n" +

@@ -1095,6 +1095,139 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "migrationcenter",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/migrationcenter/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "migrationcenter.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListAssets = append(client.CallOptions.ListAssets, gax.WithClientTracing(tracing))
+		client.CallOptions.GetAsset = append(client.CallOptions.GetAsset, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateAsset = append(client.CallOptions.UpdateAsset, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchUpdateAssets = append(client.CallOptions.BatchUpdateAssets, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteAsset = append(client.CallOptions.DeleteAsset, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchDeleteAssets = append(client.CallOptions.BatchDeleteAssets, gax.WithClientTracing(tracing))
+		client.CallOptions.ReportAssetFrames = append(client.CallOptions.ReportAssetFrames, gax.WithClientTracing(tracing))
+		client.CallOptions.AggregateAssetsValues = append(client.CallOptions.AggregateAssetsValues, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateImportJob = append(client.CallOptions.CreateImportJob, gax.WithClientTracing(tracing))
+		client.CallOptions.ListImportJobs = append(client.CallOptions.ListImportJobs, gax.WithClientTracing(tracing))
+		client.CallOptions.GetImportJob = append(client.CallOptions.GetImportJob, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteImportJob = append(client.CallOptions.DeleteImportJob, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateImportJob = append(client.CallOptions.UpdateImportJob, gax.WithClientTracing(tracing))
+		client.CallOptions.ValidateImportJob = append(client.CallOptions.ValidateImportJob, gax.WithClientTracing(tracing))
+		client.CallOptions.RunImportJob = append(client.CallOptions.RunImportJob, gax.WithClientTracing(tracing))
+		client.CallOptions.GetImportDataFile = append(client.CallOptions.GetImportDataFile, gax.WithClientTracing(tracing))
+		client.CallOptions.ListImportDataFiles = append(client.CallOptions.ListImportDataFiles, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateImportDataFile = append(client.CallOptions.CreateImportDataFile, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteImportDataFile = append(client.CallOptions.DeleteImportDataFile, gax.WithClientTracing(tracing))
+		client.CallOptions.ListGroups = append(client.CallOptions.ListGroups, gax.WithClientTracing(tracing))
+		client.CallOptions.GetGroup = append(client.CallOptions.GetGroup, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateGroup = append(client.CallOptions.CreateGroup, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateGroup = append(client.CallOptions.UpdateGroup, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteGroup = append(client.CallOptions.DeleteGroup, gax.WithClientTracing(tracing))
+		client.CallOptions.AddAssetsToGroup = append(client.CallOptions.AddAssetsToGroup, gax.WithClientTracing(tracing))
+		client.CallOptions.RemoveAssetsFromGroup = append(client.CallOptions.RemoveAssetsFromGroup, gax.WithClientTracing(tracing))
+		client.CallOptions.ListErrorFrames = append(client.CallOptions.ListErrorFrames, gax.WithClientTracing(tracing))
+		client.CallOptions.GetErrorFrame = append(client.CallOptions.GetErrorFrame, gax.WithClientTracing(tracing))
+		client.CallOptions.ListSources = append(client.CallOptions.ListSources, gax.WithClientTracing(tracing))
+		client.CallOptions.GetSource = append(client.CallOptions.GetSource, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateSource = append(client.CallOptions.CreateSource, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateSource = append(client.CallOptions.UpdateSource, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteSource = append(client.CallOptions.DeleteSource, gax.WithClientTracing(tracing))
+		client.CallOptions.ListPreferenceSets = append(client.CallOptions.ListPreferenceSets, gax.WithClientTracing(tracing))
+		client.CallOptions.GetPreferenceSet = append(client.CallOptions.GetPreferenceSet, gax.WithClientTracing(tracing))
+		client.CallOptions.CreatePreferenceSet = append(client.CallOptions.CreatePreferenceSet, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdatePreferenceSet = append(client.CallOptions.UpdatePreferenceSet, gax.WithClientTracing(tracing))
+		client.CallOptions.DeletePreferenceSet = append(client.CallOptions.DeletePreferenceSet, gax.WithClientTracing(tracing))
+		client.CallOptions.GetSettings = append(client.CallOptions.GetSettings, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateSettings = append(client.CallOptions.UpdateSettings, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateReportConfig = append(client.CallOptions.CreateReportConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.GetReportConfig = append(client.CallOptions.GetReportConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.ListReportConfigs = append(client.CallOptions.ListReportConfigs, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteReportConfig = append(client.CallOptions.DeleteReportConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateReport = append(client.CallOptions.CreateReport, gax.WithClientTracing(tracing))
+		client.CallOptions.GetReport = append(client.CallOptions.GetReport, gax.WithClientTracing(tracing))
+		client.CallOptions.ListReports = append(client.CallOptions.ListReports, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteReport = append(client.CallOptions.DeleteReport, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "migrationcenter",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/migrationcenter/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "migrationcenter.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListAssets = append(client.CallOptions.ListAssets, gax.WithClientLogging(logging))
+		client.CallOptions.GetAsset = append(client.CallOptions.GetAsset, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateAsset = append(client.CallOptions.UpdateAsset, gax.WithClientLogging(logging))
+		client.CallOptions.BatchUpdateAssets = append(client.CallOptions.BatchUpdateAssets, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteAsset = append(client.CallOptions.DeleteAsset, gax.WithClientLogging(logging))
+		client.CallOptions.BatchDeleteAssets = append(client.CallOptions.BatchDeleteAssets, gax.WithClientLogging(logging))
+		client.CallOptions.ReportAssetFrames = append(client.CallOptions.ReportAssetFrames, gax.WithClientLogging(logging))
+		client.CallOptions.AggregateAssetsValues = append(client.CallOptions.AggregateAssetsValues, gax.WithClientLogging(logging))
+		client.CallOptions.CreateImportJob = append(client.CallOptions.CreateImportJob, gax.WithClientLogging(logging))
+		client.CallOptions.ListImportJobs = append(client.CallOptions.ListImportJobs, gax.WithClientLogging(logging))
+		client.CallOptions.GetImportJob = append(client.CallOptions.GetImportJob, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteImportJob = append(client.CallOptions.DeleteImportJob, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateImportJob = append(client.CallOptions.UpdateImportJob, gax.WithClientLogging(logging))
+		client.CallOptions.ValidateImportJob = append(client.CallOptions.ValidateImportJob, gax.WithClientLogging(logging))
+		client.CallOptions.RunImportJob = append(client.CallOptions.RunImportJob, gax.WithClientLogging(logging))
+		client.CallOptions.GetImportDataFile = append(client.CallOptions.GetImportDataFile, gax.WithClientLogging(logging))
+		client.CallOptions.ListImportDataFiles = append(client.CallOptions.ListImportDataFiles, gax.WithClientLogging(logging))
+		client.CallOptions.CreateImportDataFile = append(client.CallOptions.CreateImportDataFile, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteImportDataFile = append(client.CallOptions.DeleteImportDataFile, gax.WithClientLogging(logging))
+		client.CallOptions.ListGroups = append(client.CallOptions.ListGroups, gax.WithClientLogging(logging))
+		client.CallOptions.GetGroup = append(client.CallOptions.GetGroup, gax.WithClientLogging(logging))
+		client.CallOptions.CreateGroup = append(client.CallOptions.CreateGroup, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateGroup = append(client.CallOptions.UpdateGroup, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteGroup = append(client.CallOptions.DeleteGroup, gax.WithClientLogging(logging))
+		client.CallOptions.AddAssetsToGroup = append(client.CallOptions.AddAssetsToGroup, gax.WithClientLogging(logging))
+		client.CallOptions.RemoveAssetsFromGroup = append(client.CallOptions.RemoveAssetsFromGroup, gax.WithClientLogging(logging))
+		client.CallOptions.ListErrorFrames = append(client.CallOptions.ListErrorFrames, gax.WithClientLogging(logging))
+		client.CallOptions.GetErrorFrame = append(client.CallOptions.GetErrorFrame, gax.WithClientLogging(logging))
+		client.CallOptions.ListSources = append(client.CallOptions.ListSources, gax.WithClientLogging(logging))
+		client.CallOptions.GetSource = append(client.CallOptions.GetSource, gax.WithClientLogging(logging))
+		client.CallOptions.CreateSource = append(client.CallOptions.CreateSource, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateSource = append(client.CallOptions.UpdateSource, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteSource = append(client.CallOptions.DeleteSource, gax.WithClientLogging(logging))
+		client.CallOptions.ListPreferenceSets = append(client.CallOptions.ListPreferenceSets, gax.WithClientLogging(logging))
+		client.CallOptions.GetPreferenceSet = append(client.CallOptions.GetPreferenceSet, gax.WithClientLogging(logging))
+		client.CallOptions.CreatePreferenceSet = append(client.CallOptions.CreatePreferenceSet, gax.WithClientLogging(logging))
+		client.CallOptions.UpdatePreferenceSet = append(client.CallOptions.UpdatePreferenceSet, gax.WithClientLogging(logging))
+		client.CallOptions.DeletePreferenceSet = append(client.CallOptions.DeletePreferenceSet, gax.WithClientLogging(logging))
+		client.CallOptions.GetSettings = append(client.CallOptions.GetSettings, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateSettings = append(client.CallOptions.UpdateSettings, gax.WithClientLogging(logging))
+		client.CallOptions.CreateReportConfig = append(client.CallOptions.CreateReportConfig, gax.WithClientLogging(logging))
+		client.CallOptions.GetReportConfig = append(client.CallOptions.GetReportConfig, gax.WithClientLogging(logging))
+		client.CallOptions.ListReportConfigs = append(client.CallOptions.ListReportConfigs, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteReportConfig = append(client.CallOptions.DeleteReportConfig, gax.WithClientLogging(logging))
+		client.CallOptions.CreateReport = append(client.CallOptions.CreateReport, gax.WithClientLogging(logging))
+		client.CallOptions.GetReport = append(client.CallOptions.GetReport, gax.WithClientLogging(logging))
+		client.CallOptions.ListReports = append(client.CallOptions.ListReports, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteReport = append(client.CallOptions.DeleteReport, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -1255,6 +1388,139 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "migrationcenter",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/migrationcenter/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "migrationcenter.googleapis.com",
+			}),
+		)
+
+		callOpts.ListAssets = append(callOpts.ListAssets, gax.WithClientTracing(tracing))
+		callOpts.GetAsset = append(callOpts.GetAsset, gax.WithClientTracing(tracing))
+		callOpts.UpdateAsset = append(callOpts.UpdateAsset, gax.WithClientTracing(tracing))
+		callOpts.BatchUpdateAssets = append(callOpts.BatchUpdateAssets, gax.WithClientTracing(tracing))
+		callOpts.DeleteAsset = append(callOpts.DeleteAsset, gax.WithClientTracing(tracing))
+		callOpts.BatchDeleteAssets = append(callOpts.BatchDeleteAssets, gax.WithClientTracing(tracing))
+		callOpts.ReportAssetFrames = append(callOpts.ReportAssetFrames, gax.WithClientTracing(tracing))
+		callOpts.AggregateAssetsValues = append(callOpts.AggregateAssetsValues, gax.WithClientTracing(tracing))
+		callOpts.CreateImportJob = append(callOpts.CreateImportJob, gax.WithClientTracing(tracing))
+		callOpts.ListImportJobs = append(callOpts.ListImportJobs, gax.WithClientTracing(tracing))
+		callOpts.GetImportJob = append(callOpts.GetImportJob, gax.WithClientTracing(tracing))
+		callOpts.DeleteImportJob = append(callOpts.DeleteImportJob, gax.WithClientTracing(tracing))
+		callOpts.UpdateImportJob = append(callOpts.UpdateImportJob, gax.WithClientTracing(tracing))
+		callOpts.ValidateImportJob = append(callOpts.ValidateImportJob, gax.WithClientTracing(tracing))
+		callOpts.RunImportJob = append(callOpts.RunImportJob, gax.WithClientTracing(tracing))
+		callOpts.GetImportDataFile = append(callOpts.GetImportDataFile, gax.WithClientTracing(tracing))
+		callOpts.ListImportDataFiles = append(callOpts.ListImportDataFiles, gax.WithClientTracing(tracing))
+		callOpts.CreateImportDataFile = append(callOpts.CreateImportDataFile, gax.WithClientTracing(tracing))
+		callOpts.DeleteImportDataFile = append(callOpts.DeleteImportDataFile, gax.WithClientTracing(tracing))
+		callOpts.ListGroups = append(callOpts.ListGroups, gax.WithClientTracing(tracing))
+		callOpts.GetGroup = append(callOpts.GetGroup, gax.WithClientTracing(tracing))
+		callOpts.CreateGroup = append(callOpts.CreateGroup, gax.WithClientTracing(tracing))
+		callOpts.UpdateGroup = append(callOpts.UpdateGroup, gax.WithClientTracing(tracing))
+		callOpts.DeleteGroup = append(callOpts.DeleteGroup, gax.WithClientTracing(tracing))
+		callOpts.AddAssetsToGroup = append(callOpts.AddAssetsToGroup, gax.WithClientTracing(tracing))
+		callOpts.RemoveAssetsFromGroup = append(callOpts.RemoveAssetsFromGroup, gax.WithClientTracing(tracing))
+		callOpts.ListErrorFrames = append(callOpts.ListErrorFrames, gax.WithClientTracing(tracing))
+		callOpts.GetErrorFrame = append(callOpts.GetErrorFrame, gax.WithClientTracing(tracing))
+		callOpts.ListSources = append(callOpts.ListSources, gax.WithClientTracing(tracing))
+		callOpts.GetSource = append(callOpts.GetSource, gax.WithClientTracing(tracing))
+		callOpts.CreateSource = append(callOpts.CreateSource, gax.WithClientTracing(tracing))
+		callOpts.UpdateSource = append(callOpts.UpdateSource, gax.WithClientTracing(tracing))
+		callOpts.DeleteSource = append(callOpts.DeleteSource, gax.WithClientTracing(tracing))
+		callOpts.ListPreferenceSets = append(callOpts.ListPreferenceSets, gax.WithClientTracing(tracing))
+		callOpts.GetPreferenceSet = append(callOpts.GetPreferenceSet, gax.WithClientTracing(tracing))
+		callOpts.CreatePreferenceSet = append(callOpts.CreatePreferenceSet, gax.WithClientTracing(tracing))
+		callOpts.UpdatePreferenceSet = append(callOpts.UpdatePreferenceSet, gax.WithClientTracing(tracing))
+		callOpts.DeletePreferenceSet = append(callOpts.DeletePreferenceSet, gax.WithClientTracing(tracing))
+		callOpts.GetSettings = append(callOpts.GetSettings, gax.WithClientTracing(tracing))
+		callOpts.UpdateSettings = append(callOpts.UpdateSettings, gax.WithClientTracing(tracing))
+		callOpts.CreateReportConfig = append(callOpts.CreateReportConfig, gax.WithClientTracing(tracing))
+		callOpts.GetReportConfig = append(callOpts.GetReportConfig, gax.WithClientTracing(tracing))
+		callOpts.ListReportConfigs = append(callOpts.ListReportConfigs, gax.WithClientTracing(tracing))
+		callOpts.DeleteReportConfig = append(callOpts.DeleteReportConfig, gax.WithClientTracing(tracing))
+		callOpts.CreateReport = append(callOpts.CreateReport, gax.WithClientTracing(tracing))
+		callOpts.GetReport = append(callOpts.GetReport, gax.WithClientTracing(tracing))
+		callOpts.ListReports = append(callOpts.ListReports, gax.WithClientTracing(tracing))
+		callOpts.DeleteReport = append(callOpts.DeleteReport, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "migrationcenter",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/migrationcenter/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "migrationcenter.googleapis.com",
+			}),
+		)
+
+		callOpts.ListAssets = append(callOpts.ListAssets, gax.WithClientLogging(logging))
+		callOpts.GetAsset = append(callOpts.GetAsset, gax.WithClientLogging(logging))
+		callOpts.UpdateAsset = append(callOpts.UpdateAsset, gax.WithClientLogging(logging))
+		callOpts.BatchUpdateAssets = append(callOpts.BatchUpdateAssets, gax.WithClientLogging(logging))
+		callOpts.DeleteAsset = append(callOpts.DeleteAsset, gax.WithClientLogging(logging))
+		callOpts.BatchDeleteAssets = append(callOpts.BatchDeleteAssets, gax.WithClientLogging(logging))
+		callOpts.ReportAssetFrames = append(callOpts.ReportAssetFrames, gax.WithClientLogging(logging))
+		callOpts.AggregateAssetsValues = append(callOpts.AggregateAssetsValues, gax.WithClientLogging(logging))
+		callOpts.CreateImportJob = append(callOpts.CreateImportJob, gax.WithClientLogging(logging))
+		callOpts.ListImportJobs = append(callOpts.ListImportJobs, gax.WithClientLogging(logging))
+		callOpts.GetImportJob = append(callOpts.GetImportJob, gax.WithClientLogging(logging))
+		callOpts.DeleteImportJob = append(callOpts.DeleteImportJob, gax.WithClientLogging(logging))
+		callOpts.UpdateImportJob = append(callOpts.UpdateImportJob, gax.WithClientLogging(logging))
+		callOpts.ValidateImportJob = append(callOpts.ValidateImportJob, gax.WithClientLogging(logging))
+		callOpts.RunImportJob = append(callOpts.RunImportJob, gax.WithClientLogging(logging))
+		callOpts.GetImportDataFile = append(callOpts.GetImportDataFile, gax.WithClientLogging(logging))
+		callOpts.ListImportDataFiles = append(callOpts.ListImportDataFiles, gax.WithClientLogging(logging))
+		callOpts.CreateImportDataFile = append(callOpts.CreateImportDataFile, gax.WithClientLogging(logging))
+		callOpts.DeleteImportDataFile = append(callOpts.DeleteImportDataFile, gax.WithClientLogging(logging))
+		callOpts.ListGroups = append(callOpts.ListGroups, gax.WithClientLogging(logging))
+		callOpts.GetGroup = append(callOpts.GetGroup, gax.WithClientLogging(logging))
+		callOpts.CreateGroup = append(callOpts.CreateGroup, gax.WithClientLogging(logging))
+		callOpts.UpdateGroup = append(callOpts.UpdateGroup, gax.WithClientLogging(logging))
+		callOpts.DeleteGroup = append(callOpts.DeleteGroup, gax.WithClientLogging(logging))
+		callOpts.AddAssetsToGroup = append(callOpts.AddAssetsToGroup, gax.WithClientLogging(logging))
+		callOpts.RemoveAssetsFromGroup = append(callOpts.RemoveAssetsFromGroup, gax.WithClientLogging(logging))
+		callOpts.ListErrorFrames = append(callOpts.ListErrorFrames, gax.WithClientLogging(logging))
+		callOpts.GetErrorFrame = append(callOpts.GetErrorFrame, gax.WithClientLogging(logging))
+		callOpts.ListSources = append(callOpts.ListSources, gax.WithClientLogging(logging))
+		callOpts.GetSource = append(callOpts.GetSource, gax.WithClientLogging(logging))
+		callOpts.CreateSource = append(callOpts.CreateSource, gax.WithClientLogging(logging))
+		callOpts.UpdateSource = append(callOpts.UpdateSource, gax.WithClientLogging(logging))
+		callOpts.DeleteSource = append(callOpts.DeleteSource, gax.WithClientLogging(logging))
+		callOpts.ListPreferenceSets = append(callOpts.ListPreferenceSets, gax.WithClientLogging(logging))
+		callOpts.GetPreferenceSet = append(callOpts.GetPreferenceSet, gax.WithClientLogging(logging))
+		callOpts.CreatePreferenceSet = append(callOpts.CreatePreferenceSet, gax.WithClientLogging(logging))
+		callOpts.UpdatePreferenceSet = append(callOpts.UpdatePreferenceSet, gax.WithClientLogging(logging))
+		callOpts.DeletePreferenceSet = append(callOpts.DeletePreferenceSet, gax.WithClientLogging(logging))
+		callOpts.GetSettings = append(callOpts.GetSettings, gax.WithClientLogging(logging))
+		callOpts.UpdateSettings = append(callOpts.UpdateSettings, gax.WithClientLogging(logging))
+		callOpts.CreateReportConfig = append(callOpts.CreateReportConfig, gax.WithClientLogging(logging))
+		callOpts.GetReportConfig = append(callOpts.GetReportConfig, gax.WithClientLogging(logging))
+		callOpts.ListReportConfigs = append(callOpts.ListReportConfigs, gax.WithClientLogging(logging))
+		callOpts.DeleteReportConfig = append(callOpts.DeleteReportConfig, gax.WithClientLogging(logging))
+		callOpts.CreateReport = append(callOpts.CreateReport, gax.WithClientLogging(logging))
+		callOpts.GetReport = append(callOpts.GetReport, gax.WithClientLogging(logging))
+		callOpts.ListReports = append(callOpts.ListReports, gax.WithClientLogging(logging))
+		callOpts.DeleteReport = append(callOpts.DeleteReport, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -1311,9 +1577,6 @@ func (c *gRPCClient) ListAssets(ctx context.Context, req *migrationcenterpb.List
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/ListAssets")
 	}
@@ -1363,9 +1626,6 @@ func (c *gRPCClient) GetAsset(ctx context.Context, req *migrationcenterpb.GetAss
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/GetAsset")
 	}
@@ -1408,9 +1668,6 @@ func (c *gRPCClient) BatchUpdateAssets(ctx context.Context, req *migrationcenter
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/BatchUpdateAssets")
 	}
@@ -1432,9 +1689,6 @@ func (c *gRPCClient) DeleteAsset(ctx context.Context, req *migrationcenterpb.Del
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/DeleteAsset")
 	}
@@ -1452,9 +1706,6 @@ func (c *gRPCClient) BatchDeleteAssets(ctx context.Context, req *migrationcenter
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/BatchDeleteAssets")
 	}
@@ -1472,9 +1723,6 @@ func (c *gRPCClient) ReportAssetFrames(ctx context.Context, req *migrationcenter
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetSource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/ReportAssetFrames")
 	}
@@ -1517,9 +1765,6 @@ func (c *gRPCClient) CreateImportJob(ctx context.Context, req *migrationcenterpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/CreateImportJob")
 	}
@@ -1547,9 +1792,6 @@ func (c *gRPCClient) ListImportJobs(ctx context.Context, req *migrationcenterpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/ListImportJobs")
 	}
@@ -1599,9 +1841,6 @@ func (c *gRPCClient) GetImportJob(ctx context.Context, req *migrationcenterpb.Ge
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/GetImportJob")
 	}
@@ -1623,9 +1862,6 @@ func (c *gRPCClient) DeleteImportJob(ctx context.Context, req *migrationcenterpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/DeleteImportJob")
 	}
@@ -1680,9 +1916,6 @@ func (c *gRPCClient) ValidateImportJob(ctx context.Context, req *migrationcenter
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/ValidateImportJob")
 	}
@@ -1710,9 +1943,6 @@ func (c *gRPCClient) RunImportJob(ctx context.Context, req *migrationcenterpb.Ru
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/RunImportJob")
 	}
@@ -1740,9 +1970,6 @@ func (c *gRPCClient) GetImportDataFile(ctx context.Context, req *migrationcenter
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/GetImportDataFile")
 	}
@@ -1764,9 +1991,6 @@ func (c *gRPCClient) ListImportDataFiles(ctx context.Context, req *migrationcent
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/ListImportDataFiles")
 	}
@@ -1816,9 +2040,6 @@ func (c *gRPCClient) CreateImportDataFile(ctx context.Context, req *migrationcen
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/CreateImportDataFile")
 	}
@@ -1846,9 +2067,6 @@ func (c *gRPCClient) DeleteImportDataFile(ctx context.Context, req *migrationcen
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/DeleteImportDataFile")
 	}
@@ -1876,9 +2094,6 @@ func (c *gRPCClient) ListGroups(ctx context.Context, req *migrationcenterpb.List
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/ListGroups")
 	}
@@ -1928,9 +2143,6 @@ func (c *gRPCClient) GetGroup(ctx context.Context, req *migrationcenterpb.GetGro
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/GetGroup")
 	}
@@ -1952,9 +2164,6 @@ func (c *gRPCClient) CreateGroup(ctx context.Context, req *migrationcenterpb.Cre
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/CreateGroup")
 	}
@@ -2009,9 +2218,6 @@ func (c *gRPCClient) DeleteGroup(ctx context.Context, req *migrationcenterpb.Del
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/DeleteGroup")
 	}
@@ -2039,9 +2245,6 @@ func (c *gRPCClient) AddAssetsToGroup(ctx context.Context, req *migrationcenterp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetGroup()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/AddAssetsToGroup")
 	}
@@ -2069,9 +2272,6 @@ func (c *gRPCClient) RemoveAssetsFromGroup(ctx context.Context, req *migrationce
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetGroup()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/RemoveAssetsFromGroup")
 	}
@@ -2099,9 +2299,6 @@ func (c *gRPCClient) ListErrorFrames(ctx context.Context, req *migrationcenterpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/ListErrorFrames")
 	}
@@ -2151,9 +2348,6 @@ func (c *gRPCClient) GetErrorFrame(ctx context.Context, req *migrationcenterpb.G
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/GetErrorFrame")
 	}
@@ -2175,9 +2369,6 @@ func (c *gRPCClient) ListSources(ctx context.Context, req *migrationcenterpb.Lis
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/ListSources")
 	}
@@ -2227,9 +2418,6 @@ func (c *gRPCClient) GetSource(ctx context.Context, req *migrationcenterpb.GetSo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/GetSource")
 	}
@@ -2251,9 +2439,6 @@ func (c *gRPCClient) CreateSource(ctx context.Context, req *migrationcenterpb.Cr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/CreateSource")
 	}
@@ -2308,9 +2493,6 @@ func (c *gRPCClient) DeleteSource(ctx context.Context, req *migrationcenterpb.De
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/DeleteSource")
 	}
@@ -2338,9 +2520,6 @@ func (c *gRPCClient) ListPreferenceSets(ctx context.Context, req *migrationcente
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/ListPreferenceSets")
 	}
@@ -2390,9 +2569,6 @@ func (c *gRPCClient) GetPreferenceSet(ctx context.Context, req *migrationcenterp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/GetPreferenceSet")
 	}
@@ -2414,9 +2590,6 @@ func (c *gRPCClient) CreatePreferenceSet(ctx context.Context, req *migrationcent
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/CreatePreferenceSet")
 	}
@@ -2471,9 +2644,6 @@ func (c *gRPCClient) DeletePreferenceSet(ctx context.Context, req *migrationcent
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/DeletePreferenceSet")
 	}
@@ -2501,9 +2671,6 @@ func (c *gRPCClient) GetSettings(ctx context.Context, req *migrationcenterpb.Get
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/GetSettings")
 	}
@@ -2552,9 +2719,6 @@ func (c *gRPCClient) CreateReportConfig(ctx context.Context, req *migrationcente
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/CreateReportConfig")
 	}
@@ -2582,9 +2746,6 @@ func (c *gRPCClient) GetReportConfig(ctx context.Context, req *migrationcenterpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/GetReportConfig")
 	}
@@ -2606,9 +2767,6 @@ func (c *gRPCClient) ListReportConfigs(ctx context.Context, req *migrationcenter
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/ListReportConfigs")
 	}
@@ -2658,9 +2816,6 @@ func (c *gRPCClient) DeleteReportConfig(ctx context.Context, req *migrationcente
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/DeleteReportConfig")
 	}
@@ -2688,9 +2843,6 @@ func (c *gRPCClient) CreateReport(ctx context.Context, req *migrationcenterpb.Cr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/CreateReport")
 	}
@@ -2718,9 +2870,6 @@ func (c *gRPCClient) GetReport(ctx context.Context, req *migrationcenterpb.GetRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/GetReport")
 	}
@@ -2742,9 +2891,6 @@ func (c *gRPCClient) ListReports(ctx context.Context, req *migrationcenterpb.Lis
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/ListReports")
 	}
@@ -2794,9 +2940,6 @@ func (c *gRPCClient) DeleteReport(ctx context.Context, req *migrationcenterpb.De
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/DeleteReport")
 	}
@@ -3102,9 +3245,6 @@ func (c *restClient) GetAsset(ctx context.Context, req *migrationcenterpb.GetAss
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/GetAsset")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/assets/*}")
@@ -3236,9 +3376,6 @@ func (c *restClient) BatchUpdateAssets(ctx context.Context, req *migrationcenter
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/BatchUpdateAssets")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/assets:batchUpdate")
@@ -3296,9 +3433,6 @@ func (c *restClient) DeleteAsset(ctx context.Context, req *migrationcenterpb.Del
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/DeleteAsset")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/assets/*}")
@@ -3344,9 +3478,6 @@ func (c *restClient) BatchDeleteAssets(ctx context.Context, req *migrationcenter
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/BatchDeleteAssets")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/assets:batchDelete")
@@ -3394,9 +3525,6 @@ func (c *restClient) ReportAssetFrames(ctx context.Context, req *migrationcenter
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetSource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/ReportAssetFrames")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/assets:reportAssetFrames")
@@ -3522,9 +3650,6 @@ func (c *restClient) CreateImportJob(ctx context.Context, req *migrationcenterpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/CreateImportJob")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/importJobs")
@@ -3676,9 +3801,6 @@ func (c *restClient) GetImportJob(ctx context.Context, req *migrationcenterpb.Ge
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/GetImportJob")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/importJobs/*}")
@@ -3739,9 +3861,6 @@ func (c *restClient) DeleteImportJob(ctx context.Context, req *migrationcenterpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/DeleteImportJob")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/importJobs/*}")
@@ -3887,9 +4006,6 @@ func (c *restClient) ValidateImportJob(ctx context.Context, req *migrationcenter
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/ValidateImportJob")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/importJobs/*}:validate")
@@ -3957,9 +4073,6 @@ func (c *restClient) RunImportJob(ctx context.Context, req *migrationcenterpb.Ru
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/RunImportJob")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/importJobs/*}:run")
@@ -4021,9 +4134,6 @@ func (c *restClient) GetImportDataFile(ctx context.Context, req *migrationcenter
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/GetImportDataFile")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/importJobs/*/importDataFiles/*}")
@@ -4173,9 +4283,6 @@ func (c *restClient) CreateImportDataFile(ctx context.Context, req *migrationcen
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/CreateImportDataFile")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/importJobs/*}/importDataFiles")
@@ -4240,9 +4347,6 @@ func (c *restClient) DeleteImportDataFile(ctx context.Context, req *migrationcen
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/DeleteImportDataFile")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/importJobs/*/importDataFiles/*}")
@@ -4388,9 +4492,6 @@ func (c *restClient) GetGroup(ctx context.Context, req *migrationcenterpb.GetGro
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/GetGroup")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/groups/*}")
@@ -4456,9 +4557,6 @@ func (c *restClient) CreateGroup(ctx context.Context, req *migrationcenterpb.Cre
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/CreateGroup")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/groups")
@@ -4601,9 +4699,6 @@ func (c *restClient) DeleteGroup(ctx context.Context, req *migrationcenterpb.Del
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/DeleteGroup")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/groups/*}")
@@ -4671,9 +4766,6 @@ func (c *restClient) AddAssetsToGroup(ctx context.Context, req *migrationcenterp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetGroup()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/AddAssetsToGroup")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{group=projects/*/locations/*/groups/*}:addAssets")
@@ -4741,9 +4833,6 @@ func (c *restClient) RemoveAssetsFromGroup(ctx context.Context, req *migrationce
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetGroup()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/RemoveAssetsFromGroup")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{group=projects/*/locations/*/groups/*}:removeAssets")
@@ -4889,9 +4978,6 @@ func (c *restClient) GetErrorFrame(ctx context.Context, req *migrationcenterpb.G
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/GetErrorFrame")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/sources/*/errorFrames/*}")
@@ -5030,9 +5116,6 @@ func (c *restClient) GetSource(ctx context.Context, req *migrationcenterpb.GetSo
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/GetSource")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/sources/*}")
@@ -5098,9 +5181,6 @@ func (c *restClient) CreateSource(ctx context.Context, req *migrationcenterpb.Cr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/CreateSource")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/sources")
@@ -5243,9 +5323,6 @@ func (c *restClient) DeleteSource(ctx context.Context, req *migrationcenterpb.De
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/DeleteSource")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/sources/*}")
@@ -5388,9 +5465,6 @@ func (c *restClient) GetPreferenceSet(ctx context.Context, req *migrationcenterp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/GetPreferenceSet")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/preferenceSets/*}")
@@ -5456,9 +5530,6 @@ func (c *restClient) CreatePreferenceSet(ctx context.Context, req *migrationcent
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/CreatePreferenceSet")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/preferenceSets")
@@ -5601,9 +5672,6 @@ func (c *restClient) DeletePreferenceSet(ctx context.Context, req *migrationcent
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/DeletePreferenceSet")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/preferenceSets/*}")
@@ -5665,9 +5733,6 @@ func (c *restClient) GetSettings(ctx context.Context, req *migrationcenterpb.Get
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/GetSettings")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/settings}")
@@ -5811,9 +5876,6 @@ func (c *restClient) CreateReportConfig(ctx context.Context, req *migrationcente
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/CreateReportConfig")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/reportConfigs")
@@ -5875,9 +5937,6 @@ func (c *restClient) GetReportConfig(ctx context.Context, req *migrationcenterpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/GetReportConfig")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/reportConfigs/*}")
@@ -6022,9 +6081,6 @@ func (c *restClient) DeleteReportConfig(ctx context.Context, req *migrationcente
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/DeleteReportConfig")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/reportConfigs/*}")
@@ -6097,9 +6153,6 @@ func (c *restClient) CreateReport(ctx context.Context, req *migrationcenterpb.Cr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/CreateReport")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/reportConfigs/*}/reports")
@@ -6164,9 +6217,6 @@ func (c *restClient) GetReport(ctx context.Context, req *migrationcenterpb.GetRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/GetReport")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/reportConfigs/*/reports/*}")
@@ -6311,9 +6361,6 @@ func (c *restClient) DeleteReport(ctx context.Context, req *migrationcenterpb.De
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//migrationcenter.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.migrationcenter.v1.MigrationCenter/DeleteReport")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/reportConfigs/*/reports/*}")

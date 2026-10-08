@@ -249,6 +249,41 @@ func NewSqlBackupsClient(ctx context.Context, opts ...option.ClientOption) (*Sql
 		client.CallOptions.UpdateBackup = append(client.CallOptions.UpdateBackup, gax.WithClientMetrics(metrics))
 		client.CallOptions.DeleteBackup = append(client.CallOptions.DeleteBackup, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "sqladmin",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/sql/apiv1beta4",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "sqladmin.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateBackup = append(client.CallOptions.CreateBackup, gax.WithClientTracing(tracing))
+		client.CallOptions.GetBackup = append(client.CallOptions.GetBackup, gax.WithClientTracing(tracing))
+		client.CallOptions.ListBackups = append(client.CallOptions.ListBackups, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateBackup = append(client.CallOptions.UpdateBackup, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteBackup = append(client.CallOptions.DeleteBackup, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "sqladmin",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/sql/apiv1beta4",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "sqladmin.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateBackup = append(client.CallOptions.CreateBackup, gax.WithClientLogging(logging))
+		client.CallOptions.GetBackup = append(client.CallOptions.GetBackup, gax.WithClientLogging(logging))
+		client.CallOptions.ListBackups = append(client.CallOptions.ListBackups, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateBackup = append(client.CallOptions.UpdateBackup, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteBackup = append(client.CallOptions.DeleteBackup, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -342,6 +377,41 @@ func NewSqlBackupsRESTClient(ctx context.Context, opts ...option.ClientOption) (
 		callOpts.UpdateBackup = append(callOpts.UpdateBackup, gax.WithClientMetrics(metrics))
 		callOpts.DeleteBackup = append(callOpts.DeleteBackup, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "sqladmin",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/sql/apiv1beta4",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "sqladmin.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateBackup = append(callOpts.CreateBackup, gax.WithClientTracing(tracing))
+		callOpts.GetBackup = append(callOpts.GetBackup, gax.WithClientTracing(tracing))
+		callOpts.ListBackups = append(callOpts.ListBackups, gax.WithClientTracing(tracing))
+		callOpts.UpdateBackup = append(callOpts.UpdateBackup, gax.WithClientTracing(tracing))
+		callOpts.DeleteBackup = append(callOpts.DeleteBackup, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "sqladmin",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/sql/apiv1beta4",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "sqladmin.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateBackup = append(callOpts.CreateBackup, gax.WithClientLogging(logging))
+		callOpts.GetBackup = append(callOpts.GetBackup, gax.WithClientLogging(logging))
+		callOpts.ListBackups = append(callOpts.ListBackups, gax.WithClientLogging(logging))
+		callOpts.UpdateBackup = append(callOpts.UpdateBackup, gax.WithClientLogging(logging))
+		callOpts.DeleteBackup = append(callOpts.DeleteBackup, gax.WithClientLogging(logging))
+	}
 
 	return &SqlBackupsClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -388,9 +458,6 @@ func (c *sqlBackupsGRPCClient) CreateBackup(ctx context.Context, req *sqlpb.Crea
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//sqladmin.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.sql.v1beta4.SqlBackupsService/CreateBackup")
 	}
@@ -412,9 +479,6 @@ func (c *sqlBackupsGRPCClient) GetBackup(ctx context.Context, req *sqlpb.GetBack
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//sqladmin.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.sql.v1beta4.SqlBackupsService/GetBackup")
 	}
@@ -436,9 +500,6 @@ func (c *sqlBackupsGRPCClient) ListBackups(ctx context.Context, req *sqlpb.ListB
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//sqladmin.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.sql.v1beta4.SqlBackupsService/ListBackups")
 	}
@@ -509,9 +570,6 @@ func (c *sqlBackupsGRPCClient) DeleteBackup(ctx context.Context, req *sqlpb.Dele
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//sqladmin.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.sql.v1beta4.SqlBackupsService/DeleteBackup")
 	}
@@ -555,9 +613,6 @@ func (c *sqlBackupsRESTClient) CreateBackup(ctx context.Context, req *sqlpb.Crea
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//sqladmin.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.sql.v1beta4.SqlBackupsService/CreateBackup")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/sql/v1beta4/{parent=projects/*}/backups")
@@ -612,9 +667,6 @@ func (c *sqlBackupsRESTClient) GetBackup(ctx context.Context, req *sqlpb.GetBack
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//sqladmin.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.sql.v1beta4.SqlBackupsService/GetBackup")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/sql/v1beta4/{name=projects/*/backups/*}")
@@ -819,9 +871,6 @@ func (c *sqlBackupsRESTClient) DeleteBackup(ctx context.Context, req *sqlpb.Dele
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//sqladmin.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.sql.v1beta4.SqlBackupsService/DeleteBackup")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/sql/v1beta4/{name=projects/*/backups/*}")

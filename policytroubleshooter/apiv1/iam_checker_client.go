@@ -199,6 +199,33 @@ func NewIamCheckerClient(ctx context.Context, opts ...option.ClientOption) (*Iam
 
 		client.CallOptions.TroubleshootIamPolicy = append(client.CallOptions.TroubleshootIamPolicy, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "policytroubleshooter",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/policytroubleshooter/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "policytroubleshooter.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.TroubleshootIamPolicy = append(client.CallOptions.TroubleshootIamPolicy, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "policytroubleshooter",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/policytroubleshooter/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "policytroubleshooter.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.TroubleshootIamPolicy = append(client.CallOptions.TroubleshootIamPolicy, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -291,6 +318,33 @@ func NewIamCheckerRESTClient(ctx context.Context, opts ...option.ClientOption) (
 		)
 
 		callOpts.TroubleshootIamPolicy = append(callOpts.TroubleshootIamPolicy, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "policytroubleshooter",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/policytroubleshooter/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "policytroubleshooter.googleapis.com",
+			}),
+		)
+
+		callOpts.TroubleshootIamPolicy = append(callOpts.TroubleshootIamPolicy, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "policytroubleshooter",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/policytroubleshooter/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "policytroubleshooter.googleapis.com",
+			}),
+		)
+
+		callOpts.TroubleshootIamPolicy = append(callOpts.TroubleshootIamPolicy, gax.WithClientLogging(logging))
 	}
 
 	return &IamCheckerClient{internalClient: c, CallOptions: callOpts}, nil

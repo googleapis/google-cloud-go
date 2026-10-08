@@ -1024,8 +1024,17 @@ func metricsInterceptor() grpc.UnaryClientInterceptor {
 		opts ...grpc.CallOption,
 	) error {
 		mt, ok := ctx.Value(metricsTracerKey).(*builtinMetricsTracer)
-		if !ok {
-			return invoker(ctx, method, req, reply, cc, opts...)
+		if !ok || mt == nil {
+			span := otrace.SpanFromContext(ctx)
+			if !span.IsRecording() {
+				return invoker(ctx, method, req, reply, cc, opts...)
+			}
+			// Built-in metrics are disabled, but the server timing span
+			// attributes are still recorded for traced calls.
+			var md metadata.MD
+			err := invoker(ctx, method, req, reply, cc, append(opts, grpc.Header(&md))...)
+			setGFEAndAFESpanAttributes(span, parseServerTimingHeader(md))
+			return err
 		}
 
 		mt.method = method
@@ -1063,16 +1072,21 @@ func metricsStreamInterceptor() grpc.StreamClientInterceptor {
 		streamer grpc.Streamer,
 		opts ...grpc.CallOption,
 	) (grpc.ClientStream, error) {
-		s, err := streamer(ctx, desc, cc, method, opts...)
-		if err != nil {
-			return nil, err
-		}
+		// Set the method before creating the stream, so that a stream that
+		// fails to open is recorded for its method.
 		mt, ok := ctx.Value(metricsTracerKey).(*builtinMetricsTracer)
 		if ok && mt != nil {
 			mt.method = method
 			if strings.HasPrefix(cc.Target(), "google-c2p") {
 				mt.currOp.setDirectPathEnabled(true)
 			}
+			if mt.currOp.currAttempt != nil {
+				mt.currOp.currAttempt.rpcStarted = true
+			}
+		}
+		s, err := streamer(ctx, desc, cc, method, opts...)
+		if err != nil {
+			return nil, err
 		}
 		return s, nil
 	}
@@ -1590,61 +1604,187 @@ func (bwo BatchWriteOptions) merge(opts BatchWriteOptions) BatchWriteOptions {
 }
 
 // BatchWriteResponseIterator is an iterator over BatchWriteResponse structures returned from BatchWrite RPC.
+//
+// If the stream fails with a retryable error, or ends before every mutation
+// group has been acknowledged, the iterator opens a new stream that contains
+// only the mutation groups that have not yet been acknowledged. The indexes in
+// each returned BatchWriteResponse always refer to the positions of the
+// mutation groups in the original request. Mutation groups that have been
+// acknowledged are never sent again, so a retry does not return the index of
+// a mutation group that an earlier response already returned. As for streaming
+// reads and queries, retries continue until the request succeeds, fails with
+// an error that cannot be retried, or the context is canceled or its deadline
+// passes.
 type BatchWriteResponseIterator struct {
-	ctx                context.Context
-	stream             sppb.Spanner_BatchWriteClient
-	err                error
-	meterTracerFactory *builtinMetricsTracerFactory
-	rpc                func(ctx context.Context) (sppb.Spanner_BatchWriteClient, error)
-	release            func(error)
-	cancel             func()
+	ctx     context.Context
+	stream  sppb.Spanner_BatchWriteClient
+	err     error
+	rpc     func(ctx context.Context, mgs []*sppb.BatchWriteRequest_MutationGroup) (sppb.Spanner_BatchWriteClient, error)
+	release func(error)
+	cancel  func()
+
+	// streamOperationMetrics records the built-in metrics operation of the
+	// BatchWrite request. Every stream that is opened for it is an attempt.
+	streamOperationMetrics
+
+	// pending holds the mutation groups of the original request. An entry is
+	// set to nil once a response has acknowledged it, so that it is not sent
+	// again on retry.
+	pending []*sppb.BatchWriteRequest_MutationGroup
+	// remaining is the number of non-nil entries in pending.
+	remaining int
+	// streamIndexes maps the indexes of the mutation groups sent on the
+	// current stream to their indexes in pending.
+	streamIndexes []int
+	retryer       gax.Retryer
+}
+
+func newBatchWriteResponseIterator(ctx context.Context, mgs []*sppb.BatchWriteRequest_MutationGroup, rpc func(context.Context, []*sppb.BatchWriteRequest_MutationGroup) (sppb.Spanner_BatchWriteClient, error), backoff gax.Backoff) *BatchWriteResponseIterator {
+	return &BatchWriteResponseIterator{
+		ctx:       ctx,
+		rpc:       rpc,
+		pending:   append([]*sppb.BatchWriteRequest_MutationGroup(nil), mgs...),
+		remaining: len(mgs),
+		retryer:   onCodes(backoff, codes.Unavailable),
+	}
 }
 
 // Next returns the next result. Its second return value is iterator.Done if
 // there are no more results. Once Next returns Done, all subsequent calls
 // will return Done.
 func (r *BatchWriteResponseIterator) Next() (*sppb.BatchWriteResponse, error) {
-	mt := r.meterTracerFactory.createBuiltinMetricsTracer(r.ctx)
-	defer func() {
-		if mt.method != "" {
-			statusCode, _ := convertToGrpcStatusErr(r.err)
-			mt.currOp.setStatus(statusCode.String())
-			recordOperationCompletion(&mt)
+	response, err := r.next()
+	if err != nil && r.mt != nil {
+		// The built-in metrics operation of the BatchWrite request ends when
+		// Next first returns an error or iterator.Done.
+		code := codes.OK
+		if err != iterator.Done {
+			code, _ = convertToGrpcStatusErr(err)
 		}
-	}()
+		r.finishOperation(code)
+	}
+	return response, err
+}
+
+func (r *BatchWriteResponseIterator) next() (*sppb.BatchWriteResponse, error) {
 	for {
 		// Stream finished or in error state.
 		if r.err != nil {
 			return nil, r.err
 		}
 
-		// RPC not made yet.
+		// No stream is open, so open one for the mutation groups that have not
+		// been acknowledged yet.
 		if r.stream == nil {
-			r.stream, r.err = r.rpc(r.ctx)
+			r.startAttempt(r.ctx)
+			stream, err := r.rpc(contextWithBuiltinMetricsTracer(r.ctx, r.mt), r.unacknowledgedMutationGroups())
+			if err != nil {
+				if r.mt != nil {
+					r.endAttempt(status.Code(err))
+				}
+				r.retryOrFail(err)
+				continue
+			}
+			r.stream = stream
 			continue
 		}
 
 		// Read from the stream.
-		var response *sppb.BatchWriteResponse
-		response, r.err = r.stream.Recv()
-
-		// Return an item.
-		if r.err == nil {
+		response, err := r.stream.Recv()
+		switch {
+		case err == nil:
+			if ackErr := r.acknowledge(response); ackErr != nil {
+				r.stream = nil
+				r.err = ackErr
+				return nil, r.err
+			}
 			return response, nil
+		case err == io.EOF:
+			r.stream = nil
+			r.endAttempt(codes.OK)
+			if r.remaining > 0 {
+				r.retryOrFail(spannerErrorf(codes.Unavailable, "BatchWrite stream closed prematurely with %d unprocessed mutation groups", r.remaining))
+			}
+		default:
+			r.stream = nil
+			if r.mt != nil {
+				r.endAttempt(status.Code(err))
+			}
+			r.retryOrFail(err)
 		}
-
-		// Stream finished.
-		if r.err == io.EOF {
+		if r.err == nil && r.remaining == 0 {
 			r.err = iterator.Done
-			return nil, r.err
 		}
+	}
+}
+
+// unacknowledgedMutationGroups returns the mutation groups that have not been
+// acknowledged yet and records their original indexes in streamIndexes.
+func (r *BatchWriteResponseIterator) unacknowledgedMutationGroups() []*sppb.BatchWriteRequest_MutationGroup {
+	r.streamIndexes = r.streamIndexes[:0]
+	mgs := make([]*sppb.BatchWriteRequest_MutationGroup, 0, r.remaining)
+	for i, mg := range r.pending {
+		if mg == nil {
+			continue
+		}
+		r.streamIndexes = append(r.streamIndexes, i)
+		mgs = append(mgs, mg)
+	}
+	return mgs
+}
+
+// acknowledge translates the indexes in response from positions in the current
+// stream request to positions in the original request, and marks the mutation
+// groups as acknowledged. A mutation group is acknowledged regardless of the
+// status in the response, as that status has been delivered to the caller.
+func (r *BatchWriteResponseIterator) acknowledge(response *sppb.BatchWriteResponse) error {
+	for _, index := range response.GetIndexes() {
+		if index < 0 || int(index) >= len(r.streamIndexes) {
+			return spannerErrorf(codes.Internal, "Spanner returned mutation group index %d out of bounds for BatchWrite stream with %d mutation groups", index, len(r.streamIndexes))
+		}
+	}
+	for i, index := range response.GetIndexes() {
+		original := r.streamIndexes[index]
+		if r.pending[original] != nil {
+			r.pending[original] = nil
+			r.remaining--
+		}
+		response.Indexes[i] = int32(original)
+	}
+	return nil
+}
+
+// retryOrFail waits for the retry delay if err can be retried. Otherwise, or if
+// the context ends while waiting, it sets the error as the terminal error of
+// the iterator. All mutation groups that have been acknowledged are excluded
+// from the retried request.
+func (r *BatchWriteResponseIterator) retryOrFail(err error) {
+	if r.remaining == 0 && len(r.pending) > 0 {
+		// Every mutation group has been acknowledged, so the error does not
+		// affect the outcome of the request.
+		return
+	}
+	delay, shouldRetry := r.retryer.Retry(err)
+	if !shouldRetry {
+		r.err = err
+		return
+	}
+	trace.TracePrintf(r.ctx, nil, "Backing off BatchWrite stream for %s", delay)
+	if sleepErr := gax.Sleep(r.ctx, delay); sleepErr != nil {
+		r.err = sleepErr
 	}
 }
 
 // Stop terminates the iteration. It should be called after you finish using the
 // iterator.
 func (r *BatchWriteResponseIterator) Stop() {
-	if r.stream != nil {
+	if r.err == nil {
+		// Stop before Next returned an error or iterator.Done ends the built-in
+		// metrics operation without an error, as the caller chose to stop
+		// reading.
+		r.finishOperation(codes.OK)
+	}
+	if r.ctx != nil {
 		err := r.err
 		if err == iterator.Done {
 			err = nil
@@ -1703,6 +1843,11 @@ func (r *BatchWriteResponseIterator) Do(f func(r *sppb.BatchWriteResponse) error
 // timestamp-based keys, it may result in additional rows being added to the
 // mutation's table. We recommend structuring your mutation groups to be
 // idempotent to avoid this issue.
+//
+// If the response stream fails with an UNAVAILABLE error, or ends before all
+// mutation groups have been acknowledged, the client retries the request with
+// only the mutation groups that have not been acknowledged yet. The indexes in
+// the returned responses always refer to the positions in mgs.
 func (c *Client) BatchWrite(ctx context.Context, mgs []*MutationGroup) *BatchWriteResponseIterator {
 	return c.BatchWriteWithOptions(ctx, mgs, BatchWriteOptions{})
 }
@@ -1723,33 +1868,22 @@ func (c *Client) BatchWriteWithOptions(ctx context.Context, mgs []*MutationGroup
 
 	mgsPb, err := mutationGroupsProto(mgs)
 	if err != nil {
-		return &BatchWriteResponseIterator{meterTracerFactory: c.metricsTracerFactory, err: err}
+		return &BatchWriteResponseIterator{err: err}
 	}
 
 	var sh *sessionHandle
 	sh, err = c.sm.takeMultiplexed(ctx)
 	if err != nil {
-		return &BatchWriteResponseIterator{meterTracerFactory: c.metricsTracerFactory, err: err}
+		return &BatchWriteResponseIterator{err: err}
 	}
 
-	rpc := func(ct context.Context) (sppb.Spanner_BatchWriteClient, error) {
-		var md metadata.MD
-		stream, rpcErr := sh.getClient().BatchWrite(contextWithOutgoingMetadata(ct, sh.getMetadata(), c.disableRouteToLeader), &sppb.BatchWriteRequest{
+	rpc := func(ct context.Context, mgs []*sppb.BatchWriteRequest_MutationGroup) (sppb.Spanner_BatchWriteClient, error) {
+		return sh.getClient().BatchWrite(contextWithOutgoingMetadata(ct, sh.getMetadata(), c.disableRouteToLeader), &sppb.BatchWriteRequest{
 			Session:                     sh.getID(),
-			MutationGroups:              mgsPb,
+			MutationGroups:              mgs,
 			RequestOptions:              createRequestOptions(opts.Priority, "", opts.TransactionTag, mergeClientContext(c.clientContext, opts.ClientContext)),
 			ExcludeTxnFromChangeStreams: opts.ExcludeTxnFromChangeStreams,
-		}, gax.WithGRPCOptions(grpc.Header(&md)))
-
-		if getGFELatencyMetricsFlag() && md != nil && c.ct != nil {
-			if metricErr := createContextAndCaptureGFELatencyMetrics(ct, c.ct, md, "BatchWrite"); metricErr != nil {
-				trace.TracePrintf(ct, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", err)
-			}
-		}
-		if metricErr := recordGFELatencyMetricsOT(ct, md, "BatchWrite", c.otConfig); metricErr != nil {
-			trace.TracePrintf(ct, nil, "Error in recording GFE Latency through OpenTelemetry. Error: %v", err)
-		}
-		return stream, rpcErr
+		})
 	}
 
 	release := func(err error) {
@@ -1759,15 +1893,15 @@ func (c *Client) BatchWriteWithOptions(ctx context.Context, mgs []*MutationGroup
 		sh.recycle()
 	}
 
-	ctx, cancel := context.WithCancel(ctx)
-	ctx, _ = startSpan(ctx, "BatchWriteResponseIterator", c.otConfig.commonTraceStartOptions...)
-	return &BatchWriteResponseIterator{
-		ctx:                ctx,
-		meterTracerFactory: c.metricsTracerFactory,
-		rpc:                rpc,
-		release:            release,
-		cancel:             cancel,
-	}
+	// The iterator uses its own context, so that the deferred EndSpan above
+	// ends the BatchWrite span and not the span of the iterator.
+	iterCtx, cancel := context.WithCancel(ctx)
+	iterCtx, _ = startSpan(iterCtx, "BatchWriteResponseIterator", c.otConfig.commonTraceStartOptions...)
+	iter := newBatchWriteResponseIterator(iterCtx, mgsPb, rpc, DefaultRetryBackoff)
+	iter.meterTracerFactory = c.metricsTracerFactory
+	iter.release = release
+	iter.cancel = cancel
+	return iter
 }
 
 // logf logs the given message to the given logger, or the standard logger if

@@ -620,6 +620,10 @@ type attemptTracer struct {
 
 	directPathUsed      bool // Indicates if DirectPath was used for the attempt.
 	serverTimingMetrics map[string]time.Duration
+
+	// rpcStarted indicates if the streaming RPC of the attempt reached the
+	// metrics stream interceptor.
+	rpcStarted bool
 }
 
 // setStartTime sets the start time for the operation.
@@ -682,6 +686,16 @@ func (tf *builtinMetricsTracerFactory) createBuiltinMetricsTracer(ctx context.Co
 
 		sinks: tf.sinks,
 	}
+}
+
+// newBuiltinMetricsTracer returns nil when built-in metrics are disabled, so
+// that no operation state, tracer allocation, or clock read happens per call.
+func (tf *builtinMetricsTracerFactory) newBuiltinMetricsTracer(ctx context.Context) *builtinMetricsTracer {
+	if tf == nil || !tf.enabled {
+		return nil
+	}
+	tracer := tf.createBuiltinMetricsTracer(ctx)
+	return &tracer
 }
 
 // toOtelMetricAttrs converts per-operation and per-attempt metric attributes
@@ -791,7 +805,7 @@ func convertToGrpcStatusErr(err error) (codes.Code, error) {
 // Ignore errors seen while creating metric attributes since metric can still
 // be recorded with rest of the attributes
 func recordAttemptCompletion(mt *builtinMetricsTracer) {
-	if !mt.builtInEnabled {
+	if mt == nil || !mt.builtInEnabled {
 		return
 	}
 	// capture AFE metrics only if direct-path is enabled and used in current attempt
@@ -822,11 +836,75 @@ func recordAttemptCompletion(mt *builtinMetricsTracer) {
 	}
 }
 
+// streamOperationMetrics records the built-in metrics operation of a
+// resumable stream, such as the result stream of a query or the response
+// stream of a BatchWrite. The operation starts when the first stream is opened
+// and ends when finishOperation is called. Every stream that is opened or
+// resumed for it is an attempt of that operation.
+type streamOperationMetrics struct {
+	// meterTracerFactory creates mt when the first stream is opened. It is
+	// cleared then, so that each stream operation is recorded at most once.
+	meterTracerFactory *builtinMetricsTracerFactory
+	// mt records the built-in metrics operation of the stream. It is nil when
+	// built-in metrics are disabled and after the operation ended.
+	mt *builtinMetricsTracer
+}
+
+// startAttempt starts a built-in metrics attempt for a new stream. The first
+// attempt also starts the operation.
+func (m *streamOperationMetrics) startAttempt(ctx context.Context) {
+	if m.meterTracerFactory != nil {
+		m.mt = m.meterTracerFactory.newBuiltinMetricsTracer(ctx)
+		m.meterTracerFactory = nil
+	}
+	if m.mt == nil {
+		return
+	}
+	m.mt.currOp.incrementAttemptCount()
+	m.mt.currOp.currAttempt = &attemptTracer{
+		startTime: time.Now(),
+	}
+}
+
+// endAttempt records the end of the current attempt with the given status. An
+// attempt that already has a status has been recorded before.
+func (m *streamOperationMetrics) endAttempt(code codes.Code) {
+	if m.mt == nil || m.mt.currOp.currAttempt == nil || m.mt.currOp.currAttempt.status != "" {
+		return
+	}
+	m.mt.currOp.currAttempt.setStatus(code.String())
+	if !m.mt.currOp.currAttempt.rpcStarted {
+		// The attempt failed before its RPC was started, so it is not
+		// recorded or counted.
+		m.mt.currOp.attemptCount--
+		return
+	}
+	recordAttemptCompletion(m.mt)
+}
+
+// finishOperation records the end of the operation with the given status,
+// ending the current attempt with the same status if it is still in progress.
+// Later calls do nothing.
+func (m *streamOperationMetrics) finishOperation(code codes.Code) {
+	mt := m.mt
+	if mt == nil {
+		return
+	}
+	m.endAttempt(code)
+	m.mt = nil
+	// The method is empty if no RPC was ever sent.
+	if mt.method == "" {
+		return
+	}
+	mt.currOp.setStatus(code.String())
+	recordOperationCompletion(mt)
+}
+
 // recordOperationCompletion records as many operation specific metrics as it can
 // Ignores error seen while creating metric attributes since metric can still
 // be recorded with rest of the attributes
 func recordOperationCompletion(mt *builtinMetricsTracer) {
-	if !mt.builtInEnabled {
+	if mt == nil || !mt.builtInEnabled {
 		return
 	}
 

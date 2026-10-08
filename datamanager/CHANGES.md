@@ -1,5 +1,19 @@
 # Changes
 
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/datamanager/v1.6.0...datamanager/v1.7.0) (2026-10-01)
+
+
+### Features
+
+* Update API sources and regenerate ([#20607](https://github.com/googleapis/google-cloud-go/issues/20607)) ([395fc59](https://github.com/googleapis/google-cloud-go/commit/395fc59e067ed2576a1c8c961edf3f749633520c))
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/datamanager/v1.5.0...datamanager/v1.6.0) (2026-09-23)
+
+
+### Features
+
+* **all:** Update supported go versions ([#20520](https://github.com/googleapis/google-cloud-go/issues/20520)) ([90413d3](https://github.com/googleapis/google-cloud-go/commit/90413d3e9d381ef4b92e3c496d98b023c5b2d8cc))
+
 ## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/datamanager/v1.4.0...datamanager/v1.5.0) (2026-09-17)
 
 

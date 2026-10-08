@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/beyondcorp/appgateways/apiv1",
-    "version": "1.8.0"
+    "version": "1.9.0"
   },
   "snippets": [
     {
@@ -88,7 +88,7 @@
         "resultType": "CreateAppGatewayOperation",
         "shortName": "CreateAppGateway"
       },
-      "description": "CreateAppGateway creates a new AppGateway in a given project and location.",
+      "description": "CreateAppGateway creates a new AppGateway in a given project and location.\n\n\nDeprecated: CreateAppGateway may be removed in a future version.",
       "file": "Client/CreateAppGateway/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -134,7 +134,7 @@
         "resultType": "DeleteAppGatewayOperation",
         "shortName": "DeleteAppGateway"
       },
-      "description": "DeleteAppGateway deletes a single AppGateway.",
+      "description": "DeleteAppGateway deletes a single AppGateway.\n\n\nDeprecated: DeleteAppGateway may be removed in a future version.",
       "file": "Client/DeleteAppGateway/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -225,7 +225,7 @@
         "resultType": "*appgatewayspb.AppGateway",
         "shortName": "GetAppGateway"
       },
-      "description": "GetAppGateway gets details of a single AppGateway.",
+      "description": "GetAppGateway gets details of a single AppGateway.\n\n\nDeprecated: GetAppGateway may be removed in a future version.",
       "file": "Client/GetAppGateway/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -409,7 +409,7 @@
         "resultType": "AppGatewayIterator",
         "shortName": "ListAppGateways"
       },
-      "description": "ListAppGateways lists AppGateways in a given project and location.",
+      "description": "ListAppGateways lists AppGateways in a given project and location.\n\n\nDeprecated: ListAppGateways may be removed in a future version.",
       "file": "Client/ListAppGateways/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -455,7 +455,7 @@
         "resultType": "LocationIterator",
         "shortName": "ListLocations"
       },
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name][google.cloud.location.ListLocationsRequest.name] field: *\n**Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
       "file": "Client/ListLocations/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",

@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/compute/apiv1",
-    "version": "1.69.0"
+    "version": "1.71.0"
   },
   "snippets": [
     {
@@ -6500,6 +6500,98 @@
     {
       "clientMethod": {
         "client": {
+          "fullName": "google.cloud.compute.v1.GlobalFrontendSettingsClient",
+          "shortName": "GlobalFrontendSettingsClient"
+        },
+        "fullName": "google.cloud.compute.v1.GlobalFrontendSettingsClient.Get",
+        "method": {
+          "fullName": "google.cloud.compute.v1.GlobalFrontendSettingsService.Get",
+          "service": {
+            "fullName": "google.cloud.compute.v1.GlobalFrontendSettingsService",
+            "shortName": "GlobalFrontendSettingsService"
+          },
+          "shortName": "Get"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.GetGlobalFrontendSettingRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*computepb.GlobalFrontendSettings",
+        "shortName": "Get"
+      },
+      "description": "Get gets the Global Frontend Billing Bundle Settings for a project.",
+      "file": "GlobalFrontendSettingsClient/Get/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1_generated_GlobalFrontendSettingsService_Get_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute Get Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1.GlobalFrontendSettingsClient",
+          "shortName": "GlobalFrontendSettingsClient"
+        },
+        "fullName": "google.cloud.compute.v1.GlobalFrontendSettingsClient.Patch",
+        "method": {
+          "fullName": "google.cloud.compute.v1.GlobalFrontendSettingsService.Patch",
+          "service": {
+            "fullName": "google.cloud.compute.v1.GlobalFrontendSettingsService",
+            "shortName": "GlobalFrontendSettingsService"
+          },
+          "shortName": "Patch"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.PatchGlobalFrontendSettingRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*computepb.GlobalFrontendSettingsPatchResponse",
+        "shortName": "Patch"
+      },
+      "description": "Patch updates the Global Frontend Billing Bundle Settings for a project.",
+      "file": "GlobalFrontendSettingsClient/Patch/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1_generated_GlobalFrontendSettingsService_Patch_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute Patch Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
           "fullName": "google.cloud.compute.v1.GlobalNetworkEndpointGroupsClient",
           "shortName": "GlobalNetworkEndpointGroupsClient"
         },
@@ -8244,6 +8336,98 @@
         }
       ],
       "title": "compute Get Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1.ImageViewsClient",
+          "shortName": "ImageViewsClient"
+        },
+        "fullName": "google.cloud.compute.v1.ImageViewsClient.Get",
+        "method": {
+          "fullName": "google.cloud.compute.v1.ImageViews.Get",
+          "service": {
+            "fullName": "google.cloud.compute.v1.ImageViews",
+            "shortName": "ImageViews"
+          },
+          "shortName": "Get"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.GetImageViewRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*computepb.ImageView",
+        "shortName": "Get"
+      },
+      "description": "Get returns the specified global ImageView resource, with a regional\ncontext.",
+      "file": "ImageViewsClient/Get/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1_generated_ImageViews_Get_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute Get Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1.ImageViewsClient",
+          "shortName": "ImageViewsClient"
+        },
+        "fullName": "google.cloud.compute.v1.ImageViewsClient.List",
+        "method": {
+          "fullName": "google.cloud.compute.v1.ImageViews.List",
+          "service": {
+            "fullName": "google.cloud.compute.v1.ImageViews",
+            "shortName": "ImageViews"
+          },
+          "shortName": "List"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.ListImageViewsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "ImageViewIterator",
+        "shortName": "List"
+      },
+      "description": "List returns a list of global ImageView resources, with a regional\ncontext.",
+      "file": "ImageViewsClient/List/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1_generated_ImageViews_List_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute List Sample"
     },
     {
       "clientMethod": {
@@ -15838,6 +16022,52 @@
     {
       "clientMethod": {
         "client": {
+          "fullName": "google.cloud.compute.v1.InterconnectsClient",
+          "shortName": "InterconnectsClient"
+        },
+        "fullName": "google.cloud.compute.v1.InterconnectsClient.SetName",
+        "method": {
+          "fullName": "google.cloud.compute.v1.Interconnects.SetName",
+          "service": {
+            "fullName": "google.cloud.compute.v1.Interconnects",
+            "shortName": "Interconnects"
+          },
+          "shortName": "SetName"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.SetNameInterconnectRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*Operation",
+        "shortName": "SetName"
+      },
+      "description": "SetName sets name of an interconnect.",
+      "file": "InterconnectsClient/SetName/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1_generated_Interconnects_SetName_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute SetName Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
           "fullName": "google.cloud.compute.v1.LicenseCodesClient",
           "shortName": "LicenseCodesClient"
         },
@@ -16884,6 +17114,98 @@
       "language": "GO",
       "origin": "API_DEFINITION",
       "regionTag": "compute_v1_generated_MachineTypes_List_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute List Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1.ManagedRulesetsClient",
+          "shortName": "ManagedRulesetsClient"
+        },
+        "fullName": "google.cloud.compute.v1.ManagedRulesetsClient.Get",
+        "method": {
+          "fullName": "google.cloud.compute.v1.ManagedRulesets.Get",
+          "service": {
+            "fullName": "google.cloud.compute.v1.ManagedRulesets",
+            "shortName": "ManagedRulesets"
+          },
+          "shortName": "Get"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.GetManagedRulesetRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*computepb.ManagedRuleset",
+        "shortName": "Get"
+      },
+      "description": "Get gets the details for the specified managed ruleset name.",
+      "file": "ManagedRulesetsClient/Get/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1_generated_ManagedRulesets_Get_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute Get Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1.ManagedRulesetsClient",
+          "shortName": "ManagedRulesetsClient"
+        },
+        "fullName": "google.cloud.compute.v1.ManagedRulesetsClient.List",
+        "method": {
+          "fullName": "google.cloud.compute.v1.ManagedRulesets.List",
+          "service": {
+            "fullName": "google.cloud.compute.v1.ManagedRulesets",
+            "shortName": "ManagedRulesets"
+          },
+          "shortName": "List"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.ListManagedRulesetsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "ManagedRulesetIterator",
+        "shortName": "List"
+      },
+      "description": "List retrieves the list of all the managed rulesets available.",
+      "file": "ManagedRulesetsClient/List/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1_generated_ManagedRulesets_List_sync",
       "segments": [
         {
           "end": 68,
@@ -30830,6 +31152,52 @@
         }
       ],
       "title": "compute Patch Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1.RegionNetworkFirewallPoliciesClient",
+          "shortName": "RegionNetworkFirewallPoliciesClient"
+        },
+        "fullName": "google.cloud.compute.v1.RegionNetworkFirewallPoliciesClient.PatchAssociation",
+        "method": {
+          "fullName": "google.cloud.compute.v1.RegionNetworkFirewallPolicies.PatchAssociation",
+          "service": {
+            "fullName": "google.cloud.compute.v1.RegionNetworkFirewallPolicies",
+            "shortName": "RegionNetworkFirewallPolicies"
+          },
+          "shortName": "PatchAssociation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.PatchAssociationRegionNetworkFirewallPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*Operation",
+        "shortName": "PatchAssociation"
+      },
+      "description": "PatchAssociation updates an association for the specified network firewall policy.",
+      "file": "RegionNetworkFirewallPoliciesClient/PatchAssociation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1_generated_RegionNetworkFirewallPolicies_PatchAssociation_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute PatchAssociation Sample"
     },
     {
       "clientMethod": {

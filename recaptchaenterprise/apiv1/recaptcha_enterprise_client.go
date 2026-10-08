@@ -424,6 +424,79 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.ListRelatedAccountGroupMemberships = append(client.CallOptions.ListRelatedAccountGroupMemberships, gax.WithClientMetrics(metrics))
 		client.CallOptions.SearchRelatedAccountGroupMemberships = append(client.CallOptions.SearchRelatedAccountGroupMemberships, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "recaptchaenterprise",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/recaptchaenterprise/v2/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "recaptchaenterprise.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateAssessment = append(client.CallOptions.CreateAssessment, gax.WithClientTracing(tracing))
+		client.CallOptions.AnnotateAssessment = append(client.CallOptions.AnnotateAssessment, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateKey = append(client.CallOptions.CreateKey, gax.WithClientTracing(tracing))
+		client.CallOptions.ListKeys = append(client.CallOptions.ListKeys, gax.WithClientTracing(tracing))
+		client.CallOptions.RetrieveLegacySecretKey = append(client.CallOptions.RetrieveLegacySecretKey, gax.WithClientTracing(tracing))
+		client.CallOptions.GetKey = append(client.CallOptions.GetKey, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateKey = append(client.CallOptions.UpdateKey, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteKey = append(client.CallOptions.DeleteKey, gax.WithClientTracing(tracing))
+		client.CallOptions.MigrateKey = append(client.CallOptions.MigrateKey, gax.WithClientTracing(tracing))
+		client.CallOptions.AddIpOverride = append(client.CallOptions.AddIpOverride, gax.WithClientTracing(tracing))
+		client.CallOptions.RemoveIpOverride = append(client.CallOptions.RemoveIpOverride, gax.WithClientTracing(tracing))
+		client.CallOptions.ListIpOverrides = append(client.CallOptions.ListIpOverrides, gax.WithClientTracing(tracing))
+		client.CallOptions.GetMetrics = append(client.CallOptions.GetMetrics, gax.WithClientTracing(tracing))
+		client.CallOptions.GetPolicy = append(client.CallOptions.GetPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdatePolicy = append(client.CallOptions.UpdatePolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateFirewallPolicy = append(client.CallOptions.CreateFirewallPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.ListFirewallPolicies = append(client.CallOptions.ListFirewallPolicies, gax.WithClientTracing(tracing))
+		client.CallOptions.GetFirewallPolicy = append(client.CallOptions.GetFirewallPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateFirewallPolicy = append(client.CallOptions.UpdateFirewallPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteFirewallPolicy = append(client.CallOptions.DeleteFirewallPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.ReorderFirewallPolicies = append(client.CallOptions.ReorderFirewallPolicies, gax.WithClientTracing(tracing))
+		client.CallOptions.ListRelatedAccountGroups = append(client.CallOptions.ListRelatedAccountGroups, gax.WithClientTracing(tracing))
+		client.CallOptions.ListRelatedAccountGroupMemberships = append(client.CallOptions.ListRelatedAccountGroupMemberships, gax.WithClientTracing(tracing))
+		client.CallOptions.SearchRelatedAccountGroupMemberships = append(client.CallOptions.SearchRelatedAccountGroupMemberships, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "recaptchaenterprise",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/recaptchaenterprise/v2/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "recaptchaenterprise.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateAssessment = append(client.CallOptions.CreateAssessment, gax.WithClientLogging(logging))
+		client.CallOptions.AnnotateAssessment = append(client.CallOptions.AnnotateAssessment, gax.WithClientLogging(logging))
+		client.CallOptions.CreateKey = append(client.CallOptions.CreateKey, gax.WithClientLogging(logging))
+		client.CallOptions.ListKeys = append(client.CallOptions.ListKeys, gax.WithClientLogging(logging))
+		client.CallOptions.RetrieveLegacySecretKey = append(client.CallOptions.RetrieveLegacySecretKey, gax.WithClientLogging(logging))
+		client.CallOptions.GetKey = append(client.CallOptions.GetKey, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateKey = append(client.CallOptions.UpdateKey, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteKey = append(client.CallOptions.DeleteKey, gax.WithClientLogging(logging))
+		client.CallOptions.MigrateKey = append(client.CallOptions.MigrateKey, gax.WithClientLogging(logging))
+		client.CallOptions.AddIpOverride = append(client.CallOptions.AddIpOverride, gax.WithClientLogging(logging))
+		client.CallOptions.RemoveIpOverride = append(client.CallOptions.RemoveIpOverride, gax.WithClientLogging(logging))
+		client.CallOptions.ListIpOverrides = append(client.CallOptions.ListIpOverrides, gax.WithClientLogging(logging))
+		client.CallOptions.GetMetrics = append(client.CallOptions.GetMetrics, gax.WithClientLogging(logging))
+		client.CallOptions.GetPolicy = append(client.CallOptions.GetPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.UpdatePolicy = append(client.CallOptions.UpdatePolicy, gax.WithClientLogging(logging))
+		client.CallOptions.CreateFirewallPolicy = append(client.CallOptions.CreateFirewallPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.ListFirewallPolicies = append(client.CallOptions.ListFirewallPolicies, gax.WithClientLogging(logging))
+		client.CallOptions.GetFirewallPolicy = append(client.CallOptions.GetFirewallPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateFirewallPolicy = append(client.CallOptions.UpdateFirewallPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteFirewallPolicy = append(client.CallOptions.DeleteFirewallPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.ReorderFirewallPolicies = append(client.CallOptions.ReorderFirewallPolicies, gax.WithClientLogging(logging))
+		client.CallOptions.ListRelatedAccountGroups = append(client.CallOptions.ListRelatedAccountGroups, gax.WithClientLogging(logging))
+		client.CallOptions.ListRelatedAccountGroupMemberships = append(client.CallOptions.ListRelatedAccountGroupMemberships, gax.WithClientLogging(logging))
+		client.CallOptions.SearchRelatedAccountGroupMemberships = append(client.CallOptions.SearchRelatedAccountGroupMemberships, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -460,9 +533,6 @@ func (c *gRPCClient) CreateAssessment(ctx context.Context, req *recaptchaenterpr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//recaptchaenterprise.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService/CreateAssessment")
 	}
@@ -484,9 +554,6 @@ func (c *gRPCClient) AnnotateAssessment(ctx context.Context, req *recaptchaenter
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//recaptchaenterprise.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService/AnnotateAssessment")
 	}
@@ -508,9 +575,6 @@ func (c *gRPCClient) CreateKey(ctx context.Context, req *recaptchaenterprisepb.C
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//recaptchaenterprise.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService/CreateKey")
 	}
@@ -532,9 +596,6 @@ func (c *gRPCClient) ListKeys(ctx context.Context, req *recaptchaenterprisepb.Li
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//recaptchaenterprise.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService/ListKeys")
 	}
@@ -584,9 +645,6 @@ func (c *gRPCClient) RetrieveLegacySecretKey(ctx context.Context, req *recaptcha
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//recaptchaenterprise.googleapis.com/%v", req.GetKey()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService/RetrieveLegacySecretKey")
 	}
@@ -608,9 +666,6 @@ func (c *gRPCClient) GetKey(ctx context.Context, req *recaptchaenterprisepb.GetK
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//recaptchaenterprise.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService/GetKey")
 	}
@@ -653,9 +708,6 @@ func (c *gRPCClient) DeleteKey(ctx context.Context, req *recaptchaenterprisepb.D
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//recaptchaenterprise.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService/DeleteKey")
 	}
@@ -673,9 +725,6 @@ func (c *gRPCClient) MigrateKey(ctx context.Context, req *recaptchaenterprisepb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//recaptchaenterprise.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService/MigrateKey")
 	}
@@ -697,9 +746,6 @@ func (c *gRPCClient) AddIpOverride(ctx context.Context, req *recaptchaenterprise
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//recaptchaenterprise.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService/AddIpOverride")
 	}
@@ -721,9 +767,6 @@ func (c *gRPCClient) RemoveIpOverride(ctx context.Context, req *recaptchaenterpr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//recaptchaenterprise.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService/RemoveIpOverride")
 	}
@@ -745,9 +788,6 @@ func (c *gRPCClient) ListIpOverrides(ctx context.Context, req *recaptchaenterpri
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//recaptchaenterprise.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService/ListIpOverrides")
 	}
@@ -797,9 +837,6 @@ func (c *gRPCClient) GetMetrics(ctx context.Context, req *recaptchaenterprisepb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//recaptchaenterprise.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService/GetMetrics")
 	}
@@ -821,9 +858,6 @@ func (c *gRPCClient) GetPolicy(ctx context.Context, req *recaptchaenterprisepb.G
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//recaptchaenterprise.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService/GetPolicy")
 	}
@@ -866,9 +900,6 @@ func (c *gRPCClient) CreateFirewallPolicy(ctx context.Context, req *recaptchaent
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//recaptchaenterprise.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService/CreateFirewallPolicy")
 	}
@@ -890,9 +921,6 @@ func (c *gRPCClient) ListFirewallPolicies(ctx context.Context, req *recaptchaent
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//recaptchaenterprise.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService/ListFirewallPolicies")
 	}
@@ -942,9 +970,6 @@ func (c *gRPCClient) GetFirewallPolicy(ctx context.Context, req *recaptchaenterp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//recaptchaenterprise.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService/GetFirewallPolicy")
 	}
@@ -987,9 +1012,6 @@ func (c *gRPCClient) DeleteFirewallPolicy(ctx context.Context, req *recaptchaent
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//recaptchaenterprise.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService/DeleteFirewallPolicy")
 	}
@@ -1007,9 +1029,6 @@ func (c *gRPCClient) ReorderFirewallPolicies(ctx context.Context, req *recaptcha
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//recaptchaenterprise.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService/ReorderFirewallPolicies")
 	}
@@ -1031,9 +1050,6 @@ func (c *gRPCClient) ListRelatedAccountGroups(ctx context.Context, req *recaptch
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//recaptchaenterprise.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService/ListRelatedAccountGroups")
 	}
@@ -1083,9 +1099,6 @@ func (c *gRPCClient) ListRelatedAccountGroupMemberships(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//recaptchaenterprise.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService/ListRelatedAccountGroupMemberships")
 	}
@@ -1135,9 +1148,6 @@ func (c *gRPCClient) SearchRelatedAccountGroupMemberships(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//recaptchaenterprise.googleapis.com/%v", req.GetProject()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService/SearchRelatedAccountGroupMemberships")
 	}

@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/compute/apiv1beta",
-    "version": "1.69.0"
+    "version": "1.71.0"
   },
   "snippets": [
     {
@@ -9076,6 +9076,52 @@
     {
       "clientMethod": {
         "client": {
+          "fullName": "google.cloud.compute.v1beta.ImageViewsClient",
+          "shortName": "ImageViewsClient"
+        },
+        "fullName": "google.cloud.compute.v1beta.ImageViewsClient.List",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.ImageViews.List",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.ImageViews",
+            "shortName": "ImageViews"
+          },
+          "shortName": "List"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.ListImageViewsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "ImageViewIterator",
+        "shortName": "List"
+      },
+      "description": "List returns a list of global ImageView resources, with a regional\ncontext.",
+      "file": "ImageViewsClient/List/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_ImageViews_List_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute List Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
           "fullName": "google.cloud.compute.v1beta.ImagesClient",
           "shortName": "ImagesClient"
         },
@@ -17306,6 +17352,52 @@
         }
       ],
       "title": "compute SetLabels Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1beta.InterconnectsClient",
+          "shortName": "InterconnectsClient"
+        },
+        "fullName": "google.cloud.compute.v1beta.InterconnectsClient.SetName",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.Interconnects.SetName",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.Interconnects",
+            "shortName": "Interconnects"
+          },
+          "shortName": "SetName"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.SetNameInterconnectRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*Operation",
+        "shortName": "SetName"
+      },
+      "description": "SetName sets name of an interconnect.",
+      "file": "InterconnectsClient/SetName/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_Interconnects_SetName_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute SetName Sample"
     },
     {
       "clientMethod": {

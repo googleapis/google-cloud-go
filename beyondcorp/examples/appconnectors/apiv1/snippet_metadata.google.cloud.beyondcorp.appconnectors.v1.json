@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/beyondcorp/appconnectors/apiv1",
-    "version": "1.8.0"
+    "version": "1.9.0"
   },
   "snippets": [
     {
@@ -88,7 +88,7 @@
         "resultType": "CreateAppConnectorOperation",
         "shortName": "CreateAppConnector"
       },
-      "description": "CreateAppConnector creates a new AppConnector in a given project and location.",
+      "description": "CreateAppConnector creates a new AppConnector in a given project and location.\n\n\nDeprecated: CreateAppConnector may be removed in a future version.",
       "file": "Client/CreateAppConnector/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -134,7 +134,7 @@
         "resultType": "DeleteAppConnectorOperation",
         "shortName": "DeleteAppConnector"
       },
-      "description": "DeleteAppConnector deletes a single AppConnector.",
+      "description": "DeleteAppConnector deletes a single AppConnector.\n\n\nDeprecated: DeleteAppConnector may be removed in a future version.",
       "file": "Client/DeleteAppConnector/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -225,7 +225,7 @@
         "resultType": "*appconnectorspb.AppConnector",
         "shortName": "GetAppConnector"
       },
-      "description": "GetAppConnector gets details of a single AppConnector.",
+      "description": "GetAppConnector gets details of a single AppConnector.\n\n\nDeprecated: GetAppConnector may be removed in a future version.",
       "file": "Client/GetAppConnector/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -409,7 +409,7 @@
         "resultType": "AppConnectorIterator",
         "shortName": "ListAppConnectors"
       },
-      "description": "ListAppConnectors lists AppConnectors in a given project and location.",
+      "description": "ListAppConnectors lists AppConnectors in a given project and location.\n\n\nDeprecated: ListAppConnectors may be removed in a future version.",
       "file": "Client/ListAppConnectors/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -455,7 +455,7 @@
         "resultType": "LocationIterator",
         "shortName": "ListLocations"
       },
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name][google.cloud.location.ListLocationsRequest.name] field: *\n**Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
       "file": "Client/ListLocations/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -547,7 +547,7 @@
         "resultType": "ReportStatusOperation",
         "shortName": "ReportStatus"
       },
-      "description": "ReportStatus report status for a given connector.",
+      "description": "ReportStatus report status for a given connector.\n\n\nDeprecated: ReportStatus may be removed in a future version.",
       "file": "Client/ReportStatus/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -560,6 +560,52 @@
         }
       ],
       "title": "beyondcorp ReportStatus Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.beyondcorp.appconnectors.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.beyondcorp.appconnectors.v1.Client.ResolveInstanceConfig",
+        "method": {
+          "fullName": "google.cloud.beyondcorp.appconnectors.v1.AppConnectorsService.ResolveInstanceConfig",
+          "service": {
+            "fullName": "google.cloud.beyondcorp.appconnectors.v1.AppConnectorsService",
+            "shortName": "AppConnectorsService"
+          },
+          "shortName": "ResolveInstanceConfig"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "appconnectorspb.ResolveInstanceConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*appconnectorspb.ResolveInstanceConfigResponse",
+        "shortName": "ResolveInstanceConfig"
+      },
+      "description": "ResolveInstanceConfig gets instance configuration for a given AppConnector.\nAn internal method called by a AppConnector to get its container config.\n\n\nDeprecated: ResolveInstanceConfig may be removed in a future version.",
+      "file": "Client/ResolveInstanceConfig/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "beyondcorp_v1_generated_AppConnectorsService_ResolveInstanceConfig_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "beyondcorp ResolveInstanceConfig Sample"
     },
     {
       "clientMethod": {
@@ -685,7 +731,7 @@
         "resultType": "UpdateAppConnectorOperation",
         "shortName": "UpdateAppConnector"
       },
-      "description": "UpdateAppConnector updates the parameters of a single AppConnector.",
+      "description": "UpdateAppConnector updates the parameters of a single AppConnector.\n\n\nDeprecated: UpdateAppConnector may be removed in a future version.",
       "file": "Client/UpdateAppConnector/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",

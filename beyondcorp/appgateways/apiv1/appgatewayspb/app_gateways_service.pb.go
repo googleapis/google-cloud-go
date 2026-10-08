@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import (
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	_ "google.golang.org/protobuf/types/known/emptypb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -215,8 +216,8 @@ type ListAppGatewaysRequest struct {
 	// If not specified, a default value of 50 will be used by the service.
 	// Regardless of the page_size value, the response may include a partial list
 	// and a caller should only rely on response's
-	// [next_page_token][BeyondCorp.ListAppGatewaysResponse.next_page_token] to
-	// determine if there are more instances left to be queried.
+	// [next_page_token][google.cloud.beyondcorp.appgateways.v1.ListAppGatewaysResponse.next_page_token]
+	// to determine if there are more instances left to be queried.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// Optional. The next_page_token value returned from a previous
 	// ListAppGatewaysRequest, if any.
@@ -427,8 +428,8 @@ type CreateAppGatewayRequest struct {
 	// ignore the request if it has already been completed. The server will
 	// guarantee that for at least 60 minutes since the first request.
 	//
-	// For example, consider a situation where you make an initial request and t
-	// he request times out. If you make the request again with the same request
+	// For example, consider a situation where you make an initial request and
+	// the request times out. If you make the request again with the same request
 	// ID, the server can check if original operation with the same request ID
 	// was received, and if so, will ignore the second request. This prevents
 	// clients from accidentally creating duplicate commitments.
@@ -519,8 +520,8 @@ type DeleteAppGatewayRequest struct {
 	// ignore the request if it has already been completed. The server will
 	// guarantee that for at least 60 minutes after the first request.
 	//
-	// For example, consider a situation where you make an initial request and t
-	// he request times out. If you make the request again with the same request
+	// For example, consider a situation where you make an initial request and
+	// the request times out. If you make the request again with the same request
 	// ID, the server can check if original operation with the same request ID
 	// was received, and if so, will ignore the second request. This prevents
 	// clients from accidentally creating duplicate commitments.
@@ -616,7 +617,11 @@ type AppGateway struct {
 	// Output only. A list of connections allocated for the Gateway
 	AllocatedConnections []*AppGateway_AllocatedConnection `protobuf:"bytes,10,rep,name=allocated_connections,json=allocatedConnections,proto3" json:"allocated_connections,omitempty"`
 	// Required. The type of hosting used by the AppGateway.
-	HostType      AppGateway_HostType `protobuf:"varint,11,opt,name=host_type,json=hostType,proto3,enum=google.cloud.beyondcorp.appgateways.v1.AppGateway_HostType" json:"host_type,omitempty"`
+	HostType AppGateway_HostType `protobuf:"varint,11,opt,name=host_type,json=hostType,proto3,enum=google.cloud.beyondcorp.appgateways.v1.AppGateway_HostType" json:"host_type,omitempty"`
+	// Output only. Reserved for future use.
+	SatisfiesPzs *bool `protobuf:"varint,12,opt,name=satisfies_pzs,json=satisfiesPzs,proto3,oneof" json:"satisfies_pzs,omitempty"`
+	// Output only. Reserved for future use.
+	SatisfiesPzi  *bool `protobuf:"varint,13,opt,name=satisfies_pzi,json=satisfiesPzi,proto3,oneof" json:"satisfies_pzi,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -728,6 +733,20 @@ func (x *AppGateway) GetHostType() AppGateway_HostType {
 	return AppGateway_HOST_TYPE_UNSPECIFIED
 }
 
+func (x *AppGateway) GetSatisfiesPzs() bool {
+	if x != nil && x.SatisfiesPzs != nil {
+		return *x.SatisfiesPzs
+	}
+	return false
+}
+
+func (x *AppGateway) GetSatisfiesPzi() bool {
+	if x != nil && x.SatisfiesPzi != nil {
+		return *x.SatisfiesPzi
+	}
+	return false
+}
+
 // Represents the metadata of the long-running operation.
 type AppGatewayOperationMetadata struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -743,9 +762,10 @@ type AppGatewayOperationMetadata struct {
 	StatusMessage string `protobuf:"bytes,5,opt,name=status_message,json=statusMessage,proto3" json:"status_message,omitempty"`
 	// Output only. Identifies whether the user has requested cancellation
 	// of the operation. Operations that have successfully been cancelled
-	// have [Operation.error][] value with a
-	// [google.rpc.Status.code][google.rpc.Status.code] of 1, corresponding to
-	// `Code.CANCELLED`.
+	// have
+	// [google.longrunning.Operation.error][google.longrunning.Operation.error]
+	// value with a [google.rpc.Status.code][google.rpc.Status.code] of `1`,
+	// corresponding to `Code.CANCELLED`.
 	RequestedCancellation bool `protobuf:"varint,6,opt,name=requested_cancellation,json=requestedCancellation,proto3" json:"requested_cancellation,omitempty"`
 	// Output only. API version used to start the operation.
 	ApiVersion    string `protobuf:"bytes,7,opt,name=api_version,json=apiVersion,proto3" json:"api_version,omitempty"`
@@ -891,7 +911,7 @@ var File_google_cloud_beyondcorp_appgateways_v1_app_gateways_service_proto proto
 
 const file_google_cloud_beyondcorp_appgateways_v1_app_gateways_service_proto_rawDesc = "" +
 	"\n" +
-	"Agoogle/cloud/beyondcorp/appgateways/v1/app_gateways_service.proto\x12&google.cloud.beyondcorp.appgateways.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe1\x01\n" +
+	"Agoogle/cloud/beyondcorp/appgateways/v1/app_gateways_service.proto\x12&google.cloud.beyondcorp.appgateways.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe1\x01\n" +
 	"\x16ListAppGatewaysRequest\x12D\n" +
 	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\x12$beyondcorp.googleapis.com/AppGatewayR\x06parent\x12 \n" +
 	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
@@ -919,7 +939,8 @@ const file_google_cloud_beyondcorp_appgateways_v1_app_gateways_service_proto_raw
 	"$beyondcorp.googleapis.com/AppGatewayR\x04name\x12\"\n" +
 	"\n" +
 	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\x12(\n" +
-	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\xb6\t\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\xb8\n" +
+	"\n" +
 	"\n" +
 	"AppGateway\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12@\n" +
@@ -935,7 +956,9 @@ const file_google_cloud_beyondcorp_appgateways_v1_app_gateways_service_proto_raw
 	"\x03uri\x18\t \x01(\tB\x03\xe0A\x03R\x03uri\x12\x80\x01\n" +
 	"\x15allocated_connections\x18\n" +
 	" \x03(\v2F.google.cloud.beyondcorp.appgateways.v1.AppGateway.AllocatedConnectionB\x03\xe0A\x03R\x14allocatedConnections\x12]\n" +
-	"\thost_type\x18\v \x01(\x0e2;.google.cloud.beyondcorp.appgateways.v1.AppGateway.HostTypeB\x03\xe0A\x02R\bhostType\x1a[\n" +
+	"\thost_type\x18\v \x01(\x0e2;.google.cloud.beyondcorp.appgateways.v1.AppGateway.HostTypeB\x03\xe0A\x02R\bhostType\x12-\n" +
+	"\rsatisfies_pzs\x18\f \x01(\bB\x03\xe0A\x03H\x00R\fsatisfiesPzs\x88\x01\x01\x12-\n" +
+	"\rsatisfies_pzi\x18\r \x01(\bB\x03\xe0A\x03H\x01R\fsatisfiesPzi\x88\x01\x01\x1a[\n" +
 	"\x13AllocatedConnection\x12\x1c\n" +
 	"\apsc_uri\x18\x01 \x01(\tB\x03\xe0A\x02R\x06pscUri\x12&\n" +
 	"\fingress_port\x18\x02 \x01(\x05B\x03\xe0A\x02R\vingressPort\x1a9\n" +
@@ -955,7 +978,9 @@ const file_google_cloud_beyondcorp_appgateways_v1_app_gateways_service_proto_raw
 	"\bHostType\x12\x19\n" +
 	"\x15HOST_TYPE_UNSPECIFIED\x10\x00\x12\x14\n" +
 	"\x10GCP_REGIONAL_MIG\x10\x01:l\xeaAi\n" +
-	"$beyondcorp.googleapis.com/AppGateway\x12Aprojects/{project}/locations/{location}/appGateways/{app_gateway}\"\xdf\x02\n" +
+	"$beyondcorp.googleapis.com/AppGateway\x12Aprojects/{project}/locations/{location}/appGateways/{app_gateway}B\x10\n" +
+	"\x0e_satisfies_pzsB\x10\n" +
+	"\x0e_satisfies_pzi\"\xdf\x02\n" +
 	"\x1bAppGatewayOperationMetadata\x12@\n" +
 	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
 	"createTime\x12:\n" +
@@ -965,15 +990,15 @@ const file_google_cloud_beyondcorp_appgateways_v1_app_gateways_service_proto_raw
 	"\x0estatus_message\x18\x05 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12:\n" +
 	"\x16requested_cancellation\x18\x06 \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
 	"\vapi_version\x18\a \x01(\tB\x03\xe0A\x03R\n" +
-	"apiVersion2\xf6\a\n" +
-	"\x12AppGatewaysService\x12\xd4\x01\n" +
-	"\x0fListAppGateways\x12>.google.cloud.beyondcorp.appgateways.v1.ListAppGatewaysRequest\x1a?.google.cloud.beyondcorp.appgateways.v1.ListAppGatewaysResponse\"@\xdaA\x06parent\x82\xd3\xe4\x93\x021\x12//v1/{parent=projects/*/locations/*}/appGateways\x12\xc1\x01\n" +
-	"\rGetAppGateway\x12<.google.cloud.beyondcorp.appgateways.v1.GetAppGatewayRequest\x1a2.google.cloud.beyondcorp.appgateways.v1.AppGateway\">\xdaA\x04name\x82\xd3\xe4\x93\x021\x12//v1/{name=projects/*/locations/*/appGateways/*}\x12\x89\x02\n" +
-	"\x10CreateAppGateway\x12?.google.cloud.beyondcorp.appgateways.v1.CreateAppGatewayRequest\x1a\x1d.google.longrunning.Operation\"\x94\x01\xcaA)\n" +
+	"apiVersion2\x85\b\n" +
+	"\x12AppGatewaysService\x12\xd7\x01\n" +
+	"\x0fListAppGateways\x12>.google.cloud.beyondcorp.appgateways.v1.ListAppGatewaysRequest\x1a?.google.cloud.beyondcorp.appgateways.v1.ListAppGatewaysResponse\"C\xdaA\x06parent\x82\xd3\xe4\x93\x021\x12//v1/{parent=projects/*/locations/*}/appGateways\x88\x02\x01\x12\xc4\x01\n" +
+	"\rGetAppGateway\x12<.google.cloud.beyondcorp.appgateways.v1.GetAppGatewayRequest\x1a2.google.cloud.beyondcorp.appgateways.v1.AppGateway\"A\xdaA\x04name\x82\xd3\xe4\x93\x021\x12//v1/{name=projects/*/locations/*/appGateways/*}\x88\x02\x01\x12\x8c\x02\n" +
+	"\x10CreateAppGateway\x12?.google.cloud.beyondcorp.appgateways.v1.CreateAppGatewayRequest\x1a\x1d.google.longrunning.Operation\"\x97\x01\xcaA)\n" +
 	"\n" +
-	"AppGateway\x12\x1bAppGatewayOperationMetadata\xdaA!parent,app_gateway,app_gateway_id\x82\xd3\xe4\x93\x02>:\vapp_gateway\"//v1/{parent=projects/*/locations/*}/appGateways\x12\xe9\x01\n" +
-	"\x10DeleteAppGateway\x12?.google.cloud.beyondcorp.appgateways.v1.DeleteAppGatewayRequest\x1a\x1d.google.longrunning.Operation\"u\xcaA4\n" +
-	"\x15google.protobuf.Empty\x12\x1bAppGatewayOperationMetadata\xdaA\x04name\x82\xd3\xe4\x93\x021*//v1/{name=projects/*/locations/*/appGateways/*}\x1aM\xcaA\x19beyondcorp.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\x94\x02\n" +
+	"AppGateway\x12\x1bAppGatewayOperationMetadata\xdaA!parent,app_gateway,app_gateway_id\x82\xd3\xe4\x93\x02>:\vapp_gateway\"//v1/{parent=projects/*/locations/*}/appGateways\x88\x02\x01\x12\xec\x01\n" +
+	"\x10DeleteAppGateway\x12?.google.cloud.beyondcorp.appgateways.v1.DeleteAppGatewayRequest\x1a\x1d.google.longrunning.Operation\"x\xcaA4\n" +
+	"\x15google.protobuf.Empty\x12\x1bAppGatewayOperationMetadata\xdaA\x04name\x82\xd3\xe4\x93\x021*//v1/{name=projects/*/locations/*/appGateways/*}\x88\x02\x01\x1aP\xcaA\x19beyondcorp.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platform\x88\x02\x01B\x94\x02\n" +
 	"*com.google.cloud.beyondcorp.appgateways.v1B\x17AppGatewaysServiceProtoP\x01ZLcloud.google.com/go/beyondcorp/appgateways/apiv1/appgatewayspb;appgatewayspb\xaa\x02&Google.Cloud.BeyondCorp.AppGateways.V1\xca\x02&Google\\Cloud\\BeyondCorp\\AppGateways\\V1\xea\x02*Google::Cloud::BeyondCorp::AppGateways::V1b\x06proto3"
 
 var (
@@ -1038,6 +1063,7 @@ func file_google_cloud_beyondcorp_appgateways_v1_app_gateways_service_proto_init
 	if File_google_cloud_beyondcorp_appgateways_v1_app_gateways_service_proto != nil {
 		return
 	}
+	file_google_cloud_beyondcorp_appgateways_v1_app_gateways_service_proto_msgTypes[5].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

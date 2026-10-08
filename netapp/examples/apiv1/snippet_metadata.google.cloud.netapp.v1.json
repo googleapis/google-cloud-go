@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/netapp/apiv1",
-    "version": "1.18.0"
+    "version": "1.19.0"
   },
   "snippets": [
     {
@@ -1283,7 +1283,7 @@
         "resultType": "*netapppb.ExecuteOntapDeleteResponse",
         "shortName": "ExecuteOntapDelete"
       },
-      "description": "ExecuteOntapDelete `ExecuteOntapDelete` dispatches the ONTAP `DELETE` request to the\n`StoragePool` cluster.",
+      "description": "ExecuteOntapDelete `ExecuteOntapDelete` sends the ONTAP `DELETE` request to the\n`StoragePool` cluster.",
       "file": "Client/ExecuteOntapDelete/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -1329,7 +1329,7 @@
         "resultType": "*netapppb.ExecuteOntapGetResponse",
         "shortName": "ExecuteOntapGet"
       },
-      "description": "ExecuteOntapGet `ExecuteOntapGet` dispatches the ONTAP `GET` request to the\n`StoragePool` cluster.",
+      "description": "ExecuteOntapGet `ExecuteOntapGet` sends the ONTAP `GET` request to the\n`StoragePool` cluster.",
       "file": "Client/ExecuteOntapGet/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -1375,7 +1375,7 @@
         "resultType": "*netapppb.ExecuteOntapPatchResponse",
         "shortName": "ExecuteOntapPatch"
       },
-      "description": "ExecuteOntapPatch `ExecuteOntapPatch` dispatches the ONTAP `PATCH` request to the\n`StoragePool` cluster.",
+      "description": "ExecuteOntapPatch `ExecuteOntapPatch` sends the ONTAP `PATCH` request to the\n`StoragePool` cluster.",
       "file": "Client/ExecuteOntapPatch/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -1421,7 +1421,7 @@
         "resultType": "*netapppb.ExecuteOntapPostResponse",
         "shortName": "ExecuteOntapPost"
       },
-      "description": "ExecuteOntapPost `ExecuteOntapPost` dispatches the ONTAP `POST` request to the\n`StoragePool` cluster.",
+      "description": "ExecuteOntapPost `ExecuteOntapPost` sends the ONTAP `POST` request to the\n`StoragePool` cluster.",
       "file": "Client/ExecuteOntapPost/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -1947,6 +1947,52 @@
           "fullName": "google.cloud.netapp.v1.Client",
           "shortName": "Client"
         },
+        "fullName": "google.cloud.netapp.v1.Client.GetSplitStatus",
+        "method": {
+          "fullName": "google.cloud.netapp.v1.NetApp.GetSplitStatus",
+          "service": {
+            "fullName": "google.cloud.netapp.v1.NetApp",
+            "shortName": "NetApp"
+          },
+          "shortName": "GetSplitStatus"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "netapppb.GetSplitStatusRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*netapppb.SplitStatus",
+        "shortName": "GetSplitStatus"
+      },
+      "description": "GetSplitStatus retrieves the current state, progress, and details of a split operation for\na volume. This method is relevant when the volume is a clone. For volumes\nthat are not clones, this method will return an error.",
+      "file": "Client/GetSplitStatus/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "netapp_v1_generated_NetApp_GetSplitStatus_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "netapp GetSplitStatus Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.netapp.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.netapp.v1.Client.GetStoragePool",
         "method": {
           "fullName": "google.cloud.netapp.v1.NetApp.GetStoragePool",
@@ -2078,6 +2124,52 @@
         }
       ],
       "title": "netapp ListActiveDirectories Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.netapp.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.netapp.v1.Client.ListBackupConfigs",
+        "method": {
+          "fullName": "google.cloud.netapp.v1.NetApp.ListBackupConfigs",
+          "service": {
+            "fullName": "google.cloud.netapp.v1.NetApp",
+            "shortName": "NetApp"
+          },
+          "shortName": "ListBackupConfigs"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "netapppb.ListBackupConfigsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "VolumeBackupConfigIterator",
+        "shortName": "ListBackupConfigs"
+      },
+      "description": "ListBackupConfigs lists backup configurations for all volumes in an ONTAP-mode Storage Pool.",
+      "file": "Client/ListBackupConfigs/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "netapp_v1_generated_NetApp_ListBackupConfigs_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "netapp ListBackupConfigs Sample"
     },
     {
       "clientMethod": {
@@ -2683,6 +2775,52 @@
           "fullName": "google.cloud.netapp.v1.Client",
           "shortName": "Client"
         },
+        "fullName": "google.cloud.netapp.v1.Client.RestoreVolume",
+        "method": {
+          "fullName": "google.cloud.netapp.v1.NetApp.RestoreVolume",
+          "service": {
+            "fullName": "google.cloud.netapp.v1.NetApp",
+            "shortName": "NetApp"
+          },
+          "shortName": "RestoreVolume"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "netapppb.RestoreVolumeRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "RestoreVolumeOperation",
+        "shortName": "RestoreVolume"
+      },
+      "description": "RestoreVolume restores a backup to an ONTAP-mode volume.",
+      "file": "Client/RestoreVolume/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "netapp_v1_generated_NetApp_RestoreVolume_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "netapp RestoreVolume Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.netapp.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.netapp.v1.Client.ResumeReplication",
         "method": {
           "fullName": "google.cloud.netapp.v1.NetApp.ResumeReplication",
@@ -2814,6 +2952,52 @@
         }
       ],
       "title": "netapp RevertVolume Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.netapp.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.netapp.v1.Client.StartSplit",
+        "method": {
+          "fullName": "google.cloud.netapp.v1.NetApp.StartSplit",
+          "service": {
+            "fullName": "google.cloud.netapp.v1.NetApp",
+            "shortName": "NetApp"
+          },
+          "shortName": "StartSplit"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "netapppb.StartSplitRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "StartSplitOperation",
+        "shortName": "StartSplit"
+      },
+      "description": "StartSplit splits a clone volume from its source volume.\nThis operation will only work for volumes which have clone_details\nset(clones).\nFor volumes that are not clones, this operation will return an error.",
+      "file": "Client/StartSplit/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "netapp_v1_generated_NetApp_StartSplit_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "netapp StartSplit Sample"
     },
     {
       "clientMethod": {
@@ -3044,6 +3228,52 @@
         }
       ],
       "title": "netapp UpdateBackup Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.netapp.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.netapp.v1.Client.UpdateBackupConfig",
+        "method": {
+          "fullName": "google.cloud.netapp.v1.NetApp.UpdateBackupConfig",
+          "service": {
+            "fullName": "google.cloud.netapp.v1.NetApp",
+            "shortName": "NetApp"
+          },
+          "shortName": "UpdateBackupConfig"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "netapppb.UpdateBackupConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "UpdateBackupConfigOperation",
+        "shortName": "UpdateBackupConfig"
+      },
+      "description": "UpdateBackupConfig updates the backup configuration for an ONTAP-mode volume.",
+      "file": "Client/UpdateBackupConfig/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "netapp_v1_generated_NetApp_UpdateBackupConfig_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "netapp UpdateBackupConfig Sample"
     },
     {
       "clientMethod": {

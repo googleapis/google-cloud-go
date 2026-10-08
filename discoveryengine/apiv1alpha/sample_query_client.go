@@ -494,6 +494,49 @@ func NewSampleQueryClient(ctx context.Context, opts ...option.ClientOption) (*Sa
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "discoveryengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/discoveryengine/apiv1alpha",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "discoveryengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetSampleQuery = append(client.CallOptions.GetSampleQuery, gax.WithClientTracing(tracing))
+		client.CallOptions.ListSampleQueries = append(client.CallOptions.ListSampleQueries, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateSampleQuery = append(client.CallOptions.CreateSampleQuery, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateSampleQuery = append(client.CallOptions.UpdateSampleQuery, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteSampleQuery = append(client.CallOptions.DeleteSampleQuery, gax.WithClientTracing(tracing))
+		client.CallOptions.ImportSampleQueries = append(client.CallOptions.ImportSampleQueries, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "discoveryengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/discoveryengine/apiv1alpha",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "discoveryengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetSampleQuery = append(client.CallOptions.GetSampleQuery, gax.WithClientLogging(logging))
+		client.CallOptions.ListSampleQueries = append(client.CallOptions.ListSampleQueries, gax.WithClientLogging(logging))
+		client.CallOptions.CreateSampleQuery = append(client.CallOptions.CreateSampleQuery, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateSampleQuery = append(client.CallOptions.UpdateSampleQuery, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteSampleQuery = append(client.CallOptions.DeleteSampleQuery, gax.WithClientLogging(logging))
+		client.CallOptions.ImportSampleQueries = append(client.CallOptions.ImportSampleQueries, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -610,6 +653,49 @@ func NewSampleQueryRESTClient(ctx context.Context, opts ...option.ClientOption) 
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "discoveryengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/discoveryengine/apiv1alpha",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "discoveryengine.googleapis.com",
+			}),
+		)
+
+		callOpts.GetSampleQuery = append(callOpts.GetSampleQuery, gax.WithClientTracing(tracing))
+		callOpts.ListSampleQueries = append(callOpts.ListSampleQueries, gax.WithClientTracing(tracing))
+		callOpts.CreateSampleQuery = append(callOpts.CreateSampleQuery, gax.WithClientTracing(tracing))
+		callOpts.UpdateSampleQuery = append(callOpts.UpdateSampleQuery, gax.WithClientTracing(tracing))
+		callOpts.DeleteSampleQuery = append(callOpts.DeleteSampleQuery, gax.WithClientTracing(tracing))
+		callOpts.ImportSampleQueries = append(callOpts.ImportSampleQueries, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "discoveryengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/discoveryengine/apiv1alpha",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "discoveryengine.googleapis.com",
+			}),
+		)
+
+		callOpts.GetSampleQuery = append(callOpts.GetSampleQuery, gax.WithClientLogging(logging))
+		callOpts.ListSampleQueries = append(callOpts.ListSampleQueries, gax.WithClientLogging(logging))
+		callOpts.CreateSampleQuery = append(callOpts.CreateSampleQuery, gax.WithClientLogging(logging))
+		callOpts.UpdateSampleQuery = append(callOpts.UpdateSampleQuery, gax.WithClientLogging(logging))
+		callOpts.DeleteSampleQuery = append(callOpts.DeleteSampleQuery, gax.WithClientLogging(logging))
+		callOpts.ImportSampleQueries = append(callOpts.ImportSampleQueries, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -666,9 +752,6 @@ func (c *sampleQueryGRPCClient) GetSampleQuery(ctx context.Context, req *discove
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1alpha.SampleQueryService/GetSampleQuery")
 	}
@@ -690,9 +773,6 @@ func (c *sampleQueryGRPCClient) ListSampleQueries(ctx context.Context, req *disc
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1alpha.SampleQueryService/ListSampleQueries")
 	}
@@ -742,9 +822,6 @@ func (c *sampleQueryGRPCClient) CreateSampleQuery(ctx context.Context, req *disc
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1alpha.SampleQueryService/CreateSampleQuery")
 	}
@@ -787,9 +864,6 @@ func (c *sampleQueryGRPCClient) DeleteSampleQuery(ctx context.Context, req *disc
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1alpha.SampleQueryService/DeleteSampleQuery")
 	}
@@ -807,9 +881,6 @@ func (c *sampleQueryGRPCClient) ImportSampleQueries(ctx context.Context, req *di
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1alpha.SampleQueryService/ImportSampleQueries")
 	}
@@ -938,9 +1009,6 @@ func (c *sampleQueryRESTClient) GetSampleQuery(ctx context.Context, req *discove
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1alpha.SampleQueryService/GetSampleQuery")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=projects/*/locations/*/sampleQuerySets/*/sampleQueries/*}")
@@ -1082,9 +1150,6 @@ func (c *sampleQueryRESTClient) CreateSampleQuery(ctx context.Context, req *disc
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1alpha.SampleQueryService/CreateSampleQuery")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{parent=projects/*/locations/*/sampleQuerySets/*}/sampleQueries")
@@ -1207,9 +1272,6 @@ func (c *sampleQueryRESTClient) DeleteSampleQuery(ctx context.Context, req *disc
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1alpha.SampleQueryService/DeleteSampleQuery")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=projects/*/locations/*/sampleQuerySets/*/sampleQueries/*}")
@@ -1261,9 +1323,6 @@ func (c *sampleQueryRESTClient) ImportSampleQueries(ctx context.Context, req *di
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1alpha.SampleQueryService/ImportSampleQueries")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{parent=projects/*/locations/*/sampleQuerySets/*}/sampleQueries:import")

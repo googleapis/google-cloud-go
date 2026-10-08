@@ -293,6 +293,37 @@ func NewErrorStatsClient(ctx context.Context, opts ...option.ClientOption) (*Err
 		client.CallOptions.ListEvents = append(client.CallOptions.ListEvents, gax.WithClientMetrics(metrics))
 		client.CallOptions.DeleteEvents = append(client.CallOptions.DeleteEvents, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "clouderrorreporting",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/errorreporting/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "clouderrorreporting.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListGroupStats = append(client.CallOptions.ListGroupStats, gax.WithClientTracing(tracing))
+		client.CallOptions.ListEvents = append(client.CallOptions.ListEvents, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteEvents = append(client.CallOptions.DeleteEvents, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "clouderrorreporting",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/errorreporting/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "clouderrorreporting.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListGroupStats = append(client.CallOptions.ListGroupStats, gax.WithClientLogging(logging))
+		client.CallOptions.ListEvents = append(client.CallOptions.ListEvents, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteEvents = append(client.CallOptions.DeleteEvents, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -387,6 +418,37 @@ func NewErrorStatsRESTClient(ctx context.Context, opts ...option.ClientOption) (
 		callOpts.ListEvents = append(callOpts.ListEvents, gax.WithClientMetrics(metrics))
 		callOpts.DeleteEvents = append(callOpts.DeleteEvents, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "clouderrorreporting",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/errorreporting/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "clouderrorreporting.googleapis.com",
+			}),
+		)
+
+		callOpts.ListGroupStats = append(callOpts.ListGroupStats, gax.WithClientTracing(tracing))
+		callOpts.ListEvents = append(callOpts.ListEvents, gax.WithClientTracing(tracing))
+		callOpts.DeleteEvents = append(callOpts.DeleteEvents, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "clouderrorreporting",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/errorreporting/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "clouderrorreporting.googleapis.com",
+			}),
+		)
+
+		callOpts.ListGroupStats = append(callOpts.ListGroupStats, gax.WithClientLogging(logging))
+		callOpts.ListEvents = append(callOpts.ListEvents, gax.WithClientLogging(logging))
+		callOpts.DeleteEvents = append(callOpts.DeleteEvents, gax.WithClientLogging(logging))
+	}
 
 	return &ErrorStatsClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -433,9 +495,6 @@ func (c *errorStatsGRPCClient) ListGroupStats(ctx context.Context, req *errorrep
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//clouderrorreporting.googleapis.com/%v", req.GetProjectName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.clouderrorreporting.v1beta1.ErrorStatsService/ListGroupStats")
 	}
@@ -485,9 +544,6 @@ func (c *errorStatsGRPCClient) ListEvents(ctx context.Context, req *errorreporti
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//clouderrorreporting.googleapis.com/%v", req.GetProjectName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.clouderrorreporting.v1beta1.ErrorStatsService/ListEvents")
 	}
@@ -537,9 +593,6 @@ func (c *errorStatsGRPCClient) DeleteEvents(ctx context.Context, req *errorrepor
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//clouderrorreporting.googleapis.com/%v", req.GetProjectName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.clouderrorreporting.v1beta1.ErrorStatsService/DeleteEvents")
 	}
@@ -781,9 +834,6 @@ func (c *errorStatsRESTClient) DeleteEvents(ctx context.Context, req *errorrepor
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//clouderrorreporting.googleapis.com/%v", req.GetProjectName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.clouderrorreporting.v1beta1.ErrorStatsService/DeleteEvents")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{project_name=projects/*}/events")

@@ -789,6 +789,101 @@ func NewBigtableTableAdminClient(ctx context.Context, opts ...option.ClientOptio
 		client.CallOptions.ListSchemaBundles = append(client.CallOptions.ListSchemaBundles, gax.WithClientMetrics(metrics))
 		client.CallOptions.DeleteSchemaBundle = append(client.CallOptions.DeleteSchemaBundle, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "bigtableadmin",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigtable/admin/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "bigtableadmin.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateTable = append(client.CallOptions.CreateTable, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateTableFromSnapshot = append(client.CallOptions.CreateTableFromSnapshot, gax.WithClientTracing(tracing))
+		client.CallOptions.ListTables = append(client.CallOptions.ListTables, gax.WithClientTracing(tracing))
+		client.CallOptions.GetTable = append(client.CallOptions.GetTable, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateTable = append(client.CallOptions.UpdateTable, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteTable = append(client.CallOptions.DeleteTable, gax.WithClientTracing(tracing))
+		client.CallOptions.UndeleteTable = append(client.CallOptions.UndeleteTable, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateAuthorizedView = append(client.CallOptions.CreateAuthorizedView, gax.WithClientTracing(tracing))
+		client.CallOptions.ListAuthorizedViews = append(client.CallOptions.ListAuthorizedViews, gax.WithClientTracing(tracing))
+		client.CallOptions.GetAuthorizedView = append(client.CallOptions.GetAuthorizedView, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateAuthorizedView = append(client.CallOptions.UpdateAuthorizedView, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteAuthorizedView = append(client.CallOptions.DeleteAuthorizedView, gax.WithClientTracing(tracing))
+		client.CallOptions.ModifyColumnFamilies = append(client.CallOptions.ModifyColumnFamilies, gax.WithClientTracing(tracing))
+		client.CallOptions.DropRowRange = append(client.CallOptions.DropRowRange, gax.WithClientTracing(tracing))
+		client.CallOptions.GenerateConsistencyToken = append(client.CallOptions.GenerateConsistencyToken, gax.WithClientTracing(tracing))
+		client.CallOptions.CheckConsistency = append(client.CallOptions.CheckConsistency, gax.WithClientTracing(tracing))
+		client.CallOptions.SnapshotTable = append(client.CallOptions.SnapshotTable, gax.WithClientTracing(tracing))
+		client.CallOptions.GetSnapshot = append(client.CallOptions.GetSnapshot, gax.WithClientTracing(tracing))
+		client.CallOptions.ListSnapshots = append(client.CallOptions.ListSnapshots, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteSnapshot = append(client.CallOptions.DeleteSnapshot, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateBackup = append(client.CallOptions.CreateBackup, gax.WithClientTracing(tracing))
+		client.CallOptions.GetBackup = append(client.CallOptions.GetBackup, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateBackup = append(client.CallOptions.UpdateBackup, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteBackup = append(client.CallOptions.DeleteBackup, gax.WithClientTracing(tracing))
+		client.CallOptions.ListBackups = append(client.CallOptions.ListBackups, gax.WithClientTracing(tracing))
+		client.CallOptions.RestoreTable = append(client.CallOptions.RestoreTable, gax.WithClientTracing(tracing))
+		client.CallOptions.CopyBackup = append(client.CallOptions.CopyBackup, gax.WithClientTracing(tracing))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateSchemaBundle = append(client.CallOptions.CreateSchemaBundle, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateSchemaBundle = append(client.CallOptions.UpdateSchemaBundle, gax.WithClientTracing(tracing))
+		client.CallOptions.GetSchemaBundle = append(client.CallOptions.GetSchemaBundle, gax.WithClientTracing(tracing))
+		client.CallOptions.ListSchemaBundles = append(client.CallOptions.ListSchemaBundles, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteSchemaBundle = append(client.CallOptions.DeleteSchemaBundle, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "bigtableadmin",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigtable/admin/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "bigtableadmin.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateTable = append(client.CallOptions.CreateTable, gax.WithClientLogging(logging))
+		client.CallOptions.CreateTableFromSnapshot = append(client.CallOptions.CreateTableFromSnapshot, gax.WithClientLogging(logging))
+		client.CallOptions.ListTables = append(client.CallOptions.ListTables, gax.WithClientLogging(logging))
+		client.CallOptions.GetTable = append(client.CallOptions.GetTable, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateTable = append(client.CallOptions.UpdateTable, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteTable = append(client.CallOptions.DeleteTable, gax.WithClientLogging(logging))
+		client.CallOptions.UndeleteTable = append(client.CallOptions.UndeleteTable, gax.WithClientLogging(logging))
+		client.CallOptions.CreateAuthorizedView = append(client.CallOptions.CreateAuthorizedView, gax.WithClientLogging(logging))
+		client.CallOptions.ListAuthorizedViews = append(client.CallOptions.ListAuthorizedViews, gax.WithClientLogging(logging))
+		client.CallOptions.GetAuthorizedView = append(client.CallOptions.GetAuthorizedView, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateAuthorizedView = append(client.CallOptions.UpdateAuthorizedView, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteAuthorizedView = append(client.CallOptions.DeleteAuthorizedView, gax.WithClientLogging(logging))
+		client.CallOptions.ModifyColumnFamilies = append(client.CallOptions.ModifyColumnFamilies, gax.WithClientLogging(logging))
+		client.CallOptions.DropRowRange = append(client.CallOptions.DropRowRange, gax.WithClientLogging(logging))
+		client.CallOptions.GenerateConsistencyToken = append(client.CallOptions.GenerateConsistencyToken, gax.WithClientLogging(logging))
+		client.CallOptions.CheckConsistency = append(client.CallOptions.CheckConsistency, gax.WithClientLogging(logging))
+		client.CallOptions.SnapshotTable = append(client.CallOptions.SnapshotTable, gax.WithClientLogging(logging))
+		client.CallOptions.GetSnapshot = append(client.CallOptions.GetSnapshot, gax.WithClientLogging(logging))
+		client.CallOptions.ListSnapshots = append(client.CallOptions.ListSnapshots, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteSnapshot = append(client.CallOptions.DeleteSnapshot, gax.WithClientLogging(logging))
+		client.CallOptions.CreateBackup = append(client.CallOptions.CreateBackup, gax.WithClientLogging(logging))
+		client.CallOptions.GetBackup = append(client.CallOptions.GetBackup, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateBackup = append(client.CallOptions.UpdateBackup, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteBackup = append(client.CallOptions.DeleteBackup, gax.WithClientLogging(logging))
+		client.CallOptions.ListBackups = append(client.CallOptions.ListBackups, gax.WithClientLogging(logging))
+		client.CallOptions.RestoreTable = append(client.CallOptions.RestoreTable, gax.WithClientLogging(logging))
+		client.CallOptions.CopyBackup = append(client.CallOptions.CopyBackup, gax.WithClientLogging(logging))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientLogging(logging))
+		client.CallOptions.CreateSchemaBundle = append(client.CallOptions.CreateSchemaBundle, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateSchemaBundle = append(client.CallOptions.UpdateSchemaBundle, gax.WithClientLogging(logging))
+		client.CallOptions.GetSchemaBundle = append(client.CallOptions.GetSchemaBundle, gax.WithClientLogging(logging))
+		client.CallOptions.ListSchemaBundles = append(client.CallOptions.ListSchemaBundles, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteSchemaBundle = append(client.CallOptions.DeleteSchemaBundle, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -836,9 +931,6 @@ func (c *bigtableTableAdminGRPCClient) CreateTable(ctx context.Context, req *adm
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigtableadmin.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.bigtable.admin.v2.BigtableTableAdmin/CreateTable")
 	}
@@ -860,9 +952,6 @@ func (c *bigtableTableAdminGRPCClient) CreateTableFromSnapshot(ctx context.Conte
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigtableadmin.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.bigtable.admin.v2.BigtableTableAdmin/CreateTableFromSnapshot")
 	}
@@ -890,9 +979,6 @@ func (c *bigtableTableAdminGRPCClient) ListTables(ctx context.Context, req *admi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigtableadmin.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.bigtable.admin.v2.BigtableTableAdmin/ListTables")
 	}
@@ -942,9 +1028,6 @@ func (c *bigtableTableAdminGRPCClient) GetTable(ctx context.Context, req *adminp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigtableadmin.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.bigtable.admin.v2.BigtableTableAdmin/GetTable")
 	}
@@ -993,9 +1076,6 @@ func (c *bigtableTableAdminGRPCClient) DeleteTable(ctx context.Context, req *adm
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigtableadmin.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.bigtable.admin.v2.BigtableTableAdmin/DeleteTable")
 	}
@@ -1013,9 +1093,6 @@ func (c *bigtableTableAdminGRPCClient) UndeleteTable(ctx context.Context, req *a
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigtableadmin.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.bigtable.admin.v2.BigtableTableAdmin/UndeleteTable")
 	}
@@ -1043,9 +1120,6 @@ func (c *bigtableTableAdminGRPCClient) CreateAuthorizedView(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigtableadmin.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.bigtable.admin.v2.BigtableTableAdmin/CreateAuthorizedView")
 	}
@@ -1073,9 +1147,6 @@ func (c *bigtableTableAdminGRPCClient) ListAuthorizedViews(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigtableadmin.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.bigtable.admin.v2.BigtableTableAdmin/ListAuthorizedViews")
 	}
@@ -1125,9 +1196,6 @@ func (c *bigtableTableAdminGRPCClient) GetAuthorizedView(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigtableadmin.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.bigtable.admin.v2.BigtableTableAdmin/GetAuthorizedView")
 	}
@@ -1176,9 +1244,6 @@ func (c *bigtableTableAdminGRPCClient) DeleteAuthorizedView(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigtableadmin.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.bigtable.admin.v2.BigtableTableAdmin/DeleteAuthorizedView")
 	}
@@ -1196,9 +1261,6 @@ func (c *bigtableTableAdminGRPCClient) ModifyColumnFamilies(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigtableadmin.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.bigtable.admin.v2.BigtableTableAdmin/ModifyColumnFamilies")
 	}
@@ -1220,9 +1282,6 @@ func (c *bigtableTableAdminGRPCClient) DropRowRange(ctx context.Context, req *ad
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigtableadmin.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.bigtable.admin.v2.BigtableTableAdmin/DropRowRange")
 	}
@@ -1240,9 +1299,6 @@ func (c *bigtableTableAdminGRPCClient) GenerateConsistencyToken(ctx context.Cont
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigtableadmin.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.bigtable.admin.v2.BigtableTableAdmin/GenerateConsistencyToken")
 	}
@@ -1264,9 +1320,6 @@ func (c *bigtableTableAdminGRPCClient) CheckConsistency(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigtableadmin.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.bigtable.admin.v2.BigtableTableAdmin/CheckConsistency")
 	}
@@ -1288,9 +1341,6 @@ func (c *bigtableTableAdminGRPCClient) SnapshotTable(ctx context.Context, req *a
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigtableadmin.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.bigtable.admin.v2.BigtableTableAdmin/SnapshotTable")
 	}
@@ -1318,9 +1368,6 @@ func (c *bigtableTableAdminGRPCClient) GetSnapshot(ctx context.Context, req *adm
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigtableadmin.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.bigtable.admin.v2.BigtableTableAdmin/GetSnapshot")
 	}
@@ -1342,9 +1389,6 @@ func (c *bigtableTableAdminGRPCClient) ListSnapshots(ctx context.Context, req *a
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigtableadmin.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.bigtable.admin.v2.BigtableTableAdmin/ListSnapshots")
 	}
@@ -1394,9 +1438,6 @@ func (c *bigtableTableAdminGRPCClient) DeleteSnapshot(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigtableadmin.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.bigtable.admin.v2.BigtableTableAdmin/DeleteSnapshot")
 	}
@@ -1414,9 +1455,6 @@ func (c *bigtableTableAdminGRPCClient) CreateBackup(ctx context.Context, req *ad
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigtableadmin.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.bigtable.admin.v2.BigtableTableAdmin/CreateBackup")
 	}
@@ -1444,9 +1482,6 @@ func (c *bigtableTableAdminGRPCClient) GetBackup(ctx context.Context, req *admin
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigtableadmin.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.bigtable.admin.v2.BigtableTableAdmin/GetBackup")
 	}
@@ -1489,9 +1524,6 @@ func (c *bigtableTableAdminGRPCClient) DeleteBackup(ctx context.Context, req *ad
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigtableadmin.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.bigtable.admin.v2.BigtableTableAdmin/DeleteBackup")
 	}
@@ -1509,9 +1541,6 @@ func (c *bigtableTableAdminGRPCClient) ListBackups(ctx context.Context, req *adm
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigtableadmin.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.bigtable.admin.v2.BigtableTableAdmin/ListBackups")
 	}
@@ -1561,9 +1590,6 @@ func (c *bigtableTableAdminGRPCClient) restoreTable(ctx context.Context, req *ad
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigtableadmin.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.bigtable.admin.v2.BigtableTableAdmin/RestoreTable")
 	}
@@ -1591,9 +1617,6 @@ func (c *bigtableTableAdminGRPCClient) CopyBackup(ctx context.Context, req *admi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigtableadmin.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.bigtable.admin.v2.BigtableTableAdmin/CopyBackup")
 	}
@@ -1621,9 +1644,6 @@ func (c *bigtableTableAdminGRPCClient) GetIamPolicy(ctx context.Context, req *ia
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigtableadmin.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.bigtable.admin.v2.BigtableTableAdmin/GetIamPolicy")
 	}
@@ -1645,9 +1665,6 @@ func (c *bigtableTableAdminGRPCClient) SetIamPolicy(ctx context.Context, req *ia
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigtableadmin.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.bigtable.admin.v2.BigtableTableAdmin/SetIamPolicy")
 	}
@@ -1669,9 +1686,6 @@ func (c *bigtableTableAdminGRPCClient) TestIamPermissions(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigtableadmin.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.bigtable.admin.v2.BigtableTableAdmin/TestIamPermissions")
 	}
@@ -1693,9 +1707,6 @@ func (c *bigtableTableAdminGRPCClient) CreateSchemaBundle(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigtableadmin.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.bigtable.admin.v2.BigtableTableAdmin/CreateSchemaBundle")
 	}
@@ -1750,9 +1761,6 @@ func (c *bigtableTableAdminGRPCClient) GetSchemaBundle(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigtableadmin.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.bigtable.admin.v2.BigtableTableAdmin/GetSchemaBundle")
 	}
@@ -1774,9 +1782,6 @@ func (c *bigtableTableAdminGRPCClient) ListSchemaBundles(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigtableadmin.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.bigtable.admin.v2.BigtableTableAdmin/ListSchemaBundles")
 	}
@@ -1826,9 +1831,6 @@ func (c *bigtableTableAdminGRPCClient) DeleteSchemaBundle(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigtableadmin.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.bigtable.admin.v2.BigtableTableAdmin/DeleteSchemaBundle")
 	}

@@ -20,6 +20,11 @@
                 "DeleteOperation"
               ]
             },
+            "ExploreSchema": {
+              "methods": [
+                "ExploreSchema"
+              ]
+            },
             "GenerateDiscoveredResourcesTopology": {
               "methods": [
                 "GenerateDiscoveredResourcesTopology"
@@ -73,6 +78,11 @@
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
+              ]
+            },
+            "ExploreSchema": {
+              "methods": [
+                "ExploreSchema"
               ]
             },
             "GenerateDiscoveredResourcesTopology": {

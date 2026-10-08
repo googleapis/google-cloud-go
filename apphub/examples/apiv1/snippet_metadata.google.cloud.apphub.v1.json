@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/apphub/apiv1",
-    "version": "1.1.0"
+    "version": "1.2.0"
   },
   "snippets": [
     {
@@ -567,6 +567,52 @@
           "fullName": "google.cloud.apphub.v1.Client",
           "shortName": "Client"
         },
+        "fullName": "google.cloud.apphub.v1.Client.GetBoundary",
+        "method": {
+          "fullName": "google.cloud.apphub.v1.AppHub.GetBoundary",
+          "service": {
+            "fullName": "google.cloud.apphub.v1.AppHub",
+            "shortName": "AppHub"
+          },
+          "shortName": "GetBoundary"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "apphubpb.GetBoundaryRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*apphubpb.Boundary",
+        "shortName": "GetBoundary"
+      },
+      "description": "GetBoundary gets a Boundary.",
+      "file": "Client/GetBoundary/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "apphub_v1_generated_AppHub_GetBoundary_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "apphub GetBoundary Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apphub.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.apphub.v1.Client.GetDiscoveredService",
         "method": {
           "fullName": "google.cloud.apphub.v1.AppHub.GetDiscoveredService",
@@ -652,6 +698,52 @@
         }
       ],
       "title": "apphub GetDiscoveredWorkload Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apphub.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.apphub.v1.Client.GetExtendedMetadataSchema",
+        "method": {
+          "fullName": "google.cloud.apphub.v1.AppHub.GetExtendedMetadataSchema",
+          "service": {
+            "fullName": "google.cloud.apphub.v1.AppHub",
+            "shortName": "AppHub"
+          },
+          "shortName": "GetExtendedMetadataSchema"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "apphubpb.GetExtendedMetadataSchemaRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*apphubpb.ExtendedMetadataSchema",
+        "shortName": "GetExtendedMetadataSchema"
+      },
+      "description": "GetExtendedMetadataSchema gets an Extended Metadata Schema.",
+      "file": "Client/GetExtendedMetadataSchema/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "apphub_v1_generated_AppHub_GetExtendedMetadataSchema_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "apphub GetExtendedMetadataSchema Sample"
     },
     {
       "clientMethod": {
@@ -1073,6 +1165,52 @@
           "fullName": "google.cloud.apphub.v1.Client",
           "shortName": "Client"
         },
+        "fullName": "google.cloud.apphub.v1.Client.ListExtendedMetadataSchemas",
+        "method": {
+          "fullName": "google.cloud.apphub.v1.AppHub.ListExtendedMetadataSchemas",
+          "service": {
+            "fullName": "google.cloud.apphub.v1.AppHub",
+            "shortName": "AppHub"
+          },
+          "shortName": "ListExtendedMetadataSchemas"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "apphubpb.ListExtendedMetadataSchemasRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "ExtendedMetadataSchemaIterator",
+        "shortName": "ListExtendedMetadataSchemas"
+      },
+      "description": "ListExtendedMetadataSchemas lists Extended Metadata Schemas available in a host project and location.",
+      "file": "Client/ListExtendedMetadataSchemas/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "apphub_v1_generated_AppHub_ListExtendedMetadataSchemas_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "apphub ListExtendedMetadataSchemas Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apphub.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.apphub.v1.Client.ListLocations",
         "method": {
           "fullName": "google.cloud.location.Locations.ListLocations",
@@ -1099,7 +1237,7 @@
         "resultType": "LocationIterator",
         "shortName": "ListLocations"
       },
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name][google.cloud.location.ListLocationsRequest.name] field: *\n**Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
       "file": "Client/ListLocations/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -1572,6 +1710,52 @@
         }
       ],
       "title": "apphub UpdateApplication Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apphub.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.apphub.v1.Client.UpdateBoundary",
+        "method": {
+          "fullName": "google.cloud.apphub.v1.AppHub.UpdateBoundary",
+          "service": {
+            "fullName": "google.cloud.apphub.v1.AppHub",
+            "shortName": "AppHub"
+          },
+          "shortName": "UpdateBoundary"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "apphubpb.UpdateBoundaryRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "UpdateBoundaryOperation",
+        "shortName": "UpdateBoundary"
+      },
+      "description": "UpdateBoundary updates a Boundary.",
+      "file": "Client/UpdateBoundary/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "apphub_v1_generated_AppHub_UpdateBoundary_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "apphub UpdateBoundary Sample"
     },
     {
       "clientMethod": {

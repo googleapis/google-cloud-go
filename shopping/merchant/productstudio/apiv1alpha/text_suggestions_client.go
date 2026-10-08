@@ -216,6 +216,33 @@ func NewTextSuggestionsClient(ctx context.Context, opts ...option.ClientOption) 
 
 		client.CallOptions.GenerateProductTextSuggestions = append(client.CallOptions.GenerateProductTextSuggestions, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/productstudio/apiv1alpha",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GenerateProductTextSuggestions = append(client.CallOptions.GenerateProductTextSuggestions, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/productstudio/apiv1alpha",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GenerateProductTextSuggestions = append(client.CallOptions.GenerateProductTextSuggestions, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -307,6 +334,33 @@ func NewTextSuggestionsRESTClient(ctx context.Context, opts ...option.ClientOpti
 		)
 
 		callOpts.GenerateProductTextSuggestions = append(callOpts.GenerateProductTextSuggestions, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/productstudio/apiv1alpha",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.GenerateProductTextSuggestions = append(callOpts.GenerateProductTextSuggestions, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/productstudio/apiv1alpha",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.GenerateProductTextSuggestions = append(callOpts.GenerateProductTextSuggestions, gax.WithClientLogging(logging))
 	}
 
 	return &TextSuggestionsClient{internalClient: c, CallOptions: callOpts}, nil

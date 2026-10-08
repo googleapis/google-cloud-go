@@ -8,9 +8,239 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/sql/apiv1",
-    "version": "0.1.0"
+    "version": "0.2.0"
   },
   "snippets": [
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1.BlueGreenDeploymentsClient",
+          "shortName": "BlueGreenDeploymentsClient"
+        },
+        "fullName": "google.cloud.sql.v1.BlueGreenDeploymentsClient.CreateBlueGreenDeployment",
+        "method": {
+          "fullName": "google.cloud.sql.v1.BlueGreenDeploymentsService.CreateBlueGreenDeployment",
+          "service": {
+            "fullName": "google.cloud.sql.v1.BlueGreenDeploymentsService",
+            "shortName": "BlueGreenDeploymentsService"
+          },
+          "shortName": "CreateBlueGreenDeployment"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.CreateBlueGreenDeploymentRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "CreateBlueGreenDeployment"
+      },
+      "description": "CreateBlueGreenDeployment creates a blue-green deployment under a given project and location.",
+      "file": "BlueGreenDeploymentsClient/CreateBlueGreenDeployment/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1_generated_BlueGreenDeploymentsService_CreateBlueGreenDeployment_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin CreateBlueGreenDeployment Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1.BlueGreenDeploymentsClient",
+          "shortName": "BlueGreenDeploymentsClient"
+        },
+        "fullName": "google.cloud.sql.v1.BlueGreenDeploymentsClient.DeleteBlueGreenDeployment",
+        "method": {
+          "fullName": "google.cloud.sql.v1.BlueGreenDeploymentsService.DeleteBlueGreenDeployment",
+          "service": {
+            "fullName": "google.cloud.sql.v1.BlueGreenDeploymentsService",
+            "shortName": "BlueGreenDeploymentsService"
+          },
+          "shortName": "DeleteBlueGreenDeployment"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.DeleteBlueGreenDeploymentRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "DeleteBlueGreenDeployment"
+      },
+      "description": "DeleteBlueGreenDeployment deletes a blue-green deployment.",
+      "file": "BlueGreenDeploymentsClient/DeleteBlueGreenDeployment/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1_generated_BlueGreenDeploymentsService_DeleteBlueGreenDeployment_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin DeleteBlueGreenDeployment Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1.BlueGreenDeploymentsClient",
+          "shortName": "BlueGreenDeploymentsClient"
+        },
+        "fullName": "google.cloud.sql.v1.BlueGreenDeploymentsClient.GetBlueGreenDeployment",
+        "method": {
+          "fullName": "google.cloud.sql.v1.BlueGreenDeploymentsService.GetBlueGreenDeployment",
+          "service": {
+            "fullName": "google.cloud.sql.v1.BlueGreenDeploymentsService",
+            "shortName": "BlueGreenDeploymentsService"
+          },
+          "shortName": "GetBlueGreenDeployment"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.GetBlueGreenDeploymentRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.BlueGreenDeployment",
+        "shortName": "GetBlueGreenDeployment"
+      },
+      "description": "GetBlueGreenDeployment retrieves a blue-green deployment resource under a given project and\nlocation.",
+      "file": "BlueGreenDeploymentsClient/GetBlueGreenDeployment/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1_generated_BlueGreenDeploymentsService_GetBlueGreenDeployment_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin GetBlueGreenDeployment Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1.BlueGreenDeploymentsClient",
+          "shortName": "BlueGreenDeploymentsClient"
+        },
+        "fullName": "google.cloud.sql.v1.BlueGreenDeploymentsClient.ListBlueGreenDeployments",
+        "method": {
+          "fullName": "google.cloud.sql.v1.BlueGreenDeploymentsService.ListBlueGreenDeployments",
+          "service": {
+            "fullName": "google.cloud.sql.v1.BlueGreenDeploymentsService",
+            "shortName": "BlueGreenDeploymentsService"
+          },
+          "shortName": "ListBlueGreenDeployments"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.ListBlueGreenDeploymentsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "BlueGreenDeploymentIterator",
+        "shortName": "ListBlueGreenDeployments"
+      },
+      "description": "ListBlueGreenDeployments lists blue-green deployments under a given project.",
+      "file": "BlueGreenDeploymentsClient/ListBlueGreenDeployments/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1_generated_BlueGreenDeploymentsService_ListBlueGreenDeployments_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin ListBlueGreenDeployments Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1.BlueGreenDeploymentsClient",
+          "shortName": "BlueGreenDeploymentsClient"
+        },
+        "fullName": "google.cloud.sql.v1.BlueGreenDeploymentsClient.SwitchoverBlueGreenDeployment",
+        "method": {
+          "fullName": "google.cloud.sql.v1.BlueGreenDeploymentsService.SwitchoverBlueGreenDeployment",
+          "service": {
+            "fullName": "google.cloud.sql.v1.BlueGreenDeploymentsService",
+            "shortName": "BlueGreenDeploymentsService"
+          },
+          "shortName": "SwitchoverBlueGreenDeployment"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SwitchoverBlueGreenDeploymentRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "SwitchoverBlueGreenDeployment"
+      },
+      "description": "SwitchoverBlueGreenDeployment switches over to green instance for a blue-green deployment.",
+      "file": "BlueGreenDeploymentsClient/SwitchoverBlueGreenDeployment/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1_generated_BlueGreenDeploymentsService_SwitchoverBlueGreenDeployment_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin SwitchoverBlueGreenDeployment Sample"
+    },
     {
       "clientMethod": {
         "client": {
@@ -3459,6 +3689,236 @@
         }
       ],
       "title": "sqladmin Update Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1.SqlWorkloadCapturesClient",
+          "shortName": "SqlWorkloadCapturesClient"
+        },
+        "fullName": "google.cloud.sql.v1.SqlWorkloadCapturesClient.List",
+        "method": {
+          "fullName": "google.cloud.sql.v1.SqlWorkloadCapturesService.List",
+          "service": {
+            "fullName": "google.cloud.sql.v1.SqlWorkloadCapturesService",
+            "shortName": "SqlWorkloadCapturesService"
+          },
+          "shortName": "List"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.SqlWorkloadCapturesListRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.WorkloadCapturesListResponse",
+        "shortName": "List"
+      },
+      "description": "List lists all captured workloads associated with the instance.",
+      "file": "SqlWorkloadCapturesClient/List/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1_generated_SqlWorkloadCapturesService_List_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin List Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1.SqlWorkloadCapturesClient",
+          "shortName": "SqlWorkloadCapturesClient"
+        },
+        "fullName": "google.cloud.sql.v1.SqlWorkloadCapturesClient.Start",
+        "method": {
+          "fullName": "google.cloud.sql.v1.SqlWorkloadCapturesService.Start",
+          "service": {
+            "fullName": "google.cloud.sql.v1.SqlWorkloadCapturesService",
+            "shortName": "SqlWorkloadCapturesService"
+          },
+          "shortName": "Start"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.WorkloadCapturesStartRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "Start"
+      },
+      "description": "Start starts capturing the SQL queries, transactions, and other operations\nexecuted on the primary instance. This traffic is securely stored and forms\na \"captured workload\". This workload can be replayed later on a different\ninstance to safely test performance impacts, database upgrades,\nconfiguration changes etc. before applying them to production.",
+      "file": "SqlWorkloadCapturesClient/Start/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1_generated_SqlWorkloadCapturesService_Start_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin Start Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1.SqlWorkloadCapturesClient",
+          "shortName": "SqlWorkloadCapturesClient"
+        },
+        "fullName": "google.cloud.sql.v1.SqlWorkloadCapturesClient.StartReplay",
+        "method": {
+          "fullName": "google.cloud.sql.v1.SqlWorkloadCapturesService.StartReplay",
+          "service": {
+            "fullName": "google.cloud.sql.v1.SqlWorkloadCapturesService",
+            "shortName": "SqlWorkloadCapturesService"
+          },
+          "shortName": "StartReplay"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.WorkloadCapturesStartReplayRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "StartReplay"
+      },
+      "description": "StartReplay starts executing a captured workload on a separate Cloud SQL instance\nprovisioned for workload replay. This target instance simulates the\nproduction environment without affecting the primary instance.",
+      "file": "SqlWorkloadCapturesClient/StartReplay/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1_generated_SqlWorkloadCapturesService_StartReplay_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin StartReplay Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1.SqlWorkloadCapturesClient",
+          "shortName": "SqlWorkloadCapturesClient"
+        },
+        "fullName": "google.cloud.sql.v1.SqlWorkloadCapturesClient.Stop",
+        "method": {
+          "fullName": "google.cloud.sql.v1.SqlWorkloadCapturesService.Stop",
+          "service": {
+            "fullName": "google.cloud.sql.v1.SqlWorkloadCapturesService",
+            "shortName": "SqlWorkloadCapturesService"
+          },
+          "shortName": "Stop"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.WorkloadCapturesStopRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "Stop"
+      },
+      "description": "Stop stops capturing the query traffic and related operations executed on the\nprimary instance.",
+      "file": "SqlWorkloadCapturesClient/Stop/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1_generated_SqlWorkloadCapturesService_Stop_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin Stop Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.sql.v1.SqlWorkloadCapturesClient",
+          "shortName": "SqlWorkloadCapturesClient"
+        },
+        "fullName": "google.cloud.sql.v1.SqlWorkloadCapturesClient.StopReplay",
+        "method": {
+          "fullName": "google.cloud.sql.v1.SqlWorkloadCapturesService.StopReplay",
+          "service": {
+            "fullName": "google.cloud.sql.v1.SqlWorkloadCapturesService",
+            "shortName": "SqlWorkloadCapturesService"
+          },
+          "shortName": "StopReplay"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "sqlpb.WorkloadCapturesStopReplayRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*sqlpb.Operation",
+        "shortName": "StopReplay"
+      },
+      "description": "StopReplay stops an active workload replay on the target Cloud SQL replay instance.",
+      "file": "SqlWorkloadCapturesClient/StopReplay/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "sqladmin_v1_generated_SqlWorkloadCapturesService_StopReplay_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "sqladmin StopReplay Sample"
     }
   ]
 }

@@ -22,14 +22,21 @@ import (
 	"testing"
 	"time"
 
+	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"go.opentelemetry.io/otel/attribute"
 	otelmetric "go.opentelemetry.io/otel/metric"
 	"go.opentelemetry.io/otel/metric/noop"
 	"go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/metric/metricdata"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
+	"go.opentelemetry.io/otel/sdk/trace/tracetest"
+	otrace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
 )
 
 type testMonitoringExporter struct {
@@ -473,4 +480,201 @@ func TestNewBuiltinMetricsTracerFactoryReleasesNativeProviderOnClientSinkError(t
 	}
 	// The failed constructor already released what it owned; a later shutdown must be a no-op.
 	factory.shutdown(context.Background())
+}
+
+func TestNewBuiltinMetricsTracerReturnsNilWhenDisabled(t *testing.T) {
+	ctx := context.Background()
+	for _, test := range []struct {
+		desc    string
+		factory *builtinMetricsTracerFactory
+		wantNil bool
+	}{
+		{desc: "nil factory", factory: nil, wantNil: true},
+		{desc: "disabled factory", factory: &builtinMetricsTracerFactory{enabled: false}, wantNil: true},
+		{desc: "enabled factory", factory: &builtinMetricsTracerFactory{enabled: true}, wantNil: false},
+	} {
+		t.Run(test.desc, func(t *testing.T) {
+			mt := test.factory.newBuiltinMetricsTracer(ctx)
+			if gotNil := mt == nil; gotNil != test.wantNil {
+				t.Fatalf("newBuiltinMetricsTracer() returned nil = %v, want %v", gotNil, test.wantNil)
+			}
+			if mt != nil && (!mt.builtInEnabled || mt.currOp == nil) {
+				t.Fatalf("newBuiltinMetricsTracer() = %+v, want an enabled tracer with operation state", mt)
+			}
+			if got := contextWithBuiltinMetricsTracer(ctx, mt); (got == ctx) != test.wantNil {
+				t.Fatalf("contextWithBuiltinMetricsTracer() returned the input context = %v, want %v", got == ctx, test.wantNil)
+			}
+			// All helpers must accept a nil tracer.
+			setBuiltinMetricsOperationStatus(mt, errors.New("test"))
+			if mt != nil {
+				mt.currOp.currAttempt = &attemptTracer{}
+			}
+			recordAttemptCompletion(mt)
+			recordOperationCompletion(mt)
+		})
+	}
+}
+
+func TestUnaryRPCBuiltinMetricsTracer(t *testing.T) {
+	// The in-memory server answers unary Read with a server-timing header and
+	// an Unimplemented error, and the client never issues it during startup.
+	const readMethod = "/google.spanner.v1.Spanner/Read"
+	for _, test := range []struct {
+		desc    string
+		enabled bool
+	}{
+		{desc: "disabled", enabled: false},
+		{desc: "enabled", enabled: true},
+	} {
+		t.Run(test.desc, func(t *testing.T) {
+			config := ClientConfig{DisableNativeMetrics: true}
+			var reader *metric.ManualReader
+			if test.enabled {
+				var provider *metric.MeterProvider
+				reader, provider = newTestMeterProvider()
+				defer provider.Shutdown(context.Background())
+				config.ClientMetricsProvider = provider
+			}
+			var sawCall, sawTracer bool
+			observeTracer := func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
+				if method == readMethod {
+					sawCall = true
+					_, sawTracer = ctx.Value(metricsTracerKey).(*builtinMetricsTracer)
+				}
+				return invoker(ctx, method, req, reply, cc, opts...)
+			}
+			_, client, teardown := setupMockedTestServerWithConfigAndClientOptions(t, config, []option.ClientOption{
+				option.WithGRPCDialOption(grpc.WithChainUnaryInterceptor(observeTracer)),
+			})
+			defer teardown()
+			if client.metricsTracerFactory.enabled != test.enabled {
+				t.Fatalf("metricsTracerFactory.enabled = %v, want %v", client.metricsTracerFactory.enabled, test.enabled)
+			}
+
+			exporter := tracetest.NewInMemoryExporter()
+			tp := sdktrace.NewTracerProvider(sdktrace.WithSyncer(exporter))
+			defer tp.Shutdown(context.Background())
+			ctx, span := tp.Tracer("test").Start(context.Background(), "Read")
+			ctx = metadata.AppendToOutgoingContext(ctx, resourcePrefixHeader, client.sc.database)
+
+			gsc, err := client.sc.nextClient()
+			if err != nil {
+				t.Fatalf("nextClient() failed: %v", err)
+			}
+			if _, err := gsc.Read(ctx, &sppb.ReadRequest{Session: client.sc.database + "/sessions/s"}); status.Code(err) != codes.Unimplemented {
+				t.Fatalf("Read() error = %v, want code %v", err, codes.Unimplemented)
+			}
+			span.End()
+
+			if !sawCall {
+				t.Fatal("Read did not reach the unary interceptor chain")
+			}
+			if sawTracer != test.enabled {
+				t.Fatalf("builtin metrics tracer in unary RPC context = %v, want %v", sawTracer, test.enabled)
+			}
+			// Server timing span attributes must not depend on built-in metrics.
+			spans := exporter.GetSpans()
+			if len(spans) != 1 {
+				t.Fatalf("got %d spans, want 1", len(spans))
+			}
+			var gotGFELatency bool
+			for _, attr := range spans[0].Attributes {
+				if attr.Key == "gfe.latency_ms" && attr.Value.AsFloat64() == 123 {
+					gotGFELatency = true
+				}
+			}
+			if !gotGFELatency {
+				t.Fatalf("span attributes %v are missing gfe.latency_ms=123", spans[0].Attributes)
+			}
+			if test.enabled {
+				m := requireTestMetric(t, collectTestMetrics(t, reader), clientMetricsPrefix+metricNameOperationCount)
+				var readOps int64
+				for _, point := range m.Data.(metricdata.Sum[int64]).DataPoints {
+					if hasAttrs(point.Attributes, map[attribute.Key]string{metricLabelKeyMethod: "Spanner.Read"}) {
+						readOps += point.Value
+					}
+				}
+				if readOps != 1 {
+					t.Fatalf("Spanner.Read operation count = %d, want 1", readOps)
+				}
+			}
+		})
+	}
+}
+
+func TestDisabledBuiltinMetricsTracerDoesNotAllocate(t *testing.T) {
+	ctx := context.Background()
+	factory := &builtinMetricsTracerFactory{enabled: false}
+	err := errors.New("test")
+	allocs := testing.AllocsPerRun(100, func() {
+		mt := factory.newBuiltinMetricsTracer(ctx)
+		_ = contextWithBuiltinMetricsTracer(ctx, mt)
+		setBuiltinMetricsOperationStatus(mt, err)
+		recordOperationCompletion(mt)
+	})
+	if allocs != 0 {
+		t.Fatalf("disabled builtin metrics tracer path allocated %v times per call, want 0", allocs)
+	}
+}
+
+func TestMetricsInterceptorWithoutTracer(t *testing.T) {
+	const serverTiming = "gfet4t7; dur=123, afe; dur=45"
+	for _, test := range []struct {
+		desc      string
+		tracer    bool // Store a typed nil tracer in the context.
+		recording bool
+	}{
+		{desc: "absent tracer, non-recording span"},
+		{desc: "typed nil tracer, non-recording span", tracer: true},
+		{desc: "absent tracer, recording span", recording: true},
+		{desc: "typed nil tracer, recording span", tracer: true, recording: true},
+	} {
+		t.Run(test.desc, func(t *testing.T) {
+			ctx := context.Background()
+			if test.tracer {
+				ctx = context.WithValue(ctx, metricsTracerKey, (*builtinMetricsTracer)(nil))
+			}
+			exporter := tracetest.NewInMemoryExporter()
+			tp := sdktrace.NewTracerProvider(sdktrace.WithSyncer(exporter))
+			defer tp.Shutdown(context.Background())
+			if test.recording {
+				ctx, _ = tp.Tracer("test").Start(ctx, "unary")
+			}
+
+			var gotHeaderOption bool
+			invoker := func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, opts ...grpc.CallOption) error {
+				for _, opt := range opts {
+					if h, ok := opt.(grpc.HeaderCallOption); ok {
+						gotHeaderOption = true
+						*h.HeaderAddr = metadata.Pairs(serverTimingHeaderKey, serverTiming)
+					}
+				}
+				return nil
+			}
+			if err := metricsInterceptor()(ctx, "/google.spanner.v1.Spanner/Commit", nil, nil, nil, invoker); err != nil {
+				t.Fatalf("metricsInterceptor() failed: %v", err)
+			}
+			if gotHeaderOption != test.recording {
+				t.Fatalf("header call option added = %v, want %v", gotHeaderOption, test.recording)
+			}
+			if !test.recording {
+				return
+			}
+			otrace.SpanFromContext(ctx).End()
+			spans := exporter.GetSpans()
+			if len(spans) != 1 {
+				t.Fatalf("got %d spans, want 1", len(spans))
+			}
+			got := map[attribute.Key]float64{}
+			for _, attr := range spans[0].Attributes {
+				got[attr.Key] = attr.Value.AsFloat64()
+			}
+			want := map[attribute.Key]float64{"gfe.latency_ms": 123, "afe.latency_ms": 45}
+			for k, v := range want {
+				if got[k] != v {
+					t.Errorf("span attribute %s = %v, want %v", k, got[k], v)
+				}
+			}
+		})
+	}
 }

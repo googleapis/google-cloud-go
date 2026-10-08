@@ -1237,6 +1237,11 @@
               "methods": [
                 "Get"
               ]
+            },
+            "List": {
+              "methods": [
+                "List"
+              ]
             }
           }
         }
@@ -2266,6 +2271,11 @@
             "SetLabels": {
               "methods": [
                 "SetLabels"
+              ]
+            },
+            "SetName": {
+              "methods": [
+                "SetName"
               ]
             },
             "TestIamPermissions": {
