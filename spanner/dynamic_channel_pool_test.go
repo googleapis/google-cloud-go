@@ -956,7 +956,7 @@ func TestDCPStreamHoldsReferenceUntilFinished(t *testing.T) {
 	bound := entries[0]
 	drainDCPEntryForTest(t, p, bound)
 	client := &dcpSpannerClient{entry: bound}
-	ref := client.startStream(context.Background())
+	_, ref := client.startStream(context.Background())
 	// The drain worker passed its idle check just before the stream started.
 	if bound.closeIfUnreferenced() {
 		t.Fatal("drain closed an entry with an open stream")
@@ -1343,7 +1343,7 @@ func TestDCPStreamContextCancelReleasesStreamLoad(t *testing.T) {
 	entry := &dcpEntry{id: 1, parent: p}
 	client := &dcpSpannerClient{entry: entry}
 
-	_ = client.startStream(ctx)
+	_, _ = client.startStream(ctx)
 	if got := entry.streamLoad.Load(); got != 1 {
 		t.Fatalf("stream load after start mismatch:\n Got: %d\nWant: 1", got)
 	}
@@ -1966,7 +1966,7 @@ func TestDCPErrorPenaltyCallPaths(t *testing.T) {
 		p := newPenaltyPool()
 		e := &dcpEntry{parent: p}
 		client := &dcpSpannerClient{entry: e}
-		ref := client.startStream(context.Background())
+		_, ref := client.startStream(context.Background())
 		ref.done(errUnavailable)
 		expiry := e.penaltyExpiry.Load()
 		if expiry == 0 {

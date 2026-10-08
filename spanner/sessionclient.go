@@ -111,7 +111,6 @@ type sessionClient struct {
 	callOptions          *vkit.CallOptions
 	otConfig             *openTelemetryConfig
 	metricsTracerFactory *builtinMetricsTracerFactory
-	channelIDMap         map[*grpc.ClientConn]uint64
 
 	// baseClientOpts holds the client options used for creating endpoint-specific
 	// gRPC connections in location-aware routing.
@@ -288,38 +287,13 @@ func (sc *sessionClient) nextClient() (spannerClient, error) {
 		}
 		return entry.client, nil
 	}
-	var clientOpt option.ClientOption
-	var channelID uint64
-	if _, ok := sc.connPool.(*gmeWrapper); ok {
-		// Pass GCPMultiEndpoint as a pool.
-		clientOpt = gtransport.WithConnPool(sc.connPool)
-	} else if _, ok := sc.connPool.(*fallbackWrapper); ok {
-		clientOpt = gtransport.WithConnPool(sc.connPool)
-	} else {
-		// Pick a grpc.ClientConn from a regular pool.
-		conn := sc.connPool.Conn()
-
-		// Retrieve the channelID for each spannerClient.
-		// It is assumed that this method is invoked
-		// under a lock already.
-		var ok bool
-		channelID, ok = sc.channelIDMap[conn]
-		if !ok {
-			if sc.channelIDMap == nil {
-				sc.channelIDMap = make(map[*grpc.ClientConn]uint64)
-			}
-			channelID = uint64(len(sc.channelIDMap)) + 1
-			sc.channelIDMap[conn] = channelID
-		}
-
-		clientOpt = option.WithGRPCConn(conn)
+	if pool, ok := sc.connPool.(*staticChannelPool); ok {
+		slot := pool.nextSlot()
+		return newGRPCSpannerClient(context.Background(), sc, slot.id, gtransport.WithConnPool(slot))
 	}
-	client, err := newGRPCSpannerClient(context.Background(), sc, channelID, clientOpt)
-	if err != nil {
-		return nil, err
-	}
-
-	return client, nil
+	// GCPMultiEndpoint hides its connections, so the client uses the whole
+	// pool.
+	return newGRPCSpannerClient(context.Background(), sc, 0, gtransport.WithConnPool(sc.connPool))
 }
 
 // createEndpointClient creates a new spannerClient for a specific server endpoint
