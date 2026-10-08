@@ -142,16 +142,22 @@ func TestDirectPathDiagnostic(t *testing.T) {
 	}
 }
 
+func stringPtr(s string) *string {
+	return &s
+}
+
 func TestDirectPathDiagnostic_Interconnect(t *testing.T) {
-	// Ensure GCE metadata server is not used/reachable so off-GCE bypass is verified.
-	t.Setenv("GCE_METADATA_HOST", "127.0.0.1:1")
+	origOnGCE := onGCE
+	onGCE = func() bool { return false }
+	t.Cleanup(func() { onGCE = origOnGCE })
+
 	t.Setenv(directPathDisableEnvVar, "false")
-	t.Setenv(enableDirectPathXdsOverInterconnectEnvVar, "")
 
 	for _, tc := range []struct {
-		name string
-		opts []option.ClientOption
-		want string
+		name   string
+		envVal *string
+		opts   []option.ClientOption
+		want   string
 	}{
 		{
 			name: "interconnect enabled off-GCE with standard endpoint bypasses GCE check",
@@ -172,6 +178,43 @@ func TestDirectPathDiagnostic_Interconnect(t *testing.T) {
 				option.WithEndpoint("google-c2p:///storage-direct.googleapis.com?force-xds"),
 			},
 			want: reasonUndetermined,
+		},
+		{
+			name:   "env var alone enables bypass off-GCE",
+			envVal: stringPtr("true"),
+			opts: []option.ClientOption{
+				internaloption.EnableDirectPath(true),
+				internaloption.EnableDirectPathXds(),
+				option.WithEndpoint("storage.googleapis.com:443"),
+			},
+			want: reasonUndetermined,
+		},
+		{
+			name: "endpoint with -direct. enables bypass off-GCE",
+			opts: []option.ClientOption{
+				internaloption.EnableDirectPath(true),
+				internaloption.EnableDirectPathXds(),
+				option.WithEndpoint("storage-direct.googleapis.com:443"),
+			},
+			want: reasonUndetermined,
+		},
+		{
+			name: "endpoint with force-xds enables bypass off-GCE",
+			opts: []option.ClientOption{
+				internaloption.EnableDirectPath(true),
+				internaloption.EnableDirectPathXds(),
+				option.WithEndpoint("google-c2p:///storage.googleapis.com?force-xds"),
+			},
+			want: reasonUndetermined,
+		},
+		{
+			name: "interconnect disabled off-GCE returns not_on_gce",
+			opts: []option.ClientOption{
+				internaloption.EnableDirectPath(true),
+				internaloption.EnableDirectPathXds(),
+				option.WithEndpoint("storage.googleapis.com:443"),
+			},
+			want: reasonNotOnGCE,
 		},
 		{
 			name: "interconnect enabled with unsupported scheme endpoint returns unsupported_endpoint",
@@ -207,8 +250,64 @@ func TestDirectPathDiagnostic_Interconnect(t *testing.T) {
 		},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
+			if tc.envVal != nil {
+				t.Setenv(enableDirectPathXdsOverInterconnectEnvVar, *tc.envVal)
+			} else {
+				t.Setenv(enableDirectPathXdsOverInterconnectEnvVar, "")
+			}
 			if got := directPathDiagnostic(context.Background(), tc.opts...); got != tc.want {
 				t.Errorf("directPathDiagnostic() = %q, want %q", got, tc.want)
+			}
+		})
+	}
+}
+
+func TestInterconnectRequested(t *testing.T) {
+	for _, tc := range []struct {
+		name     string
+		envVal   *string
+		resOpt   bool
+		endpoint string
+		want     bool
+	}{
+		{name: "option true, env unset", envVal: nil, resOpt: true, endpoint: "storage.googleapis.com:443", want: true},
+		{name: "option false, env unset", envVal: nil, resOpt: false, endpoint: "storage.googleapis.com:443", want: false},
+		{name: "env true overrides option false", envVal: stringPtr("true"), resOpt: false, endpoint: "storage.googleapis.com:443", want: true},
+		{name: "env 1 overrides option false", envVal: stringPtr("1"), resOpt: false, endpoint: "storage.googleapis.com:443", want: true},
+		{name: "env false overrides option true", envVal: stringPtr("false"), resOpt: true, endpoint: "storage.googleapis.com:443", want: false},
+		{name: "env 0 overrides option true", envVal: stringPtr("0"), resOpt: true, endpoint: "storage.googleapis.com:443", want: false},
+		{name: "invalid env falls back to option true", envVal: stringPtr("invalid"), resOpt: true, endpoint: "storage.googleapis.com:443", want: true},
+		{name: "empty env falls back to option true", envVal: stringPtr(""), resOpt: true, endpoint: "storage.googleapis.com:443", want: true},
+		{name: "endpoint with directPathInterconnectInfix enables interconnect", envVal: nil, resOpt: false, endpoint: "storage-direct.googleapis.com:443", want: true},
+		{name: "endpoint with force-xds enables interconnect", envVal: nil, resOpt: false, endpoint: "google-c2p:///storage.googleapis.com?force-xds", want: true},
+		{name: "env false overrides endpoint infix", envVal: stringPtr("false"), resOpt: false, endpoint: "storage-direct.googleapis.com:443", want: false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			if tc.envVal != nil {
+				t.Setenv(enableDirectPathXdsOverInterconnectEnvVar, *tc.envVal)
+			} else {
+				origVal, had := os.LookupEnv(enableDirectPathXdsOverInterconnectEnvVar)
+				os.Unsetenv(enableDirectPathXdsOverInterconnectEnvVar)
+				t.Cleanup(func() {
+					if had {
+						os.Setenv(enableDirectPathXdsOverInterconnectEnvVar, origVal)
+					} else {
+						os.Unsetenv(enableDirectPathXdsOverInterconnectEnvVar)
+					}
+				})
+			}
+
+			var opts []option.ClientOption
+			if tc.resOpt {
+				opts = append(opts, internaloption.EnableDirectPathXdsOverInterconnect())
+			}
+			res, err := internaloption.NewUnsafeResolver(opts...)
+			if err != nil {
+				t.Fatalf("internaloption.NewUnsafeResolver() failed: %v", err)
+			}
+
+			if got := interconnectRequested(res, tc.endpoint); got != tc.want {
+				t.Errorf("interconnectRequested() = %v, want %v", got, tc.want)
 			}
 		})
 	}

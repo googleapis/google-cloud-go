@@ -93,11 +93,18 @@ func WithDirectConnectivityEnforced() option.ClientOption {
 // WithDirectPathXdsOverInterconnect provides an [option.ClientOption] that may be passed to
 // [cloud.google.com/go/storage.NewGRPCClient].
 //
-// It instructs the client to attempt DirectPath over Google Cloud Interconnect
-// (on-premises xDS name resolution via google-c2p:///storage-direct.googleapis.com?force-xds),
-// bypassing GCE VM BIOS and metadata server locality checks.
+// It instructs the client to attempt DirectPath over Google Cloud Interconnect in on-premises
+// or hybrid environments without requiring GCE VM residency.
 //
-// Note: This option is exclusively supported for gRPC clients.
+// Behavior and Constraints:
+//   - The GOOGLE_CLOUD_ENABLE_DIRECT_PATH_XDS_OVER_INTERCONNECT environment variable overrides
+//     this option in both directions (e.g. "true"/"1" to enable, "false"/"0" to disable);
+//     unparseable values are ignored.
+//   - Requirements: default universe domain (googleapis.com), valid credentials, and that
+//     DirectPath is not disabled via GOOGLE_CLOUD_DISABLE_DIRECT_PATH.
+//   - This option is supported exclusively for gRPC clients.
+//   - Has no effect when using a custom grpc.ClientConn, with the storage emulator, or when
+//     the new auth library is disabled (GOOGLE_API_GO_EXPERIMENTAL_DISABLE_NEW_AUTH_LIB).
 func WithDirectPathXdsOverInterconnect() option.ClientOption {
 	return internal.WithDirectPathXdsOverInterconnect.(func() option.ClientOption)()
 }

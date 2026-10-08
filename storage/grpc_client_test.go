@@ -26,10 +26,12 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/storage/experimental"
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/google/go-cmp/cmp"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
@@ -513,28 +515,26 @@ func TestPrepareDirectPathMetadata(t *testing.T) {
 	}
 }
 
-func TestIsDirectPathXdsOverInterconnectEnabled(t *testing.T) {
-	for _, tc := range []struct {
-		name   string
-		envVal string
-		cfgVal bool
-		want   bool
-	}{
-		{name: "option true, env unset", envVal: "", cfgVal: true, want: true},
-		{name: "option false, env unset", envVal: "", cfgVal: false, want: false},
-		{name: "env true overrides option false", envVal: "true", cfgVal: false, want: true},
-		{name: "env 1 overrides option false", envVal: "1", cfgVal: false, want: true},
-		{name: "env false overrides option true", envVal: "false", cfgVal: true, want: false},
-		{name: "env 0 overrides option true", envVal: "0", cfgVal: true, want: false},
-		{name: "invalid env falls back to option true", envVal: "invalid", cfgVal: true, want: true},
-	} {
-		t.Run(tc.name, func(t *testing.T) {
-			t.Setenv(enableDirectPathXdsOverInterconnectEnvVar, tc.envVal)
-			cfg := &storageConfig{grpcDirectPathXdsOverInterconnect: tc.cfgVal}
-			if got := isDirectPathXdsOverInterconnectEnabled(cfg); got != tc.want {
-				t.Errorf("isDirectPathXdsOverInterconnectEnabled() = %v, want %v", got, tc.want)
-			}
-		})
+func TestNewGRPCStorageClient_InterconnectOption(t *testing.T) {
+	ctx := context.Background()
+	client, err := newGRPCStorageClient(ctx,
+		withClientOptions(
+			option.WithoutAuthentication(),
+			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+			experimental.WithDirectPathXdsOverInterconnect(),
+		),
+	)
+	if err != nil {
+		t.Fatalf("newGRPCStorageClient: %v", err)
+	}
+	defer client.Close()
+
+	res, err := internaloption.NewUnsafeResolver(client.settings.clientOption...)
+	if err != nil {
+		t.Fatalf("NewUnsafeResolver: %v", err)
+	}
+	if got := res.ResolvedEnableDirectPathXdsOverInterconnect(); !got {
+		t.Errorf("res.ResolvedEnableDirectPathXdsOverInterconnect() = %v, want true", got)
 	}
 }
 

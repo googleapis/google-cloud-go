@@ -80,21 +80,20 @@ func getDynamicReadReqInitialTimeoutSecFromEnv(defaultVal time.Duration) time.Du
 
 // set through storageClientOptions.
 type storageConfig struct {
-	useJSONforReads                   bool
-	readAPIWasSet                     bool
-	disableClientMetrics              bool
-	enableOtelMetrics                 bool
-	enableOtelDebugMetrics            bool
-	metricExporter                    *metric.Exporter
-	metricInterval                    time.Duration
-	meterProvider                     *metric.MeterProvider
-	manualReader                      *metric.ManualReader
-	readStallTimeoutConfig            *experimental.ReadStallTimeoutConfig
-	grpcBidiReads                     bool
-	grpcAppendableUploads             bool
-	grpcDirectPathEnforced            bool
-	grpcDirectPathXdsOverInterconnect bool
-	bufferPool                        experimental.BufferPool
+	useJSONforReads        bool
+	readAPIWasSet          bool
+	disableClientMetrics   bool
+	enableOtelMetrics      bool
+	enableOtelDebugMetrics bool
+	metricExporter         *metric.Exporter
+	metricInterval         time.Duration
+	meterProvider          *metric.MeterProvider
+	manualReader           *metric.ManualReader
+	readStallTimeoutConfig *experimental.ReadStallTimeoutConfig
+	grpcBidiReads          bool
+	grpcAppendableUploads  bool
+	grpcDirectPathEnforced bool
+	bufferPool             experimental.BufferPool
 }
 
 // newStorageConfig generates a new storageConfig with all the given
@@ -128,15 +127,7 @@ func (w *withDirectPathEnforced) ApplyStorageOpt(c *storageConfig) {
 }
 
 func withDirectPathXdsOverInterconnect() option.ClientOption {
-	return &withDirectPathXdsOverInterconnectConfig{}
-}
-
-type withDirectPathXdsOverInterconnectConfig struct {
-	internaloption.EmbeddableAdapter
-}
-
-func (w *withDirectPathXdsOverInterconnectConfig) ApplyStorageOpt(c *storageConfig) {
-	c.grpcDirectPathXdsOverInterconnect = true
+	return internaloption.EnableDirectPathXdsOverInterconnect()
 }
 
 // WithJSONReads is an option that may be passed to [NewClient].
