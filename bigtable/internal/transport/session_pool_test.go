@@ -742,13 +742,71 @@ func TestRemoveWaiter_IdempotentWithSignalFree(t *testing.T) {
 
 	// removeWaiter called AFTER signalFree must not panic (would
 	// double-close if it re-issued close on an already-closed channel).
-	p.removeWaiter(w)
+	// Must also report removed=false so the caller can forward the wake.
+	if removed := p.removeWaiter(w); removed {
+		t.Errorf("removeWaiter after signalFree returned removed=true; want false (we were already popped)")
+	}
 	// Sanity: w.elem stays nil.
 	p.waitersMu.Lock()
 	elem := w.elem
 	p.waitersMu.Unlock()
 	if elem != nil {
 		t.Errorf("w.elem = %p, want nil after signalFree", elem)
+	}
+}
+
+// TestCheckoutSession_LostWakeupForwardedOnCtxCancel pins the fix for
+// the signalFree ↔ ctx.Done lost-wakeup race in CheckoutSession. The
+// scenario the fix must handle: signalFree pops w1 (closes w1.ready);
+// w1's ctx cancels in the same tick and Go's select picks the ctx.Done
+// branch; the wake token is otherwise consumed by w1's return. Without
+// the forward-on-cancel fix, w2 stays parked indefinitely (until the
+// next drain / onActive event). With the fix, w1's ctx-cancel path
+// detects "already popped" via removeWaiter's false return and calls
+// signalFree() to forward the token to w2.
+//
+// Verifies the direct removeWaiter+forward logic. End-to-end race
+// coverage is in bigtable/.specula-lite's repro harness (see TLA+
+// counterexample in run-20261008-034436/output/check3.log).
+func TestCheckoutSession_LostWakeupForwardedOnCtxCancel(t *testing.T) {
+	p := newTestPool(t, 1, 10)
+
+	w1 := &waiter{ready: make(chan struct{})}
+	w2 := &waiter{ready: make(chan struct{})}
+	p.waitersMu.Lock()
+	w1.elem = p.waiters.PushBack(w1)
+	w2.elem = p.waiters.PushBack(w2)
+	p.waitersMu.Unlock()
+
+	// A drain fires signalFree, popping w1 and closing w1.ready.
+	p.signalFree()
+	select {
+	case <-w1.ready:
+	case <-time.After(100 * time.Millisecond):
+		t.Fatal("w1 not woken by signalFree")
+	}
+	// w2 should still be parked.
+	select {
+	case <-w2.ready:
+		t.Fatal("w2 woken by first signalFree — FIFO broken")
+	default:
+	}
+
+	// Simulate CheckoutSession's ctx.Done branch for w1: removeWaiter
+	// reports the waiter was already popped, so the caller forwards the
+	// wake via signalFree(). This is the exact code path the fix adds.
+	if removed := p.removeWaiter(w1); removed {
+		t.Fatalf("removeWaiter(w1) returned removed=true; want false (signalFree already popped w1)")
+	}
+	p.signalFree()
+
+	// Without the fix, this times out (w2 stays parked). With the fix,
+	// the forwarded signalFree pops w2 and closes w2.ready.
+	select {
+	case <-w2.ready:
+		// expected — the wake was forwarded to the next FIFO head.
+	case <-time.After(100 * time.Millisecond):
+		t.Fatal("w2 not woken after w1's cancel forward — lost wake-up regression")
 	}
 }
 
