@@ -1114,6 +1114,12 @@ func TestCloudPathAuthenticatesWithLegacyAuthLibrary(t *testing.T) {
 		t.Run(fmt.Sprintf("dynamic=%v", dynamic), func(t *testing.T) {
 			enableDirectPathForTest(t)
 			t.Setenv("GOOGLE_API_GO_EXPERIMENTAL_DISABLE_NEW_AUTH_LIB", "true")
+			// On GCE the legacy library dials DirectPath with its own
+			// credentials bundle, which gRPC rejects next to the TLS
+			// credentials this test needs for its fake DirectPath server.
+			// Keep the direct dial on plain gRPC as it is off GCE; the
+			// CloudPath dial never uses DirectPath.
+			t.Setenv("GOOGLE_CLOUD_DISABLE_DIRECT_PATH", "true")
 			var tokenRequests atomic.Int32
 			tokens := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 				tokenRequests.Add(1)
