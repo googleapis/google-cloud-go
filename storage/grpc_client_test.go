@@ -26,10 +26,12 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/storage/experimental"
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/google/go-cmp/cmp"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
@@ -460,6 +462,18 @@ func TestPrepareDirectPathMetadata(t *testing.T) {
 			want:     "direct_connectivity_diagnostic=reason",
 		},
 		{
+			desc:     "DirectPath over Interconnect target with ENFORCED",
+			enforced: true,
+			target:   "google-c2p:///storage-direct.googleapis.com?force-xds",
+			want:     "force_direct_connectivity=ENFORCED",
+		},
+		{
+			desc:     "DirectPath over Interconnect target with NOT ENFORCED",
+			enforced: false,
+			target:   "google-c2p:///storage-direct.googleapis.com?force-xds",
+			want:     "",
+		},
+		{
 			desc:     "Empty target with ENFORCED",
 			enforced: true,
 			target:   "",
@@ -498,6 +512,29 @@ func TestPrepareDirectPathMetadata(t *testing.T) {
 				t.Errorf("got metadata %q, want %q", headerValue, tc.want)
 			}
 		})
+	}
+}
+
+func TestNewGRPCStorageClient_InterconnectOption(t *testing.T) {
+	ctx := context.Background()
+	client, err := newGRPCStorageClient(ctx,
+		withClientOptions(
+			option.WithoutAuthentication(),
+			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+			experimental.WithDirectPathXdsOverInterconnect(),
+		),
+	)
+	if err != nil {
+		t.Fatalf("newGRPCStorageClient: %v", err)
+	}
+	defer client.Close()
+
+	res, err := internaloption.NewUnsafeResolver(client.settings.clientOption...)
+	if err != nil {
+		t.Fatalf("NewUnsafeResolver: %v", err)
+	}
+	if got := res.ResolvedEnableDirectPathXdsOverInterconnect(); !got {
+		t.Errorf("res.ResolvedEnableDirectPathXdsOverInterconnect() = %v, want true", got)
 	}
 }
 
