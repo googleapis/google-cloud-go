@@ -3057,6 +3057,13 @@ func (s *atomicRetryStorageServer) BidiWriteObject(stream storagepb.Storage_Bidi
 	}
 
 	size := req.GetWriteOffset() + int64(len(req.GetChecksummedData().GetContent()))
+	if !req.GetFinishWrite() {
+		return stream.Send(&storagepb.BidiWriteObjectResponse{
+			WriteStatus: &storagepb.BidiWriteObjectResponse_PersistedSize{
+				PersistedSize: size,
+			},
+		})
+	}
 	return stream.Send(&storagepb.BidiWriteObjectResponse{
 		WriteStatus: &storagepb.BidiWriteObjectResponse_Resource{
 			Resource: &storagepb.Object{
@@ -3133,13 +3140,18 @@ func TestGRPCResumableBidiWriteBufferSender_AtomicRetryWithoutQueryWriteStatus(t
 	if fakeSrv.queryStatusCalls != 0 {
 		t.Errorf("QueryWriteStatus calls = %d, want 0", fakeSrv.queryStatusCalls)
 	}
-	if fakeSrv.bidiStreams != 2 {
-		t.Errorf("BidiWriteObject streams = %d, want 2", fakeSrv.bidiStreams)
+	// Stream 1: initial 100-byte chunk flush (stalls).
+	// Stream 2: retried 100-byte chunk flush (succeeds and closes stream).
+	// Stream 3: final Close() request at offset 100 with finish_write=true.
+	if fakeSrv.bidiStreams != 3 {
+		t.Errorf("BidiWriteObject streams = %d, want 3", fakeSrv.bidiStreams)
 	}
-	if len(fakeSrv.receivedOffsets) != 2 || fakeSrv.receivedOffsets[0] != 0 || fakeSrv.receivedOffsets[1] != 0 {
-		t.Errorf("received write_offsets = %v, want [0, 0]", fakeSrv.receivedOffsets)
+	if len(fakeSrv.receivedOffsets) != 3 || fakeSrv.receivedOffsets[0] != 0 || fakeSrv.receivedOffsets[1] != 0 || fakeSrv.receivedOffsets[2] != 100 {
+		t.Errorf("received write_offsets = %v, want [0, 0, 100]", fakeSrv.receivedOffsets)
 	}
-	if len(fakeSrv.receivedUploadID) != 2 || fakeSrv.receivedUploadID[0] != "upload-atomic-1" || fakeSrv.receivedUploadID[1] != "upload-atomic-1" {
-		t.Errorf("received upload_ids = %v, want [upload-atomic-1, upload-atomic-1]", fakeSrv.receivedUploadID)
+	for i, upid := range fakeSrv.receivedUploadID {
+		if upid != "upload-atomic-1" {
+			t.Errorf("received upload_ids[%d] = %q, want upload-atomic-1", i, upid)
+		}
 	}
 }

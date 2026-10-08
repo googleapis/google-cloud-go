@@ -125,13 +125,13 @@ func TestGRPCWriterStallEmulated(t *testing.T) {
 			name:         "StallInFirstChunk_Recovers",
 			instructions: []string{stallAfter(1024)},
 			budget:       stallEmuRecoverBudget,
-			wantStreams:  2,
+			wantStreams:  4,
 		},
 		{
 			name:         "StallInSecondChunk_Recovers",
 			instructions: []string{stallAfter(3072)},
 			budget:       stallEmuRecoverBudget,
-			wantStreams:  2,
+			wantStreams:  4,
 		},
 		{
 			// With a 4 MiB ChunkSize (two 2 MiB BidiWriteObjectRequest messages per
@@ -145,27 +145,27 @@ func TestGRPCWriterStallEmulated(t *testing.T) {
 			configure: func(w *Writer) {
 				w.ChunkSize = 2 * stallEmuChunkSize
 			},
-			wantStreams: 2,
+			wantStreams: 3,
 		},
 		{
 			// The 1 MiB tail is sent by Close as the final request.
 			name:         "StallInFinalRequest_Recovers",
 			instructions: []string{stallAfter(4608)},
 			budget:       stallEmuRecoverBudget,
-			wantStreams:  2,
+			wantStreams:  4,
 		},
 		{
 			name:         "ConsecutiveStalls_Recover",
 			instructions: []string{stallAfter(1024), stallAfter(1024)},
 			budget:       stallEmuRecoverBudget,
-			wantStreams:  3,
+			wantStreams:  5,
 		},
 		{
 			name:         "CustomErrorFuncRejectingStall_Recovers",
 			instructions: []string{stallAfter(1024)},
 			budget:       stallEmuRecoverBudget,
 			retry:        []RetryOption{WithErrorFunc(func(error) bool { return false })},
-			wantStreams:  2,
+			wantStreams:  4,
 		},
 		{
 			// The stall hits the first message, before the server returns a
@@ -274,7 +274,7 @@ func TestGRPCWriterStallEmulated(t *testing.T) {
 				return err
 			},
 			size:        7 * 1024 * 1024,
-			wantStreams: 1,
+			wantStreams: 2,
 		},
 		{
 			name:   "AppendableFlushThenIdle_NoFalseStall",
