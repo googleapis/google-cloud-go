@@ -1,6 +1,21 @@
 # Changes
 
 
+## [1.70.0](https://github.com/googleapis/google-cloud-go/compare/storage/v1.69.0...storage/v1.70.0) (2026-10-08)
+
+
+### Features
+
+* **storage:** Honor ChunkTransferTimeout in the gRPC Writer ([#20634](https://github.com/googleapis/google-cloud-go/issues/20634)) ([df47d64](https://github.com/googleapis/google-cloud-go/commit/df47d64a291c6060846d456a9b72d91a1ed207c0))
+* **storage:** Plumb ChunkTransferTimeout and stall timeout error into gRPC Writer ([#20613](https://github.com/googleapis/google-cloud-go/issues/20613)) ([82bb5c9](https://github.com/googleapis/google-cloud-go/commit/82bb5c956b9988ffa95ad556f30e0c8f882a6415))
+
+
+### Bug Fixes
+
+* **storage:** Allow mid-stream retries once gRPC upload session is established ([#20612](https://github.com/googleapis/google-cloud-go/issues/20612)) ([c74aee1](https://github.com/googleapis/google-cloud-go/commit/c74aee178dbb81948810ec48d8f2a2d73c1b5384))
+* **storage:** Correct remaining bytes for gRPC bidi range reads ([#20619](https://github.com/googleapis/google-cloud-go/issues/20619)) ([f9eec5d](https://github.com/googleapis/google-cloud-go/commit/f9eec5d653b0faf5ea541d2574b47251365a627a))
+* **storage:** Surface the last transport error from the gRPC Writer's ChunkRetryDeadline error ([#20637](https://github.com/googleapis/google-cloud-go/issues/20637)) ([8f964fb](https://github.com/googleapis/google-cloud-go/commit/8f964fba8c1b37e63c6a3b7fcfdf1fd08eb0b22b))
+
 ## [1.69.0](https://github.com/googleapis/google-cloud-go/compare/storage/v1.68.0...storage/v1.69.0) (2026-10-01)
 
 
