@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/apptopology/v0.2.0...apptopology/v0.3.0) (2026-10-08)
+
+
+### Features
+
+* Update API sources and regenerate ([#20646](https://github.com/googleapis/google-cloud-go/issues/20646)) ([4ad5d50](https://github.com/googleapis/google-cloud-go/commit/4ad5d50aaf4392d19fd391ee71eec1c5029ecd1d))
+
 ## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/apptopology/v0.1.0...apptopology/v0.2.0) (2026-09-23)
 
 
