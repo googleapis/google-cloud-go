@@ -21,6 +21,8 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/iam"
+	"cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/storage/internal"
 	"github.com/google/go-cmp/cmp"
@@ -244,7 +246,7 @@ func TestStartSpanWithBucket(t *testing.T) {
 			}
 			client := &Client{bucketMetadataCache: cache}
 
-			ctx1, _ := startSpanWithBucket(ctx, client, tc.bucket, "TestSpan")
+			ctx1, _ := startSpanWithBucket(ctx, client, tc.bucket, "", "TestSpan")
 			endSpan(ctx1, nil)
 
 			spans := te.Spans()
@@ -337,7 +339,7 @@ func TestEndSpanEviction(t *testing.T) {
 			// Populate cache.
 			cache.put(bucketName, bucketMetadata{resource: "res", location: "loc"})
 
-			ctx, _ := startSpanWithBucket(context.Background(), client, bucketName, tc.spanName)
+			ctx, _ := startSpanWithBucket(context.Background(), client, bucketName, "", tc.spanName)
 			endSpan(ctx, tc.err)
 
 			_, found := cache.get(bucketName)
@@ -348,5 +350,226 @@ func TestEndSpanEviction(t *testing.T) {
 				t.Errorf("expected bucket to remain in cache")
 			}
 		})
+	}
+}
+
+// storageURIAttr returns the gcp.storage.uri value on the span named spanName,
+// and whether it was set.
+func storageURIAttr(t *testing.T, spans tracetest.SpanStubs, spanName string) (string, bool) {
+	t.Helper()
+	for _, s := range spans {
+		if s.Name != appendPackageName(spanName) {
+			continue
+		}
+		for _, a := range s.Attributes {
+			if a.Key == storageURIAttrKey {
+				return a.Value.AsString(), true
+			}
+		}
+		return "", false
+	}
+	t.Fatalf("span %q not found", spanName)
+	return "", false
+}
+
+func TestStorageURIAttribute(t *testing.T) {
+	const (
+		bucket    = "my-bucket"
+		object    = "dir/my object.txt"
+		dstBucket = "dst-bucket"
+		dstObject = "dst/object.txt"
+	)
+	wantObjURI := "gs://" + bucket + "/" + object
+	wantDstURI := "gs://" + dstBucket + "/" + dstObject
+	wantBucketURI := "gs://" + bucket + "/"
+
+	tests := []struct {
+		name     string // Test name; defaults to spanName.
+		spanName string
+		op       func(ctx context.Context, c *Client)
+		wantURI  string
+	}{
+		// Object-scoped operations.
+		{
+			spanName: "Object.Attrs",
+			op:       func(ctx context.Context, c *Client) { c.Bucket(bucket).Object(object).Attrs(ctx) },
+			wantURI:  wantObjURI,
+		},
+		{
+			spanName: "Object.Update",
+			op: func(ctx context.Context, c *Client) {
+				c.Bucket(bucket).Object(object).Update(ctx, ObjectAttrsToUpdate{ContentType: "text/plain"})
+			},
+			wantURI: wantObjURI,
+		},
+		{
+			spanName: "Object.Delete",
+			op:       func(ctx context.Context, c *Client) { c.Bucket(bucket).Object(object).Delete(ctx) },
+			wantURI:  wantObjURI,
+		},
+		{
+			spanName: "Object.Reader",
+			op:       func(ctx context.Context, c *Client) { c.Bucket(bucket).Object(object).NewReader(ctx) },
+			wantURI:  wantObjURI,
+		},
+		{
+			spanName: "Object.Writer",
+			op: func(ctx context.Context, c *Client) {
+				w := c.Bucket(bucket).Object(object).NewWriter(ctx)
+				w.Write([]byte("data"))
+				w.Close()
+			},
+			wantURI: wantObjURI,
+		},
+		{
+			spanName: "Object.MultiRangeDownloader",
+			op:       func(ctx context.Context, c *Client) { c.Bucket(bucket).Object(object).NewMultiRangeDownloader(ctx) },
+			wantURI:  wantObjURI,
+		},
+		{
+			name:     "Copier.Run uses destination",
+			spanName: "Copier.Run",
+			op: func(ctx context.Context, c *Client) {
+				c.Bucket(dstBucket).Object(dstObject).CopierFrom(c.Bucket(bucket).Object(object)).Run(ctx)
+			},
+			wantURI: wantDstURI,
+		},
+		{
+			name:     "Composer.Run uses destination",
+			spanName: "Composer.Run",
+			op: func(ctx context.Context, c *Client) {
+				c.Bucket(dstBucket).Object(dstObject).ComposerFrom(c.Bucket(dstBucket).Object("src1")).Run(ctx)
+			},
+			wantURI: wantDstURI,
+		},
+		{
+			name:     "object ACL.List",
+			spanName: "ACL.List",
+			op:       func(ctx context.Context, c *Client) { c.Bucket(bucket).Object(object).ACL().List(ctx) },
+			wantURI:  wantObjURI,
+		},
+		{
+			name:     "object ACL.Set",
+			spanName: "ACL.Set",
+			op: func(ctx context.Context, c *Client) {
+				c.Bucket(bucket).Object(object).ACL().Set(ctx, AllUsers, RoleReader)
+			},
+			wantURI: wantObjURI,
+		},
+		{
+			name:     "object ACL.Delete",
+			spanName: "ACL.Delete",
+			op:       func(ctx context.Context, c *Client) { c.Bucket(bucket).Object(object).ACL().Delete(ctx, AllUsers) },
+			wantURI:  wantObjURI,
+		},
+		// Bucket-scoped operations.
+		{
+			name:     "bucket ACL.List",
+			spanName: "ACL.List",
+			op:       func(ctx context.Context, c *Client) { c.Bucket(bucket).ACL().List(ctx) },
+			wantURI:  wantBucketURI,
+		},
+		{
+			spanName: "Bucket.Create",
+			op:       func(ctx context.Context, c *Client) { c.Bucket(bucket).Create(ctx, "my-project", nil) },
+			wantURI:  wantBucketURI,
+		},
+		{
+			spanName: "Bucket.Delete",
+			op:       func(ctx context.Context, c *Client) { c.Bucket(bucket).Delete(ctx) },
+			wantURI:  wantBucketURI,
+		},
+		{
+			spanName: "Bucket.Attrs",
+			op:       func(ctx context.Context, c *Client) { c.Bucket(bucket).Attrs(ctx) },
+			wantURI:  wantBucketURI,
+		},
+		{
+			spanName: "Bucket.Update",
+			op: func(ctx context.Context, c *Client) {
+				c.Bucket(bucket).Update(ctx, BucketAttrsToUpdate{StorageClass: "STANDARD"})
+			},
+			wantURI: wantBucketURI,
+		},
+		{
+			spanName: "Bucket.AddNotification",
+			op: func(ctx context.Context, c *Client) {
+				c.Bucket(bucket).AddNotification(ctx, &Notification{TopicProjectID: "p", TopicID: "t"})
+			},
+			wantURI: wantBucketURI,
+		},
+		{
+			spanName: "Bucket.Notifications",
+			op:       func(ctx context.Context, c *Client) { c.Bucket(bucket).Notifications(ctx) },
+			wantURI:  wantBucketURI,
+		},
+		{
+			spanName: "Bucket.DeleteNotification",
+			op:       func(ctx context.Context, c *Client) { c.Bucket(bucket).DeleteNotification(ctx, "n") },
+			wantURI:  wantBucketURI,
+		},
+		{
+			spanName: "storage.IAM.Get",
+			op:       func(ctx context.Context, c *Client) { c.Bucket(bucket).IAM().Policy(ctx) },
+			wantURI:  wantBucketURI,
+		},
+		{
+			spanName: "storage.IAM.Set",
+			op: func(ctx context.Context, c *Client) {
+				c.Bucket(bucket).IAM().SetPolicy(ctx, &iam.Policy{InternalProto: &iampb.Policy{}})
+			},
+			wantURI: wantBucketURI,
+		},
+		{
+			spanName: "storage.IAM.Test",
+			op: func(ctx context.Context, c *Client) {
+				c.Bucket(bucket).IAM().TestPermissions(ctx, []string{"storage.buckets.get"})
+			},
+			wantURI: wantBucketURI,
+		},
+		{
+			spanName: "httpStorageClient.ObjectsListCall",
+			op:       func(ctx context.Context, c *Client) { c.Bucket(bucket).Objects(ctx, nil).Next() },
+			wantURI:  wantBucketURI,
+		},
+	}
+
+	for _, tc := range tests {
+		name := tc.name
+		if name == "" {
+			name = tc.spanName
+		}
+		t.Run(name, func(t *testing.T) {
+			t.Setenv(storageOtelTracingDevVar, "true")
+			// Disable the bucket metadata cache so no background fetch runs.
+			t.Setenv(storageBucketMetadataDisabledVar, "true")
+			ctx := context.Background()
+			te := testutil.NewOpenTelemetryTestExporter()
+			t.Cleanup(func() { te.Unregister(ctx) })
+
+			tc.op(ctx, mockClient(t, &mockTransport{}))
+
+			got, ok := storageURIAttr(t, te.Spans(), tc.spanName)
+			if !ok {
+				t.Fatalf("%s not found on span %q", storageURIAttrKey, tc.spanName)
+			}
+			if got != tc.wantURI {
+				t.Errorf("%s = %q, want %q", storageURIAttrKey, got, tc.wantURI)
+			}
+		})
+	}
+}
+
+func TestStorageURIAttributeDevTracingDisabled(t *testing.T) {
+	t.Setenv(storageOtelTracingDevVar, "false")
+	t.Setenv(storageBucketMetadataDisabledVar, "true")
+	ctx := context.Background()
+	te := testutil.NewOpenTelemetryTestExporter()
+	t.Cleanup(func() { te.Unregister(ctx) })
+
+	mockClient(t, &mockTransport{}).Bucket("b").Object("o").Attrs(ctx)
+
+	if got, ok := storageURIAttr(t, te.Spans(), "Object.Attrs"); ok {
+		t.Errorf("%s = %q, want it absent when dev tracing is disabled", storageURIAttrKey, got)
 	}
 }
