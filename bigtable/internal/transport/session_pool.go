@@ -312,7 +312,14 @@ func (p *SessionPoolImpl) CheckoutSession(ctx context.Context) (*SessionHandle, 
 			p.waitersCount.Add(-1)
 			// Remove from queue so a subsequent free-session wake
 			// doesn't burn on a caller that's already given up.
-			p.removeWaiter(w)
+			// If removeWaiter reports we were ALREADY popped (signalFree
+			// closed w.ready in the tick ctx fired; Go's select picked
+			// the ctx branch), the wake token is otherwise lost — forward
+			// it so the next FIFO head gets served. signalFree is a
+			// no-op on an empty queue, so this is cheap in the common case.
+			if !p.removeWaiter(w) {
+				p.signalFree()
+			}
 			return nil, fmt.Errorf("%w: %w", ErrNoSessionsAvailable, ctx.Err())
 		case <-w.ready:
 			p.waitersCount.Add(-1)
@@ -330,14 +337,19 @@ func (p *SessionPoolImpl) CheckoutSession(ctx context.Context) (*SessionHandle, 
 // removeWaiter pulls w out of the waiter queue if still present. Safe
 // to call from the ctx-cancel path even when signalFree has already
 // removed the waiter (checks w.elem — nil means already dequeued by
-// signalFree, which will have closed w.ready).
-func (p *SessionPoolImpl) removeWaiter(w *waiter) {
+// signalFree, which will have closed w.ready). Returns true iff w was
+// still queued (we removed it); false means signalFree already popped
+// w — the ctx-cancel caller MUST forward the wake via signalFree so
+// the token isn't lost on the departing waiter's consumed w.ready.
+func (p *SessionPoolImpl) removeWaiter(w *waiter) (removed bool) {
 	p.waitersMu.Lock()
 	if w.elem != nil {
 		p.waiters.Remove(w.elem)
 		w.elem = nil
+		removed = true
 	}
 	p.waitersMu.Unlock()
+	return
 }
 
 // signalFree wakes exactly one parked CheckoutSession waiter (the FIFO
