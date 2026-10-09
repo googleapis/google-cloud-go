@@ -1804,6 +1804,7 @@ func (a *AggregationQuery) GetResponse(ctx context.Context) (aro *AggregationRes
 		req.ConsistencySelector = &pb.RunAggregationQueryRequest_Transaction{
 			Transaction: a.tx.id,
 		}
+		ctx = withTransactionHeader(ctx)
 	}
 
 	ctx = withResourceHeader(ctx, a.query.c.path())
