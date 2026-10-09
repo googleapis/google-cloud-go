@@ -131,6 +131,14 @@ type Client struct {
 	bucketMetadataCache *bucketMetadataCache
 }
 
+// rpcSystem returns "http" if the client uses HTTP, or "grpc" if it uses gRPC.
+func (c *Client) rpcSystem() string {
+	if c != nil && c.hc != nil {
+		return "http"
+	}
+	return "grpc"
+}
+
 // credsJSON returns the raw JSON of the Client's creds and true, or an empty slice
 // and false if no credentials JSON is available.
 func (c Client) credsJSON() ([]byte, bool) {
