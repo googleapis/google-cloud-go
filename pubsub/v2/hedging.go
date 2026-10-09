@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"math"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	pb "cloud.google.com/go/pubsub/v2/apiv1/pubsubpb"
@@ -128,7 +129,7 @@ type hedgeBatch struct {
 type cancellationSharer struct {
 	mu       sync.Mutex
 	cancels  map[int]context.CancelFunc
-	done     bool
+	done     atomic.Bool
 	nextID   int
 	batch    *hedgeBatch
 	inflight sync.WaitGroup
@@ -142,9 +143,7 @@ func newCancellationSharer(batch *hedgeBatch) *cancellationSharer {
 }
 
 func (cs *cancellationSharer) isDone() bool {
-	cs.mu.Lock()
-	defer cs.mu.Unlock()
-	return cs.done
+	return cs.done.Load()
 }
 
 // registerAttempt registers a cancel function and returns its ID.
@@ -152,10 +151,16 @@ func (cs *cancellationSharer) isDone() bool {
 func (cs *cancellationSharer) registerAttempt(cancel context.CancelFunc) int {
 	cs.mu.Lock()
 	defer cs.mu.Unlock()
-	if cs.done {
+	if cs.done.Load() {
 		cancel()
 		return -1
 	}
+	return cs.registerAttemptLocked(cancel)
+}
+
+// registerAttemptLocked registers a cancel function and returns its ID.
+// cs.mu must be held.
+func (cs *cancellationSharer) registerAttemptLocked(cancel context.CancelFunc) int {
 	id := cs.nextID
 	cs.nextID++
 	cs.cancels[id] = cancel
@@ -168,13 +173,11 @@ func (cs *cancellationSharer) registerAttempt(cancel context.CancelFunc) int {
 func (cs *cancellationSharer) acquireHedge() (id int, ctx context.Context, b *hedgeBatch, ok bool) {
 	cs.mu.Lock()
 	defer cs.mu.Unlock()
-	if cs.done || cs.batch == nil {
+	if cs.done.Load() || cs.batch == nil {
 		return 0, nil, nil, false
 	}
 	ctx, cancel := context.WithCancel(cs.batch.ctx)
-	id = cs.nextID
-	cs.nextID++
-	cs.cancels[id] = cancel
+	id = cs.registerAttemptLocked(cancel)
 	// Add under mu while !done so it precedes wait(), which is called after cancelAll.
 	cs.inflight.Add(1)
 	return id, ctx, cs.batch, true
@@ -189,10 +192,10 @@ func (cs *cancellationSharer) releaseHedge() {
 func (cs *cancellationSharer) cancelOthers(winnerID int) {
 	cs.mu.Lock()
 	defer cs.mu.Unlock()
-	if cs.done {
+	if cs.done.Load() {
 		return
 	}
-	cs.done = true
+	cs.done.Store(true)
 	cs.batch = nil
 	for id, cancel := range cs.cancels {
 		if id != winnerID {
@@ -206,7 +209,7 @@ func (cs *cancellationSharer) cancelOthers(winnerID int) {
 func (cs *cancellationSharer) cancelAll() {
 	cs.mu.Lock()
 	defer cs.mu.Unlock()
-	cs.done = true
+	cs.done.Store(true)
 	cs.batch = nil
 	for _, cancel := range cs.cancels {
 		cancel()
@@ -234,14 +237,13 @@ func (t *Publisher) publishHedged(ctx context.Context, start time.Time, pbMsgs [
 		bmsgs:     bms,
 	})
 
+	mainCtx, mainCancel := context.WithCancel(ctx)
+	mainID := cs.registerAttempt(mainCancel)
 	t.enqueueHedgedRequest(&hedgedRequest{
 		attemptID: 1,
 		sendAfter: start.Add(t.hedgingDelay),
 		cs:        cs,
 	})
-
-	mainCtx, mainCancel := context.WithCancel(ctx)
-	mainID := cs.registerAttempt(mainCancel)
 	mainCtx = metadata.AppendToOutgoingContext(
 		mainCtx,
 		pubsubClientTelemetryHeader,
@@ -303,14 +305,13 @@ func (t *Publisher) enqueueHedgedRequest(req *hedgedRequest) {
 	}
 }
 
-func (t *Publisher) processHedgingQueue() {
+func (t *Publisher) drainDueHedgedRequests(now time.Time) []*hedgedRequest {
 	t.hedgingMu.Lock()
+	defer t.hedgingMu.Unlock()
 	if t.hedgingStopped {
-		t.hedgingMu.Unlock()
-		return
+		return nil
 	}
 
-	now := time.Now()
 	var ready []*hedgedRequest
 	for len(t.hedgingQueue) > 0 {
 		head := t.hedgingQueue[0]
@@ -327,8 +328,11 @@ func (t *Publisher) processHedgingQueue() {
 	} else {
 		t.hedgingTimer = nil
 	}
-	t.hedgingMu.Unlock()
+	return ready
+}
 
+func (t *Publisher) processHedgingQueue() {
+	ready := t.drainDueHedgedRequests(time.Now())
 	for _, req := range ready {
 		if !req.isDone() && t.tryAcquireHedgingToken() {
 			go t.fireHedgedAttempt(req)

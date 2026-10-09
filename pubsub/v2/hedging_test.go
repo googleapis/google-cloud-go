@@ -167,8 +167,8 @@ func TestPublishHedging_QueueDoesNotRetainPayload(t *testing.T) {
 	cs := queue[0].cs
 	cs.mu.Lock()
 	defer cs.mu.Unlock()
-	if !cs.done || cs.batch != nil {
-		t.Errorf("queued request's cancellationSharer: done=%v, batch=%v; want done=true, batch=nil", cs.done, cs.batch)
+	if !cs.isDone() || cs.batch != nil {
+		t.Errorf("queued request's cancellationSharer: done=%v, batch=%v; want done=true, batch=nil", cs.isDone(), cs.batch)
 	}
 }
 

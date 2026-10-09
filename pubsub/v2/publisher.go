@@ -543,9 +543,6 @@ func (t *Publisher) publishMessageBundle(ctx context.Context, bms []*bundledMess
 				Topic:    t.name,
 				Messages: pbMsgs,
 			}, gaxOpts...)
-			if err == nil && t.hedgingDelay > 0 {
-				t.replenishHedgingTokens()
-			}
 		}
 	}
 	end := time.Now()
