@@ -74,6 +74,9 @@ func startSpanWithBucket(ctx context.Context, client *Client, bucket string, nam
 	if !isOTelTracingDevEnabled() {
 		return startSpan(ctx, name, opts...)
 	}
+	if client != nil {
+		opts = append(opts, trace.WithAttributes(attribute.String("rpc.system.name", client.rpcSystem())))
+	}
 	if client != nil && client.bucketMetadataCache != nil && bucket != "" {
 		ctx = context.WithValue(ctx, cacheContextKey, client.bucketMetadataCache)
 		ctx = context.WithValue(ctx, bucketContextKey, bucket)

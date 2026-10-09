@@ -350,3 +350,46 @@ func TestEndSpanEviction(t *testing.T) {
 		})
 	}
 }
+
+func TestStorageTraceRPCSystemNameAttribute(t *testing.T) {
+	ctx := context.Background()
+	te := testutil.NewOpenTelemetryTestExporter()
+	t.Cleanup(func() {
+		te.Unregister(ctx)
+	})
+
+	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
+
+	httpClient := &Client{hc: &http.Client{}}
+	grpcClient := &Client{}
+
+	ctx1, _ := startSpanWithBucket(ctx, httpClient, "my-bucket", "Bucket.Attrs")
+	endSpan(ctx1, nil)
+
+	ctx2, _ := startSpanWithBucket(ctx, grpcClient, "my-bucket", "Bucket.Attrs")
+	endSpan(ctx2, nil)
+
+	spans := te.Spans()
+	if len(spans) != 2 {
+		t.Fatalf("expected 2 spans, got %d", len(spans))
+	}
+
+	var httpSysName, grpcSysName string
+	for _, attr := range spans[0].Attributes {
+		if attr.Key == "rpc.system.name" {
+			httpSysName = attr.Value.AsString()
+		}
+	}
+	for _, attr := range spans[1].Attributes {
+		if attr.Key == "rpc.system.name" {
+			grpcSysName = attr.Value.AsString()
+		}
+	}
+
+	if httpSysName != "http" {
+		t.Errorf("expected HTTP span rpc.system.name = %q, got %q", "http", httpSysName)
+	}
+	if grpcSysName != "grpc" {
+		t.Errorf("expected gRPC span rpc.system.name = %q, got %q", "grpc", grpcSysName)
+	}
+}
