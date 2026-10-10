@@ -5,7 +5,7 @@
         ":disableDependencyDashboard",
         "docker:disable"
     ],
-    "semanticCommits": false,
+    "semanticCommits": "disabled",
     "postUpdateOptions": [
         "gomodTidy"
     ],
@@ -25,13 +25,13 @@
             "constraintsFiltering": "strict"
     	},
         {
-            "matchPackagePatterns": [
-                "^github.com/google/go-github/v",
-                "^github.com/apache/arrow/go/v",
-                "^github.com/cloudprober/cloudprober",
-                "^go.einride.tech/aip"
-            ],
-            "enabled": false
+            "enabled": false,
+            "matchPackageNames": [
+                "/^github.com/google/go-github/v/",
+                "/^github.com/apache/arrow/go/v/",
+                "/^github.com/cloudprober/cloudprober/",
+                "/^go.einride.tech/aip/"
+            ]
         },
         {
           "matchPackageNames": ["cloud.google.com/go/pubsub"],
