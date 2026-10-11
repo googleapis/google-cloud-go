@@ -181,7 +181,7 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (client *g
 
 	var clientMetrics *clientMetrics
 	var metricsCleanup func()
-	if isOtelMetricsEnabled(&config) {
+	if isOtelMetricsEnabled(&config) || isOtelDebugMetricsEnabled(&config) {
 		clientMetrics, metricsCleanup = initGRPCMetricsAndWrapCredentials(ctx, &config, s)
 		if clientMetrics != nil {
 			unaryInt, streamInt := metricsInterceptors(clientMetrics)
@@ -243,10 +243,12 @@ func initGRPCMetricsAndWrapCredentials(ctx context.Context, config *storageConfi
 	var authCreds *auth.Credentials
 
 	credsOpts := append([]option.ClientOption{option.WithScopes(gapic.DefaultAuthScopes()...)}, s.clientOption...)
-	if c, err := internaloption.AuthCreds(ctx, credsOpts); err == nil {
+	if c, err := internaloption.AuthCreds(ctx, credsOpts); err == nil && c != nil {
+		// AuthCreds returns nil credentials without error when
+		// option.WithoutAuthentication is used.
 		authCreds = c
 		project, _ = authCreds.ProjectID(ctx)
-	} else if c, err := transport.Creds(ctx, credsOpts...); err == nil {
+	} else if c, err := transport.Creds(ctx, credsOpts...); err == nil && c != nil {
 		project = c.ProjectID
 	}
 

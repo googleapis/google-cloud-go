@@ -17,6 +17,7 @@ package storage
 import (
 	"context"
 	"crypto/tls"
+	"crypto/x509"
 	"errors"
 	"fmt"
 	"io"
@@ -24,14 +25,17 @@ import (
 	"net"
 	"net/http"
 	"net/http/httptrace"
+	"net/netip"
 	"os"
 	"strconv"
 	"strings"
 	"sync"
 	"sync/atomic"
+	"syscall"
 	"time"
 
 	"cloud.google.com/go/auth"
+	gcemetadata "cloud.google.com/go/compute/metadata"
 	"cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/storage/internal"
 	mexporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric"
@@ -48,6 +52,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/stats"
 	"google.golang.org/grpc/status"
 )
@@ -68,6 +73,7 @@ type clientMetrics struct {
 	responseBodySize          metric.Int64Histogram
 	ttfb                      metric.Float64Histogram
 	errors                    metric.Int64Counter
+	retries                   metric.Int64Counter
 	activeRequests            metric.Int64UpDownCounter
 	gfeHeaderMissing          metric.Int64Counter
 	dnsLookupDuration         metric.Float64Histogram
@@ -162,6 +168,21 @@ func newMetricsGCMExporter(ctx context.Context, projectID string) (sdkmetric.Exp
 	return exporter, nil
 }
 
+// detectMetricsProjectID returns the project to export metrics to when it
+// could not be derived from the client credentials. It checks the
+// GOOGLE_CLOUD_PROJECT environment variable and then the GCE metadata server.
+func detectMetricsProjectID(ctx context.Context) string {
+	if p := os.Getenv("GOOGLE_CLOUD_PROJECT"); p != "" {
+		return p
+	}
+	if gcemetadata.OnGCE() {
+		if p, err := gcemetadata.ProjectIDWithContext(ctx); err == nil {
+			return p
+		}
+	}
+	return ""
+}
+
 // initMetrics initializes clientMetrics with a meter provider and registered exporter.
 func initMetrics(ctx context.Context, projectID string, config *storageConfig) (*clientMetrics, func(), error) {
 	var provider *sdkmetric.MeterProvider
@@ -175,6 +196,14 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 		if config.metricExporter != nil {
 			exporter = *config.metricExporter
 		} else {
+			if projectID == "" {
+				projectID = detectMetricsProjectID(ctx)
+			}
+			if projectID == "" {
+				return nil, nil, errors.New("storage: client metrics are enabled but the project ID for Cloud Monitoring export could not be determined " +
+					"(for example when using option.WithHTTPClient or credentials without a project); set GOOGLE_CLOUD_PROJECT or " +
+					"provide experimental.WithMetricExporter or experimental.WithMeterProvider")
+			}
 			exporter, err = newMetricsGCMExporter(ctx, projectID)
 			if err != nil {
 				return nil, nil, err
@@ -295,8 +324,17 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 
 	attempts, err := meter.Int64Counter(
 		"gcp.storage.client.attempts",
-		metric.WithDescription("Number of GCS client attempts"),
+		metric.WithDescription("Number of GCS client attempts (individual HTTP requests or gRPC calls), including retries, resumable upload chunks and list pages."),
 		metric.WithUnit("1"),
+	)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	retries, err := meter.Int64Counter(
+		"gcp.storage.client.retries",
+		metric.WithDescription("Number of GCS client attempts that retried an earlier failed attempt of the same request. error.type is the error of the attempt that was retried. Resumable upload chunks and list pages are not retries."),
+		metric.WithUnit("{retry}"),
 	)
 	if err != nil {
 		return nil, nil, err
@@ -304,7 +342,7 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 
 	requestBodySize, err := meter.Int64Histogram(
 		"gcp.storage.client.request.body.size",
-		metric.WithDescription("Size of GCS client request body"),
+		metric.WithDescription("Number of object bytes written by an upload operation (recorded once per operation, including empty objects)."),
 		metric.WithUnit("By"),
 	)
 	if err != nil {
@@ -313,7 +351,7 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 
 	responseBodySize, err := meter.Int64Histogram(
 		"gcp.storage.client.response.body.size",
-		metric.WithDescription("Size of GCS client response body"),
+		metric.WithDescription("Number of object bytes delivered to the application by a download operation (recorded once per operation)."),
 		metric.WithUnit("By"),
 	)
 	if err != nil {
@@ -322,7 +360,7 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 
 	ttfb, err := meter.Float64Histogram(
 		"gcp.storage.client.operation.ttfb",
-		metric.WithDescription("Time to first byte of GCS client operations"),
+		metric.WithDescription("Time from the start of an attempt until the first byte of the response was received. Not recorded for attempts that received no response."),
 		metric.WithUnit("s"),
 	)
 	if err != nil {
@@ -331,7 +369,7 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 
 	errors, err := meter.Int64Counter(
 		"gcp.storage.client.errors",
-		metric.WithDescription("Number of GCS client errors"),
+		metric.WithDescription("Number of failed GCS client attempts, by error.type."),
 		metric.WithUnit("1"),
 	)
 	if err != nil {
@@ -380,7 +418,7 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 
 		credentialRefreshDuration, err = meter.Float64Histogram(
 			"gcp.storage.client.auth.credential_refresh.duration",
-			metric.WithDescription("Duration of the background API/network calls made to refresh OAuth2/JWT access credentials."),
+			metric.WithDescription("Time a request was blocked obtaining an access token (credential refreshes and failures). Tokens served from the credential cache are not recorded."),
 			metric.WithUnit("s"),
 		)
 		if err != nil {
@@ -397,7 +435,7 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 
 		gfeHeaderMissing, err = meter.Int64Counter(
 			"gcp.storage.client.gfe.header_missing",
-			metric.WithDescription("Number of GCS requests where the X-Goog-Gfe-Service-Time header was missing"),
+			metric.WithDescription("Number of GCS attempts without an X-Goog-Gfe-Service-Time response header, including attempts that failed before a response was received (see error.type). DirectPath responses, which bypass the GFE, are not counted."),
 			metric.WithUnit("1"),
 		)
 		if err != nil {
@@ -424,7 +462,7 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 
 		tlsHandshakeDuration, err = meter.Float64Histogram(
 			"gcp.storage.client.network.tls.handshake.duration",
-			metric.WithDescription("Time taken to perform a TLS handshake"),
+			metric.WithDescription("Time taken to perform a TLS handshake. For gRPC this is the connection setup time after the TCP connection is established (TLS or ALTS handshake)."),
 			metric.WithUnit("s"),
 		)
 		if err != nil {
@@ -452,6 +490,7 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 		responseBodySize:          responseBodySize,
 		ttfb:                      ttfb,
 		errors:                    errors,
+		retries:                   retries,
 		activeRequests:            activeRequests,
 		gfeHeaderMissing:          gfeHeaderMissing,
 		dnsLookupDuration:         dnsLookupDuration,
@@ -518,70 +557,196 @@ func grpcCodeToString(code codes.Code) string {
 	}
 }
 
+// Values of the error.type attribute that are not derived from a gRPC status
+// or an HTTP status code. They describe failures that happen on the client or
+// on the network before the server produced a response.
+const (
+	errorTypeOK                  = "OK"
+	errorTypeCancelled           = "CANCELLED"
+	errorTypeTimeout             = "TIMEOUT"
+	errorTypeDNSFailure          = "DNS_FAILURE"
+	errorTypeConnectionError     = "CONNECTION_ERROR"
+	errorTypeTLSFailure          = "TLS_FAILURE"
+	errorTypeAuthenticationError = "AUTHENTICATION_ERROR"
+	errorTypeChecksumMismatch    = "CHECKSUM_MISMATCH"
+	errorTypeUnknown             = "UNKNOWN"
+)
+
+// credentialError marks an error returned while obtaining an access token so
+// that it can be classified as AUTHENTICATION_ERROR regardless of the
+// underlying cause (for example a metadata server connection failure).
+// It is transparent to callers: Error() and Unwrap() expose the original error.
+type credentialError struct{ err error }
+
+func (e *credentialError) Error() string { return e.err.Error() }
+func (e *credentialError) Unwrap() error { return e.err }
+
 // computeErrorType maps the request result to the standard error.type values.
+//
+// The classification is based on error types and status codes. Server
+// responses (gRPC status or HTTP status code) always take precedence over the
+// error message, so that object or bucket names that appear in an error
+// message can never change the label. Message inspection is only used for
+// transport-level failures that gRPC reports as flattened status strings.
+//
+// TIMEOUT is used for client-side deadlines (context deadline or network
+// timeouts) while DEADLINE_EXCEEDED is used when the server or the gRPC
+// transport reports that status.
 func computeErrorType(err error, isHTTP bool, statusCode int64) string {
-	if err == nil {
+	// A bare io.EOF signals the successful end of a response body or stream.
+	if err == nil || err == io.EOF {
 		if isHTTP && statusCode >= 400 {
 			return mapHTTPStatusCode(int(statusCode))
 		}
-		return "OK"
+		return errorTypeOK
 	}
 
-	if err == io.EOF {
-		return "OK"
+	if errors.Is(err, context.Canceled) {
+		return errorTypeCancelled
 	}
-
-	errStr := strings.ToLower(err.Error())
-
-	if err == context.Canceled || strings.Contains(errStr, "context canceled") {
-		return "CANCELLED"
+	if errors.Is(err, context.DeadlineExceeded) {
+		return errorTypeTimeout
 	}
-
-	if err == context.DeadlineExceeded || strings.Contains(errStr, "deadline exceeded") || strings.Contains(errStr, "timeout") {
-		return "TIMEOUT"
+	var credErr *credentialError
+	if errors.As(err, &credErr) {
+		return errorTypeAuthenticationError
 	}
-
-	if strings.Contains(errStr, "checksum") || strings.Contains(errStr, "mismatch") {
-		return "CHECKSUM_MISMATCH"
-	}
-
-	if strings.Contains(errStr, "auth") || strings.Contains(errStr, "credentials") || strings.Contains(errStr, "token") || strings.Contains(errStr, "key") {
-		return "AUTHENTICATION_ERROR"
-	}
-
-	if strings.Contains(errStr, "no such host") || strings.Contains(errStr, "no address") {
-		return "DNS_FAILURE"
-	}
-
-	if strings.Contains(errStr, "connection refused") || strings.Contains(errStr, "connection reset") || strings.Contains(errStr, "dial tcp") || strings.Contains(errStr, "broken pipe") || strings.Contains(errStr, "eof") {
-		return "CONNECTION_ERROR"
-	}
-
-	if strings.Contains(errStr, "tls") || strings.Contains(errStr, "certificate") || strings.Contains(errStr, "x509") {
-		return "TLS_FAILURE"
+	if isChecksumError(err) {
+		return errorTypeChecksumMismatch
 	}
 
 	if !isHTTP {
 		if st, ok := status.FromError(err); ok && st.Code() != codes.OK {
-			return grpcCodeToString(st.Code())
+			return classifyGRPCStatus(st)
 		}
-	}
-
-	if isHTTP {
+	} else {
 		var apiErr *googleapi.Error
-		if errors.As(err, &apiErr) {
+		if errors.As(err, &apiErr) && apiErr.Code != 0 {
+			if apiErr.Code == http.StatusBadRequest && isChecksumMessage(apiErr.Message) {
+				return errorTypeChecksumMismatch
+			}
 			return mapHTTPStatusCode(apiErr.Code)
 		}
-		if statusCode >= 400 {
-			return mapHTTPStatusCode(int(statusCode))
-		}
 	}
 
-	return "UNKNOWN"
+	if t := classifyTransportError(err); t != "" {
+		return t
+	}
+
+	if isHTTP && statusCode >= 400 {
+		return mapHTTPStatusCode(int(statusCode))
+	}
+	return errorTypeUnknown
 }
 
-// mapHTTPStatusCode converts an HTTP status code to a canonical API error string.
-// If there is no direct mapping, it returns the numeric string.
+// classifyGRPCStatus maps a non-OK gRPC status to an error.type value. Failures
+// that happen before a response is received (DNS, TCP, TLS, per-RPC
+// credentials) are surfaced by grpc-go as UNAVAILABLE/UNKNOWN/INTERNAL/
+// UNAUTHENTICATED statuses whose message carries the underlying cause.
+func classifyGRPCStatus(st *status.Status) string {
+	code := st.Code()
+	msg := strings.ToLower(st.Message())
+	switch code {
+	case codes.Unavailable, codes.Unknown, codes.Internal, codes.Unauthenticated:
+		if strings.Contains(msg, "per-rpc creds failed") || strings.Contains(msg, "per-rpc credentials") {
+			return errorTypeAuthenticationError
+		}
+		if code != codes.Unauthenticated {
+			if t := classifyTransportMessage(msg); t != "" {
+				return t
+			}
+		}
+	case codes.InvalidArgument, codes.DataLoss:
+		if isChecksumMessage(msg) {
+			return errorTypeChecksumMismatch
+		}
+	}
+	return grpcCodeToString(code)
+}
+
+// classifyTransportError classifies network, TLS and credential errors based
+// on their types, falling back to well-known transport error messages.
+// It returns "" if the error is not recognized.
+func classifyTransportError(err error) string {
+	var authErr *auth.Error
+	if errors.As(err, &authErr) {
+		return errorTypeAuthenticationError
+	}
+	var dnsErr *net.DNSError
+	if errors.As(err, &dnsErr) {
+		return errorTypeDNSFailure
+	}
+	var (
+		certVerifyErr *tls.CertificateVerificationError
+		recordErr     tls.RecordHeaderError
+		alertErr      tls.AlertError
+		unknownAuth   x509.UnknownAuthorityError
+		hostnameErr   x509.HostnameError
+		certInvalid   x509.CertificateInvalidError
+	)
+	if errors.As(err, &certVerifyErr) || errors.As(err, &recordErr) || errors.As(err, &alertErr) ||
+		errors.As(err, &unknownAuth) || errors.As(err, &hostnameErr) || errors.As(err, &certInvalid) {
+		return errorTypeTLSFailure
+	}
+	// A failure to establish a connection is a connectivity problem even when
+	// it manifests as a dial timeout (e.g. packets dropped by a firewall).
+	var opErr *net.OpError
+	if errors.As(err, &opErr) && opErr.Op == "dial" {
+		return errorTypeConnectionError
+	}
+	var netErr net.Error
+	if errors.As(err, &netErr) && netErr.Timeout() {
+		return errorTypeTimeout
+	}
+	if errors.Is(err, io.EOF) || errors.Is(err, io.ErrUnexpectedEOF) || errors.Is(err, syscall.ECONNREFUSED) ||
+		errors.Is(err, syscall.ECONNRESET) || errors.Is(err, syscall.EPIPE) ||
+		errors.Is(err, syscall.ECONNABORTED) || errors.Is(err, syscall.EHOSTUNREACH) ||
+		errors.Is(err, syscall.ENETUNREACH) || errors.Is(err, net.ErrClosed) || opErr != nil {
+		return errorTypeConnectionError
+	}
+	return classifyTransportMessage(strings.ToLower(err.Error()))
+}
+
+// classifyTransportMessage recognizes transport-level failure messages
+// produced by the Go standard library and grpc-go. The input must be lower
+// case. It returns "" if the message is not recognized.
+func classifyTransportMessage(msg string) string {
+	switch {
+	case strings.Contains(msg, "no such host"), strings.Contains(msg, "server misbehaving"),
+		strings.Contains(msg, "produced zero addresses"):
+		return errorTypeDNSFailure
+	case strings.Contains(msg, "x509:"), strings.Contains(msg, "tls:"),
+		strings.Contains(msg, "authentication handshake failed"):
+		return errorTypeTLSFailure
+	case strings.Contains(msg, "connection refused"), strings.Contains(msg, "connection reset"),
+		strings.Contains(msg, "broken pipe"), strings.Contains(msg, "unexpected eof"),
+		strings.Contains(msg, "error while dialing"), strings.Contains(msg, "no route to host"),
+		strings.Contains(msg, "network is unreachable"), strings.Contains(msg, "use of closed network connection"),
+		strings.Contains(msg, "client connection lost"), strings.Contains(msg, "server sent goaway"):
+		return errorTypeConnectionError
+	}
+	return ""
+}
+
+// isChecksumError reports whether err is an integrity check failure detected
+// by the client (CRC32C/MD5 validation of downloaded or uploaded data).
+func isChecksumError(err error) bool {
+	msg := err.Error()
+	return strings.Contains(msg, "storage: bad CRC on") ||
+		strings.Contains(msg, "storage: object checksum mismatch") ||
+		strings.Contains(msg, "does not match the expected CRC32C")
+}
+
+// isChecksumMessage reports whether a server error message describes a
+// checksum validation failure of uploaded data.
+func isChecksumMessage(msg string) bool {
+	m := strings.ToLower(msg)
+	return (strings.Contains(m, "crc32c") || strings.Contains(m, "md5")) && strings.Contains(m, "match")
+}
+
+// mapHTTPStatusCode converts an HTTP status code to a canonical API error
+// string following the HTTP to gRPC status mapping. Status codes without a
+// canonical mapping are returned as numeric strings.
 func mapHTTPStatusCode(code int) string {
 	switch code {
 	case 400:
@@ -592,8 +757,12 @@ func mapHTTPStatusCode(code int) string {
 		return "PERMISSION_DENIED"
 	case 404:
 		return "NOT_FOUND"
+	case 408:
+		return "DEADLINE_EXCEEDED"
 	case 409:
 		return "ABORTED"
+	case 412:
+		return "FAILED_PRECONDITION"
 	case 416:
 		return "OUT_OF_RANGE"
 	case 429:
@@ -604,7 +773,7 @@ func mapHTTPStatusCode(code int) string {
 		return "INTERNAL"
 	case 501:
 		return "UNIMPLEMENTED"
-	case 503:
+	case 502, 503:
 		return "UNAVAILABLE"
 	case 504:
 		return "DEADLINE_EXCEEDED"
@@ -613,90 +782,126 @@ func mapHTTPStatusCode(code int) string {
 	}
 }
 
-func (cm *clientMetrics) recordRPC(ctx context.Context, method, target string, duration float64, err error) {
-	statusCode := int64(codes.OK)
+// isStreamingRPC reports whether the gRPC method streams object data. Unary
+// methods record time to first byte as the full attempt latency.
+func isStreamingRPC(methodName string) bool {
+	switch methodName {
+	case "ReadObject", "WriteObject", "BidiReadObject", "BidiWriteObject":
+		return true
+	}
+	return false
+}
+
+// recordRPC records the metrics of a finished gRPC attempt. responded reports
+// whether any response (headers, a message or trailers) was received from the
+// server; time to first byte is not recorded for attempts that never received
+// a response (for example DNS, connection or TLS failures).
+func (cm *clientMetrics) recordRPC(ctx context.Context, fullMethod, target string, duration float64, err error, responded bool) {
+	code := codes.OK
 	if err != nil && err != io.EOF {
-		statusCode = int64(status.Code(err))
+		code = status.Code(err)
 	}
+	methodName := getLogicalMethod(fullMethod)
+	errorType := refineCancelled(ctx, computeErrorType(err, false, 0))
+	server := stripPort(target)
+	statusAttr := attribute.String("rpc.status_code", grpcCodeToString(code))
 
-	service := "google.storage.v2.Storage"
-	methodName := method
-	if idx := strings.LastIndex(methodName, "/"); idx != -1 && idx > 0 {
-		service = methodName[1:idx]
-		methodName = methodName[idx+1:]
-	}
-
-	errorType := computeErrorType(err, false, statusCode)
-
+	// rpc.client.call.duration follows the OpenTelemetry RPC semantic
+	// conventions: fully-qualified rpc.method and string rpc.status_code.
 	attrs := []attribute.KeyValue{
 		attribute.String("rpc.system.name", "grpc"),
-		attribute.String("rpc.service", service),
-		attribute.String("rpc.method", methodName),
-		attribute.Int64("rpc.grpc.status_code", statusCode),
-		attribute.Int64("rpc.response.status_code", statusCode),
-		attribute.String("server.address", stripPort(target)),
+		attribute.String("rpc.method", strings.TrimPrefix(fullMethod, "/")),
+		statusAttr,
+		attribute.String("server.address", server),
 		attribute.String("error.type", errorType),
 	}
-
 	cm.rpcClientCallDuration.Record(ctx, duration, metric.WithAttributes(injectAPIMethod(ctx, attrs)...))
 
-	// Record standard attempt metric: gcp.storage.client.attempts.
 	state := metricsStateFromContext(ctx)
 	logicalMethod := methodName
 	if state != nil {
 		logicalMethod = state.method
 		state.setTarget(target)
 	}
-	attemptAttrs := make([]attribute.KeyValue, 0, 5)
-	attemptAttrs = append(attemptAttrs,
-		attribute.String("rpc.system.name", "grpc"),
-		attribute.String("rpc.method", logicalMethod),
-		attribute.Int64("rpc.grpc.status_code", statusCode),
-		attribute.String("server.address", stripPort(target)),
-		attribute.String("error.type", errorType),
-	)
-	cm.attempts.Add(ctx, 1, metric.WithAttributes(injectAPIMethod(ctx, attemptAttrs)...))
+	cm.recordAttempt(ctx, "grpc", logicalMethod, server, errorType, statusAttr, grpcRetryInfo(ctx))
 
-	// Record standard error metric: gcp.storage.client.errors.
-	if err != nil && err != io.EOF {
-		errorAttrs := make([]attribute.KeyValue, 0, 5)
-		errorAttrs = append(errorAttrs,
-			attribute.String("rpc.system.name", "grpc"),
-			attribute.String("rpc.method", logicalMethod),
-			attribute.String("server.address", stripPort(target)),
-			attribute.String("error.type", errorType),
-		)
-		cm.errors.Add(ctx, 1, metric.WithAttributes(injectAPIMethod(ctx, errorAttrs)...))
-	}
-
-	// For unary calls, record TTFB equal to the total attempt latency.
-	isStreaming := methodName == "ReadObject" || methodName == "WriteObject" || methodName == "BidiReadObject" || methodName == "BidiWriteObject"
-	if !isStreaming {
-		ttfbAttrs := []attribute.KeyValue{attribute.String("rpc.system.name", "grpc"), attribute.String("rpc.method", logicalMethod), attribute.String("server.address", stripPort(target))}
+	if !isStreamingRPC(methodName) && responded {
+		ttfbAttrs := []attribute.KeyValue{attribute.String("rpc.system.name", "grpc"), attribute.String("rpc.method", logicalMethod), attribute.String("server.address", server)}
 		cm.ttfb.Record(ctx, duration, metric.WithAttributes(injectAPIMethod(ctx, ttfbAttrs)...))
 	}
 }
 
-func (cm *clientMetrics) recordHTTP(ctx context.Context, req *http.Request, resp *http.Response, duration float64, err error) {
+// recordAttempt records gcp.storage.client.attempts for every attempt,
+// gcp.storage.client.errors for failed attempts and
+// gcp.storage.client.retries for attempts that retried an earlier attempt.
+func (cm *clientMetrics) recordAttempt(ctx context.Context, system, method, server, errorType string, statusAttr attribute.KeyValue, info retryInfo) {
+	base := []attribute.KeyValue{
+		attribute.String("rpc.system.name", system),
+		attribute.String("rpc.method", method),
+		attribute.String("server.address", server),
+		attribute.String("error.type", errorType),
+	}
+	attemptAttrs := make([]attribute.KeyValue, 0, len(base)+1)
+	attemptAttrs = append(attemptAttrs, base...)
+	attemptAttrs = append(attemptAttrs, statusAttr)
+	cm.attempts.Add(ctx, 1, metric.WithAttributes(injectAPIMethod(ctx, attemptAttrs)...))
+	if errorType != errorTypeOK {
+		cm.errors.Add(ctx, 1, metric.WithAttributes(injectAPIMethod(ctx, base)...))
+	}
+	cm.recordRetry(ctx, system, method, server, info, errorType)
+}
+
+// recordHTTP records the metrics of a finished HTTP attempt (after the
+// response body was fully read or closed, or the round trip failed).
+func (cm *clientMetrics) recordHTTP(ctx context.Context, req *http.Request, resp *http.Response, duration float64, errorType string) {
 	statusCode := int64(0)
 	if resp != nil {
 		statusCode = int64(resp.StatusCode)
 	}
+	server := stripPort(req.URL.Host)
 
-	urlTemplate := computeURLTemplate(req.URL.Path, req.URL.Host)
-	errorType := computeErrorType(err, true, statusCode)
-
+	// http.client.request.duration follows the OpenTelemetry HTTP semantic
+	// conventions.
 	attrs := []attribute.KeyValue{
 		attribute.String("rpc.system.name", "http"),
 		attribute.String("http.request.method", req.Method),
-		attribute.String("url.template", urlTemplate),
+		attribute.String("url.template", computeURLTemplate(req.URL.Path, req.URL.Host)),
 		attribute.Int64("http.response.status_code", statusCode),
-		attribute.Int64("rpc.response.status_code", statusCode),
-		attribute.String("server.address", stripPort(req.URL.Host)),
+		attribute.String("server.address", server),
 		attribute.String("error.type", errorType),
 	}
-
 	cm.httpClientRequestDuration.Record(ctx, duration, metric.WithAttributes(injectAPIMethod(ctx, attrs)...))
+
+	cm.recordAttempt(ctx, "http", httpLogicalMethod(ctx), server, errorType,
+		attribute.Int64("http.response.status_code", statusCode), parseRetryInfo(req.Header.Values(xGoogHeaderKey)))
+}
+
+// httpLogicalMethod returns the logical operation name of the request in ctx.
+func httpLogicalMethod(ctx context.Context) string {
+	if state := metricsStateFromContext(ctx); state != nil {
+		return state.method
+	}
+	return "Unknown"
+}
+
+// computeHTTPAttemptErrorType classifies the outcome of a single HTTP
+// round trip. Unlike response body reads, a round trip that fails with io.EOF
+// means the connection was closed before a response was received.
+func computeHTTPAttemptErrorType(err error, statusCode int64) string {
+	if err == io.EOF {
+		return errorTypeConnectionError
+	}
+	return computeErrorType(err, true, statusCode)
+}
+
+// refineCancelled labels attempts that the client aborted because of the
+// dynamic read stall timeout as TIMEOUT rather than CANCELLED, which would
+// otherwise suggest that the application cancelled the request.
+func refineCancelled(ctx context.Context, errorType string) string {
+	if errorType == errorTypeCancelled && errors.Is(context.Cause(ctx), errReadStallTimeout) {
+		return errorTypeTimeout
+	}
+	return errorType
 }
 
 // computeURLTemplate extracts a parameterized template path for a given GCS HTTP request URL path.
@@ -746,11 +951,22 @@ func computeURLTemplate(path, host string) string {
 	return prefix + "{bucket}/" + oRest
 }
 
+// stripPort returns the host name of an HTTP host ("host:port") or a gRPC
+// target ("dns:///host:port", "google-c2p:///host", "dns://authority/host"),
+// without scheme, authority or port, for use as the server.address attribute.
+// The attribute therefore identifies the configured Cloud Storage endpoint and
+// not the resolver or the path (DirectPath or CloudPath) used to reach it.
 func stripPort(host string) string {
+	if i := strings.Index(host, "://"); i >= 0 {
+		host = host[i+3:]
+		if j := strings.Index(host, "/"); j >= 0 {
+			host = host[j+1:]
+		}
+	}
 	if h, _, err := net.SplitHostPort(host); err == nil {
 		return h
 	}
-	return host
+	return strings.TrimSuffix(strings.TrimPrefix(host, "["), "]")
 }
 
 // metricsRoundTripper is an http.RoundTripper that wraps an underlying transport.
@@ -760,197 +976,177 @@ type metricsRoundTripper struct {
 }
 
 func (rt *metricsRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
-	state := metricsStateFromContext(req.Context())
-	var logicalMethod string
-	if state != nil {
-		logicalMethod = state.method
-	} else {
-		logicalMethod = "Unknown"
+	cm := rt.metrics
+	if cm == nil {
+		return rt.base.RoundTrip(req)
+	}
+	ctx := req.Context()
+	logicalMethod := httpLogicalMethod(ctx)
+	host := stripPort(req.URL.Host)
+	rpcAttrs := metric.WithAttributes(
+		attribute.String("rpc.method", logicalMethod),
+		attribute.String("rpc.system.name", "http"),
+		attribute.String("server.address", host),
+	)
+	if cm.activeRequests != nil {
+		cm.activeRequests.Add(ctx, 1, rpcAttrs)
 	}
 
-	var decrementActiveRequests bool
-	var netAttrs, rpcAttrs metric.MeasurementOption
-	if rt.metrics != nil {
-		host := stripPort(req.URL.Host)
-		netAttrs = metric.WithAttributes(
+	// Time to first byte is the time from sending the request until the
+	// first byte of the response arrives, as reported by httptrace. This is
+	// the same point curl (time_starttransfer), otelhttptrace and the AWS
+	// SDK's TimeToFirstByte measure, and it is independent of when the
+	// application starts reading the response body.
+	var firstByteNanos atomic.Int64
+	trace := &httptrace.ClientTrace{
+		GotFirstResponseByte: func() {
+			firstByteNanos.CompareAndSwap(0, time.Now().UnixNano())
+		},
+	}
+	if cm.dnsLookupDuration != nil || cm.tcpConnectDuration != nil || cm.tlsHandshakeDuration != nil {
+		rt.addNetworkTrace(ctx, trace, metric.WithAttributes(
 			attribute.String("rpc.system.name", "http"),
 			attribute.String("server.address", host),
-		)
-		rpcAttrs = metric.WithAttributes(
-			attribute.String("rpc.method", logicalMethod),
-			attribute.String("rpc.system.name", "http"),
-			attribute.String("server.address", host),
-		)
-		if rt.metrics.activeRequests != nil {
-			rt.metrics.activeRequests.Add(req.Context(), 1, rpcAttrs)
-			decrementActiveRequests = true
-		}
+		))
 	}
-	defer func() {
-		if decrementActiveRequests && rt.metrics != nil && rt.metrics.activeRequests != nil {
-			rt.metrics.activeRequests.Add(req.Context(), -1, rpcAttrs)
-		}
-	}()
-
-	if rt.metrics != nil && (rt.metrics.dnsLookupDuration != nil || rt.metrics.tcpConnectDuration != nil || rt.metrics.tlsHandshakeDuration != nil) {
-		var dnsStart, tlsStart time.Time
-		var tcpStarts sync.Map
-
-		trace := &httptrace.ClientTrace{
-			DNSStart: func(info httptrace.DNSStartInfo) {
-				dnsStart = time.Now()
-			},
-			DNSDone: func(info httptrace.DNSDoneInfo) {
-				if rt.metrics.dnsLookupDuration != nil {
-					start := dnsStart
-					if !start.IsZero() {
-						duration := time.Since(start).Seconds()
-						rt.metrics.dnsLookupDuration.Record(req.Context(), duration, netAttrs)
-					}
-				}
-			},
-			ConnectStart: func(network, addr string) {
-				tcpStarts.Store(addr, time.Now())
-			},
-			ConnectDone: func(network, addr string, err error) {
-				if err == nil && rt.metrics.tcpConnectDuration != nil {
-					if startV, ok := tcpStarts.LoadAndDelete(addr); ok {
-						duration := time.Since(startV.(time.Time)).Seconds()
-						rt.metrics.tcpConnectDuration.Record(req.Context(), duration, netAttrs)
-					}
-				}
-			},
-			TLSHandshakeStart: func() {
-				tlsStart = time.Now()
-			},
-			TLSHandshakeDone: func(state tls.ConnectionState, err error) {
-				if err == nil && rt.metrics.tlsHandshakeDuration != nil {
-					start := tlsStart
-					if !start.IsZero() {
-						duration := time.Since(start).Seconds()
-						rt.metrics.tlsHandshakeDuration.Record(req.Context(), duration, netAttrs)
-					}
-				}
-			},
-		}
-		req = req.WithContext(httptrace.WithClientTrace(req.Context(), trace))
-	}
+	req = req.WithContext(httptrace.WithClientTrace(ctx, trace))
 
 	startTime := time.Now()
 	resp, err := rt.base.RoundTrip(req)
 
-	statusCode := int64(0)
-	if resp != nil {
-		statusCode = int64(resp.StatusCode)
-	}
-	errorType := computeErrorType(err, true, statusCode)
-
-	if rt.metrics != nil {
-		state := metricsStateFromContext(req.Context())
-		if state != nil {
-			state.setTarget(req.URL.Host)
-		}
-		// Record attempt.
-		attemptAttrs := make([]attribute.KeyValue, 0, 4)
-		attemptAttrs = append(attemptAttrs,
-			attribute.String("rpc.system.name", "http"),
-			attribute.String("rpc.method", logicalMethod),
-			attribute.Int64("http.response.status_code", statusCode),
-			attribute.String("server.address", stripPort(req.URL.Host)),
-			attribute.String("error.type", errorType),
-		)
-		rt.metrics.attempts.Add(req.Context(), 1, metric.WithAttributes(injectAPIMethod(req.Context(), attemptAttrs)...))
-
-		// Record error if failed.
-		if err != nil || (resp != nil && resp.StatusCode >= 400) {
-			errorAttrs := make([]attribute.KeyValue, 0, 4)
-			errorAttrs = append(errorAttrs,
-				attribute.String("rpc.system.name", "http"),
-				attribute.String("rpc.method", logicalMethod),
-				attribute.String("server.address", stripPort(req.URL.Host)),
-				attribute.String("error.type", errorType),
-			)
-			rt.metrics.errors.Add(req.Context(), 1, metric.WithAttributes(injectAPIMethod(req.Context(), errorAttrs)...))
-		}
-
-		if rt.metrics.gfeHeaderMissing != nil {
-			headerVal := ""
-			if resp != nil {
-				headerVal = resp.Header.Get("X-Goog-Gfe-Service-Time")
-			}
-			if resp == nil || headerVal == "" {
-				missingAttrs := metric.WithAttributes(
-					attribute.String("rpc.method", logicalMethod),
-					attribute.String("rpc.system.name", "http"),
-					attribute.String("server.address", stripPort(req.URL.Host)),
-					attribute.String("error.type", errorType),
-				)
-				rt.metrics.gfeHeaderMissing.Add(req.Context(), 1, missingAttrs)
-			} else if rt.metrics.gfeDuration != nil {
-				if ms, parseErr := strconv.ParseFloat(headerVal, 64); parseErr == nil {
-					rt.metrics.gfeDuration.Record(req.Context(), ms/1000.0, rpcAttrs)
-				}
-			}
-		}
-
-		// Record TTFB.
-		isDownload := req.Method == "GET" && req.URL.Query().Get("alt") == "media"
-		isResumableInit := req.Method == "POST" && strings.Contains(req.URL.Path, "/upload/") && req.URL.Query().Get("uploadType") == "resumable"
-		if !isDownload || isResumableInit {
-			duration := time.Since(startTime).Seconds()
-			ttfbAttrs := []attribute.KeyValue{attribute.String("rpc.system.name", "http"), attribute.String("rpc.method", logicalMethod), attribute.String("server.address", stripPort(req.URL.Host))}
-			rt.metrics.ttfb.Record(req.Context(), duration, metric.WithAttributes(injectAPIMethod(req.Context(), ttfbAttrs)...))
-		}
+	if state := metricsStateFromContext(ctx); state != nil {
+		state.setTarget(req.URL.Host)
 	}
 
 	if err != nil {
-		if rt.metrics != nil {
-			duration := time.Since(startTime).Seconds()
-			rt.metrics.recordHTTP(req.Context(), req, nil, duration, err)
+		errorType := refineCancelled(ctx, computeHTTPAttemptErrorType(err, 0))
+		cm.recordHTTPGFEMetrics(ctx, nil, logicalMethod, host, errorType, rpcAttrs)
+		cm.recordHTTP(ctx, req, nil, time.Since(startTime).Seconds(), errorType)
+		if cm.activeRequests != nil {
+			cm.activeRequests.Add(ctx, -1, rpcAttrs)
 		}
 		return nil, err
 	}
 
-	if resp.Body != nil {
-		decrementActiveRequests = false
-		resp.Body = &wrappedResponseBody{
-			ReadCloser: resp.Body,
-			startTime:  startTime,
-			req:        req,
-			resp:       resp,
-			metrics:    rt.metrics,
-			isDownload: req.Method == "GET" && req.URL.Query().Get("alt") == "media",
-		}
-	} else {
-		if rt.metrics != nil {
-			duration := time.Since(startTime).Seconds()
-			rt.metrics.recordHTTP(req.Context(), req, resp, duration, nil)
-		}
+	// Attempts that received no response (err != nil above) record no TTFB.
+	// If the trace hook did not fire (custom transports that do not support
+	// httptrace), fall back to the time RoundTrip returned, which is after the
+	// response headers were read.
+	ttfb := time.Since(startTime)
+	if n := firstByteNanos.Load(); n != 0 {
+		ttfb = time.Unix(0, n).Sub(startTime)
 	}
+	ttfbAttrs := []attribute.KeyValue{attribute.String("rpc.system.name", "http"), attribute.String("rpc.method", logicalMethod), attribute.String("server.address", host)}
+	cm.ttfb.Record(ctx, ttfb.Seconds(), metric.WithAttributes(injectAPIMethod(ctx, ttfbAttrs)...))
+	cm.recordHTTPGFEMetrics(ctx, resp, logicalMethod, host, computeHTTPAttemptErrorType(nil, int64(resp.StatusCode)), rpcAttrs)
+
+	body := &wrappedResponseBody{
+		ReadCloser: resp.Body,
+		startTime:  startTime,
+		ctx:        ctx,
+		req:        req,
+		resp:       resp,
+		metrics:    cm,
+		rpcAttrs:   rpcAttrs,
+	}
+	if resp.Body == nil || resp.Body == http.NoBody {
+		// Nothing to read: the attempt is complete.
+		body.record(nil)
+		return resp, nil
+	}
+	resp.Body = body
 	return resp, nil
 }
 
+// addNetworkTrace adds DNS, TCP and TLS timing hooks to trace.
+func (rt *metricsRoundTripper) addNetworkTrace(ctx context.Context, trace *httptrace.ClientTrace, netAttrs metric.MeasurementOption) {
+	cm := rt.metrics
+	var mu sync.Mutex
+	var dnsStart, tlsStart time.Time
+	tcpStarts := map[string]time.Time{}
+	trace.DNSStart = func(httptrace.DNSStartInfo) {
+		mu.Lock()
+		dnsStart = time.Now()
+		mu.Unlock()
+	}
+	trace.DNSDone = func(httptrace.DNSDoneInfo) {
+		mu.Lock()
+		start := dnsStart
+		mu.Unlock()
+		if cm.dnsLookupDuration != nil && !start.IsZero() {
+			cm.dnsLookupDuration.Record(ctx, time.Since(start).Seconds(), netAttrs)
+		}
+	}
+	trace.ConnectStart = func(network, addr string) {
+		mu.Lock()
+		tcpStarts[addr] = time.Now()
+		mu.Unlock()
+	}
+	trace.ConnectDone = func(network, addr string, err error) {
+		mu.Lock()
+		start, ok := tcpStarts[addr]
+		delete(tcpStarts, addr)
+		mu.Unlock()
+		if err == nil && ok && cm.tcpConnectDuration != nil {
+			cm.tcpConnectDuration.Record(ctx, time.Since(start).Seconds(), netAttrs)
+		}
+	}
+	trace.TLSHandshakeStart = func() {
+		mu.Lock()
+		tlsStart = time.Now()
+		mu.Unlock()
+	}
+	trace.TLSHandshakeDone = func(_ tls.ConnectionState, err error) {
+		mu.Lock()
+		start := tlsStart
+		mu.Unlock()
+		if err == nil && cm.tlsHandshakeDuration != nil && !start.IsZero() {
+			cm.tlsHandshakeDuration.Record(ctx, time.Since(start).Seconds(), netAttrs)
+		}
+	}
+}
+
+// recordHTTPGFEMetrics records the GFE service time reported in the
+// X-Goog-Gfe-Service-Time response header, or counts a missing header. A nil
+// response (the request never reached a server) is counted as missing.
+func (cm *clientMetrics) recordHTTPGFEMetrics(ctx context.Context, resp *http.Response, logicalMethod, host, errorType string, rpcAttrs metric.MeasurementOption) {
+	if cm.gfeHeaderMissing == nil {
+		return
+	}
+	headerVal := ""
+	if resp != nil {
+		headerVal = resp.Header.Get("X-Goog-Gfe-Service-Time")
+	}
+	if headerVal == "" {
+		cm.gfeHeaderMissing.Add(ctx, 1, metric.WithAttributes(
+			attribute.String("rpc.method", logicalMethod),
+			attribute.String("rpc.system.name", "http"),
+			attribute.String("server.address", host),
+			attribute.String("error.type", errorType),
+		))
+		return
+	}
+	if cm.gfeDuration != nil {
+		if ms, err := strconv.ParseFloat(headerVal, 64); err == nil {
+			cm.gfeDuration.Record(ctx, ms/1000.0, rpcAttrs)
+		}
+	}
+}
+
+// wrappedResponseBody records the attempt metrics when the response body has
+// been fully read (io.EOF), failed, or was closed.
 type wrappedResponseBody struct {
 	io.ReadCloser
-	startTime  time.Time
-	req        *http.Request
-	resp       *http.Response
-	metrics    *clientMetrics
-	recorded   atomic.Bool
-	isDownload bool
-	firstRead  atomic.Bool
+	startTime time.Time
+	ctx       context.Context
+	req       *http.Request
+	resp      *http.Response
+	metrics   *clientMetrics
+	rpcAttrs  metric.MeasurementOption
+	recorded  atomic.Bool
 }
 
 func (w *wrappedResponseBody) Read(p []byte) (n int, err error) {
-	if w.isDownload && w.metrics != nil && w.firstRead.CompareAndSwap(false, true) {
-		duration := time.Since(w.startTime).Seconds()
-		state := metricsStateFromContext(w.req.Context())
-		logicalMethod := "ReadObject"
-		if state != nil {
-			logicalMethod = state.method
-		}
-		w.metrics.ttfb.Record(w.req.Context(), duration, metric.WithAttributes(attribute.String("rpc.system.name", "http"), attribute.String("rpc.method", logicalMethod), attribute.String("server.address", stripPort(w.req.URL.Host))))
-	}
 	n, err = w.ReadCloser.Read(p)
 	if err != nil {
 		w.record(err)
@@ -965,24 +1161,13 @@ func (w *wrappedResponseBody) Close() error {
 }
 
 func (w *wrappedResponseBody) record(err error) {
-	if w.recorded.CompareAndSwap(false, true) {
-		duration := time.Since(w.startTime).Seconds()
-		w.metrics.recordHTTP(w.req.Context(), w.req, w.resp, duration, err)
-
-		if w.metrics.activeRequests != nil {
-			state := metricsStateFromContext(w.req.Context())
-			var logicalMethod string
-			if state != nil {
-				logicalMethod = state.method
-			} else {
-				logicalMethod = "Unknown"
-			}
-			w.metrics.activeRequests.Add(w.req.Context(), -1, metric.WithAttributes(
-				attribute.String("rpc.method", logicalMethod),
-				attribute.String("rpc.system.name", "http"),
-				attribute.String("server.address", stripPort(w.req.URL.Host)),
-			))
-		}
+	if !w.recorded.CompareAndSwap(false, true) {
+		return
+	}
+	duration := time.Since(w.startTime).Seconds()
+	w.metrics.recordHTTP(w.ctx, w.req, w.resp, duration, refineCancelled(w.ctx, computeErrorType(err, true, int64(w.resp.StatusCode))))
+	if w.metrics.activeRequests != nil {
+		w.metrics.activeRequests.Add(w.ctx, -1, w.rpcAttrs)
 	}
 }
 
@@ -993,11 +1178,62 @@ func getLogicalMethod(method string) string {
 	return method
 }
 
-func (cm *clientMetrics) recordGFEMetrics(ctx context.Context, headerMD, trailerMD metadata.MD, err error, logicalMethod, target string, rpcAttrs metric.MeasurementOption) {
+// DirectPath traffic is served from these address ranges and bypasses the
+// GFE, so responses do not carry the X-Goog-Gfe-Service-Time header.
+var (
+	directPathIPv4Range = netip.MustParsePrefix("34.126.0.0/18")
+	directPathIPv6Range = netip.MustParsePrefix("2001:4860:8040::/42")
+)
+
+// isDirectPathPeer reports whether the connection peer is a DirectPath address.
+func isDirectPathPeer(p *peer.Peer) bool {
+	if p == nil || p.Addr == nil {
+		return false
+	}
+	ip, err := netip.ParseAddr(stripPort(p.Addr.String()))
+	if err != nil {
+		return false
+	}
+	ip = ip.Unmap()
+	return directPathIPv4Range.Contains(ip) || directPathIPv6Range.Contains(ip)
+}
+
+// grpcLogicalMethod returns the logical storage operation for a gRPC call so
+// that all gcp.storage.client.* metrics use the same rpc.method values
+// regardless of the underlying RPC (e.g. ReadObject for BidiReadObject).
+func grpcLogicalMethod(ctx context.Context, fullMethod string) string {
+	if state := metricsStateFromContext(ctx); state != nil {
+		return state.method
+	}
+	return getLogicalMethod(fullMethod)
+}
+
+// isClientSideErrorType reports whether errorType describes a failure that
+// happened before any response was received from the server.
+func isClientSideErrorType(errorType string) bool {
+	switch errorType {
+	case errorTypeCancelled, errorTypeTimeout, errorTypeDNSFailure, errorTypeConnectionError,
+		errorTypeTLSFailure, errorTypeAuthenticationError:
+		return true
+	}
+	return false
+}
+
+// grpcResponded reports whether a gRPC attempt received a response from the server.
+func grpcResponded(err error, headerMD, trailerMD metadata.MD, p *peer.Peer) bool {
+	if err == nil || err == io.EOF || len(headerMD) > 0 || len(trailerMD) > 0 {
+		return true
+	}
+	return p != nil && p.Addr != nil && !isClientSideErrorType(computeErrorType(err, false, 0))
+}
+
+// recordGFEMetrics records the GFE service time from the
+// x-goog-gfe-service-time response metadata, or counts a missing header.
+// DirectPath responses never carry the header and are not counted as missing.
+func (cm *clientMetrics) recordGFEMetrics(ctx context.Context, headerMD, trailerMD metadata.MD, err error, logicalMethod, target string, p *peer.Peer) {
 	if cm.gfeHeaderMissing == nil {
 		return
 	}
-
 	headerVals := headerMD.Get("x-goog-gfe-service-time")
 	if len(headerVals) == 0 {
 		headerVals = trailerMD.Get("x-goog-gfe-service-time")
@@ -1006,18 +1242,26 @@ func (cm *clientMetrics) recordGFEMetrics(ctx context.Context, headerMD, trailer
 	if len(headerVals) > 0 {
 		headerVal = headerVals[0]
 	}
+	server := stripPort(target)
 	if headerVal == "" {
-		errType := computeErrorType(err, false, int64(status.Code(err)))
-		missingAttrs := metric.WithAttributes(
+		if isDirectPathPeer(p) {
+			return
+		}
+		cm.gfeHeaderMissing.Add(ctx, 1, metric.WithAttributes(
 			attribute.String("rpc.method", logicalMethod),
 			attribute.String("rpc.system.name", "grpc"),
-			attribute.String("server.address", stripPort(target)),
-			attribute.String("error.type", errType),
-		)
-		cm.gfeHeaderMissing.Add(ctx, 1, missingAttrs)
-	} else if cm.gfeDuration != nil {
+			attribute.String("server.address", server),
+			attribute.String("error.type", computeErrorType(err, false, 0)),
+		))
+		return
+	}
+	if cm.gfeDuration != nil {
 		if ms, parseErr := strconv.ParseFloat(headerVal, 64); parseErr == nil {
-			cm.gfeDuration.Record(ctx, ms/1000.0, rpcAttrs)
+			cm.gfeDuration.Record(ctx, ms/1000.0, metric.WithAttributes(
+				attribute.String("rpc.method", logicalMethod),
+				attribute.String("rpc.system.name", "grpc"),
+				attribute.String("server.address", server),
+			))
 		}
 	}
 }
@@ -1025,47 +1269,48 @@ func (cm *clientMetrics) recordGFEMetrics(ctx context.Context, headerMD, trailer
 // metricsInterceptors returns gRPC client interceptors.
 func metricsInterceptors(cm *clientMetrics) (grpc.UnaryClientInterceptor, grpc.StreamClientInterceptor) {
 	unary := func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
-		logicalMethod := getLogicalMethod(method)
-
 		target := ""
 		if cc != nil {
 			target = cc.Target()
 		}
+		// Record the target up front: operation metrics may be recorded (e.g. on
+		// Reader.Close) before an asynchronously finished stream is.
+		metricsStateFromContext(ctx).setTarget(target)
+		logicalMethod := grpcLogicalMethod(ctx, method)
 
 		var rpcAttrs metric.MeasurementOption
-		if cm.activeRequests != nil || cm.gfeHeaderMissing != nil {
+		if cm.activeRequests != nil {
 			rpcAttrs = metric.WithAttributes(
 				attribute.String("rpc.method", logicalMethod),
 				attribute.String("rpc.system.name", "grpc"),
 				attribute.String("server.address", stripPort(target)),
 			)
-		}
-
-		if cm.activeRequests != nil {
 			cm.activeRequests.Add(ctx, 1, rpcAttrs)
 			defer cm.activeRequests.Add(ctx, -1, rpcAttrs)
 		}
 
 		var headerMD, trailerMD metadata.MD
-		opts = append(opts, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
+		var p peer.Peer
+		opts = append(opts, grpc.Header(&headerMD), grpc.Trailer(&trailerMD), grpc.Peer(&p))
 
 		startTime := time.Now()
 		err := invoker(ctx, method, req, reply, cc, opts...)
-
-		cm.recordGFEMetrics(ctx, headerMD, trailerMD, err, logicalMethod, target, rpcAttrs)
-
 		duration := time.Since(startTime).Seconds()
-		cm.recordRPC(ctx, method, target, duration, err)
+
+		cm.recordGFEMetrics(ctx, headerMD, trailerMD, err, logicalMethod, target, &p)
+		cm.recordRPC(ctx, method, target, duration, err, grpcResponded(err, headerMD, trailerMD, &p))
 		return err
 	}
 
 	stream := func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
-		logicalMethod := getLogicalMethod(method)
-
 		target := ""
 		if cc != nil {
 			target = cc.Target()
 		}
+		// Record the target up front: operation metrics may be recorded (e.g. on
+		// Reader.Close) before an asynchronously finished stream is.
+		metricsStateFromContext(ctx).setTarget(target)
+		logicalMethod := grpcLogicalMethod(ctx, method)
 
 		var rpcAttrs metric.MeasurementOption
 		if cm.activeRequests != nil {
@@ -1077,40 +1322,90 @@ func metricsInterceptors(cm *clientMetrics) (grpc.UnaryClientInterceptor, grpc.S
 			cm.activeRequests.Add(ctx, 1, rpcAttrs)
 		}
 
+		// OnFinish is invoked when the stream ends for any reason, including
+		// cancellation by the caller (e.g. a Reader closed before EOF). Without
+		// it, streams that are never drained are never recorded and leak the
+		// in-flight gauge.
+		finisher := &streamFinisher{}
+		opts = append(opts, grpc.OnFinish(finisher.onFinish))
+
 		startTime := time.Now()
 		clientStream, err := streamer(ctx, desc, cc, method, opts...)
-
 		if err != nil {
+			finisher.attach(nil)
 			if cm.activeRequests != nil {
 				cm.activeRequests.Add(ctx, -1, rpcAttrs)
 			}
 			duration := time.Since(startTime).Seconds()
-			cm.recordRPC(ctx, method, target, duration, err)
+			cm.recordGFEMetrics(ctx, nil, nil, err, logicalMethod, target, nil)
+			cm.recordRPC(ctx, method, target, duration, err, false)
 			return nil, err
 		}
 
-		return &wrappedClientStream{
+		w := &wrappedClientStream{
 			ClientStream:  clientStream,
 			startTime:     startTime,
 			method:        method,
+			logicalMethod: logicalMethod,
 			target:        target,
 			metrics:       cm,
 			ctx:           ctx,
+			rpcAttrs:      rpcAttrs,
 			serverStreams: desc.ServerStreams,
 			clientStreams: desc.ClientStreams,
-		}, nil
+		}
+		finisher.attach(w)
+		return w, nil
 	}
 
 	return unary, stream
+}
+
+// streamFinisher connects the grpc.OnFinish callback, which may fire before
+// the wrapped stream exists, to the wrappedClientStream.
+type streamFinisher struct {
+	mu       sync.Mutex
+	attached bool
+	w        *wrappedClientStream
+	finished bool
+	err      error
+}
+
+func (f *streamFinisher) onFinish(err error) {
+	f.mu.Lock()
+	w, attached := f.w, f.attached
+	if !attached {
+		f.finished, f.err = true, err
+	}
+	f.mu.Unlock()
+	if w != nil {
+		// grpc-go invokes OnFinish while holding the stream lock, so the
+		// stream (Header, Trailer, Context) must be inspected asynchronously.
+		go w.record(err)
+	}
+}
+
+// attach associates the stream with the finisher. A nil w means stream
+// creation failed and was recorded by the caller.
+func (f *streamFinisher) attach(w *wrappedClientStream) {
+	f.mu.Lock()
+	f.attached, f.w = true, w
+	finished, err := f.finished, f.err
+	f.mu.Unlock()
+	if finished && w != nil {
+		w.record(err)
+	}
 }
 
 type wrappedClientStream struct {
 	grpc.ClientStream
 	startTime     time.Time
 	method        string
+	logicalMethod string
 	target        string
 	metrics       *clientMetrics
 	ctx           context.Context
+	rpcAttrs      metric.MeasurementOption
 	recorded      atomic.Bool
 	serverStreams bool
 	clientStreams bool
@@ -1120,7 +1415,7 @@ type wrappedClientStream struct {
 func (w *wrappedClientStream) RecvMsg(m interface{}) error {
 	err := w.ClientStream.RecvMsg(m)
 	if err == nil {
-		w.recordTTFB(m)
+		w.recordTTFB()
 	}
 	// For client-streaming streams (like WriteObject), the single successful RecvMsg call
 	// returns the response and nil error, which marks the completion of the stream.
@@ -1131,57 +1426,37 @@ func (w *wrappedClientStream) RecvMsg(m interface{}) error {
 	return err
 }
 
-func (w *wrappedClientStream) SendMsg(m interface{}) error {
-	err := w.ClientStream.SendMsg(m)
-	if err != nil {
-		w.record(err)
-	}
-	return err
-}
-
+// record records the attempt metrics once. SendMsg errors are not recorded
+// here: gRPC reports the stream status through RecvMsg or OnFinish (SendMsg
+// returns io.EOF when the server terminated the stream).
 func (w *wrappedClientStream) record(err error) {
-	if w.recorded.CompareAndSwap(false, true) {
-		duration := time.Since(w.startTime).Seconds()
-		w.metrics.recordRPC(w.ctx, w.method, w.target, duration, err)
-
-		logicalMethod := getLogicalMethod(w.method)
-
-		var rpcAttrs metric.MeasurementOption
-		if w.metrics.activeRequests != nil || w.metrics.gfeHeaderMissing != nil {
-			rpcAttrs = metric.WithAttributes(
-				attribute.String("rpc.method", logicalMethod),
-				attribute.String("rpc.system.name", "grpc"),
-				attribute.String("server.address", stripPort(w.target)),
-			)
-		}
-
-		if w.metrics.activeRequests != nil {
-			w.metrics.activeRequests.Add(w.ctx, -1, rpcAttrs)
-		}
-
-		headerMD, _ := w.ClientStream.Header()
-		trailerMD := w.ClientStream.Trailer()
-		w.metrics.recordGFEMetrics(w.ctx, headerMD, trailerMD, err, logicalMethod, w.target, rpcAttrs)
-	}
-}
-
-func (w *wrappedClientStream) recordTTFB(m interface{}) {
-	if w.recordedTTFB.Load() {
+	if !w.recorded.CompareAndSwap(false, true) {
 		return
 	}
-	methodName := getLogicalMethod(w.method)
+	duration := time.Since(w.startTime).Seconds()
+	headerMD, _ := w.ClientStream.Header()
+	trailerMD := w.ClientStream.Trailer()
+	p, _ := peer.FromContext(w.ClientStream.Context())
 
-	// The first response from the server, whether it contains metadata,
-	// persisted size, or actual content, indicates TTFB.
-	if w.recordedTTFB.CompareAndSwap(false, true) {
-		duration := time.Since(w.startTime).Seconds()
-		state := metricsStateFromContext(w.ctx)
-		logicalMethod := methodName
-		if state != nil {
-			logicalMethod = state.method
-		}
-		w.metrics.ttfb.Record(w.ctx, duration, metric.WithAttributes(attribute.String("rpc.system.name", "grpc"), attribute.String("rpc.method", logicalMethod), attribute.String("server.address", stripPort(w.target))))
+	if w.metrics.activeRequests != nil {
+		w.metrics.activeRequests.Add(w.ctx, -1, w.rpcAttrs)
 	}
+	w.metrics.recordGFEMetrics(w.ctx, headerMD, trailerMD, err, w.logicalMethod, w.target, p)
+	w.metrics.recordRPC(w.ctx, w.method, w.target, duration, err, grpcResponded(err, headerMD, trailerMD, p))
+}
+
+// recordTTFB records the time to the first response message of the stream,
+// whether it contains metadata, persisted size or object data.
+func (w *wrappedClientStream) recordTTFB() {
+	if !w.recordedTTFB.CompareAndSwap(false, true) {
+		return
+	}
+	duration := time.Since(w.startTime).Seconds()
+	w.metrics.ttfb.Record(w.ctx, duration, metric.WithAttributes(injectAPIMethod(w.ctx, []attribute.KeyValue{
+		attribute.String("rpc.system.name", "grpc"),
+		attribute.String("rpc.method", w.logicalMethod),
+		attribute.String("server.address", stripPort(w.target)),
+	})...))
 }
 
 type metricsKey struct{}
@@ -1202,6 +1477,61 @@ type metricsState struct {
 	metrics   *clientMetrics
 	isHTTP    bool
 	record    func(error)
+	sizeOnce  sync.Once
+	// composite marks an operation that is implemented with other client
+	// operations (e.g. a parallel composite upload that uploads parts and
+	// composes them). Operations started within it are not recorded as
+	// operations of their own; their attempts are still recorded.
+	composite bool
+	// parent is the composite operation this operation belongs to.
+	parent *metricsState
+	// retryTracker attributes retries to the failure that caused them.
+	retryTracker retryTracker
+}
+
+// retries returns the retry tracker of the operation. Operations that are part
+// of a composite operation share the tracker of the composite operation.
+func (s *metricsState) retries() *retryTracker {
+	if s == nil {
+		return nil
+	}
+	if s.parent != nil {
+		return s.parent.retries()
+	}
+	return &s.retryTracker
+}
+
+// recordResponseBodySize records the number of object bytes delivered to the
+// application by the operation. It records at most once per operation and
+// includes zero-byte reads.
+func (s *metricsState) recordResponseBodySize(ctx context.Context, n int64) {
+	if s == nil || s.metrics == nil {
+		return
+	}
+	s.recordBodySize(ctx, s.metrics.responseBodySize, n)
+}
+
+// recordRequestBodySize records the number of object bytes written by the
+// operation. It records at most once per operation and includes zero-byte
+// objects.
+func (s *metricsState) recordRequestBodySize(ctx context.Context, n int64) {
+	if s == nil || s.metrics == nil {
+		return
+	}
+	s.recordBodySize(ctx, s.metrics.requestBodySize, n)
+}
+
+func (s *metricsState) recordBodySize(ctx context.Context, h metric.Int64Histogram, n int64) {
+	if h == nil || s.parent != nil {
+		return
+	}
+	s.sizeOnce.Do(func() {
+		h.Record(ctx, n, metric.WithAttributes(injectAPIMethod(ctx, []attribute.KeyValue{
+			attribute.String("rpc.system.name", s.getSystemName()),
+			attribute.String("rpc.method", s.method),
+			attribute.String("server.address", stripPort(s.getTarget())),
+		})...))
+	})
 }
 
 func (s *metricsState) setTarget(t string) {
@@ -1209,6 +1539,9 @@ func (s *metricsState) setTarget(t string) {
 		return
 	}
 	s.target.Store(&t)
+	if s.parent != nil {
+		s.parent.setTarget(t)
+	}
 }
 
 func (s *metricsState) getSystemName() string {
@@ -1245,16 +1578,16 @@ func metricsStateFromContext(ctx context.Context) *metricsState {
 	return nil
 }
 
-func contextWithoutMetrics(ctx context.Context) context.Context {
-	if ctx == nil {
-		return nil
-	}
-	return context.WithValue(ctx, metricsKey{}, (*metricsState)(nil))
-}
-
 func (cm *clientMetrics) startOperation(ctx context.Context, method string, isHTTP bool) (context.Context, func(error)) {
 	if cm == nil {
 		return ctx, func(error) {}
+	}
+	if parent := metricsStateFromContext(ctx); parent != nil && parent.composite {
+		// Part of a composite operation: attribute attempts to this call but
+		// record the operation only once, for the composite operation.
+		child := &metricsState{method: method, startTime: time.Now(), metrics: cm, isHTTP: isHTTP, parent: parent}
+		child.record = func(error) {}
+		return contextWithMetricsState(ctx, child), child.record
 	}
 	state := &metricsState{
 		method:    method,
@@ -1284,6 +1617,18 @@ func (cm *clientMetrics) startOperation(ctx context.Context, method string, isHT
 
 	ctx = contextWithMetricsState(ctx, state)
 	return ctx, record
+}
+
+// startCompositeOperation starts an operation that is implemented with other
+// client operations. It is recorded when the returned state's record function
+// is called (for writers, in Writer.Close); operations started with the
+// returned context are recorded as attempts only.
+func (cm *clientMetrics) startCompositeOperation(ctx context.Context, method string, isHTTP bool) context.Context {
+	ctx, _ = cm.startOperation(ctx, method, isHTTP)
+	if state := metricsStateFromContext(ctx); state != nil {
+		state.composite = true
+	}
+	return ctx
 }
 
 // startMetricsOp starts a client operation if OpenTelemetry metrics are enabled in ctx.
@@ -1703,15 +2048,48 @@ func grpcNetworkMetricsDialOptions(host string, metrics *clientMetrics) []option
 }
 
 type metricsTokenProvider struct {
-	base    auth.TokenProvider
-	metrics *clientMetrics
+	base auth.TokenProvider
+	// metrics may be attached after the provider has been installed in a
+	// transport (see NewClient), hence the atomic pointer.
+	metrics atomic.Pointer[clientMetrics]
+}
+
+func newMetricsTokenProvider(base auth.TokenProvider, m *clientMetrics) *metricsTokenProvider {
+	p := &metricsTokenProvider{base: base}
+	if m != nil {
+		p.metrics.Store(m)
+	}
+	return p
 }
 
 func (p *metricsTokenProvider) Token(ctx context.Context) (*auth.Token, error) {
 	start := time.Now()
 	tok, err := p.base.Token(ctx)
-	p.metrics.recordCredentialRefreshDuration(ctx, time.Since(start), err)
+	p.metrics.Load().recordCredentialRefreshDuration(ctx, time.Since(start), err)
+	if err != nil {
+		var credErr *credentialError
+		if !errors.As(err, &credErr) {
+			err = &credentialError{err: err}
+		}
+	}
 	return tok, err
+}
+
+// deferredMetricsCredentials returns a copy of c whose token provider records
+// credential refresh metrics once metrics are attached to the returned
+// provider. It is used by NewClient, which must build the http.Client (and
+// therefore install the credentials) before the metrics pipeline exists.
+func deferredMetricsCredentials(c *auth.Credentials) (*auth.Credentials, *metricsTokenProvider) {
+	if c == nil || c.TokenProvider == nil {
+		return c, nil
+	}
+	if mtp, ok := c.TokenProvider.(*metricsTokenProvider); ok {
+		return c, mtp
+	}
+	mtp := newMetricsTokenProvider(c.TokenProvider, nil)
+	clone := *c
+	clone.TokenProvider = mtp
+	return &clone, mtp
 }
 
 // wrapAuthCredentials wraps an auth.Credentials object to track credential refresh durations.
@@ -1724,25 +2102,50 @@ func wrapAuthCredentials(c *auth.Credentials, m *clientMetrics) *auth.Credential
 		return c
 	}
 	if mtp, ok := c.TokenProvider.(*metricsTokenProvider); ok {
-		if m == nil || mtp.metrics == m {
+		if m == nil || mtp.metrics.Load() == m {
+			return c
+		}
+		// A provider installed by NewClient without metrics yet: attach them
+		// in place so the already-built transport starts recording.
+		if mtp.metrics.CompareAndSwap(nil, m) {
 			return c
 		}
 		clone := *c
-		clone.TokenProvider = &metricsTokenProvider{base: mtp.base, metrics: m}
+		clone.TokenProvider = newMetricsTokenProvider(mtp.base, m)
 		return &clone
 	}
 	clone := *c
-	clone.TokenProvider = &metricsTokenProvider{base: c.TokenProvider, metrics: m}
+	clone.TokenProvider = newMetricsTokenProvider(c.TokenProvider, m)
 	return &clone
 }
 
+// credentialCacheHitThreshold is the duration below which a call to
+// TokenProvider.Token is considered to have been served from the token cache.
+// Cached lookups take microseconds, whereas any refresh involves a network
+// round trip (metadata server, STS or OAuth2 endpoint).
+const credentialCacheHitThreshold = time.Millisecond
+
+// recordCredentialRefreshDuration records the time a request was blocked while
+// obtaining an access token. The auth libraries cache tokens and serve almost
+// every call from memory; those cache hits are not recorded so that the
+// histogram reflects actual credential refreshes (and failures) that added
+// latency to requests. Background (asynchronous) refreshes that do not block a
+// request are not observable here.
 func (cm *clientMetrics) recordCredentialRefreshDuration(ctx context.Context, duration time.Duration, err error) {
 	if cm == nil || cm.credentialRefreshDuration == nil {
 		return
 	}
-	errorType := "OK"
+	if err == nil && duration < credentialCacheHitThreshold {
+		return
+	}
+	errorType := errorTypeOK
 	if err != nil {
-		errorType = "CLIENT_AUTHENTICATION_ERROR"
+		errorType = errorTypeAuthenticationError
+		if errors.Is(err, context.Canceled) {
+			errorType = errorTypeCancelled
+		} else if errors.Is(err, context.DeadlineExceeded) {
+			errorType = errorTypeTimeout
+		}
 	}
 	attrs := []attribute.KeyValue{attribute.String("error.type", errorType)}
 	cm.credentialRefreshDuration.Record(ctx, duration.Seconds(), metric.WithAttributes(attrs...))
