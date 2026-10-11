@@ -73,6 +73,7 @@ type clientMetrics struct {
 	responseBodySize          metric.Int64Histogram
 	ttfb                      metric.Float64Histogram
 	errors                    metric.Int64Counter
+	retries                   metric.Int64Counter
 	activeRequests            metric.Int64UpDownCounter
 	gfeHeaderMissing          metric.Int64Counter
 	dnsLookupDuration         metric.Float64Histogram
@@ -330,6 +331,15 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 		return nil, nil, err
 	}
 
+	retries, err := meter.Int64Counter(
+		"gcp.storage.client.retries",
+		metric.WithDescription("Number of GCS client attempts that retried an earlier failed attempt of the same request. error.type is the error of the attempt that was retried. Resumable upload chunks and list pages are not retries."),
+		metric.WithUnit("{retry}"),
+	)
+	if err != nil {
+		return nil, nil, err
+	}
+
 	requestBodySize, err := meter.Int64Histogram(
 		"gcp.storage.client.request.body.size",
 		metric.WithDescription("Number of object bytes written by an upload operation (recorded once per operation, including empty objects)."),
@@ -480,6 +490,7 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 		responseBodySize:          responseBodySize,
 		ttfb:                      ttfb,
 		errors:                    errors,
+		retries:                   retries,
 		activeRequests:            activeRequests,
 		gfeHeaderMissing:          gfeHeaderMissing,
 		dnsLookupDuration:         dnsLookupDuration,
@@ -812,7 +823,7 @@ func (cm *clientMetrics) recordRPC(ctx context.Context, fullMethod, target strin
 		logicalMethod = state.method
 		state.setTarget(target)
 	}
-	cm.recordAttempt(ctx, "grpc", logicalMethod, server, errorType, statusAttr)
+	cm.recordAttempt(ctx, "grpc", logicalMethod, server, errorType, statusAttr, grpcRetryInfo(ctx))
 
 	if !isStreamingRPC(methodName) && responded {
 		ttfbAttrs := []attribute.KeyValue{attribute.String("rpc.system.name", "grpc"), attribute.String("rpc.method", logicalMethod), attribute.String("server.address", server)}
@@ -820,9 +831,10 @@ func (cm *clientMetrics) recordRPC(ctx context.Context, fullMethod, target strin
 	}
 }
 
-// recordAttempt records gcp.storage.client.attempts for every attempt and
-// gcp.storage.client.errors for failed attempts.
-func (cm *clientMetrics) recordAttempt(ctx context.Context, system, method, server, errorType string, statusAttr attribute.KeyValue) {
+// recordAttempt records gcp.storage.client.attempts for every attempt,
+// gcp.storage.client.errors for failed attempts and
+// gcp.storage.client.retries for attempts that retried an earlier attempt.
+func (cm *clientMetrics) recordAttempt(ctx context.Context, system, method, server, errorType string, statusAttr attribute.KeyValue, info retryInfo) {
 	base := []attribute.KeyValue{
 		attribute.String("rpc.system.name", system),
 		attribute.String("rpc.method", method),
@@ -836,6 +848,7 @@ func (cm *clientMetrics) recordAttempt(ctx context.Context, system, method, serv
 	if errorType != errorTypeOK {
 		cm.errors.Add(ctx, 1, metric.WithAttributes(injectAPIMethod(ctx, base)...))
 	}
+	cm.recordRetry(ctx, system, method, server, info, errorType)
 }
 
 // recordHTTP records the metrics of a finished HTTP attempt (after the
@@ -860,7 +873,7 @@ func (cm *clientMetrics) recordHTTP(ctx context.Context, req *http.Request, resp
 	cm.httpClientRequestDuration.Record(ctx, duration, metric.WithAttributes(injectAPIMethod(ctx, attrs)...))
 
 	cm.recordAttempt(ctx, "http", httpLogicalMethod(ctx), server, errorType,
-		attribute.Int64("http.response.status_code", statusCode))
+		attribute.Int64("http.response.status_code", statusCode), parseRetryInfo(req.Header.Values(xGoogHeaderKey)))
 }
 
 // httpLogicalMethod returns the logical operation name of the request in ctx.
@@ -1472,6 +1485,20 @@ type metricsState struct {
 	composite bool
 	// parent is the composite operation this operation belongs to.
 	parent *metricsState
+	// retryTracker attributes retries to the failure that caused them.
+	retryTracker retryTracker
+}
+
+// retries returns the retry tracker of the operation. Operations that are part
+// of a composite operation share the tracker of the composite operation.
+func (s *metricsState) retries() *retryTracker {
+	if s == nil {
+		return nil
+	}
+	if s.parent != nil {
+		return s.parent.retries()
+	}
+	return &s.retryTracker
 }
 
 // recordResponseBodySize records the number of object bytes delivered to the
