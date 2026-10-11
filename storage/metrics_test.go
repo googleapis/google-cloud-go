@@ -26,7 +26,6 @@ import (
 	"time"
 
 	"cloud.google.com/go/auth"
-	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 
 	"go.opentelemetry.io/otel/attribute"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
@@ -376,6 +375,10 @@ func (m *mockClientStream) Trailer() metadata.MD {
 	return nil
 }
 
+func (m *mockClientStream) Context() context.Context {
+	return context.Background()
+}
+
 func TestGRPCMetricsRecording(t *testing.T) {
 	ctx := context.Background()
 	mr := sdkmetric.NewManualReader()
@@ -483,13 +486,13 @@ func TestGRPCMetricsRecording(t *testing.T) {
 					for _, kv := range dp.Attributes.ToSlice() {
 						attrs[string(kv.Key)] = kv.Value.Emit()
 					}
-					if attrs["rpc.method"] == "GetObject" {
+					if attrs["rpc.method"] == "google.storage.v2.Storage/GetObject" {
 						unaryDp = &dpCopy
-					} else if attrs["rpc.method"] == "ReadObject" {
+					} else if attrs["rpc.method"] == "google.storage.v2.Storage/ReadObject" {
 						streamDp = &dpCopy
-					} else if attrs["rpc.method"] == "WriteObject" {
+					} else if attrs["rpc.method"] == "google.storage.v2.Storage/WriteObject" {
 						writeDp = &dpCopy
-					} else if attrs["rpc.method"] == "BidiWriteObject" {
+					} else if attrs["rpc.method"] == "google.storage.v2.Storage/BidiWriteObject" {
 						bidiDp = &dpCopy
 					}
 				}
@@ -524,11 +527,11 @@ func TestGRPCMetricsRecording(t *testing.T) {
 		if attrs["rpc.system.name"] != "grpc" {
 			t.Errorf("expected rpc.system.name grpc, got %q", attrs["rpc.system.name"])
 		}
-		if attrs["rpc.service"] != "google.storage.v2.Storage" {
-			t.Errorf("expected rpc.service, got %q", attrs["rpc.service"])
+		if _, ok := attrs["rpc.service"]; ok {
+			t.Errorf("rpc.service is deprecated and must not be set")
 		}
-		if attrs["rpc.grpc.status_code"] != "5" { // codes.NotFound is 5.
-			t.Errorf("expected status_code 5, got %q", attrs["rpc.grpc.status_code"])
+		if attrs["rpc.status_code"] != "NOT_FOUND" {
+			t.Errorf("expected rpc.status_code NOT_FOUND, got %q", attrs["rpc.status_code"])
 		}
 		if attrs["error.type"] != "NOT_FOUND" {
 			t.Errorf("expected error.type NOT_FOUND, got %q", attrs["error.type"])
@@ -545,11 +548,8 @@ func TestGRPCMetricsRecording(t *testing.T) {
 		if attrs["rpc.system.name"] != "grpc" {
 			t.Errorf("expected rpc.system.name grpc, got %q", attrs["rpc.system.name"])
 		}
-		if attrs["rpc.service"] != "google.storage.v2.Storage" {
-			t.Errorf("expected rpc.service, got %q", attrs["rpc.service"])
-		}
-		if attrs["rpc.grpc.status_code"] != "0" { // codes.OK is 0 (io.EOF maps to OK).
-			t.Errorf("expected status_code 0, got %q", attrs["rpc.grpc.status_code"])
+		if attrs["rpc.status_code"] != "OK" { // io.EOF maps to OK.
+			t.Errorf("expected rpc.status_code OK, got %q", attrs["rpc.status_code"])
 		}
 		if attrs["error.type"] != "OK" {
 			t.Errorf("expected error.type OK, got %q", attrs["error.type"])
@@ -566,11 +566,8 @@ func TestGRPCMetricsRecording(t *testing.T) {
 		if attrs["rpc.system.name"] != "grpc" {
 			t.Errorf("expected rpc.system.name grpc, got %q", attrs["rpc.system.name"])
 		}
-		if attrs["rpc.service"] != "google.storage.v2.Storage" {
-			t.Errorf("expected rpc.service, got %q", attrs["rpc.service"])
-		}
-		if attrs["rpc.grpc.status_code"] != "0" { // codes.OK is 0.
-			t.Errorf("expected status_code 0, got %q", attrs["rpc.grpc.status_code"])
+		if attrs["rpc.status_code"] != "OK" {
+			t.Errorf("expected rpc.status_code OK, got %q", attrs["rpc.status_code"])
 		}
 		if attrs["error.type"] != "OK" {
 			t.Errorf("expected error.type OK, got %q", attrs["error.type"])
@@ -589,9 +586,6 @@ func TestGRPCMetricsRecording(t *testing.T) {
 		}
 		if attrs["rpc.system.name"] != "grpc" {
 			t.Errorf("expected rpc.system.name grpc, got %q", attrs["rpc.system.name"])
-		}
-		if attrs["rpc.service"] != "google.storage.v2.Storage" {
-			t.Errorf("expected rpc.service, got %q", attrs["rpc.service"])
 		}
 	}
 }
@@ -815,11 +809,18 @@ func TestStandardMetricsRecording(t *testing.T) {
 		t.Errorf("metric gcp.storage.client.response.body.size not found")
 	} else {
 		hist := m.Data.(metricdata.Histogram[int64])
-		if len(hist.DataPoints) != 1 {
-			t.Fatalf("expected 1 datapoint for response body size, got %d", len(hist.DataPoints))
+		// Reader and MultiRangeDownloader are recorded as separate series
+		// (distinguished by gcp.client.method); one sample per operation.
+		var total, count int64
+		for _, dp := range hist.DataPoints {
+			total += dp.Sum
+			count += int64(dp.Count)
 		}
-		if hist.DataPoints[0].Sum != 47 {
-			t.Errorf("expected total sum 47, got %d", hist.DataPoints[0].Sum)
+		if count != 2 {
+			t.Errorf("expected 2 response body size samples (Reader + MRD), got %d", count)
+		}
+		if total != 47 {
+			t.Errorf("expected total sum 47, got %d", total)
 		}
 	}
 
@@ -861,11 +862,9 @@ func TestRecordTTFB_MetadataOnly(t *testing.T) {
 		startTime: time.Now(),
 	}
 
-	// First response with only metadata should trigger TTFB.
-	resp := &storagepb.ReadObjectResponse{
-		Metadata: &storagepb.Object{Name: "test-object"},
-	}
-	w.recordTTFB(resp)
+	// The first response message, even if it only contains metadata, should
+	// trigger TTFB.
+	w.recordTTFB()
 
 	if !w.recordedTTFB.Load() {
 		t.Errorf("recordTTFB did not trigger TTFB for metadata-only ReadObjectResponse")

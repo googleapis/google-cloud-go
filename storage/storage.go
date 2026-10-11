@@ -151,6 +151,10 @@ func (c Client) credsJSON() ([]byte, bool) {
 // package. You may also use options defined in this package, such as [WithJSONReads].
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	var creds *auth.Credentials
+	// metricsTP is the token provider installed on creds when client metrics
+	// are enabled. The http.Client is built before the metrics pipeline
+	// exists, so the metrics are attached to it after newHTTPStorageClient.
+	var metricsTP *metricsTokenProvider
 
 	// In general, it is recommended to use raw.NewService instead of htransport.NewClient
 	// since raw.NewService configures the correct default endpoints when initializing the
@@ -174,6 +178,14 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		c, err := internaloption.AuthCreds(ctx, opts)
 		if err == nil {
 			creds = c
+			// The http.Client below is built before the metrics pipeline
+			// exists (it is created in newHTTPStorageClient), and the auth
+			// transport wraps whatever token provider it is given in its own
+			// cache. Install the metrics token provider now so that it is the
+			// one inside the transport; the metrics are attached to it below.
+			if cfg := newStorageConfig(opts...); isOtelMetricsEnabled(&cfg) || isOtelDebugMetricsEnabled(&cfg) {
+				creds, metricsTP = deferredMetricsCredentials(creds)
+			}
 			opts = append(opts, option.WithAuthCredentials(creds))
 		}
 	} else {
@@ -232,6 +244,10 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 			storageClient: tc,
 			metrics:       httpClient.metrics,
 			isHTTP:        true,
+		}
+		if metricsTP != nil {
+			// Start recording credential refreshes on the transport built above.
+			metricsTP.metrics.CompareAndSwap(nil, httpClient.metrics)
 		}
 	}
 
