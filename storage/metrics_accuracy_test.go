@@ -553,7 +553,7 @@ func TestMethodAttributesHaveOneMeaningEach(t *testing.T) {
 	cm, mr := accuracyMetrics(t)
 	ctx := context.WithValue(context.Background(), apiMethodKey{}, "Object.Writer")
 	ctx, record := cm.startOperation(ctx, "WriteObject", false)
-	cm.recordRPC(ctx, "/google.storage.v2.Storage/BidiWriteObject", "google-c2p:///storage.googleapis.com", 0.01, nil, true)
+	cm.recordRPC(ctx, "/google.storage.v2.Storage/BidiWriteObject", "google-c2p:///storage.googleapis.com", 0.01, nil, true, peerAt("34.126.10.53:1371"))
 	state := metricsStateFromContext(ctx)
 	state.recordRequestBodySize(ctx, 10)
 	record(nil)

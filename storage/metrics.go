@@ -73,6 +73,7 @@ type clientMetrics struct {
 	responseBodySize          metric.Int64Histogram
 	ttfb                      metric.Float64Histogram
 	errors                    metric.Int64Counter
+	retries                   metric.Int64Counter
 	activeRequests            metric.Int64UpDownCounter
 	gfeHeaderMissing          metric.Int64Counter
 	dnsLookupDuration         metric.Float64Histogram
@@ -80,8 +81,7 @@ type clientMetrics struct {
 	tlsHandshakeDuration      metric.Float64Histogram
 	gfeDuration               metric.Float64Histogram
 	credentialRefreshDuration metric.Float64Histogram
-	networkBytesSent          metric.Int64Counter
-	networkBytesReceived      metric.Int64Counter
+	networkIO                 metric.Int64Counter
 	stallDuration             metric.Float64Histogram
 }
 
@@ -330,6 +330,15 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 		return nil, nil, err
 	}
 
+	retries, err := meter.Int64Counter(
+		"gcp.storage.client.retries",
+		metric.WithDescription("Number of GCS client attempts that retried an earlier failed attempt of the same request. error.type is the error of the attempt that was retried. Resumable upload chunks and list pages are not retries."),
+		metric.WithUnit("{retry}"),
+	)
+	if err != nil {
+		return nil, nil, err
+	}
+
 	requestBodySize, err := meter.Int64Histogram(
 		"gcp.storage.client.request.body.size",
 		metric.WithDescription("Number of object bytes written by an upload operation (recorded once per operation, including empty objects)."),
@@ -374,23 +383,13 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 	var gfeDuration metric.Float64Histogram
 	var credentialRefreshDuration metric.Float64Histogram
 
-	var networkBytesSent metric.Int64Counter
-	var networkBytesReceived metric.Int64Counter
+	var networkIO metric.Int64Counter
 	var stallDuration metric.Float64Histogram
 
 	if isOtelDebugMetricsEnabled(config) {
-		networkBytesSent, err = meter.Int64Counter(
-			"gcp.storage.client.network.bytes.sent",
-			metric.WithDescription("Total physical bytes sent over the wire socket (gRPC only)."),
-			metric.WithUnit("By"),
-		)
-		if err != nil {
-			return nil, nil, err
-		}
-
-		networkBytesReceived, err = meter.Int64Counter(
-			"gcp.storage.client.network.bytes.received",
-			metric.WithDescription("Total physical bytes received over the wire socket (gRPC only)."),
+		networkIO, err = meter.Int64Counter(
+			"gcp.storage.client.network.io",
+			metric.WithDescription("Bytes read from and written to the TCP connections to Cloud Storage, by network.io.direction (receive, transmit). Counted at the socket, so it includes TLS and HTTP/2 framing and data the transport received but the application never read; compare with request/response.body.size to measure protocol overhead, read-ahead waste and upload retransmission. gRPC only."),
 			metric.WithUnit("By"),
 		)
 		if err != nil {
@@ -480,6 +479,7 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 		responseBodySize:          responseBodySize,
 		ttfb:                      ttfb,
 		errors:                    errors,
+		retries:                   retries,
 		activeRequests:            activeRequests,
 		gfeHeaderMissing:          gfeHeaderMissing,
 		dnsLookupDuration:         dnsLookupDuration,
@@ -487,8 +487,7 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 		tlsHandshakeDuration:      tlsHandshakeDuration,
 		gfeDuration:               gfeDuration,
 		credentialRefreshDuration: credentialRefreshDuration,
-		networkBytesSent:          networkBytesSent,
-		networkBytesReceived:      networkBytesReceived,
+		networkIO:                 networkIO,
 		stallDuration:             stallDuration,
 	}
 
@@ -785,7 +784,7 @@ func isStreamingRPC(methodName string) bool {
 // whether any response (headers, a message or trailers) was received from the
 // server; time to first byte is not recorded for attempts that never received
 // a response (for example DNS, connection or TLS failures).
-func (cm *clientMetrics) recordRPC(ctx context.Context, fullMethod, target string, duration float64, err error, responded bool) {
+func (cm *clientMetrics) recordRPC(ctx context.Context, fullMethod, target string, duration float64, err error, responded bool, p *peer.Peer) {
 	code := codes.OK
 	if err != nil && err != io.EOF {
 		code = status.Code(err)
@@ -793,6 +792,7 @@ func (cm *clientMetrics) recordRPC(ctx context.Context, fullMethod, target strin
 	methodName := getLogicalMethod(fullMethod)
 	errorType := refineCancelled(ctx, computeErrorType(err, false, 0))
 	server := stripPort(target)
+	path := networkPathOfPeer(p)
 	statusAttr := attribute.String("rpc.response.status_code", grpcCodeToString(code))
 
 	// rpc.client.call.duration follows the OpenTelemetry RPC semantic
@@ -802,6 +802,7 @@ func (cm *clientMetrics) recordRPC(ctx context.Context, fullMethod, target strin
 		attribute.String("rpc.method", strings.TrimPrefix(fullMethod, "/")),
 		statusAttr,
 		attribute.String("server.address", server),
+		attribute.String(networkPathAttr, path),
 		attribute.String("error.type", errorType),
 	}
 	cm.rpcClientCallDuration.Record(ctx, duration, metric.WithAttributes(attrs...))
@@ -812,21 +813,23 @@ func (cm *clientMetrics) recordRPC(ctx context.Context, fullMethod, target strin
 		logicalMethod = state.method
 		state.setTarget(target)
 	}
-	cm.recordAttempt(ctx, "grpc", logicalMethod, server, errorType, statusAttr)
+	cm.recordAttempt(ctx, "grpc", logicalMethod, server, path, errorType, statusAttr, grpcRetryInfo(ctx))
 
 	if !isStreamingRPC(methodName) && responded {
-		ttfbAttrs := []attribute.KeyValue{attribute.String("rpc.system.name", "grpc"), attribute.String(storageOperationAttr, logicalMethod), attribute.String("server.address", server)}
+		ttfbAttrs := []attribute.KeyValue{attribute.String("rpc.system.name", "grpc"), attribute.String(storageOperationAttr, logicalMethod), attribute.String("server.address", server), attribute.String(networkPathAttr, path)}
 		cm.ttfb.Record(ctx, duration, metric.WithAttributes(ttfbAttrs...))
 	}
 }
 
-// recordAttempt records gcp.storage.client.attempts for every attempt and
-// gcp.storage.client.errors for failed attempts.
-func (cm *clientMetrics) recordAttempt(ctx context.Context, system, method, server, errorType string, statusAttr attribute.KeyValue) {
+// recordAttempt records gcp.storage.client.attempts for every attempt,
+// gcp.storage.client.errors for failed attempts and
+// gcp.storage.client.retries for attempts that retried an earlier attempt.
+func (cm *clientMetrics) recordAttempt(ctx context.Context, system, method, server, path, errorType string, statusAttr attribute.KeyValue, info retryInfo) {
 	base := []attribute.KeyValue{
 		attribute.String("rpc.system.name", system),
 		attribute.String(storageOperationAttr, method),
 		attribute.String("server.address", server),
+		attribute.String(networkPathAttr, path),
 		attribute.String("error.type", errorType),
 	}
 	attemptAttrs := make([]attribute.KeyValue, 0, len(base)+1)
@@ -836,6 +839,7 @@ func (cm *clientMetrics) recordAttempt(ctx context.Context, system, method, serv
 	if errorType != errorTypeOK {
 		cm.errors.Add(ctx, 1, metric.WithAttributes(base...))
 	}
+	cm.recordRetry(ctx, system, method, server, path, info, errorType)
 }
 
 // recordHTTP records the metrics of a finished HTTP attempt (after the
@@ -855,12 +859,13 @@ func (cm *clientMetrics) recordHTTP(ctx context.Context, req *http.Request, resp
 		attribute.String("url.template", computeURLTemplate(req.URL.Path, req.URL.Host)),
 		attribute.Int64("http.response.status_code", statusCode),
 		attribute.String("server.address", server),
+		attribute.String(networkPathAttr, networkPathCloud),
 		attribute.String("error.type", errorType),
 	}
 	cm.httpClientRequestDuration.Record(ctx, duration, metric.WithAttributes(attrs...))
 
-	cm.recordAttempt(ctx, "http", httpLogicalMethod(ctx), server, errorType,
-		attribute.Int64("http.response.status_code", statusCode))
+	cm.recordAttempt(ctx, "http", httpLogicalMethod(ctx), server, networkPathCloud, errorType,
+		attribute.Int64("http.response.status_code", statusCode), parseRetryInfo(req.Header.Values(xGoogHeaderKey)))
 }
 
 // httpLogicalMethod returns the logical operation name of the request in ctx.
@@ -994,6 +999,7 @@ func (rt *metricsRoundTripper) RoundTrip(req *http.Request) (*http.Response, err
 		rt.addNetworkTrace(ctx, trace, metric.WithAttributes(
 			attribute.String("rpc.system.name", "http"),
 			attribute.String("server.address", host),
+			attribute.String(networkPathAttr, networkPathCloud),
 		))
 	}
 	req = req.WithContext(httptrace.WithClientTrace(ctx, trace))
@@ -1007,7 +1013,7 @@ func (rt *metricsRoundTripper) RoundTrip(req *http.Request) (*http.Response, err
 
 	if err != nil {
 		errorType := refineCancelled(ctx, computeHTTPAttemptErrorType(err, 0))
-		cm.recordHTTPGFEMetrics(ctx, nil, logicalMethod, host, errorType, rpcAttrs)
+		cm.recordHTTPGFEMetrics(ctx, nil, logicalMethod, host, errorType)
 		cm.recordHTTP(ctx, req, nil, time.Since(startTime).Seconds(), errorType)
 		if cm.activeRequests != nil {
 			cm.activeRequests.Add(ctx, -1, rpcAttrs)
@@ -1023,9 +1029,9 @@ func (rt *metricsRoundTripper) RoundTrip(req *http.Request) (*http.Response, err
 	if n := firstByteNanos.Load(); n != 0 {
 		ttfb = time.Unix(0, n).Sub(startTime)
 	}
-	ttfbAttrs := []attribute.KeyValue{attribute.String("rpc.system.name", "http"), attribute.String(storageOperationAttr, logicalMethod), attribute.String("server.address", host)}
+	ttfbAttrs := []attribute.KeyValue{attribute.String("rpc.system.name", "http"), attribute.String(storageOperationAttr, logicalMethod), attribute.String("server.address", host), attribute.String(networkPathAttr, networkPathCloud)}
 	cm.ttfb.Record(ctx, ttfb.Seconds(), metric.WithAttributes(ttfbAttrs...))
-	cm.recordHTTPGFEMetrics(ctx, resp, logicalMethod, host, computeHTTPAttemptErrorType(nil, int64(resp.StatusCode)), rpcAttrs)
+	cm.recordHTTPGFEMetrics(ctx, resp, logicalMethod, host, computeHTTPAttemptErrorType(nil, int64(resp.StatusCode)))
 
 	body := &wrappedResponseBody{
 		ReadCloser: resp.Body,
@@ -1096,7 +1102,7 @@ func (rt *metricsRoundTripper) addNetworkTrace(ctx context.Context, trace *httpt
 // recordHTTPGFEMetrics records the GFE service time reported in the
 // X-Goog-Gfe-Service-Time response header, or counts a missing header. A nil
 // response (the request never reached a server) is counted as missing.
-func (cm *clientMetrics) recordHTTPGFEMetrics(ctx context.Context, resp *http.Response, logicalMethod, host, errorType string, rpcAttrs metric.MeasurementOption) {
+func (cm *clientMetrics) recordHTTPGFEMetrics(ctx context.Context, resp *http.Response, logicalMethod, host, errorType string) {
 	if cm.gfeHeaderMissing == nil {
 		return
 	}
@@ -1104,18 +1110,19 @@ func (cm *clientMetrics) recordHTTPGFEMetrics(ctx context.Context, resp *http.Re
 	if resp != nil {
 		headerVal = resp.Header.Get("X-Goog-Gfe-Service-Time")
 	}
+	attrs := []attribute.KeyValue{
+		attribute.String(storageOperationAttr, logicalMethod),
+		attribute.String("rpc.system.name", "http"),
+		attribute.String("server.address", host),
+		attribute.String(networkPathAttr, networkPathCloud),
+	}
 	if headerVal == "" {
-		cm.gfeHeaderMissing.Add(ctx, 1, metric.WithAttributes(
-			attribute.String(storageOperationAttr, logicalMethod),
-			attribute.String("rpc.system.name", "http"),
-			attribute.String("server.address", host),
-			attribute.String("error.type", errorType),
-		))
+		cm.gfeHeaderMissing.Add(ctx, 1, metric.WithAttributes(append(attrs, attribute.String("error.type", errorType))...))
 		return
 	}
 	if cm.gfeDuration != nil {
 		if ms, err := strconv.ParseFloat(headerVal, 64); err == nil {
-			cm.gfeDuration.Record(ctx, ms/1000.0, rpcAttrs)
+			cm.gfeDuration.Record(ctx, ms/1000.0, metric.WithAttributes(attrs...))
 		}
 	}
 }
@@ -1172,17 +1179,50 @@ var (
 	directPathIPv6Range = netip.MustParsePrefix("2001:4860:8040::/42")
 )
 
-// isDirectPathPeer reports whether the connection peer is a DirectPath address.
-func isDirectPathPeer(p *peer.Peer) bool {
-	if p == nil || p.Addr == nil {
-		return false
-	}
-	ip, err := netip.ParseAddr(stripPort(p.Addr.String()))
+// network.path attribute values. The attribute reports the route an attempt
+// or connection actually took to Cloud Storage, independently of the
+// configured endpoint in server.address: a gRPC client with DirectPath enabled
+// falls back to CloudPath per connection (for example for cross-region
+// buckets), and only the peer address of the connection reveals which path
+// served the attempt.
+const (
+	networkPathAttr    = "network.path"
+	networkPathDirect  = "directpath" // peer in the DirectPath address ranges
+	networkPathCloud   = "cloudpath"  // Google Front End; always the case for HTTP
+	networkPathUnknown = "unknown"    // no connection was established
+)
+
+// isDirectPathAddr reports whether addr ("ip:port" or "ip") is a DirectPath
+// address.
+func isDirectPathAddr(addr string) bool {
+	ip, err := netip.ParseAddr(stripPort(addr))
 	if err != nil {
 		return false
 	}
 	ip = ip.Unmap()
 	return directPathIPv4Range.Contains(ip) || directPathIPv6Range.Contains(ip)
+}
+
+// isDirectPathPeer reports whether the connection peer is a DirectPath address.
+func isDirectPathPeer(p *peer.Peer) bool {
+	return p != nil && p.Addr != nil && isDirectPathAddr(p.Addr.String())
+}
+
+// networkPathOfAddr returns the network.path value for a connection to addr.
+func networkPathOfAddr(addr string) string {
+	if isDirectPathAddr(addr) {
+		return networkPathDirect
+	}
+	return networkPathCloud
+}
+
+// networkPathOfPeer returns the network.path value of a gRPC attempt from the
+// peer of its connection, or networkPathUnknown if no connection was made.
+func networkPathOfPeer(p *peer.Peer) string {
+	if p == nil || p.Addr == nil {
+		return networkPathUnknown
+	}
+	return networkPathOfAddr(p.Addr.String())
 }
 
 // grpcLogicalMethod returns the logical storage operation for a gRPC call so
@@ -1230,25 +1270,22 @@ func (cm *clientMetrics) recordGFEMetrics(ctx context.Context, headerMD, trailer
 		headerVal = headerVals[0]
 	}
 	server := stripPort(target)
+	attrs := []attribute.KeyValue{
+		attribute.String(storageOperationAttr, logicalMethod),
+		attribute.String("rpc.system.name", "grpc"),
+		attribute.String("server.address", server),
+		attribute.String(networkPathAttr, networkPathOfPeer(p)),
+	}
 	if headerVal == "" {
 		if isDirectPathPeer(p) {
 			return
 		}
-		cm.gfeHeaderMissing.Add(ctx, 1, metric.WithAttributes(
-			attribute.String(storageOperationAttr, logicalMethod),
-			attribute.String("rpc.system.name", "grpc"),
-			attribute.String("server.address", server),
-			attribute.String("error.type", computeErrorType(err, false, 0)),
-		))
+		cm.gfeHeaderMissing.Add(ctx, 1, metric.WithAttributes(append(attrs, attribute.String("error.type", computeErrorType(err, false, 0)))...))
 		return
 	}
 	if cm.gfeDuration != nil {
 		if ms, parseErr := strconv.ParseFloat(headerVal, 64); parseErr == nil {
-			cm.gfeDuration.Record(ctx, ms/1000.0, metric.WithAttributes(
-				attribute.String(storageOperationAttr, logicalMethod),
-				attribute.String("rpc.system.name", "grpc"),
-				attribute.String("server.address", server),
-			))
+			cm.gfeDuration.Record(ctx, ms/1000.0, metric.WithAttributes(attrs...))
 		}
 	}
 }
@@ -1285,7 +1322,7 @@ func metricsInterceptors(cm *clientMetrics) (grpc.UnaryClientInterceptor, grpc.S
 		duration := time.Since(startTime).Seconds()
 
 		cm.recordGFEMetrics(ctx, headerMD, trailerMD, err, logicalMethod, target, &p)
-		cm.recordRPC(ctx, method, target, duration, err, grpcResponded(err, headerMD, trailerMD, &p))
+		cm.recordRPC(ctx, method, target, duration, err, grpcResponded(err, headerMD, trailerMD, &p), &p)
 		return err
 	}
 
@@ -1325,7 +1362,7 @@ func metricsInterceptors(cm *clientMetrics) (grpc.UnaryClientInterceptor, grpc.S
 			}
 			duration := time.Since(startTime).Seconds()
 			cm.recordGFEMetrics(ctx, nil, nil, err, logicalMethod, target, nil)
-			cm.recordRPC(ctx, method, target, duration, err, false)
+			cm.recordRPC(ctx, method, target, duration, err, false, nil)
 			return nil, err
 		}
 
@@ -1423,13 +1460,13 @@ func (w *wrappedClientStream) record(err error) {
 	duration := time.Since(w.startTime).Seconds()
 	headerMD, _ := w.ClientStream.Header()
 	trailerMD := w.ClientStream.Trailer()
-	p, _ := peer.FromContext(w.ClientStream.Context())
+	p := w.peer()
 
 	if w.metrics.activeRequests != nil {
 		w.metrics.activeRequests.Add(w.ctx, -1, w.rpcAttrs)
 	}
 	w.metrics.recordGFEMetrics(w.ctx, headerMD, trailerMD, err, w.logicalMethod, w.target, p)
-	w.metrics.recordRPC(w.ctx, w.method, w.target, duration, err, grpcResponded(err, headerMD, trailerMD, p))
+	w.metrics.recordRPC(w.ctx, w.method, w.target, duration, err, grpcResponded(err, headerMD, trailerMD, p), p)
 }
 
 // recordTTFB records the time to the first response message of the stream,
@@ -1443,7 +1480,18 @@ func (w *wrappedClientStream) recordTTFB() {
 		attribute.String("rpc.system.name", "grpc"),
 		attribute.String(storageOperationAttr, w.logicalMethod),
 		attribute.String("server.address", stripPort(w.target)),
+		attribute.String(networkPathAttr, networkPathOfPeer(w.peer())),
 	))
+}
+
+// peer returns the peer of the stream's connection, or nil if the stream has
+// no connection (yet).
+func (w *wrappedClientStream) peer() *peer.Peer {
+	if w.ClientStream == nil {
+		return nil
+	}
+	p, _ := peer.FromContext(w.ClientStream.Context())
+	return p
 }
 
 type metricsKey struct{}
@@ -1530,6 +1578,20 @@ type metricsState struct {
 	composite bool
 	// parent is the composite operation this operation belongs to.
 	parent *metricsState
+	// retryTracker attributes retries to the failure that caused them.
+	retryTracker retryTracker
+}
+
+// retries returns the retry tracker of the operation. Operations that are part
+// of a composite operation share the tracker of the composite operation.
+func (s *metricsState) retries() *retryTracker {
+	if s == nil {
+		return nil
+	}
+	if s.parent != nil {
+		return s.parent.retries()
+	}
+	return &s.retryTracker
 }
 
 // recordResponseBodySize records the number of object bytes delivered to the
@@ -1971,6 +2033,7 @@ func (mc *metricsStorageClient) fetchBucketMetadata(ctx context.Context, bucket 
 type dialInfo struct {
 	doneTime time.Time
 	host     string
+	path     string
 }
 
 type dialDoneContextKey struct{}
@@ -1982,40 +2045,15 @@ type grpcMetricsStatsHandler struct {
 	host      string
 }
 
-type contextKeyRPCTag struct{}
-
-func (h *grpcMetricsStatsHandler) TagRPC(ctx context.Context, info *stats.RPCTagInfo) context.Context {
-	method := info.FullMethodName
-	if idx := strings.LastIndex(method, "/"); idx != -1 {
-		method = method[idx+1:]
-	}
-	return context.WithValue(ctx, contextKeyRPCTag{}, method)
+func (h *grpcMetricsStatsHandler) TagRPC(ctx context.Context, _ *stats.RPCTagInfo) context.Context {
+	return ctx
 }
-func (h *grpcMetricsStatsHandler) HandleRPC(ctx context.Context, s stats.RPCStats) {
-	if h.metrics == nil {
-		return
-	}
-	method := ""
-	if v := ctx.Value(contextKeyRPCTag{}); v != nil {
-		method = v.(string)
-	}
-	attrs := metric.WithAttributes(
-		attribute.String("rpc.system.name", "grpc"),
-		attribute.String(storageOperationAttr, method),
-		attribute.String("server.address", h.host),
-	)
 
-	switch st := s.(type) {
-	case *stats.InPayload:
-		if h.metrics.networkBytesReceived != nil {
-			h.metrics.networkBytesReceived.Add(ctx, int64(st.WireLength), attrs)
-		}
-	case *stats.OutPayload:
-		if h.metrics.networkBytesSent != nil {
-			h.metrics.networkBytesSent.Add(ctx, int64(st.WireLength), attrs)
-		}
-	}
-}
+// HandleRPC is required by stats.Handler. Network bytes are counted at the
+// socket by countingConn rather than per gRPC message here, so that data the
+// transport received but no stream consumed (flow-control window, cancelled
+// streams) is included.
+func (h *grpcMetricsStatsHandler) HandleRPC(context.Context, stats.RPCStats) {}
 func (h *grpcMetricsStatsHandler) TagConn(ctx context.Context, info *stats.ConnTagInfo) context.Context {
 	if info.LocalAddr != nil && h.dialTimes != nil {
 		if val, ok := h.dialTimes.LoadAndDelete(info.LocalAddr.String()); ok {
@@ -2033,25 +2071,80 @@ func (h *grpcMetricsStatsHandler) HandleConn(ctx context.Context, s stats.ConnSt
 				h.metrics.tlsHandshakeDuration.Record(context.Background(), duration, metric.WithAttributes(
 					attribute.String("rpc.system.name", "grpc"),
 					attribute.String("server.address", info.host),
+					attribute.String(networkPathAttr, info.path),
 				))
 			}
 		}
 	}
 }
 
+// network.io.direction attribute values (OpenTelemetry semantic conventions).
+const (
+	networkIODirectionAttr = "network.io.direction"
+	networkIOReceive       = "receive"
+	networkIOTransmit      = "transmit"
+)
+
+// countingConn is a net.Conn that records the bytes read from and written to
+// the connection in gcp.storage.client.network.io. gRPC performs TLS on top
+// of this connection, so the counts are the bytes on the TCP socket
+// (ciphertext, including TLS and HTTP/2 framing). Bytes are attributed to the
+// connection's endpoint and network path, not to an operation, because one
+// connection multiplexes many streams.
+type countingConn struct {
+	net.Conn
+	ctx      context.Context
+	io       metric.Int64Counter
+	receive  metric.MeasurementOption
+	transmit metric.MeasurementOption
+}
+
+func newCountingConn(ctx context.Context, c net.Conn, io metric.Int64Counter, host, path string) *countingConn {
+	base := []attribute.KeyValue{
+		attribute.String("rpc.system.name", "grpc"),
+		attribute.String("server.address", host),
+		attribute.String(networkPathAttr, path),
+	}
+	return &countingConn{
+		Conn:     c,
+		ctx:      context.WithoutCancel(ctx),
+		io:       io,
+		receive:  metric.WithAttributes(append(append([]attribute.KeyValue{}, base...), attribute.String(networkIODirectionAttr, networkIOReceive))...),
+		transmit: metric.WithAttributes(append(append([]attribute.KeyValue{}, base...), attribute.String(networkIODirectionAttr, networkIOTransmit))...),
+	}
+}
+
+func (c *countingConn) Read(b []byte) (int, error) {
+	n, err := c.Conn.Read(b)
+	if n > 0 {
+		c.io.Add(c.ctx, int64(n), c.receive)
+	}
+	return n, err
+}
+
+func (c *countingConn) Write(b []byte) (int, error) {
+	n, err := c.Conn.Write(b)
+	if n > 0 {
+		c.io.Add(c.ctx, int64(n), c.transmit)
+	}
+	return n, err
+}
+
 // grpcNetworkMetricsDialOptions returns dial options that instrument TCP and TLS handshake metrics.
 func grpcNetworkMetricsDialOptions(host string, metrics *clientMetrics) []option.ClientOption {
-	if metrics == nil || (metrics.tcpConnectDuration == nil && metrics.tlsHandshakeDuration == nil && metrics.networkBytesSent == nil && metrics.networkBytesReceived == nil) {
+	if metrics == nil || (metrics.tcpConnectDuration == nil && metrics.tlsHandshakeDuration == nil && metrics.networkIO == nil) {
 		return nil
 	}
 	var dialTimes sync.Map
 
 	dialer := func(ctx context.Context, addr string) (net.Conn, error) {
+		path := networkPathOfAddr(addr)
 		var netAttrs metric.MeasurementOption
 		if metrics.tcpConnectDuration != nil {
 			netAttrs = metric.WithAttributes(
 				attribute.String("rpc.system.name", "grpc"),
 				attribute.String("server.address", host),
+				attribute.String(networkPathAttr, path),
 			)
 		}
 
@@ -2064,7 +2157,10 @@ func grpcNetworkMetricsDialOptions(host string, metrics *clientMetrics) []option
 				metrics.tcpConnectDuration.Record(ctx, tcpDuration, netAttrs)
 			}
 			if conn != nil && metrics.tlsHandshakeDuration != nil {
-				dialTimes.Store(conn.LocalAddr().String(), dialInfo{doneTime: time.Now(), host: host})
+				dialTimes.Store(conn.LocalAddr().String(), dialInfo{doneTime: time.Now(), host: host, path: path})
+			}
+			if conn != nil && metrics.networkIO != nil {
+				conn = newCountingConn(ctx, conn, metrics.networkIO, host, path)
 			}
 		}
 

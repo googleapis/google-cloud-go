@@ -19,6 +19,7 @@ import (
 	"context"
 	"errors"
 	"io"
+	"net"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -34,7 +35,6 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
-	"google.golang.org/grpc/stats"
 	"google.golang.org/grpc/status"
 )
 
@@ -909,64 +909,63 @@ func TestComputeErrorType(t *testing.T) {
 	}
 }
 
-func TestGRPCMetricsStatsHandler(t *testing.T) {
+func TestNetworkIOCountedAtSocket(t *testing.T) {
 	ctx := context.Background()
 	mr := sdkmetric.NewManualReader()
 	provider := sdkmetric.NewMeterProvider(sdkmetric.WithReader(mr))
 	defer provider.Shutdown(ctx)
-
-	cfg := storageConfig{
-		enableOtelMetrics:      true,
-		enableOtelDebugMetrics: true,
-		meterProvider:          provider,
-	}
-
-	cm, _, err := initMetrics(ctx, "project-id", &cfg)
+	cm, _, err := initMetrics(ctx, "project-id", &storageConfig{enableOtelMetrics: true, enableOtelDebugMetrics: true, meterProvider: provider})
 	if err != nil {
 		t.Fatalf("initMetrics: %v", err)
 	}
 
-	h := &grpcMetricsStatsHandler{metrics: cm}
-
-	// Mock TagRPC
-	info := &stats.RPCTagInfo{FullMethodName: "/google.storage.v2.Storage/ReadObject"}
-	ctx = h.TagRPC(ctx, info)
-
-	// Mock InPayload
-	h.HandleRPC(ctx, &stats.InPayload{WireLength: 1024})
-	// Mock OutPayload
-	h.HandleRPC(ctx, &stats.OutPayload{WireLength: 512})
+	// A connection to a DirectPath peer: bytes written and read on the
+	// socket are counted by direction, including bytes nobody consumed at
+	// the gRPC layer.
+	client, server := net.Pipe()
+	defer server.Close()
+	cc := newCountingConn(ctx, client, cm.networkIO, "storage.googleapis.com", networkPathDirect)
+	go func() {
+		buf := make([]byte, 100)
+		io.ReadFull(server, buf)
+		server.Write(make([]byte, 300))
+	}()
+	if _, err := cc.Write(make([]byte, 100)); err != nil {
+		t.Fatalf("Write: %v", err)
+	}
+	if _, err := io.ReadFull(cc, make([]byte, 300)); err != nil {
+		t.Fatalf("Read: %v", err)
+	}
+	cc.Close()
 
 	var rm metricdata.ResourceMetrics
 	if err := mr.Collect(ctx, &rm); err != nil {
 		t.Fatalf("Collect: %v", err)
 	}
-
-	var ingress, egress int64
+	got := map[string]int64{}
 	for _, sm := range rm.ScopeMetrics {
 		for _, m := range sm.Metrics {
-			if m.Name == "gcp.storage.client.network.bytes.received" {
-				sum := m.Data.(metricdata.Sum[int64])
-				ingress = sum.DataPoints[0].Value
-				if getAttr(sum.DataPoints[0], "gcp.storage.operation") != "ReadObject" {
-					t.Errorf("expected gcp.storage.operation ReadObject")
-				}
+			if m.Name != "gcp.storage.client.network.io" {
+				continue
 			}
-			if m.Name == "gcp.storage.client.network.bytes.sent" {
-				sum := m.Data.(metricdata.Sum[int64])
-				egress = sum.DataPoints[0].Value
-				if getAttr(sum.DataPoints[0], "gcp.storage.operation") != "ReadObject" {
-					t.Errorf("expected gcp.storage.operation ReadObject")
+			for _, dp := range m.Data.(metricdata.Sum[int64]).DataPoints {
+				if getAttr(dp, "server.address") != "storage.googleapis.com" || getAttr(dp, "network.path") != networkPathDirect || getAttr(dp, "rpc.system.name") != "grpc" {
+					t.Errorf("unexpected attributes on network.io: %v", dp.Attributes.ToSlice())
 				}
+				if _, ok := dp.Attributes.Value("gcp.storage.operation"); ok {
+					t.Error("network.io must not carry an operation: a connection multiplexes streams")
+				}
+				got[getAttr(dp, "network.io.direction")] += dp.Value
 			}
 		}
 	}
-
-	if ingress != 1024 {
-		t.Errorf("expected ingress 1024, got %v", ingress)
+	if got["transmit"] != 100 || got["receive"] != 300 {
+		t.Errorf("network.io = %v, want transmit 100, receive 300", got)
 	}
-	if egress != 512 {
-		t.Errorf("expected egress 512, got %v", egress)
+	for _, m := range rm.ScopeMetrics[0].Metrics {
+		if m.Name == "gcp.storage.client.network.bytes.sent" || m.Name == "gcp.storage.client.network.bytes.received" {
+			t.Errorf("legacy metric %s still registered", m.Name)
+		}
 	}
 }
 
