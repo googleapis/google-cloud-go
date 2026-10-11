@@ -183,8 +183,15 @@ func (w *Writer) initPCU(ctx context.Context) error {
 	// Track PCU operations using client feature tracking header.
 	ctx = addFeatureAttributes(ctx, featurePCU)
 
-	bgCtx := contextWithoutMetrics(ctx)
-	pCtx, cancel := context.WithCancel(bgCtx)
+	// Record the parallel upload as a single WriteObject operation, completed
+	// in Writer.Close. The part uploads, compose and cleanup calls it makes
+	// are recorded as attempts of that operation, not as operations.
+	if mc, ok := w.o.c.tc.(*metricsStorageClient); ok {
+		ctx = mc.metrics.startCompositeOperation(ctx, "WriteObject", mc.isHTTP)
+		w.ctx = ctx
+	}
+
+	pCtx, cancel := context.WithCancel(ctx)
 
 	state := &pcuState{
 		ctx:             pCtx,
