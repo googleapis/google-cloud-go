@@ -139,11 +139,11 @@ func (cm *clientMetrics) recordRetry(ctx context.Context, system, method, server
 	if reason == "" {
 		return
 	}
-	cm.retries.Add(ctx, 1, metric.WithAttributes(injectAPIMethod(ctx, []attribute.KeyValue{
+	cm.retries.Add(ctx, 1, metric.WithAttributes(
 		attribute.String("rpc.system.name", system),
 		attribute.String(storageOperationAttr, method),
 		attribute.String("server.address", server),
 		attribute.String(networkPathAttr, path),
 		attribute.String("error.type", reason),
-	})...))
+	))
 }

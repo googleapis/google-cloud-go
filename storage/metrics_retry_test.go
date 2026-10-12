@@ -257,7 +257,7 @@ func TestNetworkPathOnAttemptMetrics(t *testing.T) {
 			}
 		}
 	}
-	if c, _ := metricPoints(t, mr, "gcp.storage.client.operation.ttfb", map[string]string{networkPathAttr: networkPathDirect}); c != 1 {
+	if c, _ := metricPoints(t, mr, "gcp.storage.client.ttfb", map[string]string{networkPathAttr: networkPathDirect}); c != 1 {
 		t.Errorf("ttfb{directpath} = %d, want 1", c)
 	}
 	if c, _ := metricPoints(t, mr, "gcp.storage.client.errors", map[string]string{networkPathAttr: networkPathUnknown, "error.type": "UNAVAILABLE"}); c != 1 {
@@ -284,7 +284,7 @@ func TestNetworkPathOnAttemptMetrics(t *testing.T) {
 	io.ReadAll(resp.Body)
 	resp.Body.Close()
 	hrecord(nil)
-	for _, m := range []string{"gcp.storage.client.attempts", "http.client.request.duration", "gcp.storage.client.operation.ttfb"} {
+	for _, m := range []string{"gcp.storage.client.attempts", "http.client.request.duration", "gcp.storage.client.ttfb"} {
 		if c, _ := metricPoints(t, mr, m, map[string]string{"rpc.system.name": "http", networkPathAttr: networkPathCloud}); c != 1 {
 			t.Errorf("%s{http,cloudpath} = %d, want 1", m, c)
 		}

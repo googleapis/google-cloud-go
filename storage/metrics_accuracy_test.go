@@ -214,7 +214,7 @@ func TestHTTPAttemptsAndTTFB(t *testing.T) {
 	if c, _ := metricPoints(t, mr, "gcp.storage.client.attempts", map[string]string{"error.type": "OK"}); c != 2 {
 		t.Errorf("attempts = %d, want 2", c)
 	}
-	c, sum := metricPoints(t, mr, "gcp.storage.client.operation.ttfb", nil)
+	c, sum := metricPoints(t, mr, "gcp.storage.client.ttfb", nil)
 	if c != 2 {
 		t.Fatalf("ttfb count = %d, want 2", c)
 	}
@@ -239,7 +239,7 @@ func TestHTTPConnectionFailureRecordsNoTTFB(t *testing.T) {
 	if _, err := rt.RoundTrip(req); err == nil {
 		t.Fatal("RoundTrip succeeded against a closed server")
 	}
-	if c, _ := metricPoints(t, mr, "gcp.storage.client.operation.ttfb", nil); c != 0 {
+	if c, _ := metricPoints(t, mr, "gcp.storage.client.ttfb", nil); c != 0 {
 		t.Errorf("ttfb recorded %d times without a response", c)
 	}
 	if c, _ := metricPoints(t, mr, "gcp.storage.client.attempts", map[string]string{"error.type": "CONNECTION_ERROR"}); c != 1 {
@@ -348,7 +348,7 @@ func TestGRPCStreamRecordedWhenCancelled(t *testing.T) {
 	if c, _ := metricPoints(t, mr, "gcp.storage.client.request.active", nil); c != 0 {
 		t.Errorf("request.active = %d, want 0 after cancellation", c)
 	}
-	if c, _ := metricPoints(t, mr, "gcp.storage.client.operation.ttfb", nil); c != 1 {
+	if c, _ := metricPoints(t, mr, "gcp.storage.client.ttfb", nil); c != 1 {
 		t.Errorf("ttfb count = %d, want 1", c)
 	}
 }
@@ -368,7 +368,7 @@ func TestGRPCUnaryNotFoundWithKeywordName(t *testing.T) {
 		t.Errorf("rpc.client.call.duration%v = %d, want 1", want, c)
 	}
 	// The server responded, so time to first byte is recorded.
-	if c, _ := metricPoints(t, mr, "gcp.storage.client.operation.ttfb", nil); c != 1 {
+	if c, _ := metricPoints(t, mr, "gcp.storage.client.ttfb", nil); c != 1 {
 		t.Errorf("ttfb count = %d, want 1", c)
 	}
 }
@@ -570,7 +570,7 @@ func TestMethodAttributesHaveOneMeaningEach(t *testing.T) {
 	if c, _ := metricPoints(t, mr, "gcp.client.request.duration", map[string]string{"rpc.method": "google.storage.v2.Storage/WriteObject"}); c != 1 {
 		t.Errorf("gcp.client.request.duration{rpc.method=google.storage.v2.Storage/WriteObject} = %d, want 1", c)
 	}
-	for _, m := range []string{"gcp.storage.client.attempts", "gcp.storage.client.operation.ttfb", "rpc.client.call.duration"} {
+	for _, m := range []string{"gcp.storage.client.attempts", "gcp.storage.client.ttfb", "rpc.client.call.duration"} {
 		if c, _ := metricPoints(t, mr, m, entry); c != 0 {
 			t.Errorf("%s carries gcp.client.method (%d points); attempt-scoped metrics must not", m, c)
 		}

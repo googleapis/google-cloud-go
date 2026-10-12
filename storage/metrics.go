@@ -247,7 +247,7 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 					sdkmetric.Stream{Aggregation: sdkmetric.AggregationExplicitBucketHistogram{Boundaries: latencyHistogramBoundaries()}},
 				),
 				sdkmetric.NewView(
-					sdkmetric.Instrument{Name: "gcp.storage.client.operation.ttfb", Kind: sdkmetric.InstrumentKindHistogram},
+					sdkmetric.Instrument{Name: "gcp.storage.client.ttfb", Kind: sdkmetric.InstrumentKindHistogram},
 					sdkmetric.Stream{Aggregation: sdkmetric.AggregationExplicitBucketHistogram{Boundaries: latencyHistogramBoundaries()}},
 				),
 				sdkmetric.NewView(
@@ -358,7 +358,7 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 	}
 
 	ttfb, err := meter.Float64Histogram(
-		"gcp.storage.client.operation.ttfb",
+		"gcp.storage.client.ttfb",
 		metric.WithDescription("Time from the start of an attempt until the first byte of the response was received. Not recorded for attempts that received no response."),
 		metric.WithUnit("s"),
 	)
@@ -1299,7 +1299,9 @@ func metricsInterceptors(cm *clientMetrics) (grpc.UnaryClientInterceptor, grpc.S
 		}
 		// Record the target up front: operation metrics may be recorded (e.g. on
 		// Reader.Close) before an asynchronously finished stream is.
-		metricsStateFromContext(ctx).setTarget(target)
+		state := metricsStateFromContext(ctx)
+		state.setTarget(target)
+		state.setLastRPCMethod(strings.TrimPrefix(method, "/"))
 		logicalMethod := grpcLogicalMethod(ctx, method)
 
 		var rpcAttrs metric.MeasurementOption
@@ -1333,7 +1335,9 @@ func metricsInterceptors(cm *clientMetrics) (grpc.UnaryClientInterceptor, grpc.S
 		}
 		// Record the target up front: operation metrics may be recorded (e.g. on
 		// Reader.Close) before an asynchronously finished stream is.
-		metricsStateFromContext(ctx).setTarget(target)
+		state := metricsStateFromContext(ctx)
+		state.setTarget(target)
+		state.setLastRPCMethod(strings.TrimPrefix(method, "/"))
 		logicalMethod := grpcLogicalMethod(ctx, method)
 
 		var rpcAttrs metric.MeasurementOption
@@ -1565,6 +1569,7 @@ func injectAPIMethod(ctx context.Context, attrs []attribute.KeyValue) []attribut
 
 type metricsState struct {
 	target    atomic.Pointer[string]
+	lastRPCMethod atomic.Pointer[string]
 	method    string
 	startTime time.Time
 	metrics   *clientMetrics
@@ -1637,6 +1642,28 @@ func (s *metricsState) setTarget(t string) {
 	}
 }
 
+
+func (s *metricsState) setLastRPCMethod(m string) {
+	if s == nil {
+		return
+	}
+	s.lastRPCMethod.Store(&m)
+	if s.parent != nil {
+		s.parent.setLastRPCMethod(m)
+	}
+}
+
+func (s *metricsState) getLastRPCMethod() string {
+	if s == nil {
+		return ""
+	}
+	p := s.lastRPCMethod.Load()
+	if p == nil {
+		return ""
+	}
+	return *p
+}
+
 func (s *metricsState) getSystemName() string {
 	if s == nil {
 		return ""
@@ -1707,7 +1734,11 @@ func (cm *clientMetrics) startOperation(ctx context.Context, method string, isHT
 			// observability conventions.
 			durationAttrs := make([]attribute.KeyValue, 0, len(attrs)+1)
 			durationAttrs = append(durationAttrs, attrs...)
-			durationAttrs = append(durationAttrs, attribute.String("rpc.method", fullyQualifiedRPCMethod(method)))
+			lastRPC := state.getLastRPCMethod()
+			if lastRPC == "" {
+				lastRPC = fullyQualifiedRPCMethod(method)
+			}
+			durationAttrs = append(durationAttrs, attribute.String("rpc.method", lastRPC))
 			cm.duration.Record(ctx, duration, metric.WithAttributes(durationAttrs...))
 		})
 	}
