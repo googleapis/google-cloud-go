@@ -24,6 +24,7 @@ import (
 	"net/url"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	gapic "cloud.google.com/go/storage/internal/apiv2"
@@ -1504,6 +1505,8 @@ type gRPCResumableBidiWriteBufferSender struct {
 	startWriteRequest *storagepb.StartResumableWriteRequest
 	upid              string
 
+	chunkDelay *dynamicDelay
+
 	// Checksum related settings.
 	sendCRC32C          bool
 	disableAutoChecksum bool
@@ -1522,6 +1525,7 @@ func (w *gRPCWriter) newGRPCResumableBidiWriteBufferSender() *gRPCResumableBidiW
 			CommonObjectRequestParams: toProtoCommonObjectRequestParams(w.encryptionKey),
 			ObjectChecksums:           toProtoChecksums(w.sendCRC32C, w.attrs),
 		},
+		chunkDelay:          newWriteChunkDelay(w.chunkSize, w.chunkTransferTimeout),
 		sendCRC32C:          w.sendCRC32C,
 		disableAutoChecksum: w.disableAutoChecksum,
 		objectAttrs:         w.attrs,
@@ -1567,7 +1571,61 @@ func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRP
 		cs.completions <- gRPCBidiWriteCompletion{flushOffset: q.GetPersistedSize()}
 	}
 
-	stream, err := s.raw.BidiWriteObject(ctx, opts...)
+	type flushTiming struct {
+		sentAt       time.Time
+		sendDuration time.Duration
+	}
+	var rotate atomic.Bool
+
+	openStream := func() (storagepb.Storage_BidiWriteObjectClient, chan<- flushTiming, <-chan struct{}, func() error, error) {
+		st, err := s.raw.BidiWriteObject(ctx, opts...)
+		if err != nil {
+			return nil, nil, nil, nil, err
+		}
+		rotate.Store(false)
+		flushes := make(chan flushTiming, 16)
+		rDone := make(chan struct{})
+		var rErr error
+		go func() {
+			rErr = func() error {
+				var lastAck time.Time
+				for {
+					resp, err := st.Recv()
+					if err != nil {
+						return err
+					}
+					if c := completion(resp); c != nil {
+						now := time.Now()
+						select {
+						case f := <-flushes:
+							waitStart := f.sentAt
+							if lastAck.After(waitStart) {
+								waitStart = lastAck
+							}
+							var commitWait time.Duration
+							if now.After(waitStart) {
+								commitWait = now.Sub(waitStart)
+							}
+							if s.chunkDelay.recordLatency(f.sendDuration + commitWait) {
+								rotate.Store(true)
+							}
+						default:
+						}
+						lastAck = now
+						select {
+						case cs.completions <- *c:
+						case <-st.Context().Done():
+							return st.Context().Err()
+						}
+					}
+				}
+			}()
+			close(rDone)
+		}()
+		return st, flushes, rDone, func() error { return rErr }, nil
+	}
+
+	stream, flushes, recvDone, getRecvErr, err := openStream()
 	if err != nil {
 		s.streamErr = err
 		close(cs.completions)
@@ -1575,81 +1633,93 @@ func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRP
 	}
 
 	go func() {
-		var sendErr, recvErr error
-		sendDone := make(chan struct{})
-		recvDone := make(chan struct{})
+		var sendErr error
+		firstSend := true
+		unflushedDataSent := false
+		var chunkSendDuration time.Duration
 
-		go func() {
-			sendErr = func() error {
-				firstSend := true
-				for {
-					select {
-					case <-recvDone:
-						// Because `requests` is not connected to the gRPC machinery, we
-						// have to check for asynchronous termination on the receive side.
+		sendErr = func() error {
+			for {
+				select {
+				case <-recvDone:
+					// Because `requests` is not connected to the gRPC machinery, we
+					// have to check for asynchronous termination on the receive side.
+					return nil
+				case r, ok := <-cs.requests:
+					if !ok {
+						stream.CloseSend()
 						return nil
-					case r, ok := <-cs.requests:
-						if !ok {
-							stream.CloseSend()
-							return nil
-						}
-						if r.requestAck {
-							cs.requestAcks <- struct{}{}
-							continue
-						}
+					}
+					if r.requestAck {
+						cs.requestAcks <- struct{}{}
+						continue
+					}
 
-						var bufChecksum *uint32
-						if !s.disableAutoChecksum {
-							bufChecksum = proto.Uint32(crc32.Checksum(r.buf, crc32cTable))
-						}
-						objectChecksums := getObjectChecksums(&getObjectChecksumsParams{
-							sendCRC32C:          s.sendCRC32C,
-							objectAttrs:         s.objectAttrs,
-							fullObjectChecksum:  s.fullObjectChecksum,
-							disableAutoChecksum: s.disableAutoChecksum,
-							finishWrite:         r.finishWrite,
-						})
-						req := bidiWriteObjectRequest(r, bufChecksum, objectChecksums)
-
-						if firstSend {
-							req.FirstMessage = &storagepb.BidiWriteObjectRequest_UploadId{UploadId: s.upid}
-							firstSend = false
-						}
-						if err := stream.Send(req); err != nil {
+					if !r.finishWrite && !unflushedDataSent && rotate.Load() {
+						stream.CloseSend()
+						<-recvDone
+						if err := getRecvErr(); err != nil && err != io.EOF {
 							return err
 						}
-						if r.finishWrite {
-							stream.CloseSend()
+						var err error
+						stream, flushes, recvDone, getRecvErr, err = openStream()
+						if err != nil {
+							return err
+						}
+						firstSend = true
+						chunkSendDuration = 0
+					}
+
+					var bufChecksum *uint32
+					if !s.disableAutoChecksum {
+						bufChecksum = proto.Uint32(crc32.Checksum(r.buf, crc32cTable))
+					}
+					objectChecksums := getObjectChecksums(&getObjectChecksumsParams{
+						sendCRC32C:          s.sendCRC32C,
+						objectAttrs:         s.objectAttrs,
+						fullObjectChecksum:  s.fullObjectChecksum,
+						disableAutoChecksum: s.disableAutoChecksum,
+						finishWrite:         r.finishWrite,
+					})
+					req := bidiWriteObjectRequest(r, bufChecksum, objectChecksums)
+
+					if firstSend {
+						req.FirstMessage = &storagepb.BidiWriteObjectRequest_UploadId{UploadId: s.upid}
+						firstSend = false
+					}
+					sendStart := time.Now()
+					if r.flush && !r.finishWrite && s.chunkDelay != nil {
+						select {
+						case flushes <- flushTiming{sentAt: sendStart, sendDuration: chunkSendDuration}:
+						case <-recvDone:
 							return nil
 						}
 					}
-				}
-			}()
-			close(sendDone)
-		}()
-
-		go func() {
-			recvErr = func() error {
-				for {
-					resp, err := stream.Recv()
-					if err != nil {
+					if err := stream.Send(req); err != nil {
 						return err
 					}
-					if c := completion(resp); c != nil {
-						select {
-						case cs.completions <- *c:
-						case <-stream.Context().Done():
-							return stream.Context().Err()
+					if r.finishWrite {
+						stream.CloseSend()
+						return nil
+					}
+					if s.chunkDelay != nil {
+						chunkSendDuration += time.Since(sendStart)
+						if s.chunkDelay.exceeds(chunkSendDuration) {
+							rotate.Store(true)
 						}
 					}
+					if r.flush {
+						chunkSendDuration = 0
+						unflushedDataSent = false
+					} else if len(r.buf) > 0 {
+						unflushedDataSent = true
+					}
 				}
-			}()
-			close(recvDone)
+			}
 		}()
 
-		<-sendDone
 		<-recvDone
-		s.streamErr = pickStreamError(recvErr, sendErr)
+		s.streamErr = pickStreamError(getRecvErr(), sendErr)
 		close(cs.completions)
 	}()
 }

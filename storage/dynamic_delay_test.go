@@ -483,3 +483,38 @@ func TestExecuteWithReadStallTimeout(t *testing.T) {
 		}
 	})
 }
+
+func TestWriteChunkDelay(t *testing.T) {
+	if d := newWriteChunkDelay(16*1024*1024, 0); d != nil {
+		t.Fatalf("expected nil dynamicDelay when chunkTransferTimeout=0, got %+v", d)
+	}
+	var nilDelay *dynamicDelay
+	if nilDelay.recordLatency(time.Second) {
+		t.Fatal("expected nil dynamicDelay.recordLatency to return false")
+	}
+	if nilDelay.exceeds(time.Second) {
+		t.Fatal("expected nil dynamicDelay.exceeds to return false")
+	}
+
+	// 16 MiB chunk with 5s timeout -> minDelay = 50ms + 16*10ms = 210ms.
+	d := newWriteChunkDelay(16*1024*1024, 5*time.Second)
+	if got, want := d.getValue(), 210*time.Millisecond; got != want {
+		t.Fatalf("initial value = %v, want %v", got, want)
+	}
+	if d.exceeds(210 * time.Millisecond) {
+		t.Fatal("expected exceeds(210ms) to be false at threshold 210ms")
+	}
+	if !d.exceeds(211 * time.Millisecond) {
+		t.Fatal("expected exceeds(211ms) to be true at threshold 210ms")
+	}
+	if !d.recordLatency(300 * time.Millisecond) {
+		t.Fatal("expected recordLatency(300ms) to report exceeded=true")
+	}
+	afterIncrease := d.getValue()
+	if afterIncrease <= 210*time.Millisecond {
+		t.Fatalf("expected threshold to increase above 210ms, got %v", afterIncrease)
+	}
+	if d.recordLatency(200 * time.Millisecond) {
+		t.Fatal("expected recordLatency(200ms) to report exceeded=false")
+	}
+}

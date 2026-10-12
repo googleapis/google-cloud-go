@@ -299,3 +299,61 @@ func executeWithReadStallTimeout(
 	}
 	return innerErr
 }
+
+const (
+	defaultWriteChunkDelayTargetPercentile = 0.99
+	defaultWriteChunkDelayIncreaseRate     = 10.0
+	baseWriteChunkMinDelay                 = 50 * time.Millisecond
+	perMiBWriteChunkMinDelay               = 10 * time.Millisecond
+)
+
+func newWriteChunkDelay(chunkSize int, chunkTransferTimeout time.Duration) *dynamicDelay {
+	if chunkTransferTimeout <= 0 {
+		return nil
+	}
+	chunkMiB := float64(chunkSize) / float64(1024*1024)
+	minDelay := baseWriteChunkMinDelay + time.Duration(chunkMiB*float64(perMiBWriteChunkMinDelay))
+	if halfTimeout := chunkTransferTimeout / 2; minDelay > halfTimeout {
+		minDelay = halfTimeout
+	}
+	if minDelay <= 0 {
+		minDelay = time.Millisecond
+	}
+	maxDelay := chunkTransferTimeout
+	if maxDelay <= minDelay {
+		maxDelay = minDelay + time.Millisecond
+	}
+	return newDynamicDelay(
+		defaultWriteChunkDelayTargetPercentile,
+		defaultWriteChunkDelayIncreaseRate,
+		minDelay,
+		minDelay,
+		maxDelay,
+	)
+}
+
+// recordLatency updates d with latency and reports whether latency exceeded the
+// threshold before the update. Safe to call on a nil receiver.
+func (d *dynamicDelay) recordLatency(latency time.Duration) bool {
+	if d == nil {
+		return false
+	}
+	d.mu.Lock()
+	defer d.mu.Unlock()
+	exceeded := latency > d.value
+	if exceeded {
+		d.unsafeIncrease()
+	} else {
+		d.unsafeDecrease()
+	}
+	return exceeded
+}
+
+// exceeds reports whether latency is strictly greater than d's current
+// threshold. Safe to call on a nil receiver.
+func (d *dynamicDelay) exceeds(latency time.Duration) bool {
+	if d == nil {
+		return false
+	}
+	return latency > d.getValue()
+}

@@ -19,16 +19,21 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net"
 	"strings"
 	"sync"
 	"testing"
 	"time"
 
+	gapic "cloud.google.com/go/storage/internal/apiv2"
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	gax "github.com/googleapis/gax-go/v2"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/metric/metricdata"
+	"google.golang.org/api/option"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 )
@@ -3002,6 +3007,269 @@ func TestGRPCWriter_TwoLayerStallAndRetryDeadline(t *testing.T) {
 		}
 		if errors.Is(err, errStallTimeout) {
 			t.Fatalf("expected user cancellation not to be masked as errStallTimeout, got: %v", err)
+		}
+	})
+}
+
+type adaptiveRotationStorageServer struct {
+	storagepb.UnimplementedStorageServer
+	mu               sync.Mutex
+	startCalls       int
+	queryStatusCalls int
+	bidiStreams      int
+	persistedSize    int64
+	streamDelay      map[int]time.Duration
+	stallStreamAt    map[int]int64
+	receivedOffsets  []int64
+}
+
+func (s *adaptiveRotationStorageServer) StartResumableWrite(ctx context.Context, req *storagepb.StartResumableWriteRequest) (*storagepb.StartResumableWriteResponse, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.startCalls++
+	return &storagepb.StartResumableWriteResponse{UploadId: "upload-adaptive-1"}, nil
+}
+
+func (s *adaptiveRotationStorageServer) QueryWriteStatus(ctx context.Context, req *storagepb.QueryWriteStatusRequest) (*storagepb.QueryWriteStatusResponse, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.queryStatusCalls++
+	return &storagepb.QueryWriteStatusResponse{
+		WriteStatus: &storagepb.QueryWriteStatusResponse_PersistedSize{
+			PersistedSize: s.persistedSize,
+		},
+	}, nil
+}
+
+func (s *adaptiveRotationStorageServer) BidiWriteObject(stream storagepb.Storage_BidiWriteObjectServer) error {
+	s.mu.Lock()
+	s.bidiStreams++
+	streamNum := s.bidiStreams
+	delay := s.streamDelay[streamNum]
+	stallAt, hasStall := s.stallStreamAt[streamNum]
+	s.mu.Unlock()
+
+	for {
+		req, err := stream.Recv()
+		if err == io.EOF {
+			return nil
+		}
+		if err != nil {
+			return err
+		}
+
+		size := req.GetWriteOffset() + int64(len(req.GetChecksummedData().GetContent()))
+		s.mu.Lock()
+		s.receivedOffsets = append(s.receivedOffsets, req.GetWriteOffset())
+		s.mu.Unlock()
+
+		if hasStall && size >= stallAt {
+			<-stream.Context().Done()
+			return stream.Context().Err()
+		}
+
+		if delay > 0 && req.GetFlush() {
+			select {
+			case <-time.After(delay):
+			case <-stream.Context().Done():
+				return stream.Context().Err()
+			}
+		}
+
+		if req.GetFlush() || req.GetFinishWrite() {
+			s.mu.Lock()
+			if size > s.persistedSize {
+				s.persistedSize = size
+			}
+			s.mu.Unlock()
+		}
+
+		if req.GetFinishWrite() {
+			return stream.Send(&storagepb.BidiWriteObjectResponse{
+				WriteStatus: &storagepb.BidiWriteObjectResponse_Resource{
+					Resource: &storagepb.Object{
+						Bucket: "b",
+						Name:   "obj",
+						Size:   size,
+					},
+				},
+			})
+		}
+		if req.GetStateLookup() {
+			if err := stream.Send(&storagepb.BidiWriteObjectResponse{
+				WriteStatus: &storagepb.BidiWriteObjectResponse_PersistedSize{
+					PersistedSize: size,
+				},
+			}); err != nil {
+				return err
+			}
+		}
+	}
+}
+
+func TestGRPCResumableBidiWriteBufferSender_AdaptiveStreamRotation(t *testing.T) {
+	runUpload := func(t *testing.T, srv *adaptiveRotationStorageServer, chunkTransferTimeout time.Duration, chunks int, waitPerChunk bool) {
+		t.Helper()
+		ctx := context.Background()
+		lis, err := net.Listen("tcp", "localhost:0")
+		if err != nil {
+			t.Fatalf("net.Listen: %v", err)
+		}
+		grpcSrv := grpc.NewServer()
+		storagepb.RegisterStorageServer(grpcSrv, srv)
+		go grpcSrv.Serve(lis)
+		defer grpcSrv.Stop()
+
+		rawClient, err := gapic.NewClient(ctx,
+			option.WithEndpoint(lis.Addr().String()),
+			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+			option.WithoutAuthentication(),
+		)
+		if err != nil {
+			t.Fatalf("gapic.NewClient: %v", err)
+		}
+		defer rawClient.Close()
+
+		progress := newProgressRecorder()
+		w := &gRPCWriter{
+			preRunCtx:            ctx,
+			c:                    &grpcStorageClient{raw: rawClient},
+			bucket:               "b",
+			attrs:                &ObjectAttrs{Name: "obj"},
+			spec:                 &storagepb.WriteObjectSpec{Resource: &storagepb.Object{Bucket: "projects/_/buckets/b", Name: "obj"}},
+			chunkTransferTimeout: chunkTransferTimeout,
+			budget:               chunkRetryBudget{deadline: 2 * time.Second},
+			settings: &settings{
+				retry:      &retryConfig{backoff: &gax.Backoff{Initial: 5 * time.Millisecond}},
+				idempotent: true,
+			},
+			chunkSize:        100,
+			writeQuantum:     100,
+			buf:              make([]byte, 0, 100),
+			bufBaseOffset:    0,
+			bufUnsentIdx:     0,
+			awaitingFirstAck: true,
+			sendableUnits:    2,
+			writesChan:       make(chan gRPCWriterCommand, 4),
+			setSize:          func(int64) {},
+			progress:         progress.report,
+			setObj:           func(*ObjectAttrs) {},
+		}
+		w.streamSender = w.newGRPCResumableBidiWriteBufferSender()
+
+		go func() {
+			for i := 0; i < chunks; i++ {
+				done := make(chan struct{})
+				w.writesChan <- &gRPCWriterCommandWrite{p: make([]byte, 100), done: done}
+				<-done
+				if waitPerChunk {
+					progress.waitFor(t, int64((i+1)*100))
+				}
+			}
+			w.writesChan <- &gRPCWriterCommandClose{err: nil}
+		}()
+
+		err = run(w.preRunCtx, func(ctx context.Context) error {
+			w.lastErr = w.writeLoop(ctx)
+			return w.lastErr
+		}, w.writerRetryConfig(), w.settings.idempotent, withOperation("WriteObject"))
+		if err != nil {
+			t.Fatalf("upload failed: %v", err)
+		}
+	}
+
+	t.Run("FastChunks_SingleStream", func(t *testing.T) {
+		srv := &adaptiveRotationStorageServer{}
+		runUpload(t, srv, 200*time.Millisecond, 3, false)
+
+		srv.mu.Lock()
+		defer srv.mu.Unlock()
+		if srv.startCalls != 1 {
+			t.Errorf("StartResumableWrite calls = %d, want 1", srv.startCalls)
+		}
+		if srv.queryStatusCalls != 0 {
+			t.Errorf("QueryWriteStatus calls = %d, want 0", srv.queryStatusCalls)
+		}
+		if srv.bidiStreams != 1 {
+			t.Errorf("BidiWriteObject streams = %d, want 1", srv.bidiStreams)
+		}
+	})
+
+	t.Run("SlowFirstStream_RotatesWithoutQueryWriteStatus_Sequential", func(t *testing.T) {
+		srv := &adaptiveRotationStorageServer{
+			streamDelay: map[int]time.Duration{
+				1: 75 * time.Millisecond, // > 50ms minDelay threshold, < 250ms stall timeout
+			},
+		}
+		runUpload(t, srv, 250*time.Millisecond, 3, true)
+
+		srv.mu.Lock()
+		defer srv.mu.Unlock()
+		if srv.startCalls != 1 {
+			t.Errorf("StartResumableWrite calls = %d, want 1", srv.startCalls)
+		}
+		if srv.queryStatusCalls != 0 {
+			t.Errorf("QueryWriteStatus calls = %d, want 0", srv.queryStatusCalls)
+		}
+		if srv.bidiStreams != 2 {
+			t.Errorf("BidiWriteObject streams = %d, want 2", srv.bidiStreams)
+		}
+	})
+
+	t.Run("SlowFirstStream_RotatesWithoutQueryWriteStatus_Pipelined", func(t *testing.T) {
+		srv := &adaptiveRotationStorageServer{
+			streamDelay: map[int]time.Duration{
+				1: 75 * time.Millisecond, // > 50ms minDelay threshold, < 250ms stall timeout
+			},
+		}
+		runUpload(t, srv, 250*time.Millisecond, 3, false)
+
+		srv.mu.Lock()
+		defer srv.mu.Unlock()
+		if srv.startCalls != 1 {
+			t.Errorf("StartResumableWrite calls = %d, want 1", srv.startCalls)
+		}
+		if srv.queryStatusCalls != 0 {
+			t.Errorf("QueryWriteStatus calls = %d, want 0", srv.queryStatusCalls)
+		}
+		if srv.bidiStreams != 2 {
+			t.Errorf("BidiWriteObject streams = %d, want 2", srv.bidiStreams)
+		}
+	})
+
+	t.Run("SlowFirstStream_ChunkTransferTimeoutZero_SingleStream", func(t *testing.T) {
+		srv := &adaptiveRotationStorageServer{
+			streamDelay: map[int]time.Duration{
+				1: 75 * time.Millisecond,
+			},
+		}
+		runUpload(t, srv, 0, 3, true)
+
+		srv.mu.Lock()
+		defer srv.mu.Unlock()
+		if srv.bidiStreams != 1 {
+			t.Errorf("BidiWriteObject streams = %d, want 1 when ChunkTransferTimeout == 0", srv.bidiStreams)
+		}
+	})
+
+	t.Run("HardStall_ReconnectsWithQueryWriteStatus", func(t *testing.T) {
+		srv := &adaptiveRotationStorageServer{
+			stallStreamAt: map[int]int64{
+				1: 200, // Ack chunk 1 (100), stall on chunk 2 (200)
+			},
+		}
+		runUpload(t, srv, 50*time.Millisecond, 3, true)
+
+		srv.mu.Lock()
+		defer srv.mu.Unlock()
+		if srv.startCalls != 1 {
+			t.Errorf("StartResumableWrite calls = %d, want 1", srv.startCalls)
+		}
+		if srv.queryStatusCalls != 1 {
+			t.Errorf("QueryWriteStatus calls = %d, want 1 on stall reconnect", srv.queryStatusCalls)
+		}
+		if srv.bidiStreams != 2 {
+			t.Errorf("BidiWriteObject streams = %d, want 2", srv.bidiStreams)
 		}
 	})
 }
