@@ -386,6 +386,33 @@ func TestRetryApplyBulk_MidStreamErrorRetriesIdempotentBatch(t *testing.T) {
 	}
 }
 
+// TestRetryApplyBulk_PreservesContextErrorOnNonIdempotentBatch guards
+// against masking a caller's context cancellation / deadline with the
+// FailedPrecondition wrapper used to block retry for non-idempotent
+// batches. Callers that drive graceful shutdown off ctx cancellation
+// need to see Canceled, not FailedPrecondition.
+func TestRetryApplyBulk_PreservesContextErrorOnNonIdempotentBatch(t *testing.T) {
+	tbl, cleanup, err := setupDefaultFakeServer()
+	defer cleanup()
+	if err != nil {
+		t.Fatalf("fake server setup: %v", err)
+	}
+
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel() // pre-cancel so the RPC fails with Canceled immediately
+
+	m := NewMutation()
+	m.Set("cf", "c1", ServerTime, []byte("v")) // non-idempotent -- would otherwise be wrapped as FailedPrecondition
+
+	_, topErr := tbl.ApplyBulk(ctx, []string{"row1"}, []*Mutation{m})
+	if topErr == nil {
+		t.Fatalf("ApplyBulk returned nil top-level err; want Canceled")
+	}
+	if got, want := status.Code(topErr), codes.Canceled; got != want {
+		t.Errorf("ApplyBulk top-level err code = %v, want %v (must not mask ctx cancellation with FailedPrecondition)", got, want)
+	}
+}
+
 func TestRetryApplyBulk_UnretryableErrors(t *testing.T) {
 	ctx := context.Background()
 

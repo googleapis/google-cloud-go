@@ -105,6 +105,13 @@ func (t *Table) applyGroup(ctx context.Context, group []*entryErr, opts ...Apply
 		trace.TracePrintf(ctx, attrMap, "Row count in ApplyBulk")
 		err := t.doApplyBulk(ctx, group, headerMD, trailerMD, opts...)
 		if err != nil {
+			// Preserve context errors (Canceled / DeadlineExceeded) as-is
+			// so callers that drive graceful shutdown or timeout logic off
+			// the status code still see the right signal; wrapping them in
+			// FailedPrecondition below would mask that intent.
+			if ctx.Err() != nil {
+				return err
+			}
 			// If any entry in this group carries a non-idempotent mutation
 			// (SetCell at Timestamp=ServerTime), suppress the gax retry.
 			// For a mid-stream RPC failure some entries may have already
