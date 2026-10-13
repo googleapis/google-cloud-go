@@ -101,6 +101,129 @@ func TestIntegration_SessionVRpc_Apply(t *testing.T) {
 	}
 }
 
+// TestIntegration_SessionVRpc_CheckAndMutateRow exercises conditional Apply
+// end-to-end through the vRPC session path and asserts a CheckAndMutateRow
+// TableRequest reached the wire and GetCondMutationResult reports matched=true.
+func TestIntegration_SessionVRpc_CheckAndMutateRow(t *testing.T) {
+	h := newSessionTestHarness(t)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	tbl := h.client.OpenTable("test-table")
+	mtrue := NewMutation()
+	mtrue.Set("fam1", "col1", Timestamp(1000), []byte("v"))
+	cond := NewCondMutation(PassAllFilter(), mtrue, nil)
+
+	var matched bool
+	if err := tbl.Apply(ctx, "test-row", cond, GetCondMutationResult(&matched)); err != nil {
+		t.Fatalf("Apply(conditional): %v", err)
+	}
+	if !matched {
+		t.Errorf("GetCondMutationResult matched = false, want true")
+	}
+
+	vrpcs := waitForVRpcs(t, h.server, 1, 2*time.Second)
+	if len(vrpcs) != 1 {
+		t.Errorf("server saw %d vRPCs, want exactly 1", len(vrpcs))
+	}
+	var tr btpb.TableRequest
+	if err := proto.Unmarshal(vrpcs[0].req.Payload, &tr); err != nil {
+		t.Fatalf("decode captured TableRequest: %v", err)
+	}
+	if tr.GetCheckAndMutateRow() == nil {
+		t.Errorf("captured TableRequest was not CheckAndMutateRow shape: %T", tr.Payload)
+	}
+	openReqs := h.server.getOpenTableRequests()
+	if len(openReqs) == 0 {
+		t.Fatalf("expected at least 1 OpenTableRequest")
+	}
+	if got := openReqs[len(openReqs)-1].GetPermission(); got != btpb.OpenTableRequest_PERMISSION_READ_WRITE {
+		t.Errorf("OpenTable permission = %v, want PERMISSION_READ_WRITE", got)
+	}
+}
+
+// TestIntegration_SessionVRpc_ReadModifyWriteRow exercises ApplyReadModifyWrite
+// end-to-end through the vRPC session path and asserts a ReadModifyWriteRow
+// TableRequest reached the wire and the updated row is decoded.
+func TestIntegration_SessionVRpc_ReadModifyWriteRow(t *testing.T) {
+	h := newSessionTestHarness(t)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	tbl := h.client.OpenTable("test-table")
+	rmw := NewReadModifyWrite()
+	rmw.AppendValue("fam1", "col1", []byte("-suffix"))
+
+	row, err := tbl.ApplyReadModifyWrite(ctx, "test-row", rmw)
+	if err != nil {
+		t.Fatalf("ApplyReadModifyWrite: %v", err)
+	}
+	if row.Key() != "test-row" || len(row["fam1"]) == 0 || string(row["fam1"][0].Value) != "rmw-value" {
+		t.Errorf("ApplyReadModifyWrite row = %+v, want fam1:col1=rmw-value", row)
+	}
+
+	vrpcs := waitForVRpcs(t, h.server, 1, 2*time.Second)
+	if len(vrpcs) != 1 {
+		t.Errorf("server saw %d vRPCs, want exactly 1", len(vrpcs))
+	}
+	var tr btpb.TableRequest
+	if err := proto.Unmarshal(vrpcs[0].req.Payload, &tr); err != nil {
+		t.Fatalf("decode captured TableRequest: %v", err)
+	}
+	if tr.GetReadModifyWriteRow() == nil {
+		t.Errorf("captured TableRequest was not ReadModifyWriteRow shape: %T", tr.Payload)
+	}
+	openReqs := h.server.getOpenTableRequests()
+	if len(openReqs) == 0 {
+		t.Fatalf("expected at least 1 OpenTableRequest")
+	}
+	if got := openReqs[len(openReqs)-1].GetPermission(); got != btpb.OpenTableRequest_PERMISSION_READ_WRITE {
+		t.Errorf("OpenTable permission = %v, want PERMISSION_READ_WRITE", got)
+	}
+}
+
+// TestIntegration_SessionVRpc_MutateRows exercises ApplyBulk end-to-end
+// through the vRPC session path and asserts a MutateRows TableRequest
+// reached the wire.
+func TestIntegration_SessionVRpc_MutateRows(t *testing.T) {
+	h := newSessionTestHarness(t)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	tbl := h.client.OpenTable("test-table")
+	m1 := NewMutation()
+	m1.Set("fam1", "col1", Timestamp(1000), []byte("v1"))
+	m2 := NewMutation()
+	m2.Set("fam1", "col1", Timestamp(1000), []byte("v2"))
+
+	errs, err := tbl.ApplyBulk(ctx, []string{"r1", "r2"}, []*Mutation{m1, m2})
+	if err != nil || len(errs) != 0 {
+		t.Fatalf("ApplyBulk = (%v, %v), want (nil, nil)", errs, err)
+	}
+
+	vrpcs := waitForVRpcs(t, h.server, 1, 2*time.Second)
+	if len(vrpcs) != 1 {
+		t.Errorf("server saw %d vRPCs, want exactly 1", len(vrpcs))
+	}
+	var tr btpb.TableRequest
+	if err := proto.Unmarshal(vrpcs[0].req.Payload, &tr); err != nil {
+		t.Fatalf("decode captured TableRequest: %v", err)
+	}
+	if tr.GetMutateRows() == nil || len(tr.GetMutateRows().GetEntries()) != 2 {
+		t.Errorf("captured TableRequest was not MutateRows shape with 2 entries: %+v", &tr)
+	}
+	openReqs := h.server.getOpenTableRequests()
+	if len(openReqs) == 0 {
+		t.Fatalf("expected at least 1 OpenTableRequest")
+	}
+	if got := openReqs[len(openReqs)-1].GetPermission(); got != btpb.OpenTableRequest_PERMISSION_WRITE {
+		t.Errorf("OpenTable permission = %v, want PERMISSION_WRITE", got)
+	}
+}
+
 // TestIntegration_SessionVRpc_RequestCarriesDeadline asserts the per-vRPC
 // Deadline field is populated from the caller's context deadline. The exact
 // remaining budget will be slightly less than the parent (encode + send

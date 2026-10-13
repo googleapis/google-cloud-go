@@ -41,6 +41,13 @@ import (
 //
 // Conditional mutations cannot be applied in bulk and providing one will result in an error.
 func (t *Table) ApplyBulk(ctx context.Context, rowKeys []string, muts []*Mutation, opts ...ApplyOption) (errs []error, err error) {
+	if t.divertible != nil {
+		return t.divertible.ApplyBulk(ctx, rowKeys, muts, opts...)
+	}
+	return t.applyBulkClassic(ctx, rowKeys, muts, opts...)
+}
+
+func (t *Table) applyBulkClassic(ctx context.Context, rowKeys []string, muts []*Mutation, opts ...ApplyOption) (errs []error, err error) {
 	ctx = mergeOutgoingMetadata(ctx, t.md)
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigtable/ApplyBulk")
 	defer func() { trace.EndSpan(ctx, err) }()

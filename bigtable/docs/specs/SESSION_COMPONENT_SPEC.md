@@ -211,7 +211,7 @@ Every rule is a MUST. Violations are bugs, not preferences.
 | Retry classification (`AttemptState`) | `session_vrpc.go` tag sites | `RetryingVRpc` reads via `ClassifyErr`; MUST NOT re-classify |
 | Retry policy (max attempts, backoff) | `RetryingVRpc` | Session and pool MUST NOT enforce their own retry caps |
 | Proto ↔ public-type translation | `TableShim` (public side) + `sessionTable` (proto side) | session package NEVER sees public types; public callers NEVER see proto |
-| Read pool vs write pool selection | `sessionTable.ReadRow` / `sessionTable.MutateRow` | `TableShim` MUST NOT pick the pool — it picks session-vs-classic only |
+| Read / write / read-write pool selection | `sessionTable` (`ReadRow` → read pool; `MutateRow` / `MutateRows` → write pool; `CheckAndMutateRow` / `ReadModifyWriteRow` → read-write pool) | `TableShim` MUST NOT pick the pool — it picks session-vs-classic only |
 | Debug/z-page state access | `SessionDebugProvider` (interface) | providers implemented on `sessionClient` and `mixedModeSessionDebug`; z-pages depend only on the interface |
 | Close reason | `Session.closeReason` (CAS-once) | first cause wins; late `StreamEnd:*` classifications MUST NOT overwrite |
 | Per-attempt `ClusterInfo` (classic path) | metrics tracer's `attempt` state, stamped from response `ResponseParams` in unary interceptor | `internal/metrics/util.go:96-102`; MUST NOT be stamped from session-side sources |
