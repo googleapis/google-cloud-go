@@ -83,7 +83,10 @@ func TestRunTransaction(t *testing.T) {
 				},
 			}},
 		},
-		&pb.CommitResponse{CommitTime: aTimestamp3},
+		&pb.CommitResponse{
+			CommitTime:   aTimestamp3,
+			WriteResults: []*pb.WriteResult{{UpdateTime: aTimestamp3}},
+		},
 	)
 	var commitResponse CommitResponse
 	err = c.RunTransaction(ctx, func(_ context.Context, tx *Transaction) error {
@@ -102,10 +105,14 @@ func TestRunTransaction(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// validate commit time
+	// validate commit time and write results
 	commitTime := commitResponse.CommitTime()
 	if commitTime != aTimestamp3.AsTime() {
 		t.Fatalf("commit time %v should equal %v", commitTime, aTimestamp3)
+	}
+	writeResults := commitResponse.WriteResults()
+	if len(writeResults) != 1 || !writeResults[0].UpdateTime.Equal(aTimestamp3.AsTime()) {
+		t.Fatalf("got write results %+v, want 1 result with UpdateTime %v", writeResults, aTimestamp3.AsTime())
 	}
 
 	// Query
