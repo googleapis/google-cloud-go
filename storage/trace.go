@@ -22,6 +22,7 @@ import (
 	"os"
 	"strings"
 
+	"cloud.google.com/go/auth"
 	internalTrace "cloud.google.com/go/internal/trace"
 	"cloud.google.com/go/storage/internal"
 	"go.opentelemetry.io/otel"
@@ -194,4 +195,32 @@ func getCommonAttributes() []attribute.KeyValue {
 
 func appendPackageName(spanName string) string {
 	return fmt.Sprintf("%s.%s", gcpClientArtifact, spanName)
+}
+
+type tracedTokenProvider struct {
+	base auth.TokenProvider
+}
+
+func (p *tracedTokenProvider) Token(ctx context.Context) (*auth.Token, error) {
+	if !isOTelTracingDevEnabled() {
+		return p.base.Token(ctx)
+	}
+	ctx, _ = startSpan(ctx, "Auth.RefreshAccessToken")
+	tok, err := p.base.Token(ctx)
+	endSpan(ctx, err)
+	return tok, err
+}
+
+// wrapAuthCredentialsForTracing wraps an auth.Credentials object to record T5
+// Auth.RefreshAccessToken internal operation spans when fetching or refreshing tokens.
+func wrapAuthCredentialsForTracing(c *auth.Credentials) *auth.Credentials {
+	if c == nil || c.TokenProvider == nil {
+		return c
+	}
+	if _, ok := c.TokenProvider.(*tracedTokenProvider); ok {
+		return c
+	}
+	clone := *c
+	clone.TokenProvider = &tracedTokenProvider{base: c.TokenProvider}
+	return &clone
 }

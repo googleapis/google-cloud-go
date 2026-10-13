@@ -18,9 +18,11 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"net/http/httptest"
 	"testing"
 	"time"
 
+	"cloud.google.com/go/auth"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/storage/internal"
 	"github.com/google/go-cmp/cmp"
@@ -30,6 +32,7 @@ import (
 	"go.opentelemetry.io/otel/sdk/trace/tracetest"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/googleapi"
+	"google.golang.org/api/option"
 )
 
 func TestStorageTraceStartEndSpan(t *testing.T) {
@@ -348,5 +351,146 @@ func TestEndSpanEviction(t *testing.T) {
 				t.Errorf("expected bucket to remain in cache")
 			}
 		})
+	}
+}
+
+type staticAuthTokenProvider struct {
+	token *auth.Token
+	err   error
+}
+
+func (s *staticAuthTokenProvider) Token(ctx context.Context) (*auth.Token, error) {
+	return s.token, s.err
+}
+
+func TestTracedTokenProviderSpan(t *testing.T) {
+	ctx := context.Background()
+	te := testutil.NewOpenTelemetryTestExporter()
+	t.Cleanup(func() {
+		te.Unregister(ctx)
+	})
+	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
+	t.Setenv("STORAGE_EMULATOR_HOST", "")
+
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		fmt.Fprintln(w, `{"name": "my-bucket", "location": "US"}`)
+	}))
+	defer srv.Close()
+
+	creds := auth.NewCredentials(&auth.CredentialsOptions{
+		TokenProvider: &staticAuthTokenProvider{token: &auth.Token{Value: "fake-token"}},
+	})
+
+	client, err := NewClient(ctx, option.WithEndpoint(srv.URL), option.WithAuthCredentials(creds), WithDisabledClientMetrics())
+	if err != nil {
+		t.Fatalf("NewClient: %v", err)
+	}
+	defer client.Close()
+
+	if _, err := client.Bucket("my-bucket").Attrs(ctx); err != nil {
+		t.Fatalf("Bucket.Attrs: %v", err)
+	}
+
+	var authSpan *tracetest.SpanStub
+	var bucketSpan *tracetest.SpanStub
+	for i := range te.Spans() {
+		s := &te.Spans()[i]
+		switch s.Name {
+		case "cloud.google.com/go/storage.Auth.RefreshAccessToken":
+			authSpan = s
+		case "cloud.google.com/go/storage.Bucket.Attrs":
+			bucketSpan = s
+		}
+	}
+	if authSpan == nil {
+		t.Fatalf("expected span %q to be recorded, got none", "cloud.google.com/go/storage.Auth.RefreshAccessToken")
+	}
+	if bucketSpan != nil {
+		if got, want := authSpan.Parent.TraceID(), bucketSpan.SpanContext.TraceID(); got != want {
+			t.Errorf("got trace ID %v, want %v", got, want)
+		}
+	}
+}
+
+func TestTracedTokenProviderError(t *testing.T) {
+	ctx := context.Background()
+	te := testutil.NewOpenTelemetryTestExporter()
+	t.Cleanup(func() {
+		te.Unregister(ctx)
+	})
+	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
+	t.Setenv("STORAGE_EMULATOR_HOST", "")
+
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer srv.Close()
+
+	testErr := fmt.Errorf("oauth2: token expired")
+	creds := auth.NewCredentials(&auth.CredentialsOptions{
+		TokenProvider: &staticAuthTokenProvider{err: testErr},
+	})
+
+	client, err := NewClient(ctx, option.WithEndpoint(srv.URL), option.WithAuthCredentials(creds), WithDisabledClientMetrics())
+	if err != nil {
+		t.Fatalf("NewClient: %v", err)
+	}
+	defer client.Close()
+
+	_, err = client.Bucket("my-bucket").Attrs(ctx)
+	if err == nil {
+		t.Fatalf("expected error from Bucket.Attrs, got nil")
+	}
+
+	var authSpan *tracetest.SpanStub
+	for i := range te.Spans() {
+		s := &te.Spans()[i]
+		if s.Name == "cloud.google.com/go/storage.Auth.RefreshAccessToken" {
+			authSpan = s
+			break
+		}
+	}
+	if authSpan == nil {
+		t.Fatalf("expected span %q to be recorded on error, got none", "cloud.google.com/go/storage.Auth.RefreshAccessToken")
+	}
+	if authSpan.Status.Code != otcodes.Error {
+		t.Errorf("got span status code %v, want %v", authSpan.Status.Code, otcodes.Error)
+	}
+}
+
+func TestTracedTokenProviderDevTracingDisabled(t *testing.T) {
+	ctx := context.Background()
+	te := testutil.NewOpenTelemetryTestExporter()
+	t.Cleanup(func() {
+		te.Unregister(ctx)
+	})
+	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "false")
+	t.Setenv("STORAGE_EMULATOR_HOST", "")
+
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		fmt.Fprintln(w, `{"name": "my-bucket", "location": "US"}`)
+	}))
+	defer srv.Close()
+
+	creds := auth.NewCredentials(&auth.CredentialsOptions{
+		TokenProvider: &staticAuthTokenProvider{token: &auth.Token{Value: "fake-token"}},
+	})
+
+	client, err := NewClient(ctx, option.WithEndpoint(srv.URL), option.WithAuthCredentials(creds), WithDisabledClientMetrics())
+	if err != nil {
+		t.Fatalf("NewClient: %v", err)
+	}
+	defer client.Close()
+
+	if _, err := client.Bucket("my-bucket").Attrs(ctx); err != nil {
+		t.Fatalf("Bucket.Attrs: %v", err)
+	}
+
+	for _, s := range te.Spans() {
+		if s.Name == "cloud.google.com/go/storage.Auth.RefreshAccessToken" {
+			t.Fatalf("expected no Auth.RefreshAccessToken span when dev tracing is disabled, but found one")
+		}
 	}
 }

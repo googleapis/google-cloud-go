@@ -192,6 +192,9 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (client *g
 			s.clientOption = append(s.clientOption, grpcNetworkMetricsDialOptions("storage.googleapis.com", clientMetrics)...)
 		}
 	}
+	if isOTelTracingDevEnabled() {
+		wrapGRPCAuthCredentialsForTracing(ctx, s)
+	}
 
 	if metricsCleanup != nil {
 		defer func() {
@@ -258,6 +261,14 @@ func initGRPCMetricsAndWrapCredentials(ctx context.Context, config *storageConfi
 		}
 	}
 	return clientMetrics, metricsCleanup
+}
+
+func wrapGRPCAuthCredentialsForTracing(ctx context.Context, s *settings) {
+	credsOpts := append([]option.ClientOption{option.WithScopes(gapic.DefaultAuthScopes()...)}, s.clientOption...)
+	if authCreds, err := internaloption.AuthCreds(ctx, credsOpts); err == nil && authCreds != nil {
+		authCreds = wrapAuthCredentialsForTracing(authCreds)
+		s.clientOption = append(s.clientOption, option.WithAuthCredentials(authCreds))
+	}
 }
 
 // configureStreamingTimeouts explicitly overrides default call timeouts to 0 (unbounded)
