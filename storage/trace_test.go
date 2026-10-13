@@ -389,32 +389,22 @@ func TestTracedTokenProviderSpan(t *testing.T) {
 	defer client.Close()
 
 	if _, err := client.Bucket("my-bucket").Attrs(ctx); err != nil {
-		t.Fatalf("Bucket.Attrs (1): %v", err)
-	}
-	if _, err := client.Bucket("my-bucket").Attrs(ctx); err != nil {
-		t.Fatalf("Bucket.Attrs (2): %v", err)
+		t.Fatalf("Bucket.Attrs: %v", err)
 	}
 
 	var authSpan *tracetest.SpanStub
-	var authSpanCount int
 	var bucketSpan *tracetest.SpanStub
 	for i := range te.Spans() {
 		s := &te.Spans()[i]
 		switch s.Name {
 		case "cloud.google.com/go/storage.Auth.RefreshAccessToken":
 			authSpan = s
-			authSpanCount++
 		case "cloud.google.com/go/storage.Bucket.Attrs":
-			if bucketSpan == nil {
-				bucketSpan = s
-			}
+			bucketSpan = s
 		}
 	}
 	if authSpan == nil {
 		t.Fatalf("expected span %q to be recorded, got none", "cloud.google.com/go/storage.Auth.RefreshAccessToken")
-	}
-	if authSpanCount != 1 {
-		t.Errorf("got %d Auth.RefreshAccessToken spans across 2 operations with cached token, want 1", authSpanCount)
 	}
 	if bucketSpan != nil {
 		if got, want := authSpan.Parent.TraceID(), bucketSpan.SpanContext.TraceID(); got != want {

@@ -211,29 +211,16 @@ func (p *tracedTokenProvider) Token(ctx context.Context) (*auth.Token, error) {
 	return tok, err
 }
 
-// cachedTracedTokenProvider wraps a tracedTokenProvider with an in-memory
-// token cache so that Auth.RefreshAccessToken spans are only emitted when a
-// token is initially fetched or refreshed, rather than on every cached lookup.
-type cachedTracedTokenProvider struct {
-	cached auth.TokenProvider
-}
-
-func (p *cachedTracedTokenProvider) Token(ctx context.Context) (*auth.Token, error) {
-	return p.cached.Token(ctx)
-}
-
 // wrapAuthCredentialsForTracing wraps an auth.Credentials object to record T5
 // Auth.RefreshAccessToken internal operation spans when fetching or refreshing tokens.
 func wrapAuthCredentialsForTracing(c *auth.Credentials) *auth.Credentials {
 	if c == nil || c.TokenProvider == nil {
 		return c
 	}
-	if _, ok := c.TokenProvider.(*cachedTracedTokenProvider); ok {
+	if _, ok := c.TokenProvider.(*tracedTokenProvider); ok {
 		return c
 	}
 	clone := *c
-	clone.TokenProvider = &cachedTracedTokenProvider{
-		cached: auth.NewCachedTokenProvider(&tracedTokenProvider{base: c.TokenProvider}, nil),
-	}
+	clone.TokenProvider = &tracedTokenProvider{base: c.TokenProvider}
 	return &clone
 }
