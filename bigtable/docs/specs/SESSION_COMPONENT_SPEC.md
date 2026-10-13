@@ -141,11 +141,10 @@ Every rule is a MUST. Violations are bugs, not preferences.
 - Rationale: z-pages are consumers. If a z-page reaches into `*SessionPoolImpl` to read a field directly, refactoring the pool becomes impossible without breaking the debug UI. The provider interface is the versioned surface.
 - **Adding a 4th method to `SessionDebugProvider`?** Update **every** fake in `afez/afez_test.go`, `flightz/flightz_test.go`, `sessionz/sessionz_test.go`, and any new debug-page tests — the interface is defensive by design.
 
-### B4. `Diverter` MUST NOT know about specific RPCs
-- `Diverter` has one input (`SessionLoad`), one output (`UseSession() bool`), and two counters (`SessionPicks`, `ClassicPicks`). That is the complete surface.
-- MUST NOT gain per-method routing (e.g., "route ReadRow to session but Apply to classic"). Method-shape routing lives in `TableShim` (Part C).
+### B4. `Diverter` evaluates global and per-scope (`method`) session load ratios
+- `Diverter` stores a uniform `SessionLoad` plus optional per-scope (`"method:Bigtable.<Method>"`) session load overrides (`scopeLoads`), exposes `UseSession() bool` / `UseSessionForMethod(method string) bool`, and maintains two counters (`SessionPicks`, `ClassicPicks`).
+- Only the `method` scope dimension (`"method:Bigtable.<Method>"`) is supported; `TableShim` determines which method scope a given `TableAPI` call maps to (e.g., `ReadRow` and single-row `ReadRows` → `method:Bigtable.ReadRow`; non-conditional `Apply` → `method:Bigtable.MutateRow`; conditional `Apply` → `method:Bigtable.CheckAndMutateRow`; `ApplyBulk` → `method:Bigtable.MutateRows`; `ApplyReadModifyWrite` → `method:Bigtable.ReadModifyWriteRow`).
 - MUST NOT gain per-row/per-key stickiness. It is a stochastic gate, not a router. Any invariant that assumes "the same call went to the same place last time" MUST NOT rely on `Diverter`.
-- Rationale: keeping `Diverter` shape-agnostic means adding a new vRPC method requires zero `Diverter` change — it's a `TableShim` change plus a session-side descriptor.
 
 ### B5. `TableShim` MUST NOT reach into `Session` or pool internals
 - `TableShim` holds `SessionTableApi` (the interface), never `*SessionPoolImpl` or `*Session`.
@@ -153,10 +152,10 @@ Every rule is a MUST. Violations are bugs, not preferences.
 - Errors from either data path MUST surface to the caller as-is. `TableShim` MUST NOT retry a session-side failure on classic — that violates the retry oracle (`SESSION_SPEC.md` #9).
 
 ### B6. `ClientConfigurationManager` is the SOLE writer of pool-shaping config
-- `SessionPoolImpl.UpdateConfig`, `Diverter.SetSessionLoad`, and every pool-shaping setter MUST be called from `ClientConfigurationManager` in production code paths.
+- `SessionPoolImpl.UpdateConfig`, `Diverter.ApplySessionClientConfiguration` / `Diverter.SetSessionLoad`, and every pool-shaping setter MUST be called from `ClientConfigurationManager` in production code paths.
 - Tests MAY call these setters directly for fixture setup. This is the only exception.
 - Rationale: if pools self-tune, or if application code toggles `Diverter.SetSessionLoad` outside the config path, the polled config is no longer authoritative (`SESSION_SPEC.md` #13) and the client stops honoring server-driven rollouts.
-- **`grep` sanity check for new call sites:** `git grep -n 'SetSessionLoad\|UpdateConfig' -- ':!*_test.go' ':!*_configuration_manager.go' ':!*/diverter_test.go'` — new hits should be reviewed.
+- **`grep` sanity check for new call sites:** `git grep -n 'SetSessionLoad\|ApplySessionClientConfiguration\|UpdateConfig' -- ':!*_test.go' ':!*_configuration_manager.go' ':!*/diverter_test.go'` — new hits should be reviewed.
 
 ### B7. `Session` MUST NOT hold pool-level counters
 - Per-Session state: `state`, `activeRPC`, `peerInfo`, `refreshConfig`, `heartbeat*`, `nextRPCID`, `hooks` (`SessionHooks` struct — opaque per-session lifecycle + slot-drained callbacks, wired once at construction by `SessionPoolImpl.createSession`), tracer, debug ring buffer.
@@ -206,7 +205,7 @@ Every rule is a MUST. Violations are bugs, not preferences.
 | Session pool composition (min/max/waiters) | `SessionPoolImpl` | driven by `ClientConfigurationManager.UpdateConfig` |
 | Pool sizing formula + `ScaleDecision` | `PoolSizer` (`pool_sizer.go:154`) | `session_pool_scaling.go`, z-pages, tests MUST consume `Decide()`/`ScaleDecision`; MUST NOT recompute `EffectivePending`/`IdleHeadroom`/`DesiredCapacity` from raw `PoolStats` |
 | Sizer inputs (`PoolStats`) | `SessionPoolImpl` via injected `StatsFetcher` | `PoolSizer` reads via fetcher closure; MUST NOT touch pool internals directly |
-| Traffic split ratio (session vs classic) | `Diverter.sessionLoadBits` (atomic float64) | driven by `ClientConfigurationManager.SessionLoadListener` |
+| Traffic split ratio (session vs classic) | `Diverter.sessionLoadBits` (atomic float64) + `Diverter.scopeLoads` (atomic pointer to per-scope map) | driven by `ClientConfigurationManager.AddSessionDiversionListener` / `AddSessionLoadListener` |
 | Server-driven config | `ClientConfigurationManager.currentConfig` (RW-mutex) | pools subscribe via listener |
 | Retry classification (`AttemptState`) | `session_vrpc.go` tag sites | `RetryingVRpc` reads via `ClassifyErr`; MUST NOT re-classify |
 | Retry policy (max attempts, backoff) | `RetryingVRpc` | Session and pool MUST NOT enforce their own retry caps |

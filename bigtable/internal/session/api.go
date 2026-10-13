@@ -121,6 +121,12 @@ type Client interface {
 	// ignore this method.
 	AddSessionLoadListener(func(load float64)) func()
 
+	// AddSessionDiversionListener registers a listener invoked every
+	// time the server-driven ClientConfigurationManager reports updated
+	// session diversion settings (SessionLoad or
+	// SessionDiversionConfiguration). Returns an unregister thunk.
+	AddSessionDiversionListener(func(cfg *btpb.SessionClientConfiguration)) func()
+
 	// Close closes the underlying channel pool. TableAPI
 	// instances previously vended become unusable.
 	Close() error

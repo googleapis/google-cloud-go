@@ -440,6 +440,78 @@ func (m *ClientConfigurationManager) AddSessionLoadListener(listener func(load f
 	})
 }
 
+// AddSessionDiversionListener registers a callback that receives the
+// server-driven SessionClientConfiguration whenever session diversion
+// settings (SessionLoad or SessionDiversionConfiguration) change on a
+// successful poll. Returns an unregister thunk.
+//
+// Like AddSessionLoadListener, this skips the immediate registration-time
+// fire (seq=0) so the Diverter's bootstrap configuration remains in effect
+// until the control plane responds.
+func (m *ClientConfigurationManager) AddSessionDiversionListener(listener func(*bigtablepb.SessionClientConfiguration)) func() {
+	var (
+		diffMu     sync.Mutex
+		hasPrev    bool
+		prevLoad   float32
+		prevDivCfg *bigtablepb.SessionDiversionConfiguration
+	)
+	return m.addListener(func(cfg *bigtablepb.ClientConfiguration, seq int64) {
+		if seq == 0 {
+			return
+		}
+		sc := cfg.GetSessionConfiguration()
+		load := sc.GetSessionLoad()
+		divCfg := sc.GetSessionDiversionConfiguration()
+		diffMu.Lock()
+		if hasPrev && prevLoad == load && proto.Equal(prevDivCfg, divCfg) {
+			diffMu.Unlock()
+			return
+		}
+		hasPrev = true
+		prevLoad = load
+		if divCfg != nil {
+			prevDivCfg = proto.Clone(divCfg).(*bigtablepb.SessionDiversionConfiguration)
+		} else {
+			prevDivCfg = nil
+		}
+		diffMu.Unlock()
+		listener(sc)
+	})
+}
+
+// isSessionLoadZero reports whether sc results in zero session load across all
+// supported scopes once both deprecated SessionLoad and
+// SessionDiversionConfiguration are evaluated.
+func isSessionLoadZero(sc *bigtablepb.SessionClientConfiguration) bool {
+	if sc == nil {
+		return true
+	}
+	if divCfg := sc.GetSessionDiversionConfiguration(); divCfg != nil {
+		switch strategy := divCfg.GetDiversionStrategy().(type) {
+		case *bigtablepb.SessionDiversionConfiguration_GlobalDiversion:
+			return strategy.GlobalDiversion.GetSessionLoad() <= 0
+		case *bigtablepb.SessionDiversionConfiguration_PerScopeDiversion_:
+			loads := make(map[string]float64)
+			if baseLoad := float64(sc.GetSessionLoad()); baseLoad > 0 {
+				loads[ScopeMethodReadRow] = baseLoad
+				loads[ScopeMethodMutateRow] = baseLoad
+			}
+			for scope, scopeCfg := range strategy.PerScopeDiversion.GetScopeDiversions() {
+				if isSupportedMethodScope(scope) {
+					loads[normalizeMethodScope(scope)] = float64(scopeCfg.GetSessionLoad())
+				}
+			}
+			for _, v := range loads {
+				if v > 0 {
+					return false
+				}
+			}
+			return true
+		}
+	}
+	return sc.GetSessionLoad() <= 0
+}
+
 // pollingLoop continuously polls the Bigtable control plane at the configured interval.
 // It enforces a minimum interval (minPollingInterval) to protect the control plane from DDoSes.
 func (m *ClientConfigurationManager) pollingLoop() {
@@ -574,7 +646,7 @@ func (m *ClientConfigurationManager) poll(ctx context.Context) {
 	// session_load, channel/session pool sizing, and LB options at zero.
 	if resp.GetSessionConfiguration() == nil {
 		recordDebugTag(tagClientConfigSessionConfigurationNull)
-	} else if resp.GetSessionConfiguration().GetSessionLoad() == 0 {
+	} else if isSessionLoadZero(resp.GetSessionConfiguration()) {
 		// Distinct from the null case: server sent a populated
 		// SessionClientConfiguration but explicitly set session_load=0
 		// (route 0% through session, 100% through classic). Legitimate

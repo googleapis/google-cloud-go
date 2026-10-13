@@ -321,7 +321,7 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 			_ = mPool.Close()
 			return nil, fmt.Errorf("bigtable: session.NewClient: %w", sessionErr)
 		}
-		sc.AddSessionLoadListener(c.diverter.SetSessionLoad)
+		sc.AddSessionDiversionListener(c.diverter.ApplySessionClientConfiguration)
 		c.sessionImpl = sc
 
 		// Per-resource TableAPI cache with TTL-on-idle eviction. The

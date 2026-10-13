@@ -813,3 +813,70 @@ func TestIntegration_SessionVRpc_ClientCloseSendsCloseSession(t *testing.T) {
 			got, sessionsBeforeClose)
 	}
 }
+
+// TestIntegration_SessionVRpc_PerScopeDiversion exercises end-to-end
+// GetClientConfiguration -> Diverter -> TableShim routing with
+// PerScopeDiversion configured for the "method" scope.
+func TestIntegration_SessionVRpc_PerScopeDiversion(t *testing.T) {
+	divCfg := &btpb.SessionDiversionConfiguration{
+		DiversionStrategy: &btpb.SessionDiversionConfiguration_PerScopeDiversion_{
+			PerScopeDiversion: &btpb.SessionDiversionConfiguration_PerScopeDiversion{
+				ScopeDiversions: map[string]*btpb.SessionScopeDiversionConfiguration{
+					"method:Bigtable.ReadRow":            {SessionLoad: 1.0},
+					"method:Bigtable.MutateRow":          {SessionLoad: 0.0},
+					"method:Bigtable.CheckAndMutateRow":  {SessionLoad: 1.0},
+					"method:Bigtable.ReadModifyWriteRow": {SessionLoad: 0.0},
+					"method:Bigtable.MutateRows":         {SessionLoad: 1.0},
+				},
+			},
+		},
+	}
+	h := newSessionTestHarness(t, withFakeSetup(func(s *fakeBigtableServer) {
+		s.setSessionDiversionConfiguration(divCfg)
+	}))
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	tbl := h.client.Open("test-table")
+
+	// 1. ReadRow (load 1.0) -> succeeds on session path
+	if _, err := tbl.ReadRow(ctx, "row-1"); err != nil {
+		t.Fatalf("ReadRow (load=1.0) failed: %v", err)
+	}
+
+	// 2. Conditional Apply / CheckAndMutateRow (load 1.0) -> succeeds on session path
+	mut := NewMutation()
+	mut.Set("fam", "col", 1000, []byte("val"))
+	condMut := NewCondMutation(PassAllFilter(), mut, nil)
+	if err := tbl.Apply(ctx, "row-1", condMut); err != nil {
+		t.Fatalf("Apply(conditional, load=1.0) failed: %v", err)
+	}
+
+	// 3. ApplyBulk / MutateRows (load 1.0) -> succeeds on session path
+	if errs, err := tbl.ApplyBulk(ctx, []string{"row-1"}, []*Mutation{mut}); err != nil || len(errs) != 0 {
+		t.Fatalf("ApplyBulk (load=1.0) errs=%v err=%v", errs, err)
+	}
+
+	// 4. Non-conditional Apply / MutateRow (load 0.0) -> routes to classic
+	// (which fakeBigtableServer leaves Unimplemented).
+	err := tbl.Apply(ctx, "row-1", mut)
+	if status.Code(err) != codes.Unimplemented {
+		t.Errorf("Apply(non-conditional, load=0.0) err = %v, want codes.Unimplemented from classic server", err)
+	}
+
+	// 5. ApplyReadModifyWrite / ReadModifyWriteRow (load 0.0) -> routes to classic
+	rmw := NewReadModifyWrite()
+	rmw.AppendValue("fam", "col", []byte("x"))
+	_, err = tbl.ApplyReadModifyWrite(ctx, "row-1", rmw)
+	if status.Code(err) != codes.Unimplemented {
+		t.Errorf("ApplyReadModifyWrite (load=0.0) err = %v, want codes.Unimplemented from classic server", err)
+	}
+
+	// Verify that only the 3 session-enabled vRPCs (ReadRow, CheckAndMutateRow, MutateRows)
+	// reached the fake server's session stream.
+	captured := h.server.snapshotVRpcs()
+	if len(captured) != 3 {
+		t.Fatalf("captured vRPC count = %d, want 3 (ReadRow, CheckAndMutateRow, MutateRows)", len(captured))
+	}
+}

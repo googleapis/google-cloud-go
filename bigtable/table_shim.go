@@ -71,7 +71,7 @@ func NewTableShim(classic TableAPI, sessionAPI session.TableAPI, diverter *btran
 // the diverter allows and the session API is available; otherwise
 // delegates to classic.
 func (t *TableShim) ReadRow(ctx context.Context, row string, opts ...ReadOption) (Row, error) {
-	if !t.useSession() {
+	if !t.useSessionForMethod(btransport.ScopeMethodReadRow) {
 		return t.classic.ReadRow(ctx, row, opts...)
 	}
 	r, err := t.readRowSession(ctx, row, opts...)
@@ -115,15 +115,15 @@ func (t *TableShim) Apply(ctx context.Context, row string, m *Mutation, opts ...
 	if m == nil {
 		return t.classic.Apply(ctx, row, m, opts...)
 	}
-	if !t.useSession() {
-		return t.classic.Apply(ctx, row, m, opts...)
-	}
 	after := func(res proto.Message) {
 		for _, o := range opts {
 			o.after(res)
 		}
 	}
 	if m.isConditional {
+		if !t.useSessionForMethod(btransport.ScopeMethodCheckAndMutateRow) {
+			return t.classic.Apply(ctx, row, m, opts...)
+		}
 		req := &btpb.SessionCheckAndMutateRowRequest{
 			Key: []byte(row),
 		}
@@ -152,6 +152,9 @@ func (t *TableShim) Apply(ctx context.Context, row string, m *Mutation, opts ...
 			})
 		}
 		return err
+	}
+	if !t.useSessionForMethod(btransport.ScopeMethodMutateRow) {
+		return t.classic.Apply(ctx, row, m, opts...)
 	}
 	req := &btpb.SessionMutateRowRequest{
 		Key:       []byte(row),
@@ -183,7 +186,7 @@ func (t *TableShim) Apply(ctx context.Context, row string, m *Mutation, opts ...
 // stays in the ReadRows body it was designed for.
 func (t *TableShim) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts ...ReadOption) error {
 	key, ok := singleRowKey(arg)
-	if !ok || !t.useSession() || deferToClassicForLimit(opts) {
+	if !ok || !t.useSessionForMethod(btransport.ScopeMethodReadRow) || deferToClassicForLimit(opts) {
 		return t.classic.ReadRows(ctx, arg, f, opts...)
 	}
 	row, err := t.readRowSession(ctx, key, opts...)
@@ -281,7 +284,7 @@ func (t *TableShim) ApplyBulk(ctx context.Context, rowKeys []string, muts []*Mut
 			return t.classic.ApplyBulk(ctx, rowKeys, muts, opts...)
 		}
 	}
-	if !t.useSession() {
+	if !t.useSessionForMethod(btransport.ScopeMethodMutateRows) {
 		return t.classic.ApplyBulk(ctx, rowKeys, muts, opts...)
 	}
 
@@ -412,7 +415,7 @@ func (t *TableShim) applyGroupSession(ctx context.Context, group []*entryErr, op
 // operations over the session ReadModifyWriteRow vRPC when the diverter
 // allows, or delegates to classic.
 func (t *TableShim) ApplyReadModifyWrite(ctx context.Context, row string, m *ReadModifyWrite) (Row, error) {
-	if m == nil || !t.useSession() {
+	if m == nil || !t.useSessionForMethod(btransport.ScopeMethodReadModifyWriteRow) {
 		return t.classic.ApplyReadModifyWrite(ctx, row, m)
 	}
 	resp, err := t.session.ReadModifyWriteRow(ctx, &btpb.SessionReadModifyWriteRowRequest{
@@ -436,13 +439,23 @@ func (t *TableShim) ApplyReadModifyWrite(ctx context.Context, row string, m *Rea
 }
 
 // useSession returns true when session + diverter are configured, the
-// Unimplemented breaker hasn't tripped, and the diverter
-// says this call should go over session.
+// Unimplemented breaker hasn't tripped, and the diverter says a call
+// should go over session under its default load.
 func (t *TableShim) useSession() bool {
 	return t.session != nil &&
 		t.diverter != nil &&
 		!t.breaker.Bypass() &&
 		t.diverter.UseSession()
+}
+
+// useSessionForMethod returns true when session + diverter are configured,
+// the Unimplemented breaker hasn't tripped, and the diverter says this
+// method's call should go over session.
+func (t *TableShim) useSessionForMethod(method string) bool {
+	return t.session != nil &&
+		t.diverter != nil &&
+		!t.breaker.Bypass() &&
+		t.diverter.UseSessionForMethod(method)
 }
 
 // protoRowToRow converts a proto Row (the wire shape returned by a

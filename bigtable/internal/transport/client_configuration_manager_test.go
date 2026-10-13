@@ -113,6 +113,42 @@ func TestManagerPoll_SessionConfigurationDebugTags(t *testing.T) {
 			wantNullTag: 0,
 			wantZeroTag: 0,
 		},
+		{
+			name: "per_scope_diversion_nonzero",
+			resp: &bigtablepb.ClientConfiguration{
+				SessionConfiguration: &bigtablepb.SessionClientConfiguration{
+					SessionDiversionConfiguration: &bigtablepb.SessionDiversionConfiguration{
+						DiversionStrategy: &bigtablepb.SessionDiversionConfiguration_PerScopeDiversion_{
+							PerScopeDiversion: &bigtablepb.SessionDiversionConfiguration_PerScopeDiversion{
+								ScopeDiversions: map[string]*bigtablepb.SessionScopeDiversionConfiguration{
+									"method:Bigtable.ReadRow": {SessionLoad: 0.5},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantNullTag: 0,
+			wantZeroTag: 0,
+		},
+		{
+			name: "per_scope_diversion_all_zero",
+			resp: &bigtablepb.ClientConfiguration{
+				SessionConfiguration: &bigtablepb.SessionClientConfiguration{
+					SessionDiversionConfiguration: &bigtablepb.SessionDiversionConfiguration{
+						DiversionStrategy: &bigtablepb.SessionDiversionConfiguration_PerScopeDiversion_{
+							PerScopeDiversion: &bigtablepb.SessionDiversionConfiguration_PerScopeDiversion{
+								ScopeDiversions: map[string]*bigtablepb.SessionScopeDiversionConfiguration{
+									"method:Bigtable.ReadRow": {SessionLoad: 0.0},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantNullTag: 0,
+			wantZeroTag: 1,
+		},
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
@@ -686,6 +722,97 @@ func TestManagerPoll_StopPollingFlagsCurrentConfig(t *testing.T) {
 
 	if !manager.getConfig().GetStopPolling() {
 		t.Fatalf("expected currentConfig StopPolling=true after StopPolling response, got false")
+	}
+}
+
+func TestAddSessionDiversionListener(t *testing.T) {
+	configs := []*bigtablepb.ClientConfiguration{
+		{
+			Polling: &bigtablepb.ClientConfiguration_PollingConfiguration_{
+				PollingConfiguration: &bigtablepb.ClientConfiguration_PollingConfiguration{
+					PollingInterval: durationpb.New(600 * time.Second),
+				},
+			},
+			SessionConfiguration: &bigtablepb.SessionClientConfiguration{
+				SessionDiversionConfiguration: &bigtablepb.SessionDiversionConfiguration{
+					DiversionStrategy: &bigtablepb.SessionDiversionConfiguration_PerScopeDiversion_{
+						PerScopeDiversion: &bigtablepb.SessionDiversionConfiguration_PerScopeDiversion{
+							ScopeDiversions: map[string]*bigtablepb.SessionScopeDiversionConfiguration{
+								"method:Bigtable.ReadRow":   {SessionLoad: 1.0},
+								"method:Bigtable.MutateRow": {SessionLoad: 0.5},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			Polling: &bigtablepb.ClientConfiguration_PollingConfiguration_{
+				PollingConfiguration: &bigtablepb.ClientConfiguration_PollingConfiguration{
+					PollingInterval: durationpb.New(900 * time.Second),
+				},
+			},
+			SessionConfiguration: &bigtablepb.SessionClientConfiguration{
+				SessionDiversionConfiguration: &bigtablepb.SessionDiversionConfiguration{
+					DiversionStrategy: &bigtablepb.SessionDiversionConfiguration_PerScopeDiversion_{
+						PerScopeDiversion: &bigtablepb.SessionDiversionConfiguration_PerScopeDiversion{
+							ScopeDiversions: map[string]*bigtablepb.SessionScopeDiversionConfiguration{
+								"method:Bigtable.ReadRow":   {SessionLoad: 1.0},
+								"method:Bigtable.MutateRow": {SessionLoad: 0.5},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	var idx int
+	var idxMu sync.Mutex
+	client := &mockBigtableClient{
+		getConfigFunc: func(ctx context.Context, req *bigtablepb.GetClientConfigurationRequest) (*bigtablepb.ClientConfiguration, error) {
+			idxMu.Lock()
+			defer idxMu.Unlock()
+			cfg := configs[idx]
+			if idx+1 < len(configs) {
+				idx++
+			}
+			return cfg, nil
+		},
+	}
+	manager := NewClientConfigurationManager(client, "instance", "profile", nil, nil)
+
+	var mu sync.Mutex
+	var deliveries []*bigtablepb.SessionClientConfiguration
+	unregister := manager.AddSessionDiversionListener(func(sc *bigtablepb.SessionClientConfiguration) {
+		mu.Lock()
+		deliveries = append(deliveries, sc)
+		mu.Unlock()
+	})
+	defer unregister()
+
+	// Must not fire at registration (seq=0 suppression).
+	mu.Lock()
+	if len(deliveries) != 0 {
+		mu.Unlock()
+		t.Fatalf("AddSessionDiversionListener fired at registration time; want 0")
+	}
+	mu.Unlock()
+
+	manager.poll(context.Background()) // fires
+	manager.poll(context.Background()) // unchanged diversion config -> skipped
+
+	mu.Lock()
+	defer mu.Unlock()
+	if len(deliveries) != 1 {
+		t.Fatalf("AddSessionDiversionListener deliveries = %d, want 1", len(deliveries))
+	}
+	psd := deliveries[0].GetSessionDiversionConfiguration().GetPerScopeDiversion()
+	if psd == nil {
+		t.Fatal("expected PerScopeDiversion in delivered SessionClientConfiguration")
+	}
+	if got := psd.GetScopeDiversions()["method:Bigtable.ReadRow"].GetSessionLoad(); got != 1.0 {
+		t.Errorf("ReadRow SessionLoad = %v, want 1.0", got)
 	}
 }
 

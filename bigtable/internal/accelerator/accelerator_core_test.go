@@ -105,6 +105,9 @@ func (m *mockSessionClient) ChannelDebug() btransport.ChannelDebugProvider { ret
 func (m *mockSessionClient) ConfigDebug() btransport.ConfigDebugProvider   { return nil }
 
 func (m *mockSessionClient) AddSessionLoadListener(func(float64)) func() { return func() {} }
+func (m *mockSessionClient) AddSessionDiversionListener(func(*v2pb.SessionClientConfiguration)) func() {
+	return func() {}
+}
 
 func (m *mockSessionClient) Close() error { return nil }
 

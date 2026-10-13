@@ -517,6 +517,16 @@ func (sc *sessionClient) AddSessionLoadListener(fn func(load float64)) func() {
 	return sc.configManager.AddSessionLoadListener(fn)
 }
 
+// AddSessionDiversionListener forwards to the internal
+// ClientConfigurationManager. Returns a no-op unregister when no
+// manager is wired (stub == nil at construction).
+func (sc *sessionClient) AddSessionDiversionListener(fn func(cfg *btpb.SessionClientConfiguration)) func() {
+	if sc.configManager == nil {
+		return func() {}
+	}
+	return sc.configManager.AddSessionDiversionListener(fn)
+}
+
 // MetricsFactory returns the *metrics.Factory the Client was
 // constructed with. Exposed to internal callers (sessionTable) that
 // need to construct tracers lazily when ctx doesn't already carry one.

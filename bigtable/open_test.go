@@ -568,6 +568,10 @@ func (f *fakeSessionClient) AddSessionLoadListener(_ func(load float64)) func() 
 	f.loadListenerSet = true
 	return func() {}
 }
+func (f *fakeSessionClient) AddSessionDiversionListener(_ func(cfg *btpb.SessionClientConfiguration)) func() {
+	f.loadListenerSet = true
+	return func() {}
+}
 func (f *fakeSessionClient) Close() error { f.closeCalls++; return nil }
 
 // noopSessionTable is the session.TableAPI vended by fakeSessionClient.

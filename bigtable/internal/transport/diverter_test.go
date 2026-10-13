@@ -17,6 +17,8 @@ package internal
 import (
 	"sync"
 	"testing"
+
+	bigtablepb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 )
 
 func TestDiverterZeroAndOne(t *testing.T) {
@@ -112,3 +114,136 @@ func TestDiverterConcurrentAccess(t *testing.T) {
 
 	wg.Wait()
 }
+
+func TestDiverterApplySessionClientConfiguration(t *testing.T) {
+	t.Run("nil config resets all methods to 0", func(t *testing.T) {
+		d := NewDiverter(1.0)
+		d.ApplySessionClientConfiguration(nil)
+		for _, m := range []string{
+			ScopeMethodReadRow,
+			ScopeMethodMutateRow,
+			ScopeMethodCheckAndMutateRow,
+			ScopeMethodReadModifyWriteRow,
+			ScopeMethodMutateRows,
+		} {
+			if got := d.SessionLoadForMethod(m); got != 0 {
+				t.Errorf("SessionLoadForMethod(%q) = %v, want 0", m, got)
+			}
+			if d.UseSessionForMethod(m) {
+				t.Errorf("UseSessionForMethod(%q) = true, want false", m)
+			}
+		}
+	})
+
+	t.Run("deprecated session_load applies only to ReadRow and MutateRow", func(t *testing.T) {
+		d := NewDiverter(0.0)
+		d.ApplySessionClientConfiguration(&bigtablepb.SessionClientConfiguration{
+			SessionLoad: 1.0,
+		})
+		if got := d.SessionLoadForMethod("ReadRow"); got != 1.0 {
+			t.Errorf("SessionLoadForMethod(ReadRow) = %v, want 1.0", got)
+		}
+		if got := d.SessionLoadForMethod("Bigtable.MutateRow"); got != 1.0 {
+			t.Errorf("SessionLoadForMethod(MutateRow) = %v, want 1.0", got)
+		}
+		for _, m := range []string{
+			ScopeMethodCheckAndMutateRow,
+			ScopeMethodReadModifyWriteRow,
+			ScopeMethodMutateRows,
+		} {
+			if got := d.SessionLoadForMethod(m); got != 0 {
+				t.Errorf("SessionLoadForMethod(%q) = %v, want 0", m, got)
+			}
+			if d.UseSessionForMethod(m) {
+				t.Errorf("UseSessionForMethod(%q) = true, want false", m)
+			}
+		}
+	})
+
+	t.Run("global_diversion overrides deprecated session_load for all methods", func(t *testing.T) {
+		d := NewDiverter(0.0)
+		d.ApplySessionClientConfiguration(&bigtablepb.SessionClientConfiguration{
+			SessionLoad: 0.0,
+			SessionDiversionConfiguration: &bigtablepb.SessionDiversionConfiguration{
+				DiversionStrategy: &bigtablepb.SessionDiversionConfiguration_GlobalDiversion{
+					GlobalDiversion: &bigtablepb.SessionScopeDiversionConfiguration{
+						SessionLoad: 1.0,
+					},
+				},
+			},
+		})
+		for _, m := range []string{
+			ScopeMethodReadRow,
+			ScopeMethodMutateRow,
+			ScopeMethodCheckAndMutateRow,
+			ScopeMethodReadModifyWriteRow,
+			ScopeMethodMutateRows,
+		} {
+			if got := d.SessionLoadForMethod(m); got != 1.0 {
+				t.Errorf("SessionLoadForMethod(%q) = %v, want 1.0", m, got)
+			}
+			if !d.UseSessionForMethod(m) {
+				t.Errorf("UseSessionForMethod(%q) = false, want true", m)
+			}
+		}
+	})
+
+	t.Run("per_scope_diversion sets method-specific loads and overrides session_load", func(t *testing.T) {
+		d := NewDiverter(0.0)
+		d.ApplySessionClientConfiguration(&bigtablepb.SessionClientConfiguration{
+			SessionLoad: 0.5,
+			SessionDiversionConfiguration: &bigtablepb.SessionDiversionConfiguration{
+				DiversionStrategy: &bigtablepb.SessionDiversionConfiguration_PerScopeDiversion_{
+					PerScopeDiversion: &bigtablepb.SessionDiversionConfiguration_PerScopeDiversion{
+						ScopeDiversions: map[string]*bigtablepb.SessionScopeDiversionConfiguration{
+							"method:Bigtable.ReadRow":           {SessionLoad: 1.0},
+							"method:Bigtable.MutateRow":         {SessionLoad: 0.0},
+							"method:Bigtable.CheckAndMutateRow": {SessionLoad: 1.0},
+							"method:Bigtable.MutateRows":        {SessionLoad: 0.25},
+							// Unsupported scopes must be ignored:
+							"table:my_table":                             {SessionLoad: 1.0},
+							"method:Bigtable.ReadModifyWriteRow,table:t": {SessionLoad: 1.0},
+						},
+					},
+				},
+			},
+		})
+
+		wantLoads := map[string]float64{
+			ScopeMethodReadRow:            1.0,
+			ScopeMethodMutateRow:          0.0,
+			ScopeMethodCheckAndMutateRow:  1.0,
+			ScopeMethodReadModifyWriteRow: 0.0,
+			ScopeMethodMutateRows:         0.25,
+		}
+		for scope, want := range wantLoads {
+			if got := d.SessionLoadForMethod(scope); got != want {
+				t.Errorf("SessionLoadForMethod(%q) = %v, want %v", scope, got, want)
+			}
+		}
+		if !d.UseSessionForMethod("ReadRow") {
+			t.Errorf("UseSessionForMethod(ReadRow) = false, want true")
+		}
+		if d.UseSessionForMethod("MutateRow") {
+			t.Errorf("UseSessionForMethod(MutateRow) = true, want false")
+		}
+		if !d.UseSessionForMethod("CheckAndMutateRow") {
+			t.Errorf("UseSessionForMethod(CheckAndMutateRow) = false, want true")
+		}
+		if d.UseSessionForMethod("ReadModifyWriteRow") {
+			t.Errorf("UseSessionForMethod(ReadModifyWriteRow) = true, want false")
+		}
+
+		snap := d.Snapshot()
+		if snap.ScopeLoads == nil {
+			t.Fatal("Snapshot().ScopeLoads = nil, want non-nil map")
+		}
+		if got := snap.ScopeLoads[ScopeMethodCheckAndMutateRow]; got != 1.0 {
+			t.Errorf("Snapshot().ScopeLoads[%q] = %v, want 1.0", ScopeMethodCheckAndMutateRow, got)
+		}
+		if _, exists := snap.ScopeLoads["table:my_table"]; exists {
+			t.Errorf("Snapshot().ScopeLoads unexpectedly contains unsupported scope 'table:my_table'")
+		}
+	})
+}
+

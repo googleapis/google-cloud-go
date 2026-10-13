@@ -316,6 +316,12 @@ func TestSessionClient_AddSessionLoadListener_NilManagerNoop(t *testing.T) {
 		t.Fatal("AddSessionLoadListener returned nil unregister, want non-nil no-op")
 	}
 	unreg() // must not panic
+
+	unregDiv := sc.AddSessionDiversionListener(func(*btpb.SessionClientConfiguration) {})
+	if unregDiv == nil {
+		t.Fatal("AddSessionDiversionListener returned nil unregister, want non-nil no-op")
+	}
+	unregDiv() // must not panic
 }
 
 // TestSessionClient_Close_NilSafe pins the "everything nil" happy path
