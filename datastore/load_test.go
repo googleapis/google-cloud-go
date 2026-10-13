@@ -1556,3 +1556,76 @@ func TestIssue5225(t *testing.T) {
 		}
 	})
 }
+
+func TestLoadSliceFieldMismatch(t *testing.T) {
+	type Sub struct {
+		A int
+	}
+	type Parent struct {
+		Subs    []Sub
+		PtrSubs []*Sub
+	}
+
+	src := &pb.Entity{
+		Key: keyToProto(testKey0),
+		Properties: map[string]*pb.Value{
+			"Subs": {ValueType: &pb.Value_ArrayValue{
+				ArrayValue: &pb.ArrayValue{
+					Values: []*pb.Value{
+						{ValueType: &pb.Value_EntityValue{
+							EntityValue: &pb.Entity{
+								Properties: map[string]*pb.Value{
+									"A":     {ValueType: &pb.Value_IntegerValue{IntegerValue: 1}},
+									"Extra": {ValueType: &pb.Value_StringValue{StringValue: "ignored"}},
+								},
+							},
+						}},
+						{ValueType: &pb.Value_EntityValue{
+							EntityValue: &pb.Entity{
+								Properties: map[string]*pb.Value{
+									"A": {ValueType: &pb.Value_IntegerValue{IntegerValue: 2}},
+								},
+							},
+						}},
+					},
+				},
+			}},
+			"PtrSubs": {ValueType: &pb.Value_ArrayValue{
+				ArrayValue: &pb.ArrayValue{
+					Values: []*pb.Value{
+						{ValueType: &pb.Value_EntityValue{
+							EntityValue: &pb.Entity{
+								Properties: map[string]*pb.Value{
+									"A":     {ValueType: &pb.Value_IntegerValue{IntegerValue: 3}},
+									"Extra": {ValueType: &pb.Value_StringValue{StringValue: "ignored"}},
+								},
+							},
+						}},
+						{ValueType: &pb.Value_EntityValue{
+							EntityValue: &pb.Entity{
+								Properties: map[string]*pb.Value{
+									"A": {ValueType: &pb.Value_IntegerValue{IntegerValue: 4}},
+								},
+							},
+						}},
+					},
+				},
+			}},
+		},
+	}
+
+	got := &Parent{}
+	err := loadEntityProto(got, src)
+	if _, ok := err.(*ErrFieldMismatch); !ok {
+		t.Fatalf("loadEntityProto error = %v, want *ErrFieldMismatch", err)
+	}
+
+	want := &Parent{
+		Subs:    []Sub{{A: 1}, {A: 2}},
+		PtrSubs: []*Sub{{A: 3}, {A: 4}},
+	}
+	if diff := testutil.Diff(got, want); diff != "" {
+		t.Errorf("Parent mismatch (-got +want):\n%s", diff)
+	}
+}
+
