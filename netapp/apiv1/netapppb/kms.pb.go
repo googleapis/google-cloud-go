@@ -657,7 +657,7 @@ func (x *VerifyKmsConfigResponse) GetInstructions() string {
 // KmsConfig is the customer-managed encryption key(CMEK) configuration.
 type KmsConfig struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Identifier. Name of the KmsConfig.
+	// Identifier. Name of the `KmsConfig`.
 	// Format: `projects/{project}/locations/{location}/kmsConfigs/{kms_config}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Required. Customer-managed crypto key resource full name. Format:
@@ -818,10 +818,11 @@ const file_google_cloud_netapp_v1_kms_proto_rawDesc = "" +
 	"\x17VerifyKmsConfigResponse\x12\x1d\n" +
 	"\ahealthy\x18\x01 \x01(\bB\x03\xe0A\x03R\ahealthy\x12&\n" +
 	"\fhealth_error\x18\x02 \x01(\tB\x03\xe0A\x03R\vhealthError\x12'\n" +
-	"\finstructions\x18\x03 \x01(\tB\x03\xe0A\x03R\finstructions\"\xc1\x06\n" +
+	"\finstructions\x18\x03 \x01(\tB\x03\xe0A\x03R\finstructions\"\xe7\x06\n" +
 	"\tKmsConfig\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12+\n" +
-	"\x0fcrypto_key_name\x18\x02 \x01(\tB\x03\xe0A\x02R\rcryptoKeyName\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12Q\n" +
+	"\x0fcrypto_key_name\x18\x02 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"!cloudkms.googleapis.com/CryptoKeyR\rcryptoKeyName\x12B\n" +
 	"\x05state\x18\x03 \x01(\x0e2'.google.cloud.netapp.v1.KmsConfig.StateB\x03\xe0A\x03R\x05state\x12(\n" +
 	"\rstate_details\x18\x04 \x01(\tB\x03\xe0A\x03R\fstateDetails\x12@\n" +
 	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
@@ -849,7 +850,8 @@ const file_google_cloud_netapp_v1_kms_proto_rawDesc = "" +
 	"\x12\r\n" +
 	"\tMIGRATING\x10\v:|\xeaAy\n" +
 	"\x1fnetapp.googleapis.com/KmsConfig\x12?projects/{project}/locations/{location}/kmsConfigs/{kms_config}*\n" +
-	"kmsConfigs2\tkmsConfigB\xd4\x02\xeaA\xa6\x01\n" +
+	"kmsConfigs2\tkmsConfigB\xcf\x03\xeaAx\n" +
+	"!cloudkms.googleapis.com/CryptoKey\x12Sprojects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}\xeaA\xa6\x01\n" +
 	"(cloudkms.googleapis.com/CryptoKeyVersion\x12zprojects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}/cryptoKeyVersions/{crypto_key_version}\n" +
 	"\x1acom.google.cloud.netapp.v1B\bKmsProtoP\x01Z2cloud.google.com/go/netapp/apiv1/netapppb;netapppb\xaa\x02\x16Google.Cloud.NetApp.V1\xca\x02\x16Google\\Cloud\\NetApp\\V1\xea\x02\x19Google::Cloud::NetApp::V1b\x06proto3"
 

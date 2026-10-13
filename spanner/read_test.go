@@ -197,16 +197,18 @@ func genProtoListValue(v ...string) *proto3.Value_ListValue {
 }
 
 // Test Row generation logics of partialResultSetDecoder.
-func TestPartialResultSetDecoder(t *testing.T) {
-	restore := setMaxBytesBetweenResumeTokens()
-	defer restore()
-	var tests = []struct {
-		input    []*sppb.PartialResultSet
-		wantF    []*Row
-		wantTxID transactionID
-		wantTs   time.Time
-		wantD    bool
-	}{
+type partialResultSetDecoderTest struct {
+	input    []*sppb.PartialResultSet
+	wantF    []*Row
+	wantTxID transactionID
+	wantTs   time.Time
+	wantD    bool
+}
+
+// partialResultSetDecoderTests returns test cases that assemble
+// PartialResultSets into rows.
+func partialResultSetDecoderTests() []partialResultSetDecoderTest {
+	return []partialResultSetDecoderTest{
 		{
 			// Empty input.
 			wantD: true,
@@ -585,9 +587,13 @@ func TestPartialResultSetDecoder(t *testing.T) {
 			wantD:    true,
 		},
 	}
+}
 
+func TestPartialResultSetDecoder(t *testing.T) {
+	restore := setMaxBytesBetweenResumeTokens()
+	defer restore()
 nextTest:
-	for i, test := range tests {
+	for i, test := range partialResultSetDecoderTests() {
 		var rows []*Row
 		p := &partialResultSetDecoder{}
 		for j, v := range test.input {
@@ -888,7 +894,7 @@ func TestRsdNonblockingStates(t *testing.T) {
 						if item == nil {
 							break
 						}
-						q = append(q, item)
+						q = append(q, item.(*sppb.PartialResultSet))
 					}
 					if !testEqual(q, test.queue) {
 						t.Fatalf("PartialResultSets still queued: \n%v\n, want \n%v\n", q, test.queue)
@@ -905,7 +911,7 @@ func TestRsdNonblockingStates(t *testing.T) {
 				}
 				// Receive next decoded item.
 				if r.next() {
-					rs = append(rs, r.get())
+					rs = append(rs, r.get().(*sppb.PartialResultSet))
 				}
 			}
 		})
@@ -1159,7 +1165,9 @@ func TestRsdBlockingStates(t *testing.T) {
 					st = append(st, rs)
 					if len(st) == hl {
 						lastErr = r.lastErr()
-						q = r.q.dump()
+						for _, item := range r.q.dump() {
+							q = append(q, item.(*sppb.PartialResultSet))
+						}
 						close(stateDone)
 					}
 				}
@@ -1180,7 +1188,7 @@ func TestRsdBlockingStates(t *testing.T) {
 						return
 					}
 					mutex.Lock()
-					rs = append(rs, r.get())
+					rs = append(rs, r.get().(*sppb.PartialResultSet))
 					mutex.Unlock()
 				}
 			}()
@@ -1426,7 +1434,7 @@ func TestResumeToken(t *testing.T) {
 		if err != nil {
 			t.Fatalf("failed to get next value: %v", err)
 		}
-		rows = append(rows, row)
+		rows = append(rows, detachRow(row))
 	}
 
 	want := []*Row{
@@ -1463,7 +1471,7 @@ func TestResumeToken(t *testing.T) {
 		if err != nil {
 			t.Fatalf("failed to get next value: %v", err)
 		}
-		rows = append(rows, row)
+		rows = append(rows, detachRow(row))
 	}
 
 	// Since resumableStreamDecoder is already at queueingUnretryable state,
@@ -1490,7 +1498,7 @@ func TestResumeToken(t *testing.T) {
 		if err != nil {
 			t.Fatalf("failed to get next value: %v", err)
 		}
-		rows = append(rows, row)
+		rows = append(rows, detachRow(row))
 	}
 
 	// Verify if a normal server side EOF flushes all queued rows.
@@ -2112,13 +2120,21 @@ func TestRowIteratorNextBufferedRowsDoesNotAllocate(t *testing.T) {
 // number of recordings.
 func streamingQueryMetrics(t *testing.T, rm metricdata.ResourceMetrics) map[string]int64 {
 	t.Helper()
+	return builtInMetricsForMethod(t, rm, "Spanner.ExecuteStreamingSql")
+}
+
+// builtInMetricsForMethod returns the built-in metrics recorded for method,
+// and any recorded without a method, keyed by metric name, method and status.
+// Counters are summed and histograms report their number of recordings.
+func builtInMetricsForMethod(t *testing.T, rm metricdata.ResourceMetrics, wantMethod string) map[string]int64 {
+	t.Helper()
 	got := make(map[string]int64)
 	for _, sm := range rm.ScopeMetrics {
 		for _, m := range sm.Metrics {
 			name := strings.TrimPrefix(m.Name, clientMetricsPrefix)
 			add := func(attrs attribute.Set, value int64) {
 				method, ok := attrs.Value(metricLabelKeyMethod)
-				if !ok || (method.AsString() != "Spanner.ExecuteStreamingSql" && method.AsString() != "") {
+				if !ok || (method.AsString() != wantMethod && method.AsString() != "") {
 					return
 				}
 				rpcStatus, _ := attrs.Value(metricLabelKeyStatus)
@@ -2430,7 +2446,7 @@ func TestRowIteratorNextErrorWithoutTracerDoesNotAllocate(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			iter := &RowIterator{
 				err:     spannerErrorf(codes.InvalidArgument, "invalid"),
-				streamd: &resumableStreamDecoder{mt: test.mt},
+				streamd: &resumableStreamDecoder{streamOperationMetrics: streamOperationMetrics{mt: test.mt}},
 			}
 			// The first call ends the operation, if there is one.
 			iter.Next()

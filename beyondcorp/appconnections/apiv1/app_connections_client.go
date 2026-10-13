@@ -138,6 +138,11 @@ type internalClient interface {
 //
 // The AppConnectionsService service provides methods to manage
 // (create/read/update/delete) BeyondCorp AppConnections.
+//
+// Deprecated: App Connector is deprecated and creation of new App Connector
+// resources is no longer permitted. Use Security Gateway instead.
+//
+// Deprecated: AppConnectionsService may be removed in a future version.
 type Client struct {
 	// The internal transport-dependent client.
 	internalClient internalClient
@@ -175,16 +180,22 @@ func (c *Client) Connection() *grpc.ClientConn {
 }
 
 // ListAppConnections lists AppConnections in a given project and location.
+//
+// Deprecated: ListAppConnections may be removed in a future version.
 func (c *Client) ListAppConnections(ctx context.Context, req *appconnectionspb.ListAppConnectionsRequest, opts ...gax.CallOption) *AppConnectionIterator {
 	return c.internalClient.ListAppConnections(ctx, req, opts...)
 }
 
 // GetAppConnection gets details of a single AppConnection.
+//
+// Deprecated: GetAppConnection may be removed in a future version.
 func (c *Client) GetAppConnection(ctx context.Context, req *appconnectionspb.GetAppConnectionRequest, opts ...gax.CallOption) (*appconnectionspb.AppConnection, error) {
 	return c.internalClient.GetAppConnection(ctx, req, opts...)
 }
 
 // CreateAppConnection creates a new AppConnection in a given project and location.
+//
+// Deprecated: CreateAppConnection may be removed in a future version.
 func (c *Client) CreateAppConnection(ctx context.Context, req *appconnectionspb.CreateAppConnectionRequest, opts ...gax.CallOption) (*CreateAppConnectionOperation, error) {
 	return c.internalClient.CreateAppConnection(ctx, req, opts...)
 }
@@ -196,6 +207,8 @@ func (c *Client) CreateAppConnectionOperation(name string) *CreateAppConnectionO
 }
 
 // UpdateAppConnection updates the parameters of a single AppConnection.
+//
+// Deprecated: UpdateAppConnection may be removed in a future version.
 func (c *Client) UpdateAppConnection(ctx context.Context, req *appconnectionspb.UpdateAppConnectionRequest, opts ...gax.CallOption) (*UpdateAppConnectionOperation, error) {
 	return c.internalClient.UpdateAppConnection(ctx, req, opts...)
 }
@@ -207,6 +220,8 @@ func (c *Client) UpdateAppConnectionOperation(name string) *UpdateAppConnectionO
 }
 
 // DeleteAppConnection deletes a single AppConnection.
+//
+// Deprecated: DeleteAppConnection may be removed in a future version.
 func (c *Client) DeleteAppConnection(ctx context.Context, req *appconnectionspb.DeleteAppConnectionRequest, opts ...gax.CallOption) (*DeleteAppConnectionOperation, error) {
 	return c.internalClient.DeleteAppConnection(ctx, req, opts...)
 }
@@ -220,6 +235,8 @@ func (c *Client) DeleteAppConnectionOperation(name string) *DeleteAppConnectionO
 // ResolveAppConnections resolves AppConnections details for a given AppConnector.
 // An internal method called by a connector to find AppConnections to connect
 // to.
+//
+// Deprecated: ResolveAppConnections may be removed in a future version.
 func (c *Client) ResolveAppConnections(ctx context.Context, req *appconnectionspb.ResolveAppConnectionsRequest, opts ...gax.CallOption) *ResolveAppConnectionsResponse_AppConnectionDetailsIterator {
 	return c.internalClient.ResolveAppConnections(ctx, req, opts...)
 }
@@ -230,6 +247,21 @@ func (c *Client) GetLocation(ctx context.Context, req *locationpb.GetLocationReq
 }
 
 // ListLocations lists information about the supported locations for this service.
+//
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
+//
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *Client) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	return c.internalClient.ListLocations(ctx, req, opts...)
 }
@@ -327,6 +359,11 @@ type gRPCClient struct {
 //
 // The AppConnectionsService service provides methods to manage
 // (create/read/update/delete) BeyondCorp AppConnections.
+//
+// Deprecated: App Connector is deprecated and creation of new App Connector
+// resources is no longer permitted. Use Security Gateway instead.
+//
+// Deprecated: AppConnectionsService may be removed in a future version.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
 	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {

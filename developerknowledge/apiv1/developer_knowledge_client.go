@@ -67,7 +67,18 @@ func defaultDeveloperKnowledgeGRPCClientOptions() []option.ClientOption {
 
 func defaultDeveloperKnowledgeCallOptions() *DeveloperKnowledgeCallOptions {
 	return &DeveloperKnowledgeCallOptions{
-		SearchDocumentChunks: []gax.CallOption{},
+		SearchDocumentChunks: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		GetDocument: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -98,7 +109,17 @@ func defaultDeveloperKnowledgeCallOptions() *DeveloperKnowledgeCallOptions {
 
 func defaultDeveloperKnowledgeRESTCallOptions() *DeveloperKnowledgeCallOptions {
 	return &DeveloperKnowledgeCallOptions{
-		SearchDocumentChunks: []gax.CallOption{},
+		SearchDocumentChunks: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		GetDocument: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {

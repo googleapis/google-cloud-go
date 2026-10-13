@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -95,6 +95,55 @@ func (Application_State) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_apphub_v1_application_proto_rawDescGZIP(), []int{0, 0}
 }
 
+// Application type enum.
+type ApplicationType_Type int32
+
+const (
+	// Unspecified type.
+	ApplicationType_TYPE_UNSPECIFIED ApplicationType_Type = 0
+	// AI Application type.
+	ApplicationType_AI_APPLICATION ApplicationType_Type = 1
+)
+
+// Enum value maps for ApplicationType_Type.
+var (
+	ApplicationType_Type_name = map[int32]string{
+		0: "TYPE_UNSPECIFIED",
+		1: "AI_APPLICATION",
+	}
+	ApplicationType_Type_value = map[string]int32{
+		"TYPE_UNSPECIFIED": 0,
+		"AI_APPLICATION":   1,
+	}
+)
+
+func (x ApplicationType_Type) Enum() *ApplicationType_Type {
+	p := new(ApplicationType_Type)
+	*p = x
+	return p
+}
+
+func (x ApplicationType_Type) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ApplicationType_Type) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_apphub_v1_application_proto_enumTypes[1].Descriptor()
+}
+
+func (ApplicationType_Type) Type() protoreflect.EnumType {
+	return &file_google_cloud_apphub_v1_application_proto_enumTypes[1]
+}
+
+func (x ApplicationType_Type) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use ApplicationType_Type.Descriptor instead.
+func (ApplicationType_Type) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_apphub_v1_application_proto_rawDescGZIP(), []int{1, 0}
+}
+
 // Scope Type.
 type Scope_Type int32
 
@@ -132,11 +181,11 @@ func (x Scope_Type) String() string {
 }
 
 func (Scope_Type) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_apphub_v1_application_proto_enumTypes[1].Descriptor()
+	return file_google_cloud_apphub_v1_application_proto_enumTypes[2].Descriptor()
 }
 
 func (Scope_Type) Type() protoreflect.EnumType {
-	return &file_google_cloud_apphub_v1_application_proto_enumTypes[1]
+	return &file_google_cloud_apphub_v1_application_proto_enumTypes[2]
 }
 
 func (x Scope_Type) Number() protoreflect.EnumNumber {
@@ -145,7 +194,7 @@ func (x Scope_Type) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Scope_Type.Descriptor instead.
 func (Scope_Type) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_apphub_v1_application_proto_rawDescGZIP(), []int{1, 0}
+	return file_google_cloud_apphub_v1_application_proto_rawDescGZIP(), []int{2, 0}
 }
 
 // Application defines the governance boundary for App Hub entities that
@@ -176,9 +225,14 @@ type Application struct {
 	// `Application`.
 	Uid string `protobuf:"bytes,10,opt,name=uid,proto3" json:"uid,omitempty"`
 	// Output only. Application state.
-	State         Application_State `protobuf:"varint,11,opt,name=state,proto3,enum=google.cloud.apphub.v1.Application_State" json:"state,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	State Application_State `protobuf:"varint,11,opt,name=state,proto3,enum=google.cloud.apphub.v1.Application_State" json:"state,omitempty"`
+	// Output only. Properties of an underlying cloud resource that can comprise
+	// an Application.
+	ApplicationProperties *ApplicationProperties `protobuf:"bytes,12,opt,name=application_properties,json=applicationProperties,proto3" json:"application_properties,omitempty"`
+	// Output only. Application type.
+	ApplicationType *ApplicationType `protobuf:"bytes,13,opt,name=application_type,json=applicationType,proto3" json:"application_type,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *Application) Reset() {
@@ -274,6 +328,66 @@ func (x *Application) GetState() Application_State {
 	return Application_STATE_UNSPECIFIED
 }
 
+func (x *Application) GetApplicationProperties() *ApplicationProperties {
+	if x != nil {
+		return x.ApplicationProperties
+	}
+	return nil
+}
+
+func (x *Application) GetApplicationType() *ApplicationType {
+	if x != nil {
+		return x.ApplicationType
+	}
+	return nil
+}
+
+// Application type.
+type ApplicationType struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The type of the application.
+	Type          ApplicationType_Type `protobuf:"varint,1,opt,name=type,proto3,enum=google.cloud.apphub.v1.ApplicationType_Type" json:"type,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ApplicationType) Reset() {
+	*x = ApplicationType{}
+	mi := &file_google_cloud_apphub_v1_application_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ApplicationType) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ApplicationType) ProtoMessage() {}
+
+func (x *ApplicationType) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_apphub_v1_application_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ApplicationType.ProtoReflect.Descriptor instead.
+func (*ApplicationType) Descriptor() ([]byte, []int) {
+	return file_google_cloud_apphub_v1_application_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *ApplicationType) GetType() ApplicationType_Type {
+	if x != nil {
+		return x.Type
+	}
+	return ApplicationType_TYPE_UNSPECIFIED
+}
+
 // Scope of an application.
 type Scope struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -285,7 +399,7 @@ type Scope struct {
 
 func (x *Scope) Reset() {
 	*x = Scope{}
-	mi := &file_google_cloud_apphub_v1_application_proto_msgTypes[1]
+	mi := &file_google_cloud_apphub_v1_application_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -297,7 +411,7 @@ func (x *Scope) String() string {
 func (*Scope) ProtoMessage() {}
 
 func (x *Scope) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_apphub_v1_application_proto_msgTypes[1]
+	mi := &file_google_cloud_apphub_v1_application_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -310,7 +424,7 @@ func (x *Scope) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Scope.ProtoReflect.Descriptor instead.
 func (*Scope) Descriptor() ([]byte, []int) {
-	return file_google_cloud_apphub_v1_application_proto_rawDescGZIP(), []int{1}
+	return file_google_cloud_apphub_v1_application_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *Scope) GetType() Scope_Type {
@@ -320,11 +434,60 @@ func (x *Scope) GetType() Scope_Type {
 	return Scope_TYPE_UNSPECIFIED
 }
 
+// Additional system properties of an Application.
+type ApplicationProperties struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. Additional metadata specific to the App Hub application.
+	// The key is a string that identifies the type of metadata and the value is
+	// the metadata contents specific to that type.
+	// Key format: `apphub.googleapis.com/{metadataType}`
+	ExtendedMetadata map[string]*ExtendedMetadata `protobuf:"bytes,1,rep,name=extended_metadata,json=extendedMetadata,proto3" json:"extended_metadata,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *ApplicationProperties) Reset() {
+	*x = ApplicationProperties{}
+	mi := &file_google_cloud_apphub_v1_application_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ApplicationProperties) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ApplicationProperties) ProtoMessage() {}
+
+func (x *ApplicationProperties) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_apphub_v1_application_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ApplicationProperties.ProtoReflect.Descriptor instead.
+func (*ApplicationProperties) Descriptor() ([]byte, []int) {
+	return file_google_cloud_apphub_v1_application_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *ApplicationProperties) GetExtendedMetadata() map[string]*ExtendedMetadata {
+	if x != nil {
+		return x.ExtendedMetadata
+	}
+	return nil
+}
+
 var File_google_cloud_apphub_v1_application_proto protoreflect.FileDescriptor
 
 const file_google_cloud_apphub_v1_application_proto_rawDesc = "" +
 	"\n" +
-	"(google/cloud/apphub/v1/application.proto\x12\x16google.cloud.apphub.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a'google/cloud/apphub/v1/attributes.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb5\x05\n" +
+	"(google/cloud/apphub/v1/application.proto\x12\x16google.cloud.apphub.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a'google/cloud/apphub/v1/attributes.proto\x1a'google/cloud/apphub/v1/properties.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf9\x06\n" +
 	"\vApplication\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
 	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12%\n" +
@@ -339,21 +502,33 @@ const file_google_cloud_apphub_v1_application_proto_rawDesc = "" +
 	"\x05scope\x18\t \x01(\v2\x1d.google.cloud.apphub.v1.ScopeB\x06\xe0A\x02\xe0A\x05R\x05scope\x12\x1d\n" +
 	"\x03uid\x18\n" +
 	" \x01(\tB\v\xe0A\x03\xe2\x8c\xcf\xd7\b\x02\b\x01R\x03uid\x12D\n" +
-	"\x05state\x18\v \x01(\x0e2).google.cloud.apphub.v1.Application.StateB\x03\xe0A\x03R\x05state\"F\n" +
+	"\x05state\x18\v \x01(\x0e2).google.cloud.apphub.v1.Application.StateB\x03\xe0A\x03R\x05state\x12i\n" +
+	"\x16application_properties\x18\f \x01(\v2-.google.cloud.apphub.v1.ApplicationPropertiesB\x03\xe0A\x03R\x15applicationProperties\x12W\n" +
+	"\x10application_type\x18\r \x01(\v2'.google.cloud.apphub.v1.ApplicationTypeB\x03\xe0A\x03R\x0fapplicationType\"F\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bCREATING\x10\x01\x12\n" +
 	"\n" +
 	"\x06ACTIVE\x10\x02\x12\f\n" +
 	"\bDELETING\x10\x03:\x86\x01\xeaA\x82\x01\n" +
-	"!apphub.googleapis.com/Application\x12Bprojects/{project}/locations/{location}/applications/{application}*\fapplications2\vapplication\"|\n" +
+	"!apphub.googleapis.com/Application\x12Bprojects/{project}/locations/{location}/applications/{application}*\fapplications2\vapplication\"\x85\x01\n" +
+	"\x0fApplicationType\x12@\n" +
+	"\x04type\x18\x01 \x01(\x0e2,.google.cloud.apphub.v1.ApplicationType.TypeR\x04type\"0\n" +
+	"\x04Type\x12\x14\n" +
+	"\x10TYPE_UNSPECIFIED\x10\x00\x12\x12\n" +
+	"\x0eAI_APPLICATION\x10\x01\"|\n" +
 	"\x05Scope\x12;\n" +
 	"\x04type\x18\x01 \x01(\x0e2\".google.cloud.apphub.v1.Scope.TypeB\x03\xe0A\x02R\x04type\"6\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bREGIONAL\x10\x01\x12\n" +
 	"\n" +
-	"\x06GLOBAL\x10\x02B\xb2\x01\n" +
+	"\x06GLOBAL\x10\x02\"\xfd\x01\n" +
+	"\x15ApplicationProperties\x12u\n" +
+	"\x11extended_metadata\x18\x01 \x03(\v2C.google.cloud.apphub.v1.ApplicationProperties.ExtendedMetadataEntryB\x03\xe0A\x03R\x10extendedMetadata\x1am\n" +
+	"\x15ExtendedMetadataEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12>\n" +
+	"\x05value\x18\x02 \x01(\v2(.google.cloud.apphub.v1.ExtendedMetadataR\x05value:\x028\x01B\xb2\x01\n" +
 	"\x1acom.google.cloud.apphub.v1B\x10ApplicationProtoP\x01Z2cloud.google.com/go/apphub/apiv1/apphubpb;apphubpb\xaa\x02\x16Google.Cloud.AppHub.V1\xca\x02\x16Google\\Cloud\\AppHub\\V1\xea\x02\x19Google::Cloud::AppHub::V1b\x06proto3"
 
 var (
@@ -368,28 +543,38 @@ func file_google_cloud_apphub_v1_application_proto_rawDescGZIP() []byte {
 	return file_google_cloud_apphub_v1_application_proto_rawDescData
 }
 
-var file_google_cloud_apphub_v1_application_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_google_cloud_apphub_v1_application_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_google_cloud_apphub_v1_application_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
+var file_google_cloud_apphub_v1_application_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_google_cloud_apphub_v1_application_proto_goTypes = []any{
 	(Application_State)(0),        // 0: google.cloud.apphub.v1.Application.State
-	(Scope_Type)(0),               // 1: google.cloud.apphub.v1.Scope.Type
-	(*Application)(nil),           // 2: google.cloud.apphub.v1.Application
-	(*Scope)(nil),                 // 3: google.cloud.apphub.v1.Scope
-	(*Attributes)(nil),            // 4: google.cloud.apphub.v1.Attributes
-	(*timestamppb.Timestamp)(nil), // 5: google.protobuf.Timestamp
+	(ApplicationType_Type)(0),     // 1: google.cloud.apphub.v1.ApplicationType.Type
+	(Scope_Type)(0),               // 2: google.cloud.apphub.v1.Scope.Type
+	(*Application)(nil),           // 3: google.cloud.apphub.v1.Application
+	(*ApplicationType)(nil),       // 4: google.cloud.apphub.v1.ApplicationType
+	(*Scope)(nil),                 // 5: google.cloud.apphub.v1.Scope
+	(*ApplicationProperties)(nil), // 6: google.cloud.apphub.v1.ApplicationProperties
+	nil,                           // 7: google.cloud.apphub.v1.ApplicationProperties.ExtendedMetadataEntry
+	(*Attributes)(nil),            // 8: google.cloud.apphub.v1.Attributes
+	(*timestamppb.Timestamp)(nil), // 9: google.protobuf.Timestamp
+	(*ExtendedMetadata)(nil),      // 10: google.cloud.apphub.v1.ExtendedMetadata
 }
 var file_google_cloud_apphub_v1_application_proto_depIdxs = []int32{
-	4, // 0: google.cloud.apphub.v1.Application.attributes:type_name -> google.cloud.apphub.v1.Attributes
-	5, // 1: google.cloud.apphub.v1.Application.create_time:type_name -> google.protobuf.Timestamp
-	5, // 2: google.cloud.apphub.v1.Application.update_time:type_name -> google.protobuf.Timestamp
-	3, // 3: google.cloud.apphub.v1.Application.scope:type_name -> google.cloud.apphub.v1.Scope
-	0, // 4: google.cloud.apphub.v1.Application.state:type_name -> google.cloud.apphub.v1.Application.State
-	1, // 5: google.cloud.apphub.v1.Scope.type:type_name -> google.cloud.apphub.v1.Scope.Type
-	6, // [6:6] is the sub-list for method output_type
-	6, // [6:6] is the sub-list for method input_type
-	6, // [6:6] is the sub-list for extension type_name
-	6, // [6:6] is the sub-list for extension extendee
-	0, // [0:6] is the sub-list for field type_name
+	8,  // 0: google.cloud.apphub.v1.Application.attributes:type_name -> google.cloud.apphub.v1.Attributes
+	9,  // 1: google.cloud.apphub.v1.Application.create_time:type_name -> google.protobuf.Timestamp
+	9,  // 2: google.cloud.apphub.v1.Application.update_time:type_name -> google.protobuf.Timestamp
+	5,  // 3: google.cloud.apphub.v1.Application.scope:type_name -> google.cloud.apphub.v1.Scope
+	0,  // 4: google.cloud.apphub.v1.Application.state:type_name -> google.cloud.apphub.v1.Application.State
+	6,  // 5: google.cloud.apphub.v1.Application.application_properties:type_name -> google.cloud.apphub.v1.ApplicationProperties
+	4,  // 6: google.cloud.apphub.v1.Application.application_type:type_name -> google.cloud.apphub.v1.ApplicationType
+	1,  // 7: google.cloud.apphub.v1.ApplicationType.type:type_name -> google.cloud.apphub.v1.ApplicationType.Type
+	2,  // 8: google.cloud.apphub.v1.Scope.type:type_name -> google.cloud.apphub.v1.Scope.Type
+	7,  // 9: google.cloud.apphub.v1.ApplicationProperties.extended_metadata:type_name -> google.cloud.apphub.v1.ApplicationProperties.ExtendedMetadataEntry
+	10, // 10: google.cloud.apphub.v1.ApplicationProperties.ExtendedMetadataEntry.value:type_name -> google.cloud.apphub.v1.ExtendedMetadata
+	11, // [11:11] is the sub-list for method output_type
+	11, // [11:11] is the sub-list for method input_type
+	11, // [11:11] is the sub-list for extension type_name
+	11, // [11:11] is the sub-list for extension extendee
+	0,  // [0:11] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_apphub_v1_application_proto_init() }
@@ -398,13 +583,14 @@ func file_google_cloud_apphub_v1_application_proto_init() {
 		return
 	}
 	file_google_cloud_apphub_v1_attributes_proto_init()
+	file_google_cloud_apphub_v1_properties_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_apphub_v1_application_proto_rawDesc), len(file_google_cloud_apphub_v1_application_proto_rawDesc)),
-			NumEnums:      2,
-			NumMessages:   2,
+			NumEnums:      3,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

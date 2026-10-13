@@ -15148,7 +15148,7 @@ const file_google_cloud_dataform_v1beta1_dataform_proto_rawDesc = "" +
 	"\x0eexecution_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\rexecutionTimeB\b\n" +
 	"\x06result:\xb2\x01\xeaA\xae\x01\n" +
 	"&dataform.googleapis.com/WorkflowConfig\x12cprojects/{project}/locations/{location}/repositories/{repository}/workflowConfigs/{workflow_config}*\x0fworkflowConfigs2\x0eworkflowConfigB\x14\n" +
-	"\x12_internal_metadata\"\xa4\a\n" +
+	"\x12_internal_metadata\"\xaa\a\n" +
 	"\x10InvocationConfig\x12U\n" +
 	"\x10included_targets\x18\x01 \x03(\v2%.google.cloud.dataform.v1beta1.TargetB\x03\xe0A\x01R\x0fincludedTargets\x12(\n" +
 	"\rincluded_tags\x18\x02 \x03(\tB\x03\xe0A\x01R\fincludedTags\x12M\n" +
@@ -15166,7 +15166,7 @@ const file_google_cloud_dataform_v1beta1_dataform_proto_rawDesc = "" +
 	"\x1aQUERY_PRIORITY_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vINTERACTIVE\x10\x01\x12\t\n" +
 	"\x05BATCH\x10\x02B\x11\n" +
-	"\x0f_query_priority\"\xa6\x01\n" +
+	"\x0f_query_priorityJ\x04\b\v\x10\f\"\xa6\x01\n" +
 	"\x1aListWorkflowConfigsRequest\x12B\n" +
 	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
 	"\"dataform.googleapis.com/RepositoryR\x06parent\x12 \n" +

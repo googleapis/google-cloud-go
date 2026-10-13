@@ -265,6 +265,18 @@ func (c *cachedStreamingReadClient) Header() (metadata.MD, error) {
 	return c.md, c.err
 }
 
+type cachedBatchWriteClient struct {
+	spannerpb.Spanner_BatchWriteClient
+	once sync.Once
+	md   metadata.MD
+	err  error
+}
+
+func (c *cachedBatchWriteClient) Header() (metadata.MD, error) {
+	c.once.Do(func() { c.md, c.err = c.Spanner_BatchWriteClient.Header() })
+	return c.md, c.err
+}
+
 // captureStreamServerTiming records the server-timing header of a streaming
 // call on the span and on the current metrics attempt. It does not wait for
 // the response headers when neither built-in metrics nor the span use them.
@@ -403,5 +415,12 @@ func (g *grpcSpannerClient) PartitionRead(ctx context.Context, req *spannerpb.Pa
 func (g *grpcSpannerClient) BatchWrite(ctx context.Context, req *spannerpb.BatchWriteRequest, opts ...gax.CallOption) (spannerpb.Spanner_BatchWriteClient, error) {
 	span := oteltrace.SpanFromContext(ctx)
 	setSpanAttributes(span, req)
-	return g.raw.BatchWrite(peer.NewContext(ctx, &peer.Peer{}), req, g.optsWithNextRequestID(opts)...)
+	client, err := g.raw.BatchWrite(peer.NewContext(ctx, &peer.Peer{}), req, g.optsWithNextRequestID(opts)...)
+	if err != nil {
+		return nil, err
+	}
+	cached := &cachedBatchWriteClient{Spanner_BatchWriteClient: client}
+	mt, _ := ctx.Value(metricsTracerKey).(*builtinMetricsTracer)
+	captureStreamServerTiming(span, mt, cached)
+	return cached, nil
 }

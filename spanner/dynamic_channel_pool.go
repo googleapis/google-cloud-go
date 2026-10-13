@@ -1261,6 +1261,16 @@ func (c *dcpExecuteStreamingSqlClient) Recv() (*spannerpb.PartialResultSet, erro
 	return resp, err
 }
 
+// RecvMsg is Recv for callers that receive the PartialResultSet into a message
+// of another type. See vtproto_stream.go.
+func (c *dcpExecuteStreamingSqlClient) RecvMsg(m any) error {
+	err := c.Spanner_ExecuteStreamingSqlClient.RecvMsg(m)
+	if err != nil {
+		c.ref.done(err)
+	}
+	return err
+}
+
 func (c *dcpExecuteStreamingSqlClient) CloseSend() error {
 	err := c.Spanner_ExecuteStreamingSqlClient.CloseSend()
 	if err != nil {
@@ -1283,6 +1293,16 @@ func (c *dcpStreamingReadClient) Recv() (*spannerpb.PartialResultSet, error) {
 		c.ref.done(err)
 	}
 	return resp, err
+}
+
+// RecvMsg is Recv for callers that receive the PartialResultSet into a message
+// of another type. See vtproto_stream.go.
+func (c *dcpStreamingReadClient) RecvMsg(m any) error {
+	err := c.Spanner_StreamingReadClient.RecvMsg(m)
+	if err != nil {
+		c.ref.done(err)
+	}
+	return err
 }
 
 func (c *dcpStreamingReadClient) CloseSend() error {

@@ -5150,6 +5150,7 @@ type ExecuteSqlPayload struct {
 	// statement or a sequence of statements separated by semicolons.
 	SqlStatement string `protobuf:"bytes,2,opt,name=sql_statement,json=sqlStatement,proto3" json:"sql_statement,omitempty"`
 	// Optional. Name of the database on which the statement will be executed.
+	// For Postgres and SQL Server it's required, for MySQL it's optional.
 	Database string `protobuf:"bytes,3,opt,name=database,proto3" json:"database,omitempty"`
 	// Credentials for the database connection.
 	//
@@ -5296,7 +5297,6 @@ func (*ExecuteSqlPayload_PasswordSecretVersion) isExecuteSqlPayload_UserPassword
 
 func (*ExecuteSqlPayload_AutoIamAuthn) isExecuteSqlPayload_UserPassword() {}
 
-// Execute SQL statements response.
 type SqlInstancesExecuteSqlResponse struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// A list of notices and warnings generated during query execution.
