@@ -236,7 +236,9 @@ func (c *Client) RunTransaction(ctx context.Context, f func(context.Context, *Tr
 		}
 
 		// At this point, `err` is non-nil. It came from `f` or `Commit`.
-		if !errDuringCommit {
+		// Roll back unless Commit failed with Aborted (where the backend
+		// already ended the transaction or it will be retried with RetryTransaction).
+		if !(errDuringCommit && isAborted(err)) {
 			t.rollback()
 		}
 
