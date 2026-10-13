@@ -21,11 +21,13 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"maps"
 	"math"
 	"os"
 	"path/filepath"
 	"reflect"
 	"runtime"
+	"slices"
 	"sort"
 	"strings"
 	"testing"
@@ -94,7 +96,7 @@ func TestMain(m *testing.M) {
 
 		// 2. Initialize Enterprise Clients
 		if dbStr := os.Getenv(envEnterpriseDatabases); dbStr != "" {
-			for _, dbID := range strings.Split(dbStr, ",") {
+			for dbID := range strings.SplitSeq(dbStr, ",") {
 				dbID = strings.TrimSpace(dbID)
 				if dbID == "" {
 					continue
@@ -458,7 +460,7 @@ func testIntegrationGetAll(t *testing.T) {
 	t.Cleanup(func() {
 		deleteDocuments(docRefs)
 	})
-	for i := 0; i < 5; i++ {
+	for i := range 5 {
 		doc := coll.NewDoc()
 		docRefs = append(docRefs, doc)
 		if i != 3 {
@@ -510,7 +512,7 @@ func getRunWithOptionsTestcases(t *testing.T) ([]runWithOptionsTestcase, []*Docu
 	h := testHelper{t}
 	coll := integrationColl(t)
 	var wantDocRefs []*DocumentRef
-	for i := 0; i < count; i++ {
+	for i := range count {
 		doc := coll.Doc("getRunWithOptionsTestcases" + fmt.Sprint(i))
 		wantDocRefs = append(wantDocRefs, doc)
 		h.mustCreate(doc, getAll{N: i})
@@ -560,12 +562,7 @@ func getRunWithOptionsTestcases(t *testing.T) ([]runWithOptionsTestcase, []*Docu
 }
 
 func contains[T comparable](s []T, e T) bool {
-	for _, v := range s {
-		if v == e {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(s, e)
 }
 
 func testIntegrationGetAllWithRunOptions(t *testing.T) {
@@ -868,7 +865,7 @@ func testIntegrationCollections(t *testing.T) {
 		t.Errorf("got %d collections, want 0", len(got))
 	}
 	var want []*CollectionRef
-	for i := 0; i < 3; i++ {
+	for range 3 {
 		id := collectionIDs.New()
 		cr := doc.Collection(id)
 		want = append(want, cr)
@@ -1318,7 +1315,7 @@ func testIntegrationQueryDocuments(t *testing.T) {
 	t.Cleanup(func() {
 		deleteDocuments(createdDocRefs)
 	})
-	for i := 0; i < 8; i++ {
+	for i := range 8 {
 		doc := coll.NewDoc()
 		createdDocRefs = append(createdDocRefs, doc)
 
@@ -1508,7 +1505,7 @@ func testIntegrationQueryName(t *testing.T) {
 	t.Cleanup(func() {
 		deleteDocuments(docRefs)
 	})
-	for i := 0; i < 3; i++ {
+	for range 3 {
 		doc := coll.NewDoc()
 		docRefs = append(docRefs, doc)
 		h.mustCreate(doc, map[string]interface{}{"nm": 1})
@@ -2390,9 +2387,7 @@ func loc() string {
 
 func copyMap(m map[string]interface{}) map[string]interface{} {
 	c := map[string]interface{}{}
-	for k, v := range m {
-		c[k] = v
-	}
+	maps.Copy(c, m)
 	return c
 }
 
@@ -2574,7 +2569,7 @@ func testIntegrationColGroupRefPartitionsLarge(t *testing.T) {
 	// Create documents in a collection sufficient to trigger multiple partitions.
 	batch := iClient.Batch()
 	deleteBatch := iClient.Batch()
-	for i := 0; i < documentCount; i++ {
+	for i := range documentCount {
 		doc := coll.Doc(fmt.Sprintf("doc%d", i))
 		batch.Create(doc, integrationTestMap)
 		deleteBatch.Delete(doc)
@@ -2791,7 +2786,7 @@ func testIntegrationBulkWriter(t *testing.T) {
 	var jobs []*BulkWriterJob
 
 	// Test a slew of writes sent at the BulkWriter
-	for i := 0; i < numNewWrites; i++ {
+	for range numNewWrites {
 		d := iColl.NewDoc()
 		docRefs = append(docRefs, d)
 		jb, err := bw.Create(d, f)
@@ -3528,7 +3523,7 @@ func testIntegrationFindNearest(t *testing.T) {
 	})
 
 	// create documents with vector field
-	for i := 0; i < len(beans); i++ {
+	for i := range beans {
 		doc := collRef.NewDoc()
 		docRefs = append(docRefs, doc)
 		h.mustCreate(doc, beans[i])
@@ -3548,7 +3543,7 @@ func testIntegrationFindNearest(t *testing.T) {
 		{
 			desc: "FindNearest threshold and resultField",
 			vq: collRef.FindNearest(queryField, []float64{1, 2, 3}, 3, DistanceMeasureEuclidean, &FindNearestOptions{
-				DistanceThreshold:   Ptr(20.0),
+				DistanceThreshold:   new(20.0),
 				DistanceResultField: resultField,
 			}),
 			wantBeans:    beans[:3],
