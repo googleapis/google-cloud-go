@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/geminidataanalytics/apiv1",
-    "version": "1.4.0"
+    "version": "1.6.0"
   },
   "snippets": [
     {
@@ -658,6 +658,98 @@
           "fullName": "google.cloud.geminidataanalytics.v1.DataAgentClient",
           "shortName": "DataAgentClient"
         },
+        "fullName": "google.cloud.geminidataanalytics.v1.DataAgentClient.RetrieveAgentOpsObservability",
+        "method": {
+          "fullName": "google.cloud.geminidataanalytics.v1.DataAgentService.RetrieveAgentOpsObservability",
+          "service": {
+            "fullName": "google.cloud.geminidataanalytics.v1.DataAgentService",
+            "shortName": "DataAgentService"
+          },
+          "shortName": "RetrieveAgentOpsObservability"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "geminidataanalyticspb.RetrieveAgentOpsObservabilityRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*geminidataanalyticspb.RetrieveAgentOpsObservabilityResponse",
+        "shortName": "RetrieveAgentOpsObservability"
+      },
+      "description": "RetrieveAgentOpsObservability gets AgentOps observability settings and status of required services.",
+      "file": "DataAgentClient/RetrieveAgentOpsObservability/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "geminidataanalytics_v1_generated_DataAgentService_RetrieveAgentOpsObservability_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "geminidataanalytics RetrieveAgentOpsObservability Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.geminidataanalytics.v1.DataAgentClient",
+          "shortName": "DataAgentClient"
+        },
+        "fullName": "google.cloud.geminidataanalytics.v1.DataAgentClient.SetAgentOpsObservability",
+        "method": {
+          "fullName": "google.cloud.geminidataanalytics.v1.DataAgentService.SetAgentOpsObservability",
+          "service": {
+            "fullName": "google.cloud.geminidataanalytics.v1.DataAgentService",
+            "shortName": "DataAgentService"
+          },
+          "shortName": "SetAgentOpsObservability"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "geminidataanalyticspb.SetAgentOpsObservabilityRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "SetAgentOpsObservabilityOperation",
+        "shortName": "SetAgentOpsObservability"
+      },
+      "description": "SetAgentOpsObservability enables/Disables required GCP services and configures AgentOps\nobservability settings calling the Admin Settings executable node to\nupdate the AgentOps Observability feature.",
+      "file": "DataAgentClient/SetAgentOpsObservability/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "geminidataanalytics_v1_generated_DataAgentService_SetAgentOpsObservability_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "geminidataanalytics SetAgentOpsObservability Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.geminidataanalytics.v1.DataAgentClient",
+          "shortName": "DataAgentClient"
+        },
         "fullName": "google.cloud.geminidataanalytics.v1.DataAgentClient.SetIamPolicy",
         "method": {
           "fullName": "google.cloud.geminidataanalytics.v1.DataAgentService.SetIamPolicy",
@@ -1292,6 +1384,52 @@
         }
       ],
       "title": "geminidataanalytics ListOperations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.geminidataanalytics.v1.DataChatClient",
+          "shortName": "DataChatClient"
+        },
+        "fullName": "google.cloud.geminidataanalytics.v1.DataChatClient.UpdateConversation",
+        "method": {
+          "fullName": "google.cloud.geminidataanalytics.v1.DataChatService.UpdateConversation",
+          "service": {
+            "fullName": "google.cloud.geminidataanalytics.v1.DataChatService",
+            "shortName": "DataChatService"
+          },
+          "shortName": "UpdateConversation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "geminidataanalyticspb.UpdateConversationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*geminidataanalyticspb.Conversation",
+        "shortName": "UpdateConversation"
+      },
+      "description": "UpdateConversation updates a conversation.",
+      "file": "DataChatClient/UpdateConversation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "geminidataanalytics_v1_generated_DataChatService_UpdateConversation_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "geminidataanalytics UpdateConversation Sample"
     }
   ]
 }

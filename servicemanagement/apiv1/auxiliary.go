@@ -18,12 +18,14 @@ package servicemanagement
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	servicemanagementpb "cloud.google.com/go/servicemanagement/apiv1/servicemanagementpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	serviceconfigpb "google.golang.org/genproto/googleapis/api/serviceconfig"
 )
@@ -337,6 +339,12 @@ func (op *UndeleteServiceOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ManagedServiceIterator) All() iter.Seq2[*servicemanagementpb.ManagedService, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ManagedServiceIterator manages a stream of *servicemanagementpb.ManagedService.
 type ManagedServiceIterator struct {
 	items    []*servicemanagementpb.ManagedService
@@ -382,6 +390,12 @@ func (it *ManagedServiceIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // OperationIterator manages a stream of *longrunningpb.Operation.
@@ -431,6 +445,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RolloutIterator) All() iter.Seq2[*servicemanagementpb.Rollout, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // RolloutIterator manages a stream of *servicemanagementpb.Rollout.
 type RolloutIterator struct {
 	items    []*servicemanagementpb.Rollout
@@ -476,6 +496,12 @@ func (it *RolloutIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ServiceIterator) All() iter.Seq2[*serviceconfigpb.Service, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ServiceIterator manages a stream of *serviceconfigpb.Service.

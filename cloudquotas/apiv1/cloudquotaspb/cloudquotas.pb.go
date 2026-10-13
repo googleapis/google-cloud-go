@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ const (
 // Message for requesting list of QuotaInfos
 type ListQuotaInfosRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. Parent value of QuotaInfo resources.
+	// Required. Identifier. Parent value of QuotaInfo resources.
 	// Listing across different resource containers (such as 'projects/-') is not
 	// allowed.
 	//
@@ -169,7 +169,7 @@ func (x *ListQuotaInfosResponse) GetNextPageToken() string {
 // Message for getting a QuotaInfo
 type GetQuotaInfoRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The resource name of the quota info.
+	// Required. Identifier. The resource name of the quota info.
 	//
 	// An example name:
 	// `projects/123/locations/global/services/compute.googleapis.com/quotaInfos/CpusPerProjectPerRegion`
@@ -218,7 +218,7 @@ func (x *GetQuotaInfoRequest) GetName() string {
 // Message for requesting list of QuotaPreferences
 type ListQuotaPreferencesRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. Parent value of QuotaPreference resources.
+	// Required. Identifier. Parent value of QuotaPreference resources.
 	// Listing across different resource containers (such as 'projects/-') is not
 	// allowed.
 	//
@@ -385,7 +385,7 @@ func (x *ListQuotaPreferencesResponse) GetUnreachable() []string {
 // Message for getting a QuotaPreference
 type GetQuotaPreferenceRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. Name of the resource
+	// Required. Identifier. Name of the resource
 	//
 	// Example name:
 	// `projects/123/locations/global/quota_preferences/my-config-for-us-east1`
@@ -434,7 +434,7 @@ func (x *GetQuotaPreferenceRequest) GetName() string {
 // Message for creating a QuotaPreference
 type CreateQuotaPreferenceRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. Value for parent.
+	// Required. Identifier. Value for parent.
 	//
 	// Example:
 	// `projects/123/locations/global`
@@ -601,21 +601,21 @@ var File_google_api_cloudquotas_v1_cloudquotas_proto protoreflect.FileDescriptor
 
 const file_google_api_cloudquotas_v1_cloudquotas_proto_rawDesc = "" +
 	"\n" +
-	"+google/api/cloudquotas/v1/cloudquotas.proto\x12\x19google.api.cloudquotas.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a)google/api/cloudquotas/v1/resources.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\"\xa3\x01\n" +
-	"\x15ListQuotaInfosRequest\x12D\n" +
-	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\x12$cloudquotas.googleapis.com/QuotaInfoR\x06parent\x12 \n" +
+	"+google/api/cloudquotas/v1/cloudquotas.proto\x12\x19google.api.cloudquotas.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a)google/api/cloudquotas/v1/resources.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\"\xa6\x01\n" +
+	"\x15ListQuotaInfosRequest\x12G\n" +
+	"\x06parent\x18\x01 \x01(\tB/\xe0A\x02\xe0A\b\xfaA&\x12$cloudquotas.googleapis.com/QuotaInfoR\x06parent\x12 \n" +
 	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x87\x01\n" +
 	"\x16ListQuotaInfosResponse\x12E\n" +
 	"\vquota_infos\x18\x01 \x03(\v2$.google.api.cloudquotas.v1.QuotaInfoR\n" +
 	"quotaInfos\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"W\n" +
-	"\x13GetQuotaInfoRequest\x12@\n" +
-	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
-	"$cloudquotas.googleapis.com/QuotaInfoR\x04name\"\xec\x01\n" +
-	"\x1bListQuotaPreferencesRequest\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\x12*cloudquotas.googleapis.com/QuotaPreferenceR\x06parent\x12 \n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"Z\n" +
+	"\x13GetQuotaInfoRequest\x12C\n" +
+	"\x04name\x18\x01 \x01(\tB/\xe0A\x02\xe0A\b\xfaA&\n" +
+	"$cloudquotas.googleapis.com/QuotaInfoR\x04name\"\xef\x01\n" +
+	"\x1bListQuotaPreferencesRequest\x12M\n" +
+	"\x06parent\x18\x01 \x01(\tB5\xe0A\x02\xe0A\b\xfaA,\x12*cloudquotas.googleapis.com/QuotaPreferenceR\x06parent\x12 \n" +
 	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
@@ -624,12 +624,12 @@ const file_google_api_cloudquotas_v1_cloudquotas_proto_rawDesc = "" +
 	"\x1cListQuotaPreferencesResponse\x12W\n" +
 	"\x11quota_preferences\x18\x01 \x03(\v2*.google.api.cloudquotas.v1.QuotaPreferenceR\x10quotaPreferences\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"c\n" +
-	"\x19GetQuotaPreferenceRequest\x12F\n" +
-	"\x04name\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
-	"*cloudquotas.googleapis.com/QuotaPreferenceR\x04name\"\xda\x02\n" +
-	"\x1cCreateQuotaPreferenceRequest\x12J\n" +
-	"\x06parent\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\x12*cloudquotas.googleapis.com/QuotaPreferenceR\x06parent\x123\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"f\n" +
+	"\x19GetQuotaPreferenceRequest\x12I\n" +
+	"\x04name\x18\x01 \x01(\tB5\xe0A\x02\xe0A\b\xfaA,\n" +
+	"*cloudquotas.googleapis.com/QuotaPreferenceR\x04name\"\xdd\x02\n" +
+	"\x1cCreateQuotaPreferenceRequest\x12M\n" +
+	"\x06parent\x18\x01 \x01(\tB5\xe0A\x02\xe0A\b\xfaA,\x12*cloudquotas.googleapis.com/QuotaPreferenceR\x06parent\x123\n" +
 	"\x13quota_preference_id\x18\x02 \x01(\tB\x03\xe0A\x01R\x11quotaPreferenceId\x12Z\n" +
 	"\x10quota_preference\x18\x03 \x01(\v2*.google.api.cloudquotas.v1.QuotaPreferenceB\x03\xe0A\x02R\x0fquotaPreference\x12]\n" +
 	"\x14ignore_safety_checks\x18\x04 \x03(\x0e2+.google.api.cloudquotas.v1.QuotaSafetyCheckR\x12ignoreSafetyChecks\"\xef\x02\n" +

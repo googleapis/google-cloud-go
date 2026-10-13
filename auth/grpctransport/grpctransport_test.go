@@ -59,6 +59,11 @@ func TestCheckDirectPathEndPoint(t *testing.T) {
 			want:     true,
 		},
 		{
+			name:     "google-c2p schemes are allowed",
+			endpoint: "google-c2p:///storage-direct.googleapis.com?force-xds",
+			want:     true,
+		},
+		{
 			name:     "non-dns schemes are disallowed",
 			endpoint: "https://foo",
 			want:     false,

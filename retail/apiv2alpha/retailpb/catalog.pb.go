@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -793,8 +793,11 @@ type CompletionConfig struct {
 	// Can use [GetOperation][google.longrunning.Operations.GetOperation] API to
 	// retrieve the latest state of the Long Running Operation.
 	LastAllowlistImportOperation string `protobuf:"bytes,10,opt,name=last_allowlist_import_operation,json=lastAllowlistImportOperation,proto3" json:"last_allowlist_import_operation,omitempty"`
-	unknownFields                protoimpl.UnknownFields
-	sizeCache                    protoimpl.SizeCache
+	// Optional. If set to true, the conversational shopping agent prompts will be
+	// served. Default value is false.
+	EnableAgentPrompts bool `protobuf:"varint,16,opt,name=enable_agent_prompts,json=enableAgentPrompts,proto3" json:"enable_agent_prompts,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *CompletionConfig) Reset() {
@@ -902,6 +905,13 @@ func (x *CompletionConfig) GetLastAllowlistImportOperation() string {
 		return x.LastAllowlistImportOperation
 	}
 	return ""
+}
+
+func (x *CompletionConfig) GetEnableAgentPrompts() bool {
+	if x != nil {
+		return x.EnableAgentPrompts
+	}
+	return false
 }
 
 // Represents a link between a Merchant Center account and a branch.
@@ -1657,7 +1667,7 @@ const file_google_cloud_retail_v2alpha_catalog_proto_rawDesc = "" +
 	"\x16CatalogAttributesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12C\n" +
 	"\x05value\x18\x02 \x01(\v2-.google.cloud.retail.v2alpha.CatalogAttributeR\x05value:\x028\x01:x\xeaAu\n" +
-	"&retail.googleapis.com/AttributesConfig\x12Kprojects/{project}/locations/{location}/catalogs/{catalog}/attributesConfig\"\x8a\a\n" +
+	"&retail.googleapis.com/AttributesConfig\x12Kprojects/{project}/locations/{location}/catalogs/{catalog}/attributesConfig\"\xc1\a\n" +
 	"\x10CompletionConfig\x12\x1a\n" +
 	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x02\xe0A\x05R\x04name\x12%\n" +
 	"\x0ematching_order\x18\x02 \x01(\tR\rmatchingOrder\x12'\n" +
@@ -1670,7 +1680,8 @@ const file_google_cloud_retail_v2alpha_catalog_proto_rawDesc = "" +
 	"\x1elast_denylist_import_operation\x18\b \x01(\tB\x03\xe0A\x03R\x1blastDenylistImportOperation\x12q\n" +
 	"\x16allowlist_input_config\x18\t \x01(\v26.google.cloud.retail.v2alpha.CompletionDataInputConfigB\x03\xe0A\x03R\x14allowlistInputConfig\x12J\n" +
 	"\x1flast_allowlist_import_operation\x18\n" +
-	" \x01(\tB\x03\xe0A\x03R\x1clastAllowlistImportOperation:x\xeaAu\n" +
+	" \x01(\tB\x03\xe0A\x03R\x1clastAllowlistImportOperation\x125\n" +
+	"\x14enable_agent_prompts\x18\x10 \x01(\bB\x03\xe0A\x01R\x12enableAgentPrompts:x\xeaAu\n" +
 	"&retail.googleapis.com/CompletionConfig\x12Kprojects/{project}/locations/{location}/catalogs/{catalog}/completionConfig\"\xaa\x02\n" +
 	"\x12MerchantCenterLink\x12@\n" +
 	"\x1amerchant_center_account_id\x18\x01 \x01(\x03B\x03\xe0A\x02R\x17merchantCenterAccountId\x12\x1b\n" +

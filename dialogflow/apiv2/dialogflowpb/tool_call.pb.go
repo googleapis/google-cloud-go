@@ -512,7 +512,9 @@ func (*ToolCallResult_Content) isToolCallResult_Result() {}
 type ToolCallResult_Error struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Optional. The error message of the function.
-	Message       string `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
+	Message string `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
+	// Optional. Specifies whether the tool call is retryable.
+	Retryable     bool `protobuf:"varint,2,opt,name=retryable,proto3" json:"retryable,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -554,6 +556,13 @@ func (x *ToolCallResult_Error) GetMessage() string {
 	return ""
 }
 
+func (x *ToolCallResult_Error) GetRetryable() bool {
+	if x != nil {
+		return x.Retryable
+	}
+	return false
+}
+
 var File_google_cloud_dialogflow_v2_tool_call_proto protoreflect.FileDescriptor
 
 const file_google_cloud_dialogflow_v2_tool_call_proto_rawDesc = "" +
@@ -582,7 +591,7 @@ const file_google_cloud_dialogflow_v2_tool_call_proto_rawDesc = "" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tTRIGGERED\x10\x01\x12\x16\n" +
 	"\x12NEEDS_CONFIRMATION\x10\x02B\b\n" +
-	"\x06source\"\xeb\x04\n" +
+	"\x06source\"\x8e\x05\n" +
 	"\x0eToolCallResult\x12<\n" +
 	"\x04tool\x18\x01 \x01(\tB&\xe0A\x01\xfaA \n" +
 	"\x1edialogflow.googleapis.com/ToolH\x00R\x04tool\x12E\n" +
@@ -600,9 +609,10 @@ const file_google_cloud_dialogflow_v2_tool_call_proto_rawDesc = "" +
 	"\acontent\x18\x06 \x01(\tB\x03\xe0A\x01H\x01R\acontent\x12@\n" +
 	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
 	"createTime\x12(\n" +
-	"\ranswer_record\x18\t \x01(\tB\x03\xe0A\x01R\fanswerRecord\x1a&\n" +
+	"\ranswer_record\x18\t \x01(\tB\x03\xe0A\x01R\fanswerRecord\x1aI\n" +
 	"\x05Error\x12\x1d\n" +
-	"\amessage\x18\x01 \x01(\tB\x03\xe0A\x01R\amessageB\b\n" +
+	"\amessage\x18\x01 \x01(\tB\x03\xe0A\x01R\amessage\x12!\n" +
+	"\tretryable\x18\x02 \x01(\bB\x03\xe0A\x01R\tretryableB\b\n" +
 	"\x06sourceB\b\n" +
 	"\x06resultB\x93\x01\n" +
 	"\x1ecom.google.cloud.dialogflow.v2B\rToolCallProtoP\x01Z>cloud.google.com/go/dialogflow/apiv2/dialogflowpb;dialogflowpb\xa2\x02\x02DF\xaa\x02\x1aGoogle.Cloud.Dialogflow.V2b\x06proto3"

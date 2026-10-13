@@ -509,6 +509,59 @@ func NewCloudFunctionsClient(ctx context.Context, opts ...option.ClientOption) (
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudfunctions",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/functions/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudfunctions.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListFunctions = append(client.CallOptions.ListFunctions, gax.WithClientTracing(tracing))
+		client.CallOptions.GetFunction = append(client.CallOptions.GetFunction, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateFunction = append(client.CallOptions.CreateFunction, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateFunction = append(client.CallOptions.UpdateFunction, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteFunction = append(client.CallOptions.DeleteFunction, gax.WithClientTracing(tracing))
+		client.CallOptions.CallFunction = append(client.CallOptions.CallFunction, gax.WithClientTracing(tracing))
+		client.CallOptions.GenerateUploadUrl = append(client.CallOptions.GenerateUploadUrl, gax.WithClientTracing(tracing))
+		client.CallOptions.GenerateDownloadUrl = append(client.CallOptions.GenerateDownloadUrl, gax.WithClientTracing(tracing))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudfunctions",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/functions/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudfunctions.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListFunctions = append(client.CallOptions.ListFunctions, gax.WithClientLogging(logging))
+		client.CallOptions.GetFunction = append(client.CallOptions.GetFunction, gax.WithClientLogging(logging))
+		client.CallOptions.CreateFunction = append(client.CallOptions.CreateFunction, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateFunction = append(client.CallOptions.UpdateFunction, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteFunction = append(client.CallOptions.DeleteFunction, gax.WithClientLogging(logging))
+		client.CallOptions.CallFunction = append(client.CallOptions.CallFunction, gax.WithClientLogging(logging))
+		client.CallOptions.GenerateUploadUrl = append(client.CallOptions.GenerateUploadUrl, gax.WithClientLogging(logging))
+		client.CallOptions.GenerateDownloadUrl = append(client.CallOptions.GenerateDownloadUrl, gax.WithClientLogging(logging))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -629,6 +682,59 @@ func NewCloudFunctionsRESTClient(ctx context.Context, opts ...option.ClientOptio
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudfunctions",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/functions/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudfunctions.googleapis.com",
+			}),
+		)
+
+		callOpts.ListFunctions = append(callOpts.ListFunctions, gax.WithClientTracing(tracing))
+		callOpts.GetFunction = append(callOpts.GetFunction, gax.WithClientTracing(tracing))
+		callOpts.CreateFunction = append(callOpts.CreateFunction, gax.WithClientTracing(tracing))
+		callOpts.UpdateFunction = append(callOpts.UpdateFunction, gax.WithClientTracing(tracing))
+		callOpts.DeleteFunction = append(callOpts.DeleteFunction, gax.WithClientTracing(tracing))
+		callOpts.CallFunction = append(callOpts.CallFunction, gax.WithClientTracing(tracing))
+		callOpts.GenerateUploadUrl = append(callOpts.GenerateUploadUrl, gax.WithClientTracing(tracing))
+		callOpts.GenerateDownloadUrl = append(callOpts.GenerateDownloadUrl, gax.WithClientTracing(tracing))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudfunctions",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/functions/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudfunctions.googleapis.com",
+			}),
+		)
+
+		callOpts.ListFunctions = append(callOpts.ListFunctions, gax.WithClientLogging(logging))
+		callOpts.GetFunction = append(callOpts.GetFunction, gax.WithClientLogging(logging))
+		callOpts.CreateFunction = append(callOpts.CreateFunction, gax.WithClientLogging(logging))
+		callOpts.UpdateFunction = append(callOpts.UpdateFunction, gax.WithClientLogging(logging))
+		callOpts.DeleteFunction = append(callOpts.DeleteFunction, gax.WithClientLogging(logging))
+		callOpts.CallFunction = append(callOpts.CallFunction, gax.WithClientLogging(logging))
+		callOpts.GenerateUploadUrl = append(callOpts.GenerateUploadUrl, gax.WithClientLogging(logging))
+		callOpts.GenerateDownloadUrl = append(callOpts.GenerateDownloadUrl, gax.WithClientLogging(logging))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -685,9 +791,6 @@ func (c *cloudFunctionsGRPCClient) ListFunctions(ctx context.Context, req *funct
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudfunctions.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.functions.v1.CloudFunctionsService/ListFunctions")
 	}
@@ -737,9 +840,6 @@ func (c *cloudFunctionsGRPCClient) GetFunction(ctx context.Context, req *functio
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudfunctions.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.functions.v1.CloudFunctionsService/GetFunction")
 	}
@@ -761,9 +861,6 @@ func (c *cloudFunctionsGRPCClient) CreateFunction(ctx context.Context, req *func
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudfunctions.googleapis.com/%v", req.GetLocation()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.functions.v1.CloudFunctionsService/CreateFunction")
 	}
@@ -818,9 +915,6 @@ func (c *cloudFunctionsGRPCClient) DeleteFunction(ctx context.Context, req *func
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudfunctions.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.functions.v1.CloudFunctionsService/DeleteFunction")
 	}
@@ -848,9 +942,6 @@ func (c *cloudFunctionsGRPCClient) CallFunction(ctx context.Context, req *functi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudfunctions.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.functions.v1.CloudFunctionsService/CallFunction")
 	}
@@ -872,9 +963,6 @@ func (c *cloudFunctionsGRPCClient) GenerateUploadUrl(ctx context.Context, req *f
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudfunctions.googleapis.com/%v", req.GetKmsKeyName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.functions.v1.CloudFunctionsService/GenerateUploadUrl")
 	}
@@ -917,9 +1005,6 @@ func (c *cloudFunctionsGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudfunctions.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.functions.v1.CloudFunctionsService/SetIamPolicy")
 	}
@@ -941,9 +1026,6 @@ func (c *cloudFunctionsGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudfunctions.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.functions.v1.CloudFunctionsService/GetIamPolicy")
 	}
@@ -965,9 +1047,6 @@ func (c *cloudFunctionsGRPCClient) TestIamPermissions(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudfunctions.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.functions.v1.CloudFunctionsService/TestIamPermissions")
 	}
@@ -1200,9 +1279,6 @@ func (c *cloudFunctionsRESTClient) GetFunction(ctx context.Context, req *functio
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudfunctions.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.functions.v1.CloudFunctionsService/GetFunction")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/functions/*}")
@@ -1266,9 +1342,6 @@ func (c *cloudFunctionsRESTClient) CreateFunction(ctx context.Context, req *func
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudfunctions.googleapis.com/%v", req.GetLocation()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.functions.v1.CloudFunctionsService/CreateFunction")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{location=projects/*/locations/*}/functions")
@@ -1407,9 +1480,6 @@ func (c *cloudFunctionsRESTClient) DeleteFunction(ctx context.Context, req *func
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudfunctions.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.functions.v1.CloudFunctionsService/DeleteFunction")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/functions/*}")
@@ -1480,9 +1550,6 @@ func (c *cloudFunctionsRESTClient) CallFunction(ctx context.Context, req *functi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudfunctions.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.functions.v1.CloudFunctionsService/CallFunction")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/functions/*}:call")
@@ -1570,9 +1637,6 @@ func (c *cloudFunctionsRESTClient) GenerateUploadUrl(ctx context.Context, req *f
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudfunctions.googleapis.com/%v", req.GetKmsKeyName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.functions.v1.CloudFunctionsService/GenerateUploadUrl")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/functions:generateUploadUrl")
@@ -1698,9 +1762,6 @@ func (c *cloudFunctionsRESTClient) SetIamPolicy(ctx context.Context, req *iampb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudfunctions.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.functions.v1.CloudFunctionsService/SetIamPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/functions/*}:setIamPolicy")
@@ -1760,9 +1821,6 @@ func (c *cloudFunctionsRESTClient) GetIamPolicy(ctx context.Context, req *iampb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudfunctions.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.functions.v1.CloudFunctionsService/GetIamPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/functions/*}:getIamPolicy")
@@ -1826,9 +1884,6 @@ func (c *cloudFunctionsRESTClient) TestIamPermissions(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudfunctions.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.functions.v1.CloudFunctionsService/TestIamPermissions")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/functions/*}:testIamPermissions")

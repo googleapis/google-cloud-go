@@ -208,6 +208,35 @@ func NewRecaptchaEnterpriseServiceV1Beta1Client(ctx context.Context, opts ...opt
 		client.CallOptions.CreateAssessment = append(client.CallOptions.CreateAssessment, gax.WithClientMetrics(metrics))
 		client.CallOptions.AnnotateAssessment = append(client.CallOptions.AnnotateAssessment, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "recaptchaenterprise",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/recaptchaenterprise/v2/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "recaptchaenterprise.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateAssessment = append(client.CallOptions.CreateAssessment, gax.WithClientTracing(tracing))
+		client.CallOptions.AnnotateAssessment = append(client.CallOptions.AnnotateAssessment, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "recaptchaenterprise",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/recaptchaenterprise/v2/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "recaptchaenterprise.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateAssessment = append(client.CallOptions.CreateAssessment, gax.WithClientLogging(logging))
+		client.CallOptions.AnnotateAssessment = append(client.CallOptions.AnnotateAssessment, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -300,6 +329,35 @@ func NewRecaptchaEnterpriseServiceV1Beta1RESTClient(ctx context.Context, opts ..
 		callOpts.CreateAssessment = append(callOpts.CreateAssessment, gax.WithClientMetrics(metrics))
 		callOpts.AnnotateAssessment = append(callOpts.AnnotateAssessment, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "recaptchaenterprise",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/recaptchaenterprise/v2/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "recaptchaenterprise.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateAssessment = append(callOpts.CreateAssessment, gax.WithClientTracing(tracing))
+		callOpts.AnnotateAssessment = append(callOpts.AnnotateAssessment, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "recaptchaenterprise",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/recaptchaenterprise/v2/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "recaptchaenterprise.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateAssessment = append(callOpts.CreateAssessment, gax.WithClientLogging(logging))
+		callOpts.AnnotateAssessment = append(callOpts.AnnotateAssessment, gax.WithClientLogging(logging))
+	}
 
 	return &RecaptchaEnterpriseServiceV1Beta1Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -346,9 +404,6 @@ func (c *recaptchaEnterpriseServiceV1Beta1GRPCClient) CreateAssessment(ctx conte
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//recaptchaenterprise.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recaptchaenterprise.v1beta1.RecaptchaEnterpriseServiceV1Beta1/CreateAssessment")
 	}
@@ -370,9 +425,6 @@ func (c *recaptchaEnterpriseServiceV1Beta1GRPCClient) AnnotateAssessment(ctx con
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//recaptchaenterprise.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recaptchaenterprise.v1beta1.RecaptchaEnterpriseServiceV1Beta1/AnnotateAssessment")
 	}
@@ -415,9 +467,6 @@ func (c *recaptchaEnterpriseServiceV1Beta1RESTClient) CreateAssessment(ctx conte
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//recaptchaenterprise.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recaptchaenterprise.v1beta1.RecaptchaEnterpriseServiceV1Beta1/CreateAssessment")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=projects/*}/assessments")
@@ -479,9 +528,6 @@ func (c *recaptchaEnterpriseServiceV1Beta1RESTClient) AnnotateAssessment(ctx con
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//recaptchaenterprise.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recaptchaenterprise.v1beta1.RecaptchaEnterpriseServiceV1Beta1/AnnotateAssessment")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/assessments/*}:annotate")

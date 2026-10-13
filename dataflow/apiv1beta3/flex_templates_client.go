@@ -189,6 +189,33 @@ func NewFlexTemplatesClient(ctx context.Context, opts ...option.ClientOption) (*
 
 		client.CallOptions.LaunchFlexTemplate = append(client.CallOptions.LaunchFlexTemplate, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "dataflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dataflow/apiv1beta3",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "dataflow.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.LaunchFlexTemplate = append(client.CallOptions.LaunchFlexTemplate, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "dataflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dataflow/apiv1beta3",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "dataflow.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.LaunchFlexTemplate = append(client.CallOptions.LaunchFlexTemplate, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -279,6 +306,33 @@ func NewFlexTemplatesRESTClient(ctx context.Context, opts ...option.ClientOption
 		)
 
 		callOpts.LaunchFlexTemplate = append(callOpts.LaunchFlexTemplate, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "dataflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dataflow/apiv1beta3",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "dataflow.googleapis.com",
+			}),
+		)
+
+		callOpts.LaunchFlexTemplate = append(callOpts.LaunchFlexTemplate, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "dataflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dataflow/apiv1beta3",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "dataflow.googleapis.com",
+			}),
+		)
+
+		callOpts.LaunchFlexTemplate = append(callOpts.LaunchFlexTemplate, gax.WithClientLogging(logging))
 	}
 
 	return &FlexTemplatesClient{internalClient: c, CallOptions: callOpts}, nil

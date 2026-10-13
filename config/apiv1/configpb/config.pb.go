@@ -1707,8 +1707,8 @@ type Deployment struct {
 	// Output only. Location of Terraform error logs in Google Cloud Storage.
 	// Format: `gs://{bucket}/{object}`.
 	ErrorLogs string `protobuf:"bytes,14,opt,name=error_logs,json=errorLogs,proto3" json:"error_logs,omitempty"`
-	// Optional. User-defined location of Cloud Build logs and artifacts in Google
-	// Cloud Storage. Format: `gs://{bucket}/{folder}`
+	// User-defined location of Cloud Build logs and artifacts in Google Cloud
+	// Storage. Format: `gs://{bucket}/{folder}`
 	//
 	// A default bucket will be bootstrapped if the field is not set or empty.
 	// Default bucket format: `gs://<project number>-<region>-blueprint-config`
@@ -1729,15 +1729,15 @@ type Deployment struct {
 	//
 	// Not all resource types are supported, refer to documentation.
 	ImportExistingResources *bool `protobuf:"varint,17,opt,name=import_existing_resources,json=importExistingResources,proto3,oneof" json:"import_existing_resources,omitempty"`
-	// Optional. The user-specified Cloud Build worker pool resource in which the
-	// Cloud Build job will execute. Format:
+	// The user-specified Cloud Build worker pool resource in which the Cloud
+	// Build job will execute. Format:
 	// `projects/{project}/locations/{location}/workerPools/{workerPoolId}`.
 	// If this field is unspecified, the default Cloud Build worker pool will be
 	// used.
 	WorkerPool *string `protobuf:"bytes,19,opt,name=worker_pool,json=workerPool,proto3,oneof" json:"worker_pool,omitempty"`
 	// Output only. Current lock state of the deployment.
 	LockState Deployment_LockState `protobuf:"varint,20,opt,name=lock_state,json=lockState,proto3,enum=google.cloud.config.v1.Deployment_LockState" json:"lock_state,omitempty"`
-	// Optional. The user-specified Terraform version constraint.
+	// The user-specified Terraform version constraint.
 	// Example: "=1.3.10".
 	TfVersionConstraint *string `protobuf:"bytes,21,opt,name=tf_version_constraint,json=tfVersionConstraint,proto3,oneof" json:"tf_version_constraint,omitempty"`
 	// Output only. The current Terraform version set on the deployment.
@@ -3874,13 +3874,13 @@ func (x *TerraformError) GetError() *status.Status {
 // A set of files in a Git repository.
 type GitSource struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Optional. Repository URL.
+	// Repository URL.
 	// Example: 'https://github.com/kubernetes/examples.git'
 	Repo *string `protobuf:"bytes,1,opt,name=repo,proto3,oneof" json:"repo,omitempty"`
-	// Optional. Subdirectory inside the repository.
+	// Subdirectory inside the repository.
 	// Example: 'staging/my-package'
 	Directory *string `protobuf:"bytes,2,opt,name=directory,proto3,oneof" json:"directory,omitempty"`
-	// Optional. Git reference (e.g. branch or tag).
+	// Git reference (e.g. branch or tag).
 	Ref           *string `protobuf:"bytes,3,opt,name=ref,proto3,oneof" json:"ref,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -3948,9 +3948,11 @@ type DeploymentOperationMetadata struct {
 	Build string `protobuf:"bytes,3,opt,name=build,proto3" json:"build,omitempty"`
 	// Output only. Location of Deployment operations logs in
 	// `gs://{bucket}/{object}` format.
-	Logs          string `protobuf:"bytes,4,opt,name=logs,proto3" json:"logs,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Logs string `protobuf:"bytes,4,opt,name=logs,proto3" json:"logs,omitempty"`
+	// Output only. Indicating if early apply results are available.
+	ApplyResultsAvailable bool `protobuf:"varint,5,opt,name=apply_results_available,json=applyResultsAvailable,proto3" json:"apply_results_available,omitempty"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
 }
 
 func (x *DeploymentOperationMetadata) Reset() {
@@ -4009,6 +4011,13 @@ func (x *DeploymentOperationMetadata) GetLogs() string {
 		return x.Logs
 	}
 	return ""
+}
+
+func (x *DeploymentOperationMetadata) GetApplyResultsAvailable() bool {
+	if x != nil {
+		return x.ApplyResultsAvailable
+	}
+	return false
 }
 
 // Resource represents a Google Cloud Platform resource actuated by IM.
@@ -4965,10 +4974,10 @@ type Preview struct {
 	Labels map[string]string `protobuf:"bytes,3,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	// Output only. Current state of the preview.
 	State Preview_State `protobuf:"varint,4,opt,name=state,proto3,enum=google.cloud.config.v1.Preview_State" json:"state,omitempty"`
-	// Optional. Optional deployment reference. If specified, the preview will be
-	// performed using the provided deployment's current state and use any
-	// relevant fields from the deployment unless explicitly specified in the
-	// preview create request.
+	// Optional. Deployment reference. If specified, the preview will be performed
+	// using the provided deployment's current state and use any relevant fields
+	// from the deployment unless explicitly specified in the preview create
+	// request.
 	Deployment string `protobuf:"bytes,5,opt,name=deployment,proto3" json:"deployment,omitempty"`
 	// Optional. Current mode of preview.
 	PreviewMode Preview_PreviewMode `protobuf:"varint,15,opt,name=preview_mode,json=previewMode,proto3,enum=google.cloud.config.v1.Preview_PreviewMode" json:"preview_mode,omitempty"`
@@ -4976,7 +4985,7 @@ type Preview struct {
 	// previewing resources.
 	// Format: `projects/{projectID}/serviceAccounts/{serviceAccount}`
 	ServiceAccount string `protobuf:"bytes,7,opt,name=service_account,json=serviceAccount,proto3" json:"service_account,omitempty"`
-	// Optional. User-defined location of Cloud Build logs, artifacts, and
+	// User-defined location of Cloud Build logs, artifacts, and
 	// in Google Cloud Storage.
 	// Format: `gs://{bucket}/{folder}`
 	// A default bucket will be bootstrapped if the field is not set or empty
@@ -4987,12 +4996,12 @@ type Preview struct {
 	// If omitted and deployment resource ref provided has artifacts_gcs_bucket
 	// defined, that artifact bucket is used.
 	ArtifactsGcsBucket *string `protobuf:"bytes,8,opt,name=artifacts_gcs_bucket,json=artifactsGcsBucket,proto3,oneof" json:"artifacts_gcs_bucket,omitempty"`
-	// Optional. The user-specified Worker Pool resource in which the Cloud Build
-	// job will execute. Format
-	// projects/{project}/locations/{location}/workerPools/{workerPoolId} If this
-	// field is unspecified, the default Cloud Build worker pool will be used. If
-	// omitted and deployment resource ref provided has worker_pool defined, that
-	// worker pool is used.
+	// The user-specified Worker Pool resource in which the Cloud Build job will
+	// execute.
+	// Format projects/{project}/locations/{location}/workerPools/{workerPoolId}
+	// If this field is unspecified, the default Cloud Build worker pool will be
+	// used. If omitted and deployment resource ref provided has worker_pool
+	// defined, that worker pool is used.
 	WorkerPool *string `protobuf:"bytes,9,opt,name=worker_pool,json=workerPool,proto3,oneof" json:"worker_pool,omitempty"`
 	// Output only. Code describing any errors that may have occurred.
 	ErrorCode Preview_ErrorCode `protobuf:"varint,10,opt,name=error_code,json=errorCode,proto3,enum=google.cloud.config.v1.Preview_ErrorCode" json:"error_code,omitempty"`
@@ -5014,7 +5023,7 @@ type Preview struct {
 	// Output only. The current Terraform version set on the preview.
 	// It is in the format of "Major.Minor.Patch", for example, "1.3.10".
 	TfVersion string `protobuf:"bytes,18,opt,name=tf_version,json=tfVersion,proto3" json:"tf_version,omitempty"`
-	// Optional. The user-specified Terraform version constraint.
+	// The user-specified Terraform version constraint.
 	// Example: "=1.3.10".
 	TfVersionConstraint *string `protobuf:"bytes,19,opt,name=tf_version_constraint,json=tfVersionConstraint,proto3,oneof" json:"tf_version_constraint,omitempty"`
 	// Optional. Arbitrary key-value metadata storage e.g. to help client tools
@@ -8420,7 +8429,7 @@ var File_google_cloud_config_v1_config_proto protoreflect.FileDescriptor
 
 const file_google_cloud_config_v1_config_proto_rawDesc = "" +
 	"\n" +
-	"#google/cloud/config/v1/config.proto\x12\x16google.cloud.config.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xa9\x13\n" +
+	"#google/cloud/config/v1/config.proto\x12\x16google.cloud.config.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\x9c\x13\n" +
 	"\n" +
 	"Deployment\x12]\n" +
 	"\x13terraform_blueprint\x18\x06 \x01(\v2*.google.cloud.config.v1.TerraformBlueprintH\x00R\x12terraformBlueprint\x12\x17\n" +
@@ -8442,17 +8451,17 @@ const file_google_cloud_config_v1_config_proto_rawDesc = "" +
 	"deleteLogs\x12H\n" +
 	"\ttf_errors\x18\r \x03(\v2&.google.cloud.config.v1.TerraformErrorB\x03\xe0A\x03R\btfErrors\x12\"\n" +
 	"\n" +
-	"error_logs\x18\x0e \x01(\tB\x03\xe0A\x03R\terrorLogs\x12:\n" +
-	"\x14artifacts_gcs_bucket\x18\x0f \x01(\tB\x03\xe0A\x01H\x01R\x12artifactsGcsBucket\x88\x01\x01\x12W\n" +
+	"error_logs\x18\x0e \x01(\tB\x03\xe0A\x03R\terrorLogs\x125\n" +
+	"\x14artifacts_gcs_bucket\x18\x0f \x01(\tH\x01R\x12artifactsGcsBucket\x88\x01\x01\x12W\n" +
 	"\x0fservice_account\x18\x10 \x01(\tB)\xe0A\x02\xfaA#\n" +
 	"!iam.googleapis.com/ServiceAccountH\x02R\x0eserviceAccount\x88\x01\x01\x12?\n" +
-	"\x19import_existing_resources\x18\x11 \x01(\bH\x03R\x17importExistingResources\x88\x01\x01\x12R\n" +
-	"\vworker_pool\x18\x13 \x01(\tB,\xe0A\x01\xfaA&\n" +
+	"\x19import_existing_resources\x18\x11 \x01(\bH\x03R\x17importExistingResources\x88\x01\x01\x12O\n" +
+	"\vworker_pool\x18\x13 \x01(\tB)\xfaA&\n" +
 	"$cloudbuild.googleapis.com/WorkerPoolH\x04R\n" +
 	"workerPool\x88\x01\x01\x12P\n" +
 	"\n" +
-	"lock_state\x18\x14 \x01(\x0e2,.google.cloud.config.v1.Deployment.LockStateB\x03\xe0A\x03R\tlockState\x12<\n" +
-	"\x15tf_version_constraint\x18\x15 \x01(\tB\x03\xe0A\x01H\x05R\x13tfVersionConstraint\x88\x01\x01\x12\"\n" +
+	"lock_state\x18\x14 \x01(\x0e2,.google.cloud.config.v1.Deployment.LockStateB\x03\xe0A\x03R\tlockState\x127\n" +
+	"\x15tf_version_constraint\x18\x15 \x01(\tH\x05R\x13tfVersionConstraint\x88\x01\x01\x12\"\n" +
 	"\n" +
 	"tf_version\x18\x16 \x01(\tB\x03\xe0A\x03R\ttfVersion\x12W\n" +
 	"\x10quota_validation\x18\x17 \x01(\x0e2'.google.cloud.config.v1.QuotaValidationB\x03\xe0A\x01R\x0fquotaValidation\x12Z\n" +
@@ -8695,20 +8704,21 @@ const file_google_cloud_config_v1_config_proto_rawDesc = "" +
 	"\x10resource_address\x18\x01 \x01(\tR\x0fresourceAddress\x12,\n" +
 	"\x12http_response_code\x18\x02 \x01(\x05R\x10httpResponseCode\x12+\n" +
 	"\x11error_description\x18\x03 \x01(\tR\x10errorDescription\x12-\n" +
-	"\x05error\x18\x04 \x01(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\x05error\"\x8c\x01\n" +
-	"\tGitSource\x12\x1c\n" +
-	"\x04repo\x18\x01 \x01(\tB\x03\xe0A\x01H\x00R\x04repo\x88\x01\x01\x12&\n" +
-	"\tdirectory\x18\x02 \x01(\tB\x03\xe0A\x01H\x01R\tdirectory\x88\x01\x01\x12\x1a\n" +
-	"\x03ref\x18\x03 \x01(\tB\x03\xe0A\x01H\x02R\x03ref\x88\x01\x01B\a\n" +
+	"\x05error\x18\x04 \x01(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\x05error\"}\n" +
+	"\tGitSource\x12\x17\n" +
+	"\x04repo\x18\x01 \x01(\tH\x00R\x04repo\x88\x01\x01\x12!\n" +
+	"\tdirectory\x18\x02 \x01(\tH\x01R\tdirectory\x88\x01\x01\x12\x15\n" +
+	"\x03ref\x18\x03 \x01(\tH\x02R\x03ref\x88\x01\x01B\a\n" +
 	"\x05_repoB\f\n" +
 	"\n" +
 	"_directoryB\x06\n" +
-	"\x04_ref\"\xc0\x04\n" +
+	"\x04_ref\"\xfd\x04\n" +
 	"\x1bDeploymentOperationMetadata\x12V\n" +
 	"\x04step\x18\x01 \x01(\x0e2B.google.cloud.config.v1.DeploymentOperationMetadata.DeploymentStepR\x04step\x12I\n" +
 	"\rapply_results\x18\x02 \x01(\v2$.google.cloud.config.v1.ApplyResultsR\fapplyResults\x12\x19\n" +
 	"\x05build\x18\x03 \x01(\tB\x03\xe0A\x03R\x05build\x12\x17\n" +
-	"\x04logs\x18\x04 \x01(\tB\x03\xe0A\x03R\x04logs\"\xc9\x02\n" +
+	"\x04logs\x18\x04 \x01(\tB\x03\xe0A\x03R\x04logs\x12;\n" +
+	"\x17apply_results_available\x18\x05 \x01(\bB\x03\xe0A\x03R\x15applyResultsAvailable\"\xc9\x02\n" +
 	"\x0eDeploymentStep\x12\x1f\n" +
 	"\x1bDEPLOYMENT_STEP_UNSPECIFIED\x10\x00\x12\x1c\n" +
 	"\x18PREPARING_STORAGE_BUCKET\x10\x01\x12\x19\n" +
@@ -8812,7 +8822,7 @@ const file_google_cloud_config_v1_config_proto_rawDesc = "" +
 	"\x03who\x18\x04 \x01(\tR\x03who\x12\x18\n" +
 	"\aversion\x18\x05 \x01(\tR\aversion\x12;\n" +
 	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"createTime\"\x86\x11\n" +
+	"createTime\"\xf9\x10\n" +
 	"\aPreview\x12]\n" +
 	"\x13terraform_blueprint\x18\x06 \x01(\v2*.google.cloud.config.v1.TerraformBlueprintH\x00R\x12terraformBlueprint\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
@@ -8826,9 +8836,9 @@ const file_google_cloud_config_v1_config_proto_rawDesc = "" +
 	"deployment\x12S\n" +
 	"\fpreview_mode\x18\x0f \x01(\x0e2+.google.cloud.config.v1.Preview.PreviewModeB\x03\xe0A\x01R\vpreviewMode\x12R\n" +
 	"\x0fservice_account\x18\a \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!iam.googleapis.com/ServiceAccountR\x0eserviceAccount\x12:\n" +
-	"\x14artifacts_gcs_bucket\x18\b \x01(\tB\x03\xe0A\x01H\x01R\x12artifactsGcsBucket\x88\x01\x01\x12R\n" +
-	"\vworker_pool\x18\t \x01(\tB,\xe0A\x01\xfaA&\n" +
+	"!iam.googleapis.com/ServiceAccountR\x0eserviceAccount\x125\n" +
+	"\x14artifacts_gcs_bucket\x18\b \x01(\tH\x01R\x12artifactsGcsBucket\x88\x01\x01\x12O\n" +
+	"\vworker_pool\x18\t \x01(\tB)\xfaA&\n" +
 	"$cloudbuild.googleapis.com/WorkerPoolH\x02R\n" +
 	"workerPool\x88\x01\x01\x12M\n" +
 	"\n" +
@@ -8842,8 +8852,8 @@ const file_google_cloud_config_v1_config_proto_rawDesc = "" +
 	"\x11preview_artifacts\x18\x10 \x01(\v2(.google.cloud.config.v1.PreviewArtifactsB\x03\xe0A\x03R\x10previewArtifacts\x12\x17\n" +
 	"\x04logs\x18\x11 \x01(\tB\x03\xe0A\x03R\x04logs\x12\"\n" +
 	"\n" +
-	"tf_version\x18\x12 \x01(\tB\x03\xe0A\x03R\ttfVersion\x12<\n" +
-	"\x15tf_version_constraint\x18\x13 \x01(\tB\x03\xe0A\x01H\x03R\x13tfVersionConstraint\x88\x01\x01\x12W\n" +
+	"tf_version\x18\x12 \x01(\tB\x03\xe0A\x03R\ttfVersion\x127\n" +
+	"\x15tf_version_constraint\x18\x13 \x01(\tH\x03R\x13tfVersionConstraint\x88\x01\x01\x12W\n" +
 	"\vannotations\x18\x14 \x03(\v20.google.cloud.config.v1.Preview.AnnotationsEntryB\x03\xe0A\x01R\vannotations\x12T\n" +
 	"\x0fprovider_config\x18\x15 \x01(\v2&.google.cloud.config.v1.ProviderConfigB\x03\xe0A\x01R\x0eproviderConfig\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
@@ -9278,9 +9288,10 @@ const file_google_cloud_config_v1_config_proto_rawDesc = "" +
 	"\x1aDeprovisionDeploymentGroup\x129.google.cloud.config.v1.DeprovisionDeploymentGroupRequest\x1a\x1d.google.longrunning.Operation\"y\xcaA$\n" +
 	"\x0fDeploymentGroup\x12\x11OperationMetadata\xdaA\x04name\x82\xd3\xe4\x93\x02E:\x01*\"@/v1/{name=projects/*/locations/*/deploymentGroups/*}:deprovision\x12\xd9\x01\n" +
 	"\x1aGetDeploymentGroupRevision\x129.google.cloud.config.v1.GetDeploymentGroupRevisionRequest\x1a/.google.cloud.config.v1.DeploymentGroupRevision\"O\xdaA\x04name\x82\xd3\xe4\x93\x02B\x12@/v1/{name=projects/*/locations/*/deploymentGroups/*/revisions/*}\x12\xec\x01\n" +
-	"\x1cListDeploymentGroupRevisions\x12;.google.cloud.config.v1.ListDeploymentGroupRevisionsRequest\x1a<.google.cloud.config.v1.ListDeploymentGroupRevisionsResponse\"Q\xdaA\x06parent\x82\xd3\xe4\x93\x02B\x12@/v1/{parent=projects/*/locations/*/deploymentGroups/*}/revisions\x1aI\xcaA\x15config.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\xfc\x02\xeaAY\n" +
+	"\x1cListDeploymentGroupRevisions\x12;.google.cloud.config.v1.ListDeploymentGroupRevisionsRequest\x1a<.google.cloud.config.v1.ListDeploymentGroupRevisionsResponse\"Q\xdaA\x06parent\x82\xd3\xe4\x93\x02B\x12@/v1/{parent=projects/*/locations/*/deploymentGroups/*}/revisions\x1aI\xcaA\x15config.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\xde\x03\xeaAY\n" +
 	"!iam.googleapis.com/ServiceAccount\x124projects/{project}/serviceAccounts/{service_account}\xeaAi\n" +
-	"$cloudbuild.googleapis.com/WorkerPool\x12Aprojects/{project}/locations/{location}/workerPools/{worker_pool}\n" +
+	"$cloudbuild.googleapis.com/WorkerPool\x12Aprojects/{project}/locations/{location}/workerPools/{worker_pool}\xeaA_\n" +
+	"\x1econfig.googleapis.com/WarmPool\x12=projects/{project}/locations/{location}/warmPools/{warm_pool}\n" +
 	"\x1acom.google.cloud.config.v1B\vConfigProtoP\x01Z2cloud.google.com/go/config/apiv1/configpb;configpb\xaa\x02\x16Google.Cloud.Config.V1\xca\x02\x16Google\\Cloud\\Config\\V1\xea\x02 Google::Cloud::ConfigService::V1b\x06proto3"
 
 var (

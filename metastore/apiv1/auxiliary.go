@@ -18,12 +18,14 @@ package metastore
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	metastorepb "cloud.google.com/go/metastore/apiv1/metastorepb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
@@ -955,6 +957,12 @@ func (op *UpdateServiceOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *BackupIterator) All() iter.Seq2[*metastorepb.Backup, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // BackupIterator manages a stream of *metastorepb.Backup.
 type BackupIterator struct {
 	items    []*metastorepb.Backup
@@ -1000,6 +1008,12 @@ func (it *BackupIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *FederationIterator) All() iter.Seq2[*metastorepb.Federation, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // FederationIterator manages a stream of *metastorepb.Federation.
@@ -1049,6 +1063,12 @@ func (it *FederationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // LocationIterator manages a stream of *locationpb.Location.
 type LocationIterator struct {
 	items    []*locationpb.Location
@@ -1094,6 +1114,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *MetadataImportIterator) All() iter.Seq2[*metastorepb.MetadataImport, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // MetadataImportIterator manages a stream of *metastorepb.MetadataImport.
@@ -1143,6 +1169,12 @@ func (it *MetadataImportIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OperationIterator manages a stream of *longrunningpb.Operation.
 type OperationIterator struct {
 	items    []*longrunningpb.Operation
@@ -1188,6 +1220,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ServiceIterator) All() iter.Seq2[*metastorepb.Service, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ServiceIterator manages a stream of *metastorepb.Service.

@@ -15,9 +15,14 @@
 package internal
 
 import (
+	"context"
 	"errors"
 	"fmt"
+	"strings"
 	"testing"
+
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func TestAttemptState_String(t *testing.T) {
@@ -102,5 +107,58 @@ func TestClassifyErr_FindsThroughWrapper(t *testing.T) {
 	out := ClassifyErr(outer)
 	if out.State != StateUncommitted {
 		t.Errorf("ClassifyErr(outer-wrapped).State = %v, want StateUncommitted", out.State)
+	}
+}
+
+// The fmt.Errorf-wrapped-ctx case is deliberate: real call sites wrap
+// ctx.Err in fmt.Errorf, and a future grpc-go bump swapping
+// FromContextError's errors.Is walk for identity comparison would
+// silently regress that branch to Unknown.
+func TestVRPCErr_GRPCStatus(t *testing.T) {
+	tests := []struct {
+		name     string
+		inner    error
+		wantCode codes.Code
+		wantMsg  string // required substring in status message
+	}{
+		{
+			name:     "wrapped err already carries gRPC status wins verbatim",
+			inner:    status.Error(codes.FailedPrecondition, "table not ready"),
+			wantCode: codes.FailedPrecondition,
+			wantMsg:  "table not ready",
+		},
+		{
+			name:     "context.DeadlineExceeded translates to DeadlineExceeded",
+			inner:    context.DeadlineExceeded,
+			wantCode: codes.DeadlineExceeded,
+		},
+		{
+			name:     "context.Canceled translates to Canceled",
+			inner:    context.Canceled,
+			wantCode: codes.Canceled,
+		},
+		{
+			name:     "fmt.Errorf-wrapped ctx err still translates via errors.Is walk",
+			inner:    fmt.Errorf("send vRPC request: %w", context.DeadlineExceeded),
+			wantCode: codes.DeadlineExceeded,
+		},
+		{
+			name:     "plain non-status non-ctx err surfaces as Unknown",
+			inner:    errors.New("something else broke"),
+			wantCode: codes.Unknown,
+			wantMsg:  "something else broke",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			e := &vrpcErr{outcome: AttemptOutcome{State: StateTransportFailure, Err: tt.inner}}
+			s := e.GRPCStatus()
+			if s.Code() != tt.wantCode {
+				t.Errorf("GRPCStatus().Code = %v, want %v", s.Code(), tt.wantCode)
+			}
+			if tt.wantMsg != "" && !strings.Contains(s.Message(), tt.wantMsg) {
+				t.Errorf("GRPCStatus().Message = %q, want to contain %q", s.Message(), tt.wantMsg)
+			}
+		})
 	}
 }

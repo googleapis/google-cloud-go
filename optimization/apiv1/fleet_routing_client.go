@@ -350,6 +350,37 @@ func NewFleetRoutingClient(ctx context.Context, opts ...option.ClientOption) (*F
 		client.CallOptions.BatchOptimizeTours = append(client.CallOptions.BatchOptimizeTours, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudoptimization",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/optimization/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudoptimization.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.OptimizeTours = append(client.CallOptions.OptimizeTours, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchOptimizeTours = append(client.CallOptions.BatchOptimizeTours, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudoptimization",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/optimization/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudoptimization.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.OptimizeTours = append(client.CallOptions.OptimizeTours, gax.WithClientLogging(logging))
+		client.CallOptions.BatchOptimizeTours = append(client.CallOptions.BatchOptimizeTours, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -484,6 +515,37 @@ func NewFleetRoutingRESTClient(ctx context.Context, opts ...option.ClientOption)
 		callOpts.OptimizeTours = append(callOpts.OptimizeTours, gax.WithClientMetrics(metrics))
 		callOpts.BatchOptimizeTours = append(callOpts.BatchOptimizeTours, gax.WithClientMetrics(metrics))
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudoptimization",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/optimization/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudoptimization.googleapis.com",
+			}),
+		)
+
+		callOpts.OptimizeTours = append(callOpts.OptimizeTours, gax.WithClientTracing(tracing))
+		callOpts.BatchOptimizeTours = append(callOpts.BatchOptimizeTours, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudoptimization",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/optimization/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudoptimization.googleapis.com",
+			}),
+		)
+
+		callOpts.OptimizeTours = append(callOpts.OptimizeTours, gax.WithClientLogging(logging))
+		callOpts.BatchOptimizeTours = append(callOpts.BatchOptimizeTours, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
 	}
 
 	lroOpts := []option.ClientOption{

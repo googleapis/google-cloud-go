@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -107,7 +107,7 @@ type GetSpaceRequest struct {
 	// Meet](https://support.google.com/meet/answer/10710509).
 	//
 	// For more information, see [How Meet identifies a meeting
-	// space](https://developers.google.com/meet/api/guides/meeting-spaces#identify-meeting-space).
+	// space](https://developers.google.com/workspace/meet/api/guides/meeting-spaces#identify-meeting-space).
 	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -221,7 +221,7 @@ type EndActiveConferenceRequest struct {
 	// server-generated ID and is case sensitive. For example, `jQCFfuBOdN5z`.
 	//
 	// For more information, see [How Meet identifies a meeting
-	// space](https://developers.google.com/meet/api/guides/meeting-spaces#identify-meeting-space).
+	// space](https://developers.google.com/workspace/meet/api/guides/meeting-spaces#identify-meeting-space).
 	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -264,6 +264,462 @@ func (x *EndActiveConferenceRequest) GetName() string {
 	return ""
 }
 
+// Request to create a member for a space.
+type CreateMemberRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Format: spaces/{space}
+	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
+	// Required. The member to be created.
+	Member        *Member `protobuf:"bytes,2,opt,name=member,proto3" json:"member,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateMemberRequest) Reset() {
+	*x = CreateMemberRequest{}
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateMemberRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateMemberRequest) ProtoMessage() {}
+
+func (x *CreateMemberRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateMemberRequest.ProtoReflect.Descriptor instead.
+func (*CreateMemberRequest) Descriptor() ([]byte, []int) {
+	return file_google_apps_meet_v2_service_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *CreateMemberRequest) GetParent() string {
+	if x != nil {
+		return x.Parent
+	}
+	return ""
+}
+
+func (x *CreateMemberRequest) GetMember() *Member {
+	if x != nil {
+		return x.Member
+	}
+	return nil
+}
+
+// Request to get a member from a space.
+type GetMemberRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Format: “spaces/{space}/members/{member}”
+	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetMemberRequest) Reset() {
+	*x = GetMemberRequest{}
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetMemberRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetMemberRequest) ProtoMessage() {}
+
+func (x *GetMemberRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetMemberRequest.ProtoReflect.Descriptor instead.
+func (*GetMemberRequest) Descriptor() ([]byte, []int) {
+	return file_google_apps_meet_v2_service_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *GetMemberRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+// Request to list all members of a space.
+type ListMembersRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Format: spaces/{space}
+	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
+	// Optional. Maximum number of members to return. The service might return
+	// fewer than this value. If unspecified or set to 0, at most 250 members are
+	// returned. The maximum value is 500; values above 500 are coerced to 500.
+	// Maximum might change in the future.
+	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	// Optional. Page token returned from previous List Call.
+	PageToken     string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListMembersRequest) Reset() {
+	*x = ListMembersRequest{}
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListMembersRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListMembersRequest) ProtoMessage() {}
+
+func (x *ListMembersRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListMembersRequest.ProtoReflect.Descriptor instead.
+func (*ListMembersRequest) Descriptor() ([]byte, []int) {
+	return file_google_apps_meet_v2_service_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *ListMembersRequest) GetParent() string {
+	if x != nil {
+		return x.Parent
+	}
+	return ""
+}
+
+func (x *ListMembersRequest) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+func (x *ListMembersRequest) GetPageToken() string {
+	if x != nil {
+		return x.PageToken
+	}
+	return ""
+}
+
+// Response of list members.
+type ListMembersResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The list of members for the current page.
+	Members []*Member `protobuf:"bytes,1,rep,name=members,proto3" json:"members,omitempty"`
+	// Token to be circulated back for further list call if current list doesn't
+	// include all the members. Unset if all members are returned.
+	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListMembersResponse) Reset() {
+	*x = ListMembersResponse{}
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListMembersResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListMembersResponse) ProtoMessage() {}
+
+func (x *ListMembersResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListMembersResponse.ProtoReflect.Descriptor instead.
+func (*ListMembersResponse) Descriptor() ([]byte, []int) {
+	return file_google_apps_meet_v2_service_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *ListMembersResponse) GetMembers() []*Member {
+	if x != nil {
+		return x.Members
+	}
+	return nil
+}
+
+func (x *ListMembersResponse) GetNextPageToken() string {
+	if x != nil {
+		return x.NextPageToken
+	}
+	return ""
+}
+
+// Request to delete a member from a space.
+type DeleteMemberRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Format: “spaces/{space}/members/{member}”
+	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteMemberRequest) Reset() {
+	*x = DeleteMemberRequest{}
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteMemberRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteMemberRequest) ProtoMessage() {}
+
+func (x *DeleteMemberRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteMemberRequest.ProtoReflect.Descriptor instead.
+func (*DeleteMemberRequest) Descriptor() ([]byte, []int) {
+	return file_google_apps_meet_v2_service_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *DeleteMemberRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+// Request to update a member.
+type UpdateMemberRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The Member to update.
+	// Format: spaces/{space}/members/{member}
+	Member *Member `protobuf:"bytes,1,opt,name=member,proto3" json:"member,omitempty"`
+	// Optional. Field mask used to specify the fields to be updated in the
+	// member. If update_mask isn't provided(not set, set with empty paths, or
+	// only has "" as paths), it defaults to update all fields provided with
+	// values in the request. Using "*" as update_mask will update all fields,
+	// including deleting fields not set in the request. In case of BatchUpdate,
+	// it must be absent or the same as the update_mask in
+	// BatchUpdateMembersRequest when UpdateMemberRequest is built as a child
+	// request of BatchUpdateMembersRequest.
+	UpdateMask    *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateMemberRequest) Reset() {
+	*x = UpdateMemberRequest{}
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateMemberRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateMemberRequest) ProtoMessage() {}
+
+func (x *UpdateMemberRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateMemberRequest.ProtoReflect.Descriptor instead.
+func (*UpdateMemberRequest) Descriptor() ([]byte, []int) {
+	return file_google_apps_meet_v2_service_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *UpdateMemberRequest) GetMember() *Member {
+	if x != nil {
+		return x.Member
+	}
+	return nil
+}
+
+func (x *UpdateMemberRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
+	if x != nil {
+		return x.UpdateMask
+	}
+	return nil
+}
+
+// Request to update members of one space within a batch.
+type BatchUpdateMembersRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The parent resource shared by all Members being updated.
+	// Format: spaces/{space}
+	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
+	// Required. The request message specifying the resources to update.
+	// A maximum of 500 members can be modified in a batch.
+	Requests []*UpdateMemberRequest `protobuf:"bytes,2,rep,name=requests,proto3" json:"requests,omitempty"`
+	// Optional. Top-level field mask used to specify the fields to be updated in
+	// the member for all UpdateMemberRequests. There are 4 possible scenarios for
+	// top-level and child field mask:
+	//  1. top-level and child field mask is absent:
+	//     All fields provided in the requests are updated, including deleting
+	//     fields not set in the requests.
+	//  2. top-level field mask is present but child field mask is absent:
+	//     The fields specified in the top-level field mask are updated.
+	//  3. top-level and child field mask is present:
+	//     The child field mask must be the same as the top-level field mask.
+	//  4. top-level field mask is absent but child field mask is present:
+	//     It isn't supported and will return an error.
+	UpdateMask    *fieldmaskpb.FieldMask `protobuf:"bytes,3,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BatchUpdateMembersRequest) Reset() {
+	*x = BatchUpdateMembersRequest{}
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BatchUpdateMembersRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BatchUpdateMembersRequest) ProtoMessage() {}
+
+func (x *BatchUpdateMembersRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BatchUpdateMembersRequest.ProtoReflect.Descriptor instead.
+func (*BatchUpdateMembersRequest) Descriptor() ([]byte, []int) {
+	return file_google_apps_meet_v2_service_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *BatchUpdateMembersRequest) GetParent() string {
+	if x != nil {
+		return x.Parent
+	}
+	return ""
+}
+
+func (x *BatchUpdateMembersRequest) GetRequests() []*UpdateMemberRequest {
+	if x != nil {
+		return x.Requests
+	}
+	return nil
+}
+
+func (x *BatchUpdateMembersRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
+	if x != nil {
+		return x.UpdateMask
+	}
+	return nil
+}
+
+// Response of batch update members.
+type BatchUpdateMembersResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Members updated.
+	Members       []*Member `protobuf:"bytes,1,rep,name=members,proto3" json:"members,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BatchUpdateMembersResponse) Reset() {
+	*x = BatchUpdateMembersResponse{}
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BatchUpdateMembersResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BatchUpdateMembersResponse) ProtoMessage() {}
+
+func (x *BatchUpdateMembersResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BatchUpdateMembersResponse.ProtoReflect.Descriptor instead.
+func (*BatchUpdateMembersResponse) Descriptor() ([]byte, []int) {
+	return file_google_apps_meet_v2_service_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *BatchUpdateMembersResponse) GetMembers() []*Member {
+	if x != nil {
+		return x.Members
+	}
+	return nil
+}
+
 // Request to get a conference record.
 type GetConferenceRecordRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -275,7 +731,7 @@ type GetConferenceRecordRequest struct {
 
 func (x *GetConferenceRecordRequest) Reset() {
 	*x = GetConferenceRecordRequest{}
-	mi := &file_google_apps_meet_v2_service_proto_msgTypes[4]
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -287,7 +743,7 @@ func (x *GetConferenceRecordRequest) String() string {
 func (*GetConferenceRecordRequest) ProtoMessage() {}
 
 func (x *GetConferenceRecordRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_apps_meet_v2_service_proto_msgTypes[4]
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -300,7 +756,7 @@ func (x *GetConferenceRecordRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetConferenceRecordRequest.ProtoReflect.Descriptor instead.
 func (*GetConferenceRecordRequest) Descriptor() ([]byte, []int) {
-	return file_google_apps_meet_v2_service_proto_rawDescGZIP(), []int{4}
+	return file_google_apps_meet_v2_service_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *GetConferenceRecordRequest) GetName() string {
@@ -343,7 +799,7 @@ type ListConferenceRecordsRequest struct {
 
 func (x *ListConferenceRecordsRequest) Reset() {
 	*x = ListConferenceRecordsRequest{}
-	mi := &file_google_apps_meet_v2_service_proto_msgTypes[5]
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -355,7 +811,7 @@ func (x *ListConferenceRecordsRequest) String() string {
 func (*ListConferenceRecordsRequest) ProtoMessage() {}
 
 func (x *ListConferenceRecordsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_apps_meet_v2_service_proto_msgTypes[5]
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -368,7 +824,7 @@ func (x *ListConferenceRecordsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListConferenceRecordsRequest.ProtoReflect.Descriptor instead.
 func (*ListConferenceRecordsRequest) Descriptor() ([]byte, []int) {
-	return file_google_apps_meet_v2_service_proto_rawDescGZIP(), []int{5}
+	return file_google_apps_meet_v2_service_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *ListConferenceRecordsRequest) GetPageSize() int32 {
@@ -406,7 +862,7 @@ type ListConferenceRecordsResponse struct {
 
 func (x *ListConferenceRecordsResponse) Reset() {
 	*x = ListConferenceRecordsResponse{}
-	mi := &file_google_apps_meet_v2_service_proto_msgTypes[6]
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -418,7 +874,7 @@ func (x *ListConferenceRecordsResponse) String() string {
 func (*ListConferenceRecordsResponse) ProtoMessage() {}
 
 func (x *ListConferenceRecordsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_apps_meet_v2_service_proto_msgTypes[6]
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -431,7 +887,7 @@ func (x *ListConferenceRecordsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListConferenceRecordsResponse.ProtoReflect.Descriptor instead.
 func (*ListConferenceRecordsResponse) Descriptor() ([]byte, []int) {
-	return file_google_apps_meet_v2_service_proto_rawDescGZIP(), []int{6}
+	return file_google_apps_meet_v2_service_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *ListConferenceRecordsResponse) GetConferenceRecords() []*ConferenceRecord {
@@ -459,7 +915,7 @@ type GetParticipantRequest struct {
 
 func (x *GetParticipantRequest) Reset() {
 	*x = GetParticipantRequest{}
-	mi := &file_google_apps_meet_v2_service_proto_msgTypes[7]
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -471,7 +927,7 @@ func (x *GetParticipantRequest) String() string {
 func (*GetParticipantRequest) ProtoMessage() {}
 
 func (x *GetParticipantRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_apps_meet_v2_service_proto_msgTypes[7]
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -484,7 +940,7 @@ func (x *GetParticipantRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetParticipantRequest.ProtoReflect.Descriptor instead.
 func (*GetParticipantRequest) Descriptor() ([]byte, []int) {
-	return file_google_apps_meet_v2_service_proto_rawDescGZIP(), []int{7}
+	return file_google_apps_meet_v2_service_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *GetParticipantRequest) GetName() string {
@@ -523,7 +979,7 @@ type ListParticipantsRequest struct {
 
 func (x *ListParticipantsRequest) Reset() {
 	*x = ListParticipantsRequest{}
-	mi := &file_google_apps_meet_v2_service_proto_msgTypes[8]
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -535,7 +991,7 @@ func (x *ListParticipantsRequest) String() string {
 func (*ListParticipantsRequest) ProtoMessage() {}
 
 func (x *ListParticipantsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_apps_meet_v2_service_proto_msgTypes[8]
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -548,7 +1004,7 @@ func (x *ListParticipantsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListParticipantsRequest.ProtoReflect.Descriptor instead.
 func (*ListParticipantsRequest) Descriptor() ([]byte, []int) {
-	return file_google_apps_meet_v2_service_proto_rawDescGZIP(), []int{8}
+	return file_google_apps_meet_v2_service_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *ListParticipantsRequest) GetParent() string {
@@ -598,7 +1054,7 @@ type ListParticipantsResponse struct {
 
 func (x *ListParticipantsResponse) Reset() {
 	*x = ListParticipantsResponse{}
-	mi := &file_google_apps_meet_v2_service_proto_msgTypes[9]
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -610,7 +1066,7 @@ func (x *ListParticipantsResponse) String() string {
 func (*ListParticipantsResponse) ProtoMessage() {}
 
 func (x *ListParticipantsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_apps_meet_v2_service_proto_msgTypes[9]
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -623,7 +1079,7 @@ func (x *ListParticipantsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListParticipantsResponse.ProtoReflect.Descriptor instead.
 func (*ListParticipantsResponse) Descriptor() ([]byte, []int) {
-	return file_google_apps_meet_v2_service_proto_rawDescGZIP(), []int{9}
+	return file_google_apps_meet_v2_service_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *ListParticipantsResponse) GetParticipants() []*Participant {
@@ -658,7 +1114,7 @@ type GetParticipantSessionRequest struct {
 
 func (x *GetParticipantSessionRequest) Reset() {
 	*x = GetParticipantSessionRequest{}
-	mi := &file_google_apps_meet_v2_service_proto_msgTypes[10]
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -670,7 +1126,7 @@ func (x *GetParticipantSessionRequest) String() string {
 func (*GetParticipantSessionRequest) ProtoMessage() {}
 
 func (x *GetParticipantSessionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_apps_meet_v2_service_proto_msgTypes[10]
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -683,7 +1139,7 @@ func (x *GetParticipantSessionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetParticipantSessionRequest.ProtoReflect.Descriptor instead.
 func (*GetParticipantSessionRequest) Descriptor() ([]byte, []int) {
-	return file_google_apps_meet_v2_service_proto_rawDescGZIP(), []int{10}
+	return file_google_apps_meet_v2_service_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *GetParticipantSessionRequest) GetName() string {
@@ -723,7 +1179,7 @@ type ListParticipantSessionsRequest struct {
 
 func (x *ListParticipantSessionsRequest) Reset() {
 	*x = ListParticipantSessionsRequest{}
-	mi := &file_google_apps_meet_v2_service_proto_msgTypes[11]
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -735,7 +1191,7 @@ func (x *ListParticipantSessionsRequest) String() string {
 func (*ListParticipantSessionsRequest) ProtoMessage() {}
 
 func (x *ListParticipantSessionsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_apps_meet_v2_service_proto_msgTypes[11]
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -748,7 +1204,7 @@ func (x *ListParticipantSessionsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListParticipantSessionsRequest.ProtoReflect.Descriptor instead.
 func (*ListParticipantSessionsRequest) Descriptor() ([]byte, []int) {
-	return file_google_apps_meet_v2_service_proto_rawDescGZIP(), []int{11}
+	return file_google_apps_meet_v2_service_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *ListParticipantSessionsRequest) GetParent() string {
@@ -793,7 +1249,7 @@ type ListParticipantSessionsResponse struct {
 
 func (x *ListParticipantSessionsResponse) Reset() {
 	*x = ListParticipantSessionsResponse{}
-	mi := &file_google_apps_meet_v2_service_proto_msgTypes[12]
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -805,7 +1261,7 @@ func (x *ListParticipantSessionsResponse) String() string {
 func (*ListParticipantSessionsResponse) ProtoMessage() {}
 
 func (x *ListParticipantSessionsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_apps_meet_v2_service_proto_msgTypes[12]
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -818,7 +1274,7 @@ func (x *ListParticipantSessionsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListParticipantSessionsResponse.ProtoReflect.Descriptor instead.
 func (*ListParticipantSessionsResponse) Descriptor() ([]byte, []int) {
-	return file_google_apps_meet_v2_service_proto_rawDescGZIP(), []int{12}
+	return file_google_apps_meet_v2_service_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *ListParticipantSessionsResponse) GetParticipantSessions() []*ParticipantSession {
@@ -846,7 +1302,7 @@ type GetRecordingRequest struct {
 
 func (x *GetRecordingRequest) Reset() {
 	*x = GetRecordingRequest{}
-	mi := &file_google_apps_meet_v2_service_proto_msgTypes[13]
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -858,7 +1314,7 @@ func (x *GetRecordingRequest) String() string {
 func (*GetRecordingRequest) ProtoMessage() {}
 
 func (x *GetRecordingRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_apps_meet_v2_service_proto_msgTypes[13]
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -871,7 +1327,7 @@ func (x *GetRecordingRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetRecordingRequest.ProtoReflect.Descriptor instead.
 func (*GetRecordingRequest) Descriptor() ([]byte, []int) {
-	return file_google_apps_meet_v2_service_proto_rawDescGZIP(), []int{13}
+	return file_google_apps_meet_v2_service_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *GetRecordingRequest) GetName() string {
@@ -900,7 +1356,7 @@ type ListRecordingsRequest struct {
 
 func (x *ListRecordingsRequest) Reset() {
 	*x = ListRecordingsRequest{}
-	mi := &file_google_apps_meet_v2_service_proto_msgTypes[14]
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -912,7 +1368,7 @@ func (x *ListRecordingsRequest) String() string {
 func (*ListRecordingsRequest) ProtoMessage() {}
 
 func (x *ListRecordingsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_apps_meet_v2_service_proto_msgTypes[14]
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -925,7 +1381,7 @@ func (x *ListRecordingsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListRecordingsRequest.ProtoReflect.Descriptor instead.
 func (*ListRecordingsRequest) Descriptor() ([]byte, []int) {
-	return file_google_apps_meet_v2_service_proto_rawDescGZIP(), []int{14}
+	return file_google_apps_meet_v2_service_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *ListRecordingsRequest) GetParent() string {
@@ -963,7 +1419,7 @@ type ListRecordingsResponse struct {
 
 func (x *ListRecordingsResponse) Reset() {
 	*x = ListRecordingsResponse{}
-	mi := &file_google_apps_meet_v2_service_proto_msgTypes[15]
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -975,7 +1431,7 @@ func (x *ListRecordingsResponse) String() string {
 func (*ListRecordingsResponse) ProtoMessage() {}
 
 func (x *ListRecordingsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_apps_meet_v2_service_proto_msgTypes[15]
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -988,7 +1444,7 @@ func (x *ListRecordingsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListRecordingsResponse.ProtoReflect.Descriptor instead.
 func (*ListRecordingsResponse) Descriptor() ([]byte, []int) {
-	return file_google_apps_meet_v2_service_proto_rawDescGZIP(), []int{15}
+	return file_google_apps_meet_v2_service_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *ListRecordingsResponse) GetRecordings() []*Recording {
@@ -1016,7 +1472,7 @@ type GetTranscriptRequest struct {
 
 func (x *GetTranscriptRequest) Reset() {
 	*x = GetTranscriptRequest{}
-	mi := &file_google_apps_meet_v2_service_proto_msgTypes[16]
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1028,7 +1484,7 @@ func (x *GetTranscriptRequest) String() string {
 func (*GetTranscriptRequest) ProtoMessage() {}
 
 func (x *GetTranscriptRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_apps_meet_v2_service_proto_msgTypes[16]
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1041,7 +1497,7 @@ func (x *GetTranscriptRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetTranscriptRequest.ProtoReflect.Descriptor instead.
 func (*GetTranscriptRequest) Descriptor() ([]byte, []int) {
-	return file_google_apps_meet_v2_service_proto_rawDescGZIP(), []int{16}
+	return file_google_apps_meet_v2_service_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *GetTranscriptRequest) GetName() string {
@@ -1070,7 +1526,7 @@ type ListTranscriptsRequest struct {
 
 func (x *ListTranscriptsRequest) Reset() {
 	*x = ListTranscriptsRequest{}
-	mi := &file_google_apps_meet_v2_service_proto_msgTypes[17]
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1082,7 +1538,7 @@ func (x *ListTranscriptsRequest) String() string {
 func (*ListTranscriptsRequest) ProtoMessage() {}
 
 func (x *ListTranscriptsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_apps_meet_v2_service_proto_msgTypes[17]
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1095,7 +1551,7 @@ func (x *ListTranscriptsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListTranscriptsRequest.ProtoReflect.Descriptor instead.
 func (*ListTranscriptsRequest) Descriptor() ([]byte, []int) {
-	return file_google_apps_meet_v2_service_proto_rawDescGZIP(), []int{17}
+	return file_google_apps_meet_v2_service_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *ListTranscriptsRequest) GetParent() string {
@@ -1133,7 +1589,7 @@ type ListTranscriptsResponse struct {
 
 func (x *ListTranscriptsResponse) Reset() {
 	*x = ListTranscriptsResponse{}
-	mi := &file_google_apps_meet_v2_service_proto_msgTypes[18]
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1145,7 +1601,7 @@ func (x *ListTranscriptsResponse) String() string {
 func (*ListTranscriptsResponse) ProtoMessage() {}
 
 func (x *ListTranscriptsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_apps_meet_v2_service_proto_msgTypes[18]
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1158,7 +1614,7 @@ func (x *ListTranscriptsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListTranscriptsResponse.ProtoReflect.Descriptor instead.
 func (*ListTranscriptsResponse) Descriptor() ([]byte, []int) {
-	return file_google_apps_meet_v2_service_proto_rawDescGZIP(), []int{18}
+	return file_google_apps_meet_v2_service_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *ListTranscriptsResponse) GetTranscripts() []*Transcript {
@@ -1186,7 +1642,7 @@ type GetTranscriptEntryRequest struct {
 
 func (x *GetTranscriptEntryRequest) Reset() {
 	*x = GetTranscriptEntryRequest{}
-	mi := &file_google_apps_meet_v2_service_proto_msgTypes[19]
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1198,7 +1654,7 @@ func (x *GetTranscriptEntryRequest) String() string {
 func (*GetTranscriptEntryRequest) ProtoMessage() {}
 
 func (x *GetTranscriptEntryRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_apps_meet_v2_service_proto_msgTypes[19]
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1211,7 +1667,7 @@ func (x *GetTranscriptEntryRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetTranscriptEntryRequest.ProtoReflect.Descriptor instead.
 func (*GetTranscriptEntryRequest) Descriptor() ([]byte, []int) {
-	return file_google_apps_meet_v2_service_proto_rawDescGZIP(), []int{19}
+	return file_google_apps_meet_v2_service_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *GetTranscriptEntryRequest) GetName() string {
@@ -1241,7 +1697,7 @@ type ListTranscriptEntriesRequest struct {
 
 func (x *ListTranscriptEntriesRequest) Reset() {
 	*x = ListTranscriptEntriesRequest{}
-	mi := &file_google_apps_meet_v2_service_proto_msgTypes[20]
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1253,7 +1709,7 @@ func (x *ListTranscriptEntriesRequest) String() string {
 func (*ListTranscriptEntriesRequest) ProtoMessage() {}
 
 func (x *ListTranscriptEntriesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_apps_meet_v2_service_proto_msgTypes[20]
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1266,7 +1722,7 @@ func (x *ListTranscriptEntriesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListTranscriptEntriesRequest.ProtoReflect.Descriptor instead.
 func (*ListTranscriptEntriesRequest) Descriptor() ([]byte, []int) {
-	return file_google_apps_meet_v2_service_proto_rawDescGZIP(), []int{20}
+	return file_google_apps_meet_v2_service_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *ListTranscriptEntriesRequest) GetParent() string {
@@ -1304,7 +1760,7 @@ type ListTranscriptEntriesResponse struct {
 
 func (x *ListTranscriptEntriesResponse) Reset() {
 	*x = ListTranscriptEntriesResponse{}
-	mi := &file_google_apps_meet_v2_service_proto_msgTypes[21]
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1316,7 +1772,7 @@ func (x *ListTranscriptEntriesResponse) String() string {
 func (*ListTranscriptEntriesResponse) ProtoMessage() {}
 
 func (x *ListTranscriptEntriesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_apps_meet_v2_service_proto_msgTypes[21]
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1329,7 +1785,7 @@ func (x *ListTranscriptEntriesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListTranscriptEntriesResponse.ProtoReflect.Descriptor instead.
 func (*ListTranscriptEntriesResponse) Descriptor() ([]byte, []int) {
-	return file_google_apps_meet_v2_service_proto_rawDescGZIP(), []int{21}
+	return file_google_apps_meet_v2_service_proto_rawDescGZIP(), []int{29}
 }
 
 func (x *ListTranscriptEntriesResponse) GetTranscriptEntries() []*TranscriptEntry {
@@ -1340,6 +1796,176 @@ func (x *ListTranscriptEntriesResponse) GetTranscriptEntries() []*TranscriptEntr
 }
 
 func (x *ListTranscriptEntriesResponse) GetNextPageToken() string {
+	if x != nil {
+		return x.NextPageToken
+	}
+	return ""
+}
+
+// Request for GetSmartNote method.
+type GetSmartNoteRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Resource name of the smart note.
+	// Format: conferenceRecords/{conference_record}/smartNotes/{smart_note}
+	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetSmartNoteRequest) Reset() {
+	*x = GetSmartNoteRequest{}
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[30]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetSmartNoteRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetSmartNoteRequest) ProtoMessage() {}
+
+func (x *GetSmartNoteRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[30]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetSmartNoteRequest.ProtoReflect.Descriptor instead.
+func (*GetSmartNoteRequest) Descriptor() ([]byte, []int) {
+	return file_google_apps_meet_v2_service_proto_rawDescGZIP(), []int{30}
+}
+
+func (x *GetSmartNoteRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+// Request for ListSmartNotes method.
+type ListSmartNotesRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Format: `conferenceRecords/{conference_record}`
+	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
+	// Optional. Maximum number of smart notes to return. The service might return
+	// fewer than this value. If unspecified, at most 10 smart notes are returned.
+	// The maximum value is 100; values above 100 are coerced to 100.
+	// Maximum might change in the future.
+	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	// Optional. Page token returned from previous List Call.
+	PageToken     string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListSmartNotesRequest) Reset() {
+	*x = ListSmartNotesRequest{}
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[31]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListSmartNotesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListSmartNotesRequest) ProtoMessage() {}
+
+func (x *ListSmartNotesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[31]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListSmartNotesRequest.ProtoReflect.Descriptor instead.
+func (*ListSmartNotesRequest) Descriptor() ([]byte, []int) {
+	return file_google_apps_meet_v2_service_proto_rawDescGZIP(), []int{31}
+}
+
+func (x *ListSmartNotesRequest) GetParent() string {
+	if x != nil {
+		return x.Parent
+	}
+	return ""
+}
+
+func (x *ListSmartNotesRequest) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+func (x *ListSmartNotesRequest) GetPageToken() string {
+	if x != nil {
+		return x.PageToken
+	}
+	return ""
+}
+
+// Response for ListSmartNotes method.
+type ListSmartNotesResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// List of smart notes in one page.
+	SmartNotes []*SmartNote `protobuf:"bytes,1,rep,name=smart_notes,json=smartNotes,proto3" json:"smart_notes,omitempty"`
+	// Token to be circulated back for further List call if current List doesn't
+	// include all the smart notes. Unset if all smart notes are returned.
+	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListSmartNotesResponse) Reset() {
+	*x = ListSmartNotesResponse{}
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[32]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListSmartNotesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListSmartNotesResponse) ProtoMessage() {}
+
+func (x *ListSmartNotesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_google_apps_meet_v2_service_proto_msgTypes[32]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListSmartNotesResponse.ProtoReflect.Descriptor instead.
+func (*ListSmartNotesResponse) Descriptor() ([]byte, []int) {
+	return file_google_apps_meet_v2_service_proto_rawDescGZIP(), []int{32}
+}
+
+func (x *ListSmartNotesResponse) GetSmartNotes() []*SmartNote {
+	if x != nil {
+		return x.SmartNotes
+	}
+	return nil
+}
+
+func (x *ListSmartNotesResponse) GetNextPageToken() string {
 	if x != nil {
 		return x.NextPageToken
 	}
@@ -1362,7 +1988,35 @@ const file_google_apps_meet_v2_service_proto_rawDesc = "" +
 	"updateMask\"S\n" +
 	"\x1aEndActiveConferenceRequest\x125\n" +
 	"\x04name\x18\x01 \x01(\tB!\xe0A\x02\xfaA\x1b\n" +
-	"\x19meet.googleapis.com/SpaceR\x04name\"^\n" +
+	"\x19meet.googleapis.com/SpaceR\x04name\"\x8b\x01\n" +
+	"\x13CreateMemberRequest\x12:\n" +
+	"\x06parent\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\x12\x1ameet.googleapis.com/MemberR\x06parent\x128\n" +
+	"\x06member\x18\x02 \x01(\v2\x1b.google.apps.meet.v2.MemberB\x03\xe0A\x02R\x06member\"J\n" +
+	"\x10GetMemberRequest\x126\n" +
+	"\x04name\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\n" +
+	"\x1ameet.googleapis.com/MemberR\x04name\"\x96\x01\n" +
+	"\x12ListMembersRequest\x12:\n" +
+	"\x06parent\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\x12\x1ameet.googleapis.com/MemberR\x06parent\x12 \n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\n" +
+	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"t\n" +
+	"\x13ListMembersResponse\x125\n" +
+	"\amembers\x18\x01 \x03(\v2\x1b.google.apps.meet.v2.MemberR\amembers\x12&\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"M\n" +
+	"\x13DeleteMemberRequest\x126\n" +
+	"\x04name\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\n" +
+	"\x1ameet.googleapis.com/MemberR\x04name\"\x91\x01\n" +
+	"\x13UpdateMemberRequest\x128\n" +
+	"\x06member\x18\x01 \x01(\v2\x1b.google.apps.meet.v2.MemberB\x03\xe0A\x02R\x06member\x12@\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
+	"updateMask\"\xe4\x01\n" +
+	"\x19BatchUpdateMembersRequest\x12:\n" +
+	"\x06parent\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\x12\x1ameet.googleapis.com/MemberR\x06parent\x12I\n" +
+	"\brequests\x18\x02 \x03(\v2(.google.apps.meet.v2.UpdateMemberRequestB\x03\xe0A\x02R\brequests\x12@\n" +
+	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
+	"updateMask\"S\n" +
+	"\x1aBatchUpdateMembersResponse\x125\n" +
+	"\amembers\x18\x01 \x03(\v2\x1b.google.apps.meet.v2.MemberR\amembers\"^\n" +
 	"\x1aGetConferenceRecordRequest\x12@\n" +
 	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
 	"$meet.googleapis.com/ConferenceRecordR\x04name\"\x81\x01\n" +
@@ -1434,13 +2088,31 @@ const file_google_apps_meet_v2_service_proto_rawDesc = "" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\"\x9c\x01\n" +
 	"\x1dListTranscriptEntriesResponse\x12S\n" +
 	"\x12transcript_entries\x18\x01 \x03(\v2$.google.apps.meet.v2.TranscriptEntryR\x11transcriptEntries\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken2\xea\x05\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"P\n" +
+	"\x13GetSmartNoteRequest\x129\n" +
+	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
+	"\x1dmeet.googleapis.com/SmartNoteR\x04name\"\x9c\x01\n" +
+	"\x15ListSmartNotesRequest\x12=\n" +
+	"\x06parent\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\x12\x1dmeet.googleapis.com/SmartNoteR\x06parent\x12 \n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\n" +
+	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x81\x01\n" +
+	"\x16ListSmartNotesResponse\x12?\n" +
+	"\vsmart_notes\x18\x01 \x03(\v2\x1e.google.apps.meet.v2.SmartNoteR\n" +
+	"smartNotes\x12&\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken2\xe4\f\n" +
 	"\rSpacesService\x12u\n" +
 	"\vCreateSpace\x12'.google.apps.meet.v2.CreateSpaceRequest\x1a\x1a.google.apps.meet.v2.Space\"!\xdaA\x05space\x82\xd3\xe4\x93\x02\x13:\x05space\"\n" +
 	"/v2/spaces\x12p\n" +
 	"\bGetSpace\x12$.google.apps.meet.v2.GetSpaceRequest\x1a\x1a.google.apps.meet.v2.Space\"\"\xdaA\x04name\x82\xd3\xe4\x93\x02\x15\x12\x13/v2/{name=spaces/*}\x12\x90\x01\n" +
 	"\vUpdateSpace\x12'.google.apps.meet.v2.UpdateSpaceRequest\x1a\x1a.google.apps.meet.v2.Space\"<\xdaA\x11space,update_mask\x82\xd3\xe4\x93\x02\":\x05space2\x19/v2/{space.name=spaces/*}\x12\x99\x01\n" +
-	"\x13EndActiveConference\x12/.google.apps.meet.v2.EndActiveConferenceRequest\x1a\x16.google.protobuf.Empty\"9\xdaA\x04name\x82\xd3\xe4\x93\x02,:\x01*\"'/v2/{name=spaces/*}:endActiveConference\x1a\xc0\x01\xcaA\x13meet.googleapis.com\xd2A\xa6\x01https://www.googleapis.com/auth/meetings.space.created,https://www.googleapis.com/auth/meetings.space.readonly,https://www.googleapis.com/auth/meetings.space.settings2\xe3\x11\n" +
+	"\x13EndActiveConference\x12/.google.apps.meet.v2.EndActiveConferenceRequest\x1a\x16.google.protobuf.Empty\"9\xdaA\x04name\x82\xd3\xe4\x93\x02,:\x01*\"'/v2/{name=spaces/*}:endActiveConference\x12\x94\x01\n" +
+	"\fCreateMember\x12(.google.apps.meet.v2.CreateMemberRequest\x1a\x1b.google.apps.meet.v2.Member\"=\xdaA\rparent,member\x82\xd3\xe4\x93\x02':\x06member\"\x1d/v2/{parent=spaces/*}/members\x12}\n" +
+	"\tGetMember\x12%.google.apps.meet.v2.GetMemberRequest\x1a\x1b.google.apps.meet.v2.Member\",\xdaA\x04name\x82\xd3\xe4\x93\x02\x1f\x12\x1d/v2/{name=spaces/*/members/*}\x12\x90\x01\n" +
+	"\vListMembers\x12'.google.apps.meet.v2.ListMembersRequest\x1a(.google.apps.meet.v2.ListMembersResponse\".\xdaA\x06parent\x82\xd3\xe4\x93\x02\x1f\x12\x1d/v2/{parent=spaces/*}/members\x12~\n" +
+	"\fDeleteMember\x12(.google.apps.meet.v2.DeleteMemberRequest\x1a\x16.google.protobuf.Empty\",\xdaA\x04name\x82\xd3\xe4\x93\x02\x1f*\x1d/v2/{name=spaces/*/members/*}\x12\xa0\x01\n" +
+	"\fUpdateMember\x12(.google.apps.meet.v2.UpdateMemberRequest\x1a\x1b.google.apps.meet.v2.Member\"I\xdaA\x12member,update_mask\x82\xd3\xe4\x93\x02.:\x06member2$/v2/{member.name=spaces/*/members/*}\x12\xab\x01\n" +
+	"\x12BatchUpdateMembers\x12..google.apps.meet.v2.BatchUpdateMembersRequest\x1a/.google.apps.meet.v2.BatchUpdateMembersResponse\"4\x82\xd3\xe4\x93\x02.:\x01*\")/v2/{parent=spaces/*}/members:batchUpdate\x1a\xc0\x01\xcaA\x13meet.googleapis.com\xd2A\xa6\x01https://www.googleapis.com/auth/meetings.space.created,https://www.googleapis.com/auth/meetings.space.readonly,https://www.googleapis.com/auth/meetings.space.settings2\xa4\x14\n" +
 	"\x18ConferenceRecordsService\x12\x9c\x01\n" +
 	"\x13GetConferenceRecord\x12/.google.apps.meet.v2.GetConferenceRecordRequest\x1a%.google.apps.meet.v2.ConferenceRecord\"-\xdaA\x04name\x82\xd3\xe4\x93\x02 \x12\x1e/v2/{name=conferenceRecords/*}\x12\x9d\x01\n" +
 	"\x15ListConferenceRecords\x121.google.apps.meet.v2.ListConferenceRecordsRequest\x1a2.google.apps.meet.v2.ListConferenceRecordsResponse\"\x1d\x82\xd3\xe4\x93\x02\x17\x12\x15/v2/conferenceRecords\x12\x9c\x01\n" +
@@ -1453,7 +2125,9 @@ const file_google_apps_meet_v2_service_proto_rawDesc = "" +
 	"\rGetTranscript\x12).google.apps.meet.v2.GetTranscriptRequest\x1a\x1f.google.apps.meet.v2.Transcript\";\xdaA\x04name\x82\xd3\xe4\x93\x02.\x12,/v2/{name=conferenceRecords/*/transcripts/*}\x12\xab\x01\n" +
 	"\x0fListTranscripts\x12+.google.apps.meet.v2.ListTranscriptsRequest\x1a,.google.apps.meet.v2.ListTranscriptsResponse\"=\xdaA\x06parent\x82\xd3\xe4\x93\x02.\x12,/v2/{parent=conferenceRecords/*}/transcripts\x12\xb1\x01\n" +
 	"\x12GetTranscriptEntry\x12..google.apps.meet.v2.GetTranscriptEntryRequest\x1a$.google.apps.meet.v2.TranscriptEntry\"E\xdaA\x04name\x82\xd3\xe4\x93\x028\x126/v2/{name=conferenceRecords/*/transcripts/*/entries/*}\x12\xc7\x01\n" +
-	"\x15ListTranscriptEntries\x121.google.apps.meet.v2.ListTranscriptEntriesRequest\x1a2.google.apps.meet.v2.ListTranscriptEntriesResponse\"G\xdaA\x06parent\x82\xd3\xe4\x93\x028\x126/v2/{parent=conferenceRecords/*/transcripts/*}/entries\x1a\x87\x01\xcaA\x13meet.googleapis.com\xd2Anhttps://www.googleapis.com/auth/meetings.space.created,https://www.googleapis.com/auth/meetings.space.readonlyB\xa1\x01\n" +
+	"\x15ListTranscriptEntries\x121.google.apps.meet.v2.ListTranscriptEntriesRequest\x1a2.google.apps.meet.v2.ListTranscriptEntriesResponse\"G\xdaA\x06parent\x82\xd3\xe4\x93\x028\x126/v2/{parent=conferenceRecords/*/transcripts/*}/entries\x12\x94\x01\n" +
+	"\fGetSmartNote\x12(.google.apps.meet.v2.GetSmartNoteRequest\x1a\x1e.google.apps.meet.v2.SmartNote\":\xdaA\x04name\x82\xd3\xe4\x93\x02-\x12+/v2/{name=conferenceRecords/*/smartNotes/*}\x12\xa7\x01\n" +
+	"\x0eListSmartNotes\x12*.google.apps.meet.v2.ListSmartNotesRequest\x1a+.google.apps.meet.v2.ListSmartNotesResponse\"<\xdaA\x06parent\x82\xd3\xe4\x93\x02-\x12+/v2/{parent=conferenceRecords/*}/smartNotes\x1a\x87\x01\xcaA\x13meet.googleapis.com\xd2Anhttps://www.googleapis.com/auth/meetings.space.created,https://www.googleapis.com/auth/meetings.space.readonlyB\xa1\x01\n" +
 	"\x17com.google.apps.meet.v2B\fServiceProtoP\x01Z1cloud.google.com/go/apps/meet/apiv2/meetpb;meetpb\xaa\x02\x13Google.Apps.Meet.V2\xca\x02\x13Google\\Apps\\Meet\\V2\xea\x02\x16Google::Apps::Meet::V2b\x06proto3"
 
 var (
@@ -1468,87 +2142,124 @@ func file_google_apps_meet_v2_service_proto_rawDescGZIP() []byte {
 	return file_google_apps_meet_v2_service_proto_rawDescData
 }
 
-var file_google_apps_meet_v2_service_proto_msgTypes = make([]protoimpl.MessageInfo, 22)
+var file_google_apps_meet_v2_service_proto_msgTypes = make([]protoimpl.MessageInfo, 33)
 var file_google_apps_meet_v2_service_proto_goTypes = []any{
 	(*CreateSpaceRequest)(nil),              // 0: google.apps.meet.v2.CreateSpaceRequest
 	(*GetSpaceRequest)(nil),                 // 1: google.apps.meet.v2.GetSpaceRequest
 	(*UpdateSpaceRequest)(nil),              // 2: google.apps.meet.v2.UpdateSpaceRequest
 	(*EndActiveConferenceRequest)(nil),      // 3: google.apps.meet.v2.EndActiveConferenceRequest
-	(*GetConferenceRecordRequest)(nil),      // 4: google.apps.meet.v2.GetConferenceRecordRequest
-	(*ListConferenceRecordsRequest)(nil),    // 5: google.apps.meet.v2.ListConferenceRecordsRequest
-	(*ListConferenceRecordsResponse)(nil),   // 6: google.apps.meet.v2.ListConferenceRecordsResponse
-	(*GetParticipantRequest)(nil),           // 7: google.apps.meet.v2.GetParticipantRequest
-	(*ListParticipantsRequest)(nil),         // 8: google.apps.meet.v2.ListParticipantsRequest
-	(*ListParticipantsResponse)(nil),        // 9: google.apps.meet.v2.ListParticipantsResponse
-	(*GetParticipantSessionRequest)(nil),    // 10: google.apps.meet.v2.GetParticipantSessionRequest
-	(*ListParticipantSessionsRequest)(nil),  // 11: google.apps.meet.v2.ListParticipantSessionsRequest
-	(*ListParticipantSessionsResponse)(nil), // 12: google.apps.meet.v2.ListParticipantSessionsResponse
-	(*GetRecordingRequest)(nil),             // 13: google.apps.meet.v2.GetRecordingRequest
-	(*ListRecordingsRequest)(nil),           // 14: google.apps.meet.v2.ListRecordingsRequest
-	(*ListRecordingsResponse)(nil),          // 15: google.apps.meet.v2.ListRecordingsResponse
-	(*GetTranscriptRequest)(nil),            // 16: google.apps.meet.v2.GetTranscriptRequest
-	(*ListTranscriptsRequest)(nil),          // 17: google.apps.meet.v2.ListTranscriptsRequest
-	(*ListTranscriptsResponse)(nil),         // 18: google.apps.meet.v2.ListTranscriptsResponse
-	(*GetTranscriptEntryRequest)(nil),       // 19: google.apps.meet.v2.GetTranscriptEntryRequest
-	(*ListTranscriptEntriesRequest)(nil),    // 20: google.apps.meet.v2.ListTranscriptEntriesRequest
-	(*ListTranscriptEntriesResponse)(nil),   // 21: google.apps.meet.v2.ListTranscriptEntriesResponse
-	(*Space)(nil),                           // 22: google.apps.meet.v2.Space
-	(*fieldmaskpb.FieldMask)(nil),           // 23: google.protobuf.FieldMask
-	(*ConferenceRecord)(nil),                // 24: google.apps.meet.v2.ConferenceRecord
-	(*Participant)(nil),                     // 25: google.apps.meet.v2.Participant
-	(*ParticipantSession)(nil),              // 26: google.apps.meet.v2.ParticipantSession
-	(*Recording)(nil),                       // 27: google.apps.meet.v2.Recording
-	(*Transcript)(nil),                      // 28: google.apps.meet.v2.Transcript
-	(*TranscriptEntry)(nil),                 // 29: google.apps.meet.v2.TranscriptEntry
-	(*emptypb.Empty)(nil),                   // 30: google.protobuf.Empty
+	(*CreateMemberRequest)(nil),             // 4: google.apps.meet.v2.CreateMemberRequest
+	(*GetMemberRequest)(nil),                // 5: google.apps.meet.v2.GetMemberRequest
+	(*ListMembersRequest)(nil),              // 6: google.apps.meet.v2.ListMembersRequest
+	(*ListMembersResponse)(nil),             // 7: google.apps.meet.v2.ListMembersResponse
+	(*DeleteMemberRequest)(nil),             // 8: google.apps.meet.v2.DeleteMemberRequest
+	(*UpdateMemberRequest)(nil),             // 9: google.apps.meet.v2.UpdateMemberRequest
+	(*BatchUpdateMembersRequest)(nil),       // 10: google.apps.meet.v2.BatchUpdateMembersRequest
+	(*BatchUpdateMembersResponse)(nil),      // 11: google.apps.meet.v2.BatchUpdateMembersResponse
+	(*GetConferenceRecordRequest)(nil),      // 12: google.apps.meet.v2.GetConferenceRecordRequest
+	(*ListConferenceRecordsRequest)(nil),    // 13: google.apps.meet.v2.ListConferenceRecordsRequest
+	(*ListConferenceRecordsResponse)(nil),   // 14: google.apps.meet.v2.ListConferenceRecordsResponse
+	(*GetParticipantRequest)(nil),           // 15: google.apps.meet.v2.GetParticipantRequest
+	(*ListParticipantsRequest)(nil),         // 16: google.apps.meet.v2.ListParticipantsRequest
+	(*ListParticipantsResponse)(nil),        // 17: google.apps.meet.v2.ListParticipantsResponse
+	(*GetParticipantSessionRequest)(nil),    // 18: google.apps.meet.v2.GetParticipantSessionRequest
+	(*ListParticipantSessionsRequest)(nil),  // 19: google.apps.meet.v2.ListParticipantSessionsRequest
+	(*ListParticipantSessionsResponse)(nil), // 20: google.apps.meet.v2.ListParticipantSessionsResponse
+	(*GetRecordingRequest)(nil),             // 21: google.apps.meet.v2.GetRecordingRequest
+	(*ListRecordingsRequest)(nil),           // 22: google.apps.meet.v2.ListRecordingsRequest
+	(*ListRecordingsResponse)(nil),          // 23: google.apps.meet.v2.ListRecordingsResponse
+	(*GetTranscriptRequest)(nil),            // 24: google.apps.meet.v2.GetTranscriptRequest
+	(*ListTranscriptsRequest)(nil),          // 25: google.apps.meet.v2.ListTranscriptsRequest
+	(*ListTranscriptsResponse)(nil),         // 26: google.apps.meet.v2.ListTranscriptsResponse
+	(*GetTranscriptEntryRequest)(nil),       // 27: google.apps.meet.v2.GetTranscriptEntryRequest
+	(*ListTranscriptEntriesRequest)(nil),    // 28: google.apps.meet.v2.ListTranscriptEntriesRequest
+	(*ListTranscriptEntriesResponse)(nil),   // 29: google.apps.meet.v2.ListTranscriptEntriesResponse
+	(*GetSmartNoteRequest)(nil),             // 30: google.apps.meet.v2.GetSmartNoteRequest
+	(*ListSmartNotesRequest)(nil),           // 31: google.apps.meet.v2.ListSmartNotesRequest
+	(*ListSmartNotesResponse)(nil),          // 32: google.apps.meet.v2.ListSmartNotesResponse
+	(*Space)(nil),                           // 33: google.apps.meet.v2.Space
+	(*fieldmaskpb.FieldMask)(nil),           // 34: google.protobuf.FieldMask
+	(*Member)(nil),                          // 35: google.apps.meet.v2.Member
+	(*ConferenceRecord)(nil),                // 36: google.apps.meet.v2.ConferenceRecord
+	(*Participant)(nil),                     // 37: google.apps.meet.v2.Participant
+	(*ParticipantSession)(nil),              // 38: google.apps.meet.v2.ParticipantSession
+	(*Recording)(nil),                       // 39: google.apps.meet.v2.Recording
+	(*Transcript)(nil),                      // 40: google.apps.meet.v2.Transcript
+	(*TranscriptEntry)(nil),                 // 41: google.apps.meet.v2.TranscriptEntry
+	(*SmartNote)(nil),                       // 42: google.apps.meet.v2.SmartNote
+	(*emptypb.Empty)(nil),                   // 43: google.protobuf.Empty
 }
 var file_google_apps_meet_v2_service_proto_depIdxs = []int32{
-	22, // 0: google.apps.meet.v2.CreateSpaceRequest.space:type_name -> google.apps.meet.v2.Space
-	22, // 1: google.apps.meet.v2.UpdateSpaceRequest.space:type_name -> google.apps.meet.v2.Space
-	23, // 2: google.apps.meet.v2.UpdateSpaceRequest.update_mask:type_name -> google.protobuf.FieldMask
-	24, // 3: google.apps.meet.v2.ListConferenceRecordsResponse.conference_records:type_name -> google.apps.meet.v2.ConferenceRecord
-	25, // 4: google.apps.meet.v2.ListParticipantsResponse.participants:type_name -> google.apps.meet.v2.Participant
-	26, // 5: google.apps.meet.v2.ListParticipantSessionsResponse.participant_sessions:type_name -> google.apps.meet.v2.ParticipantSession
-	27, // 6: google.apps.meet.v2.ListRecordingsResponse.recordings:type_name -> google.apps.meet.v2.Recording
-	28, // 7: google.apps.meet.v2.ListTranscriptsResponse.transcripts:type_name -> google.apps.meet.v2.Transcript
-	29, // 8: google.apps.meet.v2.ListTranscriptEntriesResponse.transcript_entries:type_name -> google.apps.meet.v2.TranscriptEntry
-	0,  // 9: google.apps.meet.v2.SpacesService.CreateSpace:input_type -> google.apps.meet.v2.CreateSpaceRequest
-	1,  // 10: google.apps.meet.v2.SpacesService.GetSpace:input_type -> google.apps.meet.v2.GetSpaceRequest
-	2,  // 11: google.apps.meet.v2.SpacesService.UpdateSpace:input_type -> google.apps.meet.v2.UpdateSpaceRequest
-	3,  // 12: google.apps.meet.v2.SpacesService.EndActiveConference:input_type -> google.apps.meet.v2.EndActiveConferenceRequest
-	4,  // 13: google.apps.meet.v2.ConferenceRecordsService.GetConferenceRecord:input_type -> google.apps.meet.v2.GetConferenceRecordRequest
-	5,  // 14: google.apps.meet.v2.ConferenceRecordsService.ListConferenceRecords:input_type -> google.apps.meet.v2.ListConferenceRecordsRequest
-	7,  // 15: google.apps.meet.v2.ConferenceRecordsService.GetParticipant:input_type -> google.apps.meet.v2.GetParticipantRequest
-	8,  // 16: google.apps.meet.v2.ConferenceRecordsService.ListParticipants:input_type -> google.apps.meet.v2.ListParticipantsRequest
-	10, // 17: google.apps.meet.v2.ConferenceRecordsService.GetParticipantSession:input_type -> google.apps.meet.v2.GetParticipantSessionRequest
-	11, // 18: google.apps.meet.v2.ConferenceRecordsService.ListParticipantSessions:input_type -> google.apps.meet.v2.ListParticipantSessionsRequest
-	13, // 19: google.apps.meet.v2.ConferenceRecordsService.GetRecording:input_type -> google.apps.meet.v2.GetRecordingRequest
-	14, // 20: google.apps.meet.v2.ConferenceRecordsService.ListRecordings:input_type -> google.apps.meet.v2.ListRecordingsRequest
-	16, // 21: google.apps.meet.v2.ConferenceRecordsService.GetTranscript:input_type -> google.apps.meet.v2.GetTranscriptRequest
-	17, // 22: google.apps.meet.v2.ConferenceRecordsService.ListTranscripts:input_type -> google.apps.meet.v2.ListTranscriptsRequest
-	19, // 23: google.apps.meet.v2.ConferenceRecordsService.GetTranscriptEntry:input_type -> google.apps.meet.v2.GetTranscriptEntryRequest
-	20, // 24: google.apps.meet.v2.ConferenceRecordsService.ListTranscriptEntries:input_type -> google.apps.meet.v2.ListTranscriptEntriesRequest
-	22, // 25: google.apps.meet.v2.SpacesService.CreateSpace:output_type -> google.apps.meet.v2.Space
-	22, // 26: google.apps.meet.v2.SpacesService.GetSpace:output_type -> google.apps.meet.v2.Space
-	22, // 27: google.apps.meet.v2.SpacesService.UpdateSpace:output_type -> google.apps.meet.v2.Space
-	30, // 28: google.apps.meet.v2.SpacesService.EndActiveConference:output_type -> google.protobuf.Empty
-	24, // 29: google.apps.meet.v2.ConferenceRecordsService.GetConferenceRecord:output_type -> google.apps.meet.v2.ConferenceRecord
-	6,  // 30: google.apps.meet.v2.ConferenceRecordsService.ListConferenceRecords:output_type -> google.apps.meet.v2.ListConferenceRecordsResponse
-	25, // 31: google.apps.meet.v2.ConferenceRecordsService.GetParticipant:output_type -> google.apps.meet.v2.Participant
-	9,  // 32: google.apps.meet.v2.ConferenceRecordsService.ListParticipants:output_type -> google.apps.meet.v2.ListParticipantsResponse
-	26, // 33: google.apps.meet.v2.ConferenceRecordsService.GetParticipantSession:output_type -> google.apps.meet.v2.ParticipantSession
-	12, // 34: google.apps.meet.v2.ConferenceRecordsService.ListParticipantSessions:output_type -> google.apps.meet.v2.ListParticipantSessionsResponse
-	27, // 35: google.apps.meet.v2.ConferenceRecordsService.GetRecording:output_type -> google.apps.meet.v2.Recording
-	15, // 36: google.apps.meet.v2.ConferenceRecordsService.ListRecordings:output_type -> google.apps.meet.v2.ListRecordingsResponse
-	28, // 37: google.apps.meet.v2.ConferenceRecordsService.GetTranscript:output_type -> google.apps.meet.v2.Transcript
-	18, // 38: google.apps.meet.v2.ConferenceRecordsService.ListTranscripts:output_type -> google.apps.meet.v2.ListTranscriptsResponse
-	29, // 39: google.apps.meet.v2.ConferenceRecordsService.GetTranscriptEntry:output_type -> google.apps.meet.v2.TranscriptEntry
-	21, // 40: google.apps.meet.v2.ConferenceRecordsService.ListTranscriptEntries:output_type -> google.apps.meet.v2.ListTranscriptEntriesResponse
-	25, // [25:41] is the sub-list for method output_type
-	9,  // [9:25] is the sub-list for method input_type
-	9,  // [9:9] is the sub-list for extension type_name
-	9,  // [9:9] is the sub-list for extension extendee
-	0,  // [0:9] is the sub-list for field type_name
+	33, // 0: google.apps.meet.v2.CreateSpaceRequest.space:type_name -> google.apps.meet.v2.Space
+	33, // 1: google.apps.meet.v2.UpdateSpaceRequest.space:type_name -> google.apps.meet.v2.Space
+	34, // 2: google.apps.meet.v2.UpdateSpaceRequest.update_mask:type_name -> google.protobuf.FieldMask
+	35, // 3: google.apps.meet.v2.CreateMemberRequest.member:type_name -> google.apps.meet.v2.Member
+	35, // 4: google.apps.meet.v2.ListMembersResponse.members:type_name -> google.apps.meet.v2.Member
+	35, // 5: google.apps.meet.v2.UpdateMemberRequest.member:type_name -> google.apps.meet.v2.Member
+	34, // 6: google.apps.meet.v2.UpdateMemberRequest.update_mask:type_name -> google.protobuf.FieldMask
+	9,  // 7: google.apps.meet.v2.BatchUpdateMembersRequest.requests:type_name -> google.apps.meet.v2.UpdateMemberRequest
+	34, // 8: google.apps.meet.v2.BatchUpdateMembersRequest.update_mask:type_name -> google.protobuf.FieldMask
+	35, // 9: google.apps.meet.v2.BatchUpdateMembersResponse.members:type_name -> google.apps.meet.v2.Member
+	36, // 10: google.apps.meet.v2.ListConferenceRecordsResponse.conference_records:type_name -> google.apps.meet.v2.ConferenceRecord
+	37, // 11: google.apps.meet.v2.ListParticipantsResponse.participants:type_name -> google.apps.meet.v2.Participant
+	38, // 12: google.apps.meet.v2.ListParticipantSessionsResponse.participant_sessions:type_name -> google.apps.meet.v2.ParticipantSession
+	39, // 13: google.apps.meet.v2.ListRecordingsResponse.recordings:type_name -> google.apps.meet.v2.Recording
+	40, // 14: google.apps.meet.v2.ListTranscriptsResponse.transcripts:type_name -> google.apps.meet.v2.Transcript
+	41, // 15: google.apps.meet.v2.ListTranscriptEntriesResponse.transcript_entries:type_name -> google.apps.meet.v2.TranscriptEntry
+	42, // 16: google.apps.meet.v2.ListSmartNotesResponse.smart_notes:type_name -> google.apps.meet.v2.SmartNote
+	0,  // 17: google.apps.meet.v2.SpacesService.CreateSpace:input_type -> google.apps.meet.v2.CreateSpaceRequest
+	1,  // 18: google.apps.meet.v2.SpacesService.GetSpace:input_type -> google.apps.meet.v2.GetSpaceRequest
+	2,  // 19: google.apps.meet.v2.SpacesService.UpdateSpace:input_type -> google.apps.meet.v2.UpdateSpaceRequest
+	3,  // 20: google.apps.meet.v2.SpacesService.EndActiveConference:input_type -> google.apps.meet.v2.EndActiveConferenceRequest
+	4,  // 21: google.apps.meet.v2.SpacesService.CreateMember:input_type -> google.apps.meet.v2.CreateMemberRequest
+	5,  // 22: google.apps.meet.v2.SpacesService.GetMember:input_type -> google.apps.meet.v2.GetMemberRequest
+	6,  // 23: google.apps.meet.v2.SpacesService.ListMembers:input_type -> google.apps.meet.v2.ListMembersRequest
+	8,  // 24: google.apps.meet.v2.SpacesService.DeleteMember:input_type -> google.apps.meet.v2.DeleteMemberRequest
+	9,  // 25: google.apps.meet.v2.SpacesService.UpdateMember:input_type -> google.apps.meet.v2.UpdateMemberRequest
+	10, // 26: google.apps.meet.v2.SpacesService.BatchUpdateMembers:input_type -> google.apps.meet.v2.BatchUpdateMembersRequest
+	12, // 27: google.apps.meet.v2.ConferenceRecordsService.GetConferenceRecord:input_type -> google.apps.meet.v2.GetConferenceRecordRequest
+	13, // 28: google.apps.meet.v2.ConferenceRecordsService.ListConferenceRecords:input_type -> google.apps.meet.v2.ListConferenceRecordsRequest
+	15, // 29: google.apps.meet.v2.ConferenceRecordsService.GetParticipant:input_type -> google.apps.meet.v2.GetParticipantRequest
+	16, // 30: google.apps.meet.v2.ConferenceRecordsService.ListParticipants:input_type -> google.apps.meet.v2.ListParticipantsRequest
+	18, // 31: google.apps.meet.v2.ConferenceRecordsService.GetParticipantSession:input_type -> google.apps.meet.v2.GetParticipantSessionRequest
+	19, // 32: google.apps.meet.v2.ConferenceRecordsService.ListParticipantSessions:input_type -> google.apps.meet.v2.ListParticipantSessionsRequest
+	21, // 33: google.apps.meet.v2.ConferenceRecordsService.GetRecording:input_type -> google.apps.meet.v2.GetRecordingRequest
+	22, // 34: google.apps.meet.v2.ConferenceRecordsService.ListRecordings:input_type -> google.apps.meet.v2.ListRecordingsRequest
+	24, // 35: google.apps.meet.v2.ConferenceRecordsService.GetTranscript:input_type -> google.apps.meet.v2.GetTranscriptRequest
+	25, // 36: google.apps.meet.v2.ConferenceRecordsService.ListTranscripts:input_type -> google.apps.meet.v2.ListTranscriptsRequest
+	27, // 37: google.apps.meet.v2.ConferenceRecordsService.GetTranscriptEntry:input_type -> google.apps.meet.v2.GetTranscriptEntryRequest
+	28, // 38: google.apps.meet.v2.ConferenceRecordsService.ListTranscriptEntries:input_type -> google.apps.meet.v2.ListTranscriptEntriesRequest
+	30, // 39: google.apps.meet.v2.ConferenceRecordsService.GetSmartNote:input_type -> google.apps.meet.v2.GetSmartNoteRequest
+	31, // 40: google.apps.meet.v2.ConferenceRecordsService.ListSmartNotes:input_type -> google.apps.meet.v2.ListSmartNotesRequest
+	33, // 41: google.apps.meet.v2.SpacesService.CreateSpace:output_type -> google.apps.meet.v2.Space
+	33, // 42: google.apps.meet.v2.SpacesService.GetSpace:output_type -> google.apps.meet.v2.Space
+	33, // 43: google.apps.meet.v2.SpacesService.UpdateSpace:output_type -> google.apps.meet.v2.Space
+	43, // 44: google.apps.meet.v2.SpacesService.EndActiveConference:output_type -> google.protobuf.Empty
+	35, // 45: google.apps.meet.v2.SpacesService.CreateMember:output_type -> google.apps.meet.v2.Member
+	35, // 46: google.apps.meet.v2.SpacesService.GetMember:output_type -> google.apps.meet.v2.Member
+	7,  // 47: google.apps.meet.v2.SpacesService.ListMembers:output_type -> google.apps.meet.v2.ListMembersResponse
+	43, // 48: google.apps.meet.v2.SpacesService.DeleteMember:output_type -> google.protobuf.Empty
+	35, // 49: google.apps.meet.v2.SpacesService.UpdateMember:output_type -> google.apps.meet.v2.Member
+	11, // 50: google.apps.meet.v2.SpacesService.BatchUpdateMembers:output_type -> google.apps.meet.v2.BatchUpdateMembersResponse
+	36, // 51: google.apps.meet.v2.ConferenceRecordsService.GetConferenceRecord:output_type -> google.apps.meet.v2.ConferenceRecord
+	14, // 52: google.apps.meet.v2.ConferenceRecordsService.ListConferenceRecords:output_type -> google.apps.meet.v2.ListConferenceRecordsResponse
+	37, // 53: google.apps.meet.v2.ConferenceRecordsService.GetParticipant:output_type -> google.apps.meet.v2.Participant
+	17, // 54: google.apps.meet.v2.ConferenceRecordsService.ListParticipants:output_type -> google.apps.meet.v2.ListParticipantsResponse
+	38, // 55: google.apps.meet.v2.ConferenceRecordsService.GetParticipantSession:output_type -> google.apps.meet.v2.ParticipantSession
+	20, // 56: google.apps.meet.v2.ConferenceRecordsService.ListParticipantSessions:output_type -> google.apps.meet.v2.ListParticipantSessionsResponse
+	39, // 57: google.apps.meet.v2.ConferenceRecordsService.GetRecording:output_type -> google.apps.meet.v2.Recording
+	23, // 58: google.apps.meet.v2.ConferenceRecordsService.ListRecordings:output_type -> google.apps.meet.v2.ListRecordingsResponse
+	40, // 59: google.apps.meet.v2.ConferenceRecordsService.GetTranscript:output_type -> google.apps.meet.v2.Transcript
+	26, // 60: google.apps.meet.v2.ConferenceRecordsService.ListTranscripts:output_type -> google.apps.meet.v2.ListTranscriptsResponse
+	41, // 61: google.apps.meet.v2.ConferenceRecordsService.GetTranscriptEntry:output_type -> google.apps.meet.v2.TranscriptEntry
+	29, // 62: google.apps.meet.v2.ConferenceRecordsService.ListTranscriptEntries:output_type -> google.apps.meet.v2.ListTranscriptEntriesResponse
+	42, // 63: google.apps.meet.v2.ConferenceRecordsService.GetSmartNote:output_type -> google.apps.meet.v2.SmartNote
+	32, // 64: google.apps.meet.v2.ConferenceRecordsService.ListSmartNotes:output_type -> google.apps.meet.v2.ListSmartNotesResponse
+	41, // [41:65] is the sub-list for method output_type
+	17, // [17:41] is the sub-list for method input_type
+	17, // [17:17] is the sub-list for extension type_name
+	17, // [17:17] is the sub-list for extension extendee
+	0,  // [0:17] is the sub-list for field type_name
 }
 
 func init() { file_google_apps_meet_v2_service_proto_init() }
@@ -1563,7 +2274,7 @@ func file_google_apps_meet_v2_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_apps_meet_v2_service_proto_rawDesc), len(file_google_apps_meet_v2_service_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   22,
+			NumMessages:   33,
 			NumExtensions: 0,
 			NumServices:   2,
 		},

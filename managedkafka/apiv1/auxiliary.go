@@ -18,12 +18,14 @@ package managedkafka
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	managedkafkapb "cloud.google.com/go/managedkafka/apiv1/managedkafkapb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
@@ -390,6 +392,12 @@ func (op *UpdateConnectClusterOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AclIterator) All() iter.Seq2[*managedkafkapb.Acl, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // AclIterator manages a stream of *managedkafkapb.Acl.
 type AclIterator struct {
 	items    []*managedkafkapb.Acl
@@ -435,6 +443,12 @@ func (it *AclIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ClusterIterator) All() iter.Seq2[*managedkafkapb.Cluster, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ClusterIterator manages a stream of *managedkafkapb.Cluster.
@@ -484,6 +498,12 @@ func (it *ClusterIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ConnectClusterIterator) All() iter.Seq2[*managedkafkapb.ConnectCluster, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ConnectClusterIterator manages a stream of *managedkafkapb.ConnectCluster.
 type ConnectClusterIterator struct {
 	items    []*managedkafkapb.ConnectCluster
@@ -529,6 +549,12 @@ func (it *ConnectClusterIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ConnectorIterator) All() iter.Seq2[*managedkafkapb.Connector, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ConnectorIterator manages a stream of *managedkafkapb.Connector.
@@ -578,6 +604,12 @@ func (it *ConnectorIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ConsumerGroupIterator) All() iter.Seq2[*managedkafkapb.ConsumerGroup, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ConsumerGroupIterator manages a stream of *managedkafkapb.ConsumerGroup.
 type ConsumerGroupIterator struct {
 	items    []*managedkafkapb.ConsumerGroup
@@ -623,6 +655,12 @@ func (it *ConsumerGroupIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // LocationIterator manages a stream of *locationpb.Location.
@@ -672,6 +710,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OperationIterator manages a stream of *longrunningpb.Operation.
 type OperationIterator struct {
 	items    []*longrunningpb.Operation
@@ -717,6 +761,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TopicIterator) All() iter.Seq2[*managedkafkapb.Topic, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // TopicIterator manages a stream of *managedkafkapb.Topic.

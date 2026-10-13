@@ -245,6 +245,239 @@ func (MigrationSubtask_State) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_bigquery_migration_v2_migration_entities_proto_rawDescGZIP(), []int{2, 0}
 }
 
+// Possible task output states.
+type TaskOutput_State int32
+
+const (
+	// Task output state is unspecified.
+	TaskOutput_STATE_UNSPECIFIED TaskOutput_State = 0
+	// Task output is pending.
+	TaskOutput_PENDING TaskOutput_State = 1
+	// Task output is succeeded.
+	TaskOutput_SUCCEEDED TaskOutput_State = 2
+	// Task output is failed. This does not mean that there is no useful
+	// information in the output; partial outputs or failure details may be
+	// available.
+	TaskOutput_FAILED TaskOutput_State = 3
+)
+
+// Enum value maps for TaskOutput_State.
+var (
+	TaskOutput_State_name = map[int32]string{
+		0: "STATE_UNSPECIFIED",
+		1: "PENDING",
+		2: "SUCCEEDED",
+		3: "FAILED",
+	}
+	TaskOutput_State_value = map[string]int32{
+		"STATE_UNSPECIFIED": 0,
+		"PENDING":           1,
+		"SUCCEEDED":         2,
+		"FAILED":            3,
+	}
+)
+
+func (x TaskOutput_State) Enum() *TaskOutput_State {
+	p := new(TaskOutput_State)
+	*p = x
+	return p
+}
+
+func (x TaskOutput_State) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (TaskOutput_State) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_bigquery_migration_v2_migration_entities_proto_enumTypes[3].Descriptor()
+}
+
+func (TaskOutput_State) Type() protoreflect.EnumType {
+	return &file_google_cloud_bigquery_migration_v2_migration_entities_proto_enumTypes[3]
+}
+
+func (x TaskOutput_State) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use TaskOutput_State.Descriptor instead.
+func (TaskOutput_State) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_bigquery_migration_v2_migration_entities_proto_rawDescGZIP(), []int{5, 0}
+}
+
+// Input type recognized by the lineage processing.
+type LineageOutput_RecognizedInput_Type int32
+
+const (
+	// The type is not specified.
+	LineageOutput_RecognizedInput_TYPE_UNSPECIFIED LineageOutput_RecognizedInput_Type = 0
+	// The input is metadata.
+	LineageOutput_RecognizedInput_METADATA LineageOutput_RecognizedInput_Type = 1
+	// The input is a query log.
+	LineageOutput_RecognizedInput_QUERY_LOG LineageOutput_RecognizedInput_Type = 2
+	// The input is a SQL script.
+	LineageOutput_RecognizedInput_SCRIPT LineageOutput_RecognizedInput_Type = 3
+)
+
+// Enum value maps for LineageOutput_RecognizedInput_Type.
+var (
+	LineageOutput_RecognizedInput_Type_name = map[int32]string{
+		0: "TYPE_UNSPECIFIED",
+		1: "METADATA",
+		2: "QUERY_LOG",
+		3: "SCRIPT",
+	}
+	LineageOutput_RecognizedInput_Type_value = map[string]int32{
+		"TYPE_UNSPECIFIED": 0,
+		"METADATA":         1,
+		"QUERY_LOG":        2,
+		"SCRIPT":           3,
+	}
+)
+
+func (x LineageOutput_RecognizedInput_Type) Enum() *LineageOutput_RecognizedInput_Type {
+	p := new(LineageOutput_RecognizedInput_Type)
+	*p = x
+	return p
+}
+
+func (x LineageOutput_RecognizedInput_Type) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (LineageOutput_RecognizedInput_Type) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_bigquery_migration_v2_migration_entities_proto_enumTypes[4].Descriptor()
+}
+
+func (LineageOutput_RecognizedInput_Type) Type() protoreflect.EnumType {
+	return &file_google_cloud_bigquery_migration_v2_migration_entities_proto_enumTypes[4]
+}
+
+func (x LineageOutput_RecognizedInput_Type) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use LineageOutput_RecognizedInput_Type.Descriptor instead.
+func (LineageOutput_RecognizedInput_Type) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_bigquery_migration_v2_migration_entities_proto_rawDescGZIP(), []int{6, 0, 0}
+}
+
+// The processing stage the progress report describes.
+type LineageOutput_ProgressReport_ProcessingStage int32
+
+const (
+	// The stage is not specified.
+	LineageOutput_ProgressReport_PROCESSING_STAGE_UNSPECIFIED LineageOutput_ProgressReport_ProcessingStage = 0
+	// The input ingestion stage.
+	LineageOutput_ProgressReport_INPUT_INGESTION LineageOutput_ProgressReport_ProcessingStage = 1000
+	// The lineage DB postprocessing stage.
+	LineageOutput_ProgressReport_POSTPROCESSING LineageOutput_ProgressReport_ProcessingStage = 2000
+)
+
+// Enum value maps for LineageOutput_ProgressReport_ProcessingStage.
+var (
+	LineageOutput_ProgressReport_ProcessingStage_name = map[int32]string{
+		0:    "PROCESSING_STAGE_UNSPECIFIED",
+		1000: "INPUT_INGESTION",
+		2000: "POSTPROCESSING",
+	}
+	LineageOutput_ProgressReport_ProcessingStage_value = map[string]int32{
+		"PROCESSING_STAGE_UNSPECIFIED": 0,
+		"INPUT_INGESTION":              1000,
+		"POSTPROCESSING":               2000,
+	}
+)
+
+func (x LineageOutput_ProgressReport_ProcessingStage) Enum() *LineageOutput_ProgressReport_ProcessingStage {
+	p := new(LineageOutput_ProgressReport_ProcessingStage)
+	*p = x
+	return p
+}
+
+func (x LineageOutput_ProgressReport_ProcessingStage) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (LineageOutput_ProgressReport_ProcessingStage) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_bigquery_migration_v2_migration_entities_proto_enumTypes[5].Descriptor()
+}
+
+func (LineageOutput_ProgressReport_ProcessingStage) Type() protoreflect.EnumType {
+	return &file_google_cloud_bigquery_migration_v2_migration_entities_proto_enumTypes[5]
+}
+
+func (x LineageOutput_ProgressReport_ProcessingStage) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use LineageOutput_ProgressReport_ProcessingStage.Descriptor instead.
+func (LineageOutput_ProgressReport_ProcessingStage) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_bigquery_migration_v2_migration_entities_proto_rawDescGZIP(), []int{6, 1, 0}
+}
+
+// States of work. Each piece of work is in exactly one state.
+// [SUCCEEDED], [FAILED] and [SKIPPED] are terminal states; work in the
+// [IN_PROGRESS] will eventually transition to one of the terminal states.
+type LineageOutput_ProgressReport_WorkSummary_State int32
+
+const (
+	// The state is not specified.
+	LineageOutput_ProgressReport_WorkSummary_STATE_UNSPECIFIED LineageOutput_ProgressReport_WorkSummary_State = 0
+	// Work that was processed successfully.
+	LineageOutput_ProgressReport_WorkSummary_SUCCEEDED LineageOutput_ProgressReport_WorkSummary_State = 1
+	// Work that failed processing.
+	LineageOutput_ProgressReport_WorkSummary_FAILED LineageOutput_ProgressReport_WorkSummary_State = 2
+	// Work that is currently being processed or queued for processing.
+	LineageOutput_ProgressReport_WorkSummary_IN_PROGRESS LineageOutput_ProgressReport_WorkSummary_State = 3
+	// Work that was recognised as necessary to fully process inputs but was
+	// skipped due to system limitations.
+	LineageOutput_ProgressReport_WorkSummary_SKIPPED LineageOutput_ProgressReport_WorkSummary_State = 4
+)
+
+// Enum value maps for LineageOutput_ProgressReport_WorkSummary_State.
+var (
+	LineageOutput_ProgressReport_WorkSummary_State_name = map[int32]string{
+		0: "STATE_UNSPECIFIED",
+		1: "SUCCEEDED",
+		2: "FAILED",
+		3: "IN_PROGRESS",
+		4: "SKIPPED",
+	}
+	LineageOutput_ProgressReport_WorkSummary_State_value = map[string]int32{
+		"STATE_UNSPECIFIED": 0,
+		"SUCCEEDED":         1,
+		"FAILED":            2,
+		"IN_PROGRESS":       3,
+		"SKIPPED":           4,
+	}
+)
+
+func (x LineageOutput_ProgressReport_WorkSummary_State) Enum() *LineageOutput_ProgressReport_WorkSummary_State {
+	p := new(LineageOutput_ProgressReport_WorkSummary_State)
+	*p = x
+	return p
+}
+
+func (x LineageOutput_ProgressReport_WorkSummary_State) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (LineageOutput_ProgressReport_WorkSummary_State) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_bigquery_migration_v2_migration_entities_proto_enumTypes[6].Descriptor()
+}
+
+func (LineageOutput_ProgressReport_WorkSummary_State) Type() protoreflect.EnumType {
+	return &file_google_cloud_bigquery_migration_v2_migration_entities_proto_enumTypes[6]
+}
+
+func (x LineageOutput_ProgressReport_WorkSummary_State) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use LineageOutput_ProgressReport_WorkSummary_State.Descriptor instead.
+func (LineageOutput_ProgressReport_WorkSummary_State) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_bigquery_migration_v2_migration_entities_proto_rawDescGZIP(), []int{6, 1, 0, 0}
+}
+
 // A migration workflow which specifies what needs to be done for an EDW
 // migration.
 type MigrationWorkflow struct {
@@ -729,7 +962,9 @@ type MigrationTaskResult struct {
 	// Types that are valid to be assigned to Details:
 	//
 	//	*MigrationTaskResult_TranslationTaskResult
-	Details       isMigrationTaskResult_Details `protobuf_oneof:"details"`
+	Details isMigrationTaskResult_Details `protobuf_oneof:"details"`
+	// The map of task output types to the task outputs, e.g. "LINEAGE".
+	TaskOutputs   map[string]*TaskOutput `protobuf:"bytes,3,rep,name=task_outputs,json=taskOutputs,proto3" json:"task_outputs,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -776,6 +1011,13 @@ func (x *MigrationTaskResult) GetTranslationTaskResult() *TranslationTaskResult 
 		if x, ok := x.Details.(*MigrationTaskResult_TranslationTaskResult); ok {
 			return x.TranslationTaskResult
 		}
+	}
+	return nil
+}
+
+func (x *MigrationTaskResult) GetTaskOutputs() map[string]*TaskOutput {
+	if x != nil {
+		return x.TaskOutputs
 	}
 	return nil
 }
@@ -851,6 +1093,360 @@ func (x *TranslationTaskResult) GetReportLogMessages() []*GcsReportLogMessage {
 func (x *TranslationTaskResult) GetConsoleUri() string {
 	if x != nil {
 		return x.ConsoleUri
+	}
+	return ""
+}
+
+// The task output for a task type including the status and any errors.
+type TaskOutput struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The detailed output of the task.
+	//
+	// Types that are valid to be assigned to Output:
+	//
+	//	*TaskOutput_LineageOutput
+	Output isTaskOutput_Output `protobuf_oneof:"output"`
+	// Output only. The current state of the task output.
+	State TaskOutput_State `protobuf:"varint,1,opt,name=state,proto3,enum=google.cloud.bigquery.migration.v2.TaskOutput_State" json:"state,omitempty"`
+	// An explanation that may be populated when the task output is in FAILED
+	// state.
+	ProcessingError *errdetails.ErrorInfo `protobuf:"bytes,2,opt,name=processing_error,json=processingError,proto3" json:"processing_error,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *TaskOutput) Reset() {
+	*x = TaskOutput{}
+	mi := &file_google_cloud_bigquery_migration_v2_migration_entities_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TaskOutput) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TaskOutput) ProtoMessage() {}
+
+func (x *TaskOutput) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_bigquery_migration_v2_migration_entities_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TaskOutput.ProtoReflect.Descriptor instead.
+func (*TaskOutput) Descriptor() ([]byte, []int) {
+	return file_google_cloud_bigquery_migration_v2_migration_entities_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *TaskOutput) GetOutput() isTaskOutput_Output {
+	if x != nil {
+		return x.Output
+	}
+	return nil
+}
+
+func (x *TaskOutput) GetLineageOutput() *LineageOutput {
+	if x != nil {
+		if x, ok := x.Output.(*TaskOutput_LineageOutput); ok {
+			return x.LineageOutput
+		}
+	}
+	return nil
+}
+
+func (x *TaskOutput) GetState() TaskOutput_State {
+	if x != nil {
+		return x.State
+	}
+	return TaskOutput_STATE_UNSPECIFIED
+}
+
+func (x *TaskOutput) GetProcessingError() *errdetails.ErrorInfo {
+	if x != nil {
+		return x.ProcessingError
+	}
+	return nil
+}
+
+type isTaskOutput_Output interface {
+	isTaskOutput_Output()
+}
+
+type TaskOutput_LineageOutput struct {
+	// The output of the task with output type "LINEAGE".
+	LineageOutput *LineageOutput `protobuf:"bytes,3,opt,name=lineage_output,json=lineageOutput,proto3,oneof"`
+}
+
+func (*TaskOutput_LineageOutput) isTaskOutput_Output() {}
+
+// The output of a task with output type "LINEAGE".
+//
+// Actual generated lineage can be queried separately (see
+// [webapp_uri][google.cloud.bigquery.migration.v2.LineageOutput.webapp_uri]),
+// this message contains only metadata: processing status, errors, etc.
+type LineageOutput struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The URI of the webapp that visualizes the lineage.
+	// The user needs the `bigquerymigration.googleapis.com/lineageDbs.query` IAM
+	// permission to use the webapp.
+	WebappUri string `protobuf:"bytes,1,opt,name=webapp_uri,json=webappUri,proto3" json:"webapp_uri,omitempty"`
+	// Output only. Recognized lineage inputs.
+	//
+	// All inputs are processed only if the task succeeds and all work is in state
+	// [SUCCEEDED](ProgressReport.WorkSummary.State.SUCCEEDED) (in particular,
+	// nothing is [SKIPPED](ProgressReport.WorkSummary.State.SKIPPED)).
+	//
+	// Even with all inputs processed successfully, there may be transpiler errors
+	// present leading to inaccurate lineage.
+	RecognizedInputs []*LineageOutput_RecognizedInput `protobuf:"bytes,2,rep,name=recognized_inputs,json=recognizedInputs,proto3" json:"recognized_inputs,omitempty"`
+	// Output only. Work processing progress reports broken up by processing
+	// stage.
+	ProcessingProgressReports []*LineageOutput_ProgressReport `protobuf:"bytes,3,rep,name=processing_progress_reports,json=processingProgressReports,proto3" json:"processing_progress_reports,omitempty"`
+	unknownFields             protoimpl.UnknownFields
+	sizeCache                 protoimpl.SizeCache
+}
+
+func (x *LineageOutput) Reset() {
+	*x = LineageOutput{}
+	mi := &file_google_cloud_bigquery_migration_v2_migration_entities_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LineageOutput) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LineageOutput) ProtoMessage() {}
+
+func (x *LineageOutput) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_bigquery_migration_v2_migration_entities_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LineageOutput.ProtoReflect.Descriptor instead.
+func (*LineageOutput) Descriptor() ([]byte, []int) {
+	return file_google_cloud_bigquery_migration_v2_migration_entities_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *LineageOutput) GetWebappUri() string {
+	if x != nil {
+		return x.WebappUri
+	}
+	return ""
+}
+
+func (x *LineageOutput) GetRecognizedInputs() []*LineageOutput_RecognizedInput {
+	if x != nil {
+		return x.RecognizedInputs
+	}
+	return nil
+}
+
+func (x *LineageOutput) GetProcessingProgressReports() []*LineageOutput_ProgressReport {
+	if x != nil {
+		return x.ProcessingProgressReports
+	}
+	return nil
+}
+
+// Information about lineage input of the given type that lineage generation
+// recognized.
+//
+// If you expected to process more of the given input, verify your input was
+// uploaded and is in the correct format and the request to generate lineage
+// correctly specified the input location.
+type LineageOutput_RecognizedInput struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. The type of the input.
+	Type LineageOutput_RecognizedInput_Type `protobuf:"varint,1,opt,name=type,proto3,enum=google.cloud.bigquery.migration.v2.LineageOutput_RecognizedInput_Type" json:"type,omitempty"`
+	// Output only. The uncompressed size of the recognized input of the given
+	// type.
+	UncompressedSizeBytes int64 `protobuf:"varint,2,opt,name=uncompressed_size_bytes,json=uncompressedSizeBytes,proto3" json:"uncompressed_size_bytes,omitempty"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
+}
+
+func (x *LineageOutput_RecognizedInput) Reset() {
+	*x = LineageOutput_RecognizedInput{}
+	mi := &file_google_cloud_bigquery_migration_v2_migration_entities_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LineageOutput_RecognizedInput) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LineageOutput_RecognizedInput) ProtoMessage() {}
+
+func (x *LineageOutput_RecognizedInput) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_bigquery_migration_v2_migration_entities_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LineageOutput_RecognizedInput.ProtoReflect.Descriptor instead.
+func (*LineageOutput_RecognizedInput) Descriptor() ([]byte, []int) {
+	return file_google_cloud_bigquery_migration_v2_migration_entities_proto_rawDescGZIP(), []int{6, 0}
+}
+
+func (x *LineageOutput_RecognizedInput) GetType() LineageOutput_RecognizedInput_Type {
+	if x != nil {
+		return x.Type
+	}
+	return LineageOutput_RecognizedInput_TYPE_UNSPECIFIED
+}
+
+func (x *LineageOutput_RecognizedInput) GetUncompressedSizeBytes() int64 {
+	if x != nil {
+		return x.UncompressedSizeBytes
+	}
+	return 0
+}
+
+// Breaks down processing progress of work.
+type LineageOutput_ProgressReport struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. The processing stage this progress report describes.
+	ProcessingStage LineageOutput_ProgressReport_ProcessingStage `protobuf:"varint,1,opt,name=processing_stage,json=processingStage,proto3,enum=google.cloud.bigquery.migration.v2.LineageOutput_ProgressReport_ProcessingStage" json:"processing_stage,omitempty"`
+	// Output only. Summaries of work broken up by the state of the work. Each
+	// work summary describes how much work is in the given state.
+	//
+	// To get numbers for the total work covered, aggregate the numbers from all
+	// summaries.
+	WorkSummaries []*LineageOutput_ProgressReport_WorkSummary `protobuf:"bytes,2,rep,name=work_summaries,json=workSummaries,proto3" json:"work_summaries,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LineageOutput_ProgressReport) Reset() {
+	*x = LineageOutput_ProgressReport{}
+	mi := &file_google_cloud_bigquery_migration_v2_migration_entities_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LineageOutput_ProgressReport) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LineageOutput_ProgressReport) ProtoMessage() {}
+
+func (x *LineageOutput_ProgressReport) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_bigquery_migration_v2_migration_entities_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LineageOutput_ProgressReport.ProtoReflect.Descriptor instead.
+func (*LineageOutput_ProgressReport) Descriptor() ([]byte, []int) {
+	return file_google_cloud_bigquery_migration_v2_migration_entities_proto_rawDescGZIP(), []int{6, 1}
+}
+
+func (x *LineageOutput_ProgressReport) GetProcessingStage() LineageOutput_ProgressReport_ProcessingStage {
+	if x != nil {
+		return x.ProcessingStage
+	}
+	return LineageOutput_ProgressReport_PROCESSING_STAGE_UNSPECIFIED
+}
+
+func (x *LineageOutput_ProgressReport) GetWorkSummaries() []*LineageOutput_ProgressReport_WorkSummary {
+	if x != nil {
+		return x.WorkSummaries
+	}
+	return nil
+}
+
+// Summary of work in the given state.
+type LineageOutput_ProgressReport_WorkSummary struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. The state of the work this summary describes.
+	State LineageOutput_ProgressReport_WorkSummary_State `protobuf:"varint,1,opt,name=state,proto3,enum=google.cloud.bigquery.migration.v2.LineageOutput_ProgressReport_WorkSummary_State" json:"state,omitempty"`
+	// Output only. Size of the work in the given State.
+	//
+	// Size counts "units of work". Units represent arbitrary division of
+	// work; there's no expectation each unit takes similar time to process.
+	Size int64 `protobuf:"varint,2,opt,name=size,proto3" json:"size,omitempty"`
+	// Output only. Human-readable comment.
+	Comment       string `protobuf:"bytes,3,opt,name=comment,proto3" json:"comment,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LineageOutput_ProgressReport_WorkSummary) Reset() {
+	*x = LineageOutput_ProgressReport_WorkSummary{}
+	mi := &file_google_cloud_bigquery_migration_v2_migration_entities_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LineageOutput_ProgressReport_WorkSummary) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LineageOutput_ProgressReport_WorkSummary) ProtoMessage() {}
+
+func (x *LineageOutput_ProgressReport_WorkSummary) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_bigquery_migration_v2_migration_entities_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LineageOutput_ProgressReport_WorkSummary.ProtoReflect.Descriptor instead.
+func (*LineageOutput_ProgressReport_WorkSummary) Descriptor() ([]byte, []int) {
+	return file_google_cloud_bigquery_migration_v2_migration_entities_proto_rawDescGZIP(), []int{6, 1, 0}
+}
+
+func (x *LineageOutput_ProgressReport_WorkSummary) GetState() LineageOutput_ProgressReport_WorkSummary_State {
+	if x != nil {
+		return x.State
+	}
+	return LineageOutput_ProgressReport_WorkSummary_STATE_UNSPECIFIED
+}
+
+func (x *LineageOutput_ProgressReport_WorkSummary) GetSize() int64 {
+	if x != nil {
+		return x.Size
+	}
+	return 0
+}
+
+func (x *LineageOutput_ProgressReport_WorkSummary) GetComment() string {
+	if x != nil {
+		return x.Comment
 	}
 	return ""
 }
@@ -933,15 +1529,63 @@ const file_google_cloud_bigquery_migration_v2_migration_entities_proto_rawDesc =
 	"\n" +
 	"\x06PAUSED\x10\x05\x12\x16\n" +
 	"\x12PENDING_DEPENDENCY\x10\x06:\x88\x01\xeaA\x84\x01\n" +
-	"1bigquerymigration.googleapis.com/MigrationSubtask\x12Oprojects/{project}/locations/{location}/workflows/{workflow}/subtasks/{subtask}\"\x95\x01\n" +
+	"1bigquerymigration.googleapis.com/MigrationSubtask\x12Oprojects/{project}/locations/{location}/workflows/{workflow}/subtasks/{subtask}\"\xf2\x02\n" +
 	"\x13MigrationTaskResult\x12s\n" +
-	"\x17translation_task_result\x18\x02 \x01(\v29.google.cloud.bigquery.migration.v2.TranslationTaskResultH\x00R\x15translationTaskResultB\t\n" +
+	"\x17translation_task_result\x18\x02 \x01(\v29.google.cloud.bigquery.migration.v2.TranslationTaskResultH\x00R\x15translationTaskResult\x12k\n" +
+	"\ftask_outputs\x18\x03 \x03(\v2H.google.cloud.bigquery.migration.v2.MigrationTaskResult.TaskOutputsEntryR\vtaskOutputs\x1an\n" +
+	"\x10TaskOutputsEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12D\n" +
+	"\x05value\x18\x02 \x01(\v2..google.cloud.bigquery.migration.v2.TaskOutputR\x05value:\x028\x01B\t\n" +
 	"\adetails\"\xff\x01\n" +
 	"\x15TranslationTaskResult\x12\\\n" +
 	"\x13translated_literals\x18\x01 \x03(\v2+.google.cloud.bigquery.migration.v2.LiteralR\x12translatedLiterals\x12g\n" +
 	"\x13report_log_messages\x18\x02 \x03(\v27.google.cloud.bigquery.migration.v2.GcsReportLogMessageR\x11reportLogMessages\x12\x1f\n" +
 	"\vconsole_uri\x18\x03 \x01(\tR\n" +
-	"consoleUriB\xd2\x01\n" +
+	"consoleUri\"\xcd\x02\n" +
+	"\n" +
+	"TaskOutput\x12Z\n" +
+	"\x0elineage_output\x18\x03 \x01(\v21.google.cloud.bigquery.migration.v2.LineageOutputH\x00R\rlineageOutput\x12O\n" +
+	"\x05state\x18\x01 \x01(\x0e24.google.cloud.bigquery.migration.v2.TaskOutput.StateB\x03\xe0A\x03R\x05state\x12@\n" +
+	"\x10processing_error\x18\x02 \x01(\v2\x15.google.rpc.ErrorInfoR\x0fprocessingError\"F\n" +
+	"\x05State\x12\x15\n" +
+	"\x11STATE_UNSPECIFIED\x10\x00\x12\v\n" +
+	"\aPENDING\x10\x01\x12\r\n" +
+	"\tSUCCEEDED\x10\x02\x12\n" +
+	"\n" +
+	"\x06FAILED\x10\x03B\b\n" +
+	"\x06output\"\xa4\t\n" +
+	"\rLineageOutput\x12\x1d\n" +
+	"\n" +
+	"webapp_uri\x18\x01 \x01(\tR\twebappUri\x12s\n" +
+	"\x11recognized_inputs\x18\x02 \x03(\v2A.google.cloud.bigquery.migration.v2.LineageOutput.RecognizedInputB\x03\xe0A\x03R\x10recognizedInputs\x12\x85\x01\n" +
+	"\x1bprocessing_progress_reports\x18\x03 \x03(\v2@.google.cloud.bigquery.migration.v2.LineageOutput.ProgressReportB\x03\xe0A\x03R\x19processingProgressReports\x1a\xf6\x01\n" +
+	"\x0fRecognizedInput\x12_\n" +
+	"\x04type\x18\x01 \x01(\x0e2F.google.cloud.bigquery.migration.v2.LineageOutput.RecognizedInput.TypeB\x03\xe0A\x03R\x04type\x12;\n" +
+	"\x17uncompressed_size_bytes\x18\x02 \x01(\x03B\x03\xe0A\x03R\x15uncompressedSizeBytes\"E\n" +
+	"\x04Type\x12\x14\n" +
+	"\x10TYPE_UNSPECIFIED\x10\x00\x12\f\n" +
+	"\bMETADATA\x10\x01\x12\r\n" +
+	"\tQUERY_LOG\x10\x02\x12\n" +
+	"\n" +
+	"\x06SCRIPT\x10\x03\x1a\xfd\x04\n" +
+	"\x0eProgressReport\x12\x80\x01\n" +
+	"\x10processing_stage\x18\x01 \x01(\x0e2P.google.cloud.bigquery.migration.v2.LineageOutput.ProgressReport.ProcessingStageB\x03\xe0A\x03R\x0fprocessingStage\x12x\n" +
+	"\x0ework_summaries\x18\x02 \x03(\v2L.google.cloud.bigquery.migration.v2.LineageOutput.ProgressReport.WorkSummaryB\x03\xe0A\x03R\rworkSummaries\x1a\x8d\x02\n" +
+	"\vWorkSummary\x12m\n" +
+	"\x05state\x18\x01 \x01(\x0e2R.google.cloud.bigquery.migration.v2.LineageOutput.ProgressReport.WorkSummary.StateB\x03\xe0A\x03R\x05state\x12\x17\n" +
+	"\x04size\x18\x02 \x01(\x03B\x03\xe0A\x03R\x04size\x12\x1d\n" +
+	"\acomment\x18\x03 \x01(\tB\x03\xe0A\x03R\acomment\"W\n" +
+	"\x05State\x12\x15\n" +
+	"\x11STATE_UNSPECIFIED\x10\x00\x12\r\n" +
+	"\tSUCCEEDED\x10\x01\x12\n" +
+	"\n" +
+	"\x06FAILED\x10\x02\x12\x0f\n" +
+	"\vIN_PROGRESS\x10\x03\x12\v\n" +
+	"\aSKIPPED\x10\x04\"^\n" +
+	"\x0fProcessingStage\x12 \n" +
+	"\x1cPROCESSING_STAGE_UNSPECIFIED\x10\x00\x12\x14\n" +
+	"\x0fINPUT_INGESTION\x10\xe8\a\x12\x13\n" +
+	"\x0ePOSTPROCESSING\x10\xd0\x0fB\xd2\x01\n" +
 	"&com.google.cloud.bigquery.migration.v2B\x16MigrationEntitiesProtoP\x01ZDcloud.google.com/go/bigquery/migration/apiv2/migrationpb;migrationpb\xaa\x02\"Google.Cloud.BigQuery.Migration.V2\xca\x02\"Google\\Cloud\\BigQuery\\Migration\\V2b\x06proto3"
 
 var (
@@ -956,58 +1600,79 @@ func file_google_cloud_bigquery_migration_v2_migration_entities_proto_rawDescGZI
 	return file_google_cloud_bigquery_migration_v2_migration_entities_proto_rawDescData
 }
 
-var file_google_cloud_bigquery_migration_v2_migration_entities_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_google_cloud_bigquery_migration_v2_migration_entities_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_google_cloud_bigquery_migration_v2_migration_entities_proto_enumTypes = make([]protoimpl.EnumInfo, 7)
+var file_google_cloud_bigquery_migration_v2_migration_entities_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
 var file_google_cloud_bigquery_migration_v2_migration_entities_proto_goTypes = []any{
-	(MigrationWorkflow_State)(0),     // 0: google.cloud.bigquery.migration.v2.MigrationWorkflow.State
-	(MigrationTask_State)(0),         // 1: google.cloud.bigquery.migration.v2.MigrationTask.State
-	(MigrationSubtask_State)(0),      // 2: google.cloud.bigquery.migration.v2.MigrationSubtask.State
-	(*MigrationWorkflow)(nil),        // 3: google.cloud.bigquery.migration.v2.MigrationWorkflow
-	(*MigrationTask)(nil),            // 4: google.cloud.bigquery.migration.v2.MigrationTask
-	(*MigrationSubtask)(nil),         // 5: google.cloud.bigquery.migration.v2.MigrationSubtask
-	(*MigrationTaskResult)(nil),      // 6: google.cloud.bigquery.migration.v2.MigrationTaskResult
-	(*TranslationTaskResult)(nil),    // 7: google.cloud.bigquery.migration.v2.TranslationTaskResult
-	nil,                              // 8: google.cloud.bigquery.migration.v2.MigrationWorkflow.TasksEntry
-	(*timestamppb.Timestamp)(nil),    // 9: google.protobuf.Timestamp
-	(*AssessmentTaskDetails)(nil),    // 10: google.cloud.bigquery.migration.v2.AssessmentTaskDetails
-	(*TranslationConfigDetails)(nil), // 11: google.cloud.bigquery.migration.v2.TranslationConfigDetails
-	(*TranslationDetails)(nil),       // 12: google.cloud.bigquery.migration.v2.TranslationDetails
-	(*errdetails.ErrorInfo)(nil),     // 13: google.rpc.ErrorInfo
-	(*ResourceErrorDetail)(nil),      // 14: google.cloud.bigquery.migration.v2.ResourceErrorDetail
-	(*TimeSeries)(nil),               // 15: google.cloud.bigquery.migration.v2.TimeSeries
-	(*Literal)(nil),                  // 16: google.cloud.bigquery.migration.v2.Literal
-	(*GcsReportLogMessage)(nil),      // 17: google.cloud.bigquery.migration.v2.GcsReportLogMessage
+	(MigrationWorkflow_State)(0),                        // 0: google.cloud.bigquery.migration.v2.MigrationWorkflow.State
+	(MigrationTask_State)(0),                            // 1: google.cloud.bigquery.migration.v2.MigrationTask.State
+	(MigrationSubtask_State)(0),                         // 2: google.cloud.bigquery.migration.v2.MigrationSubtask.State
+	(TaskOutput_State)(0),                               // 3: google.cloud.bigquery.migration.v2.TaskOutput.State
+	(LineageOutput_RecognizedInput_Type)(0),             // 4: google.cloud.bigquery.migration.v2.LineageOutput.RecognizedInput.Type
+	(LineageOutput_ProgressReport_ProcessingStage)(0),   // 5: google.cloud.bigquery.migration.v2.LineageOutput.ProgressReport.ProcessingStage
+	(LineageOutput_ProgressReport_WorkSummary_State)(0), // 6: google.cloud.bigquery.migration.v2.LineageOutput.ProgressReport.WorkSummary.State
+	(*MigrationWorkflow)(nil),                           // 7: google.cloud.bigquery.migration.v2.MigrationWorkflow
+	(*MigrationTask)(nil),                               // 8: google.cloud.bigquery.migration.v2.MigrationTask
+	(*MigrationSubtask)(nil),                            // 9: google.cloud.bigquery.migration.v2.MigrationSubtask
+	(*MigrationTaskResult)(nil),                         // 10: google.cloud.bigquery.migration.v2.MigrationTaskResult
+	(*TranslationTaskResult)(nil),                       // 11: google.cloud.bigquery.migration.v2.TranslationTaskResult
+	(*TaskOutput)(nil),                                  // 12: google.cloud.bigquery.migration.v2.TaskOutput
+	(*LineageOutput)(nil),                               // 13: google.cloud.bigquery.migration.v2.LineageOutput
+	nil,                                                 // 14: google.cloud.bigquery.migration.v2.MigrationWorkflow.TasksEntry
+	nil,                                                 // 15: google.cloud.bigquery.migration.v2.MigrationTaskResult.TaskOutputsEntry
+	(*LineageOutput_RecognizedInput)(nil),               // 16: google.cloud.bigquery.migration.v2.LineageOutput.RecognizedInput
+	(*LineageOutput_ProgressReport)(nil),                // 17: google.cloud.bigquery.migration.v2.LineageOutput.ProgressReport
+	(*LineageOutput_ProgressReport_WorkSummary)(nil),    // 18: google.cloud.bigquery.migration.v2.LineageOutput.ProgressReport.WorkSummary
+	(*timestamppb.Timestamp)(nil),                       // 19: google.protobuf.Timestamp
+	(*AssessmentTaskDetails)(nil),                       // 20: google.cloud.bigquery.migration.v2.AssessmentTaskDetails
+	(*TranslationConfigDetails)(nil),                    // 21: google.cloud.bigquery.migration.v2.TranslationConfigDetails
+	(*TranslationDetails)(nil),                          // 22: google.cloud.bigquery.migration.v2.TranslationDetails
+	(*errdetails.ErrorInfo)(nil),                        // 23: google.rpc.ErrorInfo
+	(*ResourceErrorDetail)(nil),                         // 24: google.cloud.bigquery.migration.v2.ResourceErrorDetail
+	(*TimeSeries)(nil),                                  // 25: google.cloud.bigquery.migration.v2.TimeSeries
+	(*Literal)(nil),                                     // 26: google.cloud.bigquery.migration.v2.Literal
+	(*GcsReportLogMessage)(nil),                         // 27: google.cloud.bigquery.migration.v2.GcsReportLogMessage
 }
 var file_google_cloud_bigquery_migration_v2_migration_entities_proto_depIdxs = []int32{
-	8,  // 0: google.cloud.bigquery.migration.v2.MigrationWorkflow.tasks:type_name -> google.cloud.bigquery.migration.v2.MigrationWorkflow.TasksEntry
+	14, // 0: google.cloud.bigquery.migration.v2.MigrationWorkflow.tasks:type_name -> google.cloud.bigquery.migration.v2.MigrationWorkflow.TasksEntry
 	0,  // 1: google.cloud.bigquery.migration.v2.MigrationWorkflow.state:type_name -> google.cloud.bigquery.migration.v2.MigrationWorkflow.State
-	9,  // 2: google.cloud.bigquery.migration.v2.MigrationWorkflow.create_time:type_name -> google.protobuf.Timestamp
-	9,  // 3: google.cloud.bigquery.migration.v2.MigrationWorkflow.last_update_time:type_name -> google.protobuf.Timestamp
-	10, // 4: google.cloud.bigquery.migration.v2.MigrationTask.assessment_task_details:type_name -> google.cloud.bigquery.migration.v2.AssessmentTaskDetails
-	11, // 5: google.cloud.bigquery.migration.v2.MigrationTask.translation_config_details:type_name -> google.cloud.bigquery.migration.v2.TranslationConfigDetails
-	12, // 6: google.cloud.bigquery.migration.v2.MigrationTask.translation_details:type_name -> google.cloud.bigquery.migration.v2.TranslationDetails
+	19, // 2: google.cloud.bigquery.migration.v2.MigrationWorkflow.create_time:type_name -> google.protobuf.Timestamp
+	19, // 3: google.cloud.bigquery.migration.v2.MigrationWorkflow.last_update_time:type_name -> google.protobuf.Timestamp
+	20, // 4: google.cloud.bigquery.migration.v2.MigrationTask.assessment_task_details:type_name -> google.cloud.bigquery.migration.v2.AssessmentTaskDetails
+	21, // 5: google.cloud.bigquery.migration.v2.MigrationTask.translation_config_details:type_name -> google.cloud.bigquery.migration.v2.TranslationConfigDetails
+	22, // 6: google.cloud.bigquery.migration.v2.MigrationTask.translation_details:type_name -> google.cloud.bigquery.migration.v2.TranslationDetails
 	1,  // 7: google.cloud.bigquery.migration.v2.MigrationTask.state:type_name -> google.cloud.bigquery.migration.v2.MigrationTask.State
-	13, // 8: google.cloud.bigquery.migration.v2.MigrationTask.processing_error:type_name -> google.rpc.ErrorInfo
-	9,  // 9: google.cloud.bigquery.migration.v2.MigrationTask.create_time:type_name -> google.protobuf.Timestamp
-	9,  // 10: google.cloud.bigquery.migration.v2.MigrationTask.last_update_time:type_name -> google.protobuf.Timestamp
-	14, // 11: google.cloud.bigquery.migration.v2.MigrationTask.resource_error_details:type_name -> google.cloud.bigquery.migration.v2.ResourceErrorDetail
-	15, // 12: google.cloud.bigquery.migration.v2.MigrationTask.metrics:type_name -> google.cloud.bigquery.migration.v2.TimeSeries
-	6,  // 13: google.cloud.bigquery.migration.v2.MigrationTask.task_result:type_name -> google.cloud.bigquery.migration.v2.MigrationTaskResult
+	23, // 8: google.cloud.bigquery.migration.v2.MigrationTask.processing_error:type_name -> google.rpc.ErrorInfo
+	19, // 9: google.cloud.bigquery.migration.v2.MigrationTask.create_time:type_name -> google.protobuf.Timestamp
+	19, // 10: google.cloud.bigquery.migration.v2.MigrationTask.last_update_time:type_name -> google.protobuf.Timestamp
+	24, // 11: google.cloud.bigquery.migration.v2.MigrationTask.resource_error_details:type_name -> google.cloud.bigquery.migration.v2.ResourceErrorDetail
+	25, // 12: google.cloud.bigquery.migration.v2.MigrationTask.metrics:type_name -> google.cloud.bigquery.migration.v2.TimeSeries
+	10, // 13: google.cloud.bigquery.migration.v2.MigrationTask.task_result:type_name -> google.cloud.bigquery.migration.v2.MigrationTaskResult
 	2,  // 14: google.cloud.bigquery.migration.v2.MigrationSubtask.state:type_name -> google.cloud.bigquery.migration.v2.MigrationSubtask.State
-	13, // 15: google.cloud.bigquery.migration.v2.MigrationSubtask.processing_error:type_name -> google.rpc.ErrorInfo
-	14, // 16: google.cloud.bigquery.migration.v2.MigrationSubtask.resource_error_details:type_name -> google.cloud.bigquery.migration.v2.ResourceErrorDetail
-	9,  // 17: google.cloud.bigquery.migration.v2.MigrationSubtask.create_time:type_name -> google.protobuf.Timestamp
-	9,  // 18: google.cloud.bigquery.migration.v2.MigrationSubtask.last_update_time:type_name -> google.protobuf.Timestamp
-	15, // 19: google.cloud.bigquery.migration.v2.MigrationSubtask.metrics:type_name -> google.cloud.bigquery.migration.v2.TimeSeries
-	7,  // 20: google.cloud.bigquery.migration.v2.MigrationTaskResult.translation_task_result:type_name -> google.cloud.bigquery.migration.v2.TranslationTaskResult
-	16, // 21: google.cloud.bigquery.migration.v2.TranslationTaskResult.translated_literals:type_name -> google.cloud.bigquery.migration.v2.Literal
-	17, // 22: google.cloud.bigquery.migration.v2.TranslationTaskResult.report_log_messages:type_name -> google.cloud.bigquery.migration.v2.GcsReportLogMessage
-	4,  // 23: google.cloud.bigquery.migration.v2.MigrationWorkflow.TasksEntry.value:type_name -> google.cloud.bigquery.migration.v2.MigrationTask
-	24, // [24:24] is the sub-list for method output_type
-	24, // [24:24] is the sub-list for method input_type
-	24, // [24:24] is the sub-list for extension type_name
-	24, // [24:24] is the sub-list for extension extendee
-	0,  // [0:24] is the sub-list for field type_name
+	23, // 15: google.cloud.bigquery.migration.v2.MigrationSubtask.processing_error:type_name -> google.rpc.ErrorInfo
+	24, // 16: google.cloud.bigquery.migration.v2.MigrationSubtask.resource_error_details:type_name -> google.cloud.bigquery.migration.v2.ResourceErrorDetail
+	19, // 17: google.cloud.bigquery.migration.v2.MigrationSubtask.create_time:type_name -> google.protobuf.Timestamp
+	19, // 18: google.cloud.bigquery.migration.v2.MigrationSubtask.last_update_time:type_name -> google.protobuf.Timestamp
+	25, // 19: google.cloud.bigquery.migration.v2.MigrationSubtask.metrics:type_name -> google.cloud.bigquery.migration.v2.TimeSeries
+	11, // 20: google.cloud.bigquery.migration.v2.MigrationTaskResult.translation_task_result:type_name -> google.cloud.bigquery.migration.v2.TranslationTaskResult
+	15, // 21: google.cloud.bigquery.migration.v2.MigrationTaskResult.task_outputs:type_name -> google.cloud.bigquery.migration.v2.MigrationTaskResult.TaskOutputsEntry
+	26, // 22: google.cloud.bigquery.migration.v2.TranslationTaskResult.translated_literals:type_name -> google.cloud.bigquery.migration.v2.Literal
+	27, // 23: google.cloud.bigquery.migration.v2.TranslationTaskResult.report_log_messages:type_name -> google.cloud.bigquery.migration.v2.GcsReportLogMessage
+	13, // 24: google.cloud.bigquery.migration.v2.TaskOutput.lineage_output:type_name -> google.cloud.bigquery.migration.v2.LineageOutput
+	3,  // 25: google.cloud.bigquery.migration.v2.TaskOutput.state:type_name -> google.cloud.bigquery.migration.v2.TaskOutput.State
+	23, // 26: google.cloud.bigquery.migration.v2.TaskOutput.processing_error:type_name -> google.rpc.ErrorInfo
+	16, // 27: google.cloud.bigquery.migration.v2.LineageOutput.recognized_inputs:type_name -> google.cloud.bigquery.migration.v2.LineageOutput.RecognizedInput
+	17, // 28: google.cloud.bigquery.migration.v2.LineageOutput.processing_progress_reports:type_name -> google.cloud.bigquery.migration.v2.LineageOutput.ProgressReport
+	8,  // 29: google.cloud.bigquery.migration.v2.MigrationWorkflow.TasksEntry.value:type_name -> google.cloud.bigquery.migration.v2.MigrationTask
+	12, // 30: google.cloud.bigquery.migration.v2.MigrationTaskResult.TaskOutputsEntry.value:type_name -> google.cloud.bigquery.migration.v2.TaskOutput
+	4,  // 31: google.cloud.bigquery.migration.v2.LineageOutput.RecognizedInput.type:type_name -> google.cloud.bigquery.migration.v2.LineageOutput.RecognizedInput.Type
+	5,  // 32: google.cloud.bigquery.migration.v2.LineageOutput.ProgressReport.processing_stage:type_name -> google.cloud.bigquery.migration.v2.LineageOutput.ProgressReport.ProcessingStage
+	18, // 33: google.cloud.bigquery.migration.v2.LineageOutput.ProgressReport.work_summaries:type_name -> google.cloud.bigquery.migration.v2.LineageOutput.ProgressReport.WorkSummary
+	6,  // 34: google.cloud.bigquery.migration.v2.LineageOutput.ProgressReport.WorkSummary.state:type_name -> google.cloud.bigquery.migration.v2.LineageOutput.ProgressReport.WorkSummary.State
+	35, // [35:35] is the sub-list for method output_type
+	35, // [35:35] is the sub-list for method input_type
+	35, // [35:35] is the sub-list for extension type_name
+	35, // [35:35] is the sub-list for extension extendee
+	0,  // [0:35] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_bigquery_migration_v2_migration_entities_proto_init() }
@@ -1029,13 +1694,16 @@ func file_google_cloud_bigquery_migration_v2_migration_entities_proto_init() {
 	file_google_cloud_bigquery_migration_v2_migration_entities_proto_msgTypes[3].OneofWrappers = []any{
 		(*MigrationTaskResult_TranslationTaskResult)(nil),
 	}
+	file_google_cloud_bigquery_migration_v2_migration_entities_proto_msgTypes[5].OneofWrappers = []any{
+		(*TaskOutput_LineageOutput)(nil),
+	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_bigquery_migration_v2_migration_entities_proto_rawDesc), len(file_google_cloud_bigquery_migration_v2_migration_entities_proto_rawDesc)),
-			NumEnums:      3,
-			NumMessages:   6,
+			NumEnums:      7,
+			NumMessages:   12,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

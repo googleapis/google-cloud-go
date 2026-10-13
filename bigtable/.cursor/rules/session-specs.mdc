@@ -1,0 +1,33 @@
+---
+description: Bigtable Session subsystem specs
+globs:
+  - internal/transport/**
+  - internal/session/**
+  - table_shim.go
+  - debugview/**
+  - session_*.go
+alwaysApply: true
+---
+
+Before editing any file matching the globs above, read the specs under
+`bigtable/docs/specs/` that match the layer being touched:
+
+- `SESSION_SPEC.md` — one Session's lifecycle (state machine,
+  one-in-flight vRPC, PeerInfo timing, hook ordering, close / GOAWAY,
+  heartbeat, retry oracle, concurrency).
+- `SESSION_CLIENT_SPEC.md` — SessionClient topology (1:1 Client↔SC,
+  shared channel pool, lazy pool creation, GetClientConfiguration
+  authority, OpenSessionRequest envelope).
+- `SESSION_POOL_SPEC.md` — pool + picking (read/write pools per
+  resource, AFE picker, Diverter + TableShim routing, debug non-
+  blocking, server-driven scaling).
+- `CLIENT_SIDE_METRICS_SPEC.md` — per-attempt metrics field provenance
+  (classic vs session data paths).
+- `SESSION_COMPONENT_SPEC.md` — component topology + boundary rules
+  (Part B MUST rules, Part C ownership matrix).
+
+If a proposed change would violate a spec rule, either the change is
+wrong, or the rule is stale — in the latter case, update the spec in
+the same PR.
+
+Full canonical instructions live at `bigtable/AGENTS.md`.

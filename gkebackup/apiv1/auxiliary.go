@@ -18,12 +18,14 @@ package gkebackup
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	gkebackuppb "cloud.google.com/go/gkebackup/apiv1/gkebackuppb"
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
@@ -1114,6 +1116,12 @@ func (op *UpdateRestorePlanOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *BackupChannelIterator) All() iter.Seq2[*gkebackuppb.BackupChannel, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // BackupChannelIterator manages a stream of *gkebackuppb.BackupChannel.
 type BackupChannelIterator struct {
 	items    []*gkebackuppb.BackupChannel
@@ -1159,6 +1167,12 @@ func (it *BackupChannelIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *BackupIterator) All() iter.Seq2[*gkebackuppb.Backup, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // BackupIterator manages a stream of *gkebackuppb.Backup.
@@ -1208,6 +1222,12 @@ func (it *BackupIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *BackupPlanBindingIterator) All() iter.Seq2[*gkebackuppb.BackupPlanBinding, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // BackupPlanBindingIterator manages a stream of *gkebackuppb.BackupPlanBinding.
 type BackupPlanBindingIterator struct {
 	items    []*gkebackuppb.BackupPlanBinding
@@ -1253,6 +1273,12 @@ func (it *BackupPlanBindingIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *BackupPlanIterator) All() iter.Seq2[*gkebackuppb.BackupPlan, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // BackupPlanIterator manages a stream of *gkebackuppb.BackupPlan.
@@ -1302,6 +1328,12 @@ func (it *BackupPlanIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // LocationIterator manages a stream of *locationpb.Location.
 type LocationIterator struct {
 	items    []*locationpb.Location
@@ -1347,6 +1379,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // OperationIterator manages a stream of *longrunningpb.Operation.
@@ -1396,6 +1434,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RestoreChannelIterator) All() iter.Seq2[*gkebackuppb.RestoreChannel, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // RestoreChannelIterator manages a stream of *gkebackuppb.RestoreChannel.
 type RestoreChannelIterator struct {
 	items    []*gkebackuppb.RestoreChannel
@@ -1441,6 +1485,12 @@ func (it *RestoreChannelIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RestoreIterator) All() iter.Seq2[*gkebackuppb.Restore, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // RestoreIterator manages a stream of *gkebackuppb.Restore.
@@ -1490,6 +1540,12 @@ func (it *RestoreIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RestorePlanBindingIterator) All() iter.Seq2[*gkebackuppb.RestorePlanBinding, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // RestorePlanBindingIterator manages a stream of *gkebackuppb.RestorePlanBinding.
 type RestorePlanBindingIterator struct {
 	items    []*gkebackuppb.RestorePlanBinding
@@ -1535,6 +1591,12 @@ func (it *RestorePlanBindingIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RestorePlanIterator) All() iter.Seq2[*gkebackuppb.RestorePlan, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // RestorePlanIterator manages a stream of *gkebackuppb.RestorePlan.
@@ -1584,6 +1646,12 @@ func (it *RestorePlanIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *VolumeBackupIterator) All() iter.Seq2[*gkebackuppb.VolumeBackup, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // VolumeBackupIterator manages a stream of *gkebackuppb.VolumeBackup.
 type VolumeBackupIterator struct {
 	items    []*gkebackuppb.VolumeBackup
@@ -1629,6 +1697,12 @@ func (it *VolumeBackupIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *VolumeRestoreIterator) All() iter.Seq2[*gkebackuppb.VolumeRestore, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // VolumeRestoreIterator manages a stream of *gkebackuppb.VolumeRestore.

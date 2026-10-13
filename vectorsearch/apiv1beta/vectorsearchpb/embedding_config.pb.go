@@ -122,11 +122,17 @@ type VertexEmbeddingConfig struct {
 	// https://cloud.google.com/vertex-ai/generative-ai/docs/learn/models#embeddings-models
 	// for the list of supported models.
 	ModelId string `protobuf:"bytes,1,opt,name=model_id,json=modelId,proto3" json:"model_id,omitempty"`
-	// Required. Required: Text template for the input to the model. The template
-	// must contain one or more references to fields in the DataObject, e.g.:
-	// "Movie Title: {title} ---- Movie Plot: {plot}".
+	// Optional. Text template for the input to the model. The template must
+	// contain one or more references to fields in the DataObject, e.g.: "Movie
+	// Title: {title} ---- Movie Plot: {plot}".
+	//
+	// Required when using the text-only path.
 	TextTemplate string `protobuf:"bytes,2,opt,name=text_template,json=textTemplate,proto3" json:"text_template,omitempty"`
-	// Required. Required: Task type for the embeddings.
+	// Optional. Optional: Task type for the embeddings. Required for text-only
+	// embedding models, see
+	// https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/embeddings/task-types
+	// Not needed for multi modal embedding models, see
+	// https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/embeddings/get-multimodal-embeddings#specify-task-instructions
 	TaskType      EmbeddingTaskType `protobuf:"varint,3,opt,name=task_type,json=taskType,proto3,enum=google.cloud.vectorsearch.v1beta.EmbeddingTaskType" json:"task_type,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -190,8 +196,8 @@ const file_google_cloud_vectorsearch_v1beta_embedding_config_proto_rawDesc = "" 
 	"7google/cloud/vectorsearch/v1beta/embedding_config.proto\x12 google.cloud.vectorsearch.v1beta\x1a\x1fgoogle/api/field_behavior.proto\"\xb8\x01\n" +
 	"\x15VertexEmbeddingConfig\x12\x1e\n" +
 	"\bmodel_id\x18\x01 \x01(\tB\x03\xe0A\x02R\amodelId\x12(\n" +
-	"\rtext_template\x18\x02 \x01(\tB\x03\xe0A\x02R\ftextTemplate\x12U\n" +
-	"\ttask_type\x18\x03 \x01(\x0e23.google.cloud.vectorsearch.v1beta.EmbeddingTaskTypeB\x03\xe0A\x02R\btaskType*\xeb\x01\n" +
+	"\rtext_template\x18\x02 \x01(\tB\x03\xe0A\x01R\ftextTemplate\x12U\n" +
+	"\ttask_type\x18\x03 \x01(\x0e23.google.cloud.vectorsearch.v1beta.EmbeddingTaskTypeB\x03\xe0A\x01R\btaskType*\xeb\x01\n" +
 	"\x11EmbeddingTaskType\x12#\n" +
 	"\x1fEMBEDDING_TASK_TYPE_UNSPECIFIED\x10\x00\x12\x13\n" +
 	"\x0fRETRIEVAL_QUERY\x10\x01\x12\x16\n" +

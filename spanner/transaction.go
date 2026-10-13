@@ -31,7 +31,6 @@ import (
 	"github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/apierror"
 	"google.golang.org/api/iterator"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
@@ -257,6 +256,23 @@ type ReadOptions struct {
 
 	// ClientContext contains client-owned context information to be passed with the read request.
 	ClientContext *sppb.RequestOptions_ClientContext
+
+	// ExperimentalBorrowRows makes the RowIterator lend its rows to the
+	// application when the client is built with the spanner_vtproto build
+	// tag: the RowIterator reuses the rows and the storage of the strings
+	// decoded from them. A row, and every string decoded from it, is then only
+	// valid until the next call to Next or Stop on the RowIterator, or until
+	// the function passed to Do returns. Use Row.Detach or strings.Clone to
+	// keep data. See the README of this package for what an application must
+	// not do with such rows.
+	// Without the build tag, the option is ignored.
+	//
+	// The option is only used when it is set on a call. It is not inherited
+	// from the defaults in ClientConfig. ReadRowWithOptions and partitioned
+	// reads ignore it and always return rows that stay valid.
+	//
+	// This option is experimental and can change or be removed in any release.
+	ExperimentalBorrowRows bool
 }
 
 // merge combines two ReadOptions that the input parameter will have higher
@@ -272,6 +288,8 @@ func (ro ReadOptions) merge(opts ReadOptions) ReadOptions {
 		OrderBy:             ro.OrderBy,
 		LockHint:            ro.LockHint,
 		ClientContext:       mergeClientContext(ro.ClientContext, opts.ClientContext),
+		// Only the option of the call borrows rows, never a default.
+		ExperimentalBorrowRows: opts.ExperimentalBorrowRows,
 	}
 	if opts.Index != "" {
 		merged.Index = opts.Index
@@ -312,22 +330,16 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 	)
 	kset, err := keys.keySetProto()
 	if err != nil {
-		return &RowIterator{
-			meterTracerFactory: t.sm.sc.metricsTracerFactory,
-			err:                err}
+		return &RowIterator{err: err}
 	}
 	if sh, ts, err = t.acquire(ctx); err != nil {
-		return &RowIterator{
-			meterTracerFactory: t.sm.sc.metricsTracerFactory,
-			err:                err}
+		return &RowIterator{err: err}
 	}
 	// Cloud Spanner will return "Session not found" on bad sessions.
 	client := sh.getClient()
 	if client == nil {
 		// Might happen if transaction is closed in the middle of a API call.
-		return &RowIterator{
-			meterTracerFactory: t.sm.sc.metricsTracerFactory,
-			err:                errSessionClosed(sh)}
+		return &RowIterator{err: errSessionClosed(sh)}
 	}
 	index := t.ro.Index
 	limit := t.ro.Limit
@@ -338,7 +350,10 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 	orderBy := t.ro.OrderBy
 	lockHint := t.ro.LockHint
 	clientContext := t.ro.ClientContext
+	// Only the option of the call borrows rows, never a default.
+	borrowRows := false
 	if opts != nil {
+		borrowRows = opts.ExperimentalBorrowRows
 		index = opts.Index
 		if opts.Limit > 0 {
 			limit = opts.Limit
@@ -400,6 +415,9 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 				}
 				return client, t.updateTxState(err)
 			}
+			if !gfeLatencySinksEnabled(t.ct != nil, t.otConfig) {
+				return client, nil
+			}
 			md, err := client.Header()
 			if getGFELatencyMetricsFlag() && md != nil && t.ct != nil {
 				if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "ReadWithOptions"); err != nil {
@@ -421,6 +439,7 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 		requestIDHeaderProviderFromSpannerClient(client),
 		retryResourceExhausted,
 		allowRetryResourceExhaustedWithoutDelay,
+		borrowRows,
 	)
 }
 
@@ -502,6 +521,12 @@ func (t *txReadOnly) ReadRow(ctx context.Context, table string, key Key, columns
 //			...
 //	}
 func (t *txReadOnly) ReadRowWithOptions(ctx context.Context, table string, key Key, columns []string, opts *ReadOptions) (*Row, error) {
+	if opts != nil && opts.ExperimentalBorrowRows {
+		// The returned row must stay valid after the iterator stopped.
+		o := *opts
+		o.ExperimentalBorrowRows = false
+		opts = &o
+	}
 	iter := t.ReadWithOptions(ctx, table, key, columns, opts)
 	defer iter.Stop()
 	row, err := iter.Next()
@@ -509,7 +534,7 @@ func (t *txReadOnly) ReadRowWithOptions(ctx context.Context, table string, key K
 	case iterator.Done:
 		return nil, errRowNotFound(table, key)
 	case nil:
-		return row, nil
+		return iter.detach(row), nil
 	default:
 		return nil, err
 	}
@@ -536,6 +561,7 @@ func (t *txReadOnly) ReadRowUsingIndex(ctx context.Context, table string, index 
 	case iterator.Done:
 		return nil, errRowNotFoundByIndex(table, key, index)
 	case nil:
+		row = iter.detach(row)
 		// If more than one row found, return an error.
 		_, err := iter.Next()
 		switch err {
@@ -588,6 +614,23 @@ type QueryOptions struct {
 
 	// ClientContext contains client-owned context information to be passed with the query.
 	ClientContext *sppb.RequestOptions_ClientContext
+
+	// ExperimentalBorrowRows makes the RowIterator of a query lend its rows to
+	// the application when the client is built with the spanner_vtproto build
+	// tag: the RowIterator reuses the rows and the storage of the strings
+	// decoded from them. A row, and every string decoded from it, is then only
+	// valid until the next call to Next or Stop on the RowIterator, or until
+	// the function passed to Do returns. Use Row.Detach or strings.Clone to
+	// keep data. See the README of this package for what an application must
+	// not do with such rows.
+	// Without the build tag, the option is ignored.
+	//
+	// The option is only used when it is set on a call. It is not inherited
+	// from the defaults in ClientConfig. Partitioned queries ignore it and
+	// always return rows that stay valid.
+	//
+	// This option is experimental and can change or be removed in any release.
+	ExperimentalBorrowRows bool
 }
 
 // merge combines two QueryOptions that the input parameter will have higher
@@ -603,6 +646,8 @@ func (qo QueryOptions) merge(opts QueryOptions) QueryOptions {
 		ExcludeTxnFromChangeStreams: qo.ExcludeTxnFromChangeStreams || opts.ExcludeTxnFromChangeStreams,
 		LastStatement:               qo.LastStatement || opts.LastStatement,
 		ClientContext:               mergeClientContext(qo.ClientContext, opts.ClientContext),
+		// Only the option of the call borrows rows, never a default.
+		ExperimentalBorrowRows: opts.ExperimentalBorrowRows,
 	}
 	if opts.Mode != nil {
 		merged.Mode = opts.Mode
@@ -719,10 +764,7 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 	defer func() { endSpan(ctx, ri.err) }()
 	req, sh, err := t.prepareExecuteSQL(ctx, statement, options)
 	if err != nil {
-		return &RowIterator{
-			meterTracerFactory: t.sm.sc.metricsTracerFactory,
-			err:                err,
-		}
+		return &RowIterator{err: err}
 	}
 	var setTransactionID func(transactionID)
 	if _, ok := req.Transaction.GetSelector().(*sppb.TransactionSelector_Begin); ok {
@@ -755,6 +797,9 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 				}
 				return client, t.updateTxState(err)
 			}
+			if !gfeLatencySinksEnabled(t.ct != nil, t.otConfig) {
+				return client, nil
+			}
 			md, err := client.Header()
 			if getGFELatencyMetricsFlag() && md != nil && t.ct != nil {
 				if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "query"); err != nil {
@@ -775,7 +820,8 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 		t.release,
 		requestIDHeaderProviderFromSpannerClient(client),
 		retryResourceExhausted,
-		allowRetryResourceExhaustedWithoutDelay)
+		allowRetryResourceExhaustedWithoutDelay,
+		options.ExperimentalBorrowRows)
 }
 
 func (t *txReadOnly) prepareExecuteSQL(ctx context.Context, stmt Statement, options QueryOptions) (*sppb.ExecuteSqlRequest, *sessionHandle, error) {
@@ -958,7 +1004,7 @@ func (t *ReadOnlyTransaction) begin(ctx context.Context) error {
 			},
 		},
 		RequestOptions: createRequestOptions(sppb.RequestOptions_PRIORITY_UNSPECIFIED, "", "", t.clientContext),
-	}, gax.WithGRPCOptions(grpc.Header(&md)))
+	}, gfeLatencyHeaderOptions(&md, t.ct != nil, t.otConfig)...)
 
 	if getGFELatencyMetricsFlag() && md != nil && t.ct != nil {
 		if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "begin_BeginTransaction"); err != nil {
@@ -1427,7 +1473,7 @@ func (t *ReadWriteTransaction) update(ctx context.Context, stmt Statement, opts 
 		hasInlineBeginTransaction = true
 	}
 	var md metadata.MD
-	resultSet, err := sh.getClient().ExecuteSql(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), req, gax.WithGRPCOptions(grpc.Header(&md)))
+	resultSet, err := sh.getClient().ExecuteSql(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), req, gfeLatencyHeaderOptions(&md, t.ct != nil, t.otConfig)...)
 
 	if getGFELatencyMetricsFlag() && md != nil && t.ct != nil {
 		if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "update"); err != nil {
@@ -1536,7 +1582,7 @@ func (t *ReadWriteTransaction) batchUpdateWithOptions(ctx context.Context, stmts
 		Seqno:          atomic.AddInt64(&t.sequenceNumber, 1),
 		RequestOptions: createRequestOptions(opts.Priority, opts.RequestTag, t.txOpts.TransactionTag, mergeClientContext(t.clientContext, opts.ClientContext)),
 		LastStatements: opts.LastStatement,
-	}, gax.WithGRPCOptions(grpc.Header(&md)))
+	}, gfeLatencyHeaderOptions(&md, t.ct != nil, t.otConfig)...)
 
 	if getGFELatencyMetricsFlag() && md != nil && t.ct != nil {
 		if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "batchUpdateWithOptions"); err != nil {
@@ -1935,7 +1981,7 @@ func (t *ReadWriteTransaction) commit(ctx context.Context, options CommitOptions
 		if includeMutations {
 			req.Mutations = mutationProtos
 		}
-		return client.Commit(contextWithOutgoingMetadata(ctx, t.sh.getMetadata(), t.disableRouteToLeader), req, gax.WithGRPCOptions(grpc.Header(&md)))
+		return client.Commit(contextWithOutgoingMetadata(ctx, t.sh.getMetadata(), t.disableRouteToLeader), req, gfeLatencyHeaderOptions(&md, t.ct != nil, t.otConfig)...)
 	}
 	// Initial commit attempt with mutations
 	res, err := performCommit(true)

@@ -1,5 +1,27 @@
 # Changes
 
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/apigateway/v1.15.0...apigateway/v1.16.0) (2026-10-01)
+
+
+### Features
+
+* Update API sources and regenerate ([#20607](https://github.com/googleapis/google-cloud-go/issues/20607)) ([395fc59](https://github.com/googleapis/google-cloud-go/commit/395fc59e067ed2576a1c8c961edf3f749633520c))
+
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/apigateway/v1.14.0...apigateway/v1.15.0) (2026-09-23)
+
+
+### Features
+
+* **all:** Update supported go versions ([#20520](https://github.com/googleapis/google-cloud-go/issues/20520)) ([90413d3](https://github.com/googleapis/google-cloud-go/commit/90413d3e9d381ef4b92e3c496d98b023c5b2d8cc))
+
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/apigateway/v1.13.0...apigateway/v1.14.0) (2026-09-17)
+
+
+### Features
+
+* Update API sources and regenerate ([#20526](https://github.com/googleapis/google-cloud-go/issues/20526)) ([e6f37a3](https://github.com/googleapis/google-cloud-go/commit/e6f37a362b6e37b0bc74e77b8d7f151dc7443fb8))
+* Update API sources and regenerate. ([e6f37a3](https://github.com/googleapis/google-cloud-go/commit/e6f37a362b6e37b0bc74e77b8d7f151dc7443fb8))
+
 ## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/apigateway/v1.12.0...apigateway/v1.13.0) (2026-07-13)
 
 

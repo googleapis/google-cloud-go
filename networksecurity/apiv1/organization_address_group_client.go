@@ -457,6 +457,67 @@ func NewOrganizationAddressGroupClient(ctx context.Context, opts ...option.Clien
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "networksecurity",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/networksecurity/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "networksecurity.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListAddressGroups = append(client.CallOptions.ListAddressGroups, gax.WithClientTracing(tracing))
+		client.CallOptions.GetAddressGroup = append(client.CallOptions.GetAddressGroup, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateAddressGroup = append(client.CallOptions.CreateAddressGroup, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateAddressGroup = append(client.CallOptions.UpdateAddressGroup, gax.WithClientTracing(tracing))
+		client.CallOptions.AddAddressGroupItems = append(client.CallOptions.AddAddressGroupItems, gax.WithClientTracing(tracing))
+		client.CallOptions.RemoveAddressGroupItems = append(client.CallOptions.RemoveAddressGroupItems, gax.WithClientTracing(tracing))
+		client.CallOptions.CloneAddressGroupItems = append(client.CallOptions.CloneAddressGroupItems, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteAddressGroup = append(client.CallOptions.DeleteAddressGroup, gax.WithClientTracing(tracing))
+		client.CallOptions.ListAddressGroupReferences = append(client.CallOptions.ListAddressGroupReferences, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "networksecurity",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/networksecurity/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "networksecurity.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListAddressGroups = append(client.CallOptions.ListAddressGroups, gax.WithClientLogging(logging))
+		client.CallOptions.GetAddressGroup = append(client.CallOptions.GetAddressGroup, gax.WithClientLogging(logging))
+		client.CallOptions.CreateAddressGroup = append(client.CallOptions.CreateAddressGroup, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateAddressGroup = append(client.CallOptions.UpdateAddressGroup, gax.WithClientLogging(logging))
+		client.CallOptions.AddAddressGroupItems = append(client.CallOptions.AddAddressGroupItems, gax.WithClientLogging(logging))
+		client.CallOptions.RemoveAddressGroupItems = append(client.CallOptions.RemoveAddressGroupItems, gax.WithClientLogging(logging))
+		client.CallOptions.CloneAddressGroupItems = append(client.CallOptions.CloneAddressGroupItems, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteAddressGroup = append(client.CallOptions.DeleteAddressGroup, gax.WithClientLogging(logging))
+		client.CallOptions.ListAddressGroupReferences = append(client.CallOptions.ListAddressGroupReferences, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -583,6 +644,67 @@ func NewOrganizationAddressGroupRESTClient(ctx context.Context, opts ...option.C
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "networksecurity",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/networksecurity/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "networksecurity.googleapis.com",
+			}),
+		)
+
+		callOpts.ListAddressGroups = append(callOpts.ListAddressGroups, gax.WithClientTracing(tracing))
+		callOpts.GetAddressGroup = append(callOpts.GetAddressGroup, gax.WithClientTracing(tracing))
+		callOpts.CreateAddressGroup = append(callOpts.CreateAddressGroup, gax.WithClientTracing(tracing))
+		callOpts.UpdateAddressGroup = append(callOpts.UpdateAddressGroup, gax.WithClientTracing(tracing))
+		callOpts.AddAddressGroupItems = append(callOpts.AddAddressGroupItems, gax.WithClientTracing(tracing))
+		callOpts.RemoveAddressGroupItems = append(callOpts.RemoveAddressGroupItems, gax.WithClientTracing(tracing))
+		callOpts.CloneAddressGroupItems = append(callOpts.CloneAddressGroupItems, gax.WithClientTracing(tracing))
+		callOpts.DeleteAddressGroup = append(callOpts.DeleteAddressGroup, gax.WithClientTracing(tracing))
+		callOpts.ListAddressGroupReferences = append(callOpts.ListAddressGroupReferences, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "networksecurity",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/networksecurity/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "networksecurity.googleapis.com",
+			}),
+		)
+
+		callOpts.ListAddressGroups = append(callOpts.ListAddressGroups, gax.WithClientLogging(logging))
+		callOpts.GetAddressGroup = append(callOpts.GetAddressGroup, gax.WithClientLogging(logging))
+		callOpts.CreateAddressGroup = append(callOpts.CreateAddressGroup, gax.WithClientLogging(logging))
+		callOpts.UpdateAddressGroup = append(callOpts.UpdateAddressGroup, gax.WithClientLogging(logging))
+		callOpts.AddAddressGroupItems = append(callOpts.AddAddressGroupItems, gax.WithClientLogging(logging))
+		callOpts.RemoveAddressGroupItems = append(callOpts.RemoveAddressGroupItems, gax.WithClientLogging(logging))
+		callOpts.CloneAddressGroupItems = append(callOpts.CloneAddressGroupItems, gax.WithClientLogging(logging))
+		callOpts.DeleteAddressGroup = append(callOpts.DeleteAddressGroup, gax.WithClientLogging(logging))
+		callOpts.ListAddressGroupReferences = append(callOpts.ListAddressGroupReferences, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -639,9 +761,6 @@ func (c *organizationAddressGroupGRPCClient) ListAddressGroups(ctx context.Conte
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.OrganizationAddressGroupService/ListAddressGroups")
 	}
@@ -691,9 +810,6 @@ func (c *organizationAddressGroupGRPCClient) GetAddressGroup(ctx context.Context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.OrganizationAddressGroupService/GetAddressGroup")
 	}
@@ -715,9 +831,6 @@ func (c *organizationAddressGroupGRPCClient) CreateAddressGroup(ctx context.Cont
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.OrganizationAddressGroupService/CreateAddressGroup")
 	}
@@ -772,9 +885,6 @@ func (c *organizationAddressGroupGRPCClient) AddAddressGroupItems(ctx context.Co
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetAddressGroup()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.OrganizationAddressGroupService/AddAddressGroupItems")
 	}
@@ -802,9 +912,6 @@ func (c *organizationAddressGroupGRPCClient) RemoveAddressGroupItems(ctx context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetAddressGroup()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.OrganizationAddressGroupService/RemoveAddressGroupItems")
 	}
@@ -832,9 +939,6 @@ func (c *organizationAddressGroupGRPCClient) CloneAddressGroupItems(ctx context.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetAddressGroup()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.OrganizationAddressGroupService/CloneAddressGroupItems")
 	}
@@ -862,9 +966,6 @@ func (c *organizationAddressGroupGRPCClient) DeleteAddressGroup(ctx context.Cont
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.OrganizationAddressGroupService/DeleteAddressGroup")
 	}
@@ -892,9 +993,6 @@ func (c *organizationAddressGroupGRPCClient) ListAddressGroupReferences(ctx cont
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetAddressGroup()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.OrganizationAddressGroupService/ListAddressGroupReferences")
 	}
@@ -1014,9 +1112,6 @@ func (c *organizationAddressGroupGRPCClient) GetIamPolicy(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
 	}
@@ -1038,9 +1133,6 @@ func (c *organizationAddressGroupGRPCClient) SetIamPolicy(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
 	}
@@ -1062,9 +1154,6 @@ func (c *organizationAddressGroupGRPCClient) TestIamPermissions(ctx context.Cont
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
 	}
@@ -1285,9 +1374,6 @@ func (c *organizationAddressGroupRESTClient) GetAddressGroup(ctx context.Context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.OrganizationAddressGroupService/GetAddressGroup")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=organizations/*/locations/*/addressGroups/*}")
@@ -1353,9 +1439,6 @@ func (c *organizationAddressGroupRESTClient) CreateAddressGroup(ctx context.Cont
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.OrganizationAddressGroupService/CreateAddressGroup")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=organizations/*/locations/*}/addressGroups")
@@ -1501,9 +1584,6 @@ func (c *organizationAddressGroupRESTClient) AddAddressGroupItems(ctx context.Co
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetAddressGroup()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.OrganizationAddressGroupService/AddAddressGroupItems")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{address_group=organizations/*/locations/*/addressGroups/*}:addItems")
@@ -1571,9 +1651,6 @@ func (c *organizationAddressGroupRESTClient) RemoveAddressGroupItems(ctx context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetAddressGroup()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.OrganizationAddressGroupService/RemoveAddressGroupItems")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{address_group=organizations/*/locations/*/addressGroups/*}:removeItems")
@@ -1641,9 +1718,6 @@ func (c *organizationAddressGroupRESTClient) CloneAddressGroupItems(ctx context.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetAddressGroup()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.OrganizationAddressGroupService/CloneAddressGroupItems")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{address_group=organizations/*/locations/*/addressGroups/*}:cloneItems")
@@ -1708,9 +1782,6 @@ func (c *organizationAddressGroupRESTClient) DeleteAddressGroup(ctx context.Cont
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.OrganizationAddressGroupService/DeleteAddressGroup")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=organizations/*/locations/*/addressGroups/*}")
@@ -2004,9 +2075,6 @@ func (c *organizationAddressGroupRESTClient) GetIamPolicy(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/addressGroups/*}:getIamPolicy")
@@ -2071,9 +2139,6 @@ func (c *organizationAddressGroupRESTClient) SetIamPolicy(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/addressGroups/*}:setIamPolicy")
@@ -2140,9 +2205,6 @@ func (c *organizationAddressGroupRESTClient) TestIamPermissions(ctx context.Cont
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/addressGroups/*}:testIamPermissions")

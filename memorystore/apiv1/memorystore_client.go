@@ -66,6 +66,14 @@ type CallOptions struct {
 	BackupInstance                        []gax.CallOption
 	StartMigration                        []gax.CallOption
 	FinishMigration                       []gax.CallOption
+	ListTokenAuthUsers                    []gax.CallOption
+	GetTokenAuthUser                      []gax.CallOption
+	ListAuthTokens                        []gax.CallOption
+	GetAuthToken                          []gax.CallOption
+	AddTokenAuthUser                      []gax.CallOption
+	DeleteTokenAuthUser                   []gax.CallOption
+	AddAuthToken                          []gax.CallOption
+	DeleteAuthToken                       []gax.CallOption
 	GetLocation                           []gax.CallOption
 	ListLocations                         []gax.CallOption
 	CancelOperation                       []gax.CallOption
@@ -147,6 +155,14 @@ func defaultCallOptions() *CallOptions {
 		BackupInstance:                        []gax.CallOption{},
 		StartMigration:                        []gax.CallOption{},
 		FinishMigration:                       []gax.CallOption{},
+		ListTokenAuthUsers:                    []gax.CallOption{},
+		GetTokenAuthUser:                      []gax.CallOption{},
+		ListAuthTokens:                        []gax.CallOption{},
+		GetAuthToken:                          []gax.CallOption{},
+		AddTokenAuthUser:                      []gax.CallOption{},
+		DeleteTokenAuthUser:                   []gax.CallOption{},
+		AddAuthToken:                          []gax.CallOption{},
+		DeleteAuthToken:                       []gax.CallOption{},
 		GetLocation:                           []gax.CallOption{},
 		ListLocations:                         []gax.CallOption{},
 		CancelOperation:                       []gax.CallOption{},
@@ -211,6 +227,14 @@ func defaultRESTCallOptions() *CallOptions {
 		BackupInstance:                        []gax.CallOption{},
 		StartMigration:                        []gax.CallOption{},
 		FinishMigration:                       []gax.CallOption{},
+		ListTokenAuthUsers:                    []gax.CallOption{},
+		GetTokenAuthUser:                      []gax.CallOption{},
+		ListAuthTokens:                        []gax.CallOption{},
+		GetAuthToken:                          []gax.CallOption{},
+		AddTokenAuthUser:                      []gax.CallOption{},
+		DeleteTokenAuthUser:                   []gax.CallOption{},
+		AddAuthToken:                          []gax.CallOption{},
+		DeleteAuthToken:                       []gax.CallOption{},
 		GetLocation:                           []gax.CallOption{},
 		ListLocations:                         []gax.CallOption{},
 		CancelOperation:                       []gax.CallOption{},
@@ -251,6 +275,18 @@ type internalClient interface {
 	StartMigrationOperation(name string) *StartMigrationOperation
 	FinishMigration(context.Context, *memorystorepb.FinishMigrationRequest, ...gax.CallOption) (*FinishMigrationOperation, error)
 	FinishMigrationOperation(name string) *FinishMigrationOperation
+	ListTokenAuthUsers(context.Context, *memorystorepb.ListTokenAuthUsersRequest, ...gax.CallOption) *TokenAuthUserIterator
+	GetTokenAuthUser(context.Context, *memorystorepb.GetTokenAuthUserRequest, ...gax.CallOption) (*memorystorepb.TokenAuthUser, error)
+	ListAuthTokens(context.Context, *memorystorepb.ListAuthTokensRequest, ...gax.CallOption) *AuthTokenIterator
+	GetAuthToken(context.Context, *memorystorepb.GetAuthTokenRequest, ...gax.CallOption) (*memorystorepb.AuthToken, error)
+	AddTokenAuthUser(context.Context, *memorystorepb.AddTokenAuthUserRequest, ...gax.CallOption) (*AddTokenAuthUserOperation, error)
+	AddTokenAuthUserOperation(name string) *AddTokenAuthUserOperation
+	DeleteTokenAuthUser(context.Context, *memorystorepb.DeleteTokenAuthUserRequest, ...gax.CallOption) (*DeleteTokenAuthUserOperation, error)
+	DeleteTokenAuthUserOperation(name string) *DeleteTokenAuthUserOperation
+	AddAuthToken(context.Context, *memorystorepb.AddAuthTokenRequest, ...gax.CallOption) (*AddAuthTokenOperation, error)
+	AddAuthTokenOperation(name string) *AddAuthTokenOperation
+	DeleteAuthToken(context.Context, *memorystorepb.DeleteAuthTokenRequest, ...gax.CallOption) (*DeleteAuthTokenOperation, error)
+	DeleteAuthTokenOperation(name string) *DeleteAuthTokenOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
@@ -470,6 +506,70 @@ func (c *Client) FinishMigrationOperation(name string) *FinishMigrationOperation
 	return c.internalClient.FinishMigrationOperation(name)
 }
 
+// ListTokenAuthUsers lists all the token auth users for a token based auth enabled instance.
+func (c *Client) ListTokenAuthUsers(ctx context.Context, req *memorystorepb.ListTokenAuthUsersRequest, opts ...gax.CallOption) *TokenAuthUserIterator {
+	return c.internalClient.ListTokenAuthUsers(ctx, req, opts...)
+}
+
+// GetTokenAuthUser gets a specific token auth user for a token based auth enabled instance.
+func (c *Client) GetTokenAuthUser(ctx context.Context, req *memorystorepb.GetTokenAuthUserRequest, opts ...gax.CallOption) (*memorystorepb.TokenAuthUser, error) {
+	return c.internalClient.GetTokenAuthUser(ctx, req, opts...)
+}
+
+// ListAuthTokens lists all the auth tokens for a specific token auth user.
+func (c *Client) ListAuthTokens(ctx context.Context, req *memorystorepb.ListAuthTokensRequest, opts ...gax.CallOption) *AuthTokenIterator {
+	return c.internalClient.ListAuthTokens(ctx, req, opts...)
+}
+
+// GetAuthToken gets a token based auth enabled instance’s auth token for a given user.
+func (c *Client) GetAuthToken(ctx context.Context, req *memorystorepb.GetAuthTokenRequest, opts ...gax.CallOption) (*memorystorepb.AuthToken, error) {
+	return c.internalClient.GetAuthToken(ctx, req, opts...)
+}
+
+// AddTokenAuthUser adds a token auth user for a token based auth enabled instance.
+func (c *Client) AddTokenAuthUser(ctx context.Context, req *memorystorepb.AddTokenAuthUserRequest, opts ...gax.CallOption) (*AddTokenAuthUserOperation, error) {
+	return c.internalClient.AddTokenAuthUser(ctx, req, opts...)
+}
+
+// AddTokenAuthUserOperation returns a new AddTokenAuthUserOperation from a given name.
+// The name must be that of a previously created AddTokenAuthUserOperation, possibly from a different process.
+func (c *Client) AddTokenAuthUserOperation(name string) *AddTokenAuthUserOperation {
+	return c.internalClient.AddTokenAuthUserOperation(name)
+}
+
+// DeleteTokenAuthUser deletes a token auth user for a token based auth enabled instance.
+func (c *Client) DeleteTokenAuthUser(ctx context.Context, req *memorystorepb.DeleteTokenAuthUserRequest, opts ...gax.CallOption) (*DeleteTokenAuthUserOperation, error) {
+	return c.internalClient.DeleteTokenAuthUser(ctx, req, opts...)
+}
+
+// DeleteTokenAuthUserOperation returns a new DeleteTokenAuthUserOperation from a given name.
+// The name must be that of a previously created DeleteTokenAuthUserOperation, possibly from a different process.
+func (c *Client) DeleteTokenAuthUserOperation(name string) *DeleteTokenAuthUserOperation {
+	return c.internalClient.DeleteTokenAuthUserOperation(name)
+}
+
+// AddAuthToken adds a token for a user of a token based auth enabled instance.
+func (c *Client) AddAuthToken(ctx context.Context, req *memorystorepb.AddAuthTokenRequest, opts ...gax.CallOption) (*AddAuthTokenOperation, error) {
+	return c.internalClient.AddAuthToken(ctx, req, opts...)
+}
+
+// AddAuthTokenOperation returns a new AddAuthTokenOperation from a given name.
+// The name must be that of a previously created AddAuthTokenOperation, possibly from a different process.
+func (c *Client) AddAuthTokenOperation(name string) *AddAuthTokenOperation {
+	return c.internalClient.AddAuthTokenOperation(name)
+}
+
+// DeleteAuthToken deletes a token for a user of a token based auth enabled instance.
+func (c *Client) DeleteAuthToken(ctx context.Context, req *memorystorepb.DeleteAuthTokenRequest, opts ...gax.CallOption) (*DeleteAuthTokenOperation, error) {
+	return c.internalClient.DeleteAuthToken(ctx, req, opts...)
+}
+
+// DeleteAuthTokenOperation returns a new DeleteAuthTokenOperation from a given name.
+// The name must be that of a previously created DeleteAuthTokenOperation, possibly from a different process.
+func (c *Client) DeleteAuthTokenOperation(name string) *DeleteAuthTokenOperation {
+	return c.internalClient.DeleteAuthTokenOperation(name)
+}
+
 // GetLocation gets information about a location.
 func (c *Client) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	return c.internalClient.GetLocation(ctx, req, opts...)
@@ -611,12 +711,107 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.BackupInstance = append(client.CallOptions.BackupInstance, gax.WithClientMetrics(metrics))
 		client.CallOptions.StartMigration = append(client.CallOptions.StartMigration, gax.WithClientMetrics(metrics))
 		client.CallOptions.FinishMigration = append(client.CallOptions.FinishMigration, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListTokenAuthUsers = append(client.CallOptions.ListTokenAuthUsers, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetTokenAuthUser = append(client.CallOptions.GetTokenAuthUser, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListAuthTokens = append(client.CallOptions.ListAuthTokens, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetAuthToken = append(client.CallOptions.GetAuthToken, gax.WithClientMetrics(metrics))
+		client.CallOptions.AddTokenAuthUser = append(client.CallOptions.AddTokenAuthUser, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteTokenAuthUser = append(client.CallOptions.DeleteTokenAuthUser, gax.WithClientMetrics(metrics))
+		client.CallOptions.AddAuthToken = append(client.CallOptions.AddAuthToken, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteAuthToken = append(client.CallOptions.DeleteAuthToken, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
 		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "memorystore",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/memorystore/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "memorystore.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListInstances = append(client.CallOptions.ListInstances, gax.WithClientTracing(tracing))
+		client.CallOptions.GetInstance = append(client.CallOptions.GetInstance, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateInstance = append(client.CallOptions.CreateInstance, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateInstance = append(client.CallOptions.UpdateInstance, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteInstance = append(client.CallOptions.DeleteInstance, gax.WithClientTracing(tracing))
+		client.CallOptions.GetCertificateAuthority = append(client.CallOptions.GetCertificateAuthority, gax.WithClientTracing(tracing))
+		client.CallOptions.GetSharedRegionalCertificateAuthority = append(client.CallOptions.GetSharedRegionalCertificateAuthority, gax.WithClientTracing(tracing))
+		client.CallOptions.RescheduleMaintenance = append(client.CallOptions.RescheduleMaintenance, gax.WithClientTracing(tracing))
+		client.CallOptions.ListBackupCollections = append(client.CallOptions.ListBackupCollections, gax.WithClientTracing(tracing))
+		client.CallOptions.GetBackupCollection = append(client.CallOptions.GetBackupCollection, gax.WithClientTracing(tracing))
+		client.CallOptions.ListBackups = append(client.CallOptions.ListBackups, gax.WithClientTracing(tracing))
+		client.CallOptions.GetBackup = append(client.CallOptions.GetBackup, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteBackup = append(client.CallOptions.DeleteBackup, gax.WithClientTracing(tracing))
+		client.CallOptions.ExportBackup = append(client.CallOptions.ExportBackup, gax.WithClientTracing(tracing))
+		client.CallOptions.BackupInstance = append(client.CallOptions.BackupInstance, gax.WithClientTracing(tracing))
+		client.CallOptions.StartMigration = append(client.CallOptions.StartMigration, gax.WithClientTracing(tracing))
+		client.CallOptions.FinishMigration = append(client.CallOptions.FinishMigration, gax.WithClientTracing(tracing))
+		client.CallOptions.ListTokenAuthUsers = append(client.CallOptions.ListTokenAuthUsers, gax.WithClientTracing(tracing))
+		client.CallOptions.GetTokenAuthUser = append(client.CallOptions.GetTokenAuthUser, gax.WithClientTracing(tracing))
+		client.CallOptions.ListAuthTokens = append(client.CallOptions.ListAuthTokens, gax.WithClientTracing(tracing))
+		client.CallOptions.GetAuthToken = append(client.CallOptions.GetAuthToken, gax.WithClientTracing(tracing))
+		client.CallOptions.AddTokenAuthUser = append(client.CallOptions.AddTokenAuthUser, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteTokenAuthUser = append(client.CallOptions.DeleteTokenAuthUser, gax.WithClientTracing(tracing))
+		client.CallOptions.AddAuthToken = append(client.CallOptions.AddAuthToken, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteAuthToken = append(client.CallOptions.DeleteAuthToken, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "memorystore",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/memorystore/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "memorystore.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListInstances = append(client.CallOptions.ListInstances, gax.WithClientLogging(logging))
+		client.CallOptions.GetInstance = append(client.CallOptions.GetInstance, gax.WithClientLogging(logging))
+		client.CallOptions.CreateInstance = append(client.CallOptions.CreateInstance, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateInstance = append(client.CallOptions.UpdateInstance, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteInstance = append(client.CallOptions.DeleteInstance, gax.WithClientLogging(logging))
+		client.CallOptions.GetCertificateAuthority = append(client.CallOptions.GetCertificateAuthority, gax.WithClientLogging(logging))
+		client.CallOptions.GetSharedRegionalCertificateAuthority = append(client.CallOptions.GetSharedRegionalCertificateAuthority, gax.WithClientLogging(logging))
+		client.CallOptions.RescheduleMaintenance = append(client.CallOptions.RescheduleMaintenance, gax.WithClientLogging(logging))
+		client.CallOptions.ListBackupCollections = append(client.CallOptions.ListBackupCollections, gax.WithClientLogging(logging))
+		client.CallOptions.GetBackupCollection = append(client.CallOptions.GetBackupCollection, gax.WithClientLogging(logging))
+		client.CallOptions.ListBackups = append(client.CallOptions.ListBackups, gax.WithClientLogging(logging))
+		client.CallOptions.GetBackup = append(client.CallOptions.GetBackup, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteBackup = append(client.CallOptions.DeleteBackup, gax.WithClientLogging(logging))
+		client.CallOptions.ExportBackup = append(client.CallOptions.ExportBackup, gax.WithClientLogging(logging))
+		client.CallOptions.BackupInstance = append(client.CallOptions.BackupInstance, gax.WithClientLogging(logging))
+		client.CallOptions.StartMigration = append(client.CallOptions.StartMigration, gax.WithClientLogging(logging))
+		client.CallOptions.FinishMigration = append(client.CallOptions.FinishMigration, gax.WithClientLogging(logging))
+		client.CallOptions.ListTokenAuthUsers = append(client.CallOptions.ListTokenAuthUsers, gax.WithClientLogging(logging))
+		client.CallOptions.GetTokenAuthUser = append(client.CallOptions.GetTokenAuthUser, gax.WithClientLogging(logging))
+		client.CallOptions.ListAuthTokens = append(client.CallOptions.ListAuthTokens, gax.WithClientLogging(logging))
+		client.CallOptions.GetAuthToken = append(client.CallOptions.GetAuthToken, gax.WithClientLogging(logging))
+		client.CallOptions.AddTokenAuthUser = append(client.CallOptions.AddTokenAuthUser, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteTokenAuthUser = append(client.CallOptions.DeleteTokenAuthUser, gax.WithClientLogging(logging))
+		client.CallOptions.AddAuthToken = append(client.CallOptions.AddAuthToken, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteAuthToken = append(client.CallOptions.DeleteAuthToken, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
 	}
 
 	client.internalClient = c
@@ -740,12 +935,107 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.BackupInstance = append(callOpts.BackupInstance, gax.WithClientMetrics(metrics))
 		callOpts.StartMigration = append(callOpts.StartMigration, gax.WithClientMetrics(metrics))
 		callOpts.FinishMigration = append(callOpts.FinishMigration, gax.WithClientMetrics(metrics))
+		callOpts.ListTokenAuthUsers = append(callOpts.ListTokenAuthUsers, gax.WithClientMetrics(metrics))
+		callOpts.GetTokenAuthUser = append(callOpts.GetTokenAuthUser, gax.WithClientMetrics(metrics))
+		callOpts.ListAuthTokens = append(callOpts.ListAuthTokens, gax.WithClientMetrics(metrics))
+		callOpts.GetAuthToken = append(callOpts.GetAuthToken, gax.WithClientMetrics(metrics))
+		callOpts.AddTokenAuthUser = append(callOpts.AddTokenAuthUser, gax.WithClientMetrics(metrics))
+		callOpts.DeleteTokenAuthUser = append(callOpts.DeleteTokenAuthUser, gax.WithClientMetrics(metrics))
+		callOpts.AddAuthToken = append(callOpts.AddAuthToken, gax.WithClientMetrics(metrics))
+		callOpts.DeleteAuthToken = append(callOpts.DeleteAuthToken, gax.WithClientMetrics(metrics))
 		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
 		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
 		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
 		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientMetrics(metrics))
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "memorystore",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/memorystore/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "memorystore.googleapis.com",
+			}),
+		)
+
+		callOpts.ListInstances = append(callOpts.ListInstances, gax.WithClientTracing(tracing))
+		callOpts.GetInstance = append(callOpts.GetInstance, gax.WithClientTracing(tracing))
+		callOpts.CreateInstance = append(callOpts.CreateInstance, gax.WithClientTracing(tracing))
+		callOpts.UpdateInstance = append(callOpts.UpdateInstance, gax.WithClientTracing(tracing))
+		callOpts.DeleteInstance = append(callOpts.DeleteInstance, gax.WithClientTracing(tracing))
+		callOpts.GetCertificateAuthority = append(callOpts.GetCertificateAuthority, gax.WithClientTracing(tracing))
+		callOpts.GetSharedRegionalCertificateAuthority = append(callOpts.GetSharedRegionalCertificateAuthority, gax.WithClientTracing(tracing))
+		callOpts.RescheduleMaintenance = append(callOpts.RescheduleMaintenance, gax.WithClientTracing(tracing))
+		callOpts.ListBackupCollections = append(callOpts.ListBackupCollections, gax.WithClientTracing(tracing))
+		callOpts.GetBackupCollection = append(callOpts.GetBackupCollection, gax.WithClientTracing(tracing))
+		callOpts.ListBackups = append(callOpts.ListBackups, gax.WithClientTracing(tracing))
+		callOpts.GetBackup = append(callOpts.GetBackup, gax.WithClientTracing(tracing))
+		callOpts.DeleteBackup = append(callOpts.DeleteBackup, gax.WithClientTracing(tracing))
+		callOpts.ExportBackup = append(callOpts.ExportBackup, gax.WithClientTracing(tracing))
+		callOpts.BackupInstance = append(callOpts.BackupInstance, gax.WithClientTracing(tracing))
+		callOpts.StartMigration = append(callOpts.StartMigration, gax.WithClientTracing(tracing))
+		callOpts.FinishMigration = append(callOpts.FinishMigration, gax.WithClientTracing(tracing))
+		callOpts.ListTokenAuthUsers = append(callOpts.ListTokenAuthUsers, gax.WithClientTracing(tracing))
+		callOpts.GetTokenAuthUser = append(callOpts.GetTokenAuthUser, gax.WithClientTracing(tracing))
+		callOpts.ListAuthTokens = append(callOpts.ListAuthTokens, gax.WithClientTracing(tracing))
+		callOpts.GetAuthToken = append(callOpts.GetAuthToken, gax.WithClientTracing(tracing))
+		callOpts.AddTokenAuthUser = append(callOpts.AddTokenAuthUser, gax.WithClientTracing(tracing))
+		callOpts.DeleteTokenAuthUser = append(callOpts.DeleteTokenAuthUser, gax.WithClientTracing(tracing))
+		callOpts.AddAuthToken = append(callOpts.AddAuthToken, gax.WithClientTracing(tracing))
+		callOpts.DeleteAuthToken = append(callOpts.DeleteAuthToken, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "memorystore",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/memorystore/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "memorystore.googleapis.com",
+			}),
+		)
+
+		callOpts.ListInstances = append(callOpts.ListInstances, gax.WithClientLogging(logging))
+		callOpts.GetInstance = append(callOpts.GetInstance, gax.WithClientLogging(logging))
+		callOpts.CreateInstance = append(callOpts.CreateInstance, gax.WithClientLogging(logging))
+		callOpts.UpdateInstance = append(callOpts.UpdateInstance, gax.WithClientLogging(logging))
+		callOpts.DeleteInstance = append(callOpts.DeleteInstance, gax.WithClientLogging(logging))
+		callOpts.GetCertificateAuthority = append(callOpts.GetCertificateAuthority, gax.WithClientLogging(logging))
+		callOpts.GetSharedRegionalCertificateAuthority = append(callOpts.GetSharedRegionalCertificateAuthority, gax.WithClientLogging(logging))
+		callOpts.RescheduleMaintenance = append(callOpts.RescheduleMaintenance, gax.WithClientLogging(logging))
+		callOpts.ListBackupCollections = append(callOpts.ListBackupCollections, gax.WithClientLogging(logging))
+		callOpts.GetBackupCollection = append(callOpts.GetBackupCollection, gax.WithClientLogging(logging))
+		callOpts.ListBackups = append(callOpts.ListBackups, gax.WithClientLogging(logging))
+		callOpts.GetBackup = append(callOpts.GetBackup, gax.WithClientLogging(logging))
+		callOpts.DeleteBackup = append(callOpts.DeleteBackup, gax.WithClientLogging(logging))
+		callOpts.ExportBackup = append(callOpts.ExportBackup, gax.WithClientLogging(logging))
+		callOpts.BackupInstance = append(callOpts.BackupInstance, gax.WithClientLogging(logging))
+		callOpts.StartMigration = append(callOpts.StartMigration, gax.WithClientLogging(logging))
+		callOpts.FinishMigration = append(callOpts.FinishMigration, gax.WithClientLogging(logging))
+		callOpts.ListTokenAuthUsers = append(callOpts.ListTokenAuthUsers, gax.WithClientLogging(logging))
+		callOpts.GetTokenAuthUser = append(callOpts.GetTokenAuthUser, gax.WithClientLogging(logging))
+		callOpts.ListAuthTokens = append(callOpts.ListAuthTokens, gax.WithClientLogging(logging))
+		callOpts.GetAuthToken = append(callOpts.GetAuthToken, gax.WithClientLogging(logging))
+		callOpts.AddTokenAuthUser = append(callOpts.AddTokenAuthUser, gax.WithClientLogging(logging))
+		callOpts.DeleteTokenAuthUser = append(callOpts.DeleteTokenAuthUser, gax.WithClientLogging(logging))
+		callOpts.AddAuthToken = append(callOpts.AddAuthToken, gax.WithClientLogging(logging))
+		callOpts.DeleteAuthToken = append(callOpts.DeleteAuthToken, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
 	}
 
 	lroOpts := []option.ClientOption{
@@ -803,9 +1093,6 @@ func (c *gRPCClient) ListInstances(ctx context.Context, req *memorystorepb.ListI
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//memorystore.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/ListInstances")
 	}
@@ -855,9 +1142,6 @@ func (c *gRPCClient) GetInstance(ctx context.Context, req *memorystorepb.GetInst
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//memorystore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/GetInstance")
 	}
@@ -879,9 +1163,6 @@ func (c *gRPCClient) CreateInstance(ctx context.Context, req *memorystorepb.Crea
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//memorystore.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/CreateInstance")
 	}
@@ -936,9 +1217,6 @@ func (c *gRPCClient) DeleteInstance(ctx context.Context, req *memorystorepb.Dele
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//memorystore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/DeleteInstance")
 	}
@@ -966,9 +1244,6 @@ func (c *gRPCClient) GetCertificateAuthority(ctx context.Context, req *memorysto
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//memorystore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/GetCertificateAuthority")
 	}
@@ -990,9 +1265,6 @@ func (c *gRPCClient) GetSharedRegionalCertificateAuthority(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//memorystore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/GetSharedRegionalCertificateAuthority")
 	}
@@ -1014,9 +1286,6 @@ func (c *gRPCClient) RescheduleMaintenance(ctx context.Context, req *memorystore
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//memorystore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/RescheduleMaintenance")
 	}
@@ -1044,9 +1313,6 @@ func (c *gRPCClient) ListBackupCollections(ctx context.Context, req *memorystore
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//memorystore.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/ListBackupCollections")
 	}
@@ -1096,9 +1362,6 @@ func (c *gRPCClient) GetBackupCollection(ctx context.Context, req *memorystorepb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//memorystore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/GetBackupCollection")
 	}
@@ -1120,9 +1383,6 @@ func (c *gRPCClient) ListBackups(ctx context.Context, req *memorystorepb.ListBac
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//memorystore.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/ListBackups")
 	}
@@ -1172,9 +1432,6 @@ func (c *gRPCClient) GetBackup(ctx context.Context, req *memorystorepb.GetBackup
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//memorystore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/GetBackup")
 	}
@@ -1196,9 +1453,6 @@ func (c *gRPCClient) DeleteBackup(ctx context.Context, req *memorystorepb.Delete
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//memorystore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/DeleteBackup")
 	}
@@ -1226,9 +1480,6 @@ func (c *gRPCClient) ExportBackup(ctx context.Context, req *memorystorepb.Export
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//memorystore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/ExportBackup")
 	}
@@ -1256,9 +1507,6 @@ func (c *gRPCClient) BackupInstance(ctx context.Context, req *memorystorepb.Back
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//memorystore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/BackupInstance")
 	}
@@ -1286,9 +1534,6 @@ func (c *gRPCClient) StartMigration(ctx context.Context, req *memorystorepb.Star
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//memorystore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/StartMigration")
 	}
@@ -1316,9 +1561,6 @@ func (c *gRPCClient) FinishMigration(ctx context.Context, req *memorystorepb.Fin
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//memorystore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/FinishMigration")
 	}
@@ -1337,6 +1579,254 @@ func (c *gRPCClient) FinishMigration(ctx context.Context, req *memorystorepb.Fin
 		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
 	}
 	return &FinishMigrationOperation{
+		lro: lro,
+	}, nil
+}
+
+func (c *gRPCClient) ListTokenAuthUsers(ctx context.Context, req *memorystorepb.ListTokenAuthUsersRequest, opts ...gax.CallOption) *TokenAuthUserIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/ListTokenAuthUsers")
+	}
+	opts = append((*c.CallOptions).ListTokenAuthUsers[0:len((*c.CallOptions).ListTokenAuthUsers):len((*c.CallOptions).ListTokenAuthUsers)], opts...)
+	it := &TokenAuthUserIterator{}
+	req = proto.CloneOf(req)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*memorystorepb.TokenAuthUser, string, error) {
+		resp := &memorystorepb.ListTokenAuthUsersResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListTokenAuthUsers, req, settings.GRPC, c.logger, "ListTokenAuthUsers")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetTokenAuthUsers(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) GetTokenAuthUser(ctx context.Context, req *memorystorepb.GetTokenAuthUserRequest, opts ...gax.CallOption) (*memorystorepb.TokenAuthUser, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/GetTokenAuthUser")
+	}
+	opts = append((*c.CallOptions).GetTokenAuthUser[0:len((*c.CallOptions).GetTokenAuthUser):len((*c.CallOptions).GetTokenAuthUser)], opts...)
+	var resp *memorystorepb.TokenAuthUser
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetTokenAuthUser, req, settings.GRPC, c.logger, "GetTokenAuthUser")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListAuthTokens(ctx context.Context, req *memorystorepb.ListAuthTokensRequest, opts ...gax.CallOption) *AuthTokenIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/ListAuthTokens")
+	}
+	opts = append((*c.CallOptions).ListAuthTokens[0:len((*c.CallOptions).ListAuthTokens):len((*c.CallOptions).ListAuthTokens)], opts...)
+	it := &AuthTokenIterator{}
+	req = proto.CloneOf(req)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*memorystorepb.AuthToken, string, error) {
+		resp := &memorystorepb.ListAuthTokensResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListAuthTokens, req, settings.GRPC, c.logger, "ListAuthTokens")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetAuthTokens(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) GetAuthToken(ctx context.Context, req *memorystorepb.GetAuthTokenRequest, opts ...gax.CallOption) (*memorystorepb.AuthToken, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/GetAuthToken")
+	}
+	opts = append((*c.CallOptions).GetAuthToken[0:len((*c.CallOptions).GetAuthToken):len((*c.CallOptions).GetAuthToken)], opts...)
+	var resp *memorystorepb.AuthToken
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetAuthToken, req, settings.GRPC, c.logger, "GetAuthToken")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) AddTokenAuthUser(ctx context.Context, req *memorystorepb.AddTokenAuthUserRequest, opts ...gax.CallOption) (*AddTokenAuthUserOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "instance", url.QueryEscape(req.GetInstance()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/AddTokenAuthUser")
+	}
+	opts = append((*c.CallOptions).AddTokenAuthUser[0:len((*c.CallOptions).AddTokenAuthUser):len((*c.CallOptions).AddTokenAuthUser)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.AddTokenAuthUser, req, settings.GRPC, c.logger, "AddTokenAuthUser")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*memorystore.AddTokenAuthUserOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &AddTokenAuthUserOperation{
+		lro: lro,
+	}, nil
+}
+
+func (c *gRPCClient) DeleteTokenAuthUser(ctx context.Context, req *memorystorepb.DeleteTokenAuthUserRequest, opts ...gax.CallOption) (*DeleteTokenAuthUserOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/DeleteTokenAuthUser")
+	}
+	opts = append((*c.CallOptions).DeleteTokenAuthUser[0:len((*c.CallOptions).DeleteTokenAuthUser):len((*c.CallOptions).DeleteTokenAuthUser)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.DeleteTokenAuthUser, req, settings.GRPC, c.logger, "DeleteTokenAuthUser")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*memorystore.DeleteTokenAuthUserOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &DeleteTokenAuthUserOperation{
+		lro: lro,
+	}, nil
+}
+
+func (c *gRPCClient) AddAuthToken(ctx context.Context, req *memorystorepb.AddAuthTokenRequest, opts ...gax.CallOption) (*AddAuthTokenOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "token_auth_user", url.QueryEscape(req.GetTokenAuthUser()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/AddAuthToken")
+	}
+	opts = append((*c.CallOptions).AddAuthToken[0:len((*c.CallOptions).AddAuthToken):len((*c.CallOptions).AddAuthToken)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.AddAuthToken, req, settings.GRPC, c.logger, "AddAuthToken")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*memorystore.AddAuthTokenOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &AddAuthTokenOperation{
+		lro: lro,
+	}, nil
+}
+
+func (c *gRPCClient) DeleteAuthToken(ctx context.Context, req *memorystorepb.DeleteAuthTokenRequest, opts ...gax.CallOption) (*DeleteAuthTokenOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/DeleteAuthToken")
+	}
+	opts = append((*c.CallOptions).DeleteAuthToken[0:len((*c.CallOptions).DeleteAuthToken):len((*c.CallOptions).DeleteAuthToken)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.DeleteAuthToken, req, settings.GRPC, c.logger, "DeleteAuthToken")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*memorystore.DeleteAuthTokenOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &DeleteAuthTokenOperation{
 		lro: lro,
 	}, nil
 }
@@ -1618,9 +2108,6 @@ func (c *restClient) GetInstance(ctx context.Context, req *memorystorepb.GetInst
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//memorystore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/GetInstance")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*}")
@@ -1686,9 +2173,6 @@ func (c *restClient) CreateInstance(ctx context.Context, req *memorystorepb.Crea
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//memorystore.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/CreateInstance")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/instances")
@@ -1831,9 +2315,6 @@ func (c *restClient) DeleteInstance(ctx context.Context, req *memorystorepb.Dele
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//memorystore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/DeleteInstance")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*}")
@@ -1895,9 +2376,6 @@ func (c *restClient) GetCertificateAuthority(ctx context.Context, req *memorysto
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//memorystore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/GetCertificateAuthority")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*}/certificateAuthority")
@@ -1953,9 +2431,6 @@ func (c *restClient) GetSharedRegionalCertificateAuthority(ctx context.Context, 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//memorystore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/GetSharedRegionalCertificateAuthority")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/sharedRegionalCertificateAuthority}")
@@ -2016,9 +2491,6 @@ func (c *restClient) RescheduleMaintenance(ctx context.Context, req *memorystore
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//memorystore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/RescheduleMaintenance")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*}:rescheduleMaintenance")
@@ -2162,9 +2634,6 @@ func (c *restClient) GetBackupCollection(ctx context.Context, req *memorystorepb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//memorystore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/GetBackupCollection")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/backupCollections/*}")
@@ -2297,9 +2766,6 @@ func (c *restClient) GetBackup(ctx context.Context, req *memorystorepb.GetBackup
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//memorystore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/GetBackup")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/backupCollections/*/backups/*}")
@@ -2357,9 +2823,6 @@ func (c *restClient) DeleteBackup(ctx context.Context, req *memorystorepb.Delete
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//memorystore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/DeleteBackup")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/backupCollections/*/backups/*}")
@@ -2427,9 +2890,6 @@ func (c *restClient) ExportBackup(ctx context.Context, req *memorystorepb.Export
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//memorystore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/ExportBackup")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/backupCollections/*/backups/*}:export")
@@ -2508,9 +2968,6 @@ func (c *restClient) BackupInstance(ctx context.Context, req *memorystorepb.Back
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//memorystore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/BackupInstance")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*}:backup")
@@ -2587,9 +3044,6 @@ func (c *restClient) StartMigration(ctx context.Context, req *memorystorepb.Star
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//memorystore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/StartMigration")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*}:startMigration")
@@ -2664,9 +3118,6 @@ func (c *restClient) FinishMigration(ctx context.Context, req *memorystorepb.Fin
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//memorystore.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/FinishMigration")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*}:finishMigration")
@@ -2704,6 +3155,544 @@ func (c *restClient) FinishMigration(ctx context.Context, req *memorystorepb.Fin
 		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
 	}
 	return &FinishMigrationOperation{
+		lro:      lro,
+		pollPath: override,
+	}, nil
+}
+
+// ListTokenAuthUsers lists all the token auth users for a token based auth enabled instance.
+func (c *restClient) ListTokenAuthUsers(ctx context.Context, req *memorystorepb.ListTokenAuthUsersRequest, opts ...gax.CallOption) *TokenAuthUserIterator {
+	it := &TokenAuthUserIterator{}
+	req = proto.CloneOf(req)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*memorystorepb.TokenAuthUser, string, error) {
+		resp := &memorystorepb.ListTokenAuthUsersResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/tokenAuthUsers", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListTokenAuthUsers")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetTokenAuthUsers(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetTokenAuthUser gets a specific token auth user for a token based auth enabled instance.
+func (c *restClient) GetTokenAuthUser(ctx context.Context, req *memorystorepb.GetTokenAuthUserRequest, opts ...gax.CallOption) (*memorystorepb.TokenAuthUser, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/GetTokenAuthUser")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/tokenAuthUsers/*}")
+	}
+	opts = append((*c.CallOptions).GetTokenAuthUser[0:len((*c.CallOptions).GetTokenAuthUser):len((*c.CallOptions).GetTokenAuthUser)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &memorystorepb.TokenAuthUser{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetTokenAuthUser")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListAuthTokens lists all the auth tokens for a specific token auth user.
+func (c *restClient) ListAuthTokens(ctx context.Context, req *memorystorepb.ListAuthTokensRequest, opts ...gax.CallOption) *AuthTokenIterator {
+	it := &AuthTokenIterator{}
+	req = proto.CloneOf(req)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*memorystorepb.AuthToken, string, error) {
+		resp := &memorystorepb.ListAuthTokensResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/authTokens", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListAuthTokens")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetAuthTokens(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetAuthToken gets a token based auth enabled instance’s auth token for a given user.
+func (c *restClient) GetAuthToken(ctx context.Context, req *memorystorepb.GetAuthTokenRequest, opts ...gax.CallOption) (*memorystorepb.AuthToken, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/GetAuthToken")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/tokenAuthUsers/*/authTokens/*}")
+	}
+	opts = append((*c.CallOptions).GetAuthToken[0:len((*c.CallOptions).GetAuthToken):len((*c.CallOptions).GetAuthToken)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &memorystorepb.AuthToken{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetAuthToken")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// AddTokenAuthUser adds a token auth user for a token based auth enabled instance.
+func (c *restClient) AddTokenAuthUser(ctx context.Context, req *memorystorepb.AddTokenAuthUserRequest, opts ...gax.CallOption) (*AddTokenAuthUserOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:addTokenAuthUser", req.GetInstance())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "instance", url.QueryEscape(req.GetInstance()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/AddTokenAuthUser")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{instance=projects/*/locations/*/instances/*}:addTokenAuthUser")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "AddTokenAuthUser")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*memorystore.AddTokenAuthUserOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &AddTokenAuthUserOperation{
+		lro:      lro,
+		pollPath: override,
+	}, nil
+}
+
+// DeleteTokenAuthUser deletes a token auth user for a token based auth enabled instance.
+func (c *restClient) DeleteTokenAuthUser(ctx context.Context, req *memorystorepb.DeleteTokenAuthUserRequest, opts ...gax.CallOption) (*DeleteTokenAuthUserOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetForce() {
+		params.Add("force", fmt.Sprintf("%v", req.GetForce()))
+	}
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/DeleteTokenAuthUser")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/tokenAuthUsers/*}")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteTokenAuthUser")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*memorystore.DeleteTokenAuthUserOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &DeleteTokenAuthUserOperation{
+		lro:      lro,
+		pollPath: override,
+	}, nil
+}
+
+// AddAuthToken adds a token for a user of a token based auth enabled instance.
+func (c *restClient) AddAuthToken(ctx context.Context, req *memorystorepb.AddAuthTokenRequest, opts ...gax.CallOption) (*AddAuthTokenOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:addAuthToken", req.GetTokenAuthUser())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "token_auth_user", url.QueryEscape(req.GetTokenAuthUser()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/AddAuthToken")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{token_auth_user=projects/*/locations/*/instances/*/tokenAuthUsers/*}:addAuthToken")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "AddAuthToken")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*memorystore.AddAuthTokenOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &AddAuthTokenOperation{
+		lro:      lro,
+		pollPath: override,
+	}, nil
+}
+
+// DeleteAuthToken deletes a token for a user of a token based auth enabled instance.
+func (c *restClient) DeleteAuthToken(ctx context.Context, req *memorystorepb.DeleteAuthTokenRequest, opts ...gax.CallOption) (*DeleteAuthTokenOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.memorystore.v1.Memorystore/DeleteAuthToken")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/tokenAuthUsers/*/authTokens/*}")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteAuthToken")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*memorystore.DeleteAuthTokenOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &DeleteAuthTokenOperation{
 		lro:      lro,
 		pollPath: override,
 	}, nil
@@ -3075,6 +4064,42 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	return it
 }
 
+// AddAuthTokenOperation returns a new AddAuthTokenOperation from a given name.
+// The name must be that of a previously created AddAuthTokenOperation, possibly from a different process.
+func (c *gRPCClient) AddAuthTokenOperation(name string) *AddAuthTokenOperation {
+	return &AddAuthTokenOperation{
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*memorystore.AddAuthTokenOperation"),
+	}
+}
+
+// AddAuthTokenOperation returns a new AddAuthTokenOperation from a given name.
+// The name must be that of a previously created AddAuthTokenOperation, possibly from a different process.
+func (c *restClient) AddAuthTokenOperation(name string) *AddAuthTokenOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &AddAuthTokenOperation{
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*memorystore.AddAuthTokenOperation"),
+		pollPath: override,
+	}
+}
+
+// AddTokenAuthUserOperation returns a new AddTokenAuthUserOperation from a given name.
+// The name must be that of a previously created AddTokenAuthUserOperation, possibly from a different process.
+func (c *gRPCClient) AddTokenAuthUserOperation(name string) *AddTokenAuthUserOperation {
+	return &AddTokenAuthUserOperation{
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*memorystore.AddTokenAuthUserOperation"),
+	}
+}
+
+// AddTokenAuthUserOperation returns a new AddTokenAuthUserOperation from a given name.
+// The name must be that of a previously created AddTokenAuthUserOperation, possibly from a different process.
+func (c *restClient) AddTokenAuthUserOperation(name string) *AddTokenAuthUserOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &AddTokenAuthUserOperation{
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*memorystore.AddTokenAuthUserOperation"),
+		pollPath: override,
+	}
+}
+
 // BackupInstanceOperation returns a new BackupInstanceOperation from a given name.
 // The name must be that of a previously created BackupInstanceOperation, possibly from a different process.
 func (c *gRPCClient) BackupInstanceOperation(name string) *BackupInstanceOperation {
@@ -3111,6 +4136,24 @@ func (c *restClient) CreateInstanceOperation(name string) *CreateInstanceOperati
 	}
 }
 
+// DeleteAuthTokenOperation returns a new DeleteAuthTokenOperation from a given name.
+// The name must be that of a previously created DeleteAuthTokenOperation, possibly from a different process.
+func (c *gRPCClient) DeleteAuthTokenOperation(name string) *DeleteAuthTokenOperation {
+	return &DeleteAuthTokenOperation{
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*memorystore.DeleteAuthTokenOperation"),
+	}
+}
+
+// DeleteAuthTokenOperation returns a new DeleteAuthTokenOperation from a given name.
+// The name must be that of a previously created DeleteAuthTokenOperation, possibly from a different process.
+func (c *restClient) DeleteAuthTokenOperation(name string) *DeleteAuthTokenOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteAuthTokenOperation{
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*memorystore.DeleteAuthTokenOperation"),
+		pollPath: override,
+	}
+}
+
 // DeleteBackupOperation returns a new DeleteBackupOperation from a given name.
 // The name must be that of a previously created DeleteBackupOperation, possibly from a different process.
 func (c *gRPCClient) DeleteBackupOperation(name string) *DeleteBackupOperation {
@@ -3143,6 +4186,24 @@ func (c *restClient) DeleteInstanceOperation(name string) *DeleteInstanceOperati
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteInstanceOperation{
 		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*memorystore.DeleteInstanceOperation"),
+		pollPath: override,
+	}
+}
+
+// DeleteTokenAuthUserOperation returns a new DeleteTokenAuthUserOperation from a given name.
+// The name must be that of a previously created DeleteTokenAuthUserOperation, possibly from a different process.
+func (c *gRPCClient) DeleteTokenAuthUserOperation(name string) *DeleteTokenAuthUserOperation {
+	return &DeleteTokenAuthUserOperation{
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*memorystore.DeleteTokenAuthUserOperation"),
+	}
+}
+
+// DeleteTokenAuthUserOperation returns a new DeleteTokenAuthUserOperation from a given name.
+// The name must be that of a previously created DeleteTokenAuthUserOperation, possibly from a different process.
+func (c *restClient) DeleteTokenAuthUserOperation(name string) *DeleteTokenAuthUserOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteTokenAuthUserOperation{
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*memorystore.DeleteTokenAuthUserOperation"),
 		pollPath: override,
 	}
 }

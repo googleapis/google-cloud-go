@@ -18,11 +18,13 @@ package datafusion
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	datafusionpb "cloud.google.com/go/datafusion/apiv1/datafusionpb"
 	"cloud.google.com/go/longrunning"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
 
@@ -271,6 +273,12 @@ func (op *UpdateInstanceOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *InstanceIterator) All() iter.Seq2[*datafusionpb.Instance, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // InstanceIterator manages a stream of *datafusionpb.Instance.
 type InstanceIterator struct {
 	items    []*datafusionpb.Instance
@@ -316,6 +324,12 @@ func (it *InstanceIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *VersionIterator) All() iter.Seq2[*datafusionpb.Version, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // VersionIterator manages a stream of *datafusionpb.Version.

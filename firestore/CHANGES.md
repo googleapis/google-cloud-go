@@ -1,5 +1,19 @@
 # Changes
 
+## [1.26.0](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.25.0...firestore/v1.26.0) (2026-09-23)
+
+
+### Features
+
+* **all:** Update supported go versions ([#20520](https://github.com/googleapis/google-cloud-go/issues/20520)) ([90413d3](https://github.com/googleapis/google-cloud-go/commit/90413d3e9d381ef4b92e3c496d98b023c5b2d8cc))
+
+## [1.25.0](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.24.0...firestore/v1.25.0) (2026-08-07)
+
+
+### Features
+
+* Update API sources and regenerate ([#20326](https://github.com/googleapis/google-cloud-go/issues/20326)) ([a25826f](https://github.com/googleapis/google-cloud-go/commit/a25826f05527527005b7868284df86df4d46ce05))
+
 ## [1.24.0](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.23.0...firestore/v1.24.0) (2026-07-15)
 
 

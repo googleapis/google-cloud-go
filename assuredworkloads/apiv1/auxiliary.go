@@ -18,12 +18,14 @@ package assuredworkloads
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	assuredworkloadspb "cloud.google.com/go/assuredworkloads/apiv1/assuredworkloadspb"
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
 
@@ -91,6 +93,12 @@ func (op *CreateWorkloadOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OperationIterator manages a stream of *longrunningpb.Operation.
 type OperationIterator struct {
 	items    []*longrunningpb.Operation
@@ -138,6 +146,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ViolationIterator) All() iter.Seq2[*assuredworkloadspb.Violation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ViolationIterator manages a stream of *assuredworkloadspb.Violation.
 type ViolationIterator struct {
 	items    []*assuredworkloadspb.Violation
@@ -183,6 +197,12 @@ func (it *ViolationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *WorkloadIterator) All() iter.Seq2[*assuredworkloadspb.Workload, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // WorkloadIterator manages a stream of *assuredworkloadspb.Workload.

@@ -34,6 +34,7 @@ import (
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	metrics "cloud.google.com/go/bigtable/internal/metrics"
 	"cloud.google.com/go/bigtable/internal/metricstest"
+	btransport "cloud.google.com/go/bigtable/internal/transport"
 	"cloud.google.com/go/internal/testutil"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"go.opentelemetry.io/otel"
@@ -381,7 +382,7 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 			}
 
 			// Check feature flags
-			ffStrs := receivedHeader.Get(featureFlagsHeaderKey)
+			ffStrs := receivedHeader.Get(btransport.FeatureFlagsHeader)
 			if len(ffStrs) < 1 {
 				t.Errorf("Feature flags not sent by client")
 			}

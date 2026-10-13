@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -218,9 +218,9 @@ type Queue struct {
 	//	attempt or a retry).
 	//
 	// * [retry_config][google.cloud.tasks.v2beta3.Queue.retry_config] controls
-	// what happens to
+	// what happens to a
 	//
-	//	particular a task after its first attempt fails. That is,
+	//	particular task after its first attempt fails. That is,
 	//	[retry_config][google.cloud.tasks.v2beta3.Queue.retry_config] controls
 	//	task retries (the second attempt, third attempt, etc).
 	//
@@ -271,17 +271,23 @@ type Queue struct {
 	// time will be unset if the queue has never been purged.
 	PurgeTime *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=purge_time,json=purgeTime,proto3" json:"purge_time,omitempty"`
 	// The maximum amount of time that a task will be retained in
-	// this queue.
-	//
-	// Queues created by Cloud Tasks have a default `task_ttl` of 31 days.
-	// After a task has lived for `task_ttl`, the task will be deleted
+	// this queue. After a task has lived for `task_ttl`, the task will be deleted
 	// regardless of whether it was dispatched or not.
 	//
-	// The `task_ttl` for queues created via queue.yaml/xml is equal to the
-	// maximum duration because there is a
-	// [storage quota](https://cloud.google.com/appengine/quotas#Task_Queue) for
-	// these queues. To view the maximum valid duration, see the documentation for
-	// [Duration][google.protobuf.Duration].
+	// The minimum value is 10 days. The maximum value is 10 years. The value
+	// must be given as a string that indicates the length of time (in seconds)
+	// followed by `s` (for "seconds"). For more information on the format, see
+	// the documentation for
+	// [Duration](https://protobuf.dev/reference/protobuf/google.protobuf/#duration).
+	//
+	// Queues created by Cloud Tasks have a default `task_ttl` of 31 days.
+	// .
+	//
+	// Queues created by queue.yaml/xml have a fixed `task_ttl` of the maximum
+	// duration, because there is a
+	// [storage
+	// quota](https://docs.cloud.google.com/appengine/docs/standard/quotas#Task_Queue)
+	// for these queues.
 	TaskTtl *durationpb.Duration `protobuf:"bytes,8,opt,name=task_ttl,json=taskTtl,proto3" json:"task_ttl,omitempty"`
 	// The task tombstone time to live (TTL).
 	//
@@ -291,6 +297,12 @@ type Queue struct {
 	// name can't be created until the tombstone has expired. For more information
 	// about task de-duplication, see the documentation for
 	// [CreateTaskRequest][google.cloud.tasks.v2beta3.CreateTaskRequest.task].
+	//
+	// The minimum value is 1 hour. The maximum value is 9 days. The value
+	// must be given as a string that indicates the length of time (in seconds)
+	// followed by `s` (for "seconds"). For more information on the format, see
+	// the documentation for
+	// [Duration](https://protobuf.dev/reference/protobuf/google.protobuf/#duration).
 	//
 	// Queues created by Cloud Tasks have a default `tombstone_ttl` of 1 hour.
 	TombstoneTtl *durationpb.Duration `protobuf:"bytes,9,opt,name=tombstone_ttl,json=tombstoneTtl,proto3" json:"tombstone_ttl,omitempty"`
@@ -466,10 +478,8 @@ type RateLimits struct {
 	// If unspecified when the queue is created, Cloud Tasks will pick the
 	// default.
 	//
-	// * For [App Engine queues][google.cloud.tasks.v2beta3.AppEngineHttpQueue],
-	// the maximum allowed value
-	//
-	//	is 500.
+	// For [App Engine queues][google.cloud.tasks.v2beta3.AppEngineHttpQueue], the
+	// maximum allowed value is 500.
 	//
 	// This field has the same meaning as
 	// [rate in
@@ -583,16 +593,23 @@ func (x *RateLimits) GetMaxConcurrentDispatches() int32 {
 // These settings determine when a failed task attempt is retried.
 type RetryConfig struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Number of attempts per task.
+	// Number of attempts per task, including the first attempt. (If the
+	// first attempt fails, there will be `max_attempts - 1` retries.)
 	//
-	// Cloud Tasks will attempt the task `max_attempts` times (that is, if the
-	// first attempt fails, then there will be `max_attempts - 1` retries). Must
-	// be >= -1.
+	// Must be greater than or equal to -1, which indicates unlimited attempts.
+	//
+	// Cloud Tasks stops retrying only when `max_attempts` and
+	// `max_retry_duration` are both satisfied, or when the task is successfully
+	// executed. When the task has been attempted
+	// `max_attempts` times and when the `max_retry_duration` time has passed, no
+	// further attempts are made, and the task is deleted. If `max_attempts` is
+	// set to -1 and `max_retry_duration` is set to 0, the task is retried
+	// until the [maximum task
+	// retention](https://docs.cloud.google.com/tasks/docs/quotas#limits) limit is
+	// reached.
 	//
 	// If unspecified when the queue is created, Cloud Tasks will pick the
 	// default.
-	//
-	// -1 indicates unlimited attempts.
 	//
 	// This field has the same meaning as
 	// [task_retry_limit in
@@ -603,14 +620,20 @@ type RetryConfig struct {
 	// attempted. Once `max_retry_duration` time has passed *and* the
 	// task has been attempted
 	// [max_attempts][google.cloud.tasks.v2beta3.RetryConfig.max_attempts] times,
-	// no further attempts will be made and the task will be deleted.
+	// no further attempts are made and the task is deleted.
 	//
-	// If zero, then the task age is unlimited.
+	// A zero (0) indicates an unlimited duration, up to the
+	// [maximum task
+	// retention](https://docs.cloud.google.com/tasks/docs/quotas#limits) limit.
+	//
+	// The value must be given as a string that indicates the length of time
+	// (in seconds)  followed by `s` (for "seconds"). For the maximum possible
+	// value or the format, see the documentation for
+	// [Duration](https://protobuf.dev/reference/protobuf/google.protobuf/#duration).
+	// `max_retry_duration` will be truncated to the nearest second.
 	//
 	// If unspecified when the queue is created, Cloud Tasks will pick the
 	// default.
-	//
-	// `max_retry_duration` will be truncated to the nearest second.
 	//
 	// This field has the same meaning as
 	// [task_age_limit in
@@ -624,10 +647,14 @@ type RetryConfig struct {
 	// [RetryConfig][google.cloud.tasks.v2beta3.RetryConfig] specifies that the
 	// task should be retried.
 	//
+	// The value must be given as a string that indicates the length of time
+	// (in seconds)  followed by `s` (for "seconds"). For more information on the
+	// format, see the documentation for
+	// [Duration](https://protobuf.dev/reference/protobuf/google.protobuf/#duration).
+	// `min_backoff` will be truncated to the nearest second.
+	//
 	// If unspecified when the queue is created, Cloud Tasks will pick the
 	// default.
-	//
-	// `min_backoff` will be truncated to the nearest second.
 	//
 	// This field has the same meaning as
 	// [min_backoff_seconds in
@@ -641,10 +668,14 @@ type RetryConfig struct {
 	// [RetryConfig][google.cloud.tasks.v2beta3.RetryConfig] specifies that the
 	// task should be retried.
 	//
+	// The value must be given as a string that indicates the length of time
+	// (in seconds) followed by `s` (for "seconds"). For more information on the
+	// format, see the documentation for
+	// [Duration](https://protobuf.dev/reference/protobuf/google.protobuf/#duration).
+	// `max_backoff` will be truncated to the nearest second.
+	//
 	// If unspecified when the queue is created, Cloud Tasks will pick the
 	// default.
-	//
-	// `max_backoff` will be truncated to the nearest second.
 	//
 	// This field has the same meaning as
 	// [max_backoff_seconds in

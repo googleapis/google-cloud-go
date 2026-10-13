@@ -17,9 +17,18 @@
 package conversions
 
 import (
+	"iter"
+
 	conversionspb "cloud.google.com/go/shopping/merchant/conversions/apiv1beta/conversionspb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ConversionSourceIterator) All() iter.Seq2[*conversionspb.ConversionSource, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // ConversionSourceIterator manages a stream of *conversionspb.ConversionSource.
 type ConversionSourceIterator struct {

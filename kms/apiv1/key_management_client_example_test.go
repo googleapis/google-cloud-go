@@ -367,6 +367,31 @@ func ExampleKeyManagementClient_Encrypt() {
 	_ = resp
 }
 
+func ExampleKeyManagementClient_ExportTrustedKeyWrappedCryptoKeyVersion() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := kms.NewKeyManagementClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &kmspb.ExportTrustedKeyWrappedCryptoKeyVersionRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#ExportTrustedKeyWrappedCryptoKeyVersionRequest.
+	}
+	resp, err := c.ExportTrustedKeyWrappedCryptoKeyVersion(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleKeyManagementClient_GenerateRandomBytes() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -560,6 +585,31 @@ func ExampleKeyManagementClient_ImportCryptoKeyVersion() {
 		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#ImportCryptoKeyVersionRequest.
 	}
 	resp, err := c.ImportCryptoKeyVersion(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleKeyManagementClient_ImportTrustedKeyWrappedCryptoKeyVersion() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := kms.NewKeyManagementClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &kmspb.ImportTrustedKeyWrappedCryptoKeyVersionRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#ImportTrustedKeyWrappedCryptoKeyVersionRequest.
+	}
+	resp, err := c.ImportTrustedKeyWrappedCryptoKeyVersion(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

@@ -18,12 +18,14 @@ package eventarc
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	eventarcpb "cloud.google.com/go/eventarc/apiv1/eventarcpb"
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
@@ -1308,6 +1310,12 @@ func (op *UpdateTriggerOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ChannelConnectionIterator) All() iter.Seq2[*eventarcpb.ChannelConnection, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ChannelConnectionIterator manages a stream of *eventarcpb.ChannelConnection.
 type ChannelConnectionIterator struct {
 	items    []*eventarcpb.ChannelConnection
@@ -1353,6 +1361,12 @@ func (it *ChannelConnectionIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ChannelIterator) All() iter.Seq2[*eventarcpb.Channel, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ChannelIterator manages a stream of *eventarcpb.Channel.
@@ -1402,6 +1416,12 @@ func (it *ChannelIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *EnrollmentIterator) All() iter.Seq2[*eventarcpb.Enrollment, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // EnrollmentIterator manages a stream of *eventarcpb.Enrollment.
 type EnrollmentIterator struct {
 	items    []*eventarcpb.Enrollment
@@ -1447,6 +1467,12 @@ func (it *EnrollmentIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *GoogleApiSourceIterator) All() iter.Seq2[*eventarcpb.GoogleApiSource, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // GoogleApiSourceIterator manages a stream of *eventarcpb.GoogleApiSource.
@@ -1496,6 +1522,12 @@ func (it *GoogleApiSourceIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // LocationIterator manages a stream of *locationpb.Location.
 type LocationIterator struct {
 	items    []*locationpb.Location
@@ -1541,6 +1573,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *MessageBusIterator) All() iter.Seq2[*eventarcpb.MessageBus, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // MessageBusIterator manages a stream of *eventarcpb.MessageBus.
@@ -1590,6 +1628,12 @@ func (it *MessageBusIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OperationIterator manages a stream of *longrunningpb.Operation.
 type OperationIterator struct {
 	items    []*longrunningpb.Operation
@@ -1635,6 +1679,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PipelineIterator) All() iter.Seq2[*eventarcpb.Pipeline, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // PipelineIterator manages a stream of *eventarcpb.Pipeline.
@@ -1684,6 +1734,12 @@ func (it *PipelineIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ProviderIterator) All() iter.Seq2[*eventarcpb.Provider, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ProviderIterator manages a stream of *eventarcpb.Provider.
 type ProviderIterator struct {
 	items    []*eventarcpb.Provider
@@ -1731,6 +1787,12 @@ func (it *ProviderIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *StringIterator) All() iter.Seq2[string, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // StringIterator manages a stream of string.
 type StringIterator struct {
 	items    []string
@@ -1776,6 +1838,12 @@ func (it *StringIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TriggerIterator) All() iter.Seq2[*eventarcpb.Trigger, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // TriggerIterator manages a stream of *eventarcpb.Trigger.

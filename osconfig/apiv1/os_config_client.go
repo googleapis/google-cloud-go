@@ -564,6 +564,55 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.PausePatchDeployment = append(client.CallOptions.PausePatchDeployment, gax.WithClientMetrics(metrics))
 		client.CallOptions.ResumePatchDeployment = append(client.CallOptions.ResumePatchDeployment, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "osconfig",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/osconfig/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "osconfig.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ExecutePatchJob = append(client.CallOptions.ExecutePatchJob, gax.WithClientTracing(tracing))
+		client.CallOptions.GetPatchJob = append(client.CallOptions.GetPatchJob, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelPatchJob = append(client.CallOptions.CancelPatchJob, gax.WithClientTracing(tracing))
+		client.CallOptions.ListPatchJobs = append(client.CallOptions.ListPatchJobs, gax.WithClientTracing(tracing))
+		client.CallOptions.ListPatchJobInstanceDetails = append(client.CallOptions.ListPatchJobInstanceDetails, gax.WithClientTracing(tracing))
+		client.CallOptions.CreatePatchDeployment = append(client.CallOptions.CreatePatchDeployment, gax.WithClientTracing(tracing))
+		client.CallOptions.GetPatchDeployment = append(client.CallOptions.GetPatchDeployment, gax.WithClientTracing(tracing))
+		client.CallOptions.ListPatchDeployments = append(client.CallOptions.ListPatchDeployments, gax.WithClientTracing(tracing))
+		client.CallOptions.DeletePatchDeployment = append(client.CallOptions.DeletePatchDeployment, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdatePatchDeployment = append(client.CallOptions.UpdatePatchDeployment, gax.WithClientTracing(tracing))
+		client.CallOptions.PausePatchDeployment = append(client.CallOptions.PausePatchDeployment, gax.WithClientTracing(tracing))
+		client.CallOptions.ResumePatchDeployment = append(client.CallOptions.ResumePatchDeployment, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "osconfig",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/osconfig/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "osconfig.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ExecutePatchJob = append(client.CallOptions.ExecutePatchJob, gax.WithClientLogging(logging))
+		client.CallOptions.GetPatchJob = append(client.CallOptions.GetPatchJob, gax.WithClientLogging(logging))
+		client.CallOptions.CancelPatchJob = append(client.CallOptions.CancelPatchJob, gax.WithClientLogging(logging))
+		client.CallOptions.ListPatchJobs = append(client.CallOptions.ListPatchJobs, gax.WithClientLogging(logging))
+		client.CallOptions.ListPatchJobInstanceDetails = append(client.CallOptions.ListPatchJobInstanceDetails, gax.WithClientLogging(logging))
+		client.CallOptions.CreatePatchDeployment = append(client.CallOptions.CreatePatchDeployment, gax.WithClientLogging(logging))
+		client.CallOptions.GetPatchDeployment = append(client.CallOptions.GetPatchDeployment, gax.WithClientLogging(logging))
+		client.CallOptions.ListPatchDeployments = append(client.CallOptions.ListPatchDeployments, gax.WithClientLogging(logging))
+		client.CallOptions.DeletePatchDeployment = append(client.CallOptions.DeletePatchDeployment, gax.WithClientLogging(logging))
+		client.CallOptions.UpdatePatchDeployment = append(client.CallOptions.UpdatePatchDeployment, gax.WithClientLogging(logging))
+		client.CallOptions.PausePatchDeployment = append(client.CallOptions.PausePatchDeployment, gax.WithClientLogging(logging))
+		client.CallOptions.ResumePatchDeployment = append(client.CallOptions.ResumePatchDeployment, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -669,6 +718,55 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.PausePatchDeployment = append(callOpts.PausePatchDeployment, gax.WithClientMetrics(metrics))
 		callOpts.ResumePatchDeployment = append(callOpts.ResumePatchDeployment, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "osconfig",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/osconfig/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "osconfig.googleapis.com",
+			}),
+		)
+
+		callOpts.ExecutePatchJob = append(callOpts.ExecutePatchJob, gax.WithClientTracing(tracing))
+		callOpts.GetPatchJob = append(callOpts.GetPatchJob, gax.WithClientTracing(tracing))
+		callOpts.CancelPatchJob = append(callOpts.CancelPatchJob, gax.WithClientTracing(tracing))
+		callOpts.ListPatchJobs = append(callOpts.ListPatchJobs, gax.WithClientTracing(tracing))
+		callOpts.ListPatchJobInstanceDetails = append(callOpts.ListPatchJobInstanceDetails, gax.WithClientTracing(tracing))
+		callOpts.CreatePatchDeployment = append(callOpts.CreatePatchDeployment, gax.WithClientTracing(tracing))
+		callOpts.GetPatchDeployment = append(callOpts.GetPatchDeployment, gax.WithClientTracing(tracing))
+		callOpts.ListPatchDeployments = append(callOpts.ListPatchDeployments, gax.WithClientTracing(tracing))
+		callOpts.DeletePatchDeployment = append(callOpts.DeletePatchDeployment, gax.WithClientTracing(tracing))
+		callOpts.UpdatePatchDeployment = append(callOpts.UpdatePatchDeployment, gax.WithClientTracing(tracing))
+		callOpts.PausePatchDeployment = append(callOpts.PausePatchDeployment, gax.WithClientTracing(tracing))
+		callOpts.ResumePatchDeployment = append(callOpts.ResumePatchDeployment, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "osconfig",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/osconfig/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "osconfig.googleapis.com",
+			}),
+		)
+
+		callOpts.ExecutePatchJob = append(callOpts.ExecutePatchJob, gax.WithClientLogging(logging))
+		callOpts.GetPatchJob = append(callOpts.GetPatchJob, gax.WithClientLogging(logging))
+		callOpts.CancelPatchJob = append(callOpts.CancelPatchJob, gax.WithClientLogging(logging))
+		callOpts.ListPatchJobs = append(callOpts.ListPatchJobs, gax.WithClientLogging(logging))
+		callOpts.ListPatchJobInstanceDetails = append(callOpts.ListPatchJobInstanceDetails, gax.WithClientLogging(logging))
+		callOpts.CreatePatchDeployment = append(callOpts.CreatePatchDeployment, gax.WithClientLogging(logging))
+		callOpts.GetPatchDeployment = append(callOpts.GetPatchDeployment, gax.WithClientLogging(logging))
+		callOpts.ListPatchDeployments = append(callOpts.ListPatchDeployments, gax.WithClientLogging(logging))
+		callOpts.DeletePatchDeployment = append(callOpts.DeletePatchDeployment, gax.WithClientLogging(logging))
+		callOpts.UpdatePatchDeployment = append(callOpts.UpdatePatchDeployment, gax.WithClientLogging(logging))
+		callOpts.PausePatchDeployment = append(callOpts.PausePatchDeployment, gax.WithClientLogging(logging))
+		callOpts.ResumePatchDeployment = append(callOpts.ResumePatchDeployment, gax.WithClientLogging(logging))
+	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -715,9 +813,6 @@ func (c *gRPCClient) ExecutePatchJob(ctx context.Context, req *osconfigpb.Execut
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//osconfig.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.osconfig.v1.OsConfigService/ExecutePatchJob")
 	}
@@ -739,9 +834,6 @@ func (c *gRPCClient) GetPatchJob(ctx context.Context, req *osconfigpb.GetPatchJo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//osconfig.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.osconfig.v1.OsConfigService/GetPatchJob")
 	}
@@ -763,9 +855,6 @@ func (c *gRPCClient) CancelPatchJob(ctx context.Context, req *osconfigpb.CancelP
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//osconfig.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.osconfig.v1.OsConfigService/CancelPatchJob")
 	}
@@ -787,9 +876,6 @@ func (c *gRPCClient) ListPatchJobs(ctx context.Context, req *osconfigpb.ListPatc
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//osconfig.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.osconfig.v1.OsConfigService/ListPatchJobs")
 	}
@@ -839,9 +925,6 @@ func (c *gRPCClient) ListPatchJobInstanceDetails(ctx context.Context, req *oscon
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//osconfig.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.osconfig.v1.OsConfigService/ListPatchJobInstanceDetails")
 	}
@@ -891,9 +974,6 @@ func (c *gRPCClient) CreatePatchDeployment(ctx context.Context, req *osconfigpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//osconfig.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.osconfig.v1.OsConfigService/CreatePatchDeployment")
 	}
@@ -915,9 +995,6 @@ func (c *gRPCClient) GetPatchDeployment(ctx context.Context, req *osconfigpb.Get
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//osconfig.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.osconfig.v1.OsConfigService/GetPatchDeployment")
 	}
@@ -939,9 +1016,6 @@ func (c *gRPCClient) ListPatchDeployments(ctx context.Context, req *osconfigpb.L
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//osconfig.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.osconfig.v1.OsConfigService/ListPatchDeployments")
 	}
@@ -991,9 +1065,6 @@ func (c *gRPCClient) DeletePatchDeployment(ctx context.Context, req *osconfigpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//osconfig.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.osconfig.v1.OsConfigService/DeletePatchDeployment")
 	}
@@ -1032,9 +1103,6 @@ func (c *gRPCClient) PausePatchDeployment(ctx context.Context, req *osconfigpb.P
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//osconfig.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.osconfig.v1.OsConfigService/PausePatchDeployment")
 	}
@@ -1056,9 +1124,6 @@ func (c *gRPCClient) ResumePatchDeployment(ctx context.Context, req *osconfigpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//osconfig.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.osconfig.v1.OsConfigService/ResumePatchDeployment")
 	}
@@ -1100,9 +1165,6 @@ func (c *restClient) ExecutePatchJob(ctx context.Context, req *osconfigpb.Execut
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//osconfig.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.osconfig.v1.OsConfigService/ExecutePatchJob")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*}/patchJobs:execute")
@@ -1158,9 +1220,6 @@ func (c *restClient) GetPatchJob(ctx context.Context, req *osconfigpb.GetPatchJo
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//osconfig.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.osconfig.v1.OsConfigService/GetPatchJob")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/patchJobs/*}")
@@ -1222,9 +1281,6 @@ func (c *restClient) CancelPatchJob(ctx context.Context, req *osconfigpb.CancelP
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//osconfig.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.osconfig.v1.OsConfigService/CancelPatchJob")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/patchJobs/*}:cancel")
@@ -1449,9 +1505,6 @@ func (c *restClient) CreatePatchDeployment(ctx context.Context, req *osconfigpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//osconfig.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.osconfig.v1.OsConfigService/CreatePatchDeployment")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*}/patchDeployments")
@@ -1506,9 +1559,6 @@ func (c *restClient) GetPatchDeployment(ctx context.Context, req *osconfigpb.Get
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//osconfig.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.osconfig.v1.OsConfigService/GetPatchDeployment")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/patchDeployments/*}")
@@ -1641,9 +1691,6 @@ func (c *restClient) DeletePatchDeployment(ctx context.Context, req *osconfigpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//osconfig.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.osconfig.v1.OsConfigService/DeletePatchDeployment")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/patchDeployments/*}")
@@ -1758,9 +1805,6 @@ func (c *restClient) PausePatchDeployment(ctx context.Context, req *osconfigpb.P
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//osconfig.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.osconfig.v1.OsConfigService/PausePatchDeployment")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/patchDeployments/*}:pause")
@@ -1822,9 +1866,6 @@ func (c *restClient) ResumePatchDeployment(ctx context.Context, req *osconfigpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//osconfig.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.osconfig.v1.OsConfigService/ResumePatchDeployment")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/patchDeployments/*}:resume")

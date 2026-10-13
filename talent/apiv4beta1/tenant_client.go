@@ -323,6 +323,43 @@ func NewTenantClient(ctx context.Context, opts ...option.ClientOption) (*TenantC
 		client.CallOptions.ListTenants = append(client.CallOptions.ListTenants, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "jobs",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/talent/apiv4beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "jobs.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateTenant = append(client.CallOptions.CreateTenant, gax.WithClientTracing(tracing))
+		client.CallOptions.GetTenant = append(client.CallOptions.GetTenant, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateTenant = append(client.CallOptions.UpdateTenant, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteTenant = append(client.CallOptions.DeleteTenant, gax.WithClientTracing(tracing))
+		client.CallOptions.ListTenants = append(client.CallOptions.ListTenants, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "jobs",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/talent/apiv4beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "jobs.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateTenant = append(client.CallOptions.CreateTenant, gax.WithClientLogging(logging))
+		client.CallOptions.GetTenant = append(client.CallOptions.GetTenant, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateTenant = append(client.CallOptions.UpdateTenant, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteTenant = append(client.CallOptions.DeleteTenant, gax.WithClientLogging(logging))
+		client.CallOptions.ListTenants = append(client.CallOptions.ListTenants, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -419,6 +456,43 @@ func NewTenantRESTClient(ctx context.Context, opts ...option.ClientOption) (*Ten
 		callOpts.ListTenants = append(callOpts.ListTenants, gax.WithClientMetrics(metrics))
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "jobs",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/talent/apiv4beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "jobs.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateTenant = append(callOpts.CreateTenant, gax.WithClientTracing(tracing))
+		callOpts.GetTenant = append(callOpts.GetTenant, gax.WithClientTracing(tracing))
+		callOpts.UpdateTenant = append(callOpts.UpdateTenant, gax.WithClientTracing(tracing))
+		callOpts.DeleteTenant = append(callOpts.DeleteTenant, gax.WithClientTracing(tracing))
+		callOpts.ListTenants = append(callOpts.ListTenants, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "jobs",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/talent/apiv4beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "jobs.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateTenant = append(callOpts.CreateTenant, gax.WithClientLogging(logging))
+		callOpts.GetTenant = append(callOpts.GetTenant, gax.WithClientLogging(logging))
+		callOpts.UpdateTenant = append(callOpts.UpdateTenant, gax.WithClientLogging(logging))
+		callOpts.DeleteTenant = append(callOpts.DeleteTenant, gax.WithClientLogging(logging))
+		callOpts.ListTenants = append(callOpts.ListTenants, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+	}
 
 	return &TenantClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -465,9 +539,6 @@ func (c *tenantGRPCClient) CreateTenant(ctx context.Context, req *talentpb.Creat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//jobs.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.talent.v4beta1.TenantService/CreateTenant")
 	}
@@ -489,9 +560,6 @@ func (c *tenantGRPCClient) GetTenant(ctx context.Context, req *talentpb.GetTenan
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//jobs.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.talent.v4beta1.TenantService/GetTenant")
 	}
@@ -534,9 +602,6 @@ func (c *tenantGRPCClient) DeleteTenant(ctx context.Context, req *talentpb.Delet
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//jobs.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.talent.v4beta1.TenantService/DeleteTenant")
 	}
@@ -554,9 +619,6 @@ func (c *tenantGRPCClient) ListTenants(ctx context.Context, req *talentpb.ListTe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//jobs.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.talent.v4beta1.TenantService/ListTenants")
 	}
@@ -647,9 +709,6 @@ func (c *tenantRESTClient) CreateTenant(ctx context.Context, req *talentpb.Creat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//jobs.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.talent.v4beta1.TenantService/CreateTenant")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v4beta1/{parent=projects/*}/tenants")
@@ -704,9 +763,6 @@ func (c *tenantRESTClient) GetTenant(ctx context.Context, req *talentpb.GetTenan
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//jobs.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.talent.v4beta1.TenantService/GetTenant")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v4beta1/{name=projects/*/tenants/*}")
@@ -821,9 +877,6 @@ func (c *tenantRESTClient) DeleteTenant(ctx context.Context, req *talentpb.Delet
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//jobs.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.talent.v4beta1.TenantService/DeleteTenant")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v4beta1/{name=projects/*/tenants/*}")

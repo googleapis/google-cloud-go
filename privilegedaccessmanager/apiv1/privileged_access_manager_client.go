@@ -503,6 +503,69 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "privilegedaccessmanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/privilegedaccessmanager/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "privilegedaccessmanager.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CheckOnboardingStatus = append(client.CallOptions.CheckOnboardingStatus, gax.WithClientTracing(tracing))
+		client.CallOptions.ListEntitlements = append(client.CallOptions.ListEntitlements, gax.WithClientTracing(tracing))
+		client.CallOptions.SearchEntitlements = append(client.CallOptions.SearchEntitlements, gax.WithClientTracing(tracing))
+		client.CallOptions.GetEntitlement = append(client.CallOptions.GetEntitlement, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateEntitlement = append(client.CallOptions.CreateEntitlement, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteEntitlement = append(client.CallOptions.DeleteEntitlement, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateEntitlement = append(client.CallOptions.UpdateEntitlement, gax.WithClientTracing(tracing))
+		client.CallOptions.ListGrants = append(client.CallOptions.ListGrants, gax.WithClientTracing(tracing))
+		client.CallOptions.SearchGrants = append(client.CallOptions.SearchGrants, gax.WithClientTracing(tracing))
+		client.CallOptions.GetGrant = append(client.CallOptions.GetGrant, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateGrant = append(client.CallOptions.CreateGrant, gax.WithClientTracing(tracing))
+		client.CallOptions.ApproveGrant = append(client.CallOptions.ApproveGrant, gax.WithClientTracing(tracing))
+		client.CallOptions.DenyGrant = append(client.CallOptions.DenyGrant, gax.WithClientTracing(tracing))
+		client.CallOptions.RevokeGrant = append(client.CallOptions.RevokeGrant, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "privilegedaccessmanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/privilegedaccessmanager/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "privilegedaccessmanager.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CheckOnboardingStatus = append(client.CallOptions.CheckOnboardingStatus, gax.WithClientLogging(logging))
+		client.CallOptions.ListEntitlements = append(client.CallOptions.ListEntitlements, gax.WithClientLogging(logging))
+		client.CallOptions.SearchEntitlements = append(client.CallOptions.SearchEntitlements, gax.WithClientLogging(logging))
+		client.CallOptions.GetEntitlement = append(client.CallOptions.GetEntitlement, gax.WithClientLogging(logging))
+		client.CallOptions.CreateEntitlement = append(client.CallOptions.CreateEntitlement, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteEntitlement = append(client.CallOptions.DeleteEntitlement, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateEntitlement = append(client.CallOptions.UpdateEntitlement, gax.WithClientLogging(logging))
+		client.CallOptions.ListGrants = append(client.CallOptions.ListGrants, gax.WithClientLogging(logging))
+		client.CallOptions.SearchGrants = append(client.CallOptions.SearchGrants, gax.WithClientLogging(logging))
+		client.CallOptions.GetGrant = append(client.CallOptions.GetGrant, gax.WithClientLogging(logging))
+		client.CallOptions.CreateGrant = append(client.CallOptions.CreateGrant, gax.WithClientLogging(logging))
+		client.CallOptions.ApproveGrant = append(client.CallOptions.ApproveGrant, gax.WithClientLogging(logging))
+		client.CallOptions.DenyGrant = append(client.CallOptions.DenyGrant, gax.WithClientLogging(logging))
+		client.CallOptions.RevokeGrant = append(client.CallOptions.RevokeGrant, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -651,6 +714,69 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "privilegedaccessmanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/privilegedaccessmanager/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "privilegedaccessmanager.googleapis.com",
+			}),
+		)
+
+		callOpts.CheckOnboardingStatus = append(callOpts.CheckOnboardingStatus, gax.WithClientTracing(tracing))
+		callOpts.ListEntitlements = append(callOpts.ListEntitlements, gax.WithClientTracing(tracing))
+		callOpts.SearchEntitlements = append(callOpts.SearchEntitlements, gax.WithClientTracing(tracing))
+		callOpts.GetEntitlement = append(callOpts.GetEntitlement, gax.WithClientTracing(tracing))
+		callOpts.CreateEntitlement = append(callOpts.CreateEntitlement, gax.WithClientTracing(tracing))
+		callOpts.DeleteEntitlement = append(callOpts.DeleteEntitlement, gax.WithClientTracing(tracing))
+		callOpts.UpdateEntitlement = append(callOpts.UpdateEntitlement, gax.WithClientTracing(tracing))
+		callOpts.ListGrants = append(callOpts.ListGrants, gax.WithClientTracing(tracing))
+		callOpts.SearchGrants = append(callOpts.SearchGrants, gax.WithClientTracing(tracing))
+		callOpts.GetGrant = append(callOpts.GetGrant, gax.WithClientTracing(tracing))
+		callOpts.CreateGrant = append(callOpts.CreateGrant, gax.WithClientTracing(tracing))
+		callOpts.ApproveGrant = append(callOpts.ApproveGrant, gax.WithClientTracing(tracing))
+		callOpts.DenyGrant = append(callOpts.DenyGrant, gax.WithClientTracing(tracing))
+		callOpts.RevokeGrant = append(callOpts.RevokeGrant, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "privilegedaccessmanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/privilegedaccessmanager/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "privilegedaccessmanager.googleapis.com",
+			}),
+		)
+
+		callOpts.CheckOnboardingStatus = append(callOpts.CheckOnboardingStatus, gax.WithClientLogging(logging))
+		callOpts.ListEntitlements = append(callOpts.ListEntitlements, gax.WithClientLogging(logging))
+		callOpts.SearchEntitlements = append(callOpts.SearchEntitlements, gax.WithClientLogging(logging))
+		callOpts.GetEntitlement = append(callOpts.GetEntitlement, gax.WithClientLogging(logging))
+		callOpts.CreateEntitlement = append(callOpts.CreateEntitlement, gax.WithClientLogging(logging))
+		callOpts.DeleteEntitlement = append(callOpts.DeleteEntitlement, gax.WithClientLogging(logging))
+		callOpts.UpdateEntitlement = append(callOpts.UpdateEntitlement, gax.WithClientLogging(logging))
+		callOpts.ListGrants = append(callOpts.ListGrants, gax.WithClientLogging(logging))
+		callOpts.SearchGrants = append(callOpts.SearchGrants, gax.WithClientLogging(logging))
+		callOpts.GetGrant = append(callOpts.GetGrant, gax.WithClientLogging(logging))
+		callOpts.CreateGrant = append(callOpts.CreateGrant, gax.WithClientLogging(logging))
+		callOpts.ApproveGrant = append(callOpts.ApproveGrant, gax.WithClientLogging(logging))
+		callOpts.DenyGrant = append(callOpts.DenyGrant, gax.WithClientLogging(logging))
+		callOpts.RevokeGrant = append(callOpts.RevokeGrant, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -707,9 +833,6 @@ func (c *gRPCClient) CheckOnboardingStatus(ctx context.Context, req *privilegeda
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privilegedaccessmanager.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.privilegedaccessmanager.v1.PrivilegedAccessManager/CheckOnboardingStatus")
 	}
@@ -731,9 +854,6 @@ func (c *gRPCClient) ListEntitlements(ctx context.Context, req *privilegedaccess
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privilegedaccessmanager.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.privilegedaccessmanager.v1.PrivilegedAccessManager/ListEntitlements")
 	}
@@ -783,9 +903,6 @@ func (c *gRPCClient) SearchEntitlements(ctx context.Context, req *privilegedacce
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privilegedaccessmanager.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.privilegedaccessmanager.v1.PrivilegedAccessManager/SearchEntitlements")
 	}
@@ -835,9 +952,6 @@ func (c *gRPCClient) GetEntitlement(ctx context.Context, req *privilegedaccessma
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privilegedaccessmanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.privilegedaccessmanager.v1.PrivilegedAccessManager/GetEntitlement")
 	}
@@ -859,9 +973,6 @@ func (c *gRPCClient) CreateEntitlement(ctx context.Context, req *privilegedacces
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privilegedaccessmanager.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.privilegedaccessmanager.v1.PrivilegedAccessManager/CreateEntitlement")
 	}
@@ -889,9 +1000,6 @@ func (c *gRPCClient) DeleteEntitlement(ctx context.Context, req *privilegedacces
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privilegedaccessmanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.privilegedaccessmanager.v1.PrivilegedAccessManager/DeleteEntitlement")
 	}
@@ -946,9 +1054,6 @@ func (c *gRPCClient) ListGrants(ctx context.Context, req *privilegedaccessmanage
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privilegedaccessmanager.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.privilegedaccessmanager.v1.PrivilegedAccessManager/ListGrants")
 	}
@@ -998,9 +1103,6 @@ func (c *gRPCClient) SearchGrants(ctx context.Context, req *privilegedaccessmana
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privilegedaccessmanager.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.privilegedaccessmanager.v1.PrivilegedAccessManager/SearchGrants")
 	}
@@ -1050,9 +1152,6 @@ func (c *gRPCClient) GetGrant(ctx context.Context, req *privilegedaccessmanagerp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privilegedaccessmanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.privilegedaccessmanager.v1.PrivilegedAccessManager/GetGrant")
 	}
@@ -1074,9 +1173,6 @@ func (c *gRPCClient) CreateGrant(ctx context.Context, req *privilegedaccessmanag
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privilegedaccessmanager.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.privilegedaccessmanager.v1.PrivilegedAccessManager/CreateGrant")
 	}
@@ -1098,9 +1194,6 @@ func (c *gRPCClient) ApproveGrant(ctx context.Context, req *privilegedaccessmana
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privilegedaccessmanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.privilegedaccessmanager.v1.PrivilegedAccessManager/ApproveGrant")
 	}
@@ -1122,9 +1215,6 @@ func (c *gRPCClient) DenyGrant(ctx context.Context, req *privilegedaccessmanager
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privilegedaccessmanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.privilegedaccessmanager.v1.PrivilegedAccessManager/DenyGrant")
 	}
@@ -1146,9 +1236,6 @@ func (c *gRPCClient) RevokeGrant(ctx context.Context, req *privilegedaccessmanag
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privilegedaccessmanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.privilegedaccessmanager.v1.PrivilegedAccessManager/RevokeGrant")
 	}
@@ -1349,9 +1436,6 @@ func (c *restClient) CheckOnboardingStatus(ctx context.Context, req *privilegeda
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privilegedaccessmanager.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.privilegedaccessmanager.v1.PrivilegedAccessManager/CheckOnboardingStatus")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}:checkOnboardingStatus")
@@ -1573,9 +1657,6 @@ func (c *restClient) GetEntitlement(ctx context.Context, req *privilegedaccessma
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privilegedaccessmanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.privilegedaccessmanager.v1.PrivilegedAccessManager/GetEntitlement")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/entitlements/*}")
@@ -1642,9 +1723,6 @@ func (c *restClient) CreateEntitlement(ctx context.Context, req *privilegedacces
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privilegedaccessmanager.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.privilegedaccessmanager.v1.PrivilegedAccessManager/CreateEntitlement")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/entitlements")
@@ -1714,9 +1792,6 @@ func (c *restClient) DeleteEntitlement(ctx context.Context, req *privilegedacces
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privilegedaccessmanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.privilegedaccessmanager.v1.PrivilegedAccessManager/DeleteEntitlement")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/entitlements/*}")
@@ -2045,9 +2120,6 @@ func (c *restClient) GetGrant(ctx context.Context, req *privilegedaccessmanagerp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privilegedaccessmanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.privilegedaccessmanager.v1.PrivilegedAccessManager/GetGrant")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/entitlements/*/grants/*}")
@@ -2113,9 +2185,6 @@ func (c *restClient) CreateGrant(ctx context.Context, req *privilegedaccessmanag
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privilegedaccessmanager.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.privilegedaccessmanager.v1.PrivilegedAccessManager/CreateGrant")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/entitlements/*}/grants")
@@ -2178,9 +2247,6 @@ func (c *restClient) ApproveGrant(ctx context.Context, req *privilegedaccessmana
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privilegedaccessmanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.privilegedaccessmanager.v1.PrivilegedAccessManager/ApproveGrant")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/entitlements/*/grants/*}:approve")
@@ -2243,9 +2309,6 @@ func (c *restClient) DenyGrant(ctx context.Context, req *privilegedaccessmanager
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privilegedaccessmanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.privilegedaccessmanager.v1.PrivilegedAccessManager/DenyGrant")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/entitlements/*/grants/*}:deny")
@@ -2307,9 +2370,6 @@ func (c *restClient) RevokeGrant(ctx context.Context, req *privilegedaccessmanag
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//privilegedaccessmanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.privilegedaccessmanager.v1.PrivilegedAccessManager/RevokeGrant")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/entitlements/*/grants/*}:revoke")

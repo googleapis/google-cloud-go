@@ -244,6 +244,43 @@ func NewLicenseManagementClient(ctx context.Context, opts ...option.ClientOption
 		client.CallOptions.EnumerateLicensedUsers = append(client.CallOptions.EnumerateLicensedUsers, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudcommerceconsumerprocurement",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/commerce/consumer/procurement/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudcommerceconsumerprocurement.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetLicensePool = append(client.CallOptions.GetLicensePool, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateLicensePool = append(client.CallOptions.UpdateLicensePool, gax.WithClientTracing(tracing))
+		client.CallOptions.Assign = append(client.CallOptions.Assign, gax.WithClientTracing(tracing))
+		client.CallOptions.Unassign = append(client.CallOptions.Unassign, gax.WithClientTracing(tracing))
+		client.CallOptions.EnumerateLicensedUsers = append(client.CallOptions.EnumerateLicensedUsers, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudcommerceconsumerprocurement",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/commerce/consumer/procurement/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudcommerceconsumerprocurement.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetLicensePool = append(client.CallOptions.GetLicensePool, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateLicensePool = append(client.CallOptions.UpdateLicensePool, gax.WithClientLogging(logging))
+		client.CallOptions.Assign = append(client.CallOptions.Assign, gax.WithClientLogging(logging))
+		client.CallOptions.Unassign = append(client.CallOptions.Unassign, gax.WithClientLogging(logging))
+		client.CallOptions.EnumerateLicensedUsers = append(client.CallOptions.EnumerateLicensedUsers, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -339,6 +376,43 @@ func NewLicenseManagementRESTClient(ctx context.Context, opts ...option.ClientOp
 		callOpts.Unassign = append(callOpts.Unassign, gax.WithClientMetrics(metrics))
 		callOpts.EnumerateLicensedUsers = append(callOpts.EnumerateLicensedUsers, gax.WithClientMetrics(metrics))
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudcommerceconsumerprocurement",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/commerce/consumer/procurement/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudcommerceconsumerprocurement.googleapis.com",
+			}),
+		)
+
+		callOpts.GetLicensePool = append(callOpts.GetLicensePool, gax.WithClientTracing(tracing))
+		callOpts.UpdateLicensePool = append(callOpts.UpdateLicensePool, gax.WithClientTracing(tracing))
+		callOpts.Assign = append(callOpts.Assign, gax.WithClientTracing(tracing))
+		callOpts.Unassign = append(callOpts.Unassign, gax.WithClientTracing(tracing))
+		callOpts.EnumerateLicensedUsers = append(callOpts.EnumerateLicensedUsers, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudcommerceconsumerprocurement",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/commerce/consumer/procurement/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudcommerceconsumerprocurement.googleapis.com",
+			}),
+		)
+
+		callOpts.GetLicensePool = append(callOpts.GetLicensePool, gax.WithClientLogging(logging))
+		callOpts.UpdateLicensePool = append(callOpts.UpdateLicensePool, gax.WithClientLogging(logging))
+		callOpts.Assign = append(callOpts.Assign, gax.WithClientLogging(logging))
+		callOpts.Unassign = append(callOpts.Unassign, gax.WithClientLogging(logging))
+		callOpts.EnumerateLicensedUsers = append(callOpts.EnumerateLicensedUsers, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
 	}
 
 	return &LicenseManagementClient{internalClient: c, CallOptions: callOpts}, nil

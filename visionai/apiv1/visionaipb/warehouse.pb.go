@@ -9093,7 +9093,7 @@ type SearchAssetsRequest struct {
 	//	*SearchAssetsRequest_SchemaKeySortingStrategy
 	SortSpec isSearchAssetsRequest_SortSpec `protobuf_oneof:"sort_spec"`
 	// Required. The parent corpus to search.
-	// Format: `projects/{project_id}/locations/{location_id}/corpora/{corpus_id}'
+	// Format: `projects/{project_id}/locations/{location_id}/corpora/{corpus_id}`
 	Corpus string `protobuf:"bytes,1,opt,name=corpus,proto3" json:"corpus,omitempty"`
 	// The number of results to be returned in this page. If it's 0, the server
 	// will decide the appropriate page_size.
@@ -9250,7 +9250,7 @@ type SearchIndexEndpointRequest struct {
 	Query isSearchIndexEndpointRequest_Query `protobuf_oneof:"query"`
 	// Required. The index endpoint to search.
 	// Format:
-	// `projects/{project_id}/locations/{location_id}/indexEndpoints/{index_endpoint_id}'
+	// `projects/{project_id}/locations/{location_id}/indexEndpoints/{index_endpoint_id}`
 	IndexEndpoint string `protobuf:"bytes,1,opt,name=index_endpoint,json=indexEndpoint,proto3" json:"index_endpoint,omitempty"`
 	// Criteria applied to search results.
 	Criteria []*Criteria `protobuf:"bytes,4,rep,name=criteria,proto3" json:"criteria,omitempty"`

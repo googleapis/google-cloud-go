@@ -288,31 +288,63 @@ func (c *RowAccessPolicyClient) Connection() *grpc.ClientConn {
 }
 
 // ListRowAccessPolicies lists all row access policies on the specified table.
+//
+// IAM PermissionsRequires the bigquery.rowAccessPolicies.list permission on the table.
 func (c *RowAccessPolicyClient) ListRowAccessPolicies(ctx context.Context, req *bigquerypb.ListRowAccessPoliciesRequest, opts ...gax.CallOption) *RowAccessPolicyIterator {
 	return c.internalClient.ListRowAccessPolicies(ctx, req, opts...)
 }
 
 // GetRowAccessPolicy gets the specified row access policy by policy ID.
+//
+// IAM PermissionsRequires the bigquery.rowAccessPolicies.get permission on the table.
 func (c *RowAccessPolicyClient) GetRowAccessPolicy(ctx context.Context, req *bigquerypb.GetRowAccessPolicyRequest, opts ...gax.CallOption) (*bigquerypb.RowAccessPolicy, error) {
 	return c.internalClient.GetRowAccessPolicy(ctx, req, opts...)
 }
 
 // CreateRowAccessPolicy creates a row access policy.
+//
+// IAM PermissionsRequires the following IAM permission(s) on the table:
+//
+//	bigquery.rowAccessPolicies.create
+//
+//	bigquery.rowAccessPolicies.setIamPolicy
+//
+//	bigquery.tables.getData
 func (c *RowAccessPolicyClient) CreateRowAccessPolicy(ctx context.Context, req *bigquerypb.CreateRowAccessPolicyRequest, opts ...gax.CallOption) (*bigquerypb.RowAccessPolicy, error) {
 	return c.internalClient.CreateRowAccessPolicy(ctx, req, opts...)
 }
 
 // UpdateRowAccessPolicy updates a row access policy.
+//
+// IAM PermissionsRequires the following IAM permission(s) on the table:
+//
+//	bigquery.rowAccessPolicies.update
+//
+//	bigquery.rowAccessPolicies.setIamPolicy
+//
+//	bigquery.tables.getData
 func (c *RowAccessPolicyClient) UpdateRowAccessPolicy(ctx context.Context, req *bigquerypb.UpdateRowAccessPolicyRequest, opts ...gax.CallOption) (*bigquerypb.RowAccessPolicy, error) {
 	return c.internalClient.UpdateRowAccessPolicy(ctx, req, opts...)
 }
 
 // DeleteRowAccessPolicy deletes a row access policy.
+//
+// IAM PermissionsRequires the following IAM permission(s) on the table:
+//
+//	bigquery.rowAccessPolicies.delete
+//
+//	bigquery.rowAccessPolicies.setIamPolicy
 func (c *RowAccessPolicyClient) DeleteRowAccessPolicy(ctx context.Context, req *bigquerypb.DeleteRowAccessPolicyRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteRowAccessPolicy(ctx, req, opts...)
 }
 
 // BatchDeleteRowAccessPolicies deletes provided row access policies.
+//
+// IAM PermissionsRequires the following IAM permission(s) on the table:
+//
+//	bigquery.rowAccessPolicies.delete
+//
+//	bigquery.rowAccessPolicies.setIamPolicy
 func (c *RowAccessPolicyClient) BatchDeleteRowAccessPolicies(ctx context.Context, req *bigquerypb.BatchDeleteRowAccessPoliciesRequest, opts ...gax.CallOption) error {
 	return c.internalClient.BatchDeleteRowAccessPolicies(ctx, req, opts...)
 }
@@ -391,6 +423,43 @@ func NewRowAccessPolicyClient(ctx context.Context, opts ...option.ClientOption) 
 		client.CallOptions.UpdateRowAccessPolicy = append(client.CallOptions.UpdateRowAccessPolicy, gax.WithClientMetrics(metrics))
 		client.CallOptions.DeleteRowAccessPolicy = append(client.CallOptions.DeleteRowAccessPolicy, gax.WithClientMetrics(metrics))
 		client.CallOptions.BatchDeleteRowAccessPolicies = append(client.CallOptions.BatchDeleteRowAccessPolicies, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "bigquery",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/v2/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "bigquery.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListRowAccessPolicies = append(client.CallOptions.ListRowAccessPolicies, gax.WithClientTracing(tracing))
+		client.CallOptions.GetRowAccessPolicy = append(client.CallOptions.GetRowAccessPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateRowAccessPolicy = append(client.CallOptions.CreateRowAccessPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateRowAccessPolicy = append(client.CallOptions.UpdateRowAccessPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteRowAccessPolicy = append(client.CallOptions.DeleteRowAccessPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchDeleteRowAccessPolicies = append(client.CallOptions.BatchDeleteRowAccessPolicies, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "bigquery",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/v2/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "bigquery.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListRowAccessPolicies = append(client.CallOptions.ListRowAccessPolicies, gax.WithClientLogging(logging))
+		client.CallOptions.GetRowAccessPolicy = append(client.CallOptions.GetRowAccessPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.CreateRowAccessPolicy = append(client.CallOptions.CreateRowAccessPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateRowAccessPolicy = append(client.CallOptions.UpdateRowAccessPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteRowAccessPolicy = append(client.CallOptions.DeleteRowAccessPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.BatchDeleteRowAccessPolicies = append(client.CallOptions.BatchDeleteRowAccessPolicies, gax.WithClientLogging(logging))
 	}
 
 	client.internalClient = c
@@ -488,6 +557,43 @@ func NewRowAccessPolicyRESTClient(ctx context.Context, opts ...option.ClientOpti
 		callOpts.DeleteRowAccessPolicy = append(callOpts.DeleteRowAccessPolicy, gax.WithClientMetrics(metrics))
 		callOpts.BatchDeleteRowAccessPolicies = append(callOpts.BatchDeleteRowAccessPolicies, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "bigquery",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/v2/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "bigquery.googleapis.com",
+			}),
+		)
+
+		callOpts.ListRowAccessPolicies = append(callOpts.ListRowAccessPolicies, gax.WithClientTracing(tracing))
+		callOpts.GetRowAccessPolicy = append(callOpts.GetRowAccessPolicy, gax.WithClientTracing(tracing))
+		callOpts.CreateRowAccessPolicy = append(callOpts.CreateRowAccessPolicy, gax.WithClientTracing(tracing))
+		callOpts.UpdateRowAccessPolicy = append(callOpts.UpdateRowAccessPolicy, gax.WithClientTracing(tracing))
+		callOpts.DeleteRowAccessPolicy = append(callOpts.DeleteRowAccessPolicy, gax.WithClientTracing(tracing))
+		callOpts.BatchDeleteRowAccessPolicies = append(callOpts.BatchDeleteRowAccessPolicies, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "bigquery",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/v2/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "bigquery.googleapis.com",
+			}),
+		)
+
+		callOpts.ListRowAccessPolicies = append(callOpts.ListRowAccessPolicies, gax.WithClientLogging(logging))
+		callOpts.GetRowAccessPolicy = append(callOpts.GetRowAccessPolicy, gax.WithClientLogging(logging))
+		callOpts.CreateRowAccessPolicy = append(callOpts.CreateRowAccessPolicy, gax.WithClientLogging(logging))
+		callOpts.UpdateRowAccessPolicy = append(callOpts.UpdateRowAccessPolicy, gax.WithClientLogging(logging))
+		callOpts.DeleteRowAccessPolicy = append(callOpts.DeleteRowAccessPolicy, gax.WithClientLogging(logging))
+		callOpts.BatchDeleteRowAccessPolicies = append(callOpts.BatchDeleteRowAccessPolicies, gax.WithClientLogging(logging))
+	}
 
 	return &RowAccessPolicyClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -534,9 +640,6 @@ func (c *rowAccessPolicyGRPCClient) ListRowAccessPolicies(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquery.googleapis.com/projects/%v/datasets/%v/tables/%v", req.GetProjectId(), req.GetDatasetId(), req.GetTableId()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.RowAccessPolicyService/ListRowAccessPolicies")
 	}
@@ -586,9 +689,6 @@ func (c *rowAccessPolicyGRPCClient) GetRowAccessPolicy(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquery.googleapis.com/projects/%v/datasets/%v/tables/%v/rowAccessPolicies/%v", req.GetProjectId(), req.GetDatasetId(), req.GetTableId(), req.GetPolicyId()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.RowAccessPolicyService/GetRowAccessPolicy")
 	}
@@ -610,9 +710,6 @@ func (c *rowAccessPolicyGRPCClient) CreateRowAccessPolicy(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquery.googleapis.com/projects/%v/datasets/%v/tables/%v", req.GetProjectId(), req.GetDatasetId(), req.GetTableId()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.RowAccessPolicyService/CreateRowAccessPolicy")
 	}
@@ -634,9 +731,6 @@ func (c *rowAccessPolicyGRPCClient) UpdateRowAccessPolicy(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquery.googleapis.com/projects/%v/datasets/%v/tables/%v/rowAccessPolicies/%v", req.GetProjectId(), req.GetDatasetId(), req.GetTableId(), req.GetPolicyId()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.RowAccessPolicyService/UpdateRowAccessPolicy")
 	}
@@ -658,9 +752,6 @@ func (c *rowAccessPolicyGRPCClient) DeleteRowAccessPolicy(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquery.googleapis.com/projects/%v/datasets/%v/tables/%v/rowAccessPolicies/%v", req.GetProjectId(), req.GetDatasetId(), req.GetTableId(), req.GetPolicyId()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.RowAccessPolicyService/DeleteRowAccessPolicy")
 	}
@@ -678,9 +769,6 @@ func (c *rowAccessPolicyGRPCClient) BatchDeleteRowAccessPolicies(ctx context.Con
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquery.googleapis.com/projects/%v/datasets/%v/tables/%v", req.GetProjectId(), req.GetDatasetId(), req.GetTableId()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.RowAccessPolicyService/BatchDeleteRowAccessPolicies")
 	}
@@ -694,6 +782,8 @@ func (c *rowAccessPolicyGRPCClient) BatchDeleteRowAccessPolicies(ctx context.Con
 }
 
 // ListRowAccessPolicies lists all row access policies on the specified table.
+//
+// IAM PermissionsRequires the bigquery.rowAccessPolicies.list permission on the table.
 func (c *rowAccessPolicyRESTClient) ListRowAccessPolicies(ctx context.Context, req *bigquerypb.ListRowAccessPoliciesRequest, opts ...gax.CallOption) *RowAccessPolicyIterator {
 	it := &RowAccessPolicyIterator{}
 	req = proto.CloneOf(req)
@@ -771,6 +861,8 @@ func (c *rowAccessPolicyRESTClient) ListRowAccessPolicies(ctx context.Context, r
 }
 
 // GetRowAccessPolicy gets the specified row access policy by policy ID.
+//
+// IAM PermissionsRequires the bigquery.rowAccessPolicies.get permission on the table.
 func (c *rowAccessPolicyRESTClient) GetRowAccessPolicy(ctx context.Context, req *bigquerypb.GetRowAccessPolicyRequest, opts ...gax.CallOption) (*bigquerypb.RowAccessPolicy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -784,9 +876,6 @@ func (c *rowAccessPolicyRESTClient) GetRowAccessPolicy(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquery.googleapis.com/projects/%v/datasets/%v/tables/%v/rowAccessPolicies/%v", req.GetProjectId(), req.GetDatasetId(), req.GetTableId(), req.GetPolicyId()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.RowAccessPolicyService/GetRowAccessPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/bigquery/v2/projects/{project_id=*}/datasets/{dataset_id=*}/tables/{table_id=*}/rowAccessPolicies/{policy_id=*}")
@@ -823,6 +912,14 @@ func (c *rowAccessPolicyRESTClient) GetRowAccessPolicy(ctx context.Context, req 
 }
 
 // CreateRowAccessPolicy creates a row access policy.
+//
+// IAM PermissionsRequires the following IAM permission(s) on the table:
+//
+//	bigquery.rowAccessPolicies.create
+//
+//	bigquery.rowAccessPolicies.setIamPolicy
+//
+//	bigquery.tables.getData
 func (c *rowAccessPolicyRESTClient) CreateRowAccessPolicy(ctx context.Context, req *bigquerypb.CreateRowAccessPolicyRequest, opts ...gax.CallOption) (*bigquerypb.RowAccessPolicy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetRowAccessPolicy()
@@ -843,9 +940,6 @@ func (c *rowAccessPolicyRESTClient) CreateRowAccessPolicy(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquery.googleapis.com/projects/%v/datasets/%v/tables/%v", req.GetProjectId(), req.GetDatasetId(), req.GetTableId()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.RowAccessPolicyService/CreateRowAccessPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/bigquery/v2/projects/{project_id=*}/datasets/{dataset_id=*}/tables/{table_id=*}/rowAccessPolicies")
@@ -882,6 +976,14 @@ func (c *rowAccessPolicyRESTClient) CreateRowAccessPolicy(ctx context.Context, r
 }
 
 // UpdateRowAccessPolicy updates a row access policy.
+//
+// IAM PermissionsRequires the following IAM permission(s) on the table:
+//
+//	bigquery.rowAccessPolicies.update
+//
+//	bigquery.rowAccessPolicies.setIamPolicy
+//
+//	bigquery.tables.getData
 func (c *rowAccessPolicyRESTClient) UpdateRowAccessPolicy(ctx context.Context, req *bigquerypb.UpdateRowAccessPolicyRequest, opts ...gax.CallOption) (*bigquerypb.RowAccessPolicy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetRowAccessPolicy()
@@ -902,9 +1004,6 @@ func (c *rowAccessPolicyRESTClient) UpdateRowAccessPolicy(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquery.googleapis.com/projects/%v/datasets/%v/tables/%v/rowAccessPolicies/%v", req.GetProjectId(), req.GetDatasetId(), req.GetTableId(), req.GetPolicyId()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.RowAccessPolicyService/UpdateRowAccessPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/bigquery/v2/projects/{project_id=*}/datasets/{dataset_id=*}/tables/{table_id=*}/rowAccessPolicies/{policy_id=*}")
@@ -941,6 +1040,12 @@ func (c *rowAccessPolicyRESTClient) UpdateRowAccessPolicy(ctx context.Context, r
 }
 
 // DeleteRowAccessPolicy deletes a row access policy.
+//
+// IAM PermissionsRequires the following IAM permission(s) on the table:
+//
+//	bigquery.rowAccessPolicies.delete
+//
+//	bigquery.rowAccessPolicies.setIamPolicy
 func (c *rowAccessPolicyRESTClient) DeleteRowAccessPolicy(ctx context.Context, req *bigquerypb.DeleteRowAccessPolicyRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -961,9 +1066,6 @@ func (c *rowAccessPolicyRESTClient) DeleteRowAccessPolicy(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquery.googleapis.com/projects/%v/datasets/%v/tables/%v/rowAccessPolicies/%v", req.GetProjectId(), req.GetDatasetId(), req.GetTableId(), req.GetPolicyId()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.RowAccessPolicyService/DeleteRowAccessPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/bigquery/v2/projects/{project_id=*}/datasets/{dataset_id=*}/tables/{table_id=*}/rowAccessPolicies/{policy_id=*}")
@@ -985,6 +1087,12 @@ func (c *rowAccessPolicyRESTClient) DeleteRowAccessPolicy(ctx context.Context, r
 }
 
 // BatchDeleteRowAccessPolicies deletes provided row access policies.
+//
+// IAM PermissionsRequires the following IAM permission(s) on the table:
+//
+//	bigquery.rowAccessPolicies.delete
+//
+//	bigquery.rowAccessPolicies.setIamPolicy
 func (c *rowAccessPolicyRESTClient) BatchDeleteRowAccessPolicies(ctx context.Context, req *bigquerypb.BatchDeleteRowAccessPoliciesRequest, opts ...gax.CallOption) error {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1004,9 +1112,6 @@ func (c *rowAccessPolicyRESTClient) BatchDeleteRowAccessPolicies(ctx context.Con
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquery.googleapis.com/projects/%v/datasets/%v/tables/%v", req.GetProjectId(), req.GetDatasetId(), req.GetTableId()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.RowAccessPolicyService/BatchDeleteRowAccessPolicies")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/bigquery/v2/projects/{project_id=*}/datasets/{dataset_id=*}/tables/{table_id=*}/rowAccessPolicies:batchDelete")

@@ -66,8 +66,14 @@ type DbSystemShape struct {
 	MinMemoryPerNodeGb int32 `protobuf:"varint,11,opt,name=min_memory_per_node_gb,json=minMemoryPerNodeGb,proto3" json:"min_memory_per_node_gb,omitempty"`
 	// Optional. Minimum node storage per database server in gigabytes.
 	MinDbNodeStoragePerNodeGb int32 `protobuf:"varint,12,opt,name=min_db_node_storage_per_node_gb,json=minDbNodeStoragePerNodeGb,proto3" json:"min_db_node_storage_per_node_gb,omitempty"`
-	unknownFields             protoimpl.UnknownFields
-	sizeCache                 protoimpl.SizeCache
+	// Optional. Minimum core count per node.
+	MinimumCoreCount int32 `protobuf:"varint,13,opt,name=minimum_core_count,json=minimumCoreCount,proto3" json:"minimum_core_count,omitempty"`
+	// Optional. Available core count.
+	AvailableCoreCount int32 `protobuf:"varint,14,opt,name=available_core_count,json=availableCoreCount,proto3" json:"available_core_count,omitempty"`
+	// Optional. Core count increment.
+	CoreCountIncrement int32 `protobuf:"varint,15,opt,name=core_count_increment,json=coreCountIncrement,proto3" json:"core_count_increment,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *DbSystemShape) Reset() {
@@ -184,11 +190,32 @@ func (x *DbSystemShape) GetMinDbNodeStoragePerNodeGb() int32 {
 	return 0
 }
 
+func (x *DbSystemShape) GetMinimumCoreCount() int32 {
+	if x != nil {
+		return x.MinimumCoreCount
+	}
+	return 0
+}
+
+func (x *DbSystemShape) GetAvailableCoreCount() int32 {
+	if x != nil {
+		return x.AvailableCoreCount
+	}
+	return 0
+}
+
+func (x *DbSystemShape) GetCoreCountIncrement() int32 {
+	if x != nil {
+		return x.CoreCountIncrement
+	}
+	return 0
+}
+
 var File_google_cloud_oracledatabase_v1_db_system_shape_proto protoreflect.FileDescriptor
 
 const file_google_cloud_oracledatabase_v1_db_system_shape_proto_rawDesc = "" +
 	"\n" +
-	"4google/cloud/oracledatabase/v1/db_system_shape.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xa1\x06\n" +
+	"4google/cloud/oracledatabase/v1/db_system_shape.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xc2\a\n" +
 	"\rDbSystemShape\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x19\n" +
 	"\x05shape\x18\x02 \x01(\tB\x03\xe0A\x01R\x05shape\x12)\n" +
@@ -202,7 +229,10 @@ const file_google_cloud_oracledatabase_v1_db_system_shape_proto_rawDesc = "" +
 	"\x17min_core_count_per_node\x18\n" +
 	" \x01(\x05B\x03\xe0A\x01R\x13minCoreCountPerNode\x127\n" +
 	"\x16min_memory_per_node_gb\x18\v \x01(\x05B\x03\xe0A\x01R\x12minMemoryPerNodeGb\x12G\n" +
-	"\x1fmin_db_node_storage_per_node_gb\x18\f \x01(\x05B\x03\xe0A\x01R\x19minDbNodeStoragePerNodeGb:\x9a\x01\xeaA\x96\x01\n" +
+	"\x1fmin_db_node_storage_per_node_gb\x18\f \x01(\x05B\x03\xe0A\x01R\x19minDbNodeStoragePerNodeGb\x121\n" +
+	"\x12minimum_core_count\x18\r \x01(\x05B\x03\xe0A\x01R\x10minimumCoreCount\x125\n" +
+	"\x14available_core_count\x18\x0e \x01(\x05B\x03\xe0A\x01R\x12availableCoreCount\x125\n" +
+	"\x14core_count_increment\x18\x0f \x01(\x05B\x03\xe0A\x01R\x12coreCountIncrement:\x9a\x01\xeaA\x96\x01\n" +
 	"+oracledatabase.googleapis.com/DbSystemShape\x12Hprojects/{project}/locations/{location}/dbSystemShapes/{db_system_shape}*\x0edbSystemShapes2\rdbSystemShapeB\xec\x01\n" +
 	"\"com.google.cloud.oracledatabase.v1B\x12DbSystemShapeProtoP\x01ZJcloud.google.com/go/oracledatabase/apiv1/oracledatabasepb;oracledatabasepb\xaa\x02\x1eGoogle.Cloud.OracleDatabase.V1\xca\x02\x1eGoogle\\Cloud\\OracleDatabase\\V1\xea\x02!Google::Cloud::OracleDatabase::V1b\x06proto3"
 

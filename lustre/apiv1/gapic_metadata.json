@@ -15,14 +15,34 @@
                 "CancelOperation"
               ]
             },
+            "CreateDirectoryPolicy": {
+              "methods": [
+                "CreateDirectoryPolicy"
+              ]
+            },
             "CreateInstance": {
               "methods": [
                 "CreateInstance"
               ]
             },
+            "CreateMirror": {
+              "methods": [
+                "CreateMirror"
+              ]
+            },
+            "DeleteDirectoryPolicy": {
+              "methods": [
+                "DeleteDirectoryPolicy"
+              ]
+            },
             "DeleteInstance": {
               "methods": [
                 "DeleteInstance"
+              ]
+            },
+            "DeleteMirror": {
+              "methods": [
+                "DeleteMirror"
               ]
             },
             "DeleteOperation": {
@@ -35,6 +55,16 @@
                 "ExportData"
               ]
             },
+            "GetDirectoryPolicy": {
+              "methods": [
+                "GetDirectoryPolicy"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
             "GetInstance": {
               "methods": [
                 "GetInstance"
@@ -43,6 +73,11 @@
             "GetLocation": {
               "methods": [
                 "GetLocation"
+              ]
+            },
+            "GetMirror": {
+              "methods": [
+                "GetMirror"
               ]
             },
             "GetOperation": {
@@ -55,6 +90,11 @@
                 "ImportData"
               ]
             },
+            "ListDirectoryPolicies": {
+              "methods": [
+                "ListDirectoryPolicies"
+              ]
+            },
             "ListInstances": {
               "methods": [
                 "ListInstances"
@@ -65,14 +105,39 @@
                 "ListLocations"
               ]
             },
+            "ListMirrors": {
+              "methods": [
+                "ListMirrors"
+              ]
+            },
             "ListOperations": {
               "methods": [
                 "ListOperations"
               ]
             },
+            "RescheduleMaintenance": {
+              "methods": [
+                "RescheduleMaintenance"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
             "UpdateInstance": {
               "methods": [
                 "UpdateInstance"
+              ]
+            },
+            "UpdateMirror": {
+              "methods": [
+                "UpdateMirror"
               ]
             }
           }
@@ -85,14 +150,34 @@
                 "CancelOperation"
               ]
             },
+            "CreateDirectoryPolicy": {
+              "methods": [
+                "CreateDirectoryPolicy"
+              ]
+            },
             "CreateInstance": {
               "methods": [
                 "CreateInstance"
               ]
             },
+            "CreateMirror": {
+              "methods": [
+                "CreateMirror"
+              ]
+            },
+            "DeleteDirectoryPolicy": {
+              "methods": [
+                "DeleteDirectoryPolicy"
+              ]
+            },
             "DeleteInstance": {
               "methods": [
                 "DeleteInstance"
+              ]
+            },
+            "DeleteMirror": {
+              "methods": [
+                "DeleteMirror"
               ]
             },
             "DeleteOperation": {
@@ -105,6 +190,16 @@
                 "ExportData"
               ]
             },
+            "GetDirectoryPolicy": {
+              "methods": [
+                "GetDirectoryPolicy"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
             "GetInstance": {
               "methods": [
                 "GetInstance"
@@ -113,6 +208,11 @@
             "GetLocation": {
               "methods": [
                 "GetLocation"
+              ]
+            },
+            "GetMirror": {
+              "methods": [
+                "GetMirror"
               ]
             },
             "GetOperation": {
@@ -125,6 +225,11 @@
                 "ImportData"
               ]
             },
+            "ListDirectoryPolicies": {
+              "methods": [
+                "ListDirectoryPolicies"
+              ]
+            },
             "ListInstances": {
               "methods": [
                 "ListInstances"
@@ -135,14 +240,39 @@
                 "ListLocations"
               ]
             },
+            "ListMirrors": {
+              "methods": [
+                "ListMirrors"
+              ]
+            },
             "ListOperations": {
               "methods": [
                 "ListOperations"
               ]
             },
+            "RescheduleMaintenance": {
+              "methods": [
+                "RescheduleMaintenance"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
             "UpdateInstance": {
               "methods": [
                 "UpdateInstance"
+              ]
+            },
+            "UpdateMirror": {
+              "methods": [
+                "UpdateMirror"
               ]
             }
           }

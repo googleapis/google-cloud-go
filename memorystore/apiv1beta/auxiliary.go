@@ -18,12 +18,14 @@ package memorystore
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	memorystorepb "cloud.google.com/go/memorystore/apiv1beta/memorystorepb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
@@ -816,6 +818,12 @@ func (op *UpdateInstanceOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AuthTokenIterator) All() iter.Seq2[*memorystorepb.AuthToken, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // AuthTokenIterator manages a stream of *memorystorepb.AuthToken.
 type AuthTokenIterator struct {
 	items    []*memorystorepb.AuthToken
@@ -861,6 +869,12 @@ func (it *AuthTokenIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *BackupCollectionIterator) All() iter.Seq2[*memorystorepb.BackupCollection, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // BackupCollectionIterator manages a stream of *memorystorepb.BackupCollection.
@@ -910,6 +924,12 @@ func (it *BackupCollectionIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *BackupIterator) All() iter.Seq2[*memorystorepb.Backup, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // BackupIterator manages a stream of *memorystorepb.Backup.
 type BackupIterator struct {
 	items    []*memorystorepb.Backup
@@ -955,6 +975,12 @@ func (it *BackupIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *InstanceIterator) All() iter.Seq2[*memorystorepb.Instance, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // InstanceIterator manages a stream of *memorystorepb.Instance.
@@ -1004,6 +1030,12 @@ func (it *InstanceIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // LocationIterator manages a stream of *locationpb.Location.
 type LocationIterator struct {
 	items    []*locationpb.Location
@@ -1051,6 +1083,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OperationIterator manages a stream of *longrunningpb.Operation.
 type OperationIterator struct {
 	items    []*longrunningpb.Operation
@@ -1096,6 +1134,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TokenAuthUserIterator) All() iter.Seq2[*memorystorepb.TokenAuthUser, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // TokenAuthUserIterator manages a stream of *memorystorepb.TokenAuthUser.

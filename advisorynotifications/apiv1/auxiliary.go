@@ -17,9 +17,18 @@
 package advisorynotifications
 
 import (
+	"iter"
+
 	advisorynotificationspb "cloud.google.com/go/advisorynotifications/apiv1/advisorynotificationspb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *NotificationIterator) All() iter.Seq2[*advisorynotificationspb.Notification, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // NotificationIterator manages a stream of *advisorynotificationspb.Notification.
 type NotificationIterator struct {

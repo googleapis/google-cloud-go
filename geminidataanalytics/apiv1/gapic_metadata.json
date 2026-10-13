@@ -80,6 +80,16 @@
                 "ListOperations"
               ]
             },
+            "RetrieveAgentOpsObservability": {
+              "methods": [
+                "RetrieveAgentOpsObservability"
+              ]
+            },
+            "SetAgentOpsObservability": {
+              "methods": [
+                "SetAgentOpsObservability"
+              ]
+            },
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
@@ -170,6 +180,16 @@
                 "ListOperations"
               ]
             },
+            "RetrieveAgentOpsObservability": {
+              "methods": [
+                "RetrieveAgentOpsObservability"
+              ]
+            },
+            "SetAgentOpsObservability": {
+              "methods": [
+                "SetAgentOpsObservability"
+              ]
+            },
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
@@ -253,6 +273,11 @@
               "methods": [
                 "ListOperations"
               ]
+            },
+            "UpdateConversation": {
+              "methods": [
+                "UpdateConversation"
+              ]
             }
           }
         },
@@ -317,6 +342,11 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "UpdateConversation": {
+              "methods": [
+                "UpdateConversation"
               ]
             }
           }

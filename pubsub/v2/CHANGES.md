@@ -1,5 +1,19 @@
 # Changes
 
+## [2.7.0](https://github.com/googleapis/google-cloud-go/compare/pubsub/v2.6.2...pubsub/v2.7.0) (2026-08-26)
+
+
+### Features
+
+* Update API sources and regenerate ([#20427](https://github.com/googleapis/google-cloud-go/issues/20427)) ([eb07af9](https://github.com/googleapis/google-cloud-go/commit/eb07af97288cb3446ef50ff1806c7bc12d5c6350))
+
+## [2.6.2](https://github.com/googleapis/google-cloud-go/compare/pubsub/v2.6.1...pubsub/v2.6.2) (2026-08-19)
+
+
+### Bug Fixes
+
+* **pubsub/v2:** Update ackID batch size to 1000 ([#20393](https://github.com/googleapis/google-cloud-go/issues/20393)) ([530b88a](https://github.com/googleapis/google-cloud-go/commit/530b88ac7ff8ecb87a6bb4eae035d36c1958a9b2)), refs [#20391](https://github.com/googleapis/google-cloud-go/issues/20391)
+
 ## [2.6.1](https://github.com/googleapis/google-cloud-go/compare/pubsub/v2.6.0...pubsub/v2.6.1) (2026-07-07)
 
 

@@ -308,6 +308,45 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "vpcaccess",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/vpcaccess/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "vpcaccess.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateConnector = append(client.CallOptions.CreateConnector, gax.WithClientTracing(tracing))
+		client.CallOptions.GetConnector = append(client.CallOptions.GetConnector, gax.WithClientTracing(tracing))
+		client.CallOptions.ListConnectors = append(client.CallOptions.ListConnectors, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteConnector = append(client.CallOptions.DeleteConnector, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "vpcaccess",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/vpcaccess/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "vpcaccess.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateConnector = append(client.CallOptions.CreateConnector, gax.WithClientLogging(logging))
+		client.CallOptions.GetConnector = append(client.CallOptions.GetConnector, gax.WithClientLogging(logging))
+		client.CallOptions.ListConnectors = append(client.CallOptions.ListConnectors, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteConnector = append(client.CallOptions.DeleteConnector, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -423,6 +462,45 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "vpcaccess",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/vpcaccess/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "vpcaccess.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateConnector = append(callOpts.CreateConnector, gax.WithClientTracing(tracing))
+		callOpts.GetConnector = append(callOpts.GetConnector, gax.WithClientTracing(tracing))
+		callOpts.ListConnectors = append(callOpts.ListConnectors, gax.WithClientTracing(tracing))
+		callOpts.DeleteConnector = append(callOpts.DeleteConnector, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "vpcaccess",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/vpcaccess/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "vpcaccess.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateConnector = append(callOpts.CreateConnector, gax.WithClientLogging(logging))
+		callOpts.GetConnector = append(callOpts.GetConnector, gax.WithClientLogging(logging))
+		callOpts.ListConnectors = append(callOpts.ListConnectors, gax.WithClientLogging(logging))
+		callOpts.DeleteConnector = append(callOpts.DeleteConnector, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -479,9 +557,6 @@ func (c *gRPCClient) CreateConnector(ctx context.Context, req *vpcaccesspb.Creat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vpcaccess.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vpcaccess.v1.VpcAccessService/CreateConnector")
 	}
@@ -509,9 +584,6 @@ func (c *gRPCClient) GetConnector(ctx context.Context, req *vpcaccesspb.GetConne
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vpcaccess.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vpcaccess.v1.VpcAccessService/GetConnector")
 	}
@@ -533,9 +605,6 @@ func (c *gRPCClient) ListConnectors(ctx context.Context, req *vpcaccesspb.ListCo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vpcaccess.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vpcaccess.v1.VpcAccessService/ListConnectors")
 	}
@@ -585,9 +654,6 @@ func (c *gRPCClient) DeleteConnector(ctx context.Context, req *vpcaccesspb.Delet
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vpcaccess.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vpcaccess.v1.VpcAccessService/DeleteConnector")
 	}
@@ -756,9 +822,6 @@ func (c *restClient) CreateConnector(ctx context.Context, req *vpcaccesspb.Creat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vpcaccess.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vpcaccess.v1.VpcAccessService/CreateConnector")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/connectors")
@@ -821,9 +884,6 @@ func (c *restClient) GetConnector(ctx context.Context, req *vpcaccesspb.GetConne
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vpcaccess.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vpcaccess.v1.VpcAccessService/GetConnector")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/connectors/*}")
@@ -957,9 +1017,6 @@ func (c *restClient) DeleteConnector(ctx context.Context, req *vpcaccesspb.Delet
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vpcaccess.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vpcaccess.v1.VpcAccessService/DeleteConnector")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/connectors/*}")

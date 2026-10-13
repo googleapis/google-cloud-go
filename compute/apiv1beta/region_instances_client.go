@@ -50,7 +50,7 @@ func defaultRegionInstancesRESTCallOptions() *RegionInstancesCallOptions {
 	}
 }
 
-// internalRegionInstancesClient is an interface that defines the methods available from Google Compute Engine API.
+// internalRegionInstancesClient is an interface that defines the methods available from Compute Engine API.
 type internalRegionInstancesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -58,7 +58,7 @@ type internalRegionInstancesClient interface {
 	BulkInsert(context.Context, *computepb.BulkInsertRegionInstanceRequest, ...gax.CallOption) (*Operation, error)
 }
 
-// RegionInstancesClient is a client for interacting with Google Compute Engine API.
+// RegionInstancesClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The RegionInstances API.
@@ -162,6 +162,33 @@ func NewRegionInstancesRESTClient(ctx context.Context, opts ...option.ClientOpti
 
 		callOpts.BulkInsert = append(callOpts.BulkInsert, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.BulkInsert = append(callOpts.BulkInsert, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.BulkInsert = append(callOpts.BulkInsert, gax.WithClientLogging(logging))
+	}
 
 	o := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -246,9 +273,6 @@ func (c *regionInstancesRESTClient) BulkInsert(ctx context.Context, req *compute
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v/regions/%v", req.GetProject(), req.GetRegion()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.RegionInstances/BulkInsert")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/instances/bulkInsert")

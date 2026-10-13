@@ -308,7 +308,7 @@ func testConfigGRPC(ctx context.Context, t *testing.T, opts ...option.ClientOpti
 // initTransportClients initializes Storage clients for each supported transport.
 func initTransportClients(ctx context.Context, t *testing.T, opts ...option.ClientOption) map[string]*Client {
 	withJSON := append(slices.Clone(opts), WithJSONReads())
-	withZonal := append(slices.Clone(opts), experimental.WithZonalBucketAPIs())
+	withZonal := append(slices.Clone(opts), WithGRPCBidiReads(), WithAppendableUploads())
 	return map[string]*Client{
 		"http": testConfig(ctx, t, opts...),
 		"grpc": testConfigGRPC(ctx, t, opts...),
@@ -1279,7 +1279,7 @@ func TestIntegration_OtelMetricsEnablement(t *testing.T) {
 			res, err := resource.New(ctx,
 				resource.WithAttributes(
 					attribute.String("gcp.client.service", "storage"),
-					attribute.String("gcp.client.repo", "googleapis/google-cloud-go"),
+					attribute.String("gcp.client.artifact", "cloud.google.com/go/storage"),
 				),
 			)
 			if err != nil {
@@ -1295,6 +1295,7 @@ func TestIntegration_OtelMetricsEnablement(t *testing.T) {
 			var client *Client
 			opts := []option.ClientOption{
 				experimental.WithOtelMetrics(),
+				experimental.WithOtelDebugMetrics(),
 				experimental.WithMeterProvider(provider),
 			}
 
@@ -1332,8 +1333,8 @@ func TestIntegration_OtelMetricsEnablement(t *testing.T) {
 			if resAttrs["gcp.client.service"] != "storage" {
 				t.Errorf("expected gcp.client.service = storage, got %q", resAttrs["gcp.client.service"])
 			}
-			if resAttrs["gcp.client.repo"] != "googleapis/google-cloud-go" {
-				t.Errorf("expected gcp.client.repo = googleapis/google-cloud-go, got %q", resAttrs["gcp.client.repo"])
+			if resAttrs["gcp.client.artifact"] != "cloud.google.com/go/storage" {
+				t.Errorf("expected gcp.client.artifact = cloud.google.com/go/storage, got %q", resAttrs["gcp.client.artifact"])
 			}
 
 			// Group metrics by name.
@@ -1345,54 +1346,90 @@ func TestIntegration_OtelMetricsEnablement(t *testing.T) {
 			}
 
 			// Check transport-level duration metric.
-			expectedMetricName := "rpc.client.call.duration"
+			expectedTransportMetric := "rpc.client.call.duration"
 			if transportType == "http" {
-				expectedMetricName = "http.client.request.duration"
+				expectedTransportMetric = "http.client.request.duration"
 			}
-			if m, ok := metricsMap[expectedMetricName]; !ok {
-				t.Errorf("expected transport metric %q not found", expectedMetricName)
-			} else {
-				hist, ok := m.Data.(metricdata.Histogram[float64])
-				if !ok {
-					t.Fatalf("expected Histogram data, got %T", m.Data)
-				}
-				if len(hist.DataPoints) == 0 {
-					t.Errorf("expected at least 1 datapoint for %q, got 0", expectedMetricName)
-				} else {
-					dp := hist.DataPoints[0]
-					attrs := make(map[string]string)
-					for _, kv := range dp.Attributes.ToSlice() {
-						attrs[string(kv.Key)] = kv.Value.Emit()
-					}
-					if attrs["server.address"] == "" {
-						t.Errorf("expected non-empty server.address")
-					}
+
+			expectedHistograms := []string{
+				expectedTransportMetric,
+				"gcp.client.request.duration",
+			}
+			expectedSums := []string{
+				"gcp.storage.client.operations",
+				"gcp.storage.client.request.active",
+			}
+			expectedNetworkMetrics := []string{
+				"gcp.storage.client.network.tcp.connect.duration",
+				"gcp.storage.client.network.tls.handshake.duration",
+			}
+			if transportType == "http" {
+				expectedNetworkMetrics = append(expectedNetworkMetrics, "gcp.storage.client.network.dns.lookup.duration")
+			}
+
+			// gfe.duration might not be strictly populated locally, but check it if present.
+			if m, ok := metricsMap["gcp.storage.client.gfe.duration"]; ok {
+				if hist, ok := m.Data.(metricdata.Histogram[float64]); !ok {
+					t.Errorf("expected Histogram data for gfe.duration, got %T", m.Data)
+				} else if len(hist.DataPoints) == 0 {
+					t.Errorf("expected at least 1 datapoint for gcp.storage.client.gfe.duration")
 				}
 			}
 
-			// Check SDK-level duration metric.
-			if m, ok := metricsMap["gcp.client.request.duration"]; !ok {
-				t.Errorf("expected metric gcp.client.request.duration not found")
-			} else {
+			for _, name := range expectedHistograms {
+				m, ok := metricsMap[name]
+				if !ok {
+					t.Errorf("expected metric %q not found", name)
+					continue
+				}
 				hist, ok := m.Data.(metricdata.Histogram[float64])
 				if !ok {
-					t.Fatalf("expected Histogram data, got %T", m.Data)
+					t.Errorf("expected Histogram data for %q, got %T", name, m.Data)
+					continue
 				}
 				if len(hist.DataPoints) == 0 {
-					t.Errorf("expected at least 1 datapoint for gcp.client.request.duration, got 0")
+					t.Errorf("expected at least 1 datapoint for %q", name)
 				}
 			}
 
-			// Check client operations metric.
-			if m, ok := metricsMap["gcp.storage.client.operations"]; !ok {
-				t.Errorf("expected metric gcp.storage.client.operations not found")
-			} else {
-				sum, ok := m.Data.(metricdata.Sum[int64])
+			for _, name := range expectedSums {
+				m, ok := metricsMap[name]
 				if !ok {
-					t.Fatalf("expected Sum data, got %T", m.Data)
+					t.Errorf("expected metric %q not found", name)
+					continue
 				}
-				if len(sum.DataPoints) == 0 {
-					t.Errorf("expected at least 1 datapoint for gcp.storage.client.operations, got 0")
+				_, ok = m.Data.(metricdata.Sum[int64])
+				if !ok {
+					t.Errorf("expected Sum data for %q, got %T", name, m.Data)
+				}
+			}
+
+			for _, name := range expectedNetworkMetrics {
+				m, ok := metricsMap[name]
+				if !ok {
+					t.Errorf("expected metric %q not found", name)
+					continue
+				}
+				hist, ok := m.Data.(metricdata.Histogram[float64])
+				if !ok {
+					t.Errorf("expected Histogram data for %q, got %T", name, m.Data)
+					continue
+				}
+				if len(hist.DataPoints) == 0 {
+					t.Errorf("expected at least 1 datapoint for %q", name)
+					continue
+				}
+
+				dp := hist.DataPoints[0]
+				attrs := make(map[string]string)
+				for _, kv := range dp.Attributes.ToSlice() {
+					attrs[string(kv.Key)] = kv.Value.Emit()
+				}
+				if attrs["server.address"] == "" {
+					t.Errorf("expected non-empty server.address for %q", name)
+				}
+				if attrs["rpc.system.name"] != transportType {
+					t.Errorf("expected rpc.system.name = %q for %q, got %q", transportType, name, attrs["rpc.system.name"])
 				}
 			}
 		})
@@ -7186,6 +7223,11 @@ func TestIntegration_Reader(t *testing.T) {
 			{"entire object", 0, objlen, objlen},
 			{"first half of object", 0, objlen / 2, objlen / 2},
 			{"second half of object", objlen / 2, objlen, objlen / 2},
+			// Ranges at a non-zero offset whose length ends before the object
+			// does.
+			{"middle of object - offset smaller than length", objlen / 4, objlen / 2, objlen / 2},
+			{"middle of object - offset larger than length", objlen / 2, objlen / 4, objlen / 4},
+			{"length past end of object", objlen / 2, 3 * objlen / 4, objlen - objlen/2},
 			{"no bytes - start at beginning", 0, 0, 0},
 			{"no bytes - start halfway through", objlen / 2, 0, 0},
 			{"start halfway through - use negative to get rest of obj", objlen / 2, -1, objlen / 2},
@@ -9323,26 +9365,26 @@ func TestIntegration_ParallelUpload(t *testing.T) {
 			{
 				name:     "small object",
 				content:  bytes.Repeat([]byte("a"), 1<<20), // 1 MiB
-				config:   ParallelUploadConfig{PartSize: 5 << 20, MaxConcurrency: 2},
+				config:   ParallelUploadConfig{PartSize: 8 << 20, MaxConcurrency: 2},
 				expected: 1 << 20,
 			},
 			{
 				name:     "exact part size",
-				content:  bytes.Repeat([]byte("b"), 5<<20), // 5 MiB
-				config:   ParallelUploadConfig{PartSize: 5 << 20, MaxConcurrency: 2},
-				expected: 5 << 20,
+				content:  bytes.Repeat([]byte("b"), 8<<20), // 8 MiB
+				config:   ParallelUploadConfig{PartSize: 8 << 20, MaxConcurrency: 2},
+				expected: 8 << 20,
 			},
 			{
 				name:     "large object",
-				content:  bytes.Repeat([]byte("c"), 12<<20), // 12 MiB
-				config:   ParallelUploadConfig{PartSize: 5 << 20, MaxConcurrency: 4},
-				expected: 12 << 20,
+				content:  bytes.Repeat([]byte("c"), 18<<20), // 18 MiB
+				config:   ParallelUploadConfig{PartSize: 8 << 20, MaxConcurrency: 4},
+				expected: 18 << 20,
 			},
 			{
 				name:     "recursive composition logic",
-				content:  bytes.Repeat([]byte("d"), 165<<20), // 165 MiB = 33 parts of 5 MiB each (tests recursive compose)
-				config:   ParallelUploadConfig{PartSize: 5 << 20, MaxConcurrency: 16},
-				expected: 165 << 20,
+				content:  bytes.Repeat([]byte("d"), 264<<20), // 264 MiB = 33 parts of 8 MiB each (tests recursive compose)
+				config:   ParallelUploadConfig{PartSize: 8 << 20, MaxConcurrency: 16},
+				expected: 264 << 20,
 			},
 		}
 
@@ -9434,8 +9476,8 @@ func TestIntegration_ParallelUploadConcurrency(t *testing.T) {
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		h := testHelper{t}
 
-		content := bytes.Repeat([]byte("z"), 15<<20) // 15 MiB
-		config := ParallelUploadConfig{PartSize: 5 << 20, MaxConcurrency: 4}
+		content := bytes.Repeat([]byte("z"), 24<<20) // 24 MiB
+		config := ParallelUploadConfig{PartSize: 8 << 20, MaxConcurrency: 4}
 
 		var wg sync.WaitGroup
 		numUploads := 5
@@ -9489,7 +9531,7 @@ func TestIntegration_ParallelUpload_ChecksumValidation(t *testing.T) {
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		h := testHelper{t}
 
-		content := bytes.Repeat([]byte("z"), 12<<20) // 12 MiB
+		content := bytes.Repeat([]byte("z"), 18<<20) // 18 MiB
 		correctCRC := crc32.Checksum(content, crc32cTable)
 
 		testCases := []struct {
@@ -9519,7 +9561,7 @@ func TestIntegration_ParallelUpload_ChecksumValidation(t *testing.T) {
 
 				w := obj.NewWriter(ctx)
 				w.EnableParallelUpload = true
-				w.ParallelUploadConfig = ParallelUploadConfig{PartSize: 5 << 20, MaxConcurrency: 2}
+				w.ParallelUploadConfig = ParallelUploadConfig{PartSize: 8 << 20, MaxConcurrency: 2}
 				w.SendCRC32C = true
 				w.CRC32C = tc.crc32c
 
@@ -9705,7 +9747,7 @@ func TestIntegration_ClientTracing(t *testing.T) {
 			}
 
 			// First call should have placeholder.
-			verifySpanAttributes(t, attrsSpan, "projects/_/buckets/"+bucketName, "global")
+			verifySpanAttributes(t, attrsSpan, storageResourceNamePrefix+"projects/_/buckets/"+bucketName, "global")
 
 			// Wait for background fetch to complete and populate cache.
 			select {
@@ -9739,7 +9781,7 @@ func TestIntegration_ClientTracing(t *testing.T) {
 			}
 
 			// Second call should have resolved attributes.
-			verifySpanAttributes(t, attrsSpan, fmt.Sprintf("projects/%d/buckets/%s", bAttrs.ProjectNumber, bucketName), "us-east1")
+			verifySpanAttributes(t, attrsSpan, fmt.Sprintf(storageResourceNamePrefix+"projects/%d/buckets/%s", bAttrs.ProjectNumber, bucketName), "us-east1")
 		})
 	}
 }

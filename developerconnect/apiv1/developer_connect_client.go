@@ -862,6 +862,95 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "developerconnect",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/developerconnect/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "developerconnect.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListConnections = append(client.CallOptions.ListConnections, gax.WithClientTracing(tracing))
+		client.CallOptions.GetConnection = append(client.CallOptions.GetConnection, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateConnection = append(client.CallOptions.CreateConnection, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateConnection = append(client.CallOptions.UpdateConnection, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteConnection = append(client.CallOptions.DeleteConnection, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateGitRepositoryLink = append(client.CallOptions.CreateGitRepositoryLink, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteGitRepositoryLink = append(client.CallOptions.DeleteGitRepositoryLink, gax.WithClientTracing(tracing))
+		client.CallOptions.ListGitRepositoryLinks = append(client.CallOptions.ListGitRepositoryLinks, gax.WithClientTracing(tracing))
+		client.CallOptions.GetGitRepositoryLink = append(client.CallOptions.GetGitRepositoryLink, gax.WithClientTracing(tracing))
+		client.CallOptions.FetchReadWriteToken = append(client.CallOptions.FetchReadWriteToken, gax.WithClientTracing(tracing))
+		client.CallOptions.FetchReadToken = append(client.CallOptions.FetchReadToken, gax.WithClientTracing(tracing))
+		client.CallOptions.FetchLinkableGitRepositories = append(client.CallOptions.FetchLinkableGitRepositories, gax.WithClientTracing(tracing))
+		client.CallOptions.FetchGitHubInstallations = append(client.CallOptions.FetchGitHubInstallations, gax.WithClientTracing(tracing))
+		client.CallOptions.FetchGitRefs = append(client.CallOptions.FetchGitRefs, gax.WithClientTracing(tracing))
+		client.CallOptions.ListAccountConnectors = append(client.CallOptions.ListAccountConnectors, gax.WithClientTracing(tracing))
+		client.CallOptions.GetAccountConnector = append(client.CallOptions.GetAccountConnector, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateAccountConnector = append(client.CallOptions.CreateAccountConnector, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateAccountConnector = append(client.CallOptions.UpdateAccountConnector, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteAccountConnector = append(client.CallOptions.DeleteAccountConnector, gax.WithClientTracing(tracing))
+		client.CallOptions.FetchAccessToken = append(client.CallOptions.FetchAccessToken, gax.WithClientTracing(tracing))
+		client.CallOptions.ListUsers = append(client.CallOptions.ListUsers, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteUser = append(client.CallOptions.DeleteUser, gax.WithClientTracing(tracing))
+		client.CallOptions.FetchSelf = append(client.CallOptions.FetchSelf, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteSelf = append(client.CallOptions.DeleteSelf, gax.WithClientTracing(tracing))
+		client.CallOptions.StartOAuth = append(client.CallOptions.StartOAuth, gax.WithClientTracing(tracing))
+		client.CallOptions.FinishOAuth = append(client.CallOptions.FinishOAuth, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "developerconnect",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/developerconnect/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "developerconnect.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListConnections = append(client.CallOptions.ListConnections, gax.WithClientLogging(logging))
+		client.CallOptions.GetConnection = append(client.CallOptions.GetConnection, gax.WithClientLogging(logging))
+		client.CallOptions.CreateConnection = append(client.CallOptions.CreateConnection, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateConnection = append(client.CallOptions.UpdateConnection, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteConnection = append(client.CallOptions.DeleteConnection, gax.WithClientLogging(logging))
+		client.CallOptions.CreateGitRepositoryLink = append(client.CallOptions.CreateGitRepositoryLink, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteGitRepositoryLink = append(client.CallOptions.DeleteGitRepositoryLink, gax.WithClientLogging(logging))
+		client.CallOptions.ListGitRepositoryLinks = append(client.CallOptions.ListGitRepositoryLinks, gax.WithClientLogging(logging))
+		client.CallOptions.GetGitRepositoryLink = append(client.CallOptions.GetGitRepositoryLink, gax.WithClientLogging(logging))
+		client.CallOptions.FetchReadWriteToken = append(client.CallOptions.FetchReadWriteToken, gax.WithClientLogging(logging))
+		client.CallOptions.FetchReadToken = append(client.CallOptions.FetchReadToken, gax.WithClientLogging(logging))
+		client.CallOptions.FetchLinkableGitRepositories = append(client.CallOptions.FetchLinkableGitRepositories, gax.WithClientLogging(logging))
+		client.CallOptions.FetchGitHubInstallations = append(client.CallOptions.FetchGitHubInstallations, gax.WithClientLogging(logging))
+		client.CallOptions.FetchGitRefs = append(client.CallOptions.FetchGitRefs, gax.WithClientLogging(logging))
+		client.CallOptions.ListAccountConnectors = append(client.CallOptions.ListAccountConnectors, gax.WithClientLogging(logging))
+		client.CallOptions.GetAccountConnector = append(client.CallOptions.GetAccountConnector, gax.WithClientLogging(logging))
+		client.CallOptions.CreateAccountConnector = append(client.CallOptions.CreateAccountConnector, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateAccountConnector = append(client.CallOptions.UpdateAccountConnector, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteAccountConnector = append(client.CallOptions.DeleteAccountConnector, gax.WithClientLogging(logging))
+		client.CallOptions.FetchAccessToken = append(client.CallOptions.FetchAccessToken, gax.WithClientLogging(logging))
+		client.CallOptions.ListUsers = append(client.CallOptions.ListUsers, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteUser = append(client.CallOptions.DeleteUser, gax.WithClientLogging(logging))
+		client.CallOptions.FetchSelf = append(client.CallOptions.FetchSelf, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteSelf = append(client.CallOptions.DeleteSelf, gax.WithClientLogging(logging))
+		client.CallOptions.StartOAuth = append(client.CallOptions.StartOAuth, gax.WithClientLogging(logging))
+		client.CallOptions.FinishOAuth = append(client.CallOptions.FinishOAuth, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -1000,6 +1089,95 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "developerconnect",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/developerconnect/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "developerconnect.googleapis.com",
+			}),
+		)
+
+		callOpts.ListConnections = append(callOpts.ListConnections, gax.WithClientTracing(tracing))
+		callOpts.GetConnection = append(callOpts.GetConnection, gax.WithClientTracing(tracing))
+		callOpts.CreateConnection = append(callOpts.CreateConnection, gax.WithClientTracing(tracing))
+		callOpts.UpdateConnection = append(callOpts.UpdateConnection, gax.WithClientTracing(tracing))
+		callOpts.DeleteConnection = append(callOpts.DeleteConnection, gax.WithClientTracing(tracing))
+		callOpts.CreateGitRepositoryLink = append(callOpts.CreateGitRepositoryLink, gax.WithClientTracing(tracing))
+		callOpts.DeleteGitRepositoryLink = append(callOpts.DeleteGitRepositoryLink, gax.WithClientTracing(tracing))
+		callOpts.ListGitRepositoryLinks = append(callOpts.ListGitRepositoryLinks, gax.WithClientTracing(tracing))
+		callOpts.GetGitRepositoryLink = append(callOpts.GetGitRepositoryLink, gax.WithClientTracing(tracing))
+		callOpts.FetchReadWriteToken = append(callOpts.FetchReadWriteToken, gax.WithClientTracing(tracing))
+		callOpts.FetchReadToken = append(callOpts.FetchReadToken, gax.WithClientTracing(tracing))
+		callOpts.FetchLinkableGitRepositories = append(callOpts.FetchLinkableGitRepositories, gax.WithClientTracing(tracing))
+		callOpts.FetchGitHubInstallations = append(callOpts.FetchGitHubInstallations, gax.WithClientTracing(tracing))
+		callOpts.FetchGitRefs = append(callOpts.FetchGitRefs, gax.WithClientTracing(tracing))
+		callOpts.ListAccountConnectors = append(callOpts.ListAccountConnectors, gax.WithClientTracing(tracing))
+		callOpts.GetAccountConnector = append(callOpts.GetAccountConnector, gax.WithClientTracing(tracing))
+		callOpts.CreateAccountConnector = append(callOpts.CreateAccountConnector, gax.WithClientTracing(tracing))
+		callOpts.UpdateAccountConnector = append(callOpts.UpdateAccountConnector, gax.WithClientTracing(tracing))
+		callOpts.DeleteAccountConnector = append(callOpts.DeleteAccountConnector, gax.WithClientTracing(tracing))
+		callOpts.FetchAccessToken = append(callOpts.FetchAccessToken, gax.WithClientTracing(tracing))
+		callOpts.ListUsers = append(callOpts.ListUsers, gax.WithClientTracing(tracing))
+		callOpts.DeleteUser = append(callOpts.DeleteUser, gax.WithClientTracing(tracing))
+		callOpts.FetchSelf = append(callOpts.FetchSelf, gax.WithClientTracing(tracing))
+		callOpts.DeleteSelf = append(callOpts.DeleteSelf, gax.WithClientTracing(tracing))
+		callOpts.StartOAuth = append(callOpts.StartOAuth, gax.WithClientTracing(tracing))
+		callOpts.FinishOAuth = append(callOpts.FinishOAuth, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "developerconnect",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/developerconnect/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "developerconnect.googleapis.com",
+			}),
+		)
+
+		callOpts.ListConnections = append(callOpts.ListConnections, gax.WithClientLogging(logging))
+		callOpts.GetConnection = append(callOpts.GetConnection, gax.WithClientLogging(logging))
+		callOpts.CreateConnection = append(callOpts.CreateConnection, gax.WithClientLogging(logging))
+		callOpts.UpdateConnection = append(callOpts.UpdateConnection, gax.WithClientLogging(logging))
+		callOpts.DeleteConnection = append(callOpts.DeleteConnection, gax.WithClientLogging(logging))
+		callOpts.CreateGitRepositoryLink = append(callOpts.CreateGitRepositoryLink, gax.WithClientLogging(logging))
+		callOpts.DeleteGitRepositoryLink = append(callOpts.DeleteGitRepositoryLink, gax.WithClientLogging(logging))
+		callOpts.ListGitRepositoryLinks = append(callOpts.ListGitRepositoryLinks, gax.WithClientLogging(logging))
+		callOpts.GetGitRepositoryLink = append(callOpts.GetGitRepositoryLink, gax.WithClientLogging(logging))
+		callOpts.FetchReadWriteToken = append(callOpts.FetchReadWriteToken, gax.WithClientLogging(logging))
+		callOpts.FetchReadToken = append(callOpts.FetchReadToken, gax.WithClientLogging(logging))
+		callOpts.FetchLinkableGitRepositories = append(callOpts.FetchLinkableGitRepositories, gax.WithClientLogging(logging))
+		callOpts.FetchGitHubInstallations = append(callOpts.FetchGitHubInstallations, gax.WithClientLogging(logging))
+		callOpts.FetchGitRefs = append(callOpts.FetchGitRefs, gax.WithClientLogging(logging))
+		callOpts.ListAccountConnectors = append(callOpts.ListAccountConnectors, gax.WithClientLogging(logging))
+		callOpts.GetAccountConnector = append(callOpts.GetAccountConnector, gax.WithClientLogging(logging))
+		callOpts.CreateAccountConnector = append(callOpts.CreateAccountConnector, gax.WithClientLogging(logging))
+		callOpts.UpdateAccountConnector = append(callOpts.UpdateAccountConnector, gax.WithClientLogging(logging))
+		callOpts.DeleteAccountConnector = append(callOpts.DeleteAccountConnector, gax.WithClientLogging(logging))
+		callOpts.FetchAccessToken = append(callOpts.FetchAccessToken, gax.WithClientLogging(logging))
+		callOpts.ListUsers = append(callOpts.ListUsers, gax.WithClientLogging(logging))
+		callOpts.DeleteUser = append(callOpts.DeleteUser, gax.WithClientLogging(logging))
+		callOpts.FetchSelf = append(callOpts.FetchSelf, gax.WithClientLogging(logging))
+		callOpts.DeleteSelf = append(callOpts.DeleteSelf, gax.WithClientLogging(logging))
+		callOpts.StartOAuth = append(callOpts.StartOAuth, gax.WithClientLogging(logging))
+		callOpts.FinishOAuth = append(callOpts.FinishOAuth, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -1056,9 +1234,6 @@ func (c *gRPCClient) ListConnections(ctx context.Context, req *developerconnectp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/ListConnections")
 	}
@@ -1108,9 +1283,6 @@ func (c *gRPCClient) GetConnection(ctx context.Context, req *developerconnectpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/GetConnection")
 	}
@@ -1132,9 +1304,6 @@ func (c *gRPCClient) CreateConnection(ctx context.Context, req *developerconnect
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/CreateConnection")
 	}
@@ -1189,9 +1358,6 @@ func (c *gRPCClient) DeleteConnection(ctx context.Context, req *developerconnect
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/DeleteConnection")
 	}
@@ -1219,9 +1385,6 @@ func (c *gRPCClient) CreateGitRepositoryLink(ctx context.Context, req *developer
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/CreateGitRepositoryLink")
 	}
@@ -1249,9 +1412,6 @@ func (c *gRPCClient) DeleteGitRepositoryLink(ctx context.Context, req *developer
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/DeleteGitRepositoryLink")
 	}
@@ -1279,9 +1439,6 @@ func (c *gRPCClient) ListGitRepositoryLinks(ctx context.Context, req *developerc
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/ListGitRepositoryLinks")
 	}
@@ -1331,9 +1488,6 @@ func (c *gRPCClient) GetGitRepositoryLink(ctx context.Context, req *developercon
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/GetGitRepositoryLink")
 	}
@@ -1355,9 +1509,6 @@ func (c *gRPCClient) FetchReadWriteToken(ctx context.Context, req *developerconn
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetGitRepositoryLink()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/FetchReadWriteToken")
 	}
@@ -1379,9 +1530,6 @@ func (c *gRPCClient) FetchReadToken(ctx context.Context, req *developerconnectpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetGitRepositoryLink()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/FetchReadToken")
 	}
@@ -1403,9 +1551,6 @@ func (c *gRPCClient) FetchLinkableGitRepositories(ctx context.Context, req *deve
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetConnection()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/FetchLinkableGitRepositories")
 	}
@@ -1455,9 +1600,6 @@ func (c *gRPCClient) FetchGitHubInstallations(ctx context.Context, req *develope
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetConnection()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/FetchGitHubInstallations")
 	}
@@ -1479,9 +1621,6 @@ func (c *gRPCClient) FetchGitRefs(ctx context.Context, req *developerconnectpb.F
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetGitRepositoryLink()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/FetchGitRefs")
 	}
@@ -1531,9 +1670,6 @@ func (c *gRPCClient) ListAccountConnectors(ctx context.Context, req *developerco
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/ListAccountConnectors")
 	}
@@ -1583,9 +1719,6 @@ func (c *gRPCClient) GetAccountConnector(ctx context.Context, req *developerconn
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/GetAccountConnector")
 	}
@@ -1607,9 +1740,6 @@ func (c *gRPCClient) CreateAccountConnector(ctx context.Context, req *developerc
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/CreateAccountConnector")
 	}
@@ -1664,9 +1794,6 @@ func (c *gRPCClient) DeleteAccountConnector(ctx context.Context, req *developerc
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/DeleteAccountConnector")
 	}
@@ -1694,9 +1821,6 @@ func (c *gRPCClient) FetchAccessToken(ctx context.Context, req *developerconnect
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetAccountConnector()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/FetchAccessToken")
 	}
@@ -1718,9 +1842,6 @@ func (c *gRPCClient) ListUsers(ctx context.Context, req *developerconnectpb.List
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/ListUsers")
 	}
@@ -1770,9 +1891,6 @@ func (c *gRPCClient) DeleteUser(ctx context.Context, req *developerconnectpb.Del
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/DeleteUser")
 	}
@@ -1800,9 +1918,6 @@ func (c *gRPCClient) FetchSelf(ctx context.Context, req *developerconnectpb.Fetc
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/FetchSelf")
 	}
@@ -1824,9 +1939,6 @@ func (c *gRPCClient) DeleteSelf(ctx context.Context, req *developerconnectpb.Del
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/DeleteSelf")
 	}
@@ -1854,9 +1966,6 @@ func (c *gRPCClient) StartOAuth(ctx context.Context, req *developerconnectpb.Sta
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetAccountConnector()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/StartOAuth")
 	}
@@ -1878,9 +1987,6 @@ func (c *gRPCClient) FinishOAuth(ctx context.Context, req *developerconnectpb.Fi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetAccountConnector()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/FinishOAuth")
 	}
@@ -2174,9 +2280,6 @@ func (c *restClient) GetConnection(ctx context.Context, req *developerconnectpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/GetConnection")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/connections/*}")
@@ -2245,9 +2348,6 @@ func (c *restClient) CreateConnection(ctx context.Context, req *developerconnect
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/CreateConnection")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/connections")
@@ -2402,9 +2502,6 @@ func (c *restClient) DeleteConnection(ctx context.Context, req *developerconnect
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/DeleteConnection")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/connections/*}")
@@ -2485,9 +2582,6 @@ func (c *restClient) CreateGitRepositoryLink(ctx context.Context, req *developer
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/CreateGitRepositoryLink")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/connections/*}/gitRepositoryLinks")
@@ -2558,9 +2652,6 @@ func (c *restClient) DeleteGitRepositoryLink(ctx context.Context, req *developer
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/DeleteGitRepositoryLink")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/connections/*/gitRepositoryLinks/*}")
@@ -2706,9 +2797,6 @@ func (c *restClient) GetGitRepositoryLink(ctx context.Context, req *developercon
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/GetGitRepositoryLink")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/connections/*/gitRepositoryLinks/*}")
@@ -2769,9 +2857,6 @@ func (c *restClient) FetchReadWriteToken(ctx context.Context, req *developerconn
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetGitRepositoryLink()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/FetchReadWriteToken")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{git_repository_link=projects/*/locations/*/connections/*/gitRepositoryLinks/*}:fetchReadWriteToken")
@@ -2832,9 +2917,6 @@ func (c *restClient) FetchReadToken(ctx context.Context, req *developerconnectpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetGitRepositoryLink()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/FetchReadToken")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{git_repository_link=projects/*/locations/*/connections/*/gitRepositoryLinks/*}:fetchReadToken")
@@ -2971,9 +3053,6 @@ func (c *restClient) FetchGitHubInstallations(ctx context.Context, req *develope
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetConnection()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/FetchGitHubInstallations")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{connection=projects/*/locations/*/connections/*}:fetchGitHubInstallations")
@@ -3191,9 +3270,6 @@ func (c *restClient) GetAccountConnector(ctx context.Context, req *developerconn
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/GetAccountConnector")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/accountConnectors/*}")
@@ -3262,9 +3338,6 @@ func (c *restClient) CreateAccountConnector(ctx context.Context, req *developerc
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/CreateAccountConnector")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/accountConnectors")
@@ -3422,9 +3495,6 @@ func (c *restClient) DeleteAccountConnector(ctx context.Context, req *developerc
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/DeleteAccountConnector")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/accountConnectors/*}")
@@ -3492,9 +3562,6 @@ func (c *restClient) FetchAccessToken(ctx context.Context, req *developerconnect
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetAccountConnector()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/FetchAccessToken")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{account_connector=projects/*/locations/*/accountConnectors/*}/users:fetchAccessToken")
@@ -3642,9 +3709,6 @@ func (c *restClient) DeleteUser(ctx context.Context, req *developerconnectpb.Del
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/DeleteUser")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/accountConnectors/*/users/*}")
@@ -3706,9 +3770,6 @@ func (c *restClient) FetchSelf(ctx context.Context, req *developerconnectpb.Fetc
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/FetchSelf")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/accountConnectors/*}/users:fetchSelf")
@@ -3763,9 +3824,6 @@ func (c *restClient) DeleteSelf(ctx context.Context, req *developerconnectpb.Del
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/DeleteSelf")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/accountConnectors/*}/users:deleteSelf")
@@ -3827,9 +3885,6 @@ func (c *restClient) StartOAuth(ctx context.Context, req *developerconnectpb.Sta
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetAccountConnector()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/StartOAuth")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{account_connector=projects/*/locations/*/accountConnectors/*}/users:startOAuthFlow")
@@ -3895,9 +3950,6 @@ func (c *restClient) FinishOAuth(ctx context.Context, req *developerconnectpb.Fi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetAccountConnector()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/FinishOAuth")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{account_connector=projects/*/locations/*/accountConnectors/*}/users:finishOAuthFlow")

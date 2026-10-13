@@ -772,6 +772,77 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "securitycentermanagement",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/securitycentermanagement/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "securitycentermanagement.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListEffectiveSecurityHealthAnalyticsCustomModules = append(client.CallOptions.ListEffectiveSecurityHealthAnalyticsCustomModules, gax.WithClientTracing(tracing))
+		client.CallOptions.GetEffectiveSecurityHealthAnalyticsCustomModule = append(client.CallOptions.GetEffectiveSecurityHealthAnalyticsCustomModule, gax.WithClientTracing(tracing))
+		client.CallOptions.ListSecurityHealthAnalyticsCustomModules = append(client.CallOptions.ListSecurityHealthAnalyticsCustomModules, gax.WithClientTracing(tracing))
+		client.CallOptions.ListDescendantSecurityHealthAnalyticsCustomModules = append(client.CallOptions.ListDescendantSecurityHealthAnalyticsCustomModules, gax.WithClientTracing(tracing))
+		client.CallOptions.GetSecurityHealthAnalyticsCustomModule = append(client.CallOptions.GetSecurityHealthAnalyticsCustomModule, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateSecurityHealthAnalyticsCustomModule = append(client.CallOptions.CreateSecurityHealthAnalyticsCustomModule, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateSecurityHealthAnalyticsCustomModule = append(client.CallOptions.UpdateSecurityHealthAnalyticsCustomModule, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteSecurityHealthAnalyticsCustomModule = append(client.CallOptions.DeleteSecurityHealthAnalyticsCustomModule, gax.WithClientTracing(tracing))
+		client.CallOptions.SimulateSecurityHealthAnalyticsCustomModule = append(client.CallOptions.SimulateSecurityHealthAnalyticsCustomModule, gax.WithClientTracing(tracing))
+		client.CallOptions.ListEffectiveEventThreatDetectionCustomModules = append(client.CallOptions.ListEffectiveEventThreatDetectionCustomModules, gax.WithClientTracing(tracing))
+		client.CallOptions.GetEffectiveEventThreatDetectionCustomModule = append(client.CallOptions.GetEffectiveEventThreatDetectionCustomModule, gax.WithClientTracing(tracing))
+		client.CallOptions.ListEventThreatDetectionCustomModules = append(client.CallOptions.ListEventThreatDetectionCustomModules, gax.WithClientTracing(tracing))
+		client.CallOptions.ListDescendantEventThreatDetectionCustomModules = append(client.CallOptions.ListDescendantEventThreatDetectionCustomModules, gax.WithClientTracing(tracing))
+		client.CallOptions.GetEventThreatDetectionCustomModule = append(client.CallOptions.GetEventThreatDetectionCustomModule, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateEventThreatDetectionCustomModule = append(client.CallOptions.CreateEventThreatDetectionCustomModule, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateEventThreatDetectionCustomModule = append(client.CallOptions.UpdateEventThreatDetectionCustomModule, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteEventThreatDetectionCustomModule = append(client.CallOptions.DeleteEventThreatDetectionCustomModule, gax.WithClientTracing(tracing))
+		client.CallOptions.ValidateEventThreatDetectionCustomModule = append(client.CallOptions.ValidateEventThreatDetectionCustomModule, gax.WithClientTracing(tracing))
+		client.CallOptions.GetSecurityCenterService = append(client.CallOptions.GetSecurityCenterService, gax.WithClientTracing(tracing))
+		client.CallOptions.ListSecurityCenterServices = append(client.CallOptions.ListSecurityCenterServices, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateSecurityCenterService = append(client.CallOptions.UpdateSecurityCenterService, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "securitycentermanagement",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/securitycentermanagement/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "securitycentermanagement.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListEffectiveSecurityHealthAnalyticsCustomModules = append(client.CallOptions.ListEffectiveSecurityHealthAnalyticsCustomModules, gax.WithClientLogging(logging))
+		client.CallOptions.GetEffectiveSecurityHealthAnalyticsCustomModule = append(client.CallOptions.GetEffectiveSecurityHealthAnalyticsCustomModule, gax.WithClientLogging(logging))
+		client.CallOptions.ListSecurityHealthAnalyticsCustomModules = append(client.CallOptions.ListSecurityHealthAnalyticsCustomModules, gax.WithClientLogging(logging))
+		client.CallOptions.ListDescendantSecurityHealthAnalyticsCustomModules = append(client.CallOptions.ListDescendantSecurityHealthAnalyticsCustomModules, gax.WithClientLogging(logging))
+		client.CallOptions.GetSecurityHealthAnalyticsCustomModule = append(client.CallOptions.GetSecurityHealthAnalyticsCustomModule, gax.WithClientLogging(logging))
+		client.CallOptions.CreateSecurityHealthAnalyticsCustomModule = append(client.CallOptions.CreateSecurityHealthAnalyticsCustomModule, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateSecurityHealthAnalyticsCustomModule = append(client.CallOptions.UpdateSecurityHealthAnalyticsCustomModule, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteSecurityHealthAnalyticsCustomModule = append(client.CallOptions.DeleteSecurityHealthAnalyticsCustomModule, gax.WithClientLogging(logging))
+		client.CallOptions.SimulateSecurityHealthAnalyticsCustomModule = append(client.CallOptions.SimulateSecurityHealthAnalyticsCustomModule, gax.WithClientLogging(logging))
+		client.CallOptions.ListEffectiveEventThreatDetectionCustomModules = append(client.CallOptions.ListEffectiveEventThreatDetectionCustomModules, gax.WithClientLogging(logging))
+		client.CallOptions.GetEffectiveEventThreatDetectionCustomModule = append(client.CallOptions.GetEffectiveEventThreatDetectionCustomModule, gax.WithClientLogging(logging))
+		client.CallOptions.ListEventThreatDetectionCustomModules = append(client.CallOptions.ListEventThreatDetectionCustomModules, gax.WithClientLogging(logging))
+		client.CallOptions.ListDescendantEventThreatDetectionCustomModules = append(client.CallOptions.ListDescendantEventThreatDetectionCustomModules, gax.WithClientLogging(logging))
+		client.CallOptions.GetEventThreatDetectionCustomModule = append(client.CallOptions.GetEventThreatDetectionCustomModule, gax.WithClientLogging(logging))
+		client.CallOptions.CreateEventThreatDetectionCustomModule = append(client.CallOptions.CreateEventThreatDetectionCustomModule, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateEventThreatDetectionCustomModule = append(client.CallOptions.UpdateEventThreatDetectionCustomModule, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteEventThreatDetectionCustomModule = append(client.CallOptions.DeleteEventThreatDetectionCustomModule, gax.WithClientLogging(logging))
+		client.CallOptions.ValidateEventThreatDetectionCustomModule = append(client.CallOptions.ValidateEventThreatDetectionCustomModule, gax.WithClientLogging(logging))
+		client.CallOptions.GetSecurityCenterService = append(client.CallOptions.GetSecurityCenterService, gax.WithClientLogging(logging))
+		client.CallOptions.ListSecurityCenterServices = append(client.CallOptions.ListSecurityCenterServices, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateSecurityCenterService = append(client.CallOptions.UpdateSecurityCenterService, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -885,6 +956,77 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
 		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "securitycentermanagement",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/securitycentermanagement/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "securitycentermanagement.googleapis.com",
+			}),
+		)
+
+		callOpts.ListEffectiveSecurityHealthAnalyticsCustomModules = append(callOpts.ListEffectiveSecurityHealthAnalyticsCustomModules, gax.WithClientTracing(tracing))
+		callOpts.GetEffectiveSecurityHealthAnalyticsCustomModule = append(callOpts.GetEffectiveSecurityHealthAnalyticsCustomModule, gax.WithClientTracing(tracing))
+		callOpts.ListSecurityHealthAnalyticsCustomModules = append(callOpts.ListSecurityHealthAnalyticsCustomModules, gax.WithClientTracing(tracing))
+		callOpts.ListDescendantSecurityHealthAnalyticsCustomModules = append(callOpts.ListDescendantSecurityHealthAnalyticsCustomModules, gax.WithClientTracing(tracing))
+		callOpts.GetSecurityHealthAnalyticsCustomModule = append(callOpts.GetSecurityHealthAnalyticsCustomModule, gax.WithClientTracing(tracing))
+		callOpts.CreateSecurityHealthAnalyticsCustomModule = append(callOpts.CreateSecurityHealthAnalyticsCustomModule, gax.WithClientTracing(tracing))
+		callOpts.UpdateSecurityHealthAnalyticsCustomModule = append(callOpts.UpdateSecurityHealthAnalyticsCustomModule, gax.WithClientTracing(tracing))
+		callOpts.DeleteSecurityHealthAnalyticsCustomModule = append(callOpts.DeleteSecurityHealthAnalyticsCustomModule, gax.WithClientTracing(tracing))
+		callOpts.SimulateSecurityHealthAnalyticsCustomModule = append(callOpts.SimulateSecurityHealthAnalyticsCustomModule, gax.WithClientTracing(tracing))
+		callOpts.ListEffectiveEventThreatDetectionCustomModules = append(callOpts.ListEffectiveEventThreatDetectionCustomModules, gax.WithClientTracing(tracing))
+		callOpts.GetEffectiveEventThreatDetectionCustomModule = append(callOpts.GetEffectiveEventThreatDetectionCustomModule, gax.WithClientTracing(tracing))
+		callOpts.ListEventThreatDetectionCustomModules = append(callOpts.ListEventThreatDetectionCustomModules, gax.WithClientTracing(tracing))
+		callOpts.ListDescendantEventThreatDetectionCustomModules = append(callOpts.ListDescendantEventThreatDetectionCustomModules, gax.WithClientTracing(tracing))
+		callOpts.GetEventThreatDetectionCustomModule = append(callOpts.GetEventThreatDetectionCustomModule, gax.WithClientTracing(tracing))
+		callOpts.CreateEventThreatDetectionCustomModule = append(callOpts.CreateEventThreatDetectionCustomModule, gax.WithClientTracing(tracing))
+		callOpts.UpdateEventThreatDetectionCustomModule = append(callOpts.UpdateEventThreatDetectionCustomModule, gax.WithClientTracing(tracing))
+		callOpts.DeleteEventThreatDetectionCustomModule = append(callOpts.DeleteEventThreatDetectionCustomModule, gax.WithClientTracing(tracing))
+		callOpts.ValidateEventThreatDetectionCustomModule = append(callOpts.ValidateEventThreatDetectionCustomModule, gax.WithClientTracing(tracing))
+		callOpts.GetSecurityCenterService = append(callOpts.GetSecurityCenterService, gax.WithClientTracing(tracing))
+		callOpts.ListSecurityCenterServices = append(callOpts.ListSecurityCenterServices, gax.WithClientTracing(tracing))
+		callOpts.UpdateSecurityCenterService = append(callOpts.UpdateSecurityCenterService, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "securitycentermanagement",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/securitycentermanagement/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "securitycentermanagement.googleapis.com",
+			}),
+		)
+
+		callOpts.ListEffectiveSecurityHealthAnalyticsCustomModules = append(callOpts.ListEffectiveSecurityHealthAnalyticsCustomModules, gax.WithClientLogging(logging))
+		callOpts.GetEffectiveSecurityHealthAnalyticsCustomModule = append(callOpts.GetEffectiveSecurityHealthAnalyticsCustomModule, gax.WithClientLogging(logging))
+		callOpts.ListSecurityHealthAnalyticsCustomModules = append(callOpts.ListSecurityHealthAnalyticsCustomModules, gax.WithClientLogging(logging))
+		callOpts.ListDescendantSecurityHealthAnalyticsCustomModules = append(callOpts.ListDescendantSecurityHealthAnalyticsCustomModules, gax.WithClientLogging(logging))
+		callOpts.GetSecurityHealthAnalyticsCustomModule = append(callOpts.GetSecurityHealthAnalyticsCustomModule, gax.WithClientLogging(logging))
+		callOpts.CreateSecurityHealthAnalyticsCustomModule = append(callOpts.CreateSecurityHealthAnalyticsCustomModule, gax.WithClientLogging(logging))
+		callOpts.UpdateSecurityHealthAnalyticsCustomModule = append(callOpts.UpdateSecurityHealthAnalyticsCustomModule, gax.WithClientLogging(logging))
+		callOpts.DeleteSecurityHealthAnalyticsCustomModule = append(callOpts.DeleteSecurityHealthAnalyticsCustomModule, gax.WithClientLogging(logging))
+		callOpts.SimulateSecurityHealthAnalyticsCustomModule = append(callOpts.SimulateSecurityHealthAnalyticsCustomModule, gax.WithClientLogging(logging))
+		callOpts.ListEffectiveEventThreatDetectionCustomModules = append(callOpts.ListEffectiveEventThreatDetectionCustomModules, gax.WithClientLogging(logging))
+		callOpts.GetEffectiveEventThreatDetectionCustomModule = append(callOpts.GetEffectiveEventThreatDetectionCustomModule, gax.WithClientLogging(logging))
+		callOpts.ListEventThreatDetectionCustomModules = append(callOpts.ListEventThreatDetectionCustomModules, gax.WithClientLogging(logging))
+		callOpts.ListDescendantEventThreatDetectionCustomModules = append(callOpts.ListDescendantEventThreatDetectionCustomModules, gax.WithClientLogging(logging))
+		callOpts.GetEventThreatDetectionCustomModule = append(callOpts.GetEventThreatDetectionCustomModule, gax.WithClientLogging(logging))
+		callOpts.CreateEventThreatDetectionCustomModule = append(callOpts.CreateEventThreatDetectionCustomModule, gax.WithClientLogging(logging))
+		callOpts.UpdateEventThreatDetectionCustomModule = append(callOpts.UpdateEventThreatDetectionCustomModule, gax.WithClientLogging(logging))
+		callOpts.DeleteEventThreatDetectionCustomModule = append(callOpts.DeleteEventThreatDetectionCustomModule, gax.WithClientLogging(logging))
+		callOpts.ValidateEventThreatDetectionCustomModule = append(callOpts.ValidateEventThreatDetectionCustomModule, gax.WithClientLogging(logging))
+		callOpts.GetSecurityCenterService = append(callOpts.GetSecurityCenterService, gax.WithClientLogging(logging))
+		callOpts.ListSecurityCenterServices = append(callOpts.ListSecurityCenterServices, gax.WithClientLogging(logging))
+		callOpts.UpdateSecurityCenterService = append(callOpts.UpdateSecurityCenterService, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -931,9 +1073,6 @@ func (c *gRPCClient) ListEffectiveSecurityHealthAnalyticsCustomModules(ctx conte
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securitycentermanagement.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securitycentermanagement.v1.SecurityCenterManagement/ListEffectiveSecurityHealthAnalyticsCustomModules")
 	}
@@ -983,9 +1122,6 @@ func (c *gRPCClient) GetEffectiveSecurityHealthAnalyticsCustomModule(ctx context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securitycentermanagement.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securitycentermanagement.v1.SecurityCenterManagement/GetEffectiveSecurityHealthAnalyticsCustomModule")
 	}
@@ -1007,9 +1143,6 @@ func (c *gRPCClient) ListSecurityHealthAnalyticsCustomModules(ctx context.Contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securitycentermanagement.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securitycentermanagement.v1.SecurityCenterManagement/ListSecurityHealthAnalyticsCustomModules")
 	}
@@ -1059,9 +1192,6 @@ func (c *gRPCClient) ListDescendantSecurityHealthAnalyticsCustomModules(ctx cont
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securitycentermanagement.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securitycentermanagement.v1.SecurityCenterManagement/ListDescendantSecurityHealthAnalyticsCustomModules")
 	}
@@ -1111,9 +1241,6 @@ func (c *gRPCClient) GetSecurityHealthAnalyticsCustomModule(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securitycentermanagement.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securitycentermanagement.v1.SecurityCenterManagement/GetSecurityHealthAnalyticsCustomModule")
 	}
@@ -1135,9 +1262,6 @@ func (c *gRPCClient) CreateSecurityHealthAnalyticsCustomModule(ctx context.Conte
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securitycentermanagement.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securitycentermanagement.v1.SecurityCenterManagement/CreateSecurityHealthAnalyticsCustomModule")
 	}
@@ -1180,9 +1304,6 @@ func (c *gRPCClient) DeleteSecurityHealthAnalyticsCustomModule(ctx context.Conte
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securitycentermanagement.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securitycentermanagement.v1.SecurityCenterManagement/DeleteSecurityHealthAnalyticsCustomModule")
 	}
@@ -1221,9 +1342,6 @@ func (c *gRPCClient) ListEffectiveEventThreatDetectionCustomModules(ctx context.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securitycentermanagement.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securitycentermanagement.v1.SecurityCenterManagement/ListEffectiveEventThreatDetectionCustomModules")
 	}
@@ -1273,9 +1391,6 @@ func (c *gRPCClient) GetEffectiveEventThreatDetectionCustomModule(ctx context.Co
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securitycentermanagement.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securitycentermanagement.v1.SecurityCenterManagement/GetEffectiveEventThreatDetectionCustomModule")
 	}
@@ -1297,9 +1412,6 @@ func (c *gRPCClient) ListEventThreatDetectionCustomModules(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securitycentermanagement.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securitycentermanagement.v1.SecurityCenterManagement/ListEventThreatDetectionCustomModules")
 	}
@@ -1349,9 +1461,6 @@ func (c *gRPCClient) ListDescendantEventThreatDetectionCustomModules(ctx context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securitycentermanagement.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securitycentermanagement.v1.SecurityCenterManagement/ListDescendantEventThreatDetectionCustomModules")
 	}
@@ -1401,9 +1510,6 @@ func (c *gRPCClient) GetEventThreatDetectionCustomModule(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securitycentermanagement.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securitycentermanagement.v1.SecurityCenterManagement/GetEventThreatDetectionCustomModule")
 	}
@@ -1425,9 +1531,6 @@ func (c *gRPCClient) CreateEventThreatDetectionCustomModule(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securitycentermanagement.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securitycentermanagement.v1.SecurityCenterManagement/CreateEventThreatDetectionCustomModule")
 	}
@@ -1470,9 +1573,6 @@ func (c *gRPCClient) DeleteEventThreatDetectionCustomModule(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securitycentermanagement.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securitycentermanagement.v1.SecurityCenterManagement/DeleteEventThreatDetectionCustomModule")
 	}
@@ -1490,9 +1590,6 @@ func (c *gRPCClient) ValidateEventThreatDetectionCustomModule(ctx context.Contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securitycentermanagement.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securitycentermanagement.v1.SecurityCenterManagement/ValidateEventThreatDetectionCustomModule")
 	}
@@ -1514,9 +1611,6 @@ func (c *gRPCClient) GetSecurityCenterService(ctx context.Context, req *security
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securitycentermanagement.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securitycentermanagement.v1.SecurityCenterManagement/GetSecurityCenterService")
 	}
@@ -1538,9 +1632,6 @@ func (c *gRPCClient) ListSecurityCenterServices(ctx context.Context, req *securi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securitycentermanagement.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securitycentermanagement.v1.SecurityCenterManagement/ListSecurityCenterServices")
 	}
@@ -1778,9 +1869,6 @@ func (c *restClient) GetEffectiveSecurityHealthAnalyticsCustomModule(ctx context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securitycentermanagement.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securitycentermanagement.v1.SecurityCenterManagement/GetEffectiveSecurityHealthAnalyticsCustomModule")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/effectiveSecurityHealthAnalyticsCustomModules/*}")
@@ -1999,9 +2087,6 @@ func (c *restClient) GetSecurityHealthAnalyticsCustomModule(ctx context.Context,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securitycentermanagement.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securitycentermanagement.v1.SecurityCenterManagement/GetSecurityHealthAnalyticsCustomModule")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/securityHealthAnalyticsCustomModules/*}")
@@ -2071,9 +2156,6 @@ func (c *restClient) CreateSecurityHealthAnalyticsCustomModule(ctx context.Conte
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securitycentermanagement.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securitycentermanagement.v1.SecurityCenterManagement/CreateSecurityHealthAnalyticsCustomModule")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/securityHealthAnalyticsCustomModules")
@@ -2211,9 +2293,6 @@ func (c *restClient) DeleteSecurityHealthAnalyticsCustomModule(ctx context.Conte
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securitycentermanagement.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securitycentermanagement.v1.SecurityCenterManagement/DeleteSecurityHealthAnalyticsCustomModule")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/securityHealthAnalyticsCustomModules/*}")
@@ -2406,9 +2485,6 @@ func (c *restClient) GetEffectiveEventThreatDetectionCustomModule(ctx context.Co
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securitycentermanagement.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securitycentermanagement.v1.SecurityCenterManagement/GetEffectiveEventThreatDetectionCustomModule")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/effectiveEventThreatDetectionCustomModules/*}")
@@ -2622,9 +2698,6 @@ func (c *restClient) GetEventThreatDetectionCustomModule(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securitycentermanagement.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securitycentermanagement.v1.SecurityCenterManagement/GetEventThreatDetectionCustomModule")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/eventThreatDetectionCustomModules/*}")
@@ -2692,9 +2765,6 @@ func (c *restClient) CreateEventThreatDetectionCustomModule(ctx context.Context,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securitycentermanagement.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securitycentermanagement.v1.SecurityCenterManagement/CreateEventThreatDetectionCustomModule")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/eventThreatDetectionCustomModules")
@@ -2830,9 +2900,6 @@ func (c *restClient) DeleteEventThreatDetectionCustomModule(ctx context.Context,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securitycentermanagement.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securitycentermanagement.v1.SecurityCenterManagement/DeleteEventThreatDetectionCustomModule")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/eventThreatDetectionCustomModules/*}")
@@ -2878,9 +2945,6 @@ func (c *restClient) ValidateEventThreatDetectionCustomModule(ctx context.Contex
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securitycentermanagement.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securitycentermanagement.v1.SecurityCenterManagement/ValidateEventThreatDetectionCustomModule")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/eventThreatDetectionCustomModules:validate")
@@ -2938,9 +3002,6 @@ func (c *restClient) GetSecurityCenterService(ctx context.Context, req *security
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securitycentermanagement.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securitycentermanagement.v1.SecurityCenterManagement/GetSecurityCenterService")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/securityCenterServices/*}")

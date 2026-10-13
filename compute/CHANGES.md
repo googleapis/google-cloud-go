@@ -1,5 +1,62 @@
 # Changes
 
+## [1.72.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.71.0...compute/v1.72.0) (2026-10-08)
+
+
+### Features
+
+* Update API sources and regenerate ([#20646](https://github.com/googleapis/google-cloud-go/issues/20646)) ([4ad5d50](https://github.com/googleapis/google-cloud-go/commit/4ad5d50aaf4392d19fd391ee71eec1c5029ecd1d))
+
+## [1.71.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.70.0...compute/v1.71.0) (2026-10-01)
+
+
+### Features
+
+* Update API sources and regenerate ([#20607](https://github.com/googleapis/google-cloud-go/issues/20607)) ([395fc59](https://github.com/googleapis/google-cloud-go/commit/395fc59e067ed2576a1c8c961edf3f749633520c))
+
+## [1.70.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.69.0...compute/v1.70.0) (2026-09-23)
+
+
+### Features
+
+* **all:** Update supported go versions ([#20520](https://github.com/googleapis/google-cloud-go/issues/20520)) ([90413d3](https://github.com/googleapis/google-cloud-go/commit/90413d3e9d381ef4b92e3c496d98b023c5b2d8cc))
+
+## [1.69.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.68.0...compute/v1.69.0) (2026-09-17)
+
+
+### Features
+
+* Update API sources and regenerate ([#20526](https://github.com/googleapis/google-cloud-go/issues/20526)) ([e6f37a3](https://github.com/googleapis/google-cloud-go/commit/e6f37a362b6e37b0bc74e77b8d7f151dc7443fb8))
+* Update API sources and regenerate. ([e6f37a3](https://github.com/googleapis/google-cloud-go/commit/e6f37a362b6e37b0bc74e77b8d7f151dc7443fb8))
+
+## [1.68.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.67.0...compute/v1.68.0) (2026-09-10)
+
+
+### Features
+
+* Update API sources and regenerate ([#20502](https://github.com/googleapis/google-cloud-go/issues/20502)) ([95479e9](https://github.com/googleapis/google-cloud-go/commit/95479e9b74215f969b04d3ebfd01b8f98f11f5ed))
+
+## [1.67.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.66.0...compute/v1.67.0) (2026-08-26)
+
+
+### Features
+
+* Update API sources and regenerate ([#20427](https://github.com/googleapis/google-cloud-go/issues/20427)) ([eb07af9](https://github.com/googleapis/google-cloud-go/commit/eb07af97288cb3446ef50ff1806c7bc12d5c6350))
+
+## [1.66.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.65.0...compute/v1.66.0) (2026-08-07)
+
+
+### Features
+
+* Update API sources and regenerate ([#20326](https://github.com/googleapis/google-cloud-go/issues/20326)) ([a25826f](https://github.com/googleapis/google-cloud-go/commit/a25826f05527527005b7868284df86df4d46ce05))
+
+## [1.65.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.64.0...compute/v1.65.0) (2026-07-20)
+
+
+### Features
+
+* Update API sources and regenerate ([#20159](https://github.com/googleapis/google-cloud-go/issues/20159)) ([6395ba5](https://github.com/googleapis/google-cloud-go/commit/6395ba5d059d7e0d6ccfbf57b15d8d5ffcd70d0e))
+
 ## [1.64.0](https://github.com/googleapis/google-cloud-go/releases/tag/compute%2Fv1.64.0) (2026-05-21)
 
 ### Features

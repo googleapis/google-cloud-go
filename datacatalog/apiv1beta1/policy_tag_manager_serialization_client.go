@@ -216,6 +216,35 @@ func NewPolicyTagManagerSerializationClient(ctx context.Context, opts ...option.
 		client.CallOptions.ImportTaxonomies = append(client.CallOptions.ImportTaxonomies, gax.WithClientMetrics(metrics))
 		client.CallOptions.ExportTaxonomies = append(client.CallOptions.ExportTaxonomies, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "datacatalog",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datacatalog/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "datacatalog.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ImportTaxonomies = append(client.CallOptions.ImportTaxonomies, gax.WithClientTracing(tracing))
+		client.CallOptions.ExportTaxonomies = append(client.CallOptions.ExportTaxonomies, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "datacatalog",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datacatalog/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "datacatalog.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ImportTaxonomies = append(client.CallOptions.ImportTaxonomies, gax.WithClientLogging(logging))
+		client.CallOptions.ExportTaxonomies = append(client.CallOptions.ExportTaxonomies, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -309,6 +338,35 @@ func NewPolicyTagManagerSerializationRESTClient(ctx context.Context, opts ...opt
 		callOpts.ImportTaxonomies = append(callOpts.ImportTaxonomies, gax.WithClientMetrics(metrics))
 		callOpts.ExportTaxonomies = append(callOpts.ExportTaxonomies, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "datacatalog",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datacatalog/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "datacatalog.googleapis.com",
+			}),
+		)
+
+		callOpts.ImportTaxonomies = append(callOpts.ImportTaxonomies, gax.WithClientTracing(tracing))
+		callOpts.ExportTaxonomies = append(callOpts.ExportTaxonomies, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "datacatalog",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datacatalog/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "datacatalog.googleapis.com",
+			}),
+		)
+
+		callOpts.ImportTaxonomies = append(callOpts.ImportTaxonomies, gax.WithClientLogging(logging))
+		callOpts.ExportTaxonomies = append(callOpts.ExportTaxonomies, gax.WithClientLogging(logging))
+	}
 
 	return &PolicyTagManagerSerializationClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -355,9 +413,6 @@ func (c *policyTagManagerSerializationGRPCClient) ImportTaxonomies(ctx context.C
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datacatalog.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.v1beta1.PolicyTagManagerSerialization/ImportTaxonomies")
 	}
@@ -379,9 +434,6 @@ func (c *policyTagManagerSerializationGRPCClient) ExportTaxonomies(ctx context.C
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datacatalog.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.v1beta1.PolicyTagManagerSerialization/ExportTaxonomies")
 	}
@@ -422,9 +474,6 @@ func (c *policyTagManagerSerializationRESTClient) ImportTaxonomies(ctx context.C
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datacatalog.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.v1beta1.PolicyTagManagerSerialization/ImportTaxonomies")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=projects/*/locations/*}/taxonomies:import")
@@ -489,9 +538,6 @@ func (c *policyTagManagerSerializationRESTClient) ExportTaxonomies(ctx context.C
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datacatalog.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.v1beta1.PolicyTagManagerSerialization/ExportTaxonomies")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=projects/*/locations/*}/taxonomies:export")

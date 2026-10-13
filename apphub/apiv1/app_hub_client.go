@@ -77,6 +77,10 @@ type CallOptions struct {
 	GetApplication                 []gax.CallOption
 	UpdateApplication              []gax.CallOption
 	DeleteApplication              []gax.CallOption
+	GetBoundary                    []gax.CallOption
+	UpdateBoundary                 []gax.CallOption
+	GetExtendedMetadataSchema      []gax.CallOption
+	ListExtendedMetadataSchemas    []gax.CallOption
 	GetLocation                    []gax.CallOption
 	ListLocations                  []gax.CallOption
 	GetIamPolicy                   []gax.CallOption
@@ -321,15 +325,19 @@ func defaultCallOptions() *CallOptions {
 		DeleteApplication: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
-		GetLocation:        []gax.CallOption{},
-		ListLocations:      []gax.CallOption{},
-		GetIamPolicy:       []gax.CallOption{},
-		SetIamPolicy:       []gax.CallOption{},
-		TestIamPermissions: []gax.CallOption{},
-		CancelOperation:    []gax.CallOption{},
-		DeleteOperation:    []gax.CallOption{},
-		GetOperation:       []gax.CallOption{},
-		ListOperations:     []gax.CallOption{},
+		GetBoundary:                 []gax.CallOption{},
+		UpdateBoundary:              []gax.CallOption{},
+		GetExtendedMetadataSchema:   []gax.CallOption{},
+		ListExtendedMetadataSchemas: []gax.CallOption{},
+		GetLocation:                 []gax.CallOption{},
+		ListLocations:               []gax.CallOption{},
+		GetIamPolicy:                []gax.CallOption{},
+		SetIamPolicy:                []gax.CallOption{},
+		TestIamPermissions:          []gax.CallOption{},
+		CancelOperation:             []gax.CallOption{},
+		DeleteOperation:             []gax.CallOption{},
+		GetOperation:                []gax.CallOption{},
+		ListOperations:              []gax.CallOption{},
 	}
 }
 
@@ -536,15 +544,19 @@ func defaultRESTCallOptions() *CallOptions {
 		DeleteApplication: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
-		GetLocation:        []gax.CallOption{},
-		ListLocations:      []gax.CallOption{},
-		GetIamPolicy:       []gax.CallOption{},
-		SetIamPolicy:       []gax.CallOption{},
-		TestIamPermissions: []gax.CallOption{},
-		CancelOperation:    []gax.CallOption{},
-		DeleteOperation:    []gax.CallOption{},
-		GetOperation:       []gax.CallOption{},
-		ListOperations:     []gax.CallOption{},
+		GetBoundary:                 []gax.CallOption{},
+		UpdateBoundary:              []gax.CallOption{},
+		GetExtendedMetadataSchema:   []gax.CallOption{},
+		ListExtendedMetadataSchemas: []gax.CallOption{},
+		GetLocation:                 []gax.CallOption{},
+		ListLocations:               []gax.CallOption{},
+		GetIamPolicy:                []gax.CallOption{},
+		SetIamPolicy:                []gax.CallOption{},
+		TestIamPermissions:          []gax.CallOption{},
+		CancelOperation:             []gax.CallOption{},
+		DeleteOperation:             []gax.CallOption{},
+		GetOperation:                []gax.CallOption{},
+		ListOperations:              []gax.CallOption{},
 	}
 }
 
@@ -591,6 +603,11 @@ type internalClient interface {
 	UpdateApplicationOperation(name string) *UpdateApplicationOperation
 	DeleteApplication(context.Context, *apphubpb.DeleteApplicationRequest, ...gax.CallOption) (*DeleteApplicationOperation, error)
 	DeleteApplicationOperation(name string) *DeleteApplicationOperation
+	GetBoundary(context.Context, *apphubpb.GetBoundaryRequest, ...gax.CallOption) (*apphubpb.Boundary, error)
+	UpdateBoundary(context.Context, *apphubpb.UpdateBoundaryRequest, ...gax.CallOption) (*UpdateBoundaryOperation, error)
+	UpdateBoundaryOperation(name string) *UpdateBoundaryOperation
+	GetExtendedMetadataSchema(context.Context, *apphubpb.GetExtendedMetadataSchemaRequest, ...gax.CallOption) (*apphubpb.ExtendedMetadataSchema, error)
+	ListExtendedMetadataSchemas(context.Context, *apphubpb.ListExtendedMetadataSchemasRequest, ...gax.CallOption) *ExtendedMetadataSchemaIterator
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -850,12 +867,53 @@ func (c *Client) DeleteApplicationOperation(name string) *DeleteApplicationOpera
 	return c.internalClient.DeleteApplicationOperation(name)
 }
 
+// GetBoundary gets a Boundary.
+func (c *Client) GetBoundary(ctx context.Context, req *apphubpb.GetBoundaryRequest, opts ...gax.CallOption) (*apphubpb.Boundary, error) {
+	return c.internalClient.GetBoundary(ctx, req, opts...)
+}
+
+// UpdateBoundary updates a Boundary.
+func (c *Client) UpdateBoundary(ctx context.Context, req *apphubpb.UpdateBoundaryRequest, opts ...gax.CallOption) (*UpdateBoundaryOperation, error) {
+	return c.internalClient.UpdateBoundary(ctx, req, opts...)
+}
+
+// UpdateBoundaryOperation returns a new UpdateBoundaryOperation from a given name.
+// The name must be that of a previously created UpdateBoundaryOperation, possibly from a different process.
+func (c *Client) UpdateBoundaryOperation(name string) *UpdateBoundaryOperation {
+	return c.internalClient.UpdateBoundaryOperation(name)
+}
+
+// GetExtendedMetadataSchema gets an Extended Metadata Schema.
+func (c *Client) GetExtendedMetadataSchema(ctx context.Context, req *apphubpb.GetExtendedMetadataSchemaRequest, opts ...gax.CallOption) (*apphubpb.ExtendedMetadataSchema, error) {
+	return c.internalClient.GetExtendedMetadataSchema(ctx, req, opts...)
+}
+
+// ListExtendedMetadataSchemas lists Extended Metadata Schemas available in a host project and location.
+func (c *Client) ListExtendedMetadataSchemas(ctx context.Context, req *apphubpb.ListExtendedMetadataSchemasRequest, opts ...gax.CallOption) *ExtendedMetadataSchemaIterator {
+	return c.internalClient.ListExtendedMetadataSchemas(ctx, req, opts...)
+}
+
 // GetLocation gets information about a location.
 func (c *Client) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	return c.internalClient.GetLocation(ctx, req, opts...)
 }
 
 // ListLocations lists information about the supported locations for this service.
+//
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
+//
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *Client) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	return c.internalClient.ListLocations(ctx, req, opts...)
 }
@@ -1015,6 +1073,10 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.GetApplication = append(client.CallOptions.GetApplication, gax.WithClientMetrics(metrics))
 		client.CallOptions.UpdateApplication = append(client.CallOptions.UpdateApplication, gax.WithClientMetrics(metrics))
 		client.CallOptions.DeleteApplication = append(client.CallOptions.DeleteApplication, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetBoundary = append(client.CallOptions.GetBoundary, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateBoundary = append(client.CallOptions.UpdateBoundary, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetExtendedMetadataSchema = append(client.CallOptions.GetExtendedMetadataSchema, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListExtendedMetadataSchemas = append(client.CallOptions.ListExtendedMetadataSchemas, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientMetrics(metrics))
@@ -1024,6 +1086,111 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "apphub",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/apphub/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "apphub.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.LookupServiceProjectAttachment = append(client.CallOptions.LookupServiceProjectAttachment, gax.WithClientTracing(tracing))
+		client.CallOptions.ListServiceProjectAttachments = append(client.CallOptions.ListServiceProjectAttachments, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateServiceProjectAttachment = append(client.CallOptions.CreateServiceProjectAttachment, gax.WithClientTracing(tracing))
+		client.CallOptions.GetServiceProjectAttachment = append(client.CallOptions.GetServiceProjectAttachment, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteServiceProjectAttachment = append(client.CallOptions.DeleteServiceProjectAttachment, gax.WithClientTracing(tracing))
+		client.CallOptions.DetachServiceProjectAttachment = append(client.CallOptions.DetachServiceProjectAttachment, gax.WithClientTracing(tracing))
+		client.CallOptions.ListDiscoveredServices = append(client.CallOptions.ListDiscoveredServices, gax.WithClientTracing(tracing))
+		client.CallOptions.GetDiscoveredService = append(client.CallOptions.GetDiscoveredService, gax.WithClientTracing(tracing))
+		client.CallOptions.LookupDiscoveredService = append(client.CallOptions.LookupDiscoveredService, gax.WithClientTracing(tracing))
+		client.CallOptions.ListServices = append(client.CallOptions.ListServices, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateService = append(client.CallOptions.CreateService, gax.WithClientTracing(tracing))
+		client.CallOptions.GetService = append(client.CallOptions.GetService, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateService = append(client.CallOptions.UpdateService, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteService = append(client.CallOptions.DeleteService, gax.WithClientTracing(tracing))
+		client.CallOptions.ListDiscoveredWorkloads = append(client.CallOptions.ListDiscoveredWorkloads, gax.WithClientTracing(tracing))
+		client.CallOptions.GetDiscoveredWorkload = append(client.CallOptions.GetDiscoveredWorkload, gax.WithClientTracing(tracing))
+		client.CallOptions.LookupDiscoveredWorkload = append(client.CallOptions.LookupDiscoveredWorkload, gax.WithClientTracing(tracing))
+		client.CallOptions.ListWorkloads = append(client.CallOptions.ListWorkloads, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateWorkload = append(client.CallOptions.CreateWorkload, gax.WithClientTracing(tracing))
+		client.CallOptions.GetWorkload = append(client.CallOptions.GetWorkload, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateWorkload = append(client.CallOptions.UpdateWorkload, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteWorkload = append(client.CallOptions.DeleteWorkload, gax.WithClientTracing(tracing))
+		client.CallOptions.ListApplications = append(client.CallOptions.ListApplications, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateApplication = append(client.CallOptions.CreateApplication, gax.WithClientTracing(tracing))
+		client.CallOptions.GetApplication = append(client.CallOptions.GetApplication, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateApplication = append(client.CallOptions.UpdateApplication, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteApplication = append(client.CallOptions.DeleteApplication, gax.WithClientTracing(tracing))
+		client.CallOptions.GetBoundary = append(client.CallOptions.GetBoundary, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateBoundary = append(client.CallOptions.UpdateBoundary, gax.WithClientTracing(tracing))
+		client.CallOptions.GetExtendedMetadataSchema = append(client.CallOptions.GetExtendedMetadataSchema, gax.WithClientTracing(tracing))
+		client.CallOptions.ListExtendedMetadataSchemas = append(client.CallOptions.ListExtendedMetadataSchemas, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "apphub",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/apphub/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "apphub.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.LookupServiceProjectAttachment = append(client.CallOptions.LookupServiceProjectAttachment, gax.WithClientLogging(logging))
+		client.CallOptions.ListServiceProjectAttachments = append(client.CallOptions.ListServiceProjectAttachments, gax.WithClientLogging(logging))
+		client.CallOptions.CreateServiceProjectAttachment = append(client.CallOptions.CreateServiceProjectAttachment, gax.WithClientLogging(logging))
+		client.CallOptions.GetServiceProjectAttachment = append(client.CallOptions.GetServiceProjectAttachment, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteServiceProjectAttachment = append(client.CallOptions.DeleteServiceProjectAttachment, gax.WithClientLogging(logging))
+		client.CallOptions.DetachServiceProjectAttachment = append(client.CallOptions.DetachServiceProjectAttachment, gax.WithClientLogging(logging))
+		client.CallOptions.ListDiscoveredServices = append(client.CallOptions.ListDiscoveredServices, gax.WithClientLogging(logging))
+		client.CallOptions.GetDiscoveredService = append(client.CallOptions.GetDiscoveredService, gax.WithClientLogging(logging))
+		client.CallOptions.LookupDiscoveredService = append(client.CallOptions.LookupDiscoveredService, gax.WithClientLogging(logging))
+		client.CallOptions.ListServices = append(client.CallOptions.ListServices, gax.WithClientLogging(logging))
+		client.CallOptions.CreateService = append(client.CallOptions.CreateService, gax.WithClientLogging(logging))
+		client.CallOptions.GetService = append(client.CallOptions.GetService, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateService = append(client.CallOptions.UpdateService, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteService = append(client.CallOptions.DeleteService, gax.WithClientLogging(logging))
+		client.CallOptions.ListDiscoveredWorkloads = append(client.CallOptions.ListDiscoveredWorkloads, gax.WithClientLogging(logging))
+		client.CallOptions.GetDiscoveredWorkload = append(client.CallOptions.GetDiscoveredWorkload, gax.WithClientLogging(logging))
+		client.CallOptions.LookupDiscoveredWorkload = append(client.CallOptions.LookupDiscoveredWorkload, gax.WithClientLogging(logging))
+		client.CallOptions.ListWorkloads = append(client.CallOptions.ListWorkloads, gax.WithClientLogging(logging))
+		client.CallOptions.CreateWorkload = append(client.CallOptions.CreateWorkload, gax.WithClientLogging(logging))
+		client.CallOptions.GetWorkload = append(client.CallOptions.GetWorkload, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateWorkload = append(client.CallOptions.UpdateWorkload, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteWorkload = append(client.CallOptions.DeleteWorkload, gax.WithClientLogging(logging))
+		client.CallOptions.ListApplications = append(client.CallOptions.ListApplications, gax.WithClientLogging(logging))
+		client.CallOptions.CreateApplication = append(client.CallOptions.CreateApplication, gax.WithClientLogging(logging))
+		client.CallOptions.GetApplication = append(client.CallOptions.GetApplication, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateApplication = append(client.CallOptions.UpdateApplication, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteApplication = append(client.CallOptions.DeleteApplication, gax.WithClientLogging(logging))
+		client.CallOptions.GetBoundary = append(client.CallOptions.GetBoundary, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateBoundary = append(client.CallOptions.UpdateBoundary, gax.WithClientLogging(logging))
+		client.CallOptions.GetExtendedMetadataSchema = append(client.CallOptions.GetExtendedMetadataSchema, gax.WithClientLogging(logging))
+		client.CallOptions.ListExtendedMetadataSchemas = append(client.CallOptions.ListExtendedMetadataSchemas, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
 	}
 
 	client.internalClient = c
@@ -1157,6 +1324,10 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.GetApplication = append(callOpts.GetApplication, gax.WithClientMetrics(metrics))
 		callOpts.UpdateApplication = append(callOpts.UpdateApplication, gax.WithClientMetrics(metrics))
 		callOpts.DeleteApplication = append(callOpts.DeleteApplication, gax.WithClientMetrics(metrics))
+		callOpts.GetBoundary = append(callOpts.GetBoundary, gax.WithClientMetrics(metrics))
+		callOpts.UpdateBoundary = append(callOpts.UpdateBoundary, gax.WithClientMetrics(metrics))
+		callOpts.GetExtendedMetadataSchema = append(callOpts.GetExtendedMetadataSchema, gax.WithClientMetrics(metrics))
+		callOpts.ListExtendedMetadataSchemas = append(callOpts.ListExtendedMetadataSchemas, gax.WithClientMetrics(metrics))
 		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
 		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
 		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientMetrics(metrics))
@@ -1166,6 +1337,111 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientMetrics(metrics))
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "apphub",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/apphub/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "apphub.googleapis.com",
+			}),
+		)
+
+		callOpts.LookupServiceProjectAttachment = append(callOpts.LookupServiceProjectAttachment, gax.WithClientTracing(tracing))
+		callOpts.ListServiceProjectAttachments = append(callOpts.ListServiceProjectAttachments, gax.WithClientTracing(tracing))
+		callOpts.CreateServiceProjectAttachment = append(callOpts.CreateServiceProjectAttachment, gax.WithClientTracing(tracing))
+		callOpts.GetServiceProjectAttachment = append(callOpts.GetServiceProjectAttachment, gax.WithClientTracing(tracing))
+		callOpts.DeleteServiceProjectAttachment = append(callOpts.DeleteServiceProjectAttachment, gax.WithClientTracing(tracing))
+		callOpts.DetachServiceProjectAttachment = append(callOpts.DetachServiceProjectAttachment, gax.WithClientTracing(tracing))
+		callOpts.ListDiscoveredServices = append(callOpts.ListDiscoveredServices, gax.WithClientTracing(tracing))
+		callOpts.GetDiscoveredService = append(callOpts.GetDiscoveredService, gax.WithClientTracing(tracing))
+		callOpts.LookupDiscoveredService = append(callOpts.LookupDiscoveredService, gax.WithClientTracing(tracing))
+		callOpts.ListServices = append(callOpts.ListServices, gax.WithClientTracing(tracing))
+		callOpts.CreateService = append(callOpts.CreateService, gax.WithClientTracing(tracing))
+		callOpts.GetService = append(callOpts.GetService, gax.WithClientTracing(tracing))
+		callOpts.UpdateService = append(callOpts.UpdateService, gax.WithClientTracing(tracing))
+		callOpts.DeleteService = append(callOpts.DeleteService, gax.WithClientTracing(tracing))
+		callOpts.ListDiscoveredWorkloads = append(callOpts.ListDiscoveredWorkloads, gax.WithClientTracing(tracing))
+		callOpts.GetDiscoveredWorkload = append(callOpts.GetDiscoveredWorkload, gax.WithClientTracing(tracing))
+		callOpts.LookupDiscoveredWorkload = append(callOpts.LookupDiscoveredWorkload, gax.WithClientTracing(tracing))
+		callOpts.ListWorkloads = append(callOpts.ListWorkloads, gax.WithClientTracing(tracing))
+		callOpts.CreateWorkload = append(callOpts.CreateWorkload, gax.WithClientTracing(tracing))
+		callOpts.GetWorkload = append(callOpts.GetWorkload, gax.WithClientTracing(tracing))
+		callOpts.UpdateWorkload = append(callOpts.UpdateWorkload, gax.WithClientTracing(tracing))
+		callOpts.DeleteWorkload = append(callOpts.DeleteWorkload, gax.WithClientTracing(tracing))
+		callOpts.ListApplications = append(callOpts.ListApplications, gax.WithClientTracing(tracing))
+		callOpts.CreateApplication = append(callOpts.CreateApplication, gax.WithClientTracing(tracing))
+		callOpts.GetApplication = append(callOpts.GetApplication, gax.WithClientTracing(tracing))
+		callOpts.UpdateApplication = append(callOpts.UpdateApplication, gax.WithClientTracing(tracing))
+		callOpts.DeleteApplication = append(callOpts.DeleteApplication, gax.WithClientTracing(tracing))
+		callOpts.GetBoundary = append(callOpts.GetBoundary, gax.WithClientTracing(tracing))
+		callOpts.UpdateBoundary = append(callOpts.UpdateBoundary, gax.WithClientTracing(tracing))
+		callOpts.GetExtendedMetadataSchema = append(callOpts.GetExtendedMetadataSchema, gax.WithClientTracing(tracing))
+		callOpts.ListExtendedMetadataSchemas = append(callOpts.ListExtendedMetadataSchemas, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "apphub",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/apphub/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "apphub.googleapis.com",
+			}),
+		)
+
+		callOpts.LookupServiceProjectAttachment = append(callOpts.LookupServiceProjectAttachment, gax.WithClientLogging(logging))
+		callOpts.ListServiceProjectAttachments = append(callOpts.ListServiceProjectAttachments, gax.WithClientLogging(logging))
+		callOpts.CreateServiceProjectAttachment = append(callOpts.CreateServiceProjectAttachment, gax.WithClientLogging(logging))
+		callOpts.GetServiceProjectAttachment = append(callOpts.GetServiceProjectAttachment, gax.WithClientLogging(logging))
+		callOpts.DeleteServiceProjectAttachment = append(callOpts.DeleteServiceProjectAttachment, gax.WithClientLogging(logging))
+		callOpts.DetachServiceProjectAttachment = append(callOpts.DetachServiceProjectAttachment, gax.WithClientLogging(logging))
+		callOpts.ListDiscoveredServices = append(callOpts.ListDiscoveredServices, gax.WithClientLogging(logging))
+		callOpts.GetDiscoveredService = append(callOpts.GetDiscoveredService, gax.WithClientLogging(logging))
+		callOpts.LookupDiscoveredService = append(callOpts.LookupDiscoveredService, gax.WithClientLogging(logging))
+		callOpts.ListServices = append(callOpts.ListServices, gax.WithClientLogging(logging))
+		callOpts.CreateService = append(callOpts.CreateService, gax.WithClientLogging(logging))
+		callOpts.GetService = append(callOpts.GetService, gax.WithClientLogging(logging))
+		callOpts.UpdateService = append(callOpts.UpdateService, gax.WithClientLogging(logging))
+		callOpts.DeleteService = append(callOpts.DeleteService, gax.WithClientLogging(logging))
+		callOpts.ListDiscoveredWorkloads = append(callOpts.ListDiscoveredWorkloads, gax.WithClientLogging(logging))
+		callOpts.GetDiscoveredWorkload = append(callOpts.GetDiscoveredWorkload, gax.WithClientLogging(logging))
+		callOpts.LookupDiscoveredWorkload = append(callOpts.LookupDiscoveredWorkload, gax.WithClientLogging(logging))
+		callOpts.ListWorkloads = append(callOpts.ListWorkloads, gax.WithClientLogging(logging))
+		callOpts.CreateWorkload = append(callOpts.CreateWorkload, gax.WithClientLogging(logging))
+		callOpts.GetWorkload = append(callOpts.GetWorkload, gax.WithClientLogging(logging))
+		callOpts.UpdateWorkload = append(callOpts.UpdateWorkload, gax.WithClientLogging(logging))
+		callOpts.DeleteWorkload = append(callOpts.DeleteWorkload, gax.WithClientLogging(logging))
+		callOpts.ListApplications = append(callOpts.ListApplications, gax.WithClientLogging(logging))
+		callOpts.CreateApplication = append(callOpts.CreateApplication, gax.WithClientLogging(logging))
+		callOpts.GetApplication = append(callOpts.GetApplication, gax.WithClientLogging(logging))
+		callOpts.UpdateApplication = append(callOpts.UpdateApplication, gax.WithClientLogging(logging))
+		callOpts.DeleteApplication = append(callOpts.DeleteApplication, gax.WithClientLogging(logging))
+		callOpts.GetBoundary = append(callOpts.GetBoundary, gax.WithClientLogging(logging))
+		callOpts.UpdateBoundary = append(callOpts.UpdateBoundary, gax.WithClientLogging(logging))
+		callOpts.GetExtendedMetadataSchema = append(callOpts.GetExtendedMetadataSchema, gax.WithClientLogging(logging))
+		callOpts.ListExtendedMetadataSchemas = append(callOpts.ListExtendedMetadataSchemas, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
 	}
 
 	lroOpts := []option.ClientOption{
@@ -1223,9 +1499,6 @@ func (c *gRPCClient) LookupServiceProjectAttachment(ctx context.Context, req *ap
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apphub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apphub.v1.AppHub/LookupServiceProjectAttachment")
 	}
@@ -1247,9 +1520,6 @@ func (c *gRPCClient) ListServiceProjectAttachments(ctx context.Context, req *app
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apphub.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apphub.v1.AppHub/ListServiceProjectAttachments")
 	}
@@ -1299,9 +1569,6 @@ func (c *gRPCClient) CreateServiceProjectAttachment(ctx context.Context, req *ap
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apphub.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apphub.v1.AppHub/CreateServiceProjectAttachment")
 	}
@@ -1329,9 +1596,6 @@ func (c *gRPCClient) GetServiceProjectAttachment(ctx context.Context, req *apphu
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apphub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apphub.v1.AppHub/GetServiceProjectAttachment")
 	}
@@ -1353,9 +1617,6 @@ func (c *gRPCClient) DeleteServiceProjectAttachment(ctx context.Context, req *ap
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apphub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apphub.v1.AppHub/DeleteServiceProjectAttachment")
 	}
@@ -1383,9 +1644,6 @@ func (c *gRPCClient) DetachServiceProjectAttachment(ctx context.Context, req *ap
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apphub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apphub.v1.AppHub/DetachServiceProjectAttachment")
 	}
@@ -1407,9 +1665,6 @@ func (c *gRPCClient) ListDiscoveredServices(ctx context.Context, req *apphubpb.L
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apphub.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apphub.v1.AppHub/ListDiscoveredServices")
 	}
@@ -1459,9 +1714,6 @@ func (c *gRPCClient) GetDiscoveredService(ctx context.Context, req *apphubpb.Get
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apphub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apphub.v1.AppHub/GetDiscoveredService")
 	}
@@ -1483,9 +1735,6 @@ func (c *gRPCClient) LookupDiscoveredService(ctx context.Context, req *apphubpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apphub.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apphub.v1.AppHub/LookupDiscoveredService")
 	}
@@ -1507,9 +1756,6 @@ func (c *gRPCClient) ListServices(ctx context.Context, req *apphubpb.ListService
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apphub.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apphub.v1.AppHub/ListServices")
 	}
@@ -1559,9 +1805,6 @@ func (c *gRPCClient) CreateService(ctx context.Context, req *apphubpb.CreateServ
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apphub.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apphub.v1.AppHub/CreateService")
 	}
@@ -1589,9 +1832,6 @@ func (c *gRPCClient) GetService(ctx context.Context, req *apphubpb.GetServiceReq
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apphub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apphub.v1.AppHub/GetService")
 	}
@@ -1640,9 +1880,6 @@ func (c *gRPCClient) DeleteService(ctx context.Context, req *apphubpb.DeleteServ
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apphub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apphub.v1.AppHub/DeleteService")
 	}
@@ -1670,9 +1907,6 @@ func (c *gRPCClient) ListDiscoveredWorkloads(ctx context.Context, req *apphubpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apphub.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apphub.v1.AppHub/ListDiscoveredWorkloads")
 	}
@@ -1722,9 +1956,6 @@ func (c *gRPCClient) GetDiscoveredWorkload(ctx context.Context, req *apphubpb.Ge
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apphub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apphub.v1.AppHub/GetDiscoveredWorkload")
 	}
@@ -1746,9 +1977,6 @@ func (c *gRPCClient) LookupDiscoveredWorkload(ctx context.Context, req *apphubpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apphub.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apphub.v1.AppHub/LookupDiscoveredWorkload")
 	}
@@ -1770,9 +1998,6 @@ func (c *gRPCClient) ListWorkloads(ctx context.Context, req *apphubpb.ListWorklo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apphub.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apphub.v1.AppHub/ListWorkloads")
 	}
@@ -1822,9 +2047,6 @@ func (c *gRPCClient) CreateWorkload(ctx context.Context, req *apphubpb.CreateWor
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apphub.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apphub.v1.AppHub/CreateWorkload")
 	}
@@ -1852,9 +2074,6 @@ func (c *gRPCClient) GetWorkload(ctx context.Context, req *apphubpb.GetWorkloadR
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apphub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apphub.v1.AppHub/GetWorkload")
 	}
@@ -1903,9 +2122,6 @@ func (c *gRPCClient) DeleteWorkload(ctx context.Context, req *apphubpb.DeleteWor
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apphub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apphub.v1.AppHub/DeleteWorkload")
 	}
@@ -1933,9 +2149,6 @@ func (c *gRPCClient) ListApplications(ctx context.Context, req *apphubpb.ListApp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apphub.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apphub.v1.AppHub/ListApplications")
 	}
@@ -1985,9 +2198,6 @@ func (c *gRPCClient) CreateApplication(ctx context.Context, req *apphubpb.Create
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apphub.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apphub.v1.AppHub/CreateApplication")
 	}
@@ -2015,9 +2225,6 @@ func (c *gRPCClient) GetApplication(ctx context.Context, req *apphubpb.GetApplic
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apphub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apphub.v1.AppHub/GetApplication")
 	}
@@ -2066,9 +2273,6 @@ func (c *gRPCClient) DeleteApplication(ctx context.Context, req *apphubpb.Delete
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apphub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apphub.v1.AppHub/DeleteApplication")
 	}
@@ -2089,6 +2293,124 @@ func (c *gRPCClient) DeleteApplication(ctx context.Context, req *apphubpb.Delete
 	return &DeleteApplicationOperation{
 		lro: lro,
 	}, nil
+}
+
+func (c *gRPCClient) GetBoundary(ctx context.Context, req *apphubpb.GetBoundaryRequest, opts ...gax.CallOption) (*apphubpb.Boundary, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apphub.v1.AppHub/GetBoundary")
+	}
+	opts = append((*c.CallOptions).GetBoundary[0:len((*c.CallOptions).GetBoundary):len((*c.CallOptions).GetBoundary)], opts...)
+	var resp *apphubpb.Boundary
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetBoundary, req, settings.GRPC, c.logger, "GetBoundary")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) UpdateBoundary(ctx context.Context, req *apphubpb.UpdateBoundaryRequest, opts ...gax.CallOption) (*UpdateBoundaryOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "boundary.name", url.QueryEscape(req.GetBoundary().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apphub.v1.AppHub/UpdateBoundary")
+	}
+	opts = append((*c.CallOptions).UpdateBoundary[0:len((*c.CallOptions).UpdateBoundary):len((*c.CallOptions).UpdateBoundary)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdateBoundary, req, settings.GRPC, c.logger, "UpdateBoundary")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apphub.UpdateBoundaryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &UpdateBoundaryOperation{
+		lro: lro,
+	}, nil
+}
+
+func (c *gRPCClient) GetExtendedMetadataSchema(ctx context.Context, req *apphubpb.GetExtendedMetadataSchemaRequest, opts ...gax.CallOption) (*apphubpb.ExtendedMetadataSchema, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apphub.v1.AppHub/GetExtendedMetadataSchema")
+	}
+	opts = append((*c.CallOptions).GetExtendedMetadataSchema[0:len((*c.CallOptions).GetExtendedMetadataSchema):len((*c.CallOptions).GetExtendedMetadataSchema)], opts...)
+	var resp *apphubpb.ExtendedMetadataSchema
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetExtendedMetadataSchema, req, settings.GRPC, c.logger, "GetExtendedMetadataSchema")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListExtendedMetadataSchemas(ctx context.Context, req *apphubpb.ListExtendedMetadataSchemasRequest, opts ...gax.CallOption) *ExtendedMetadataSchemaIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apphub.v1.AppHub/ListExtendedMetadataSchemas")
+	}
+	opts = append((*c.CallOptions).ListExtendedMetadataSchemas[0:len((*c.CallOptions).ListExtendedMetadataSchemas):len((*c.CallOptions).ListExtendedMetadataSchemas)], opts...)
+	it := &ExtendedMetadataSchemaIterator{}
+	req = proto.CloneOf(req)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*apphubpb.ExtendedMetadataSchema, string, error) {
+		resp := &apphubpb.ListExtendedMetadataSchemasResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListExtendedMetadataSchemas, req, settings.GRPC, c.logger, "ListExtendedMetadataSchemas")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetExtendedMetadataSchemas(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
@@ -2166,9 +2488,6 @@ func (c *gRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
 	}
@@ -2190,9 +2509,6 @@ func (c *gRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
 	}
@@ -2214,9 +2530,6 @@ func (c *gRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
 	}
@@ -2357,9 +2670,6 @@ func (c *restClient) LookupServiceProjectAttachment(ctx context.Context, req *ap
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apphub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apphub.v1.AppHub/LookupServiceProjectAttachment")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*}:lookupServiceProjectAttachment")
@@ -2509,9 +2819,6 @@ func (c *restClient) CreateServiceProjectAttachment(ctx context.Context, req *ap
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apphub.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apphub.v1.AppHub/CreateServiceProjectAttachment")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/serviceProjectAttachments")
@@ -2573,9 +2880,6 @@ func (c *restClient) GetServiceProjectAttachment(ctx context.Context, req *apphu
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apphub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apphub.v1.AppHub/GetServiceProjectAttachment")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/serviceProjectAttachments/*}")
@@ -2633,9 +2937,6 @@ func (c *restClient) DeleteServiceProjectAttachment(ctx context.Context, req *ap
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apphub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apphub.v1.AppHub/DeleteServiceProjectAttachment")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/serviceProjectAttachments/*}")
@@ -2705,9 +3006,6 @@ func (c *restClient) DetachServiceProjectAttachment(ctx context.Context, req *ap
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apphub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apphub.v1.AppHub/DetachServiceProjectAttachment")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*}:detachServiceProjectAttachment")
@@ -2847,9 +3145,6 @@ func (c *restClient) GetDiscoveredService(ctx context.Context, req *apphubpb.Get
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apphub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apphub.v1.AppHub/GetDiscoveredService")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/discoveredServices/*}")
@@ -2906,9 +3201,6 @@ func (c *restClient) LookupDiscoveredService(ctx context.Context, req *apphubpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apphub.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apphub.v1.AppHub/LookupDiscoveredService")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/discoveredServices:lookup")
@@ -3058,9 +3350,6 @@ func (c *restClient) CreateService(ctx context.Context, req *apphubpb.CreateServ
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apphub.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apphub.v1.AppHub/CreateService")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/applications/*}/services")
@@ -3122,9 +3411,6 @@ func (c *restClient) GetService(ctx context.Context, req *apphubpb.GetServiceReq
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apphub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apphub.v1.AppHub/GetService")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/applications/*/services/*}")
@@ -3260,9 +3546,6 @@ func (c *restClient) DeleteService(ctx context.Context, req *apphubpb.DeleteServ
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apphub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apphub.v1.AppHub/DeleteService")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/applications/*/services/*}")
@@ -3409,9 +3692,6 @@ func (c *restClient) GetDiscoveredWorkload(ctx context.Context, req *apphubpb.Ge
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apphub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apphub.v1.AppHub/GetDiscoveredWorkload")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/discoveredWorkloads/*}")
@@ -3468,9 +3748,6 @@ func (c *restClient) LookupDiscoveredWorkload(ctx context.Context, req *apphubpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apphub.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apphub.v1.AppHub/LookupDiscoveredWorkload")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/discoveredWorkloads:lookup")
@@ -3620,9 +3897,6 @@ func (c *restClient) CreateWorkload(ctx context.Context, req *apphubpb.CreateWor
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apphub.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apphub.v1.AppHub/CreateWorkload")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/applications/*}/workloads")
@@ -3684,9 +3958,6 @@ func (c *restClient) GetWorkload(ctx context.Context, req *apphubpb.GetWorkloadR
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apphub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apphub.v1.AppHub/GetWorkload")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/applications/*/workloads/*}")
@@ -3822,9 +4093,6 @@ func (c *restClient) DeleteWorkload(ctx context.Context, req *apphubpb.DeleteWor
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apphub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apphub.v1.AppHub/DeleteWorkload")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/applications/*/workloads/*}")
@@ -3981,9 +4249,6 @@ func (c *restClient) CreateApplication(ctx context.Context, req *apphubpb.Create
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apphub.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apphub.v1.AppHub/CreateApplication")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/applications")
@@ -4045,9 +4310,6 @@ func (c *restClient) GetApplication(ctx context.Context, req *apphubpb.GetApplic
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apphub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apphub.v1.AppHub/GetApplication")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/applications/*}")
@@ -4183,9 +4445,6 @@ func (c *restClient) DeleteApplication(ctx context.Context, req *apphubpb.Delete
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apphub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apphub.v1.AppHub/DeleteApplication")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/applications/*}")
@@ -4226,6 +4485,270 @@ func (c *restClient) DeleteApplication(ctx context.Context, req *apphubpb.Delete
 		lro:      lro,
 		pollPath: override,
 	}, nil
+}
+
+// GetBoundary gets a Boundary.
+func (c *restClient) GetBoundary(ctx context.Context, req *apphubpb.GetBoundaryRequest, opts ...gax.CallOption) (*apphubpb.Boundary, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apphub.v1.AppHub/GetBoundary")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/boundary}")
+	}
+	opts = append((*c.CallOptions).GetBoundary[0:len((*c.CallOptions).GetBoundary):len((*c.CallOptions).GetBoundary)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &apphubpb.Boundary{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetBoundary")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpdateBoundary updates a Boundary.
+func (c *restClient) UpdateBoundary(ctx context.Context, req *apphubpb.UpdateBoundaryRequest, opts ...gax.CallOption) (*UpdateBoundaryOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetBoundary()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetBoundary().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "boundary.name", url.QueryEscape(req.GetBoundary().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apphub.v1.AppHub/UpdateBoundary")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{boundary.name=projects/*/locations/*/boundary}")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateBoundary")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apphub.UpdateBoundaryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &UpdateBoundaryOperation{
+		lro:      lro,
+		pollPath: override,
+	}, nil
+}
+
+// GetExtendedMetadataSchema gets an Extended Metadata Schema.
+func (c *restClient) GetExtendedMetadataSchema(ctx context.Context, req *apphubpb.GetExtendedMetadataSchemaRequest, opts ...gax.CallOption) (*apphubpb.ExtendedMetadataSchema, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apphub.v1.AppHub/GetExtendedMetadataSchema")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/extendedMetadataSchemas/**}")
+	}
+	opts = append((*c.CallOptions).GetExtendedMetadataSchema[0:len((*c.CallOptions).GetExtendedMetadataSchema):len((*c.CallOptions).GetExtendedMetadataSchema)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &apphubpb.ExtendedMetadataSchema{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetExtendedMetadataSchema")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListExtendedMetadataSchemas lists Extended Metadata Schemas available in a host project and location.
+func (c *restClient) ListExtendedMetadataSchemas(ctx context.Context, req *apphubpb.ListExtendedMetadataSchemasRequest, opts ...gax.CallOption) *ExtendedMetadataSchemaIterator {
+	it := &ExtendedMetadataSchemaIterator{}
+	req = proto.CloneOf(req)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*apphubpb.ExtendedMetadataSchema, string, error) {
+		resp := &apphubpb.ListExtendedMetadataSchemasResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/extendedMetadataSchemas", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListExtendedMetadataSchemas")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetExtendedMetadataSchemas(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // GetLocation gets information about a location.
@@ -4283,6 +4806,21 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 }
 
 // ListLocations lists information about the supported locations for this service.
+//
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
+//
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
 	req = proto.CloneOf(req)
@@ -4386,9 +4924,6 @@ func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/applications/*}:getIamPolicy")
@@ -4453,9 +4988,6 @@ func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/applications/*}:setIamPolicy")
@@ -4522,9 +5054,6 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/applications/*}:testIamPermissions")
@@ -4940,6 +5469,24 @@ func (c *restClient) UpdateApplicationOperation(name string) *UpdateApplicationO
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateApplicationOperation{
 		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apphub.UpdateApplicationOperation"),
+		pollPath: override,
+	}
+}
+
+// UpdateBoundaryOperation returns a new UpdateBoundaryOperation from a given name.
+// The name must be that of a previously created UpdateBoundaryOperation, possibly from a different process.
+func (c *gRPCClient) UpdateBoundaryOperation(name string) *UpdateBoundaryOperation {
+	return &UpdateBoundaryOperation{
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apphub.UpdateBoundaryOperation"),
+	}
+}
+
+// UpdateBoundaryOperation returns a new UpdateBoundaryOperation from a given name.
+// The name must be that of a previously created UpdateBoundaryOperation, possibly from a different process.
+func (c *restClient) UpdateBoundaryOperation(name string) *UpdateBoundaryOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdateBoundaryOperation{
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apphub.UpdateBoundaryOperation"),
 		pollPath: override,
 	}
 }

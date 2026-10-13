@@ -595,6 +595,89 @@ func NewStreamsClient(ctx context.Context, opts ...option.ClientOption) (*Stream
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "visionai",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/visionai/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "visionai.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListClusters = append(client.CallOptions.ListClusters, gax.WithClientTracing(tracing))
+		client.CallOptions.GetCluster = append(client.CallOptions.GetCluster, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateCluster = append(client.CallOptions.CreateCluster, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateCluster = append(client.CallOptions.UpdateCluster, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteCluster = append(client.CallOptions.DeleteCluster, gax.WithClientTracing(tracing))
+		client.CallOptions.ListStreams = append(client.CallOptions.ListStreams, gax.WithClientTracing(tracing))
+		client.CallOptions.GetStream = append(client.CallOptions.GetStream, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateStream = append(client.CallOptions.CreateStream, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateStream = append(client.CallOptions.UpdateStream, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteStream = append(client.CallOptions.DeleteStream, gax.WithClientTracing(tracing))
+		client.CallOptions.GetStreamThumbnail = append(client.CallOptions.GetStreamThumbnail, gax.WithClientTracing(tracing))
+		client.CallOptions.GenerateStreamHlsToken = append(client.CallOptions.GenerateStreamHlsToken, gax.WithClientTracing(tracing))
+		client.CallOptions.ListEvents = append(client.CallOptions.ListEvents, gax.WithClientTracing(tracing))
+		client.CallOptions.GetEvent = append(client.CallOptions.GetEvent, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateEvent = append(client.CallOptions.CreateEvent, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateEvent = append(client.CallOptions.UpdateEvent, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteEvent = append(client.CallOptions.DeleteEvent, gax.WithClientTracing(tracing))
+		client.CallOptions.ListSeries = append(client.CallOptions.ListSeries, gax.WithClientTracing(tracing))
+		client.CallOptions.GetSeries = append(client.CallOptions.GetSeries, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateSeries = append(client.CallOptions.CreateSeries, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateSeries = append(client.CallOptions.UpdateSeries, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteSeries = append(client.CallOptions.DeleteSeries, gax.WithClientTracing(tracing))
+		client.CallOptions.MaterializeChannel = append(client.CallOptions.MaterializeChannel, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "visionai",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/visionai/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "visionai.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListClusters = append(client.CallOptions.ListClusters, gax.WithClientLogging(logging))
+		client.CallOptions.GetCluster = append(client.CallOptions.GetCluster, gax.WithClientLogging(logging))
+		client.CallOptions.CreateCluster = append(client.CallOptions.CreateCluster, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateCluster = append(client.CallOptions.UpdateCluster, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteCluster = append(client.CallOptions.DeleteCluster, gax.WithClientLogging(logging))
+		client.CallOptions.ListStreams = append(client.CallOptions.ListStreams, gax.WithClientLogging(logging))
+		client.CallOptions.GetStream = append(client.CallOptions.GetStream, gax.WithClientLogging(logging))
+		client.CallOptions.CreateStream = append(client.CallOptions.CreateStream, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateStream = append(client.CallOptions.UpdateStream, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteStream = append(client.CallOptions.DeleteStream, gax.WithClientLogging(logging))
+		client.CallOptions.GetStreamThumbnail = append(client.CallOptions.GetStreamThumbnail, gax.WithClientLogging(logging))
+		client.CallOptions.GenerateStreamHlsToken = append(client.CallOptions.GenerateStreamHlsToken, gax.WithClientLogging(logging))
+		client.CallOptions.ListEvents = append(client.CallOptions.ListEvents, gax.WithClientLogging(logging))
+		client.CallOptions.GetEvent = append(client.CallOptions.GetEvent, gax.WithClientLogging(logging))
+		client.CallOptions.CreateEvent = append(client.CallOptions.CreateEvent, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateEvent = append(client.CallOptions.UpdateEvent, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteEvent = append(client.CallOptions.DeleteEvent, gax.WithClientLogging(logging))
+		client.CallOptions.ListSeries = append(client.CallOptions.ListSeries, gax.WithClientLogging(logging))
+		client.CallOptions.GetSeries = append(client.CallOptions.GetSeries, gax.WithClientLogging(logging))
+		client.CallOptions.CreateSeries = append(client.CallOptions.CreateSeries, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateSeries = append(client.CallOptions.UpdateSeries, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteSeries = append(client.CallOptions.DeleteSeries, gax.WithClientLogging(logging))
+		client.CallOptions.MaterializeChannel = append(client.CallOptions.MaterializeChannel, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -733,6 +816,89 @@ func NewStreamsRESTClient(ctx context.Context, opts ...option.ClientOption) (*St
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "visionai",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/visionai/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "visionai.googleapis.com",
+			}),
+		)
+
+		callOpts.ListClusters = append(callOpts.ListClusters, gax.WithClientTracing(tracing))
+		callOpts.GetCluster = append(callOpts.GetCluster, gax.WithClientTracing(tracing))
+		callOpts.CreateCluster = append(callOpts.CreateCluster, gax.WithClientTracing(tracing))
+		callOpts.UpdateCluster = append(callOpts.UpdateCluster, gax.WithClientTracing(tracing))
+		callOpts.DeleteCluster = append(callOpts.DeleteCluster, gax.WithClientTracing(tracing))
+		callOpts.ListStreams = append(callOpts.ListStreams, gax.WithClientTracing(tracing))
+		callOpts.GetStream = append(callOpts.GetStream, gax.WithClientTracing(tracing))
+		callOpts.CreateStream = append(callOpts.CreateStream, gax.WithClientTracing(tracing))
+		callOpts.UpdateStream = append(callOpts.UpdateStream, gax.WithClientTracing(tracing))
+		callOpts.DeleteStream = append(callOpts.DeleteStream, gax.WithClientTracing(tracing))
+		callOpts.GetStreamThumbnail = append(callOpts.GetStreamThumbnail, gax.WithClientTracing(tracing))
+		callOpts.GenerateStreamHlsToken = append(callOpts.GenerateStreamHlsToken, gax.WithClientTracing(tracing))
+		callOpts.ListEvents = append(callOpts.ListEvents, gax.WithClientTracing(tracing))
+		callOpts.GetEvent = append(callOpts.GetEvent, gax.WithClientTracing(tracing))
+		callOpts.CreateEvent = append(callOpts.CreateEvent, gax.WithClientTracing(tracing))
+		callOpts.UpdateEvent = append(callOpts.UpdateEvent, gax.WithClientTracing(tracing))
+		callOpts.DeleteEvent = append(callOpts.DeleteEvent, gax.WithClientTracing(tracing))
+		callOpts.ListSeries = append(callOpts.ListSeries, gax.WithClientTracing(tracing))
+		callOpts.GetSeries = append(callOpts.GetSeries, gax.WithClientTracing(tracing))
+		callOpts.CreateSeries = append(callOpts.CreateSeries, gax.WithClientTracing(tracing))
+		callOpts.UpdateSeries = append(callOpts.UpdateSeries, gax.WithClientTracing(tracing))
+		callOpts.DeleteSeries = append(callOpts.DeleteSeries, gax.WithClientTracing(tracing))
+		callOpts.MaterializeChannel = append(callOpts.MaterializeChannel, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "visionai",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/visionai/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "visionai.googleapis.com",
+			}),
+		)
+
+		callOpts.ListClusters = append(callOpts.ListClusters, gax.WithClientLogging(logging))
+		callOpts.GetCluster = append(callOpts.GetCluster, gax.WithClientLogging(logging))
+		callOpts.CreateCluster = append(callOpts.CreateCluster, gax.WithClientLogging(logging))
+		callOpts.UpdateCluster = append(callOpts.UpdateCluster, gax.WithClientLogging(logging))
+		callOpts.DeleteCluster = append(callOpts.DeleteCluster, gax.WithClientLogging(logging))
+		callOpts.ListStreams = append(callOpts.ListStreams, gax.WithClientLogging(logging))
+		callOpts.GetStream = append(callOpts.GetStream, gax.WithClientLogging(logging))
+		callOpts.CreateStream = append(callOpts.CreateStream, gax.WithClientLogging(logging))
+		callOpts.UpdateStream = append(callOpts.UpdateStream, gax.WithClientLogging(logging))
+		callOpts.DeleteStream = append(callOpts.DeleteStream, gax.WithClientLogging(logging))
+		callOpts.GetStreamThumbnail = append(callOpts.GetStreamThumbnail, gax.WithClientLogging(logging))
+		callOpts.GenerateStreamHlsToken = append(callOpts.GenerateStreamHlsToken, gax.WithClientLogging(logging))
+		callOpts.ListEvents = append(callOpts.ListEvents, gax.WithClientLogging(logging))
+		callOpts.GetEvent = append(callOpts.GetEvent, gax.WithClientLogging(logging))
+		callOpts.CreateEvent = append(callOpts.CreateEvent, gax.WithClientLogging(logging))
+		callOpts.UpdateEvent = append(callOpts.UpdateEvent, gax.WithClientLogging(logging))
+		callOpts.DeleteEvent = append(callOpts.DeleteEvent, gax.WithClientLogging(logging))
+		callOpts.ListSeries = append(callOpts.ListSeries, gax.WithClientLogging(logging))
+		callOpts.GetSeries = append(callOpts.GetSeries, gax.WithClientLogging(logging))
+		callOpts.CreateSeries = append(callOpts.CreateSeries, gax.WithClientLogging(logging))
+		callOpts.UpdateSeries = append(callOpts.UpdateSeries, gax.WithClientLogging(logging))
+		callOpts.DeleteSeries = append(callOpts.DeleteSeries, gax.WithClientLogging(logging))
+		callOpts.MaterializeChannel = append(callOpts.MaterializeChannel, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -789,9 +955,6 @@ func (c *streamsGRPCClient) ListClusters(ctx context.Context, req *visionaipb.Li
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//visionai.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.StreamsService/ListClusters")
 	}
@@ -841,9 +1004,6 @@ func (c *streamsGRPCClient) GetCluster(ctx context.Context, req *visionaipb.GetC
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//visionai.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.StreamsService/GetCluster")
 	}
@@ -865,9 +1025,6 @@ func (c *streamsGRPCClient) CreateCluster(ctx context.Context, req *visionaipb.C
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//visionai.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.StreamsService/CreateCluster")
 	}
@@ -922,9 +1079,6 @@ func (c *streamsGRPCClient) DeleteCluster(ctx context.Context, req *visionaipb.D
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//visionai.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.StreamsService/DeleteCluster")
 	}
@@ -952,9 +1106,6 @@ func (c *streamsGRPCClient) ListStreams(ctx context.Context, req *visionaipb.Lis
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//visionai.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.StreamsService/ListStreams")
 	}
@@ -1004,9 +1155,6 @@ func (c *streamsGRPCClient) GetStream(ctx context.Context, req *visionaipb.GetSt
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//visionai.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.StreamsService/GetStream")
 	}
@@ -1028,9 +1176,6 @@ func (c *streamsGRPCClient) CreateStream(ctx context.Context, req *visionaipb.Cr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//visionai.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.StreamsService/CreateStream")
 	}
@@ -1085,9 +1230,6 @@ func (c *streamsGRPCClient) DeleteStream(ctx context.Context, req *visionaipb.De
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//visionai.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.StreamsService/DeleteStream")
 	}
@@ -1163,9 +1305,6 @@ func (c *streamsGRPCClient) ListEvents(ctx context.Context, req *visionaipb.List
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//visionai.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.StreamsService/ListEvents")
 	}
@@ -1215,9 +1354,6 @@ func (c *streamsGRPCClient) GetEvent(ctx context.Context, req *visionaipb.GetEve
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//visionai.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.StreamsService/GetEvent")
 	}
@@ -1239,9 +1375,6 @@ func (c *streamsGRPCClient) CreateEvent(ctx context.Context, req *visionaipb.Cre
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//visionai.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.StreamsService/CreateEvent")
 	}
@@ -1296,9 +1429,6 @@ func (c *streamsGRPCClient) DeleteEvent(ctx context.Context, req *visionaipb.Del
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//visionai.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.StreamsService/DeleteEvent")
 	}
@@ -1326,9 +1456,6 @@ func (c *streamsGRPCClient) ListSeries(ctx context.Context, req *visionaipb.List
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//visionai.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.StreamsService/ListSeries")
 	}
@@ -1378,9 +1505,6 @@ func (c *streamsGRPCClient) GetSeries(ctx context.Context, req *visionaipb.GetSe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//visionai.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.StreamsService/GetSeries")
 	}
@@ -1402,9 +1526,6 @@ func (c *streamsGRPCClient) CreateSeries(ctx context.Context, req *visionaipb.Cr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//visionai.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.StreamsService/CreateSeries")
 	}
@@ -1459,9 +1580,6 @@ func (c *streamsGRPCClient) DeleteSeries(ctx context.Context, req *visionaipb.De
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//visionai.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.StreamsService/DeleteSeries")
 	}
@@ -1489,9 +1607,6 @@ func (c *streamsGRPCClient) MaterializeChannel(ctx context.Context, req *visiona
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//visionai.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.StreamsService/MaterializeChannel")
 	}
@@ -1791,9 +1906,6 @@ func (c *streamsRESTClient) GetCluster(ctx context.Context, req *visionaipb.GetC
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//visionai.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.StreamsService/GetCluster")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/clusters/*}")
@@ -1859,9 +1971,6 @@ func (c *streamsRESTClient) CreateCluster(ctx context.Context, req *visionaipb.C
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//visionai.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.StreamsService/CreateCluster")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/clusters")
@@ -2004,9 +2113,6 @@ func (c *streamsRESTClient) DeleteCluster(ctx context.Context, req *visionaipb.D
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//visionai.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.StreamsService/DeleteCluster")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/clusters/*}")
@@ -2152,9 +2258,6 @@ func (c *streamsRESTClient) GetStream(ctx context.Context, req *visionaipb.GetSt
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//visionai.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.StreamsService/GetStream")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/clusters/*/streams/*}")
@@ -2220,9 +2323,6 @@ func (c *streamsRESTClient) CreateStream(ctx context.Context, req *visionaipb.Cr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//visionai.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.StreamsService/CreateStream")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/clusters/*}/streams")
@@ -2365,9 +2465,6 @@ func (c *streamsRESTClient) DeleteStream(ctx context.Context, req *visionaipb.De
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//visionai.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.StreamsService/DeleteStream")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/clusters/*/streams/*}")
@@ -2640,9 +2737,6 @@ func (c *streamsRESTClient) GetEvent(ctx context.Context, req *visionaipb.GetEve
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//visionai.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.StreamsService/GetEvent")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/clusters/*/events/*}")
@@ -2708,9 +2802,6 @@ func (c *streamsRESTClient) CreateEvent(ctx context.Context, req *visionaipb.Cre
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//visionai.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.StreamsService/CreateEvent")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/clusters/*}/events")
@@ -2853,9 +2944,6 @@ func (c *streamsRESTClient) DeleteEvent(ctx context.Context, req *visionaipb.Del
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//visionai.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.StreamsService/DeleteEvent")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/clusters/*/events/*}")
@@ -3001,9 +3089,6 @@ func (c *streamsRESTClient) GetSeries(ctx context.Context, req *visionaipb.GetSe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//visionai.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.StreamsService/GetSeries")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/clusters/*/series/*}")
@@ -3069,9 +3154,6 @@ func (c *streamsRESTClient) CreateSeries(ctx context.Context, req *visionaipb.Cr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//visionai.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.StreamsService/CreateSeries")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/clusters/*}/series")
@@ -3214,9 +3296,6 @@ func (c *streamsRESTClient) DeleteSeries(ctx context.Context, req *visionaipb.De
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//visionai.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.StreamsService/DeleteSeries")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/clusters/*/series/*}")
@@ -3289,9 +3368,6 @@ func (c *streamsRESTClient) MaterializeChannel(ctx context.Context, req *visiona
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//visionai.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.StreamsService/MaterializeChannel")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/clusters/*}/channels")

@@ -1,5 +1,12 @@
 # Changes
 
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/gkerecommender/v1.0.0...gkerecommender/v1.1.0) (2026-09-23)
+
+
+### Features
+
+* **all:** Update supported go versions ([#20520](https://github.com/googleapis/google-cloud-go/issues/20520)) ([90413d3](https://github.com/googleapis/google-cloud-go/commit/90413d3e9d381ef4b92e3c496d98b023c5b2d8cc))
+
 ## [1.0.0](https://github.com/googleapis/google-cloud-go/releases/tag/gkerecommender%2Fv1.0.0) (2026-05-08)
 
 ## [0.6.0](https://github.com/googleapis/google-cloud-go/releases/tag/gkerecommender%2Fv0.6.0) (2026-05-07)
@@ -17,4 +24,3 @@
 ### Features
 
 * add new clients (#13238) ([8f604ff](https://github.com/googleapis/google-cloud-go/commit/8f604ff61c8dd3247111665288ce6f2249a2b19a))
-

@@ -217,6 +217,33 @@ func NewPublicCertificateAuthorityClient(ctx context.Context, opts ...option.Cli
 
 		client.CallOptions.CreateExternalAccountKey = append(client.CallOptions.CreateExternalAccountKey, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "publicca",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/security/publicca/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "publicca.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateExternalAccountKey = append(client.CallOptions.CreateExternalAccountKey, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "publicca",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/security/publicca/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "publicca.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateExternalAccountKey = append(client.CallOptions.CreateExternalAccountKey, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -310,6 +337,33 @@ func NewPublicCertificateAuthorityRESTClient(ctx context.Context, opts ...option
 
 		callOpts.CreateExternalAccountKey = append(callOpts.CreateExternalAccountKey, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "publicca",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/security/publicca/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "publicca.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateExternalAccountKey = append(callOpts.CreateExternalAccountKey, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "publicca",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/security/publicca/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "publicca.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateExternalAccountKey = append(callOpts.CreateExternalAccountKey, gax.WithClientLogging(logging))
+	}
 
 	return &PublicCertificateAuthorityClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -356,9 +410,6 @@ func (c *publicCertificateAuthorityGRPCClient) CreateExternalAccountKey(ctx cont
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//publicca.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.publicca.v1.PublicCertificateAuthorityService/CreateExternalAccountKey")
 	}
@@ -403,9 +454,6 @@ func (c *publicCertificateAuthorityRESTClient) CreateExternalAccountKey(ctx cont
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//publicca.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.publicca.v1.PublicCertificateAuthorityService/CreateExternalAccountKey")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/externalAccountKeys")

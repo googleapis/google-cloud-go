@@ -29,6 +29,7 @@ import (
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -39,29 +40,27 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// The different execution states of the Audit Manager service.
+// Different execution states of the Audit Manager service.
 type OperationState int32
 
 const (
-	// Unspecified. Invalid state.
+	// Default value. This value is unused.
 	OperationState_OPERATION_STATE_UNSPECIFIED OperationState = 0
-	// Audit report generation process has not started.
+	// Audit generation process hasn't started.
 	OperationState_OPERATION_STATE_NOT_STARTED OperationState = 10
-	// Audit Manager is currently evaluating the workloads against specific
-	// standard.
+	// Evaluation process is in progress.
 	OperationState_OPERATION_STATE_EVALUATION_IN_PROGRESS OperationState = 20
-	// Audit Manager has completed Evaluation for the workload.
+	// Evaluation process is completed.
 	OperationState_OPERATION_STATE_EVALUATION_DONE OperationState = 21
-	// Audit Manager is creating audit report from the evaluated data.
+	// Report generation process is in progress.
 	OperationState_OPERATION_STATE_EVIDENCE_REPORT_GENERATION_IN_PROGRESS OperationState = 30
-	// Audit Manager has completed generation of the audit report.
+	// Report generation process is completed.
 	OperationState_OPERATION_STATE_EVIDENCE_REPORT_GENERATION_DONE OperationState = 31
-	// Audit Manager is uploading the audit report and evidences to the customer
-	// provided destination.
+	// The audit report and evidence are being uploaded to your bucket.
 	OperationState_OPERATION_STATE_EVIDENCE_UPLOAD_IN_PROGRESS OperationState = 40
-	// Audit report generation process is completed.
+	// The audit report and evidence are uploaded to your bucket.
 	OperationState_OPERATION_STATE_DONE OperationState = 50
-	// Audit report generation process has failed.
+	// Audit report generation process failed.
 	OperationState_OPERATION_STATE_FAILED OperationState = 60
 )
 
@@ -118,21 +117,22 @@ func (OperationState) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_auditmanager_v1_auditmanager_proto_rawDescGZIP(), []int{0}
 }
 
-// The compliance state after evaluation.
+// Compliance state after evaluation.
 type ComplianceState int32
 
 const (
-	// Unspecified. Invalid state.
+	// Default value. This value is unused.
 	ComplianceState_COMPLIANCE_STATE_UNSPECIFIED ComplianceState = 0
-	// Compliant.
+	// The resource is compliant.
 	ComplianceState_COMPLIANT ComplianceState = 1
-	// Violation.
+	// The resource isn't compliant.
 	ComplianceState_VIOLATION ComplianceState = 2
-	// MANUAL_REVIEW_NEEDED, requires manual review
+	// You must complete a manual review.
 	ComplianceState_MANUAL_REVIEW_NEEDED ComplianceState = 3
-	// Error while computing status.
+	// An error was encountered during the evaluation or evidence gathering
+	// process.
 	ComplianceState_ERROR ComplianceState = 4
-	// Cannot be audited
+	// The resource can't be audited.
 	ComplianceState_AUDIT_NOT_SUPPORTED ComplianceState = 5
 )
 
@@ -183,13 +183,83 @@ func (ComplianceState) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_auditmanager_v1_auditmanager_proto_rawDescGZIP(), []int{1}
 }
 
-// The options for the audit scope report format.
+// State of an audit schedule.
+type ScheduleState int32
+
+const (
+	// Default value. This value is unused.
+	ScheduleState_SCHEDULE_STATE_UNSPECIFIED ScheduleState = 0
+	// Schedule is active and will trigger runs.
+	ScheduleState_SCHEDULE_STATE_ACTIVE ScheduleState = 1
+	// Schedule is paused and will not trigger runs.
+	ScheduleState_SCHEDULE_STATE_PAUSED ScheduleState = 2
+	// Schedule end time has passed.
+	ScheduleState_SCHEDULE_STATE_COMPLETED ScheduleState = 3
+	// Schedule setup failed during creation or update.
+	ScheduleState_SCHEDULE_STATE_FAILED_SETUP ScheduleState = 4
+	// Schedule is in an error state due to persistent failure to trigger an
+	// audit. Manual intervention is required.
+	ScheduleState_SCHEDULE_STATE_ERROR ScheduleState = 5
+	// Schedule has been marked for deletion by the user.
+	ScheduleState_SCHEDULE_STATE_DELETED ScheduleState = 6
+)
+
+// Enum value maps for ScheduleState.
+var (
+	ScheduleState_name = map[int32]string{
+		0: "SCHEDULE_STATE_UNSPECIFIED",
+		1: "SCHEDULE_STATE_ACTIVE",
+		2: "SCHEDULE_STATE_PAUSED",
+		3: "SCHEDULE_STATE_COMPLETED",
+		4: "SCHEDULE_STATE_FAILED_SETUP",
+		5: "SCHEDULE_STATE_ERROR",
+		6: "SCHEDULE_STATE_DELETED",
+	}
+	ScheduleState_value = map[string]int32{
+		"SCHEDULE_STATE_UNSPECIFIED":  0,
+		"SCHEDULE_STATE_ACTIVE":       1,
+		"SCHEDULE_STATE_PAUSED":       2,
+		"SCHEDULE_STATE_COMPLETED":    3,
+		"SCHEDULE_STATE_FAILED_SETUP": 4,
+		"SCHEDULE_STATE_ERROR":        5,
+		"SCHEDULE_STATE_DELETED":      6,
+	}
+)
+
+func (x ScheduleState) Enum() *ScheduleState {
+	p := new(ScheduleState)
+	*p = x
+	return p
+}
+
+func (x ScheduleState) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ScheduleState) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_auditmanager_v1_auditmanager_proto_enumTypes[2].Descriptor()
+}
+
+func (ScheduleState) Type() protoreflect.EnumType {
+	return &file_google_cloud_auditmanager_v1_auditmanager_proto_enumTypes[2]
+}
+
+func (x ScheduleState) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use ScheduleState.Descriptor instead.
+func (ScheduleState) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_auditmanager_v1_auditmanager_proto_rawDescGZIP(), []int{2}
+}
+
+// Format for the audit scope report.
 type GenerateAuditScopeReportRequest_AuditScopeReportFormat int32
 
 const (
-	// Unspecified. Invalid format.
+	// Default value. This value is unused.
 	GenerateAuditScopeReportRequest_AUDIT_SCOPE_REPORT_FORMAT_UNSPECIFIED GenerateAuditScopeReportRequest_AuditScopeReportFormat = 0
-	// Audit Scope Report creation format is Open Document.
+	// Open Document format.
 	GenerateAuditScopeReportRequest_AUDIT_SCOPE_REPORT_FORMAT_ODF GenerateAuditScopeReportRequest_AuditScopeReportFormat = 1
 )
 
@@ -216,11 +286,11 @@ func (x GenerateAuditScopeReportRequest_AuditScopeReportFormat) String() string 
 }
 
 func (GenerateAuditScopeReportRequest_AuditScopeReportFormat) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_auditmanager_v1_auditmanager_proto_enumTypes[2].Descriptor()
+	return file_google_cloud_auditmanager_v1_auditmanager_proto_enumTypes[3].Descriptor()
 }
 
 func (GenerateAuditScopeReportRequest_AuditScopeReportFormat) Type() protoreflect.EnumType {
-	return &file_google_cloud_auditmanager_v1_auditmanager_proto_enumTypes[2]
+	return &file_google_cloud_auditmanager_v1_auditmanager_proto_enumTypes[3]
 }
 
 func (x GenerateAuditScopeReportRequest_AuditScopeReportFormat) Number() protoreflect.EnumNumber {
@@ -232,13 +302,13 @@ func (GenerateAuditScopeReportRequest_AuditScopeReportFormat) EnumDescriptor() (
 	return file_google_cloud_auditmanager_v1_auditmanager_proto_rawDescGZIP(), []int{1, 0}
 }
 
-// The options for the audit report format.
+// Format for the audit report.
 type GenerateAuditReportRequest_AuditReportFormat int32
 
 const (
-	// Unspecified. Invalid state.
+	// Default value. This value is unused.
 	GenerateAuditReportRequest_AUDIT_REPORT_FORMAT_UNSPECIFIED GenerateAuditReportRequest_AuditReportFormat = 0
-	// Audit Report creation format is Open Document.
+	// Open Document format.
 	GenerateAuditReportRequest_AUDIT_REPORT_FORMAT_ODF GenerateAuditReportRequest_AuditReportFormat = 1
 )
 
@@ -265,11 +335,11 @@ func (x GenerateAuditReportRequest_AuditReportFormat) String() string {
 }
 
 func (GenerateAuditReportRequest_AuditReportFormat) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_auditmanager_v1_auditmanager_proto_enumTypes[3].Descriptor()
+	return file_google_cloud_auditmanager_v1_auditmanager_proto_enumTypes[4].Descriptor()
 }
 
 func (GenerateAuditReportRequest_AuditReportFormat) Type() protoreflect.EnumType {
-	return &file_google_cloud_auditmanager_v1_auditmanager_proto_enumTypes[3]
+	return &file_google_cloud_auditmanager_v1_auditmanager_proto_enumTypes[4]
 }
 
 func (x GenerateAuditReportRequest_AuditReportFormat) Number() protoreflect.EnumNumber {
@@ -281,17 +351,17 @@ func (GenerateAuditReportRequest_AuditReportFormat) EnumDescriptor() ([]byte, []
 	return file_google_cloud_auditmanager_v1_auditmanager_proto_rawDescGZIP(), []int{2, 0}
 }
 
-// The different enrollment states of a resource.
+// Different enrollment states of the resource and its parent.
 type ResourceEnrollmentStatus_ResourceEnrollmentState int32
 
 const (
-	// Unspecified. Invalid state.
+	// Default value. This value is unused.
 	ResourceEnrollmentStatus_RESOURCE_ENROLLMENT_STATE_UNSPECIFIED ResourceEnrollmentStatus_ResourceEnrollmentState = 0
-	// Not enrolled.
+	// The resource isn't enrolled.
 	ResourceEnrollmentStatus_NOT_ENROLLED ResourceEnrollmentStatus_ResourceEnrollmentState = 1
-	// Resource is not enrolled but the parent is enrolled.
+	// The resource isn't enrolled but the parent is enrolled.
 	ResourceEnrollmentStatus_INHERITED ResourceEnrollmentStatus_ResourceEnrollmentState = 2
-	// Enrolled.
+	// The resource is enrolled.
 	ResourceEnrollmentStatus_ENROLLED ResourceEnrollmentStatus_ResourceEnrollmentState = 3
 )
 
@@ -322,11 +392,11 @@ func (x ResourceEnrollmentStatus_ResourceEnrollmentState) String() string {
 }
 
 func (ResourceEnrollmentStatus_ResourceEnrollmentState) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_auditmanager_v1_auditmanager_proto_enumTypes[4].Descriptor()
+	return file_google_cloud_auditmanager_v1_auditmanager_proto_enumTypes[5].Descriptor()
 }
 
 func (ResourceEnrollmentStatus_ResourceEnrollmentState) Type() protoreflect.EnumType {
-	return &file_google_cloud_auditmanager_v1_auditmanager_proto_enumTypes[4]
+	return &file_google_cloud_auditmanager_v1_auditmanager_proto_enumTypes[5]
 }
 
 func (x ResourceEnrollmentStatus_ResourceEnrollmentState) Number() protoreflect.EnumNumber {
@@ -338,23 +408,23 @@ func (ResourceEnrollmentStatus_ResourceEnrollmentState) EnumDescriptor() ([]byte
 	return file_google_cloud_auditmanager_v1_auditmanager_proto_rawDescGZIP(), []int{15, 0}
 }
 
-// The different states of the Audit Manager report generation.
+// Different states of report generation.
 type AuditReport_ReportGenerationState int32
 
 const (
-	// Unspecified. Invalid state.
+	// Default value. This value is unused.
 	AuditReport_REPORT_GENERATION_STATE_UNSPECIFIED AuditReport_ReportGenerationState = 0
-	// Audit report generation process is in progress, ie. operation state is
-	// neither OPERATION_STATE_DONE nor OPERATION_STATE_FAILED.
+	// The process is in progress. The operation can have any state
+	// except for `OPERATION_STATE_DONE` or `OPERATION_STATE_FAILED`.
 	AuditReport_IN_PROGRESS AuditReport_ReportGenerationState = 1
-	// Audit report generation process is completed. Operation state is
-	// OPERATION_STATE_DONE.
+	// The process is completed. The operation state is
+	// `OPERATION_STATE_DONE`.
 	AuditReport_COMPLETED AuditReport_ReportGenerationState = 2
-	// Audit report generation process has failed. Operation state is
-	// OPERATION_STATE_FAILED.
+	// The process has failed. The operation state is
+	// `OPERATION_STATE_FAILED`.
 	AuditReport_FAILED AuditReport_ReportGenerationState = 3
-	// Audit report generation process has completed. But report summary is
-	// unknown. This is valid for older reports.
+	// The process completed, but the report summary's status is unknown. This
+	// state isn't used for new reports.
 	AuditReport_SUMMARY_UNKNOWN AuditReport_ReportGenerationState = 4
 )
 
@@ -387,11 +457,11 @@ func (x AuditReport_ReportGenerationState) String() string {
 }
 
 func (AuditReport_ReportGenerationState) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_auditmanager_v1_auditmanager_proto_enumTypes[5].Descriptor()
+	return file_google_cloud_auditmanager_v1_auditmanager_proto_enumTypes[6].Descriptor()
 }
 
 func (AuditReport_ReportGenerationState) Type() protoreflect.EnumType {
-	return &file_google_cloud_auditmanager_v1_auditmanager_proto_enumTypes[5]
+	return &file_google_cloud_auditmanager_v1_auditmanager_proto_enumTypes[6]
 }
 
 func (x AuditReport_ReportGenerationState) Number() protoreflect.EnumNumber {
@@ -403,47 +473,47 @@ func (AuditReport_ReportGenerationState) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_auditmanager_v1_auditmanager_proto_rawDescGZIP(), []int{16, 0}
 }
 
-// The family of the control. For example, Access Control.
+// Category of the control.
 type Control_Family int32
 
 const (
-	// Unspecified. Invalid state.
+	// Default value. This value is unused.
 	Control_FAMILY_UNSPECIFIED Control_Family = 0
-	// Access Control
+	// Access control.
 	Control_AC Control_Family = 1
-	// Awareness and Training
+	// Awareness and training.
 	Control_AT Control_Family = 2
-	// Audit and Accountability
+	// Audit and accountability.
 	Control_AU Control_Family = 3
-	// Certification, Accreditation and Security Assessments
+	// Certification, accreditation and security assessments.
 	Control_CA Control_Family = 4
-	// Configuration Management
+	// Configuration management and change control.
 	Control_CM Control_Family = 5
-	// Contingency Planning
+	// Contingency planning and disaster recovery.
 	Control_CP Control_Family = 6
-	// Identification and Authentication
+	// Identification and authentication.
 	Control_IA Control_Family = 7
-	// Incident Response
+	// Incident response.
 	Control_IR Control_Family = 8
-	// Maintenance
+	// Maintenance.
 	Control_MA Control_Family = 9
-	// Media Protection
+	// Media protection.
 	Control_MP Control_Family = 10
-	// Physical and Environmental Protection
+	// Physical and environmental protection.
 	Control_PE Control_Family = 11
-	// Security Planning
+	// Security planning.
 	Control_PL Control_Family = 12
-	// Personnel Security
+	// Personnel security.
 	Control_PS Control_Family = 13
-	// Risk Assessment
+	// Risk assessment.
 	Control_RA Control_Family = 14
-	// System Services and Acquisition
+	// System services and acquisition.
 	Control_SA Control_Family = 15
-	// System and Communications Protection
+	// System and communications protection.
 	Control_SC Control_Family = 16
-	// System and Information Integrity
+	// System and information integrity.
 	Control_SI Control_Family = 17
-	// Supply Chain Risk Management
+	// Supply chain risk management.
 	Control_SR Control_Family = 18
 )
 
@@ -504,11 +574,11 @@ func (x Control_Family) String() string {
 }
 
 func (Control_Family) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_auditmanager_v1_auditmanager_proto_enumTypes[6].Descriptor()
+	return file_google_cloud_auditmanager_v1_auditmanager_proto_enumTypes[7].Descriptor()
 }
 
 func (Control_Family) Type() protoreflect.EnumType {
-	return &file_google_cloud_auditmanager_v1_auditmanager_proto_enumTypes[6]
+	return &file_google_cloud_auditmanager_v1_auditmanager_proto_enumTypes[7]
 }
 
 func (x Control_Family) Number() protoreflect.EnumNumber {
@@ -520,23 +590,154 @@ func (Control_Family) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_auditmanager_v1_auditmanager_proto_rawDescGZIP(), []int{18, 0}
 }
 
-// Request message to subscribe the Audit Manager service for given resource.
+// Format for the audit report.
+type AuditSchedule_AuditReportFormat int32
+
+const (
+	// Default value. This value is unused.
+	AuditSchedule_AUDIT_REPORT_FORMAT_UNSPECIFIED AuditSchedule_AuditReportFormat = 0
+	// Open Document Format (ODF).
+	AuditSchedule_AUDIT_REPORT_FORMAT_ODF AuditSchedule_AuditReportFormat = 1
+)
+
+// Enum value maps for AuditSchedule_AuditReportFormat.
+var (
+	AuditSchedule_AuditReportFormat_name = map[int32]string{
+		0: "AUDIT_REPORT_FORMAT_UNSPECIFIED",
+		1: "AUDIT_REPORT_FORMAT_ODF",
+	}
+	AuditSchedule_AuditReportFormat_value = map[string]int32{
+		"AUDIT_REPORT_FORMAT_UNSPECIFIED": 0,
+		"AUDIT_REPORT_FORMAT_ODF":         1,
+	}
+)
+
+func (x AuditSchedule_AuditReportFormat) Enum() *AuditSchedule_AuditReportFormat {
+	p := new(AuditSchedule_AuditReportFormat)
+	*p = x
+	return p
+}
+
+func (x AuditSchedule_AuditReportFormat) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (AuditSchedule_AuditReportFormat) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_auditmanager_v1_auditmanager_proto_enumTypes[8].Descriptor()
+}
+
+func (AuditSchedule_AuditReportFormat) Type() protoreflect.EnumType {
+	return &file_google_cloud_auditmanager_v1_auditmanager_proto_enumTypes[8]
+}
+
+func (x AuditSchedule_AuditReportFormat) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use AuditSchedule_AuditReportFormat.Descriptor instead.
+func (AuditSchedule_AuditReportFormat) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_auditmanager_v1_auditmanager_proto_rawDescGZIP(), []int{27, 0}
+}
+
+// Frequency of audit runs.
+type ScheduleConfig_Frequency int32
+
+const (
+	// Default value. This value is unused.
+	ScheduleConfig_FREQUENCY_UNSPECIFIED ScheduleConfig_Frequency = 0
+	// The audit runs every day.
+	ScheduleConfig_DAILY ScheduleConfig_Frequency = 1
+	// The audit runs weekly on the same day of the week as `start_time`.
+	ScheduleConfig_WEEKLY ScheduleConfig_Frequency = 2
+	// The audit runs monthly on the same day of the month as `start_time`.
+	ScheduleConfig_MONTHLY ScheduleConfig_Frequency = 3
+	// The audit runs quarterly (every 3 months) on the same
+	// day of the month as `start_time`.
+	ScheduleConfig_QUARTERLY ScheduleConfig_Frequency = 4
+	// The audit runs annually on the same month and day as `start_time`.
+	ScheduleConfig_ANNUALLY ScheduleConfig_Frequency = 5
+)
+
+// Enum value maps for ScheduleConfig_Frequency.
+var (
+	ScheduleConfig_Frequency_name = map[int32]string{
+		0: "FREQUENCY_UNSPECIFIED",
+		1: "DAILY",
+		2: "WEEKLY",
+		3: "MONTHLY",
+		4: "QUARTERLY",
+		5: "ANNUALLY",
+	}
+	ScheduleConfig_Frequency_value = map[string]int32{
+		"FREQUENCY_UNSPECIFIED": 0,
+		"DAILY":                 1,
+		"WEEKLY":                2,
+		"MONTHLY":               3,
+		"QUARTERLY":             4,
+		"ANNUALLY":              5,
+	}
+)
+
+func (x ScheduleConfig_Frequency) Enum() *ScheduleConfig_Frequency {
+	p := new(ScheduleConfig_Frequency)
+	*p = x
+	return p
+}
+
+func (x ScheduleConfig_Frequency) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ScheduleConfig_Frequency) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_auditmanager_v1_auditmanager_proto_enumTypes[9].Descriptor()
+}
+
+func (ScheduleConfig_Frequency) Type() protoreflect.EnumType {
+	return &file_google_cloud_auditmanager_v1_auditmanager_proto_enumTypes[9]
+}
+
+func (x ScheduleConfig_Frequency) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use ScheduleConfig_Frequency.Descriptor instead.
+func (ScheduleConfig_Frequency) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_auditmanager_v1_auditmanager_proto_rawDescGZIP(), []int{28, 0}
+}
+
+// Request message for
+// [EnrollResource][google.cloud.auditmanager.v1.AuditManager.EnrollResource].
 type EnrollResourceRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The resource to be enrolled to the audit manager. Scope format
-	// should be resource_type/resource_identifier Eg:
-	// projects/{project}/locations/{location},
-	// folders/{folder}/locations/{location}
-	// organizations/{organization}/locations/{location}
+	// Required. Organization, folder, or project to enroll in Audit Manager, in
+	// one of the following formats:
+	//
+	// * `projects/{project}/locations/{location}`
+	// * `folders/{folder}/locations/{location}`
+	// * `organizations/{organization}/locations/{location}`
 	Scope string `protobuf:"bytes,1,opt,name=scope,proto3" json:"scope,omitempty"`
-	// Required. List of destination among which customer can choose to upload
-	// their reports during the audit process. While enrolling at a
-	// organization/folder level, customer can choose Cloud storage bucket in any
-	// project. If the audit is triggered at project level using the service agent
-	// at organization/folder level, all the destination options associated with
-	// respective organization/folder level service agent will be available to
-	// auditing projects.
-	Destinations  []*EnrollResourceRequest_EligibleDestination `protobuf:"bytes,2,rep,name=destinations,proto3" json:"destinations,omitempty"`
+	// Required. Cloud Storage buckets that you can upload your audit reports to
+	// during the audit process.
+	//
+	// When you enroll an organization or folder, you can choose a Cloud Storage
+	// bucket from any project in the organization or folder. If you run an audit
+	// at the project level using the service agent at the organization or folder
+	// level, all the buckets that are associated with the service agent are
+	// available.
+	Destinations []*EnrollResourceRequest_EligibleDestination `protobuf:"bytes,2,rep,name=destinations,proto3" json:"destinations,omitempty"`
+	// Optional. If `true`, only validates the request and does not enroll the
+	// resource. This executes standard request validation (such as schema, IAM,
+	// and destination checks) and skips the apply phase.
+	//
+	// Use this field for the following purposes:
+	//   - **Infrastructure as Code (IaC)**: Allow tools like Terraform to run
+	//     dry-run mutations (e.g., `terraform plan`) without creating real
+	//     resources or incurring costs.
+	//   - **User Interface Validation**: Enable real-time form and permission
+	//     validation in custom UIs before submitting requests.
+	//   - **CI/CD & Automation**: Test your scripts, permissions, and parameters
+	//     safely without consuming resource quotas.
+	ValidateOnly  bool `protobuf:"varint,4,opt,name=validate_only,json=validateOnly,proto3" json:"validate_only,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -585,24 +786,52 @@ func (x *EnrollResourceRequest) GetDestinations() []*EnrollResourceRequest_Eligi
 	return nil
 }
 
-// Message for requesting audit scope report.
+func (x *EnrollResourceRequest) GetValidateOnly() bool {
+	if x != nil {
+		return x.ValidateOnly
+	}
+	return false
+}
+
+// Request message for
+// [GenerateAuditScopeReport][google.cloud.auditmanager.v1.AuditManager.GenerateAuditScopeReport].
 type GenerateAuditScopeReportRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. Scope for which the AuditScopeReport is required. Must be of
-	// format resource_type/resource_identifier Eg:
-	// projects/{project}/locations/{location},
-	// folders/{folder}/locations/{location}
+	// Required. Project or folder that the audit scope report is generated for,
+	// in one of the following formats:
+	//
+	// * `projects/{project}/locations/{location}`
+	// * `folders/{folder}/locations/{location}`
+	// * `organizations/{organization}/locations/{location}`
 	Scope string `protobuf:"bytes,2,opt,name=scope,proto3" json:"scope,omitempty"`
-	// Required. Compliance Standard against which the Scope Report must be
-	// generated. Eg: FEDRAMP_MODERATE
+	// Optional. Deprecated. The standard (industry or regulatory requirements)
+	// that the audit scope report is run against.
+	//
+	// Use the `compliance_framework` field instead.
+	//
+	// Deprecated: Marked as deprecated in google/cloud/auditmanager/v1/auditmanager.proto.
 	ComplianceStandard string `protobuf:"bytes,3,opt,name=compliance_standard,json=complianceStandard,proto3" json:"compliance_standard,omitempty"`
-	// Required. The format in which the Scope report bytes should be returned.
+	// Required. Format for the audit scope report.
 	ReportFormat GenerateAuditScopeReportRequest_AuditScopeReportFormat `protobuf:"varint,4,opt,name=report_format,json=reportFormat,proto3,enum=google.cloud.auditmanager.v1.GenerateAuditScopeReportRequest_AuditScopeReportFormat" json:"report_format,omitempty"`
-	// Required. Compliance framework against which the Scope Report must be
-	// generated.
+	// Required. Framework (set of controls) that the audit scope report is
+	// generated against. For example, `NIST_800_53`.
 	ComplianceFramework string `protobuf:"bytes,5,opt,name=compliance_framework,json=complianceFramework,proto3" json:"compliance_framework,omitempty"`
-	unknownFields       protoimpl.UnknownFields
-	sizeCache           protoimpl.SizeCache
+	// Optional. If `true`, only validates the request and does not generate the
+	// audit scope report. This executes standard request validation (such as
+	// schema, framework existence, scope, and IAM checks) and skips the apply
+	// phase.
+	//
+	// Use this field for the following purposes:
+	//   - **Infrastructure as Code (IaC)**: Allow tools like Terraform to run
+	//     dry-run mutations (e.g., `terraform plan`) without creating real
+	//     resources or incurring costs.
+	//   - **User Interface Validation**: Enable real-time form and permission
+	//     validation in custom UIs before submitting requests.
+	//   - **CI/CD & Automation**: Test your scripts, permissions, and parameters
+	//     safely without consuming resource quotas.
+	ValidateOnly  bool `protobuf:"varint,6,opt,name=validate_only,json=validateOnly,proto3" json:"validate_only,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *GenerateAuditScopeReportRequest) Reset() {
@@ -642,6 +871,7 @@ func (x *GenerateAuditScopeReportRequest) GetScope() string {
 	return ""
 }
 
+// Deprecated: Marked as deprecated in google/cloud/auditmanager/v1/auditmanager.proto.
 func (x *GenerateAuditScopeReportRequest) GetComplianceStandard() string {
 	if x != nil {
 		return x.ComplianceStandard
@@ -663,29 +893,57 @@ func (x *GenerateAuditScopeReportRequest) GetComplianceFramework() string {
 	return ""
 }
 
-// Message for requesting the Audit Report.
+func (x *GenerateAuditScopeReportRequest) GetValidateOnly() bool {
+	if x != nil {
+		return x.ValidateOnly
+	}
+	return false
+}
+
+// Request message for
+// [GenerateAuditReport][google.cloud.auditmanager.v1.AuditManager.GenerateAuditReport].
 type GenerateAuditReportRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Set of options for the report destination location.
+	// Options for the report destination location.
 	//
 	// Types that are valid to be assigned to Destination:
 	//
 	//	*GenerateAuditReportRequest_GcsUri
 	Destination isGenerateAuditReportRequest_Destination `protobuf_oneof:"destination"`
-	// Required. Scope for which the AuditScopeReport is required. Must be of
-	// format resource_type/resource_identifier Eg:
-	// projects/{project}/locations/{location},
-	// folders/{folder}/locations/{location}
+	// Required. Organization, folder, or project that the audit applies to, in
+	// one of the following formats:
+	//
+	// * `projects/{project}/locations/{location}`
+	// * `folders/{folder}/locations/{location}`
+	// * `organizations/{organization}/locations/{location}`
 	Scope string `protobuf:"bytes,1,opt,name=scope,proto3" json:"scope,omitempty"`
-	// Required. Compliance Standard against which the Scope Report must be
-	// generated. Eg: FEDRAMP_MODERATE
+	// Optional. Deprecated. Compliance standard for the audit report.
+	//
+	// Use the `compliance_framework` field instead.
+	//
+	// Deprecated: Marked as deprecated in google/cloud/auditmanager/v1/auditmanager.proto.
 	ComplianceStandard string `protobuf:"bytes,3,opt,name=compliance_standard,json=complianceStandard,proto3" json:"compliance_standard,omitempty"`
-	// Required. The format in which the audit report should be created.
+	// Required. Format for the audit report.
 	ReportFormat GenerateAuditReportRequest_AuditReportFormat `protobuf:"varint,4,opt,name=report_format,json=reportFormat,proto3,enum=google.cloud.auditmanager.v1.GenerateAuditReportRequest_AuditReportFormat" json:"report_format,omitempty"`
-	// Required. Compliance framework against which the Report must be generated.
+	// Required. The framework that's used for the audit report. For example,
+	// `NIST_800_53`.
 	ComplianceFramework string `protobuf:"bytes,5,opt,name=compliance_framework,json=complianceFramework,proto3" json:"compliance_framework,omitempty"`
-	unknownFields       protoimpl.UnknownFields
-	sizeCache           protoimpl.SizeCache
+	// Optional. If `true`, only validates the request and does not generate the
+	// audit report. This executes standard request validation (such as schema,
+	// framework existence, scope, and IAM checks) and skips the apply phase.
+	//
+	// Use this field for the following purposes:
+	//   - **Infrastructure as Code (IaC)**: Allow tools like Terraform to run
+	//     dry-run mutations (e.g., `terraform plan`) without creating real
+	//     resources or incurring costs.
+	//   - **User Interface Validation**: Enable real-time form and permission
+	//     validation in custom UIs before submitting requests.
+	//   - **CI/CD & Automation**: Test your scripts, permissions, and parameters
+	//     safely without triggering expensive Long-Running Operations (LROs) or
+	//     consuming resource quotas.
+	ValidateOnly  bool `protobuf:"varint,8,opt,name=validate_only,json=validateOnly,proto3" json:"validate_only,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *GenerateAuditReportRequest) Reset() {
@@ -741,6 +999,7 @@ func (x *GenerateAuditReportRequest) GetScope() string {
 	return ""
 }
 
+// Deprecated: Marked as deprecated in google/cloud/auditmanager/v1/auditmanager.proto.
 func (x *GenerateAuditReportRequest) GetComplianceStandard() string {
 	if x != nil {
 		return x.ComplianceStandard
@@ -762,26 +1021,36 @@ func (x *GenerateAuditReportRequest) GetComplianceFramework() string {
 	return ""
 }
 
+func (x *GenerateAuditReportRequest) GetValidateOnly() bool {
+	if x != nil {
+		return x.ValidateOnly
+	}
+	return false
+}
+
 type isGenerateAuditReportRequest_Destination interface {
 	isGenerateAuditReportRequest_Destination()
 }
 
 type GenerateAuditReportRequest_GcsUri struct {
-	// Destination Cloud storage bucket where report and evidence must be
-	// uploaded. The Cloud storage bucket provided here must be selected among
-	// the buckets entered during the enrollment process.
+	// URL for the Cloud Storage bucket where the report and evidence is
+	// uploaded. You must select a bucket that was provided during the
+	// enrollment process.
 	GcsUri string `protobuf:"bytes,2,opt,name=gcs_uri,json=gcsUri,proto3,oneof"`
 }
 
 func (*GenerateAuditReportRequest_GcsUri) isGenerateAuditReportRequest_Destination() {}
 
-// Message for getting the enrollment status of a resource.
+// Request message for
+// [GetResourceEnrollmentStatus][google.cloud.auditmanager.v1.AuditManager.GetResourceEnrollmentStatus].
 type GetResourceEnrollmentStatusRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. Format
-	// folders/{folder}/locations/{location}/resourceEnrollmentStatuses/{resource_enrollment_status},
-	// projects/{project}/locations/{location}/resourceEnrollmentStatuses/{resource_enrollment_status},
-	// organizations/{organization}/locations/{location}/resourceEnrollmentStatuses/{resource_enrollment_status}
+	// Required. Name of the resource enrollment status, in one of the following
+	// formats:
+	//
+	// * `folders/{folder}/locations/{location}/resourceEnrollmentStatuses/{resource_enrollment_status}`
+	// * `projects/{project}/locations/{location}/resourceEnrollmentStatuses/{resource_enrollment_status}`
+	// * `organizations/{organization}/locations/{location}/resourceEnrollmentStatuses/{resource_enrollment_status}`
 	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -824,17 +1093,23 @@ func (x *GetResourceEnrollmentStatusRequest) GetName() string {
 	return ""
 }
 
-// Message for listing all the descendent resources under parent with
-// enrollment.
+// Request message for
+// [ListResourceEnrollmentStatuses][google.cloud.auditmanager.v1.AuditManager.ListResourceEnrollmentStatuses].
 type ListResourceEnrollmentStatusesRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The parent scope for which the list of resources with enrollments
-	// are required.
+	// Required. Parent organization or folder to list enrollment statuses for,
+	// in one of the following formats:
+	//
+	// * `folders/{folder}/locations/{location}`
+	// * `organizations/{organization}/locations/{location}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// Optional. The maximum number of resources to return.
+	// Optional. Maximum number of items to return in a single page. The service
+	// might return fewer items than this value. If unspecified, the service picks
+	// an appropriate default. The maximum value is 100; values above 100 are
+	// reduced to 100.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	// Optional. The next_page_token value returned from a previous List request,
-	// if any.
+	// Optional. A page token, received from a previous call, to retrieve the next
+	// page of results.
 	PageToken     string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -891,12 +1166,15 @@ func (x *ListResourceEnrollmentStatusesRequest) GetPageToken() string {
 	return ""
 }
 
-// Response message with all the descendent resources with enrollment.
+// Response message for
+// [ListResourceEnrollmentStatuses][google.cloud.auditmanager.v1.AuditManager.ListResourceEnrollmentStatuses].
 type ListResourceEnrollmentStatusesResponse struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The resources with their enrollment status.
+	// Resources with their enrollment status.
 	ResourceEnrollmentStatuses []*ResourceEnrollmentStatus `protobuf:"bytes,1,rep,name=resource_enrollment_statuses,json=resourceEnrollmentStatuses,proto3" json:"resource_enrollment_statuses,omitempty"`
-	// Output only. The token to retrieve the next page of results.
+	// Output only. A token that you can send as the `page_token` in a subsequent
+	// request to retrieve the next page of results. If this field is empty, there
+	// are no subsequent pages.
 	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -946,15 +1224,24 @@ func (x *ListResourceEnrollmentStatusesResponse) GetNextPageToken() string {
 	return ""
 }
 
-// Message for requesting to list the audit reports.
+// Request message for
+// [ListAuditReports][google.cloud.auditmanager.v1.AuditManager.ListAuditReports].
 type ListAuditReportsRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The parent scope for which to list the reports.
+	// Required. Parent organization, folder, or project to list reports for,
+	// in one of the following formats:
+	//
+	// * `projects/{project}/locations/{location}`
+	// * `folders/{folder}/locations/{location}`
+	// * `organizations/{organization}/locations/{location}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// Optional. The maximum number of resources to return.
+	// Optional. Maximum number of items to return in a single page. The service
+	// might return fewer items than this value. If unspecified, the service picks
+	// an appropriate default. The maximum value is 100; values above 100 are
+	// reduced to 100.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	// Optional. The next_page_token value returned from a previous List request,
-	// if any.
+	// Optional. A page token, received from a previous call, to retrieve the next
+	// page of results.
 	PageToken     string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1011,12 +1298,15 @@ func (x *ListAuditReportsRequest) GetPageToken() string {
 	return ""
 }
 
-// Response message with all the audit reports.
+// Response message for
+// [ListAuditReports][google.cloud.auditmanager.v1.AuditManager.ListAuditReports].
 type ListAuditReportsResponse struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Output only. The audit reports.
+	// Output only. Audit reports.
 	AuditReports []*AuditReport `protobuf:"bytes,1,rep,name=audit_reports,json=auditReports,proto3" json:"audit_reports,omitempty"`
-	// Output only. The token to retrieve the next page of results.
+	// Output only. A token that you can send as the `page_token` in a subsequent
+	// request to retrieve the next page of results. If this field is empty, there
+	// are no subsequent pages.
 	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1066,12 +1356,15 @@ func (x *ListAuditReportsResponse) GetNextPageToken() string {
 	return ""
 }
 
-// Message for requesting the overall audit report for an audit report name.
+// Request message for
+// [GetAuditReport][google.cloud.auditmanager.v1.AuditManager.GetAuditReport].
 type GetAuditReportRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. Format
-	// projects/{project}/locations/{location}/auditReports/{audit_report},
-	// folders/{folder}/locations/{location}/auditReports/{audit_report}
+	// Required. Name of the audit report, in one of the following formats:
+	//
+	// * `projects/{project}/locations/{location}/auditReports/{audit_report}`
+	// * `folders/{folder}/locations/{location}/auditReports/{audit_report}`
+	// * `organizations/{organization}/locations/{location}/auditReports/{audit_report}`
 	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1114,17 +1407,23 @@ func (x *GetAuditReportRequest) GetName() string {
 	return ""
 }
 
-// Message for requesting all the controls for a compliance standard.
+// Request message for
+// [ListControls][google.cloud.auditmanager.v1.AuditManager.ListControls].
 type ListControlsRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. Format
-	// projects/{project}/locations/{location}/standards/{standard},
-	// folders/{folder}/locations/{location}/standards/{standard}
+	// Required. Standard to list controls for, in one of the following formats:
+	//
+	// * `projects/{project}/locations/{location}/standards/{standard}`
+	// * `folders/{folder}/locations/{location}/standards/{standard}`
+	// * `organizations/{organization}/locations/{location}/standards/{standard}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// Optional. The maximum number of resources to return.
+	// Optional. Maximum number of items to return in a single page. The service
+	// might return fewer items than this value. If unspecified, the service picks
+	// an appropriate default. The maximum value is 100; values above 100 are
+	// reduced to 100.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	// Optional. The next_page_token value returned from a previous List request,
-	// if any.
+	// Optional. A page token, received from a previous call, to retrieve the next
+	// page of results.
 	PageToken     string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1181,12 +1480,15 @@ func (x *ListControlsRequest) GetPageToken() string {
 	return ""
 }
 
-// Response message with all the controls for a compliance standard.
+// Response message for
+// [ListControls][google.cloud.auditmanager.v1.AuditManager.ListControls].
 type ListControlsResponse struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Output only. The controls for the compliance standard.
+	// Output only. Controls for a given regulatory standard.
 	Controls []*Control `protobuf:"bytes,1,rep,name=controls,proto3" json:"controls,omitempty"`
-	// Output only. The token to retrieve the next page of results.
+	// Output only. A token that you can send as the `page_token` in a subsequent
+	// request to retrieve the next page of results. If this field is empty, there
+	// are no subsequent pages.
 	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1236,36 +1538,29 @@ func (x *ListControlsResponse) GetNextPageToken() string {
 	return ""
 }
 
-// The `ReportGenerationProgress` is part of
-// [google.longrunning.Operation][google.longrunning.Operation] returned to the
-// client for every `GetOperation` request.
+// Details about the current status of the report-generation process.
 type ReportGenerationProgress struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Output only. The current state of execution for report generation.
+	// Output only. Current state of execution for report generation.
 	State OperationState `protobuf:"varint,1,opt,name=state,proto3,enum=google.cloud.auditmanager.v1.OperationState" json:"state,omitempty"`
-	// Output only. States the reason of failure during the audit report
-	// generation process. This field is set only if the state attribute is
-	// OPERATION_STATE_FAILED.
+	// Output only. Reason for failure during the audit report generation process.
+	// This field is set only if the `OperationState` attribute is
+	// `OPERATION_STATE_FAILED`.
 	FailureReason string `protobuf:"bytes,2,opt,name=failure_reason,json=failureReason,proto3" json:"failure_reason,omitempty"`
-	// Shows the progress of the CESS service evaluation process. The progress is
-	// defined in terms of percentage complete and is being fetched from the CESS
-	// service.
+	// Progress of the evaluation process. The progress is
+	// defined in terms of percentage complete.
 	EvaluationPercentComplete float64 `protobuf:"fixed64,20,opt,name=evaluation_percent_complete,json=evaluationPercentComplete,proto3" json:"evaluation_percent_complete,omitempty"`
-	// Shows the report generation progress of the CESS Result Processor Service.
-	// The // progress is defined in terms of percentage complete and is being
-	// fetched from the CESS service. If report_generation_in_progress is non zero
-	// then evaluation_percent_complete will be 100%.
+	// Report generation progress, defined in terms of percentage complete.
+	// Until evaluation is complete, this value is always `0`.
 	ReportGenerationPercentComplete float64 `protobuf:"fixed64,30,opt,name=report_generation_percent_complete,json=reportGenerationPercentComplete,proto3" json:"report_generation_percent_complete,omitempty"`
-	// Shows the report uploading progress of the CESS Result Processor Service.
-	// The progress is defined in terms of percentage complete and is being
-	// fetched from the CESS service. If report_uploading_in_progress is non zero
-	// then evaluation_percent_complete and report_generation_percent_complete
-	// will be 100%.
+	// Report uploading progress, defined in terms of percentage complete.
+	// Until evaluation and report generation are complete, this value is always
+	// `0`.
 	ReportUploadingPercentComplete float64 `protobuf:"fixed64,40,opt,name=report_uploading_percent_complete,json=reportUploadingPercentComplete,proto3" json:"report_uploading_percent_complete,omitempty"`
-	// Output only. The Cloud Storage bucket where the audit report will be
-	// uploaded once the evaluation process is completed.
+	// Output only. Cloud Storage bucket where the audit report is uploaded to
+	// after the evaluation process is completed.
 	DestinationGcsBucket string `protobuf:"bytes,50,opt,name=destination_gcs_bucket,json=destinationGcsBucket,proto3" json:"destination_gcs_bucket,omitempty"`
-	// Output only. The name of the audit report.
+	// Output only. Name of the audit report.
 	AuditReport   string `protobuf:"bytes,51,opt,name=audit_report,json=auditReport,proto3" json:"audit_report,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1350,13 +1645,17 @@ func (x *ReportGenerationProgress) GetAuditReport() string {
 	return ""
 }
 
-// The enrollment resource.
+// Organization, folder, or project to enroll for audit reports.
 type Enrollment struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Identifier. The name of this Enrollment, in the format of scope given in
-	// request.
+	// Identifier. Name of the enrollment, in one of the following formats:
+	//
+	// * `projects/{project}/locations/{location}/enrollments/{enrollment}`
+	// * `folders/{folder}/locations/{location}/enrollments/{enrollment}`
+	// * `organizations/{organization}/locations/{location}/enrollments/{enrollment}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Output only. The locations where the generated reports can be uploaded.
+	// Output only. Cloud Storage buckets where you want to upload the audit
+	// reports.
 	DestinationDetails []*DestinationDetails `protobuf:"bytes,3,rep,name=destination_details,json=destinationDetails,proto3" json:"destination_details,omitempty"`
 	unknownFields      protoimpl.UnknownFields
 	sizeCache          protoimpl.SizeCache
@@ -1406,17 +1705,21 @@ func (x *Enrollment) GetDestinationDetails() []*DestinationDetails {
 	return nil
 }
 
-// The audit scope report.
+// Audit scope report.
 type AuditScopeReport struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The options in which the audit scope report is exported.
+	// Specific format or delivery method for the exported audit scope report.
 	//
 	// Types that are valid to be assigned to AuditReport:
 	//
 	//	*AuditScopeReport_ScopeReportContents
 	AuditReport isAuditScopeReport_AuditReport `protobuf_oneof:"audit_report"`
-	// Identifier. The name of this Audit Report, in the format of scope given in
-	// request.
+	// Identifier. Name for the audit scope report, in one of the following
+	// formats:
+	//
+	// * `projects/{project}/locations/{location}/auditScopeReports/{audit_scope_report}`
+	// * `folders/{folder}/locations/{location}/auditScopeReports/{audit_scope_report}`
+	// * `organizations/{organization}/locations/{location}/auditScopeReports/{audit_scope_report}`
 	Name          string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1480,32 +1783,34 @@ type isAuditScopeReport_AuditReport interface {
 }
 
 type AuditScopeReport_ScopeReportContents struct {
-	// The audit scope report content in byte format.
+	// Audit scope report content in byte format.
 	ScopeReportContents []byte `protobuf:"bytes,1,opt,name=scope_report_contents,json=scopeReportContents,proto3,oneof"`
 }
 
 func (*AuditScopeReport_ScopeReportContents) isAuditScopeReport_AuditReport() {}
 
-// The metadata of the long-running operation.
+// Metadata for the long-running operation.
 type OperationMetadata struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Output only. The time the operation was created.
+	// Output only. Time that the operation was created.
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
-	// Output only. The time the operation finished running.
+	// Output only. Time that the operation finished running.
 	EndTime *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=end_time,json=endTime,proto3" json:"end_time,omitempty"`
-	// Output only. Server-defined resource path for the target of the operation.
+	// Output only. A server-defined resource path for the target of the
+	// operation.
 	Target string `protobuf:"bytes,3,opt,name=target,proto3" json:"target,omitempty"`
-	// Output only. Name of the verb executed by the operation.
+	// Output only. The name of the verb that was executed by the operation.
 	Verb string `protobuf:"bytes,4,opt,name=verb,proto3" json:"verb,omitempty"`
-	// Output only. Human-readable status of the operation, if any.
+	// Output only. A human-readable status of the operation, if any.
 	StatusMessage string `protobuf:"bytes,5,opt,name=status_message,json=statusMessage,proto3" json:"status_message,omitempty"`
-	// Output only. Identifies whether the user has requested cancellation
-	// of the operation. Operations that have been cancelled successfully
-	// have [Operation.error][] value with a
-	// [google.rpc.Status.code][google.rpc.Status.code] of 1, corresponding to
-	// `Code.CANCELLED`.
+	// Output only. Whether you requested that the operation be cancelled.
+	// Operations that were cancelled successfully have an
+	// [Operation.error][google.longrunning.Operation.error]
+	// value with a status code
+	// [Code.CANCELLED][google.rpc.Status.code.CANCELLED].
 	RequestedCancellation bool `protobuf:"varint,6,opt,name=requested_cancellation,json=requestedCancellation,proto3" json:"requested_cancellation,omitempty"`
-	// Output only. API version used to start the operation.
+	// Output only. The API version used to start the operation. For example,
+	// `v1`.
 	ApiVersion    string `protobuf:"bytes,7,opt,name=api_version,json=apiVersion,proto3" json:"api_version,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1590,21 +1895,27 @@ func (x *OperationMetadata) GetApiVersion() string {
 	return ""
 }
 
-// A resource with its enrollment status.
+// An organization, folder, or project with its enrollment status.
 type ResourceEnrollmentStatus struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Identifier. The name of this resource.
+	// Identifier. Name of the resource enrollment status, in one of the following
+	// formats:
+	//
+	// * `folders/{folder}/locations/{location}/resourceEnrollmentStatuses/{resource_enrollment_status}`
+	// * `projects/{project}/locations/{location}/resourceEnrollmentStatuses/{resource_enrollment_status}`
+	// * `organizations/{organization}/locations/{location}/resourceEnrollmentStatuses/{resource_enrollment_status}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Output only. Enrollment which contains enrolled destination details for a
-	// resource
+	// Output only. Enrolled destination details for the organization, folder, or
+	// project.
 	Enrollment *Enrollment `protobuf:"bytes,2,opt,name=enrollment,proto3" json:"enrollment,omitempty"`
-	// Output only. Is resource enrolled.
+	// Output only. Deprecated. Whether the organization, folder, or project is
+	// enrolled. Use `enrollment_state` instead.
 	//
 	// Deprecated: Marked as deprecated in google/cloud/auditmanager/v1/auditmanager.proto.
 	Enrolled bool `protobuf:"varint,3,opt,name=enrolled,proto3" json:"enrolled,omitempty"`
-	// Output only. Display name of the project/folder/organization.
+	// Output only. Display name for the organization, folder, or project.
 	DisplayName string `protobuf:"bytes,4,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
-	// Output only. Enrollment state of the resource.
+	// Output only. Enrollment state of the organization, folder, or project.
 	EnrollmentState ResourceEnrollmentStatus_ResourceEnrollmentState `protobuf:"varint,5,opt,name=enrollment_state,json=enrollmentState,proto3,enum=google.cloud.auditmanager.v1.ResourceEnrollmentStatus_ResourceEnrollmentState" json:"enrollment_state,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
@@ -1679,29 +1990,43 @@ func (x *ResourceEnrollmentStatus) GetEnrollmentState() ResourceEnrollmentStatus
 // An audit report.
 type AuditReport struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Identifier. The name of this Audit Report, in the format of scope given in
-	// request.
+	// Identifier. Name of the audit report, in one of the following formats:
+	//
+	// * `projects/{project}/locations/{location}/auditReports/{audit_report}`
+	// * `folders/{folder}/locations/{location}/auditReports/{audit_report}`
+	// * `organizations/{organization}/locations/{location}/auditReports/{audit_report}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Output only. Report summary with compliance, violation counts etc.
+	// Output only. Report summary that includes information about compliance and
+	// violation counts.
 	ReportSummary *ReportSummary `protobuf:"bytes,2,opt,name=report_summary,json=reportSummary,proto3" json:"report_summary,omitempty"`
-	// Output only. ClientOperationId
+	// Output only. Client operation ID for the audit report.
 	OperationId string `protobuf:"bytes,3,opt,name=operation_id,json=operationId,proto3" json:"operation_id,omitempty"`
-	// Output only. The location where the generated report will be uploaded.
+	// Output only. Cloud Storage bucket where the audit report is uploaded to.
 	DestinationDetails *DestinationDetails `protobuf:"bytes,4,opt,name=destination_details,json=destinationDetails,proto3" json:"destination_details,omitempty"`
-	// Output only. Compliance Standard.
+	// Output only. Deprecated. Compliance standard to be audited against.
+	//
+	// Use the `compliance_framework` field instead.
+	//
+	// Deprecated: Marked as deprecated in google/cloud/auditmanager/v1/auditmanager.proto.
 	ComplianceStandard string `protobuf:"bytes,5,opt,name=compliance_standard,json=complianceStandard,proto3" json:"compliance_standard,omitempty"`
-	// Output only. The parent scope on which the report was generated.
+	// Output only. Organization, folder, or project that the report is generated
+	// for, in one of the following formats:
+	//
+	// * `projects/{project}/locations/{location}`
+	// * `folders/{folder}/locations/{location}`
+	// * `organizations/{organization}/locations/{location}`
 	Scope string `protobuf:"bytes,6,opt,name=scope,proto3" json:"scope,omitempty"`
 	// Output only. Creation time of the audit report.
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
-	// Output only. The overall status of controls
+	// Output only. Overall status of the controls.
 	ControlDetails []*ControlDetails `protobuf:"bytes,8,rep,name=control_details,json=controlDetails,proto3" json:"control_details,omitempty"`
-	// Output only. The state of Audit Report Generation.
+	// Output only. State of audit report generation.
 	ReportGenerationState AuditReport_ReportGenerationState `protobuf:"varint,9,opt,name=report_generation_state,json=reportGenerationState,proto3,enum=google.cloud.auditmanager.v1.AuditReport_ReportGenerationState" json:"report_generation_state,omitempty"`
-	// Output only. Compliance Framework of Audit Report
+	// Output only. Compliance framework to use for the audit report. For example,
+	// `CIS_GCP_FOUNDATIONS_V1_2_0`.
 	ComplianceFramework string `protobuf:"bytes,10,opt,name=compliance_framework,json=complianceFramework,proto3" json:"compliance_framework,omitempty"`
-	// Output only. The ID/ Number for the scope on which the audit report was
-	// generated.
+	// Output only. Project number, folder ID, or organization ID that the audit
+	// report was generated for.
 	ScopeId       string `protobuf:"bytes,11,opt,name=scope_id,json=scopeId,proto3" json:"scope_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1765,6 +2090,7 @@ func (x *AuditReport) GetDestinationDetails() *DestinationDetails {
 	return nil
 }
 
+// Deprecated: Marked as deprecated in google/cloud/auditmanager/v1/auditmanager.proto.
 func (x *AuditReport) GetComplianceStandard() string {
 	if x != nil {
 		return x.ComplianceStandard
@@ -1814,12 +2140,15 @@ func (x *AuditReport) GetScopeId() string {
 	return ""
 }
 
-// The regulatory family of the control.
+// Regulatory family of the control.
 type ControlFamily struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The ID of the regulatory control family.
+	// ID of the regulatory control family. To find the list of supported
+	// control families, use the
+	// [ListControls][google.cloud.auditmanager.v1.AuditManager.ListControls]
+	// method and review the `control_family` field in the response.
 	FamilyId string `protobuf:"bytes,1,opt,name=family_id,json=familyId,proto3" json:"family_id,omitempty"`
-	// The display name of the regulatory control family.
+	// Display name of the regulatory control family.
 	DisplayName   string `protobuf:"bytes,2,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1872,30 +2201,28 @@ func (x *ControlFamily) GetDisplayName() string {
 // A control.
 type Control struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Output only. The control identifier used to fetch the findings. This is
-	// same as the control report name.
+	// Output only. Control identifier that's used to fetch the findings. The
+	// identifier is the same as the control report name.
 	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	// Output only. Display name of the control.
 	DisplayName string `protobuf:"bytes,2,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
-	// Output only. Group where the control belongs. E.g. Access Control.
+	// Output only. Category that the control belongs to.
 	Family Control_Family `protobuf:"varint,3,opt,name=family,proto3,enum=google.cloud.auditmanager.v1.Control_Family" json:"family,omitempty"`
-	// Output only. Regulatory Family of the control E.g. Access Control
+	// Output only. Regulatory family of the control.
 	ControlFamily *ControlFamily `protobuf:"bytes,10,opt,name=control_family,json=controlFamily,proto3" json:"control_family,omitempty"`
-	// Output only. Regulatory control ask of the control
+	// Output only. Description of the control.
 	Description string `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`
-	// Output only. The type of responsibility for implementing this control. It
-	// can be google, customer or shared.
+	// Output only. Who is responsible for implementing this control. Set to one
+	// of the following values: `GOOGLE`, `CUSTOMER`, or `SHARED`.
 	ResponsibilityType string `protobuf:"bytes,5,opt,name=responsibility_type,json=responsibilityType,proto3" json:"responsibility_type,omitempty"`
-	// Output only. Description of the google responsibility for implementing this
-	// control.
+	// Output only. A description of Google's responsibility for this control.
 	GoogleResponsibilityDescription string `protobuf:"bytes,6,opt,name=google_responsibility_description,json=googleResponsibilityDescription,proto3" json:"google_responsibility_description,omitempty"`
-	// Output only. Implementation of the google responsibility for implementing
+	// Output only. A description of how Google implements its responsibility for
 	// this control.
 	GoogleResponsibilityImplementation string `protobuf:"bytes,7,opt,name=google_responsibility_implementation,json=googleResponsibilityImplementation,proto3" json:"google_responsibility_implementation,omitempty"`
-	// Output only. Description of the customer responsibility for implementing
-	// this control.
+	// Output only. A description of your responsibility for this control.
 	CustomerResponsibilityDescription string `protobuf:"bytes,8,opt,name=customer_responsibility_description,json=customerResponsibilityDescription,proto3" json:"customer_responsibility_description,omitempty"`
-	// Output only. Implementation of the customer responsibility for implementing
+	// Output only. A description of how you can implement your responsibility for
 	// this control.
 	CustomerResponsibilityImplementation string `protobuf:"bytes,9,opt,name=customer_responsibility_implementation,json=customerResponsibilityImplementation,proto3" json:"customer_responsibility_implementation,omitempty"`
 	unknownFields                        protoimpl.UnknownFields
@@ -2002,9 +2329,11 @@ func (x *Control) GetCustomerResponsibilityImplementation() string {
 	return ""
 }
 
-// The locations where the generated reports are saved.
+// Cloud Storage bucket where the audit report is uploaded to.
 type DestinationDetails struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
+	// The specific destination where the audit report and evidence are stored.
+	//
 	// Types that are valid to be assigned to Destination:
 	//
 	//	*DestinationDetails_GcsBucketUri
@@ -2064,24 +2393,26 @@ type isDestinationDetails_Destination interface {
 }
 
 type DestinationDetails_GcsBucketUri struct {
-	// The Cloud Storage bucket where the audit report is/will be uploaded.
+	// URI for the Cloud Storage bucket, in the format
+	// `gs://{bucket_name}`.
 	GcsBucketUri string `protobuf:"bytes,1,opt,name=gcs_bucket_uri,json=gcsBucketUri,proto3,oneof"`
 }
 
 func (*DestinationDetails_GcsBucketUri) isDestinationDetails_Destination() {}
 
-// The additional information for an audit operation.
+// Additional information about the number of checks that were made during an
+// audit operation.
 type ReportSummary struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Total number of checks.
+	// Total number of evaluated checks.
 	TotalCount int32 `protobuf:"varint,1,opt,name=total_count,json=totalCount,proto3" json:"total_count,omitempty"`
 	// Number of compliant checks.
 	CompliantCount int32 `protobuf:"varint,2,opt,name=compliant_count,json=compliantCount,proto3" json:"compliant_count,omitempty"`
 	// Number of checks with violations.
 	ViolationCount int32 `protobuf:"varint,3,opt,name=violation_count,json=violationCount,proto3" json:"violation_count,omitempty"`
-	// Number of checks with "manual review needed" status.
+	// Number of checks that require a manual review.
 	ManualReviewNeededCount int32 `protobuf:"varint,4,opt,name=manual_review_needed_count,json=manualReviewNeededCount,proto3" json:"manual_review_needed_count,omitempty"`
-	// Number of checks that could not be performed due to errors.
+	// Number of checks that can't be performed due to errors.
 	ErrorCount    int32 `protobuf:"varint,5,opt,name=error_count,json=errorCount,proto3" json:"error_count,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -2152,14 +2483,15 @@ func (x *ReportSummary) GetErrorCount() int32 {
 	return 0
 }
 
-// The evaluation details for a control.
+// Evaluation details for a control.
 type ControlDetails struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The control for which the findings are being reported.
+	// Control that the findings are being reported for.
 	Control *Control `protobuf:"bytes,1,opt,name=control,proto3" json:"control,omitempty"`
 	// Output only. Overall status of the findings for the control.
 	ComplianceState ComplianceState `protobuf:"varint,2,opt,name=compliance_state,json=complianceState,proto3,enum=google.cloud.auditmanager.v1.ComplianceState" json:"compliance_state,omitempty"`
-	// Report summary with compliance, violation counts etc.
+	// A control report summary that provides a high-level overview of the
+	// compliance controls and the assessment status.
 	ControlReportSummary *ReportSummary `protobuf:"bytes,3,opt,name=control_report_summary,json=controlReportSummary,proto3" json:"control_report_summary,omitempty"`
 	unknownFields        protoimpl.UnknownFields
 	sizeCache            protoimpl.SizeCache
@@ -2216,10 +2548,605 @@ func (x *ControlDetails) GetControlReportSummary() *ReportSummary {
 	return nil
 }
 
-// The destination details where the audit report must be uploaded.
+// Request message for
+// [CreateAuditSchedule][google.cloud.auditmanager.v1.AuditManager.CreateAuditSchedule].
+type CreateAuditScheduleRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Project or folder that this audit schedule is for, in one of the
+	// following formats:
+	//
+	// * `projects/{project}/locations/{location}`
+	// * `folders/{folder}/locations/{location}`
+	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
+	// Required. Audit schedule to create.
+	AuditSchedule *AuditSchedule `protobuf:"bytes,2,opt,name=audit_schedule,json=auditSchedule,proto3" json:"audit_schedule,omitempty"`
+	// Required. ID to use for the audit schedule, which becomes the final
+	// component of the audit schedule's resource name.
+	AuditScheduleId string `protobuf:"bytes,3,opt,name=audit_schedule_id,json=auditScheduleId,proto3" json:"audit_schedule_id,omitempty"`
+	// Optional. If `true`, only validates the request and does not create the
+	// audit schedule. This executes standard request validation (such as schema,
+	// framework existence, scope, and IAM checks) and skips the apply phase.
+	//
+	// Use this field for the following purposes:
+	//   - **Infrastructure as Code (IaC)**: Allow tools like Terraform to run
+	//     dry-run mutations (e.g., `terraform plan`) without creating real
+	//     resources or incurring costs.
+	//   - **User Interface Validation**: Enable real-time form and permission
+	//     validation in custom UIs before submitting requests.
+	//   - **CI/CD & Automation**: Test your scripts, permissions, and parameters
+	//     safely without consuming resource quotas.
+	ValidateOnly  bool `protobuf:"varint,4,opt,name=validate_only,json=validateOnly,proto3" json:"validate_only,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateAuditScheduleRequest) Reset() {
+	*x = CreateAuditScheduleRequest{}
+	mi := &file_google_cloud_auditmanager_v1_auditmanager_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateAuditScheduleRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateAuditScheduleRequest) ProtoMessage() {}
+
+func (x *CreateAuditScheduleRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_auditmanager_v1_auditmanager_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateAuditScheduleRequest.ProtoReflect.Descriptor instead.
+func (*CreateAuditScheduleRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_auditmanager_v1_auditmanager_proto_rawDescGZIP(), []int{22}
+}
+
+func (x *CreateAuditScheduleRequest) GetParent() string {
+	if x != nil {
+		return x.Parent
+	}
+	return ""
+}
+
+func (x *CreateAuditScheduleRequest) GetAuditSchedule() *AuditSchedule {
+	if x != nil {
+		return x.AuditSchedule
+	}
+	return nil
+}
+
+func (x *CreateAuditScheduleRequest) GetAuditScheduleId() string {
+	if x != nil {
+		return x.AuditScheduleId
+	}
+	return ""
+}
+
+func (x *CreateAuditScheduleRequest) GetValidateOnly() bool {
+	if x != nil {
+		return x.ValidateOnly
+	}
+	return false
+}
+
+// Request message for
+// [UpdateAuditSchedule][google.cloud.auditmanager.v1.AuditManager.UpdateAuditSchedule].
+type UpdateAuditScheduleRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Audit schedule to update.
+	AuditSchedule *AuditSchedule `protobuf:"bytes,1,opt,name=audit_schedule,json=auditSchedule,proto3" json:"audit_schedule,omitempty"`
+	// Optional. List of fields to update.
+	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
+	// Optional. If `true`, only validates the request and does not update the
+	// audit schedule. This executes standard request validation (such as
+	// schema, framework existence, scope, and IAM checks) and skips the apply
+	// phase.
+	//
+	// Use this field for the following purposes:
+	//   - **Infrastructure as Code (IaC)**: Allow tools like Terraform to run
+	//     dry-run mutations (e.g., `terraform plan`) without creating real
+	//     resources or incurring costs.
+	//   - **User Interface Validation**: Enable real-time form and permission
+	//     validation in custom UIs before submitting requests.
+	//   - **CI/CD & Automation**: Test your scripts, permissions, and parameters
+	//     safely without consuming resource quotas.
+	ValidateOnly  bool `protobuf:"varint,3,opt,name=validate_only,json=validateOnly,proto3" json:"validate_only,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateAuditScheduleRequest) Reset() {
+	*x = UpdateAuditScheduleRequest{}
+	mi := &file_google_cloud_auditmanager_v1_auditmanager_proto_msgTypes[23]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateAuditScheduleRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateAuditScheduleRequest) ProtoMessage() {}
+
+func (x *UpdateAuditScheduleRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_auditmanager_v1_auditmanager_proto_msgTypes[23]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateAuditScheduleRequest.ProtoReflect.Descriptor instead.
+func (*UpdateAuditScheduleRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_auditmanager_v1_auditmanager_proto_rawDescGZIP(), []int{23}
+}
+
+func (x *UpdateAuditScheduleRequest) GetAuditSchedule() *AuditSchedule {
+	if x != nil {
+		return x.AuditSchedule
+	}
+	return nil
+}
+
+func (x *UpdateAuditScheduleRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
+	if x != nil {
+		return x.UpdateMask
+	}
+	return nil
+}
+
+func (x *UpdateAuditScheduleRequest) GetValidateOnly() bool {
+	if x != nil {
+		return x.ValidateOnly
+	}
+	return false
+}
+
+// Request message for
+// [GetAuditSchedule][google.cloud.auditmanager.v1.AuditManager.GetAuditSchedule].
+type GetAuditScheduleRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Name of the audit schedule to retrieve, in one of the following
+	// formats:
+	//
+	// * `projects/{project}/locations/{location}/auditSchedules/{audit_schedule}`
+	// * `folders/{folder}/locations/{location}/auditSchedules/{audit_schedule}`
+	// * `organizations/{organization}/locations/{location}/auditSchedules/{audit_schedule}`
+	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetAuditScheduleRequest) Reset() {
+	*x = GetAuditScheduleRequest{}
+	mi := &file_google_cloud_auditmanager_v1_auditmanager_proto_msgTypes[24]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetAuditScheduleRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetAuditScheduleRequest) ProtoMessage() {}
+
+func (x *GetAuditScheduleRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_auditmanager_v1_auditmanager_proto_msgTypes[24]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetAuditScheduleRequest.ProtoReflect.Descriptor instead.
+func (*GetAuditScheduleRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_auditmanager_v1_auditmanager_proto_rawDescGZIP(), []int{24}
+}
+
+func (x *GetAuditScheduleRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+// Request message for
+// [ListAuditSchedules][google.cloud.auditmanager.v1.AuditManager.ListAuditSchedules].
+type ListAuditSchedulesRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Parent for the audit schedule, in one of the following formats:
+	//
+	// * `projects/{project}/locations/{location}`
+	// * `folders/{folder}/locations/{location}`
+	// * `organizations/{organization}/locations/{location}`
+	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
+	// Optional. Maximum number of items to return in a single page. The service
+	// might return fewer items than this value. If unspecified, the service picks
+	// an appropriate default. The maximum value is 100; values above 100 are
+	// reduced to 100.
+	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	// Optional. A page token, received from a previous call, to retrieve the next
+	// page of results.
+	PageToken     string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListAuditSchedulesRequest) Reset() {
+	*x = ListAuditSchedulesRequest{}
+	mi := &file_google_cloud_auditmanager_v1_auditmanager_proto_msgTypes[25]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListAuditSchedulesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListAuditSchedulesRequest) ProtoMessage() {}
+
+func (x *ListAuditSchedulesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_auditmanager_v1_auditmanager_proto_msgTypes[25]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListAuditSchedulesRequest.ProtoReflect.Descriptor instead.
+func (*ListAuditSchedulesRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_auditmanager_v1_auditmanager_proto_rawDescGZIP(), []int{25}
+}
+
+func (x *ListAuditSchedulesRequest) GetParent() string {
+	if x != nil {
+		return x.Parent
+	}
+	return ""
+}
+
+func (x *ListAuditSchedulesRequest) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+func (x *ListAuditSchedulesRequest) GetPageToken() string {
+	if x != nil {
+		return x.PageToken
+	}
+	return ""
+}
+
+// Response message for
+// [ListAuditSchedules][google.cloud.auditmanager.v1.AuditManager.ListAuditSchedules].
+type ListAuditSchedulesResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// List of audit schedules.
+	AuditSchedules []*AuditSchedule `protobuf:"bytes,1,rep,name=audit_schedules,json=auditSchedules,proto3" json:"audit_schedules,omitempty"`
+	// A token that you can send as the `page_token` in a subsequent request to
+	// retrieve the next page of results. If this field is empty, there are no
+	// subsequent pages.
+	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
+	// Locations that can't be reached.
+	Unreachable   []string `protobuf:"bytes,3,rep,name=unreachable,proto3" json:"unreachable,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListAuditSchedulesResponse) Reset() {
+	*x = ListAuditSchedulesResponse{}
+	mi := &file_google_cloud_auditmanager_v1_auditmanager_proto_msgTypes[26]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListAuditSchedulesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListAuditSchedulesResponse) ProtoMessage() {}
+
+func (x *ListAuditSchedulesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_auditmanager_v1_auditmanager_proto_msgTypes[26]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListAuditSchedulesResponse.ProtoReflect.Descriptor instead.
+func (*ListAuditSchedulesResponse) Descriptor() ([]byte, []int) {
+	return file_google_cloud_auditmanager_v1_auditmanager_proto_rawDescGZIP(), []int{26}
+}
+
+func (x *ListAuditSchedulesResponse) GetAuditSchedules() []*AuditSchedule {
+	if x != nil {
+		return x.AuditSchedules
+	}
+	return nil
+}
+
+func (x *ListAuditSchedulesResponse) GetNextPageToken() string {
+	if x != nil {
+		return x.NextPageToken
+	}
+	return ""
+}
+
+func (x *ListAuditSchedulesResponse) GetUnreachable() []string {
+	if x != nil {
+		return x.Unreachable
+	}
+	return nil
+}
+
+// An audit schedule, in one of the following formats:
+//
+// * `projects/{project}/locations/{location}/auditSchedules/{audit_schedule}`
+// * `folders/{folder}/locations/{location}/auditSchedules/{audit_schedule}`
+type AuditSchedule struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Identifier. Unique identifier for the audit schedule.
+	// Format:
+	// projects/{project}/locations/{location}/auditSchedules/{audit_schedule}
+	// folders/{folder}/locations/{location}/auditSchedules/{audit_schedule}
+	// organizations/{organization}/locations/{location}/auditSchedules/{audit_schedule}
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Optional. Display name for the audit schedule.
+	DisplayName string `protobuf:"bytes,2,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
+	// Required. Cloud Storage bucket where Audit Manager can upload the audit
+	// report and evidence. The format is `gs://{bucket_name}`.
+	GcsUri string `protobuf:"bytes,3,opt,name=gcs_uri,json=gcsUri,proto3" json:"gcs_uri,omitempty"`
+	// Required. Framework (set of controls) that the audit scope report is
+	// generated against. For example, `NIST_800_53`.
+	ComplianceFramework string `protobuf:"bytes,4,opt,name=compliance_framework,json=complianceFramework,proto3" json:"compliance_framework,omitempty"`
+	// Required. Format for the audit report.
+	ReportFormat AuditSchedule_AuditReportFormat `protobuf:"varint,5,opt,name=report_format,json=reportFormat,proto3,enum=google.cloud.auditmanager.v1.AuditSchedule_AuditReportFormat" json:"report_format,omitempty"`
+	// Required. Configuration that defines when and how often audit runs are
+	// automatically triggered for this schedule.
+	ScheduleConfig *ScheduleConfig `protobuf:"bytes,6,opt,name=schedule_config,json=scheduleConfig,proto3" json:"schedule_config,omitempty"`
+	// Optional. State of the audit schedule. While most states are managed by the
+	// system, you can use
+	// [UpdateAuditSchedule][google.cloud.auditmanager.v1.AuditManager.UpdateAuditSchedule]
+	// to start, pause, or delete the schedule.
+	State ScheduleState `protobuf:"varint,7,opt,name=state,proto3,enum=google.cloud.auditmanager.v1.ScheduleState" json:"state,omitempty"`
+	// Output only. Timestamp when the schedule was created.
+	CreateTime *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
+	// Output only. Timestamp when the schedule was last updated.
+	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
+	// Output only. Calculated timestamp for the next scheduled run.
+	NextRunTime *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=next_run_time,json=nextRunTime,proto3" json:"next_run_time,omitempty"`
+	// Output only. Timestamp when the audit run was last triggered.
+	LastTriggerTime *timestamppb.Timestamp `protobuf:"bytes,11,opt,name=last_trigger_time,json=lastTriggerTime,proto3" json:"last_trigger_time,omitempty"`
+	// Output only. Describes the error if the schedule is in an error state.
+	ErrorMessage  string `protobuf:"bytes,13,opt,name=error_message,json=errorMessage,proto3" json:"error_message,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AuditSchedule) Reset() {
+	*x = AuditSchedule{}
+	mi := &file_google_cloud_auditmanager_v1_auditmanager_proto_msgTypes[27]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AuditSchedule) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AuditSchedule) ProtoMessage() {}
+
+func (x *AuditSchedule) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_auditmanager_v1_auditmanager_proto_msgTypes[27]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AuditSchedule.ProtoReflect.Descriptor instead.
+func (*AuditSchedule) Descriptor() ([]byte, []int) {
+	return file_google_cloud_auditmanager_v1_auditmanager_proto_rawDescGZIP(), []int{27}
+}
+
+func (x *AuditSchedule) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *AuditSchedule) GetDisplayName() string {
+	if x != nil {
+		return x.DisplayName
+	}
+	return ""
+}
+
+func (x *AuditSchedule) GetGcsUri() string {
+	if x != nil {
+		return x.GcsUri
+	}
+	return ""
+}
+
+func (x *AuditSchedule) GetComplianceFramework() string {
+	if x != nil {
+		return x.ComplianceFramework
+	}
+	return ""
+}
+
+func (x *AuditSchedule) GetReportFormat() AuditSchedule_AuditReportFormat {
+	if x != nil {
+		return x.ReportFormat
+	}
+	return AuditSchedule_AUDIT_REPORT_FORMAT_UNSPECIFIED
+}
+
+func (x *AuditSchedule) GetScheduleConfig() *ScheduleConfig {
+	if x != nil {
+		return x.ScheduleConfig
+	}
+	return nil
+}
+
+func (x *AuditSchedule) GetState() ScheduleState {
+	if x != nil {
+		return x.State
+	}
+	return ScheduleState_SCHEDULE_STATE_UNSPECIFIED
+}
+
+func (x *AuditSchedule) GetCreateTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreateTime
+	}
+	return nil
+}
+
+func (x *AuditSchedule) GetUpdateTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.UpdateTime
+	}
+	return nil
+}
+
+func (x *AuditSchedule) GetNextRunTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.NextRunTime
+	}
+	return nil
+}
+
+func (x *AuditSchedule) GetLastTriggerTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.LastTriggerTime
+	}
+	return nil
+}
+
+func (x *AuditSchedule) GetErrorMessage() string {
+	if x != nil {
+		return x.ErrorMessage
+	}
+	return ""
+}
+
+// Timing and frequency parameters for recurring audit runs.
+type ScheduleConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Date and time when the first audit run is triggered.
+	// Subsequent runs are based on this time and the chosen frequency.
+	StartTime *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=start_time,json=startTime,proto3" json:"start_time,omitempty"`
+	// Optional. Date that the schedule stops.
+	// If not specified, the schedule runs indefinitely.
+	EndTime *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=end_time,json=endTime,proto3" json:"end_time,omitempty"`
+	// Required. Frequency of audit runs.
+	Frequency ScheduleConfig_Frequency `protobuf:"varint,3,opt,name=frequency,proto3,enum=google.cloud.auditmanager.v1.ScheduleConfig_Frequency" json:"frequency,omitempty"`
+	// Optional. Time zone for the audit schedule in IANA format (for example,
+	// `America/New_York`). The time zone is used to interpret the `start_time`
+	// and the `end_time`, and to calculate subsequent run dates.
+	// If not specified, the time zone default is UTC.
+	TimeZone      string `protobuf:"bytes,4,opt,name=time_zone,json=timeZone,proto3" json:"time_zone,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ScheduleConfig) Reset() {
+	*x = ScheduleConfig{}
+	mi := &file_google_cloud_auditmanager_v1_auditmanager_proto_msgTypes[28]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ScheduleConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ScheduleConfig) ProtoMessage() {}
+
+func (x *ScheduleConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_auditmanager_v1_auditmanager_proto_msgTypes[28]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ScheduleConfig.ProtoReflect.Descriptor instead.
+func (*ScheduleConfig) Descriptor() ([]byte, []int) {
+	return file_google_cloud_auditmanager_v1_auditmanager_proto_rawDescGZIP(), []int{28}
+}
+
+func (x *ScheduleConfig) GetStartTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.StartTime
+	}
+	return nil
+}
+
+func (x *ScheduleConfig) GetEndTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.EndTime
+	}
+	return nil
+}
+
+func (x *ScheduleConfig) GetFrequency() ScheduleConfig_Frequency {
+	if x != nil {
+		return x.Frequency
+	}
+	return ScheduleConfig_FREQUENCY_UNSPECIFIED
+}
+
+func (x *ScheduleConfig) GetTimeZone() string {
+	if x != nil {
+		return x.TimeZone
+	}
+	return ""
+}
+
+// Details about the bucket where you want to upload the audit report.
 type EnrollResourceRequest_EligibleDestination struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The options for the report destination location.
+	// Available Cloud Storage buckets.
 	//
 	// Types that are valid to be assigned to EligibleDestinations:
 	//
@@ -2231,7 +3158,7 @@ type EnrollResourceRequest_EligibleDestination struct {
 
 func (x *EnrollResourceRequest_EligibleDestination) Reset() {
 	*x = EnrollResourceRequest_EligibleDestination{}
-	mi := &file_google_cloud_auditmanager_v1_auditmanager_proto_msgTypes[22]
+	mi := &file_google_cloud_auditmanager_v1_auditmanager_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2243,7 +3170,7 @@ func (x *EnrollResourceRequest_EligibleDestination) String() string {
 func (*EnrollResourceRequest_EligibleDestination) ProtoMessage() {}
 
 func (x *EnrollResourceRequest_EligibleDestination) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_auditmanager_v1_auditmanager_proto_msgTypes[22]
+	mi := &file_google_cloud_auditmanager_v1_auditmanager_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2280,8 +3207,10 @@ type isEnrollResourceRequest_EligibleDestination_EligibleDestinations interface 
 }
 
 type EnrollResourceRequest_EligibleDestination_EligibleGcsBucket struct {
-	// The Cloud Storage bucket location where the audit report and evidences
-	// can be uploaded during the `GenerateAuditReport` API call.
+	// The location of the Cloud Storage bucket where you want to upload the
+	// audit report and evidence during the
+	// [GenerateAuditReport][google.cloud.auditmanager.v1.AuditManager.GenerateAuditReport]
+	// API call.
 	EligibleGcsBucket string `protobuf:"bytes,3,opt,name=eligible_gcs_bucket,json=eligibleGcsBucket,proto3,oneof"`
 }
 
@@ -2292,27 +3221,30 @@ var File_google_cloud_auditmanager_v1_auditmanager_proto protoreflect.FileDescri
 
 const file_google_cloud_auditmanager_v1_auditmanager_proto_rawDesc = "" +
 	"\n" +
-	"/google/cloud/auditmanager/v1/auditmanager.proto\x12\x1cgoogle.cloud.auditmanager.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x86\x02\n" +
+	"/google/cloud/auditmanager/v1/auditmanager.proto\x12\x1cgoogle.cloud.auditmanager.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb0\x02\n" +
 	"\x15EnrollResourceRequest\x12\x19\n" +
 	"\x05scope\x18\x01 \x01(\tB\x03\xe0A\x02R\x05scope\x12p\n" +
-	"\fdestinations\x18\x02 \x03(\v2G.google.cloud.auditmanager.v1.EnrollResourceRequest.EligibleDestinationB\x03\xe0A\x02R\fdestinations\x1a`\n" +
+	"\fdestinations\x18\x02 \x03(\v2G.google.cloud.auditmanager.v1.EnrollResourceRequest.EligibleDestinationB\x03\xe0A\x02R\fdestinations\x12(\n" +
+	"\rvalidate_only\x18\x04 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x1a`\n" +
 	"\x13EligibleDestination\x120\n" +
 	"\x13eligible_gcs_bucket\x18\x03 \x01(\tH\x00R\x11eligibleGcsBucketB\x17\n" +
-	"\x15eligible_destinations\"\x92\x03\n" +
+	"\x15eligible_destinations\"\xbe\x03\n" +
 	"\x1fGenerateAuditScopeReportRequest\x12\x19\n" +
-	"\x05scope\x18\x02 \x01(\tB\x03\xe0A\x02R\x05scope\x124\n" +
-	"\x13compliance_standard\x18\x03 \x01(\tB\x03\xe0A\x02R\x12complianceStandard\x12~\n" +
+	"\x05scope\x18\x02 \x01(\tB\x03\xe0A\x02R\x05scope\x126\n" +
+	"\x13compliance_standard\x18\x03 \x01(\tB\x05\xe0A\x01\x18\x01R\x12complianceStandard\x12~\n" +
 	"\rreport_format\x18\x04 \x01(\x0e2T.google.cloud.auditmanager.v1.GenerateAuditScopeReportRequest.AuditScopeReportFormatB\x03\xe0A\x02R\freportFormat\x126\n" +
-	"\x14compliance_framework\x18\x05 \x01(\tB\x03\xe0A\x02R\x13complianceFramework\"f\n" +
+	"\x14compliance_framework\x18\x05 \x01(\tB\x03\xe0A\x02R\x13complianceFramework\x12(\n" +
+	"\rvalidate_only\x18\x06 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"f\n" +
 	"\x16AuditScopeReportFormat\x12)\n" +
 	"%AUDIT_SCOPE_REPORT_FORMAT_UNSPECIFIED\x10\x00\x12!\n" +
-	"\x1dAUDIT_SCOPE_REPORT_FORMAT_ODF\x10\x01\"\x9c\x03\n" +
+	"\x1dAUDIT_SCOPE_REPORT_FORMAT_ODF\x10\x01\"\xc8\x03\n" +
 	"\x1aGenerateAuditReportRequest\x12\x19\n" +
 	"\agcs_uri\x18\x02 \x01(\tH\x00R\x06gcsUri\x12\x19\n" +
-	"\x05scope\x18\x01 \x01(\tB\x03\xe0A\x02R\x05scope\x124\n" +
-	"\x13compliance_standard\x18\x03 \x01(\tB\x03\xe0A\x02R\x12complianceStandard\x12t\n" +
+	"\x05scope\x18\x01 \x01(\tB\x03\xe0A\x02R\x05scope\x126\n" +
+	"\x13compliance_standard\x18\x03 \x01(\tB\x05\xe0A\x01\x18\x01R\x12complianceStandard\x12t\n" +
 	"\rreport_format\x18\x04 \x01(\x0e2J.google.cloud.auditmanager.v1.GenerateAuditReportRequest.AuditReportFormatB\x03\xe0A\x02R\freportFormat\x126\n" +
-	"\x14compliance_framework\x18\x05 \x01(\tB\x03\xe0A\x02R\x13complianceFramework\"U\n" +
+	"\x14compliance_framework\x18\x05 \x01(\tB\x03\xe0A\x02R\x13complianceFramework\x12(\n" +
+	"\rvalidate_only\x18\b \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"U\n" +
 	"\x11AuditReportFormat\x12#\n" +
 	"\x1fAUDIT_REPORT_FORMAT_UNSPECIFIED\x10\x00\x12\x1b\n" +
 	"\x17AUDIT_REPORT_FORMAT_ODF\x10\x01B\r\n" +
@@ -2363,11 +3295,11 @@ const file_google_cloud_auditmanager_v1_auditmanager_proto_rawDesc = "" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12f\n" +
 	"\x13destination_details\x18\x03 \x03(\v20.google.cloud.auditmanager.v1.DestinationDetailsB\x03\xe0A\x03R\x12destinationDetails:\x93\x02\xeaA\x8f\x02\n" +
 	"&auditmanager.googleapis.com/Enrollment\x12@projects/{project}/locations/{location}/enrollments/{enrollment}\x12>folders/{folder}/locations/{location}/enrollments/{enrollment}\x12Jorganizations/{organization}/locations/{location}/enrollments/{enrollment}*\venrollments2\n" +
-	"enrollment\"\xe9\x02\n" +
+	"enrollment\"\xc3\x03\n" +
 	"\x10AuditScopeReport\x124\n" +
 	"\x15scope_report_contents\x18\x01 \x01(\fH\x00R\x13scopeReportContents\x12\x17\n" +
-	"\x04name\x18\x02 \x01(\tB\x03\xe0A\bR\x04name:\xf5\x01\xeaA\xf1\x01\n" +
-	",auditmanager.googleapis.com/AuditScopeReport\x12Nprojects/{project}/locations/{location}/auditScopeReports/{audit_scope_report}\x12Lfolders/{folder}/locations/{location}/auditScopeReports/{audit_scope_report}*\x11auditScopeReports2\x10auditScopeReportB\x0e\n" +
+	"\x04name\x18\x02 \x01(\tB\x03\xe0A\bR\x04name:\xcf\x02\xeaA\xcb\x02\n" +
+	",auditmanager.googleapis.com/AuditScopeReport\x12Nprojects/{project}/locations/{location}/auditScopeReports/{audit_scope_report}\x12Lfolders/{folder}/locations/{location}/auditScopeReports/{audit_scope_report}\x12Xorganizations/{organization}/locations/{location}/auditScopeReports/{audit_scope_report}*\x11auditScopeReports2\x10auditScopeReportB\x0e\n" +
 	"\faudit_report\"\xd5\x02\n" +
 	"\x11OperationMetadata\x12@\n" +
 	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
@@ -2392,13 +3324,13 @@ const file_google_cloud_auditmanager_v1_auditmanager_proto_rawDesc = "" +
 	"\fNOT_ENROLLED\x10\x01\x12\r\n" +
 	"\tINHERITED\x10\x02\x12\f\n" +
 	"\bENROLLED\x10\x03:\x9b\x03\xeaA\x97\x03\n" +
-	"4auditmanager.googleapis.com/ResourceEnrollmentStatus\x12]folders/{folder}/locations/{location}/resourceEnrollmentStatuses/{resource_enrollment_status}\x12_projects/{project}/locations/{location}/resourceEnrollmentStatuses/{resource_enrollment_status}\x12iorganizations/{organization}/locations/{location}/resourceEnrollmentStatuses/{resource_enrollment_status}*\x1aresourceEnrollmentStatuses2\x18resourceEnrollmentStatus\"\xab\b\n" +
+	"4auditmanager.googleapis.com/ResourceEnrollmentStatus\x12]folders/{folder}/locations/{location}/resourceEnrollmentStatuses/{resource_enrollment_status}\x12_projects/{project}/locations/{location}/resourceEnrollmentStatuses/{resource_enrollment_status}\x12iorganizations/{organization}/locations/{location}/resourceEnrollmentStatuses/{resource_enrollment_status}*\x1aresourceEnrollmentStatuses2\x18resourceEnrollmentStatus\"\xfc\b\n" +
 	"\vAuditReport\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12W\n" +
 	"\x0ereport_summary\x18\x02 \x01(\v2+.google.cloud.auditmanager.v1.ReportSummaryB\x03\xe0A\x03R\rreportSummary\x12&\n" +
 	"\foperation_id\x18\x03 \x01(\tB\x03\xe0A\x03R\voperationId\x12f\n" +
-	"\x13destination_details\x18\x04 \x01(\v20.google.cloud.auditmanager.v1.DestinationDetailsB\x03\xe0A\x03R\x12destinationDetails\x124\n" +
-	"\x13compliance_standard\x18\x05 \x01(\tB\x03\xe0A\x03R\x12complianceStandard\x12\x19\n" +
+	"\x13destination_details\x18\x04 \x01(\v20.google.cloud.auditmanager.v1.DestinationDetailsB\x03\xe0A\x03R\x12destinationDetails\x126\n" +
+	"\x13compliance_standard\x18\x05 \x01(\tB\x05\xe0A\x03\x18\x01R\x12complianceStandard\x12\x19\n" +
 	"\x05scope\x18\x06 \x01(\tB\x03\xe0A\x03R\x05scope\x12@\n" +
 	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
 	"createTime\x12Z\n" +
@@ -2413,8 +3345,8 @@ const file_google_cloud_auditmanager_v1_auditmanager_proto_rawDesc = "" +
 	"\tCOMPLETED\x10\x02\x12\n" +
 	"\n" +
 	"\x06FAILED\x10\x03\x12\x13\n" +
-	"\x0fSUMMARY_UNKNOWN\x10\x04:\xd0\x01\xeaA\xcc\x01\n" +
-	"'auditmanager.googleapis.com/AuditReport\x12Cprojects/{project}/locations/{location}/auditReports/{audit_report}\x12Afolders/{folder}/locations/{location}/auditReports/{audit_report}*\fauditReports2\vauditReport\"O\n" +
+	"\x0fSUMMARY_UNKNOWN\x10\x04:\x9f\x02\xeaA\x9b\x02\n" +
+	"'auditmanager.googleapis.com/AuditReport\x12Cprojects/{project}/locations/{location}/auditReports/{audit_report}\x12Afolders/{folder}/locations/{location}/auditReports/{audit_report}\x12Morganizations/{organization}/locations/{location}/auditReports/{audit_report}*\fauditReports2\vauditReport\"O\n" +
 	"\rControlFamily\x12\x1b\n" +
 	"\tfamily_id\x18\x01 \x01(\tR\bfamilyId\x12!\n" +
 	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\"\xd2\x06\n" +
@@ -2465,7 +3397,63 @@ const file_google_cloud_auditmanager_v1_auditmanager_proto_rawDesc = "" +
 	"\x0eControlDetails\x12?\n" +
 	"\acontrol\x18\x01 \x01(\v2%.google.cloud.auditmanager.v1.ControlR\acontrol\x12]\n" +
 	"\x10compliance_state\x18\x02 \x01(\x0e2-.google.cloud.auditmanager.v1.ComplianceStateB\x03\xe0A\x03R\x0fcomplianceState\x12a\n" +
-	"\x16control_report_summary\x18\x03 \x01(\v2+.google.cloud.auditmanager.v1.ReportSummaryR\x14controlReportSummary*\xfb\x02\n" +
+	"\x16control_report_summary\x18\x03 \x01(\v2+.google.cloud.auditmanager.v1.ReportSummaryR\x14controlReportSummary\"\x9b\x02\n" +
+	"\x1aCreateAuditScheduleRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\x12)auditmanager.googleapis.com/AuditScheduleR\x06parent\x12W\n" +
+	"\x0eaudit_schedule\x18\x02 \x01(\v2+.google.cloud.auditmanager.v1.AuditScheduleB\x03\xe0A\x02R\rauditSchedule\x12/\n" +
+	"\x11audit_schedule_id\x18\x03 \x01(\tB\x03\xe0A\x02R\x0fauditScheduleId\x12(\n" +
+	"\rvalidate_only\x18\x04 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\xe1\x01\n" +
+	"\x1aUpdateAuditScheduleRequest\x12W\n" +
+	"\x0eaudit_schedule\x18\x01 \x01(\v2+.google.cloud.auditmanager.v1.AuditScheduleB\x03\xe0A\x02R\rauditSchedule\x12@\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
+	"updateMask\x12(\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"`\n" +
+	"\x17GetAuditScheduleRequest\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
+	")auditmanager.googleapis.com/AuditScheduleR\x04name\"\xac\x01\n" +
+	"\x19ListAuditSchedulesRequest\x12I\n" +
+	"\x06parent\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\x12)auditmanager.googleapis.com/AuditScheduleR\x06parent\x12 \n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\n" +
+	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xbc\x01\n" +
+	"\x1aListAuditSchedulesResponse\x12T\n" +
+	"\x0faudit_schedules\x18\x01 \x03(\v2+.google.cloud.auditmanager.v1.AuditScheduleR\x0eauditSchedules\x12&\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xfe\b\n" +
+	"\rAuditSchedule\x12\x17\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12\x1c\n" +
+	"\agcs_uri\x18\x03 \x01(\tB\x03\xe0A\x02R\x06gcsUri\x126\n" +
+	"\x14compliance_framework\x18\x04 \x01(\tB\x03\xe0A\x02R\x13complianceFramework\x12g\n" +
+	"\rreport_format\x18\x05 \x01(\x0e2=.google.cloud.auditmanager.v1.AuditSchedule.AuditReportFormatB\x03\xe0A\x02R\freportFormat\x12Z\n" +
+	"\x0fschedule_config\x18\x06 \x01(\v2,.google.cloud.auditmanager.v1.ScheduleConfigB\x03\xe0A\x02R\x0escheduleConfig\x12F\n" +
+	"\x05state\x18\a \x01(\x0e2+.google.cloud.auditmanager.v1.ScheduleStateB\x03\xe0A\x01R\x05state\x12@\n" +
+	"\vcreate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"createTime\x12@\n" +
+	"\vupdate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"updateTime\x12C\n" +
+	"\rnext_run_time\x18\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\vnextRunTime\x12K\n" +
+	"\x11last_trigger_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x0flastTriggerTime\x12(\n" +
+	"\rerror_message\x18\r \x01(\tB\x03\xe0A\x03R\ferrorMessage\"U\n" +
+	"\x11AuditReportFormat\x12#\n" +
+	"\x1fAUDIT_REPORT_FORMAT_UNSPECIFIED\x10\x00\x12\x1b\n" +
+	"\x17AUDIT_REPORT_FORMAT_ODF\x10\x01:\xb1\x02\xeaA\xad\x02\n" +
+	")auditmanager.googleapis.com/AuditSchedule\x12Gprojects/{project}/locations/{location}/auditSchedules/{audit_schedule}\x12Efolders/{folder}/locations/{location}/auditSchedules/{audit_schedule}\x12Qorganizations/{organization}/locations/{location}/auditSchedules/{audit_schedule}*\x0eauditSchedules2\rauditSchedule\"\xf2\x02\n" +
+	"\x0eScheduleConfig\x12>\n" +
+	"\n" +
+	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x02R\tstartTime\x12:\n" +
+	"\bend_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\aendTime\x12Y\n" +
+	"\tfrequency\x18\x03 \x01(\x0e26.google.cloud.auditmanager.v1.ScheduleConfig.FrequencyB\x03\xe0A\x02R\tfrequency\x12 \n" +
+	"\ttime_zone\x18\x04 \x01(\tB\x03\xe0A\x01R\btimeZone\"g\n" +
+	"\tFrequency\x12\x19\n" +
+	"\x15FREQUENCY_UNSPECIFIED\x10\x00\x12\t\n" +
+	"\x05DAILY\x10\x01\x12\n" +
+	"\n" +
+	"\x06WEEKLY\x10\x02\x12\v\n" +
+	"\aMONTHLY\x10\x03\x12\r\n" +
+	"\tQUARTERLY\x10\x04\x12\f\n" +
+	"\bANNUALLY\x10\x05*\xfb\x02\n" +
 	"\x0eOperationState\x12\x1f\n" +
 	"\x1bOPERATION_STATE_UNSPECIFIED\x10\x00\x12\x1f\n" +
 	"\x1bOPERATION_STATE_NOT_STARTED\x10\n" +
@@ -2483,17 +3471,29 @@ const file_google_cloud_auditmanager_v1_auditmanager_proto_rawDesc = "" +
 	"\tVIOLATION\x10\x02\x12\x18\n" +
 	"\x14MANUAL_REVIEW_NEEDED\x10\x03\x12\t\n" +
 	"\x05ERROR\x10\x04\x12\x17\n" +
-	"\x13AUDIT_NOT_SUPPORTED\x10\x052\xc0\x14\n" +
-	"\fAuditManager\x12\xb8\x02\n" +
-	"\x0eEnrollResource\x123.google.cloud.auditmanager.v1.EnrollResourceRequest\x1a(.google.cloud.auditmanager.v1.Enrollment\"\xc6\x01\xdaA\x12scope,destinations\x82\xd3\xe4\x93\x02\xaa\x01:\x01*Z6:\x01*\"1/v1/{scope=projects/*/locations/*}:enrollResourceZ;:\x01*\"6/v1/{scope=organizations/*/locations/*}:enrollResource\"0/v1/{scope=folders/*/locations/*}:enrollResource\x12\xc2\x02\n" +
-	"\x18GenerateAuditScopeReport\x12=.google.cloud.auditmanager.v1.GenerateAuditScopeReportRequest\x1a..google.cloud.auditmanager.v1.AuditScopeReport\"\xb6\x01\xdaA'scope,compliance_standard,report_format\x82\xd3\xe4\x93\x02\x85\x01:\x01*ZB:\x01*\"=/v1/{scope=projects/*/locations/*}/auditScopeReports:generate\"</v1/{scope=folders/*/locations/*}/auditScopeReports:generate\x12\xc7\x02\n" +
-	"\x13GenerateAuditReport\x128.google.cloud.auditmanager.v1.GenerateAuditReportRequest\x1a\x1d.google.longrunning.Operation\"\xd6\x01\xcaA \n" +
-	"\vAuditReport\x12\x11OperationMetadata\xdaA/scope,gcs_uri,compliance_standard,report_format\x82\xd3\xe4\x93\x02{:\x01*Z=:\x01*\"8/v1/{scope=projects/*/locations/*}/auditReports:generate\"7/v1/{scope=folders/*/locations/*}/auditReports:generate\x12\xb2\x02\n" +
-	"\x10ListAuditReports\x125.google.cloud.auditmanager.v1.ListAuditReportsRequest\x1a6.google.cloud.auditmanager.v1.ListAuditReportsResponse\"\xae\x01\xdaA\x06parent\x82\xd3\xe4\x93\x02\x9e\x01Z1\x12//v1/{parent=folders/*/locations/*}/auditReportsZ2\x120/v1/{parent=projects/*/locations/*}/auditReports\x125/v1/{parent=organizations/*/locations/*}/auditReports\x12\xe4\x01\n" +
-	"\x0eGetAuditReport\x123.google.cloud.auditmanager.v1.GetAuditReportRequest\x1a).google.cloud.auditmanager.v1.AuditReport\"r\xdaA\x04name\x82\xd3\xe4\x93\x02eZ2\x120/v1/{name=projects/*/locations/*/auditReports/*}\x12//v1/{name=folders/*/locations/*/auditReports/*}\x12\xf0\x02\n" +
+	"\x13AUDIT_NOT_SUPPORTED\x10\x05*\xda\x01\n" +
+	"\rScheduleState\x12\x1e\n" +
+	"\x1aSCHEDULE_STATE_UNSPECIFIED\x10\x00\x12\x19\n" +
+	"\x15SCHEDULE_STATE_ACTIVE\x10\x01\x12\x19\n" +
+	"\x15SCHEDULE_STATE_PAUSED\x10\x02\x12\x1c\n" +
+	"\x18SCHEDULE_STATE_COMPLETED\x10\x03\x12\x1f\n" +
+	"\x1bSCHEDULE_STATE_FAILED_SETUP\x10\x04\x12\x18\n" +
+	"\x14SCHEDULE_STATE_ERROR\x10\x05\x12\x1a\n" +
+	"\x16SCHEDULE_STATE_DELETED\x10\x062\xda!\n" +
+	"\fAuditManager\x12\x84\x03\n" +
+	"\x13CreateAuditSchedule\x128.google.cloud.auditmanager.v1.CreateAuditScheduleRequest\x1a+.google.cloud.auditmanager.v1.AuditSchedule\"\x85\x02\xdaA'parent,audit_schedule,audit_schedule_id\x82\xd3\xe4\x93\x02\xd4\x01:\x0eaudit_scheduleZC:\x0eaudit_schedule\"1/v1/{parent=folders/*/locations/*}/auditSchedulesZI:\x0eaudit_schedule\"7/v1/{parent=organizations/*/locations/*}/auditSchedules\"2/v1/{parent=projects/*/locations/*}/auditSchedules\x12\xa4\x03\n" +
+	"\x13UpdateAuditSchedule\x128.google.cloud.auditmanager.v1.UpdateAuditScheduleRequest\x1a+.google.cloud.auditmanager.v1.AuditSchedule\"\xa5\x02\xdaA\x1aaudit_schedule,update_mask\x82\xd3\xe4\x93\x02\x81\x02:\x0eaudit_scheduleZR:\x0eaudit_schedule2@/v1/{audit_schedule.name=folders/*/locations/*/auditSchedules/*}ZX:\x0eaudit_schedule2F/v1/{audit_schedule.name=organizations/*/locations/*/auditSchedules/*}2A/v1/{audit_schedule.name=projects/*/locations/*/auditSchedules/*}\x12\xab\x02\n" +
+	"\x10GetAuditSchedule\x125.google.cloud.auditmanager.v1.GetAuditScheduleRequest\x1a+.google.cloud.auditmanager.v1.AuditSchedule\"\xb2\x01\xdaA\x04name\x82\xd3\xe4\x93\x02\xa4\x01Z3\x121/v1/{name=folders/*/locations/*/auditSchedules/*}Z9\x127/v1/{name=organizations/*/locations/*/auditSchedules/*}\x122/v1/{name=projects/*/locations/*/auditSchedules/*}\x12\xbe\x02\n" +
+	"\x12ListAuditSchedules\x127.google.cloud.auditmanager.v1.ListAuditSchedulesRequest\x1a8.google.cloud.auditmanager.v1.ListAuditSchedulesResponse\"\xb4\x01\xdaA\x06parent\x82\xd3\xe4\x93\x02\xa4\x01Z3\x121/v1/{parent=folders/*/locations/*}/auditSchedulesZ9\x127/v1/{parent=organizations/*/locations/*}/auditSchedules\x122/v1/{parent=projects/*/locations/*}/auditSchedules\x12\xb8\x02\n" +
+	"\x0eEnrollResource\x123.google.cloud.auditmanager.v1.EnrollResourceRequest\x1a(.google.cloud.auditmanager.v1.Enrollment\"\xc6\x01\xdaA\x12scope,destinations\x82\xd3\xe4\x93\x02\xaa\x01:\x01*Z6:\x01*\"1/v1/{scope=projects/*/locations/*}:enrollResourceZ;:\x01*\"6/v1/{scope=organizations/*/locations/*}:enrollResource\"0/v1/{scope=folders/*/locations/*}:enrollResource\x12\x8b\x03\n" +
+	"\x18GenerateAuditScopeReport\x12=.google.cloud.auditmanager.v1.GenerateAuditScopeReportRequest\x1a..google.cloud.auditmanager.v1.AuditScopeReport\"\xff\x01\xdaA'scope,compliance_standard,report_format\x82\xd3\xe4\x93\x02\xce\x01:\x01*ZB:\x01*\"=/v1/{scope=projects/*/locations/*}/auditScopeReports:generateZG:\x01*\"B/v1/{scope=organizations/*/locations/*}/auditScopeReports:generate\"</v1/{scope=folders/*/locations/*}/auditScopeReports:generate\x12\x8c\x03\n" +
+	"\x13GenerateAuditReport\x128.google.cloud.auditmanager.v1.GenerateAuditReportRequest\x1a\x1d.google.longrunning.Operation\"\x9b\x02\xcaA \n" +
+	"\vAuditReport\x12\x11OperationMetadata\xdaA/scope,gcs_uri,compliance_standard,report_format\x82\xd3\xe4\x93\x02\xbf\x01:\x01*Z=:\x01*\"8/v1/{scope=projects/*/locations/*}/auditReports:generateZB:\x01*\"=/v1/{scope=organizations/*/locations/*}/auditReports:generate\"7/v1/{scope=folders/*/locations/*}/auditReports:generate\x12\xb2\x02\n" +
+	"\x10ListAuditReports\x125.google.cloud.auditmanager.v1.ListAuditReportsRequest\x1a6.google.cloud.auditmanager.v1.ListAuditReportsResponse\"\xae\x01\xdaA\x06parent\x82\xd3\xe4\x93\x02\x9e\x01Z1\x12//v1/{parent=folders/*/locations/*}/auditReportsZ2\x120/v1/{parent=projects/*/locations/*}/auditReports\x125/v1/{parent=organizations/*/locations/*}/auditReports\x12\x9f\x02\n" +
+	"\x0eGetAuditReport\x123.google.cloud.auditmanager.v1.GetAuditReportRequest\x1a).google.cloud.auditmanager.v1.AuditReport\"\xac\x01\xdaA\x04name\x82\xd3\xe4\x93\x02\x9e\x01Z2\x120/v1/{name=projects/*/locations/*/auditReports/*}Z7\x125/v1/{name=organizations/*/locations/*/auditReports/*}\x12//v1/{name=folders/*/locations/*/auditReports/*}\x12\xf0\x02\n" +
 	"\x1bGetResourceEnrollmentStatus\x12@.google.cloud.auditmanager.v1.GetResourceEnrollmentStatusRequest\x1a6.google.cloud.auditmanager.v1.ResourceEnrollmentStatus\"\xd6\x01\xdaA\x04name\x82\xd3\xe4\x93\x02\xc8\x01Z?\x12=/v1/{name=folders/*/locations/*/resourceEnrollmentStatuses/*}ZE\x12C/v1/{name=organizations/*/locations/*/resourceEnrollmentStatuses/*}\x12>/v1/{name=projects/*/locations/*/resourceEnrollmentStatuses/*}\x12\xc4\x02\n" +
 	"\x1eListResourceEnrollmentStatuses\x12C.google.cloud.auditmanager.v1.ListResourceEnrollmentStatusesRequest\x1aD.google.cloud.auditmanager.v1.ListResourceEnrollmentStatusesResponse\"\x96\x01\xdaA\x06parent\x82\xd3\xe4\x93\x02\x86\x01Z?\x12=/v1/{parent=folders/*/locations/*}/resourceEnrollmentStatuses\x12C/v1/{parent=organizations/*/locations/*}/resourceEnrollmentStatuses\x12\xbe\x02\n" +
-	"\fListControls\x121.google.cloud.auditmanager.v1.ListControlsRequest\x1a2.google.cloud.auditmanager.v1.ListControlsResponse\"\xc6\x01\xdaA\x06parent\x82\xd3\xe4\x93\x02\xb6\x01Z9\x127/v1/{parent=folders/*/locations/*/standards/*}/controlsZ:\x128/v1/{parent=projects/*/locations/*/standards/*}/controls\x12=/v1/{parent=organizations/*/locations/*/standards/*}/controls\x1aO\xcaA\x1bauditmanager.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\x92\x06\xeaAS\n" +
+	"\fListControls\x121.google.cloud.auditmanager.v1.ListControlsRequest\x1a2.google.cloud.auditmanager.v1.ListControlsResponse\"\xc6\x01\xdaA\x06parent\x82\xd3\xe4\x93\x02\xb6\x01Z9\x127/v1/{parent=folders/*/locations/*/standards/*}/controlsZ:\x128/v1/{parent=projects/*/locations/*/standards/*}/controls\x12=/v1/{parent=organizations/*/locations/*/standards/*}/controls\x1a\x82\x01\xcaA\x1bauditmanager.googleapis.com\xd2Aahttps://www.googleapis.com/auth/cloud-auditmanager,https://www.googleapis.com/auth/cloud-platformB\x92\x06\xeaAS\n" +
 	"*auditmanager.googleapis.com/FolderLocation\x12%folders/{folder}/locations/{location}\xeaAe\n" +
 	"0auditmanager.googleapis.com/OrganizationLocation\x121organizations/{organization}/locations/{location}\xeaA\xe8\x01\n" +
 	"$auditmanager.googleapis.com/Standard\x12<projects/{project}/locations/{location}/standards/{standard}\x12:folders/{folder}/locations/{location}/standards/{standard}\x12Forganizations/{organization}/locations/{location}/standards/{standard}\xeaA\x8d\x01\n" +
@@ -2512,86 +3512,119 @@ func file_google_cloud_auditmanager_v1_auditmanager_proto_rawDescGZIP() []byte {
 	return file_google_cloud_auditmanager_v1_auditmanager_proto_rawDescData
 }
 
-var file_google_cloud_auditmanager_v1_auditmanager_proto_enumTypes = make([]protoimpl.EnumInfo, 7)
-var file_google_cloud_auditmanager_v1_auditmanager_proto_msgTypes = make([]protoimpl.MessageInfo, 23)
+var file_google_cloud_auditmanager_v1_auditmanager_proto_enumTypes = make([]protoimpl.EnumInfo, 10)
+var file_google_cloud_auditmanager_v1_auditmanager_proto_msgTypes = make([]protoimpl.MessageInfo, 30)
 var file_google_cloud_auditmanager_v1_auditmanager_proto_goTypes = []any{
 	(OperationState)(0),  // 0: google.cloud.auditmanager.v1.OperationState
 	(ComplianceState)(0), // 1: google.cloud.auditmanager.v1.ComplianceState
-	(GenerateAuditScopeReportRequest_AuditScopeReportFormat)(0), // 2: google.cloud.auditmanager.v1.GenerateAuditScopeReportRequest.AuditScopeReportFormat
-	(GenerateAuditReportRequest_AuditReportFormat)(0),           // 3: google.cloud.auditmanager.v1.GenerateAuditReportRequest.AuditReportFormat
-	(ResourceEnrollmentStatus_ResourceEnrollmentState)(0),       // 4: google.cloud.auditmanager.v1.ResourceEnrollmentStatus.ResourceEnrollmentState
-	(AuditReport_ReportGenerationState)(0),                      // 5: google.cloud.auditmanager.v1.AuditReport.ReportGenerationState
-	(Control_Family)(0),                                         // 6: google.cloud.auditmanager.v1.Control.Family
-	(*EnrollResourceRequest)(nil),                               // 7: google.cloud.auditmanager.v1.EnrollResourceRequest
-	(*GenerateAuditScopeReportRequest)(nil),                     // 8: google.cloud.auditmanager.v1.GenerateAuditScopeReportRequest
-	(*GenerateAuditReportRequest)(nil),                          // 9: google.cloud.auditmanager.v1.GenerateAuditReportRequest
-	(*GetResourceEnrollmentStatusRequest)(nil),                  // 10: google.cloud.auditmanager.v1.GetResourceEnrollmentStatusRequest
-	(*ListResourceEnrollmentStatusesRequest)(nil),               // 11: google.cloud.auditmanager.v1.ListResourceEnrollmentStatusesRequest
-	(*ListResourceEnrollmentStatusesResponse)(nil),              // 12: google.cloud.auditmanager.v1.ListResourceEnrollmentStatusesResponse
-	(*ListAuditReportsRequest)(nil),                             // 13: google.cloud.auditmanager.v1.ListAuditReportsRequest
-	(*ListAuditReportsResponse)(nil),                            // 14: google.cloud.auditmanager.v1.ListAuditReportsResponse
-	(*GetAuditReportRequest)(nil),                               // 15: google.cloud.auditmanager.v1.GetAuditReportRequest
-	(*ListControlsRequest)(nil),                                 // 16: google.cloud.auditmanager.v1.ListControlsRequest
-	(*ListControlsResponse)(nil),                                // 17: google.cloud.auditmanager.v1.ListControlsResponse
-	(*ReportGenerationProgress)(nil),                            // 18: google.cloud.auditmanager.v1.ReportGenerationProgress
-	(*Enrollment)(nil),                                          // 19: google.cloud.auditmanager.v1.Enrollment
-	(*AuditScopeReport)(nil),                                    // 20: google.cloud.auditmanager.v1.AuditScopeReport
-	(*OperationMetadata)(nil),                                   // 21: google.cloud.auditmanager.v1.OperationMetadata
-	(*ResourceEnrollmentStatus)(nil),                            // 22: google.cloud.auditmanager.v1.ResourceEnrollmentStatus
-	(*AuditReport)(nil),                                         // 23: google.cloud.auditmanager.v1.AuditReport
-	(*ControlFamily)(nil),                                       // 24: google.cloud.auditmanager.v1.ControlFamily
-	(*Control)(nil),                                             // 25: google.cloud.auditmanager.v1.Control
-	(*DestinationDetails)(nil),                                  // 26: google.cloud.auditmanager.v1.DestinationDetails
-	(*ReportSummary)(nil),                                       // 27: google.cloud.auditmanager.v1.ReportSummary
-	(*ControlDetails)(nil),                                      // 28: google.cloud.auditmanager.v1.ControlDetails
-	(*EnrollResourceRequest_EligibleDestination)(nil),           // 29: google.cloud.auditmanager.v1.EnrollResourceRequest.EligibleDestination
-	(*timestamppb.Timestamp)(nil),                               // 30: google.protobuf.Timestamp
-	(*longrunningpb.Operation)(nil),                             // 31: google.longrunning.Operation
+	(ScheduleState)(0),   // 2: google.cloud.auditmanager.v1.ScheduleState
+	(GenerateAuditScopeReportRequest_AuditScopeReportFormat)(0), // 3: google.cloud.auditmanager.v1.GenerateAuditScopeReportRequest.AuditScopeReportFormat
+	(GenerateAuditReportRequest_AuditReportFormat)(0),           // 4: google.cloud.auditmanager.v1.GenerateAuditReportRequest.AuditReportFormat
+	(ResourceEnrollmentStatus_ResourceEnrollmentState)(0),       // 5: google.cloud.auditmanager.v1.ResourceEnrollmentStatus.ResourceEnrollmentState
+	(AuditReport_ReportGenerationState)(0),                      // 6: google.cloud.auditmanager.v1.AuditReport.ReportGenerationState
+	(Control_Family)(0),                                         // 7: google.cloud.auditmanager.v1.Control.Family
+	(AuditSchedule_AuditReportFormat)(0),                        // 8: google.cloud.auditmanager.v1.AuditSchedule.AuditReportFormat
+	(ScheduleConfig_Frequency)(0),                               // 9: google.cloud.auditmanager.v1.ScheduleConfig.Frequency
+	(*EnrollResourceRequest)(nil),                               // 10: google.cloud.auditmanager.v1.EnrollResourceRequest
+	(*GenerateAuditScopeReportRequest)(nil),                     // 11: google.cloud.auditmanager.v1.GenerateAuditScopeReportRequest
+	(*GenerateAuditReportRequest)(nil),                          // 12: google.cloud.auditmanager.v1.GenerateAuditReportRequest
+	(*GetResourceEnrollmentStatusRequest)(nil),                  // 13: google.cloud.auditmanager.v1.GetResourceEnrollmentStatusRequest
+	(*ListResourceEnrollmentStatusesRequest)(nil),               // 14: google.cloud.auditmanager.v1.ListResourceEnrollmentStatusesRequest
+	(*ListResourceEnrollmentStatusesResponse)(nil),              // 15: google.cloud.auditmanager.v1.ListResourceEnrollmentStatusesResponse
+	(*ListAuditReportsRequest)(nil),                             // 16: google.cloud.auditmanager.v1.ListAuditReportsRequest
+	(*ListAuditReportsResponse)(nil),                            // 17: google.cloud.auditmanager.v1.ListAuditReportsResponse
+	(*GetAuditReportRequest)(nil),                               // 18: google.cloud.auditmanager.v1.GetAuditReportRequest
+	(*ListControlsRequest)(nil),                                 // 19: google.cloud.auditmanager.v1.ListControlsRequest
+	(*ListControlsResponse)(nil),                                // 20: google.cloud.auditmanager.v1.ListControlsResponse
+	(*ReportGenerationProgress)(nil),                            // 21: google.cloud.auditmanager.v1.ReportGenerationProgress
+	(*Enrollment)(nil),                                          // 22: google.cloud.auditmanager.v1.Enrollment
+	(*AuditScopeReport)(nil),                                    // 23: google.cloud.auditmanager.v1.AuditScopeReport
+	(*OperationMetadata)(nil),                                   // 24: google.cloud.auditmanager.v1.OperationMetadata
+	(*ResourceEnrollmentStatus)(nil),                            // 25: google.cloud.auditmanager.v1.ResourceEnrollmentStatus
+	(*AuditReport)(nil),                                         // 26: google.cloud.auditmanager.v1.AuditReport
+	(*ControlFamily)(nil),                                       // 27: google.cloud.auditmanager.v1.ControlFamily
+	(*Control)(nil),                                             // 28: google.cloud.auditmanager.v1.Control
+	(*DestinationDetails)(nil),                                  // 29: google.cloud.auditmanager.v1.DestinationDetails
+	(*ReportSummary)(nil),                                       // 30: google.cloud.auditmanager.v1.ReportSummary
+	(*ControlDetails)(nil),                                      // 31: google.cloud.auditmanager.v1.ControlDetails
+	(*CreateAuditScheduleRequest)(nil),                          // 32: google.cloud.auditmanager.v1.CreateAuditScheduleRequest
+	(*UpdateAuditScheduleRequest)(nil),                          // 33: google.cloud.auditmanager.v1.UpdateAuditScheduleRequest
+	(*GetAuditScheduleRequest)(nil),                             // 34: google.cloud.auditmanager.v1.GetAuditScheduleRequest
+	(*ListAuditSchedulesRequest)(nil),                           // 35: google.cloud.auditmanager.v1.ListAuditSchedulesRequest
+	(*ListAuditSchedulesResponse)(nil),                          // 36: google.cloud.auditmanager.v1.ListAuditSchedulesResponse
+	(*AuditSchedule)(nil),                                       // 37: google.cloud.auditmanager.v1.AuditSchedule
+	(*ScheduleConfig)(nil),                                      // 38: google.cloud.auditmanager.v1.ScheduleConfig
+	(*EnrollResourceRequest_EligibleDestination)(nil),           // 39: google.cloud.auditmanager.v1.EnrollResourceRequest.EligibleDestination
+	(*timestamppb.Timestamp)(nil),                               // 40: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil),                               // 41: google.protobuf.FieldMask
+	(*longrunningpb.Operation)(nil),                             // 42: google.longrunning.Operation
 }
 var file_google_cloud_auditmanager_v1_auditmanager_proto_depIdxs = []int32{
-	29, // 0: google.cloud.auditmanager.v1.EnrollResourceRequest.destinations:type_name -> google.cloud.auditmanager.v1.EnrollResourceRequest.EligibleDestination
-	2,  // 1: google.cloud.auditmanager.v1.GenerateAuditScopeReportRequest.report_format:type_name -> google.cloud.auditmanager.v1.GenerateAuditScopeReportRequest.AuditScopeReportFormat
-	3,  // 2: google.cloud.auditmanager.v1.GenerateAuditReportRequest.report_format:type_name -> google.cloud.auditmanager.v1.GenerateAuditReportRequest.AuditReportFormat
-	22, // 3: google.cloud.auditmanager.v1.ListResourceEnrollmentStatusesResponse.resource_enrollment_statuses:type_name -> google.cloud.auditmanager.v1.ResourceEnrollmentStatus
-	23, // 4: google.cloud.auditmanager.v1.ListAuditReportsResponse.audit_reports:type_name -> google.cloud.auditmanager.v1.AuditReport
-	25, // 5: google.cloud.auditmanager.v1.ListControlsResponse.controls:type_name -> google.cloud.auditmanager.v1.Control
+	39, // 0: google.cloud.auditmanager.v1.EnrollResourceRequest.destinations:type_name -> google.cloud.auditmanager.v1.EnrollResourceRequest.EligibleDestination
+	3,  // 1: google.cloud.auditmanager.v1.GenerateAuditScopeReportRequest.report_format:type_name -> google.cloud.auditmanager.v1.GenerateAuditScopeReportRequest.AuditScopeReportFormat
+	4,  // 2: google.cloud.auditmanager.v1.GenerateAuditReportRequest.report_format:type_name -> google.cloud.auditmanager.v1.GenerateAuditReportRequest.AuditReportFormat
+	25, // 3: google.cloud.auditmanager.v1.ListResourceEnrollmentStatusesResponse.resource_enrollment_statuses:type_name -> google.cloud.auditmanager.v1.ResourceEnrollmentStatus
+	26, // 4: google.cloud.auditmanager.v1.ListAuditReportsResponse.audit_reports:type_name -> google.cloud.auditmanager.v1.AuditReport
+	28, // 5: google.cloud.auditmanager.v1.ListControlsResponse.controls:type_name -> google.cloud.auditmanager.v1.Control
 	0,  // 6: google.cloud.auditmanager.v1.ReportGenerationProgress.state:type_name -> google.cloud.auditmanager.v1.OperationState
-	26, // 7: google.cloud.auditmanager.v1.Enrollment.destination_details:type_name -> google.cloud.auditmanager.v1.DestinationDetails
-	30, // 8: google.cloud.auditmanager.v1.OperationMetadata.create_time:type_name -> google.protobuf.Timestamp
-	30, // 9: google.cloud.auditmanager.v1.OperationMetadata.end_time:type_name -> google.protobuf.Timestamp
-	19, // 10: google.cloud.auditmanager.v1.ResourceEnrollmentStatus.enrollment:type_name -> google.cloud.auditmanager.v1.Enrollment
-	4,  // 11: google.cloud.auditmanager.v1.ResourceEnrollmentStatus.enrollment_state:type_name -> google.cloud.auditmanager.v1.ResourceEnrollmentStatus.ResourceEnrollmentState
-	27, // 12: google.cloud.auditmanager.v1.AuditReport.report_summary:type_name -> google.cloud.auditmanager.v1.ReportSummary
-	26, // 13: google.cloud.auditmanager.v1.AuditReport.destination_details:type_name -> google.cloud.auditmanager.v1.DestinationDetails
-	30, // 14: google.cloud.auditmanager.v1.AuditReport.create_time:type_name -> google.protobuf.Timestamp
-	28, // 15: google.cloud.auditmanager.v1.AuditReport.control_details:type_name -> google.cloud.auditmanager.v1.ControlDetails
-	5,  // 16: google.cloud.auditmanager.v1.AuditReport.report_generation_state:type_name -> google.cloud.auditmanager.v1.AuditReport.ReportGenerationState
-	6,  // 17: google.cloud.auditmanager.v1.Control.family:type_name -> google.cloud.auditmanager.v1.Control.Family
-	24, // 18: google.cloud.auditmanager.v1.Control.control_family:type_name -> google.cloud.auditmanager.v1.ControlFamily
-	25, // 19: google.cloud.auditmanager.v1.ControlDetails.control:type_name -> google.cloud.auditmanager.v1.Control
+	29, // 7: google.cloud.auditmanager.v1.Enrollment.destination_details:type_name -> google.cloud.auditmanager.v1.DestinationDetails
+	40, // 8: google.cloud.auditmanager.v1.OperationMetadata.create_time:type_name -> google.protobuf.Timestamp
+	40, // 9: google.cloud.auditmanager.v1.OperationMetadata.end_time:type_name -> google.protobuf.Timestamp
+	22, // 10: google.cloud.auditmanager.v1.ResourceEnrollmentStatus.enrollment:type_name -> google.cloud.auditmanager.v1.Enrollment
+	5,  // 11: google.cloud.auditmanager.v1.ResourceEnrollmentStatus.enrollment_state:type_name -> google.cloud.auditmanager.v1.ResourceEnrollmentStatus.ResourceEnrollmentState
+	30, // 12: google.cloud.auditmanager.v1.AuditReport.report_summary:type_name -> google.cloud.auditmanager.v1.ReportSummary
+	29, // 13: google.cloud.auditmanager.v1.AuditReport.destination_details:type_name -> google.cloud.auditmanager.v1.DestinationDetails
+	40, // 14: google.cloud.auditmanager.v1.AuditReport.create_time:type_name -> google.protobuf.Timestamp
+	31, // 15: google.cloud.auditmanager.v1.AuditReport.control_details:type_name -> google.cloud.auditmanager.v1.ControlDetails
+	6,  // 16: google.cloud.auditmanager.v1.AuditReport.report_generation_state:type_name -> google.cloud.auditmanager.v1.AuditReport.ReportGenerationState
+	7,  // 17: google.cloud.auditmanager.v1.Control.family:type_name -> google.cloud.auditmanager.v1.Control.Family
+	27, // 18: google.cloud.auditmanager.v1.Control.control_family:type_name -> google.cloud.auditmanager.v1.ControlFamily
+	28, // 19: google.cloud.auditmanager.v1.ControlDetails.control:type_name -> google.cloud.auditmanager.v1.Control
 	1,  // 20: google.cloud.auditmanager.v1.ControlDetails.compliance_state:type_name -> google.cloud.auditmanager.v1.ComplianceState
-	27, // 21: google.cloud.auditmanager.v1.ControlDetails.control_report_summary:type_name -> google.cloud.auditmanager.v1.ReportSummary
-	7,  // 22: google.cloud.auditmanager.v1.AuditManager.EnrollResource:input_type -> google.cloud.auditmanager.v1.EnrollResourceRequest
-	8,  // 23: google.cloud.auditmanager.v1.AuditManager.GenerateAuditScopeReport:input_type -> google.cloud.auditmanager.v1.GenerateAuditScopeReportRequest
-	9,  // 24: google.cloud.auditmanager.v1.AuditManager.GenerateAuditReport:input_type -> google.cloud.auditmanager.v1.GenerateAuditReportRequest
-	13, // 25: google.cloud.auditmanager.v1.AuditManager.ListAuditReports:input_type -> google.cloud.auditmanager.v1.ListAuditReportsRequest
-	15, // 26: google.cloud.auditmanager.v1.AuditManager.GetAuditReport:input_type -> google.cloud.auditmanager.v1.GetAuditReportRequest
-	10, // 27: google.cloud.auditmanager.v1.AuditManager.GetResourceEnrollmentStatus:input_type -> google.cloud.auditmanager.v1.GetResourceEnrollmentStatusRequest
-	11, // 28: google.cloud.auditmanager.v1.AuditManager.ListResourceEnrollmentStatuses:input_type -> google.cloud.auditmanager.v1.ListResourceEnrollmentStatusesRequest
-	16, // 29: google.cloud.auditmanager.v1.AuditManager.ListControls:input_type -> google.cloud.auditmanager.v1.ListControlsRequest
-	19, // 30: google.cloud.auditmanager.v1.AuditManager.EnrollResource:output_type -> google.cloud.auditmanager.v1.Enrollment
-	20, // 31: google.cloud.auditmanager.v1.AuditManager.GenerateAuditScopeReport:output_type -> google.cloud.auditmanager.v1.AuditScopeReport
-	31, // 32: google.cloud.auditmanager.v1.AuditManager.GenerateAuditReport:output_type -> google.longrunning.Operation
-	14, // 33: google.cloud.auditmanager.v1.AuditManager.ListAuditReports:output_type -> google.cloud.auditmanager.v1.ListAuditReportsResponse
-	23, // 34: google.cloud.auditmanager.v1.AuditManager.GetAuditReport:output_type -> google.cloud.auditmanager.v1.AuditReport
-	22, // 35: google.cloud.auditmanager.v1.AuditManager.GetResourceEnrollmentStatus:output_type -> google.cloud.auditmanager.v1.ResourceEnrollmentStatus
-	12, // 36: google.cloud.auditmanager.v1.AuditManager.ListResourceEnrollmentStatuses:output_type -> google.cloud.auditmanager.v1.ListResourceEnrollmentStatusesResponse
-	17, // 37: google.cloud.auditmanager.v1.AuditManager.ListControls:output_type -> google.cloud.auditmanager.v1.ListControlsResponse
-	30, // [30:38] is the sub-list for method output_type
-	22, // [22:30] is the sub-list for method input_type
-	22, // [22:22] is the sub-list for extension type_name
-	22, // [22:22] is the sub-list for extension extendee
-	0,  // [0:22] is the sub-list for field type_name
+	30, // 21: google.cloud.auditmanager.v1.ControlDetails.control_report_summary:type_name -> google.cloud.auditmanager.v1.ReportSummary
+	37, // 22: google.cloud.auditmanager.v1.CreateAuditScheduleRequest.audit_schedule:type_name -> google.cloud.auditmanager.v1.AuditSchedule
+	37, // 23: google.cloud.auditmanager.v1.UpdateAuditScheduleRequest.audit_schedule:type_name -> google.cloud.auditmanager.v1.AuditSchedule
+	41, // 24: google.cloud.auditmanager.v1.UpdateAuditScheduleRequest.update_mask:type_name -> google.protobuf.FieldMask
+	37, // 25: google.cloud.auditmanager.v1.ListAuditSchedulesResponse.audit_schedules:type_name -> google.cloud.auditmanager.v1.AuditSchedule
+	8,  // 26: google.cloud.auditmanager.v1.AuditSchedule.report_format:type_name -> google.cloud.auditmanager.v1.AuditSchedule.AuditReportFormat
+	38, // 27: google.cloud.auditmanager.v1.AuditSchedule.schedule_config:type_name -> google.cloud.auditmanager.v1.ScheduleConfig
+	2,  // 28: google.cloud.auditmanager.v1.AuditSchedule.state:type_name -> google.cloud.auditmanager.v1.ScheduleState
+	40, // 29: google.cloud.auditmanager.v1.AuditSchedule.create_time:type_name -> google.protobuf.Timestamp
+	40, // 30: google.cloud.auditmanager.v1.AuditSchedule.update_time:type_name -> google.protobuf.Timestamp
+	40, // 31: google.cloud.auditmanager.v1.AuditSchedule.next_run_time:type_name -> google.protobuf.Timestamp
+	40, // 32: google.cloud.auditmanager.v1.AuditSchedule.last_trigger_time:type_name -> google.protobuf.Timestamp
+	40, // 33: google.cloud.auditmanager.v1.ScheduleConfig.start_time:type_name -> google.protobuf.Timestamp
+	40, // 34: google.cloud.auditmanager.v1.ScheduleConfig.end_time:type_name -> google.protobuf.Timestamp
+	9,  // 35: google.cloud.auditmanager.v1.ScheduleConfig.frequency:type_name -> google.cloud.auditmanager.v1.ScheduleConfig.Frequency
+	32, // 36: google.cloud.auditmanager.v1.AuditManager.CreateAuditSchedule:input_type -> google.cloud.auditmanager.v1.CreateAuditScheduleRequest
+	33, // 37: google.cloud.auditmanager.v1.AuditManager.UpdateAuditSchedule:input_type -> google.cloud.auditmanager.v1.UpdateAuditScheduleRequest
+	34, // 38: google.cloud.auditmanager.v1.AuditManager.GetAuditSchedule:input_type -> google.cloud.auditmanager.v1.GetAuditScheduleRequest
+	35, // 39: google.cloud.auditmanager.v1.AuditManager.ListAuditSchedules:input_type -> google.cloud.auditmanager.v1.ListAuditSchedulesRequest
+	10, // 40: google.cloud.auditmanager.v1.AuditManager.EnrollResource:input_type -> google.cloud.auditmanager.v1.EnrollResourceRequest
+	11, // 41: google.cloud.auditmanager.v1.AuditManager.GenerateAuditScopeReport:input_type -> google.cloud.auditmanager.v1.GenerateAuditScopeReportRequest
+	12, // 42: google.cloud.auditmanager.v1.AuditManager.GenerateAuditReport:input_type -> google.cloud.auditmanager.v1.GenerateAuditReportRequest
+	16, // 43: google.cloud.auditmanager.v1.AuditManager.ListAuditReports:input_type -> google.cloud.auditmanager.v1.ListAuditReportsRequest
+	18, // 44: google.cloud.auditmanager.v1.AuditManager.GetAuditReport:input_type -> google.cloud.auditmanager.v1.GetAuditReportRequest
+	13, // 45: google.cloud.auditmanager.v1.AuditManager.GetResourceEnrollmentStatus:input_type -> google.cloud.auditmanager.v1.GetResourceEnrollmentStatusRequest
+	14, // 46: google.cloud.auditmanager.v1.AuditManager.ListResourceEnrollmentStatuses:input_type -> google.cloud.auditmanager.v1.ListResourceEnrollmentStatusesRequest
+	19, // 47: google.cloud.auditmanager.v1.AuditManager.ListControls:input_type -> google.cloud.auditmanager.v1.ListControlsRequest
+	37, // 48: google.cloud.auditmanager.v1.AuditManager.CreateAuditSchedule:output_type -> google.cloud.auditmanager.v1.AuditSchedule
+	37, // 49: google.cloud.auditmanager.v1.AuditManager.UpdateAuditSchedule:output_type -> google.cloud.auditmanager.v1.AuditSchedule
+	37, // 50: google.cloud.auditmanager.v1.AuditManager.GetAuditSchedule:output_type -> google.cloud.auditmanager.v1.AuditSchedule
+	36, // 51: google.cloud.auditmanager.v1.AuditManager.ListAuditSchedules:output_type -> google.cloud.auditmanager.v1.ListAuditSchedulesResponse
+	22, // 52: google.cloud.auditmanager.v1.AuditManager.EnrollResource:output_type -> google.cloud.auditmanager.v1.Enrollment
+	23, // 53: google.cloud.auditmanager.v1.AuditManager.GenerateAuditScopeReport:output_type -> google.cloud.auditmanager.v1.AuditScopeReport
+	42, // 54: google.cloud.auditmanager.v1.AuditManager.GenerateAuditReport:output_type -> google.longrunning.Operation
+	17, // 55: google.cloud.auditmanager.v1.AuditManager.ListAuditReports:output_type -> google.cloud.auditmanager.v1.ListAuditReportsResponse
+	26, // 56: google.cloud.auditmanager.v1.AuditManager.GetAuditReport:output_type -> google.cloud.auditmanager.v1.AuditReport
+	25, // 57: google.cloud.auditmanager.v1.AuditManager.GetResourceEnrollmentStatus:output_type -> google.cloud.auditmanager.v1.ResourceEnrollmentStatus
+	15, // 58: google.cloud.auditmanager.v1.AuditManager.ListResourceEnrollmentStatuses:output_type -> google.cloud.auditmanager.v1.ListResourceEnrollmentStatusesResponse
+	20, // 59: google.cloud.auditmanager.v1.AuditManager.ListControls:output_type -> google.cloud.auditmanager.v1.ListControlsResponse
+	48, // [48:60] is the sub-list for method output_type
+	36, // [36:48] is the sub-list for method input_type
+	36, // [36:36] is the sub-list for extension type_name
+	36, // [36:36] is the sub-list for extension extendee
+	0,  // [0:36] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_auditmanager_v1_auditmanager_proto_init() }
@@ -2608,7 +3641,7 @@ func file_google_cloud_auditmanager_v1_auditmanager_proto_init() {
 	file_google_cloud_auditmanager_v1_auditmanager_proto_msgTypes[19].OneofWrappers = []any{
 		(*DestinationDetails_GcsBucketUri)(nil),
 	}
-	file_google_cloud_auditmanager_v1_auditmanager_proto_msgTypes[22].OneofWrappers = []any{
+	file_google_cloud_auditmanager_v1_auditmanager_proto_msgTypes[29].OneofWrappers = []any{
 		(*EnrollResourceRequest_EligibleDestination_EligibleGcsBucket)(nil),
 	}
 	type x struct{}
@@ -2616,8 +3649,8 @@ func file_google_cloud_auditmanager_v1_auditmanager_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_auditmanager_v1_auditmanager_proto_rawDesc), len(file_google_cloud_auditmanager_v1_auditmanager_proto_rawDesc)),
-			NumEnums:      7,
-			NumMessages:   23,
+			NumEnums:      10,
+			NumMessages:   30,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

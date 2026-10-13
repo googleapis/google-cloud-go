@@ -1,6 +1,20 @@
 # Changes
 
 
+## [2.28.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.27.0...recaptchaenterprise/v2.28.0) (2026-09-23)
+
+
+### Features
+
+* **all:** Update supported go versions ([#20520](https://github.com/googleapis/google-cloud-go/issues/20520)) ([90413d3](https://github.com/googleapis/google-cloud-go/commit/90413d3e9d381ef4b92e3c496d98b023c5b2d8cc))
+
+## [2.27.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.26.0...recaptchaenterprise/v2.27.0) (2026-08-13)
+
+
+### Features
+
+* Update API sources and regenerate ([#20369](https://github.com/googleapis/google-cloud-go/issues/20369)) ([bfe3aaf](https://github.com/googleapis/google-cloud-go/commit/bfe3aafc49e0c13815aa0401b1eba47aef4511df))
+
 ## [2.26.0](https://github.com/googleapis/google-cloud-go/releases/tag/recaptchaenterprise%2Fv2.26.0) (2026-05-07)
 
 ## [2.25.0](https://github.com/googleapis/google-cloud-go/releases/tag/recaptchaenterprise%2Fv2.25.0) (2026-04-30)

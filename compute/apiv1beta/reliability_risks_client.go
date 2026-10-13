@@ -74,7 +74,7 @@ func defaultReliabilityRisksRESTCallOptions() *ReliabilityRisksCallOptions {
 	}
 }
 
-// internalReliabilityRisksClient is an interface that defines the methods available from Google Compute Engine API.
+// internalReliabilityRisksClient is an interface that defines the methods available from Compute Engine API.
 type internalReliabilityRisksClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -83,7 +83,7 @@ type internalReliabilityRisksClient interface {
 	List(context.Context, *computepb.ListReliabilityRisksRequest, ...gax.CallOption) *ReliabilityRiskIterator
 }
 
-// ReliabilityRisksClient is a client for interacting with Google Compute Engine API.
+// ReliabilityRisksClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The ReliabilityRisks API.
@@ -189,6 +189,35 @@ func NewReliabilityRisksRESTClient(ctx context.Context, opts ...option.ClientOpt
 		callOpts.Get = append(callOpts.Get, gax.WithClientMetrics(metrics))
 		callOpts.List = append(callOpts.List, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Get = append(callOpts.Get, gax.WithClientTracing(tracing))
+		callOpts.List = append(callOpts.List, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Get = append(callOpts.Get, gax.WithClientLogging(logging))
+		callOpts.List = append(callOpts.List, gax.WithClientLogging(logging))
+	}
 
 	return &ReliabilityRisksClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -245,9 +274,6 @@ func (c *reliabilityRisksRESTClient) Get(ctx context.Context, req *computepb.Get
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v/global/reliabilityRisks/%v", req.GetProject(), req.GetReliabilityRisk()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.ReliabilityRisks/Get")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/global/reliabilityRisks/{reliability_risk}")

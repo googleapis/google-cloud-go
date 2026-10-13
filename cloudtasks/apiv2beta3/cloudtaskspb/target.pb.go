@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -115,11 +115,11 @@ type UriOverride_Scheme int32
 const (
 	// Scheme unspecified. Defaults to HTTPS.
 	UriOverride_SCHEME_UNSPECIFIED UriOverride_Scheme = 0
-	// Convert the scheme to HTTP, e.g., https://www.google.ca will change to
-	// http://www.google.ca.
+	// Convert the scheme to HTTP, e.g., "https://www.example.com" will change
+	// to "http://www.example.com".
 	UriOverride_HTTP UriOverride_Scheme = 1
-	// Convert the scheme to HTTPS, e.g., http://www.google.ca will change to
-	// https://www.google.ca.
+	// Convert the scheme to HTTPS, e.g., "http://www.example.com" will change
+	// to "https://www.example.com".
 	UriOverride_HTTPS UriOverride_Scheme = 2
 )
 
@@ -226,9 +226,9 @@ func (UriOverride_UriOverrideEnforceMode) EnumDescriptor() ([]byte, []int) {
 // [PULL][google.cloud.tasks.v2beta3.Queue.type] type. It currently exists for
 // backwards compatibility with the App Engine Task Queue SDK. This message type
 // maybe returned with methods
-// [list][google.cloud.tasks.v2beta3.CloudTask.ListTasks] and
-// [get][google.cloud.tasks.v2beta3.CloudTask.ListTasks], when the response view
-// is [FULL][google.cloud.tasks.v2beta3.Task.View.Full].
+// [list][google.cloud.tasks.v2beta3.CloudTasks.ListTasks] and
+// [get][google.cloud.tasks.v2beta3.CloudTasks.ListTasks], when the response
+// view is [FULL][google.cloud.tasks.v2beta3.Task.View.FULL].
 type PullMessage struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// A data payload consumed by the worker to execute the task.
@@ -409,9 +409,10 @@ type UriOverride struct {
 	// Port override.
 	//
 	// When specified, replaces the port part of the task URI. For instance,
-	// for a URI http://www.google.com/foo and port=123, the overridden URI
-	// becomes http://www.google.com:123/foo. Note that the port value must be a
-	// positive integer. Setting the port to 0 (Zero) clears the URI port.
+	// for a URI "https://www.example.com/example" and port=123, the overridden
+	// URI becomes "https://www.example.com:123/example". Note that the port value
+	// must be a positive integer. Setting the port to 0 (Zero) clears the URI
+	// port.
 	Port *int64 `protobuf:"varint,3,opt,name=port,proto3,oneof" json:"port,omitempty"`
 	// URI path.
 	//
@@ -506,8 +507,8 @@ func (x *UriOverride) GetUriOverrideEnforceMode() UriOverride_UriOverrideEnforce
 
 // HTTP target.
 //
-// When specified as a [Queue][target_type], all the tasks with [HttpRequest]
-// will be overridden according to the target.
+// When specified as a [Queue][google.cloud.tasks.v2beta3.Queue], all the tasks
+// with [HttpRequest] will be overridden according to the target.
 type HttpTarget struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// URI override.
@@ -517,9 +518,11 @@ type HttpTarget struct {
 	// The HTTP method to use for the request.
 	//
 	// When specified, it overrides
-	// [HttpRequest][google.cloud.tasks.v2beta3.HttpTarget.http_method] for the
-	// task. Note that if the value is set to [HttpMethod][GET] the
-	// [HttpRequest][body] of the task will be ignored at execution time.
+	// [HttpRequest.http_method][google.cloud.tasks.v2beta3.HttpRequest.http_method]
+	// for the task. Note that if the value is set to
+	// [HttpMethod.GET][google.cloud.tasks.v2beta3.HttpMethod.GET] the
+	// [HttpRequest.body][google.cloud.tasks.v2beta3.HttpRequest.body] of the task
+	// will be ignored at execution time.
 	HttpMethod HttpMethod `protobuf:"varint,2,opt,name=http_method,json=httpMethod,proto3,enum=google.cloud.tasks.v2beta3.HttpMethod" json:"http_method,omitempty"`
 	// HTTP target headers.
 	//
@@ -553,12 +556,17 @@ type HttpTarget struct {
 	//
 	// The size of the headers must be less than 80KB.
 	// Queue-level headers to override headers of all the tasks in the queue.
+	//
+	// Do not put business sensitive or personally identifying data in the HTTP
+	// Header Override Configuration or other similar fields in accordance with
+	// Section 12 (Resource Fields) of the
+	// [Service Specific Terms](https://cloud.google.com/terms/service-terms).
 	HeaderOverrides []*HttpTarget_HeaderOverride `protobuf:"bytes,3,rep,name=header_overrides,json=headerOverrides,proto3" json:"header_overrides,omitempty"`
 	// The mode for generating an `Authorization` header for HTTP requests.
 	//
 	// If specified, all `Authorization` headers in the
 	// [HttpRequest.headers][google.cloud.tasks.v2beta3.HttpRequest.headers] field
-	// will be overridden.
+	// are overridden.
 	//
 	// Types that are valid to be assigned to AuthorizationHeader:
 	//
@@ -652,23 +660,26 @@ type isHttpTarget_AuthorizationHeader interface {
 type HttpTarget_OauthToken struct {
 	// If specified, an
 	// [OAuth token](https://developers.google.com/identity/protocols/OAuth2)
-	// will be generated and attached as the `Authorization` header in the HTTP
+	// is generated and attached as the `Authorization` header in the HTTP
 	// request.
 	//
-	// This type of authorization should generally only be used when calling
-	// Google APIs hosted on *.googleapis.com.
+	// This type of authorization should generally be used only when calling
+	// Google APIs hosted on *.googleapis.com. Note that both the service
+	// account email and the scope MUST be specified when using the queue-level
+	// authorization override.
 	OauthToken *OAuthToken `protobuf:"bytes,5,opt,name=oauth_token,json=oauthToken,proto3,oneof"`
 }
 
 type HttpTarget_OidcToken struct {
 	// If specified, an
 	// [OIDC](https://developers.google.com/identity/protocols/OpenIDConnect)
-	// token will be generated and attached as an `Authorization` header in the
+	// token is generated and attached as an `Authorization` header in the
 	// HTTP request.
 	//
 	// This type of authorization can be used for many scenarios, including
 	// calling Cloud Run, or endpoints where you intend to validate the token
-	// yourself.
+	// yourself. Note that both the service account email and the audience MUST
+	// be specified when using the queue-level authorization override.
 	OidcToken *OidcToken `protobuf:"bytes,6,opt,name=oidc_token,json=oidcToken,proto3,oneof"`
 }
 
@@ -735,7 +746,7 @@ type HttpRequest struct {
 	//
 	// * Any header that is prefixed with "X-CloudTasks-" will be treated
 	// as service header. Service headers define properties of the task and are
-	// predefined in CloudTask.
+	// predefined in Cloud Tasks.
 	//   - Host: This will be computed by Cloud Tasks and derived from
 	//     [HttpRequest.url][google.cloud.tasks.v2beta3.HttpRequest.url].
 	//   - Content-Length: This will be computed by Cloud Tasks.
@@ -1502,7 +1513,12 @@ func (x *HttpTarget_Header) GetValue() string {
 // Wraps the Header object.
 type HttpTarget_HeaderOverride struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// header embodying a key and a value.
+	// Header embodying a key and a value.
+	//
+	// Do not put business sensitive or personally identifying data in the HTTP
+	// Header Override Configuration or other similar fields in accordance with
+	// Section 12 (Resource Fields) of the
+	// [Service Specific Terms](https://cloud.google.com/terms/service-terms).
 	Header        *HttpTarget_Header `protobuf:"bytes,1,opt,name=header,proto3" json:"header,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache

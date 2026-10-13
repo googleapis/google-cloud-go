@@ -709,9 +709,13 @@ type AdEvent struct {
 	// email address). The more data provided, the more likely a match will be
 	// found.
 	UserData *UserData `protobuf:"bytes,7,opt,name=user_data,json=userData,proto3" json:"user_data,omitempty"`
-	// Optional. Information gathered about the device being used when the ad
+	// Required. Information gathered about the device being used when the ad
 	// event happened.
 	DeviceInfo *DeviceInfo `protobuf:"bytes,8,opt,name=device_info,json=deviceInfo,proto3" json:"device_info,omitempty"`
+	// Optional. IP address used for measurement. This must be same value as
+	// [DeviceInfo.ip_address][google.ads.datamanager.v1.DeviceInfo.ip_address].
+	// Keep it blank if you do not want to share IP for measurement.
+	IpAddress string `protobuf:"bytes,34,opt,name=ip_address,json=ipAddress,proto3" json:"ip_address,omitempty"`
 	// Optional. The device ID of the device that the ad was served to.
 	MobileDeviceId string `protobuf:"bytes,9,opt,name=mobile_device_id,json=mobileDeviceId,proto3" json:"mobile_device_id,omitempty"`
 	// Required. The ID of the associated campaign.
@@ -756,7 +760,7 @@ type AdEvent struct {
 	AdHeight int32 `protobuf:"varint,20,opt,name=ad_height,json=adHeight,proto3" json:"ad_height,omitempty"`
 	// Optional. The width of the ad in pixels.
 	AdWidth int32 `protobuf:"varint,21,opt,name=ad_width,json=adWidth,proto3" json:"ad_width,omitempty"`
-	// Required. The ISO 3166-2 country plus subdivision.
+	// Optional. The ISO 3166-2 country plus subdivision.
 	RegionCode string `protobuf:"bytes,22,opt,name=region_code,json=regionCode,proto3" json:"region_code,omitempty"`
 	// Required. The platform source of the ad, akin to the Google Analytics
 	// source.
@@ -903,6 +907,13 @@ func (x *AdEvent) GetDeviceInfo() *DeviceInfo {
 		return x.DeviceInfo
 	}
 	return nil
+}
+
+func (x *AdEvent) GetIpAddress() string {
+	if x != nil {
+		return x.IpAddress
+	}
+	return ""
 }
 
 func (x *AdEvent) GetMobileDeviceId() string {
@@ -1276,7 +1287,7 @@ var File_google_ads_datamanager_v1_ad_event_proto protoreflect.FileDescriptor
 
 const file_google_ads_datamanager_v1_ad_event_proto_rawDesc = "" +
 	"\n" +
-	"(google/ads/datamanager/v1/ad_event.proto\x12\x19google.ads.datamanager.v1\x1a+google/ads/datamanager/v1/device_info.proto\x1a)google/ads/datamanager/v1/user_data.proto\x1a0google/ads/datamanager/v1/viewability_info.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd5\x11\n" +
+	"(google/ads/datamanager/v1/ad_event.proto\x12\x19google.ads.datamanager.v1\x1a+google/ads/datamanager/v1/device_info.proto\x1a)google/ads/datamanager/v1/user_data.proto\x1a0google/ads/datamanager/v1/viewability_info.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x81\x12\n" +
 	"\aAdEvent\x12(\n" +
 	"\radvertiser_id\x18\x01 \x01(\tB\x03\xe0A\x02R\fadvertiserId\x12P\n" +
 	"\n" +
@@ -1286,8 +1297,10 @@ const file_google_ads_datamanager_v1_ad_event_proto_rawDesc = "" +
 	"\ttimestamp\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x02R\ttimestamp\x12\x1e\n" +
 	"\bevent_id\x18\x06 \x01(\tB\x03\xe0A\x01R\aeventId\x12E\n" +
 	"\tuser_data\x18\a \x01(\v2#.google.ads.datamanager.v1.UserDataB\x03\xe0A\x01R\buserData\x12K\n" +
-	"\vdevice_info\x18\b \x01(\v2%.google.ads.datamanager.v1.DeviceInfoB\x03\xe0A\x01R\n" +
-	"deviceInfo\x12-\n" +
+	"\vdevice_info\x18\b \x01(\v2%.google.ads.datamanager.v1.DeviceInfoB\x03\xe0A\x02R\n" +
+	"deviceInfo\x12*\n" +
+	"\n" +
+	"ip_address\x18\" \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x04R\tipAddress\x12-\n" +
 	"\x10mobile_device_id\x18\t \x01(\tB\x03\xe0A\x01R\x0emobileDeviceId\x12$\n" +
 	"\vcampaign_id\x18\n" +
 	" \x01(\tB\x03\xe0A\x02R\n" +
@@ -1303,7 +1316,7 @@ const file_google_ads_datamanager_v1_ad_event_proto_rawDesc = "" +
 	"\x13ad_placement_string\x18\x13 \x01(\tH\x03R\x11adPlacementString\x12 \n" +
 	"\tad_height\x18\x14 \x01(\x05B\x03\xe0A\x01R\badHeight\x12\x1e\n" +
 	"\bad_width\x18\x15 \x01(\x05B\x03\xe0A\x01R\aadWidth\x12$\n" +
-	"\vregion_code\x18\x16 \x01(\tB\x03\xe0A\x02R\n" +
+	"\vregion_code\x18\x16 \x01(\tB\x03\xe0A\x01R\n" +
 	"regionCode\x12\x1b\n" +
 	"\x06source\x18\x17 \x01(\tB\x03\xe0A\x02R\x06source\x12\x1b\n" +
 	"\x06medium\x18\x18 \x01(\tB\x03\xe0A\x02R\x06medium\x12Q\n" +

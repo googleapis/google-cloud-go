@@ -48,16 +48,54 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type RowAccessPolicyServiceClient interface {
 	// Lists all row access policies on the specified table.
+	//
+	// # IAM Permissions
+	//
+	// Requires the `bigquery.rowAccessPolicies.list` permission on the table.
 	ListRowAccessPolicies(ctx context.Context, in *ListRowAccessPoliciesRequest, opts ...grpc.CallOption) (*ListRowAccessPoliciesResponse, error)
 	// Gets the specified row access policy by policy ID.
+	//
+	// # IAM Permissions
+	//
+	// Requires the `bigquery.rowAccessPolicies.get` permission on the table.
 	GetRowAccessPolicy(ctx context.Context, in *GetRowAccessPolicyRequest, opts ...grpc.CallOption) (*RowAccessPolicy, error)
 	// Creates a row access policy.
+	//
+	// # IAM Permissions
+	//
+	// Requires the following IAM permission(s) on the table:
+	//
+	//   - `bigquery.rowAccessPolicies.create`
+	//   - `bigquery.rowAccessPolicies.setIamPolicy`
+	//   - `bigquery.tables.getData`
 	CreateRowAccessPolicy(ctx context.Context, in *CreateRowAccessPolicyRequest, opts ...grpc.CallOption) (*RowAccessPolicy, error)
 	// Updates a row access policy.
+	//
+	// # IAM Permissions
+	//
+	// Requires the following IAM permission(s) on the table:
+	//
+	//   - `bigquery.rowAccessPolicies.update`
+	//   - `bigquery.rowAccessPolicies.setIamPolicy`
+	//   - `bigquery.tables.getData`
 	UpdateRowAccessPolicy(ctx context.Context, in *UpdateRowAccessPolicyRequest, opts ...grpc.CallOption) (*RowAccessPolicy, error)
 	// Deletes a row access policy.
+	//
+	// # IAM Permissions
+	//
+	// Requires the following IAM permission(s) on the table:
+	//
+	//   - `bigquery.rowAccessPolicies.delete`
+	//   - `bigquery.rowAccessPolicies.setIamPolicy`
 	DeleteRowAccessPolicy(ctx context.Context, in *DeleteRowAccessPolicyRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Deletes provided row access policies.
+	//
+	// # IAM Permissions
+	//
+	// Requires the following IAM permission(s) on the table:
+	//
+	//   - `bigquery.rowAccessPolicies.delete`
+	//   - `bigquery.rowAccessPolicies.setIamPolicy`
 	BatchDeleteRowAccessPolicies(ctx context.Context, in *BatchDeleteRowAccessPoliciesRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
@@ -128,16 +166,54 @@ func (c *rowAccessPolicyServiceClient) BatchDeleteRowAccessPolicies(ctx context.
 // for forward compatibility
 type RowAccessPolicyServiceServer interface {
 	// Lists all row access policies on the specified table.
+	//
+	// # IAM Permissions
+	//
+	// Requires the `bigquery.rowAccessPolicies.list` permission on the table.
 	ListRowAccessPolicies(context.Context, *ListRowAccessPoliciesRequest) (*ListRowAccessPoliciesResponse, error)
 	// Gets the specified row access policy by policy ID.
+	//
+	// # IAM Permissions
+	//
+	// Requires the `bigquery.rowAccessPolicies.get` permission on the table.
 	GetRowAccessPolicy(context.Context, *GetRowAccessPolicyRequest) (*RowAccessPolicy, error)
 	// Creates a row access policy.
+	//
+	// # IAM Permissions
+	//
+	// Requires the following IAM permission(s) on the table:
+	//
+	//   - `bigquery.rowAccessPolicies.create`
+	//   - `bigquery.rowAccessPolicies.setIamPolicy`
+	//   - `bigquery.tables.getData`
 	CreateRowAccessPolicy(context.Context, *CreateRowAccessPolicyRequest) (*RowAccessPolicy, error)
 	// Updates a row access policy.
+	//
+	// # IAM Permissions
+	//
+	// Requires the following IAM permission(s) on the table:
+	//
+	//   - `bigquery.rowAccessPolicies.update`
+	//   - `bigquery.rowAccessPolicies.setIamPolicy`
+	//   - `bigquery.tables.getData`
 	UpdateRowAccessPolicy(context.Context, *UpdateRowAccessPolicyRequest) (*RowAccessPolicy, error)
 	// Deletes a row access policy.
+	//
+	// # IAM Permissions
+	//
+	// Requires the following IAM permission(s) on the table:
+	//
+	//   - `bigquery.rowAccessPolicies.delete`
+	//   - `bigquery.rowAccessPolicies.setIamPolicy`
 	DeleteRowAccessPolicy(context.Context, *DeleteRowAccessPolicyRequest) (*emptypb.Empty, error)
 	// Deletes provided row access policies.
+	//
+	// # IAM Permissions
+	//
+	// Requires the following IAM permission(s) on the table:
+	//
+	//   - `bigquery.rowAccessPolicies.delete`
+	//   - `bigquery.rowAccessPolicies.setIamPolicy`
 	BatchDeleteRowAccessPolicies(context.Context, *BatchDeleteRowAccessPoliciesRequest) (*emptypb.Empty, error)
 }
 

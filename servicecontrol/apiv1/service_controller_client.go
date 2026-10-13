@@ -112,7 +112,8 @@ type internalServiceControllerClient interface {
 // ServiceControllerClient is a client for interacting with Service Control API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Google Service Control API (at /service-control/overview)
+// Google Service Control
+// API (at https://cloud.google.com/service-control/overview)
 //
 // Lets clients check and report operations against a managed
 // service (at https://cloud.google.com/service-management/reference/rpc/google.api/servicemanagement.v1#google.api.servicemanagement.v1.ManagedService).
@@ -158,8 +159,8 @@ func (c *ServiceControllerClient) Connection() *grpc.ClientConn {
 // propagation, therefore callers MUST NOT depend on the Check method having
 // the latest policy information.
 //
-// NOTE: the CheckRequest has
-// the size limit (wire-format byte size) of 1MB.
+// NOTE: the CheckRequest has the
+// size limit (wire-format byte size) of 1MB.
 //
 // This method requires the servicemanagement.services.check permission
 // on the specified service. For more information, see
@@ -209,7 +210,8 @@ type serviceControllerGRPCClient struct {
 // NewServiceControllerClient creates a new service controller client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Google Service Control API (at /service-control/overview)
+// Google Service Control
+// API (at https://cloud.google.com/service-control/overview)
 //
 // Lets clients check and report operations against a managed
 // service (at https://cloud.google.com/service-management/reference/rpc/google.api/servicemanagement.v1#google.api.servicemanagement.v1.ManagedService).
@@ -261,6 +263,35 @@ func NewServiceControllerClient(ctx context.Context, opts ...option.ClientOption
 		client.CallOptions.Check = append(client.CallOptions.Check, gax.WithClientMetrics(metrics))
 		client.CallOptions.Report = append(client.CallOptions.Report, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "servicecontrol",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/servicecontrol/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "servicecontrol.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.Check = append(client.CallOptions.Check, gax.WithClientTracing(tracing))
+		client.CallOptions.Report = append(client.CallOptions.Report, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "servicecontrol",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/servicecontrol/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "servicecontrol.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.Check = append(client.CallOptions.Check, gax.WithClientLogging(logging))
+		client.CallOptions.Report = append(client.CallOptions.Report, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -311,7 +342,8 @@ type serviceControllerRESTClient struct {
 
 // NewServiceControllerRESTClient creates a new service controller rest client.
 //
-// Google Service Control API (at /service-control/overview)
+// Google Service Control
+// API (at https://cloud.google.com/service-control/overview)
 //
 // Lets clients check and report operations against a managed
 // service (at https://cloud.google.com/service-management/reference/rpc/google.api/servicemanagement.v1#google.api.servicemanagement.v1.ManagedService).
@@ -355,6 +387,35 @@ func NewServiceControllerRESTClient(ctx context.Context, opts ...option.ClientOp
 
 		callOpts.Check = append(callOpts.Check, gax.WithClientMetrics(metrics))
 		callOpts.Report = append(callOpts.Report, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "servicecontrol",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/servicecontrol/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "servicecontrol.googleapis.com",
+			}),
+		)
+
+		callOpts.Check = append(callOpts.Check, gax.WithClientTracing(tracing))
+		callOpts.Report = append(callOpts.Report, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "servicecontrol",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/servicecontrol/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "servicecontrol.googleapis.com",
+			}),
+		)
+
+		callOpts.Check = append(callOpts.Check, gax.WithClientLogging(logging))
+		callOpts.Report = append(callOpts.Report, gax.WithClientLogging(logging))
 	}
 
 	return &ServiceControllerClient{internalClient: c, CallOptions: callOpts}, nil
@@ -450,8 +511,8 @@ func (c *serviceControllerGRPCClient) Report(ctx context.Context, req *serviceco
 // propagation, therefore callers MUST NOT depend on the Check method having
 // the latest policy information.
 //
-// NOTE: the CheckRequest has
-// the size limit (wire-format byte size) of 1MB.
+// NOTE: the CheckRequest has the
+// size limit (wire-format byte size) of 1MB.
 //
 // This method requires the servicemanagement.services.check permission
 // on the specified service. For more information, see

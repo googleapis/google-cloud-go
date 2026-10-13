@@ -91,9 +91,58 @@ type DataAgent struct {
 	// DataAgent resources. Cloud KMS CryptoKeys must reside in the same location
 	// as the DataAgent. The expected format is
 	// `projects/*/locations/*/keyRings/*/cryptoKeys/*`.
-	KmsKey        *string `protobuf:"bytes,14,opt,name=kms_key,json=kmsKey,proto3,oneof" json:"kms_key,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	KmsKey *string `protobuf:"bytes,14,opt,name=kms_key,json=kmsKey,proto3,oneof" json:"kms_key,omitempty"`
+	// Optional. Controls whether BigQuery Agent Analytics trace logging is
+	// enabled for the agent.
+	//
+	// BigQuery Agent Analytics is in Preview and is delivered to enrolled
+	// projects only. In a project that is not enrolled this field is accepted
+	// and stored, but no trace rows are written and no error is returned.
+	//
+	// Trace logging is additionally suppressed for the entire turn, without
+	// error, when any table in the agent's datasource carries row-level
+	// security, column-level security or policy tags. It is also suppressed
+	// when that determination cannot be made, for example when the caller
+	// lacks permission to list a table's row access policies.
+	//
+	// Trace rows are written only when this is `true` and
+	// `bigquery_agent_analytics_table` is set. On a BigQuery agent, enabling
+	// this without a table has no effect: no table is created for the agent
+	// and no rows are written. On an agent whose datasource is not BigQuery,
+	// `CreateDataAgent` rejects either field with `INVALID_ARGUMENT`.
+	//
+	// This setting is independent of the project-level BigQuery Agent Analytics
+	// setting configured through `SetAgentOpsObservability`. An agent does not
+	// inherit that setting.
+	BigqueryAgentAnalyticsEnabled *bool `protobuf:"varint,18,opt,name=bigquery_agent_analytics_enabled,json=bigqueryAgentAnalyticsEnabled,proto3,oneof" json:"bigquery_agent_analytics_enabled,omitempty"`
+	// Optional. The BigQuery table that BigQuery Agent Analytics trace rows are
+	// written to. Has no effect unless `bigquery_agent_analytics_enabled` is
+	// `true`. The Preview enrollment described on that field applies here too.
+	//
+	// The trace table is validated when it is set on `CreateDataAgent`, or when
+	// it is included in the `update_mask` of an `UpdateDataAgent` call. The
+	// following are rejected with `INVALID_ARGUMENT`:
+	//
+	//   - The table must belong to the same project as the agent.
+	//   - The agent's datasource must be BigQuery. BigQuery Agent Analytics is not
+	//     supported for Looker, Looker Studio or AlloyDB agents.
+	//
+	// These are validated against the agent as sent in the request. An agent
+	// that carries no datasource is not validated, and an agent switched to a
+	// non-BigQuery datasource is not re-validated; in the latter case no trace
+	// rows are written.
+	//
+	// The destination dataset must already exist and must grant write access to
+	// the project's Gemini Data Analytics service agent, whose address is
+	// `service-PROJECT_NUMBER@gcp-sa-geminidataanalytics.iam.gserviceaccount.com`
+	// (that grant is not performed on your behalf). Without it the agent answers
+	// normally and no trace rows are written.
+	//
+	// Changing the table on an existing agent affects subsequent turns only. Rows
+	// already written to the previous table are left in place.
+	BigqueryAgentAnalyticsTable *BigQueryTableReference `protobuf:"bytes,19,opt,name=bigquery_agent_analytics_table,json=bigqueryAgentAnalyticsTable,proto3" json:"bigquery_agent_analytics_table,omitempty"`
+	unknownFields               protoimpl.UnknownFields
+	sizeCache                   protoimpl.SizeCache
 }
 
 func (x *DataAgent) Reset() {
@@ -205,6 +254,20 @@ func (x *DataAgent) GetKmsKey() string {
 	return ""
 }
 
+func (x *DataAgent) GetBigqueryAgentAnalyticsEnabled() bool {
+	if x != nil && x.BigqueryAgentAnalyticsEnabled != nil {
+		return *x.BigqueryAgentAnalyticsEnabled
+	}
+	return false
+}
+
+func (x *DataAgent) GetBigqueryAgentAnalyticsTable() *BigQueryTableReference {
+	if x != nil {
+		return x.BigqueryAgentAnalyticsTable
+	}
+	return nil
+}
+
 type isDataAgent_Type interface {
 	isDataAgent_Type()
 }
@@ -220,7 +283,7 @@ var File_google_cloud_geminidataanalytics_v1_data_agent_proto protoreflect.FileD
 
 const file_google_cloud_geminidataanalytics_v1_data_agent_proto_rawDesc = "" +
 	"\n" +
-	"4google/cloud/geminidataanalytics/v1/data_agent.proto\x12#google.cloud.geminidataanalytics.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a>google/cloud/geminidataanalytics/v1/data_analytics_agent.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe7\x06\n" +
+	"4google/cloud/geminidataanalytics/v1/data_agent.proto\x12#google.cloud.geminidataanalytics.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a>google/cloud/geminidataanalytics/v1/data_analytics_agent.proto\x1a4google/cloud/geminidataanalytics/v1/datasource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe7\b\n" +
 	"\tDataAgent\x12k\n" +
 	"\x14data_analytics_agent\x18e \x01(\v27.google.cloud.geminidataanalytics.v1.DataAnalyticsAgentH\x00R\x12dataAnalyticsAgent\x12\x1a\n" +
 	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x01\xe0A\bR\x04name\x12&\n" +
@@ -236,7 +299,9 @@ const file_google_cloud_geminidataanalytics_v1_data_agent_proto_rawDesc = "" +
 	"\n" +
 	"purge_time\x18\r \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tpurgeTime\x12G\n" +
 	"\akms_key\x18\x0e \x01(\tB)\xe0A\x01\xfaA#\n" +
-	"!cloudkms.googleapis.com/CryptoKeyH\x01R\x06kmsKey\x88\x01\x01\x1a9\n" +
+	"!cloudkms.googleapis.com/CryptoKeyH\x01R\x06kmsKey\x88\x01\x01\x12Q\n" +
+	" bigquery_agent_analytics_enabled\x18\x12 \x01(\bB\x03\xe0A\x01H\x02R\x1dbigqueryAgentAnalyticsEnabled\x88\x01\x01\x12\x85\x01\n" +
+	"\x1ebigquery_agent_analytics_table\x18\x13 \x01(\v2;.google.cloud.geminidataanalytics.v1.BigQueryTableReferenceB\x03\xe0A\x01R\x1bbigqueryAgentAnalyticsTable\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x8a\x01\xeaA\x86\x01\n" +
@@ -244,7 +309,8 @@ const file_google_cloud_geminidataanalytics_v1_data_agent_proto_rawDesc = "" +
 	"dataAgents2\tdataAgentB\x06\n" +
 	"\x04typeB\n" +
 	"\n" +
-	"\b_kms_keyB\x8b\x02\n" +
+	"\b_kms_keyB#\n" +
+	"!_bigquery_agent_analytics_enabledB\x8b\x02\n" +
 	"'com.google.cloud.geminidataanalytics.v1B\x0eDataAgentProtoP\x01ZYcloud.google.com/go/geminidataanalytics/apiv1/geminidataanalyticspb;geminidataanalyticspb\xaa\x02#Google.Cloud.GeminiDataAnalytics.V1\xca\x02#Google\\Cloud\\GeminiDataAnalytics\\V1\xea\x02&Google::Cloud::GeminiDataAnalytics::V1b\x06proto3"
 
 var (
@@ -261,10 +327,11 @@ func file_google_cloud_geminidataanalytics_v1_data_agent_proto_rawDescGZIP() []b
 
 var file_google_cloud_geminidataanalytics_v1_data_agent_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_google_cloud_geminidataanalytics_v1_data_agent_proto_goTypes = []any{
-	(*DataAgent)(nil),             // 0: google.cloud.geminidataanalytics.v1.DataAgent
-	nil,                           // 1: google.cloud.geminidataanalytics.v1.DataAgent.LabelsEntry
-	(*DataAnalyticsAgent)(nil),    // 2: google.cloud.geminidataanalytics.v1.DataAnalyticsAgent
-	(*timestamppb.Timestamp)(nil), // 3: google.protobuf.Timestamp
+	(*DataAgent)(nil),              // 0: google.cloud.geminidataanalytics.v1.DataAgent
+	nil,                            // 1: google.cloud.geminidataanalytics.v1.DataAgent.LabelsEntry
+	(*DataAnalyticsAgent)(nil),     // 2: google.cloud.geminidataanalytics.v1.DataAnalyticsAgent
+	(*timestamppb.Timestamp)(nil),  // 3: google.protobuf.Timestamp
+	(*BigQueryTableReference)(nil), // 4: google.cloud.geminidataanalytics.v1.BigQueryTableReference
 }
 var file_google_cloud_geminidataanalytics_v1_data_agent_proto_depIdxs = []int32{
 	2, // 0: google.cloud.geminidataanalytics.v1.DataAgent.data_analytics_agent:type_name -> google.cloud.geminidataanalytics.v1.DataAnalyticsAgent
@@ -273,11 +340,12 @@ var file_google_cloud_geminidataanalytics_v1_data_agent_proto_depIdxs = []int32{
 	3, // 3: google.cloud.geminidataanalytics.v1.DataAgent.update_time:type_name -> google.protobuf.Timestamp
 	3, // 4: google.cloud.geminidataanalytics.v1.DataAgent.delete_time:type_name -> google.protobuf.Timestamp
 	3, // 5: google.cloud.geminidataanalytics.v1.DataAgent.purge_time:type_name -> google.protobuf.Timestamp
-	6, // [6:6] is the sub-list for method output_type
-	6, // [6:6] is the sub-list for method input_type
-	6, // [6:6] is the sub-list for extension type_name
-	6, // [6:6] is the sub-list for extension extendee
-	0, // [0:6] is the sub-list for field type_name
+	4, // 6: google.cloud.geminidataanalytics.v1.DataAgent.bigquery_agent_analytics_table:type_name -> google.cloud.geminidataanalytics.v1.BigQueryTableReference
+	7, // [7:7] is the sub-list for method output_type
+	7, // [7:7] is the sub-list for method input_type
+	7, // [7:7] is the sub-list for extension type_name
+	7, // [7:7] is the sub-list for extension extendee
+	0, // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_geminidataanalytics_v1_data_agent_proto_init() }
@@ -286,6 +354,7 @@ func file_google_cloud_geminidataanalytics_v1_data_agent_proto_init() {
 		return
 	}
 	file_google_cloud_geminidataanalytics_v1_data_analytics_agent_proto_init()
+	file_google_cloud_geminidataanalytics_v1_datasource_proto_init()
 	file_google_cloud_geminidataanalytics_v1_data_agent_proto_msgTypes[0].OneofWrappers = []any{
 		(*DataAgent_DataAnalyticsAgent)(nil),
 	}

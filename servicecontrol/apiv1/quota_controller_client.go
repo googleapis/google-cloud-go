@@ -81,7 +81,7 @@ type internalQuotaControllerClient interface {
 // QuotaControllerClient is a client for interacting with Service Control API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Google Quota Control API (at /service-control/overview)
+// Google Quota Control API (at https://cloud.google.com/service-control/overview)
 //
 // Allows clients to allocate and release quota against a managed
 // service (at https://cloud.google.com/service-management/reference/rpc/google.api/servicemanagement.v1#google.api.servicemanagement.v1.ManagedService).
@@ -153,7 +153,7 @@ type quotaControllerGRPCClient struct {
 // NewQuotaControllerClient creates a new quota controller client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Google Quota Control API (at /service-control/overview)
+// Google Quota Control API (at https://cloud.google.com/service-control/overview)
 //
 // Allows clients to allocate and release quota against a managed
 // service (at https://cloud.google.com/service-management/reference/rpc/google.api/servicemanagement.v1#google.api.servicemanagement.v1.ManagedService).
@@ -203,6 +203,33 @@ func NewQuotaControllerClient(ctx context.Context, opts ...option.ClientOption) 
 		)
 
 		client.CallOptions.AllocateQuota = append(client.CallOptions.AllocateQuota, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "servicecontrol",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/servicecontrol/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "servicecontrol.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.AllocateQuota = append(client.CallOptions.AllocateQuota, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "servicecontrol",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/servicecontrol/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "servicecontrol.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.AllocateQuota = append(client.CallOptions.AllocateQuota, gax.WithClientLogging(logging))
 	}
 
 	client.internalClient = c
@@ -254,7 +281,7 @@ type quotaControllerRESTClient struct {
 
 // NewQuotaControllerRESTClient creates a new quota controller rest client.
 //
-// Google Quota Control API (at /service-control/overview)
+// Google Quota Control API (at https://cloud.google.com/service-control/overview)
 //
 // Allows clients to allocate and release quota against a managed
 // service (at https://cloud.google.com/service-management/reference/rpc/google.api/servicemanagement.v1#google.api.servicemanagement.v1.ManagedService).
@@ -297,6 +324,33 @@ func NewQuotaControllerRESTClient(ctx context.Context, opts ...option.ClientOpti
 		)
 
 		callOpts.AllocateQuota = append(callOpts.AllocateQuota, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "servicecontrol",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/servicecontrol/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "servicecontrol.googleapis.com",
+			}),
+		)
+
+		callOpts.AllocateQuota = append(callOpts.AllocateQuota, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "servicecontrol",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/servicecontrol/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "servicecontrol.googleapis.com",
+			}),
+		)
+
+		callOpts.AllocateQuota = append(callOpts.AllocateQuota, gax.WithClientLogging(logging))
 	}
 
 	return &QuotaControllerClient{internalClient: c, CallOptions: callOpts}, nil

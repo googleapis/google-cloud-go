@@ -42,17 +42,8 @@ type DeviceInfo struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Optional. The user-agent string of the device for the given context.
 	UserAgent string `protobuf:"bytes,1,opt,name=user_agent,json=userAgent,proto3" json:"user_agent,omitempty"`
-	// Optional. The IP address of the device for the given context.
-	//
-	// **Note:** Google Ads does not support IP address matching for end users in
-	// the European Economic Area (EEA), United Kingdom (UK), or Switzerland (CH).
-	// Add logic to conditionally exclude sharing IP addresses from users from
-	// these regions and ensure that you provide users with clear and
-	// comprehensive information about the data you collect on your sites, apps,
-	// and other properties and get consent where required by law or any
-	// applicable Google policies. See the [About offline conversion
-	// imports](https://support.google.com/google-ads/answer/2998031) page for
-	// more details.
+	// Optional. The IP address of the device for the given context. Required when
+	// used in an [AdEvent][google.ads.datamanager.v1.AdEvent] for geo checks.
 	IpAddress string `protobuf:"bytes,2,opt,name=ip_address,json=ipAddress,proto3" json:"ip_address,omitempty"`
 	// Optional. The category of device. For example, “desktop”, “tablet”,
 	// “mobile”, “smart TV”.

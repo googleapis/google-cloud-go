@@ -1614,6 +1614,69 @@ func TestIntegration_RowDeletionPolicy(t *testing.T) {
 	}
 }
 
+func TestIntegration_UUID(t *testing.T) {
+	client, adminClient, _, cleanup := makeClient(t)
+	defer cleanup()
+
+	ctx := context.Background()
+
+	err := updateDDL(t, adminClient,
+		`CREATE TABLE UUIDTable (
+			TaskId UUID NOT NULL,
+			Data STRING(MAX),
+		) PRIMARY KEY (TaskId)`)
+	if err != nil {
+		t.Fatalf("updateDDL failed: %v", err)
+	}
+
+	taskID := "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
+	upperTaskID := "A0EEBC99-9C0B-4EF8-BB6D-6BB9BD380A22"
+	normalizedUpperTaskID := "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22"
+
+	_, err = client.Apply(ctx, []*spanner.Mutation{
+		spanner.Insert("UUIDTable", []string{"TaskId", "Data"}, []interface{}{taskID, "payload"}),
+		spanner.Insert("UUIDTable", []string{"TaskId", "Data"}, []interface{}{upperTaskID, "upper-payload"}),
+	})
+	if err != nil {
+		t.Fatalf("client.Apply failed: %v", err)
+	}
+
+	readTests := []struct {
+		name     string
+		key      spanner.Key
+		wantUUID string
+		wantData string
+	}{
+		{name: "exact match", key: spanner.Key{taskID}, wantUUID: taskID, wantData: "payload"},
+		{name: "lowercase key for uppercase insert", key: spanner.Key{normalizedUpperTaskID}, wantUUID: normalizedUpperTaskID, wantData: "upper-payload"},
+		{name: "uppercase key for uppercase insert", key: spanner.Key{upperTaskID}, wantUUID: normalizedUpperTaskID, wantData: "upper-payload"},
+	}
+
+	for _, tc := range readTests {
+		row, err := client.Single().ReadRow(ctx, "UUIDTable", tc.key, []string{"TaskId", "Data"})
+		if err != nil {
+			t.Fatalf("[%s] client.Single().ReadRow failed: %v", tc.name, err)
+		}
+		var gotTaskID spanner.NullUUID
+		var gotData string
+		if err := row.Columns(&gotTaskID, &gotData); err != nil {
+			t.Fatalf("[%s] row.Columns failed: %v", tc.name, err)
+		}
+		if !gotTaskID.Valid || gotTaskID.UUID.String() != tc.wantUUID || gotData != tc.wantData {
+			t.Errorf("[%s] Read row mismatch: got (%v, %q), want (%q, %q)", tc.name, gotTaskID, gotData, tc.wantUUID, tc.wantData)
+		}
+	}
+
+	// Verify invalid UUID is rejected on Apply
+	invalidTaskID := "invalid-uuid-string"
+	_, err = client.Apply(ctx, []*spanner.Mutation{
+		spanner.Insert("UUIDTable", []string{"TaskId", "Data"}, []interface{}{invalidTaskID, "invalid-payload"}),
+	})
+	if err == nil {
+		t.Errorf("client.Apply succeeded for invalid UUID %q, want error", invalidTaskID)
+	}
+}
+
 func dropTable(t *testing.T, adminClient *dbadmin.DatabaseAdminClient, table string) error {
 	t.Helper()
 	err := updateDDL(t, adminClient, "DROP TABLE "+table)
@@ -1700,6 +1763,8 @@ func genericValue(t *testing.T, gcv spanner.GenericColumnValue) interface{} {
 		dst = new(string)
 	case spannerpb.TypeCode_BYTES:
 		dst = new([]byte)
+	case spannerpb.TypeCode_UUID:
+		dst = new(string)
 	}
 	if dst == nil {
 		t.Fatalf("Can't decode Spanner generic column value: %v", gcv.Type)

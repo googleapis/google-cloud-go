@@ -18,12 +18,14 @@ package vmmigration
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	vmmigrationpb "cloud.google.com/go/vmmigration/apiv1/vmmigrationpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
@@ -2244,6 +2246,12 @@ func (op *UpgradeApplianceOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CloneJobIterator) All() iter.Seq2[*vmmigrationpb.CloneJob, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // CloneJobIterator manages a stream of *vmmigrationpb.CloneJob.
 type CloneJobIterator struct {
 	items    []*vmmigrationpb.CloneJob
@@ -2289,6 +2297,12 @@ func (it *CloneJobIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CutoverJobIterator) All() iter.Seq2[*vmmigrationpb.CutoverJob, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // CutoverJobIterator manages a stream of *vmmigrationpb.CutoverJob.
@@ -2338,6 +2352,12 @@ func (it *CutoverJobIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DatacenterConnectorIterator) All() iter.Seq2[*vmmigrationpb.DatacenterConnector, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // DatacenterConnectorIterator manages a stream of *vmmigrationpb.DatacenterConnector.
 type DatacenterConnectorIterator struct {
 	items    []*vmmigrationpb.DatacenterConnector
@@ -2383,6 +2403,12 @@ func (it *DatacenterConnectorIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DiskMigrationJobIterator) All() iter.Seq2[*vmmigrationpb.DiskMigrationJob, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // DiskMigrationJobIterator manages a stream of *vmmigrationpb.DiskMigrationJob.
@@ -2432,6 +2458,12 @@ func (it *DiskMigrationJobIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *GroupIterator) All() iter.Seq2[*vmmigrationpb.Group, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // GroupIterator manages a stream of *vmmigrationpb.Group.
 type GroupIterator struct {
 	items    []*vmmigrationpb.Group
@@ -2477,6 +2509,12 @@ func (it *GroupIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ImageImportIterator) All() iter.Seq2[*vmmigrationpb.ImageImport, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ImageImportIterator manages a stream of *vmmigrationpb.ImageImport.
@@ -2526,6 +2564,12 @@ func (it *ImageImportIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ImageImportJobIterator) All() iter.Seq2[*vmmigrationpb.ImageImportJob, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ImageImportJobIterator manages a stream of *vmmigrationpb.ImageImportJob.
 type ImageImportJobIterator struct {
 	items    []*vmmigrationpb.ImageImportJob
@@ -2571,6 +2615,12 @@ func (it *ImageImportJobIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // LocationIterator manages a stream of *locationpb.Location.
@@ -2620,6 +2670,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *MigratingVmIterator) All() iter.Seq2[*vmmigrationpb.MigratingVm, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // MigratingVmIterator manages a stream of *vmmigrationpb.MigratingVm.
 type MigratingVmIterator struct {
 	items    []*vmmigrationpb.MigratingVm
@@ -2665,6 +2721,12 @@ func (it *MigratingVmIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // OperationIterator manages a stream of *longrunningpb.Operation.
@@ -2714,6 +2776,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ReplicationCycleIterator) All() iter.Seq2[*vmmigrationpb.ReplicationCycle, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ReplicationCycleIterator manages a stream of *vmmigrationpb.ReplicationCycle.
 type ReplicationCycleIterator struct {
 	items    []*vmmigrationpb.ReplicationCycle
@@ -2759,6 +2827,12 @@ func (it *ReplicationCycleIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SourceIterator) All() iter.Seq2[*vmmigrationpb.Source, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // SourceIterator manages a stream of *vmmigrationpb.Source.
@@ -2808,6 +2882,12 @@ func (it *SourceIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SourceStorageResourceIterator) All() iter.Seq2[*vmmigrationpb.SourceStorageResource, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // SourceStorageResourceIterator manages a stream of *vmmigrationpb.SourceStorageResource.
 type SourceStorageResourceIterator struct {
 	items    []*vmmigrationpb.SourceStorageResource
@@ -2855,6 +2935,12 @@ func (it *SourceStorageResourceIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TargetProjectIterator) All() iter.Seq2[*vmmigrationpb.TargetProject, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // TargetProjectIterator manages a stream of *vmmigrationpb.TargetProject.
 type TargetProjectIterator struct {
 	items    []*vmmigrationpb.TargetProject
@@ -2900,6 +2986,12 @@ func (it *TargetProjectIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *UtilizationReportIterator) All() iter.Seq2[*vmmigrationpb.UtilizationReport, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // UtilizationReportIterator manages a stream of *vmmigrationpb.UtilizationReport.

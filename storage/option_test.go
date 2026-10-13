@@ -139,19 +139,19 @@ func TestApplyStorageOpt(t *testing.T) {
 		},
 		{
 			desc: "use gRPC bidi reads",
-			opts: []option.ClientOption{withGRPCBidiReads()},
+			opts: []option.ClientOption{WithGRPCBidiReads()},
 			want: storageConfig{
 				grpcBidiReads: true,
 			},
 		},
 		{
-			desc: "use gRPC zonal bucket APIs",
-			opts: []option.ClientOption{withZonalBucketAPIs()},
+			desc: "use gRPC appendable uploads",
+			opts: []option.ClientOption{WithAppendableUploads()},
 			want: storageConfig{
-				grpcBidiReads:         true,
 				grpcAppendableUploads: true,
 			},
 		},
+
 		{
 			desc: "enforce direct connectivity",
 			opts: []option.ClientOption{withDirectConnectivityEnforced()},
@@ -247,5 +247,20 @@ func TestGetDynamicReadReqIncreaseRateFromEnv(t *testing.T) {
 				t.Errorf("getDynamicReadReqIncreaseRateFromEnv() = %v, want %v", got, tt.want)
 			}
 		})
+	}
+}
+
+func TestSetBufferPool(t *testing.T) {
+	pool := &struct{ experimental.BufferPool }{}
+	want := storageConfig{
+		bufferPool: pool,
+	}
+	var got storageConfig
+	opt := experimental.WithBufferPool(pool)
+	if storageOpt, ok := opt.(storageClientOption); ok {
+		storageOpt.ApplyStorageOpt(&got)
+	}
+	if got.bufferPool != want.bufferPool {
+		t.Errorf("TestSetBufferPool: bufferPool want=%v, got=%v", want.bufferPool, got.bufferPool)
 	}
 }

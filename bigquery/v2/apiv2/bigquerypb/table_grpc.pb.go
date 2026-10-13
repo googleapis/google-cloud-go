@@ -50,23 +50,50 @@ type TableServiceClient interface {
 	// Gets the specified table resource by table ID.
 	// This method does not return the data in the table, it only returns the
 	// table resource, which describes the structure of this table.
+	//
+	// # IAM Permissions
+	//
+	// Requires the `bigquery.tables.get` permission on the table.
 	GetTable(ctx context.Context, in *GetTableRequest, opts ...grpc.CallOption) (*Table, error)
 	// Creates a new, empty table in the dataset.
+	//
+	// # IAM Permissions
+	//
+	// Requires the `bigquery.tables.create` permission on the dataset.
 	InsertTable(ctx context.Context, in *InsertTableRequest, opts ...grpc.CallOption) (*Table, error)
 	// Updates information in an existing table. The update method replaces the
 	// entire table resource, whereas the patch method only replaces fields that
 	// are provided in the submitted table resource.
 	// This method supports RFC5789 patch semantics.
+	//
+	// # IAM Permissions
+	//
+	// Requires the following IAM permission(s) on the table:
+	//
+	//   - `bigquery.tables.update`
+	//   - `bigquery.tables.get`
 	PatchTable(ctx context.Context, in *UpdateOrPatchTableRequest, opts ...grpc.CallOption) (*Table, error)
 	// Updates information in an existing table. The update method replaces the
 	// entire Table resource, whereas the patch method only replaces fields that
 	// are provided in the submitted Table resource.
+	//
+	// # IAM Permissions
+	//
+	// Requires the `bigquery.tables.update` permission on the table.
 	UpdateTable(ctx context.Context, in *UpdateOrPatchTableRequest, opts ...grpc.CallOption) (*Table, error)
 	// Deletes the table specified by tableId from the dataset.
 	// If the table contains data, all the data will be deleted.
+	//
+	// # IAM Permissions
+	//
+	// Requires the `bigquery.tables.delete` permission on the table.
 	DeleteTable(ctx context.Context, in *DeleteTableRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Lists all tables in the specified dataset. Requires the READER dataset
 	// role.
+	//
+	// # IAM Permissions
+	//
+	// Requires the `bigquery.tables.list` permission on the dataset.
 	ListTables(ctx context.Context, in *ListTablesRequest, opts ...grpc.CallOption) (*TableList, error)
 }
 
@@ -139,23 +166,50 @@ type TableServiceServer interface {
 	// Gets the specified table resource by table ID.
 	// This method does not return the data in the table, it only returns the
 	// table resource, which describes the structure of this table.
+	//
+	// # IAM Permissions
+	//
+	// Requires the `bigquery.tables.get` permission on the table.
 	GetTable(context.Context, *GetTableRequest) (*Table, error)
 	// Creates a new, empty table in the dataset.
+	//
+	// # IAM Permissions
+	//
+	// Requires the `bigquery.tables.create` permission on the dataset.
 	InsertTable(context.Context, *InsertTableRequest) (*Table, error)
 	// Updates information in an existing table. The update method replaces the
 	// entire table resource, whereas the patch method only replaces fields that
 	// are provided in the submitted table resource.
 	// This method supports RFC5789 patch semantics.
+	//
+	// # IAM Permissions
+	//
+	// Requires the following IAM permission(s) on the table:
+	//
+	//   - `bigquery.tables.update`
+	//   - `bigquery.tables.get`
 	PatchTable(context.Context, *UpdateOrPatchTableRequest) (*Table, error)
 	// Updates information in an existing table. The update method replaces the
 	// entire Table resource, whereas the patch method only replaces fields that
 	// are provided in the submitted Table resource.
+	//
+	// # IAM Permissions
+	//
+	// Requires the `bigquery.tables.update` permission on the table.
 	UpdateTable(context.Context, *UpdateOrPatchTableRequest) (*Table, error)
 	// Deletes the table specified by tableId from the dataset.
 	// If the table contains data, all the data will be deleted.
+	//
+	// # IAM Permissions
+	//
+	// Requires the `bigquery.tables.delete` permission on the table.
 	DeleteTable(context.Context, *DeleteTableRequest) (*emptypb.Empty, error)
 	// Lists all tables in the specified dataset. Requires the READER dataset
 	// role.
+	//
+	// # IAM Permissions
+	//
+	// Requires the `bigquery.tables.list` permission on the dataset.
 	ListTables(context.Context, *ListTablesRequest) (*TableList, error)
 }
 

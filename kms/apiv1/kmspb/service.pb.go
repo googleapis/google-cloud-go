@@ -1292,8 +1292,18 @@ type CreateCryptoKeyRequest struct {
 	// [ImportCryptoKeyVersion][google.cloud.kms.v1.KeyManagementService.ImportCryptoKeyVersion]
 	// before you can use this [CryptoKey][google.cloud.kms.v1.CryptoKey].
 	SkipInitialVersionCreation bool `protobuf:"varint,5,opt,name=skip_initial_version_creation,json=skipInitialVersionCreation,proto3" json:"skip_initial_version_creation,omitempty"`
-	unknownFields              protoimpl.UnknownFields
-	sizeCache                  protoimpl.SizeCache
+	// Optional. Whether trusted wrapping will be enabled on the first
+	// [CryptoKeyVersions][google.cloud.kms.v1.CryptoKeyVersion] created for this
+	// [CryptoKey][google.cloud.kms.v1.CryptoKey]. This field is only supported
+	// for keys with
+	// [CryptoKeyVersionTemplate.protection_level][google.cloud.kms.v1.CryptoKeyVersionTemplate.protection_level]
+	// [HSM_SINGLE_TENANT][google.cloud.kms.v1.ProtectionLevel.HSM_SINGLE_TENANT].
+	// This field is supported for all
+	// [CryptoKeyPurposes][google.cloud.kms.v1.CryptoKey.CryptoKeyPurpose] except
+	// [ENCRYPT_DECRYPT][google.cloud.kms.v1.CryptoKey.CryptoKeyPurpose.ENCRYPT_DECRYPT].
+	TrustedWrappingEnabled bool `protobuf:"varint,6,opt,name=trusted_wrapping_enabled,json=trustedWrappingEnabled,proto3" json:"trusted_wrapping_enabled,omitempty"`
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *CreateCryptoKeyRequest) Reset() {
@@ -1350,6 +1360,13 @@ func (x *CreateCryptoKeyRequest) GetCryptoKey() *CryptoKey {
 func (x *CreateCryptoKeyRequest) GetSkipInitialVersionCreation() bool {
 	if x != nil {
 		return x.SkipInitialVersionCreation
+	}
+	return false
+}
+
+func (x *CreateCryptoKeyRequest) GetTrustedWrappingEnabled() bool {
+	if x != nil {
+		return x.TrustedWrappingEnabled
 	}
 	return false
 }
@@ -1602,8 +1619,16 @@ type ImportCryptoKeyVersionRequest struct {
 	//
 	//	*ImportCryptoKeyVersionRequest_RsaAesWrappedKey
 	WrappedKeyMaterial isImportCryptoKeyVersionRequest_WrappedKeyMaterial `protobuf_oneof:"wrapped_key_material"`
-	unknownFields      protoimpl.UnknownFields
-	sizeCache          protoimpl.SizeCache
+	// Optional. Whether trusted wrapping will be enabled on the imported
+	// [CryptoKeyVersion]. This field is only supported for keys with
+	// [CryptoKeyVersionTemplate.protection_level][google.cloud.kms.v1.CryptoKeyVersionTemplate.protection_level]
+	// [HSM_SINGLE_TENANT][google.cloud.kms.v1.ProtectionLevel.HSM_SINGLE_TENANT].
+	// This field is supported for all
+	// [CryptoKeyPurposes][google.cloud.kms.v1.CryptoKey.CryptoKeyPurpose] besides
+	// [ENCRYPT_DECRYPT][google.cloud.kms.v1.CryptoKey.CryptoKeyPurpose.ENCRYPT_DECRYPT].
+	TrustedWrappingEnabled bool `protobuf:"varint,9,opt,name=trusted_wrapping_enabled,json=trustedWrappingEnabled,proto3" json:"trusted_wrapping_enabled,omitempty"`
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *ImportCryptoKeyVersionRequest) Reset() {
@@ -1687,6 +1712,13 @@ func (x *ImportCryptoKeyVersionRequest) GetRsaAesWrappedKey() []byte {
 	return nil
 }
 
+func (x *ImportCryptoKeyVersionRequest) GetTrustedWrappingEnabled() bool {
+	if x != nil {
+		return x.TrustedWrappingEnabled
+	}
+	return false
+}
+
 type isImportCryptoKeyVersionRequest_WrappedKeyMaterial interface {
 	isImportCryptoKeyVersionRequest_WrappedKeyMaterial()
 }
@@ -1700,6 +1732,249 @@ type ImportCryptoKeyVersionRequest_RsaAesWrappedKey struct {
 }
 
 func (*ImportCryptoKeyVersionRequest_RsaAesWrappedKey) isImportCryptoKeyVersionRequest_WrappedKeyMaterial() {
+}
+
+// Request message for
+// [KeyManagementService.ImportTrustedKeyWrappedCryptoKeyVersion][google.cloud.kms.v1.KeyManagementService.ImportTrustedKeyWrappedCryptoKeyVersion].
+type ImportTrustedKeyWrappedCryptoKeyVersionRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The [name][google.cloud.kms.v1.CryptoKey.name] of the
+	// [CryptoKey][google.cloud.kms.v1.CryptoKey] to be imported into.
+	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
+	// Required. Required - the CKV of the trusted key used to import.
+	// This can be the name of a CryptoKeyVersion or a CryptoKey.
+	ImportingKey string `protobuf:"bytes,2,opt,name=importing_key,json=importingKey,proto3" json:"importing_key,omitempty"`
+	// Optional. The optional [name][google.cloud.kms.v1.CryptoKeyVersion.name] of
+	// an existing [CryptoKeyVersion][google.cloud.kms.v1.CryptoKeyVersion] to
+	// target for an import operation. If this field is not present, a new
+	// [CryptoKeyVersion][google.cloud.kms.v1.CryptoKeyVersion] containing the
+	// supplied key material is created.
+	//
+	// If this field is present, the supplied key material is imported into
+	// the existing [CryptoKeyVersion][google.cloud.kms.v1.CryptoKeyVersion]. To
+	// import into an existing
+	// [CryptoKeyVersion][google.cloud.kms.v1.CryptoKeyVersion], the
+	// [CryptoKeyVersion][google.cloud.kms.v1.CryptoKeyVersion] must be a child of
+	// [ImportTrustedKeyWrappedCryptoKeyVersionRequest.parent][google.cloud.kms.v1.ImportTrustedKeyWrappedCryptoKeyVersionRequest.parent],
+	// have been previously created via
+	// [ImportTrustedKeyWrappedCryptoKeyVersion][google.cloud.kms.v1.KeyManagementService.ImportTrustedKeyWrappedCryptoKeyVersion],
+	// and be in
+	// [DESTROYED][google.cloud.kms.v1.CryptoKeyVersion.CryptoKeyVersionState.DESTROYED]
+	// or
+	// [IMPORT_FAILED][google.cloud.kms.v1.CryptoKeyVersion.CryptoKeyVersionState.IMPORT_FAILED]
+	// state. The key material and algorithm must match the previous
+	// [CryptoKeyVersion][google.cloud.kms.v1.CryptoKeyVersion] exactly if the
+	// [CryptoKeyVersion][google.cloud.kms.v1.CryptoKeyVersion] has ever contained
+	// key material
+	CryptoKeyVersion string `protobuf:"bytes,3,opt,name=crypto_key_version,json=cryptoKeyVersion,proto3" json:"crypto_key_version,omitempty"`
+	// Required. The target key pre-wrapped on premises.
+	WrappedKey []byte `protobuf:"bytes,4,opt,name=wrapped_key,json=wrappedKey,proto3" json:"wrapped_key,omitempty"`
+	// Required. Required - The
+	// [algorithm][google.cloud.kms.v1.CryptoKeyVersion.CryptoKeyVersionAlgorithm]
+	// of the key being imported. This does not need to match the
+	// [version_template][google.cloud.kms.v1.CryptoKey.version_template] of the
+	// [CryptoKey][google.cloud.kms.v1.CryptoKey] this version imports into.
+	Algorithm     CryptoKeyVersion_CryptoKeyVersionAlgorithm `protobuf:"varint,5,opt,name=algorithm,proto3,enum=google.cloud.kms.v1.CryptoKeyVersion_CryptoKeyVersionAlgorithm" json:"algorithm,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ImportTrustedKeyWrappedCryptoKeyVersionRequest) Reset() {
+	*x = ImportTrustedKeyWrappedCryptoKeyVersionRequest{}
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ImportTrustedKeyWrappedCryptoKeyVersionRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ImportTrustedKeyWrappedCryptoKeyVersionRequest) ProtoMessage() {}
+
+func (x *ImportTrustedKeyWrappedCryptoKeyVersionRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ImportTrustedKeyWrappedCryptoKeyVersionRequest.ProtoReflect.Descriptor instead.
+func (*ImportTrustedKeyWrappedCryptoKeyVersionRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{22}
+}
+
+func (x *ImportTrustedKeyWrappedCryptoKeyVersionRequest) GetParent() string {
+	if x != nil {
+		return x.Parent
+	}
+	return ""
+}
+
+func (x *ImportTrustedKeyWrappedCryptoKeyVersionRequest) GetImportingKey() string {
+	if x != nil {
+		return x.ImportingKey
+	}
+	return ""
+}
+
+func (x *ImportTrustedKeyWrappedCryptoKeyVersionRequest) GetCryptoKeyVersion() string {
+	if x != nil {
+		return x.CryptoKeyVersion
+	}
+	return ""
+}
+
+func (x *ImportTrustedKeyWrappedCryptoKeyVersionRequest) GetWrappedKey() []byte {
+	if x != nil {
+		return x.WrappedKey
+	}
+	return nil
+}
+
+func (x *ImportTrustedKeyWrappedCryptoKeyVersionRequest) GetAlgorithm() CryptoKeyVersion_CryptoKeyVersionAlgorithm {
+	if x != nil {
+		return x.Algorithm
+	}
+	return CryptoKeyVersion_CRYPTO_KEY_VERSION_ALGORITHM_UNSPECIFIED
+}
+
+// Request message for
+// [KeyManagementService.ExportTrustedKeyWrappedCryptoKeyVersion][google.cloud.kms.v1.KeyManagementService.ExportTrustedKeyWrappedCryptoKeyVersion].
+type ExportTrustedKeyWrappedCryptoKeyVersionRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The [name][google.cloud.kms.v1.CryptoKeyVersion.name] of the
+	// [CryptoKeyVersion][google.cloud.kms.v1.CryptoKeyVersion] to export. The
+	// [CryptoKeyVersion][google.cloud.kms.v1.CryptoKeyVersion] must have
+	// [trusted_wrapping_enabled][google.cloud.kms.v1.CryptoKeyVersion.trusted_wrapping_enabled]
+	// set to true.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Required. The [name][google.cloud.kms.v1.CryptoKeyVersion.name] of the
+	// [CryptoKeyVersion][google.cloud.kms.v1.CryptoKeyVersion] to use as a
+	// wrapping key. The [CryptoKeyVersion][google.cloud.kms.v1.CryptoKeyVersion]
+	// must have [hsm_trusted][google.cloud.kms.v1.CryptoKeyVersion.hsm_trusted]
+	// set to true.
+	WrappingKey   string `protobuf:"bytes,2,opt,name=wrapping_key,json=wrappingKey,proto3" json:"wrapping_key,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ExportTrustedKeyWrappedCryptoKeyVersionRequest) Reset() {
+	*x = ExportTrustedKeyWrappedCryptoKeyVersionRequest{}
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[23]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ExportTrustedKeyWrappedCryptoKeyVersionRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ExportTrustedKeyWrappedCryptoKeyVersionRequest) ProtoMessage() {}
+
+func (x *ExportTrustedKeyWrappedCryptoKeyVersionRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[23]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ExportTrustedKeyWrappedCryptoKeyVersionRequest.ProtoReflect.Descriptor instead.
+func (*ExportTrustedKeyWrappedCryptoKeyVersionRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{23}
+}
+
+func (x *ExportTrustedKeyWrappedCryptoKeyVersionRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *ExportTrustedKeyWrappedCryptoKeyVersionRequest) GetWrappingKey() string {
+	if x != nil {
+		return x.WrappingKey
+	}
+	return ""
+}
+
+// Response message for
+// [KeyManagementService.ExportTrustedKeyWrappedCryptoKeyVersion][google.cloud.kms.v1.KeyManagementService.ExportTrustedKeyWrappedCryptoKeyVersion].
+type ExportTrustedKeyWrappedCryptoKeyVersionResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The wrapped key material.
+	WrappedKey []byte `protobuf:"bytes,1,opt,name=wrapped_key,json=wrappedKey,proto3" json:"wrapped_key,omitempty"`
+	// Integrity verification field. A CRC32C checksum of the returned
+	// [ExportTrustedKeyWrappedCryptoKeyVersionResponse.wrapped_key][google.cloud.kms.v1.ExportTrustedKeyWrappedCryptoKeyVersionResponse.wrapped_key].
+	// An integrity check of
+	// [ExportTrustedKeyWrappedCryptoKeyVersionResponse.wrapped_key][google.cloud.kms.v1.ExportTrustedKeyWrappedCryptoKeyVersionResponse.wrapped_key]
+	// can be performed by computing the CRC32C checksum of
+	// [ExportTrustedKeyWrappedCryptoKeyVersionResponse.wrapped_key][google.cloud.kms.v1.ExportTrustedKeyWrappedCryptoKeyVersionResponse.wrapped_key]
+	// and comparing your results to this field. Discard the response in case of
+	// non-matching checksum values, and perform a limited number of retries. A
+	// persistent mismatch may indicate an issue in your computation of the CRC32C
+	// checksum.
+	// Note: This field is defined as int64 for reasons of compatibility across
+	// different languages. However, it is a non-negative integer, which will
+	// never exceed 2^32-1, and can be safely downconverted to uint32 in languages
+	// that support this type.
+	WrappedKeyCrc32C *wrapperspb.Int64Value `protobuf:"bytes,2,opt,name=wrapped_key_crc32c,json=wrappedKeyCrc32c,proto3" json:"wrapped_key_crc32c,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *ExportTrustedKeyWrappedCryptoKeyVersionResponse) Reset() {
+	*x = ExportTrustedKeyWrappedCryptoKeyVersionResponse{}
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[24]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ExportTrustedKeyWrappedCryptoKeyVersionResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ExportTrustedKeyWrappedCryptoKeyVersionResponse) ProtoMessage() {}
+
+func (x *ExportTrustedKeyWrappedCryptoKeyVersionResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[24]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ExportTrustedKeyWrappedCryptoKeyVersionResponse.ProtoReflect.Descriptor instead.
+func (*ExportTrustedKeyWrappedCryptoKeyVersionResponse) Descriptor() ([]byte, []int) {
+	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{24}
+}
+
+func (x *ExportTrustedKeyWrappedCryptoKeyVersionResponse) GetWrappedKey() []byte {
+	if x != nil {
+		return x.WrappedKey
+	}
+	return nil
+}
+
+func (x *ExportTrustedKeyWrappedCryptoKeyVersionResponse) GetWrappedKeyCrc32C() *wrapperspb.Int64Value {
+	if x != nil {
+		return x.WrappedKeyCrc32C
+	}
+	return nil
 }
 
 // Request message for
@@ -1722,7 +1997,7 @@ type CreateImportJobRequest struct {
 
 func (x *CreateImportJobRequest) Reset() {
 	*x = CreateImportJobRequest{}
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[22]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1734,7 +2009,7 @@ func (x *CreateImportJobRequest) String() string {
 func (*CreateImportJobRequest) ProtoMessage() {}
 
 func (x *CreateImportJobRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[22]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1747,7 +2022,7 @@ func (x *CreateImportJobRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateImportJobRequest.ProtoReflect.Descriptor instead.
 func (*CreateImportJobRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{22}
+	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *CreateImportJobRequest) GetParent() string {
@@ -1785,7 +2060,7 @@ type UpdateCryptoKeyRequest struct {
 
 func (x *UpdateCryptoKeyRequest) Reset() {
 	*x = UpdateCryptoKeyRequest{}
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[23]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1797,7 +2072,7 @@ func (x *UpdateCryptoKeyRequest) String() string {
 func (*UpdateCryptoKeyRequest) ProtoMessage() {}
 
 func (x *UpdateCryptoKeyRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[23]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1810,7 +2085,7 @@ func (x *UpdateCryptoKeyRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateCryptoKeyRequest.ProtoReflect.Descriptor instead.
 func (*UpdateCryptoKeyRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{23}
+	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *UpdateCryptoKeyRequest) GetCryptoKey() *CryptoKey {
@@ -1842,7 +2117,7 @@ type UpdateCryptoKeyVersionRequest struct {
 
 func (x *UpdateCryptoKeyVersionRequest) Reset() {
 	*x = UpdateCryptoKeyVersionRequest{}
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[24]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1854,7 +2129,7 @@ func (x *UpdateCryptoKeyVersionRequest) String() string {
 func (*UpdateCryptoKeyVersionRequest) ProtoMessage() {}
 
 func (x *UpdateCryptoKeyVersionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[24]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1867,7 +2142,7 @@ func (x *UpdateCryptoKeyVersionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateCryptoKeyVersionRequest.ProtoReflect.Descriptor instead.
 func (*UpdateCryptoKeyVersionRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{24}
+	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *UpdateCryptoKeyVersionRequest) GetCryptoKeyVersion() *CryptoKeyVersion {
@@ -1900,7 +2175,7 @@ type UpdateCryptoKeyPrimaryVersionRequest struct {
 
 func (x *UpdateCryptoKeyPrimaryVersionRequest) Reset() {
 	*x = UpdateCryptoKeyPrimaryVersionRequest{}
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[25]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1912,7 +2187,7 @@ func (x *UpdateCryptoKeyPrimaryVersionRequest) String() string {
 func (*UpdateCryptoKeyPrimaryVersionRequest) ProtoMessage() {}
 
 func (x *UpdateCryptoKeyPrimaryVersionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[25]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1925,7 +2200,7 @@ func (x *UpdateCryptoKeyPrimaryVersionRequest) ProtoReflect() protoreflect.Messa
 
 // Deprecated: Use UpdateCryptoKeyPrimaryVersionRequest.ProtoReflect.Descriptor instead.
 func (*UpdateCryptoKeyPrimaryVersionRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{25}
+	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *UpdateCryptoKeyPrimaryVersionRequest) GetName() string {
@@ -1955,7 +2230,7 @@ type DestroyCryptoKeyVersionRequest struct {
 
 func (x *DestroyCryptoKeyVersionRequest) Reset() {
 	*x = DestroyCryptoKeyVersionRequest{}
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[26]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1967,7 +2242,7 @@ func (x *DestroyCryptoKeyVersionRequest) String() string {
 func (*DestroyCryptoKeyVersionRequest) ProtoMessage() {}
 
 func (x *DestroyCryptoKeyVersionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[26]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1980,7 +2255,7 @@ func (x *DestroyCryptoKeyVersionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DestroyCryptoKeyVersionRequest.ProtoReflect.Descriptor instead.
 func (*DestroyCryptoKeyVersionRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{26}
+	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{29}
 }
 
 func (x *DestroyCryptoKeyVersionRequest) GetName() string {
@@ -2003,7 +2278,7 @@ type RestoreCryptoKeyVersionRequest struct {
 
 func (x *RestoreCryptoKeyVersionRequest) Reset() {
 	*x = RestoreCryptoKeyVersionRequest{}
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[27]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2015,7 +2290,7 @@ func (x *RestoreCryptoKeyVersionRequest) String() string {
 func (*RestoreCryptoKeyVersionRequest) ProtoMessage() {}
 
 func (x *RestoreCryptoKeyVersionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[27]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2028,7 +2303,7 @@ func (x *RestoreCryptoKeyVersionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RestoreCryptoKeyVersionRequest.ProtoReflect.Descriptor instead.
 func (*RestoreCryptoKeyVersionRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{27}
+	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{30}
 }
 
 func (x *RestoreCryptoKeyVersionRequest) GetName() string {
@@ -2122,7 +2397,7 @@ type EncryptRequest struct {
 
 func (x *EncryptRequest) Reset() {
 	*x = EncryptRequest{}
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[28]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2134,7 +2409,7 @@ func (x *EncryptRequest) String() string {
 func (*EncryptRequest) ProtoMessage() {}
 
 func (x *EncryptRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[28]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2147,7 +2422,7 @@ func (x *EncryptRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EncryptRequest.ProtoReflect.Descriptor instead.
 func (*EncryptRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{28}
+	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{31}
 }
 
 func (x *EncryptRequest) GetName() string {
@@ -2245,7 +2520,7 @@ type DecryptRequest struct {
 
 func (x *DecryptRequest) Reset() {
 	*x = DecryptRequest{}
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[29]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2257,7 +2532,7 @@ func (x *DecryptRequest) String() string {
 func (*DecryptRequest) ProtoMessage() {}
 
 func (x *DecryptRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[29]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2270,7 +2545,7 @@ func (x *DecryptRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DecryptRequest.ProtoReflect.Descriptor instead.
 func (*DecryptRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{29}
+	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{32}
 }
 
 func (x *DecryptRequest) GetName() string {
@@ -2403,7 +2678,7 @@ type RawEncryptRequest struct {
 
 func (x *RawEncryptRequest) Reset() {
 	*x = RawEncryptRequest{}
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[30]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2415,7 +2690,7 @@ func (x *RawEncryptRequest) String() string {
 func (*RawEncryptRequest) ProtoMessage() {}
 
 func (x *RawEncryptRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[30]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2428,7 +2703,7 @@ func (x *RawEncryptRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RawEncryptRequest.ProtoReflect.Descriptor instead.
 func (*RawEncryptRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{30}
+	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{33}
 }
 
 func (x *RawEncryptRequest) GetName() string {
@@ -2557,7 +2832,7 @@ type RawDecryptRequest struct {
 
 func (x *RawDecryptRequest) Reset() {
 	*x = RawDecryptRequest{}
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[31]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2569,7 +2844,7 @@ func (x *RawDecryptRequest) String() string {
 func (*RawDecryptRequest) ProtoMessage() {}
 
 func (x *RawDecryptRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[31]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2582,7 +2857,7 @@ func (x *RawDecryptRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RawDecryptRequest.ProtoReflect.Descriptor instead.
 func (*RawDecryptRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{31}
+	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{34}
 }
 
 func (x *RawDecryptRequest) GetName() string {
@@ -2708,7 +2983,7 @@ type AsymmetricSignRequest struct {
 
 func (x *AsymmetricSignRequest) Reset() {
 	*x = AsymmetricSignRequest{}
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[32]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2720,7 +2995,7 @@ func (x *AsymmetricSignRequest) String() string {
 func (*AsymmetricSignRequest) ProtoMessage() {}
 
 func (x *AsymmetricSignRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[32]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2733,7 +3008,7 @@ func (x *AsymmetricSignRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AsymmetricSignRequest.ProtoReflect.Descriptor instead.
 func (*AsymmetricSignRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{32}
+	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{35}
 }
 
 func (x *AsymmetricSignRequest) GetName() string {
@@ -2809,7 +3084,7 @@ type AsymmetricDecryptRequest struct {
 
 func (x *AsymmetricDecryptRequest) Reset() {
 	*x = AsymmetricDecryptRequest{}
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[33]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2821,7 +3096,7 @@ func (x *AsymmetricDecryptRequest) String() string {
 func (*AsymmetricDecryptRequest) ProtoMessage() {}
 
 func (x *AsymmetricDecryptRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[33]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2834,7 +3109,7 @@ func (x *AsymmetricDecryptRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AsymmetricDecryptRequest.ProtoReflect.Descriptor instead.
 func (*AsymmetricDecryptRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{33}
+	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{36}
 }
 
 func (x *AsymmetricDecryptRequest) GetName() string {
@@ -2893,7 +3168,7 @@ type MacSignRequest struct {
 
 func (x *MacSignRequest) Reset() {
 	*x = MacSignRequest{}
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[34]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[37]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2905,7 +3180,7 @@ func (x *MacSignRequest) String() string {
 func (*MacSignRequest) ProtoMessage() {}
 
 func (x *MacSignRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[34]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[37]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2918,7 +3193,7 @@ func (x *MacSignRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MacSignRequest.ProtoReflect.Descriptor instead.
 func (*MacSignRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{34}
+	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{37}
 }
 
 func (x *MacSignRequest) GetName() string {
@@ -2999,7 +3274,7 @@ type MacVerifyRequest struct {
 
 func (x *MacVerifyRequest) Reset() {
 	*x = MacVerifyRequest{}
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[35]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[38]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3011,7 +3286,7 @@ func (x *MacVerifyRequest) String() string {
 func (*MacVerifyRequest) ProtoMessage() {}
 
 func (x *MacVerifyRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[35]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[38]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3024,7 +3299,7 @@ func (x *MacVerifyRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MacVerifyRequest.ProtoReflect.Descriptor instead.
 func (*MacVerifyRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{35}
+	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{38}
 }
 
 func (x *MacVerifyRequest) GetName() string {
@@ -3100,7 +3375,7 @@ type DecapsulateRequest struct {
 
 func (x *DecapsulateRequest) Reset() {
 	*x = DecapsulateRequest{}
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[36]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[39]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3112,7 +3387,7 @@ func (x *DecapsulateRequest) String() string {
 func (*DecapsulateRequest) ProtoMessage() {}
 
 func (x *DecapsulateRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[36]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[39]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3125,7 +3400,7 @@ func (x *DecapsulateRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DecapsulateRequest.ProtoReflect.Descriptor instead.
 func (*DecapsulateRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{36}
+	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{39}
 }
 
 func (x *DecapsulateRequest) GetName() string {
@@ -3170,7 +3445,7 @@ type GenerateRandomBytesRequest struct {
 
 func (x *GenerateRandomBytesRequest) Reset() {
 	*x = GenerateRandomBytesRequest{}
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[37]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[40]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3182,7 +3457,7 @@ func (x *GenerateRandomBytesRequest) String() string {
 func (*GenerateRandomBytesRequest) ProtoMessage() {}
 
 func (x *GenerateRandomBytesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[37]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[40]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3195,7 +3470,7 @@ func (x *GenerateRandomBytesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GenerateRandomBytesRequest.ProtoReflect.Descriptor instead.
 func (*GenerateRandomBytesRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{37}
+	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{40}
 }
 
 func (x *GenerateRandomBytesRequest) GetLocation() string {
@@ -3284,7 +3559,7 @@ type EncryptResponse struct {
 
 func (x *EncryptResponse) Reset() {
 	*x = EncryptResponse{}
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[38]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[41]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3296,7 +3571,7 @@ func (x *EncryptResponse) String() string {
 func (*EncryptResponse) ProtoMessage() {}
 
 func (x *EncryptResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[38]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[41]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3309,7 +3584,7 @@ func (x *EncryptResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EncryptResponse.ProtoReflect.Descriptor instead.
 func (*EncryptResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{38}
+	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{41}
 }
 
 func (x *EncryptResponse) GetName() string {
@@ -3391,7 +3666,7 @@ type DecryptResponse struct {
 
 func (x *DecryptResponse) Reset() {
 	*x = DecryptResponse{}
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[39]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[42]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3403,7 +3678,7 @@ func (x *DecryptResponse) String() string {
 func (*DecryptResponse) ProtoMessage() {}
 
 func (x *DecryptResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[39]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[42]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3416,7 +3691,7 @@ func (x *DecryptResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DecryptResponse.ProtoReflect.Descriptor instead.
 func (*DecryptResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{39}
+	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{42}
 }
 
 func (x *DecryptResponse) GetPlaintext() []byte {
@@ -3542,7 +3817,7 @@ type RawEncryptResponse struct {
 
 func (x *RawEncryptResponse) Reset() {
 	*x = RawEncryptResponse{}
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[40]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[43]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3554,7 +3829,7 @@ func (x *RawEncryptResponse) String() string {
 func (*RawEncryptResponse) ProtoMessage() {}
 
 func (x *RawEncryptResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[40]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[43]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3567,7 +3842,7 @@ func (x *RawEncryptResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RawEncryptResponse.ProtoReflect.Descriptor instead.
 func (*RawEncryptResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{40}
+	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{43}
 }
 
 func (x *RawEncryptResponse) GetCiphertext() []byte {
@@ -3714,7 +3989,7 @@ type RawDecryptResponse struct {
 
 func (x *RawDecryptResponse) Reset() {
 	*x = RawDecryptResponse{}
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[41]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[44]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3726,7 +4001,7 @@ func (x *RawDecryptResponse) String() string {
 func (*RawDecryptResponse) ProtoMessage() {}
 
 func (x *RawDecryptResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[41]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[44]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3739,7 +4014,7 @@ func (x *RawDecryptResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RawDecryptResponse.ProtoReflect.Descriptor instead.
 func (*RawDecryptResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{41}
+	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{44}
 }
 
 func (x *RawDecryptResponse) GetPlaintext() []byte {
@@ -3847,7 +4122,7 @@ type AsymmetricSignResponse struct {
 
 func (x *AsymmetricSignResponse) Reset() {
 	*x = AsymmetricSignResponse{}
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[42]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[45]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3859,7 +4134,7 @@ func (x *AsymmetricSignResponse) String() string {
 func (*AsymmetricSignResponse) ProtoMessage() {}
 
 func (x *AsymmetricSignResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[42]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[45]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3872,7 +4147,7 @@ func (x *AsymmetricSignResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AsymmetricSignResponse.ProtoReflect.Descriptor instead.
 func (*AsymmetricSignResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{42}
+	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{45}
 }
 
 func (x *AsymmetricSignResponse) GetSignature() []byte {
@@ -3962,7 +4237,7 @@ type AsymmetricDecryptResponse struct {
 
 func (x *AsymmetricDecryptResponse) Reset() {
 	*x = AsymmetricDecryptResponse{}
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[43]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[46]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3974,7 +4249,7 @@ func (x *AsymmetricDecryptResponse) String() string {
 func (*AsymmetricDecryptResponse) ProtoMessage() {}
 
 func (x *AsymmetricDecryptResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[43]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[46]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3987,7 +4262,7 @@ func (x *AsymmetricDecryptResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AsymmetricDecryptResponse.ProtoReflect.Descriptor instead.
 func (*AsymmetricDecryptResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{43}
+	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{46}
 }
 
 func (x *AsymmetricDecryptResponse) GetPlaintext() []byte {
@@ -4066,7 +4341,7 @@ type MacSignResponse struct {
 
 func (x *MacSignResponse) Reset() {
 	*x = MacSignResponse{}
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[44]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[47]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4078,7 +4353,7 @@ func (x *MacSignResponse) String() string {
 func (*MacSignResponse) ProtoMessage() {}
 
 func (x *MacSignResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[44]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[47]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4091,7 +4366,7 @@ func (x *MacSignResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MacSignResponse.ProtoReflect.Descriptor instead.
 func (*MacSignResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{44}
+	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{47}
 }
 
 func (x *MacSignResponse) GetName() string {
@@ -4188,7 +4463,7 @@ type MacVerifyResponse struct {
 
 func (x *MacVerifyResponse) Reset() {
 	*x = MacVerifyResponse{}
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[45]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[48]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4200,7 +4475,7 @@ func (x *MacVerifyResponse) String() string {
 func (*MacVerifyResponse) ProtoMessage() {}
 
 func (x *MacVerifyResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[45]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[48]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4213,7 +4488,7 @@ func (x *MacVerifyResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MacVerifyResponse.ProtoReflect.Descriptor instead.
 func (*MacVerifyResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{45}
+	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{48}
 }
 
 func (x *MacVerifyResponse) GetName() string {
@@ -4313,7 +4588,7 @@ type DecapsulateResponse struct {
 
 func (x *DecapsulateResponse) Reset() {
 	*x = DecapsulateResponse{}
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[46]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[49]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4325,7 +4600,7 @@ func (x *DecapsulateResponse) String() string {
 func (*DecapsulateResponse) ProtoMessage() {}
 
 func (x *DecapsulateResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[46]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[49]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4338,7 +4613,7 @@ func (x *DecapsulateResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DecapsulateResponse.ProtoReflect.Descriptor instead.
 func (*DecapsulateResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{46}
+	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{49}
 }
 
 func (x *DecapsulateResponse) GetName() string {
@@ -4402,7 +4677,7 @@ type GenerateRandomBytesResponse struct {
 
 func (x *GenerateRandomBytesResponse) Reset() {
 	*x = GenerateRandomBytesResponse{}
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[47]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[50]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4414,7 +4689,7 @@ func (x *GenerateRandomBytesResponse) String() string {
 func (*GenerateRandomBytesResponse) ProtoMessage() {}
 
 func (x *GenerateRandomBytesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[47]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[50]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4427,7 +4702,7 @@ func (x *GenerateRandomBytesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GenerateRandomBytesResponse.ProtoReflect.Descriptor instead.
 func (*GenerateRandomBytesResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{47}
+	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{50}
 }
 
 func (x *GenerateRandomBytesResponse) GetData() []byte {
@@ -4462,7 +4737,7 @@ type Digest struct {
 
 func (x *Digest) Reset() {
 	*x = Digest{}
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[48]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[51]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4474,7 +4749,7 @@ func (x *Digest) String() string {
 func (*Digest) ProtoMessage() {}
 
 func (x *Digest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[48]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[51]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4487,7 +4762,7 @@ func (x *Digest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Digest.ProtoReflect.Descriptor instead.
 func (*Digest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{48}
+	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{51}
 }
 
 func (x *Digest) GetDigest() isDigest_Digest {
@@ -4593,7 +4868,7 @@ type LocationMetadata struct {
 
 func (x *LocationMetadata) Reset() {
 	*x = LocationMetadata{}
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[49]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[52]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4605,7 +4880,7 @@ func (x *LocationMetadata) String() string {
 func (*LocationMetadata) ProtoMessage() {}
 
 func (x *LocationMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[49]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[52]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4618,7 +4893,7 @@ func (x *LocationMetadata) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LocationMetadata.ProtoReflect.Descriptor instead.
 func (*LocationMetadata) Descriptor() ([]byte, []int) {
-	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{49}
+	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{52}
 }
 
 func (x *LocationMetadata) GetHsmAvailable() bool {
@@ -4658,7 +4933,7 @@ type DeleteCryptoKeyMetadata struct {
 
 func (x *DeleteCryptoKeyMetadata) Reset() {
 	*x = DeleteCryptoKeyMetadata{}
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[50]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[53]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4670,7 +4945,7 @@ func (x *DeleteCryptoKeyMetadata) String() string {
 func (*DeleteCryptoKeyMetadata) ProtoMessage() {}
 
 func (x *DeleteCryptoKeyMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[50]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[53]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4683,7 +4958,7 @@ func (x *DeleteCryptoKeyMetadata) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteCryptoKeyMetadata.ProtoReflect.Descriptor instead.
 func (*DeleteCryptoKeyMetadata) Descriptor() ([]byte, []int) {
-	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{50}
+	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{53}
 }
 
 func (x *DeleteCryptoKeyMetadata) GetRetiredResource() string {
@@ -4704,7 +4979,7 @@ type DeleteCryptoKeyVersionMetadata struct {
 
 func (x *DeleteCryptoKeyVersionMetadata) Reset() {
 	*x = DeleteCryptoKeyVersionMetadata{}
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[51]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[54]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4716,7 +4991,7 @@ func (x *DeleteCryptoKeyVersionMetadata) String() string {
 func (*DeleteCryptoKeyVersionMetadata) ProtoMessage() {}
 
 func (x *DeleteCryptoKeyVersionMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[51]
+	mi := &file_google_cloud_kms_v1_service_proto_msgTypes[54]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4729,7 +5004,7 @@ func (x *DeleteCryptoKeyVersionMetadata) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteCryptoKeyVersionMetadata.ProtoReflect.Descriptor instead.
 func (*DeleteCryptoKeyVersionMetadata) Descriptor() ([]byte, []int) {
-	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{51}
+	return file_google_cloud_kms_v1_service_proto_rawDescGZIP(), []int{54}
 }
 
 var File_google_cloud_kms_v1_service_proto protoreflect.FileDescriptor
@@ -4827,14 +5102,15 @@ const file_google_cloud_kms_v1_service_proto_rawDesc = "" +
 	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12#\n" +
 	"\vkey_ring_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tkeyRingId\x12<\n" +
-	"\bkey_ring\x18\x03 \x01(\v2\x1c.google.cloud.kms.v1.KeyRingB\x03\xe0A\x02R\akeyRing\"\x89\x02\n" +
+	"\bkey_ring\x18\x03 \x01(\v2\x1c.google.cloud.kms.v1.KeyRingB\x03\xe0A\x02R\akeyRing\"\xc8\x02\n" +
 	"\x16CreateCryptoKeyRequest\x12?\n" +
 	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
 	"\x1fcloudkms.googleapis.com/KeyRingR\x06parent\x12'\n" +
 	"\rcrypto_key_id\x18\x02 \x01(\tB\x03\xe0A\x02R\vcryptoKeyId\x12B\n" +
 	"\n" +
 	"crypto_key\x18\x03 \x01(\v2\x1e.google.cloud.kms.v1.CryptoKeyB\x03\xe0A\x02R\tcryptoKey\x12A\n" +
-	"\x1dskip_initial_version_creation\x18\x05 \x01(\bR\x1askipInitialVersionCreation\"\xbc\x01\n" +
+	"\x1dskip_initial_version_creation\x18\x05 \x01(\bR\x1askipInitialVersionCreation\x12=\n" +
+	"\x18trusted_wrapping_enabled\x18\x06 \x01(\bB\x03\xe0A\x01R\x16trustedWrappingEnabled\"\xbc\x01\n" +
 	"\x1dCreateCryptoKeyVersionRequest\x12A\n" +
 	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
 	"!cloudkms.googleapis.com/CryptoKeyR\x06parent\x12X\n" +
@@ -4844,7 +5120,7 @@ const file_google_cloud_kms_v1_service_proto_rawDesc = "" +
 	"!cloudkms.googleapis.com/CryptoKeyR\x04name\"e\n" +
 	"\x1dDeleteCryptoKeyVersionRequest\x12D\n" +
 	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
-	"(cloudkms.googleapis.com/CryptoKeyVersionR\x04name\"\xbe\x03\n" +
+	"(cloudkms.googleapis.com/CryptoKeyVersionR\x04name\"\xfd\x03\n" +
 	"\x1dImportCryptoKeyVersionRequest\x12A\n" +
 	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
 	"!cloudkms.googleapis.com/CryptoKeyR\x06parent\x12^\n" +
@@ -4855,8 +5131,25 @@ const file_google_cloud_kms_v1_service_proto_rawDesc = "" +
 	"import_job\x18\x04 \x01(\tB\x03\xe0A\x02R\timportJob\x12$\n" +
 	"\vwrapped_key\x18\b \x01(\fB\x03\xe0A\x01R\n" +
 	"wrappedKey\x124\n" +
-	"\x13rsa_aes_wrapped_key\x18\x05 \x01(\fB\x03\xe0A\x01H\x00R\x10rsaAesWrappedKeyB\x16\n" +
-	"\x14wrapped_key_material\"\xc6\x01\n" +
+	"\x13rsa_aes_wrapped_key\x18\x05 \x01(\fB\x03\xe0A\x01H\x00R\x10rsaAesWrappedKey\x12=\n" +
+	"\x18trusted_wrapping_enabled\x18\t \x01(\bB\x03\xe0A\x01R\x16trustedWrappingEnabledB\x16\n" +
+	"\x14wrapped_key_material\"\xb4\x02\n" +
+	".ImportTrustedKeyWrappedCryptoKeyVersionRequest\x12\x1b\n" +
+	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12(\n" +
+	"\rimporting_key\x18\x02 \x01(\tB\x03\xe0A\x02R\fimportingKey\x121\n" +
+	"\x12crypto_key_version\x18\x03 \x01(\tB\x03\xe0A\x01R\x10cryptoKeyVersion\x12$\n" +
+	"\vwrapped_key\x18\x04 \x01(\fB\x03\xe0A\x02R\n" +
+	"wrappedKey\x12b\n" +
+	"\talgorithm\x18\x05 \x01(\x0e2?.google.cloud.kms.v1.CryptoKeyVersion.CryptoKeyVersionAlgorithmB\x03\xe0A\x02R\talgorithm\"\xcb\x01\n" +
+	".ExportTrustedKeyWrappedCryptoKeyVersionRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
+	"(cloudkms.googleapis.com/CryptoKeyVersionR\x04name\x12S\n" +
+	"\fwrapping_key\x18\x02 \x01(\tB0\xe0A\x02\xfaA*\n" +
+	"(cloudkms.googleapis.com/CryptoKeyVersionR\vwrappingKey\"\x9d\x01\n" +
+	"/ExportTrustedKeyWrappedCryptoKeyVersionResponse\x12\x1f\n" +
+	"\vwrapped_key\x18\x01 \x01(\fR\n" +
+	"wrappedKey\x12I\n" +
+	"\x12wrapped_key_crc32c\x18\x02 \x01(\v2\x1b.google.protobuf.Int64ValueR\x10wrappedKeyCrc32c\"\xc6\x01\n" +
 	"\x16CreateImportJobRequest\x12?\n" +
 	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
 	"\x1fcloudkms.googleapis.com/KeyRingR\x06parent\x12'\n" +
@@ -5046,7 +5339,7 @@ const file_google_cloud_kms_v1_service_proto_rawDesc = "" +
 	"\x17DeleteCryptoKeyMetadata\x12Z\n" +
 	"\x10retired_resource\x18\x01 \x01(\tB/\xe0A\x03\xfaA)\n" +
 	"'cloudkms.googleapis.com/RetiredResourceR\x0fretiredResource\" \n" +
-	"\x1eDeleteCryptoKeyVersionMetadata2\xb46\n" +
+	"\x1eDeleteCryptoKeyVersionMetadata2\x85;\n" +
 	"\x14KeyManagementService\x12\xa2\x01\n" +
 	"\fListKeyRings\x12(.google.cloud.kms.v1.ListKeyRingsRequest\x1a).google.cloud.kms.v1.ListKeyRingsResponse\"=\xdaA\x06parent\x82\xd3\xe4\x93\x02.\x12,/v1/{parent=projects/*/locations/*}/keyRings\x12\xb5\x01\n" +
 	"\x0eListCryptoKeys\x12*.google.cloud.kms.v1.ListCryptoKeysRequest\x1a+.google.cloud.kms.v1.ListCryptoKeysResponse\"J\xdaA\x06parent\x82\xd3\xe4\x93\x02;\x129/v1/{parent=projects/*/locations/*/keyRings/*}/cryptoKeys\x12\xde\x01\n" +
@@ -5068,7 +5361,9 @@ const file_google_cloud_kms_v1_service_proto_rawDesc = "" +
 	"\x15google.protobuf.Empty\x12\x17DeleteCryptoKeyMetadata\xdaA\x04name\x82\xd3\xe4\x93\x02;*9/v1/{name=projects/*/locations/*/keyRings/*/cryptoKeys/*}\x12\x84\x02\n" +
 	"\x16DeleteCryptoKeyVersion\x122.google.cloud.kms.v1.DeleteCryptoKeyVersionRequest\x1a\x1d.google.longrunning.Operation\"\x96\x01\xcaA7\n" +
 	"\x15google.protobuf.Empty\x12\x1eDeleteCryptoKeyVersionMetadata\xdaA\x04name\x82\xd3\xe4\x93\x02O*M/v1/{name=projects/*/locations/*/keyRings/*/cryptoKeys/*/cryptoKeyVersions/*}\x12\xd4\x01\n" +
-	"\x16ImportCryptoKeyVersion\x122.google.cloud.kms.v1.ImportCryptoKeyVersionRequest\x1a%.google.cloud.kms.v1.CryptoKeyVersion\"_\x82\xd3\xe4\x93\x02Y:\x01*\"T/v1/{parent=projects/*/locations/*/keyRings/*/cryptoKeys/*}/cryptoKeyVersions:import\x12\xcf\x01\n" +
+	"\x16ImportCryptoKeyVersion\x122.google.cloud.kms.v1.ImportCryptoKeyVersionRequest\x1a%.google.cloud.kms.v1.CryptoKeyVersion\"_\x82\xd3\xe4\x93\x02Y:\x01*\"T/v1/{parent=projects/*/locations/*/keyRings/*/cryptoKeys/*}/cryptoKeyVersions:import\x12\x98\x02\n" +
+	"'ImportTrustedKeyWrappedCryptoKeyVersion\x12C.google.cloud.kms.v1.ImportTrustedKeyWrappedCryptoKeyVersionRequest\x1a%.google.cloud.kms.v1.CryptoKeyVersion\"\x80\x01\x82\xd3\xe4\x93\x02z:\x01*\"u/v1/{parent=projects/*/locations/*/keyRings/*/cryptoKeys/*}/cryptoKeyVersions:importTrustedKeyWrappedCryptoKeyVersion\x12\xb3\x02\n" +
+	"'ExportTrustedKeyWrappedCryptoKeyVersion\x12C.google.cloud.kms.v1.ExportTrustedKeyWrappedCryptoKeyVersionRequest\x1aD.google.cloud.kms.v1.ExportTrustedKeyWrappedCryptoKeyVersionResponse\"}\x82\xd3\xe4\x93\x02w\x12u/v1/{name=projects/*/locations/*/keyRings/*/cryptoKeys/*/cryptoKeyVersions/*}:exportTrustedKeyWrappedCryptoKeyVersion\x12\xcf\x01\n" +
 	"\x0fCreateImportJob\x12+.google.cloud.kms.v1.CreateImportJobRequest\x1a\x1e.google.cloud.kms.v1.ImportJob\"o\xdaA\x1fparent,import_job_id,import_job\x82\xd3\xe4\x93\x02G:\n" +
 	"import_job\"9/v1/{parent=projects/*/locations/*/keyRings/*}/importJobs\x12\xd1\x01\n" +
 	"\x0fUpdateCryptoKey\x12+.google.cloud.kms.v1.UpdateCryptoKeyRequest\x1a\x1e.google.cloud.kms.v1.CryptoKey\"q\xdaA\x16crypto_key,update_mask\x82\xd3\xe4\x93\x02R:\n" +
@@ -5103,201 +5398,210 @@ func file_google_cloud_kms_v1_service_proto_rawDescGZIP() []byte {
 	return file_google_cloud_kms_v1_service_proto_rawDescData
 }
 
-var file_google_cloud_kms_v1_service_proto_msgTypes = make([]protoimpl.MessageInfo, 52)
+var file_google_cloud_kms_v1_service_proto_msgTypes = make([]protoimpl.MessageInfo, 55)
 var file_google_cloud_kms_v1_service_proto_goTypes = []any{
-	(*ListKeyRingsRequest)(nil),                     // 0: google.cloud.kms.v1.ListKeyRingsRequest
-	(*ListCryptoKeysRequest)(nil),                   // 1: google.cloud.kms.v1.ListCryptoKeysRequest
-	(*ListCryptoKeyVersionsRequest)(nil),            // 2: google.cloud.kms.v1.ListCryptoKeyVersionsRequest
-	(*ListImportJobsRequest)(nil),                   // 3: google.cloud.kms.v1.ListImportJobsRequest
-	(*ListRetiredResourcesRequest)(nil),             // 4: google.cloud.kms.v1.ListRetiredResourcesRequest
-	(*ListKeyRingsResponse)(nil),                    // 5: google.cloud.kms.v1.ListKeyRingsResponse
-	(*ListCryptoKeysResponse)(nil),                  // 6: google.cloud.kms.v1.ListCryptoKeysResponse
-	(*ListCryptoKeyVersionsResponse)(nil),           // 7: google.cloud.kms.v1.ListCryptoKeyVersionsResponse
-	(*ListImportJobsResponse)(nil),                  // 8: google.cloud.kms.v1.ListImportJobsResponse
-	(*ListRetiredResourcesResponse)(nil),            // 9: google.cloud.kms.v1.ListRetiredResourcesResponse
-	(*GetKeyRingRequest)(nil),                       // 10: google.cloud.kms.v1.GetKeyRingRequest
-	(*GetCryptoKeyRequest)(nil),                     // 11: google.cloud.kms.v1.GetCryptoKeyRequest
-	(*GetCryptoKeyVersionRequest)(nil),              // 12: google.cloud.kms.v1.GetCryptoKeyVersionRequest
-	(*GetPublicKeyRequest)(nil),                     // 13: google.cloud.kms.v1.GetPublicKeyRequest
-	(*GetImportJobRequest)(nil),                     // 14: google.cloud.kms.v1.GetImportJobRequest
-	(*GetRetiredResourceRequest)(nil),               // 15: google.cloud.kms.v1.GetRetiredResourceRequest
-	(*CreateKeyRingRequest)(nil),                    // 16: google.cloud.kms.v1.CreateKeyRingRequest
-	(*CreateCryptoKeyRequest)(nil),                  // 17: google.cloud.kms.v1.CreateCryptoKeyRequest
-	(*CreateCryptoKeyVersionRequest)(nil),           // 18: google.cloud.kms.v1.CreateCryptoKeyVersionRequest
-	(*DeleteCryptoKeyRequest)(nil),                  // 19: google.cloud.kms.v1.DeleteCryptoKeyRequest
-	(*DeleteCryptoKeyVersionRequest)(nil),           // 20: google.cloud.kms.v1.DeleteCryptoKeyVersionRequest
-	(*ImportCryptoKeyVersionRequest)(nil),           // 21: google.cloud.kms.v1.ImportCryptoKeyVersionRequest
-	(*CreateImportJobRequest)(nil),                  // 22: google.cloud.kms.v1.CreateImportJobRequest
-	(*UpdateCryptoKeyRequest)(nil),                  // 23: google.cloud.kms.v1.UpdateCryptoKeyRequest
-	(*UpdateCryptoKeyVersionRequest)(nil),           // 24: google.cloud.kms.v1.UpdateCryptoKeyVersionRequest
-	(*UpdateCryptoKeyPrimaryVersionRequest)(nil),    // 25: google.cloud.kms.v1.UpdateCryptoKeyPrimaryVersionRequest
-	(*DestroyCryptoKeyVersionRequest)(nil),          // 26: google.cloud.kms.v1.DestroyCryptoKeyVersionRequest
-	(*RestoreCryptoKeyVersionRequest)(nil),          // 27: google.cloud.kms.v1.RestoreCryptoKeyVersionRequest
-	(*EncryptRequest)(nil),                          // 28: google.cloud.kms.v1.EncryptRequest
-	(*DecryptRequest)(nil),                          // 29: google.cloud.kms.v1.DecryptRequest
-	(*RawEncryptRequest)(nil),                       // 30: google.cloud.kms.v1.RawEncryptRequest
-	(*RawDecryptRequest)(nil),                       // 31: google.cloud.kms.v1.RawDecryptRequest
-	(*AsymmetricSignRequest)(nil),                   // 32: google.cloud.kms.v1.AsymmetricSignRequest
-	(*AsymmetricDecryptRequest)(nil),                // 33: google.cloud.kms.v1.AsymmetricDecryptRequest
-	(*MacSignRequest)(nil),                          // 34: google.cloud.kms.v1.MacSignRequest
-	(*MacVerifyRequest)(nil),                        // 35: google.cloud.kms.v1.MacVerifyRequest
-	(*DecapsulateRequest)(nil),                      // 36: google.cloud.kms.v1.DecapsulateRequest
-	(*GenerateRandomBytesRequest)(nil),              // 37: google.cloud.kms.v1.GenerateRandomBytesRequest
-	(*EncryptResponse)(nil),                         // 38: google.cloud.kms.v1.EncryptResponse
-	(*DecryptResponse)(nil),                         // 39: google.cloud.kms.v1.DecryptResponse
-	(*RawEncryptResponse)(nil),                      // 40: google.cloud.kms.v1.RawEncryptResponse
-	(*RawDecryptResponse)(nil),                      // 41: google.cloud.kms.v1.RawDecryptResponse
-	(*AsymmetricSignResponse)(nil),                  // 42: google.cloud.kms.v1.AsymmetricSignResponse
-	(*AsymmetricDecryptResponse)(nil),               // 43: google.cloud.kms.v1.AsymmetricDecryptResponse
-	(*MacSignResponse)(nil),                         // 44: google.cloud.kms.v1.MacSignResponse
-	(*MacVerifyResponse)(nil),                       // 45: google.cloud.kms.v1.MacVerifyResponse
-	(*DecapsulateResponse)(nil),                     // 46: google.cloud.kms.v1.DecapsulateResponse
-	(*GenerateRandomBytesResponse)(nil),             // 47: google.cloud.kms.v1.GenerateRandomBytesResponse
-	(*Digest)(nil),                                  // 48: google.cloud.kms.v1.Digest
-	(*LocationMetadata)(nil),                        // 49: google.cloud.kms.v1.LocationMetadata
-	(*DeleteCryptoKeyMetadata)(nil),                 // 50: google.cloud.kms.v1.DeleteCryptoKeyMetadata
-	(*DeleteCryptoKeyVersionMetadata)(nil),          // 51: google.cloud.kms.v1.DeleteCryptoKeyVersionMetadata
-	(CryptoKeyVersion_CryptoKeyVersionView)(0),      // 52: google.cloud.kms.v1.CryptoKeyVersion.CryptoKeyVersionView
-	(*KeyRing)(nil),                                 // 53: google.cloud.kms.v1.KeyRing
-	(*CryptoKey)(nil),                               // 54: google.cloud.kms.v1.CryptoKey
-	(*CryptoKeyVersion)(nil),                        // 55: google.cloud.kms.v1.CryptoKeyVersion
-	(*ImportJob)(nil),                               // 56: google.cloud.kms.v1.ImportJob
-	(*RetiredResource)(nil),                         // 57: google.cloud.kms.v1.RetiredResource
-	(PublicKey_PublicKeyFormat)(0),                  // 58: google.cloud.kms.v1.PublicKey.PublicKeyFormat
-	(CryptoKeyVersion_CryptoKeyVersionAlgorithm)(0), // 59: google.cloud.kms.v1.CryptoKeyVersion.CryptoKeyVersionAlgorithm
-	(*fieldmaskpb.FieldMask)(nil),                   // 60: google.protobuf.FieldMask
-	(*wrapperspb.Int64Value)(nil),                   // 61: google.protobuf.Int64Value
-	(ProtectionLevel)(0),                            // 62: google.cloud.kms.v1.ProtectionLevel
-	(*PublicKey)(nil),                               // 63: google.cloud.kms.v1.PublicKey
-	(*longrunningpb.Operation)(nil),                 // 64: google.longrunning.Operation
+	(*ListKeyRingsRequest)(nil),                             // 0: google.cloud.kms.v1.ListKeyRingsRequest
+	(*ListCryptoKeysRequest)(nil),                           // 1: google.cloud.kms.v1.ListCryptoKeysRequest
+	(*ListCryptoKeyVersionsRequest)(nil),                    // 2: google.cloud.kms.v1.ListCryptoKeyVersionsRequest
+	(*ListImportJobsRequest)(nil),                           // 3: google.cloud.kms.v1.ListImportJobsRequest
+	(*ListRetiredResourcesRequest)(nil),                     // 4: google.cloud.kms.v1.ListRetiredResourcesRequest
+	(*ListKeyRingsResponse)(nil),                            // 5: google.cloud.kms.v1.ListKeyRingsResponse
+	(*ListCryptoKeysResponse)(nil),                          // 6: google.cloud.kms.v1.ListCryptoKeysResponse
+	(*ListCryptoKeyVersionsResponse)(nil),                   // 7: google.cloud.kms.v1.ListCryptoKeyVersionsResponse
+	(*ListImportJobsResponse)(nil),                          // 8: google.cloud.kms.v1.ListImportJobsResponse
+	(*ListRetiredResourcesResponse)(nil),                    // 9: google.cloud.kms.v1.ListRetiredResourcesResponse
+	(*GetKeyRingRequest)(nil),                               // 10: google.cloud.kms.v1.GetKeyRingRequest
+	(*GetCryptoKeyRequest)(nil),                             // 11: google.cloud.kms.v1.GetCryptoKeyRequest
+	(*GetCryptoKeyVersionRequest)(nil),                      // 12: google.cloud.kms.v1.GetCryptoKeyVersionRequest
+	(*GetPublicKeyRequest)(nil),                             // 13: google.cloud.kms.v1.GetPublicKeyRequest
+	(*GetImportJobRequest)(nil),                             // 14: google.cloud.kms.v1.GetImportJobRequest
+	(*GetRetiredResourceRequest)(nil),                       // 15: google.cloud.kms.v1.GetRetiredResourceRequest
+	(*CreateKeyRingRequest)(nil),                            // 16: google.cloud.kms.v1.CreateKeyRingRequest
+	(*CreateCryptoKeyRequest)(nil),                          // 17: google.cloud.kms.v1.CreateCryptoKeyRequest
+	(*CreateCryptoKeyVersionRequest)(nil),                   // 18: google.cloud.kms.v1.CreateCryptoKeyVersionRequest
+	(*DeleteCryptoKeyRequest)(nil),                          // 19: google.cloud.kms.v1.DeleteCryptoKeyRequest
+	(*DeleteCryptoKeyVersionRequest)(nil),                   // 20: google.cloud.kms.v1.DeleteCryptoKeyVersionRequest
+	(*ImportCryptoKeyVersionRequest)(nil),                   // 21: google.cloud.kms.v1.ImportCryptoKeyVersionRequest
+	(*ImportTrustedKeyWrappedCryptoKeyVersionRequest)(nil),  // 22: google.cloud.kms.v1.ImportTrustedKeyWrappedCryptoKeyVersionRequest
+	(*ExportTrustedKeyWrappedCryptoKeyVersionRequest)(nil),  // 23: google.cloud.kms.v1.ExportTrustedKeyWrappedCryptoKeyVersionRequest
+	(*ExportTrustedKeyWrappedCryptoKeyVersionResponse)(nil), // 24: google.cloud.kms.v1.ExportTrustedKeyWrappedCryptoKeyVersionResponse
+	(*CreateImportJobRequest)(nil),                          // 25: google.cloud.kms.v1.CreateImportJobRequest
+	(*UpdateCryptoKeyRequest)(nil),                          // 26: google.cloud.kms.v1.UpdateCryptoKeyRequest
+	(*UpdateCryptoKeyVersionRequest)(nil),                   // 27: google.cloud.kms.v1.UpdateCryptoKeyVersionRequest
+	(*UpdateCryptoKeyPrimaryVersionRequest)(nil),            // 28: google.cloud.kms.v1.UpdateCryptoKeyPrimaryVersionRequest
+	(*DestroyCryptoKeyVersionRequest)(nil),                  // 29: google.cloud.kms.v1.DestroyCryptoKeyVersionRequest
+	(*RestoreCryptoKeyVersionRequest)(nil),                  // 30: google.cloud.kms.v1.RestoreCryptoKeyVersionRequest
+	(*EncryptRequest)(nil),                                  // 31: google.cloud.kms.v1.EncryptRequest
+	(*DecryptRequest)(nil),                                  // 32: google.cloud.kms.v1.DecryptRequest
+	(*RawEncryptRequest)(nil),                               // 33: google.cloud.kms.v1.RawEncryptRequest
+	(*RawDecryptRequest)(nil),                               // 34: google.cloud.kms.v1.RawDecryptRequest
+	(*AsymmetricSignRequest)(nil),                           // 35: google.cloud.kms.v1.AsymmetricSignRequest
+	(*AsymmetricDecryptRequest)(nil),                        // 36: google.cloud.kms.v1.AsymmetricDecryptRequest
+	(*MacSignRequest)(nil),                                  // 37: google.cloud.kms.v1.MacSignRequest
+	(*MacVerifyRequest)(nil),                                // 38: google.cloud.kms.v1.MacVerifyRequest
+	(*DecapsulateRequest)(nil),                              // 39: google.cloud.kms.v1.DecapsulateRequest
+	(*GenerateRandomBytesRequest)(nil),                      // 40: google.cloud.kms.v1.GenerateRandomBytesRequest
+	(*EncryptResponse)(nil),                                 // 41: google.cloud.kms.v1.EncryptResponse
+	(*DecryptResponse)(nil),                                 // 42: google.cloud.kms.v1.DecryptResponse
+	(*RawEncryptResponse)(nil),                              // 43: google.cloud.kms.v1.RawEncryptResponse
+	(*RawDecryptResponse)(nil),                              // 44: google.cloud.kms.v1.RawDecryptResponse
+	(*AsymmetricSignResponse)(nil),                          // 45: google.cloud.kms.v1.AsymmetricSignResponse
+	(*AsymmetricDecryptResponse)(nil),                       // 46: google.cloud.kms.v1.AsymmetricDecryptResponse
+	(*MacSignResponse)(nil),                                 // 47: google.cloud.kms.v1.MacSignResponse
+	(*MacVerifyResponse)(nil),                               // 48: google.cloud.kms.v1.MacVerifyResponse
+	(*DecapsulateResponse)(nil),                             // 49: google.cloud.kms.v1.DecapsulateResponse
+	(*GenerateRandomBytesResponse)(nil),                     // 50: google.cloud.kms.v1.GenerateRandomBytesResponse
+	(*Digest)(nil),                                          // 51: google.cloud.kms.v1.Digest
+	(*LocationMetadata)(nil),                                // 52: google.cloud.kms.v1.LocationMetadata
+	(*DeleteCryptoKeyMetadata)(nil),                         // 53: google.cloud.kms.v1.DeleteCryptoKeyMetadata
+	(*DeleteCryptoKeyVersionMetadata)(nil),                  // 54: google.cloud.kms.v1.DeleteCryptoKeyVersionMetadata
+	(CryptoKeyVersion_CryptoKeyVersionView)(0),              // 55: google.cloud.kms.v1.CryptoKeyVersion.CryptoKeyVersionView
+	(*KeyRing)(nil),                                         // 56: google.cloud.kms.v1.KeyRing
+	(*CryptoKey)(nil),                                       // 57: google.cloud.kms.v1.CryptoKey
+	(*CryptoKeyVersion)(nil),                                // 58: google.cloud.kms.v1.CryptoKeyVersion
+	(*ImportJob)(nil),                                       // 59: google.cloud.kms.v1.ImportJob
+	(*RetiredResource)(nil),                                 // 60: google.cloud.kms.v1.RetiredResource
+	(PublicKey_PublicKeyFormat)(0),                          // 61: google.cloud.kms.v1.PublicKey.PublicKeyFormat
+	(CryptoKeyVersion_CryptoKeyVersionAlgorithm)(0),         // 62: google.cloud.kms.v1.CryptoKeyVersion.CryptoKeyVersionAlgorithm
+	(*wrapperspb.Int64Value)(nil),                           // 63: google.protobuf.Int64Value
+	(*fieldmaskpb.FieldMask)(nil),                           // 64: google.protobuf.FieldMask
+	(ProtectionLevel)(0),                                    // 65: google.cloud.kms.v1.ProtectionLevel
+	(*PublicKey)(nil),                                       // 66: google.cloud.kms.v1.PublicKey
+	(*longrunningpb.Operation)(nil),                         // 67: google.longrunning.Operation
 }
 var file_google_cloud_kms_v1_service_proto_depIdxs = []int32{
-	52, // 0: google.cloud.kms.v1.ListCryptoKeysRequest.version_view:type_name -> google.cloud.kms.v1.CryptoKeyVersion.CryptoKeyVersionView
-	52, // 1: google.cloud.kms.v1.ListCryptoKeyVersionsRequest.view:type_name -> google.cloud.kms.v1.CryptoKeyVersion.CryptoKeyVersionView
-	53, // 2: google.cloud.kms.v1.ListKeyRingsResponse.key_rings:type_name -> google.cloud.kms.v1.KeyRing
-	54, // 3: google.cloud.kms.v1.ListCryptoKeysResponse.crypto_keys:type_name -> google.cloud.kms.v1.CryptoKey
-	55, // 4: google.cloud.kms.v1.ListCryptoKeyVersionsResponse.crypto_key_versions:type_name -> google.cloud.kms.v1.CryptoKeyVersion
-	56, // 5: google.cloud.kms.v1.ListImportJobsResponse.import_jobs:type_name -> google.cloud.kms.v1.ImportJob
-	57, // 6: google.cloud.kms.v1.ListRetiredResourcesResponse.retired_resources:type_name -> google.cloud.kms.v1.RetiredResource
-	58, // 7: google.cloud.kms.v1.GetPublicKeyRequest.public_key_format:type_name -> google.cloud.kms.v1.PublicKey.PublicKeyFormat
-	58, // 8: google.cloud.kms.v1.GetImportJobRequest.public_key_format:type_name -> google.cloud.kms.v1.PublicKey.PublicKeyFormat
-	53, // 9: google.cloud.kms.v1.CreateKeyRingRequest.key_ring:type_name -> google.cloud.kms.v1.KeyRing
-	54, // 10: google.cloud.kms.v1.CreateCryptoKeyRequest.crypto_key:type_name -> google.cloud.kms.v1.CryptoKey
-	55, // 11: google.cloud.kms.v1.CreateCryptoKeyVersionRequest.crypto_key_version:type_name -> google.cloud.kms.v1.CryptoKeyVersion
-	59, // 12: google.cloud.kms.v1.ImportCryptoKeyVersionRequest.algorithm:type_name -> google.cloud.kms.v1.CryptoKeyVersion.CryptoKeyVersionAlgorithm
-	56, // 13: google.cloud.kms.v1.CreateImportJobRequest.import_job:type_name -> google.cloud.kms.v1.ImportJob
-	54, // 14: google.cloud.kms.v1.UpdateCryptoKeyRequest.crypto_key:type_name -> google.cloud.kms.v1.CryptoKey
-	60, // 15: google.cloud.kms.v1.UpdateCryptoKeyRequest.update_mask:type_name -> google.protobuf.FieldMask
-	55, // 16: google.cloud.kms.v1.UpdateCryptoKeyVersionRequest.crypto_key_version:type_name -> google.cloud.kms.v1.CryptoKeyVersion
-	60, // 17: google.cloud.kms.v1.UpdateCryptoKeyVersionRequest.update_mask:type_name -> google.protobuf.FieldMask
-	61, // 18: google.cloud.kms.v1.EncryptRequest.plaintext_crc32c:type_name -> google.protobuf.Int64Value
-	61, // 19: google.cloud.kms.v1.EncryptRequest.additional_authenticated_data_crc32c:type_name -> google.protobuf.Int64Value
-	61, // 20: google.cloud.kms.v1.DecryptRequest.ciphertext_crc32c:type_name -> google.protobuf.Int64Value
-	61, // 21: google.cloud.kms.v1.DecryptRequest.additional_authenticated_data_crc32c:type_name -> google.protobuf.Int64Value
-	61, // 22: google.cloud.kms.v1.RawEncryptRequest.plaintext_crc32c:type_name -> google.protobuf.Int64Value
-	61, // 23: google.cloud.kms.v1.RawEncryptRequest.additional_authenticated_data_crc32c:type_name -> google.protobuf.Int64Value
-	61, // 24: google.cloud.kms.v1.RawEncryptRequest.initialization_vector_crc32c:type_name -> google.protobuf.Int64Value
-	61, // 25: google.cloud.kms.v1.RawDecryptRequest.ciphertext_crc32c:type_name -> google.protobuf.Int64Value
-	61, // 26: google.cloud.kms.v1.RawDecryptRequest.additional_authenticated_data_crc32c:type_name -> google.protobuf.Int64Value
-	61, // 27: google.cloud.kms.v1.RawDecryptRequest.initialization_vector_crc32c:type_name -> google.protobuf.Int64Value
-	48, // 28: google.cloud.kms.v1.AsymmetricSignRequest.digest:type_name -> google.cloud.kms.v1.Digest
-	61, // 29: google.cloud.kms.v1.AsymmetricSignRequest.digest_crc32c:type_name -> google.protobuf.Int64Value
-	61, // 30: google.cloud.kms.v1.AsymmetricSignRequest.data_crc32c:type_name -> google.protobuf.Int64Value
-	61, // 31: google.cloud.kms.v1.AsymmetricDecryptRequest.ciphertext_crc32c:type_name -> google.protobuf.Int64Value
-	61, // 32: google.cloud.kms.v1.MacSignRequest.data_crc32c:type_name -> google.protobuf.Int64Value
-	61, // 33: google.cloud.kms.v1.MacVerifyRequest.data_crc32c:type_name -> google.protobuf.Int64Value
-	61, // 34: google.cloud.kms.v1.MacVerifyRequest.mac_crc32c:type_name -> google.protobuf.Int64Value
-	61, // 35: google.cloud.kms.v1.DecapsulateRequest.ciphertext_crc32c:type_name -> google.protobuf.Int64Value
-	62, // 36: google.cloud.kms.v1.GenerateRandomBytesRequest.protection_level:type_name -> google.cloud.kms.v1.ProtectionLevel
-	61, // 37: google.cloud.kms.v1.EncryptResponse.ciphertext_crc32c:type_name -> google.protobuf.Int64Value
-	62, // 38: google.cloud.kms.v1.EncryptResponse.protection_level:type_name -> google.cloud.kms.v1.ProtectionLevel
-	61, // 39: google.cloud.kms.v1.DecryptResponse.plaintext_crc32c:type_name -> google.protobuf.Int64Value
-	62, // 40: google.cloud.kms.v1.DecryptResponse.protection_level:type_name -> google.cloud.kms.v1.ProtectionLevel
-	61, // 41: google.cloud.kms.v1.RawEncryptResponse.ciphertext_crc32c:type_name -> google.protobuf.Int64Value
-	61, // 42: google.cloud.kms.v1.RawEncryptResponse.initialization_vector_crc32c:type_name -> google.protobuf.Int64Value
-	62, // 43: google.cloud.kms.v1.RawEncryptResponse.protection_level:type_name -> google.cloud.kms.v1.ProtectionLevel
-	61, // 44: google.cloud.kms.v1.RawDecryptResponse.plaintext_crc32c:type_name -> google.protobuf.Int64Value
-	62, // 45: google.cloud.kms.v1.RawDecryptResponse.protection_level:type_name -> google.cloud.kms.v1.ProtectionLevel
-	61, // 46: google.cloud.kms.v1.AsymmetricSignResponse.signature_crc32c:type_name -> google.protobuf.Int64Value
-	62, // 47: google.cloud.kms.v1.AsymmetricSignResponse.protection_level:type_name -> google.cloud.kms.v1.ProtectionLevel
-	61, // 48: google.cloud.kms.v1.AsymmetricDecryptResponse.plaintext_crc32c:type_name -> google.protobuf.Int64Value
-	62, // 49: google.cloud.kms.v1.AsymmetricDecryptResponse.protection_level:type_name -> google.cloud.kms.v1.ProtectionLevel
-	61, // 50: google.cloud.kms.v1.MacSignResponse.mac_crc32c:type_name -> google.protobuf.Int64Value
-	62, // 51: google.cloud.kms.v1.MacSignResponse.protection_level:type_name -> google.cloud.kms.v1.ProtectionLevel
-	62, // 52: google.cloud.kms.v1.MacVerifyResponse.protection_level:type_name -> google.cloud.kms.v1.ProtectionLevel
-	62, // 53: google.cloud.kms.v1.DecapsulateResponse.protection_level:type_name -> google.cloud.kms.v1.ProtectionLevel
-	61, // 54: google.cloud.kms.v1.GenerateRandomBytesResponse.data_crc32c:type_name -> google.protobuf.Int64Value
-	0,  // 55: google.cloud.kms.v1.KeyManagementService.ListKeyRings:input_type -> google.cloud.kms.v1.ListKeyRingsRequest
-	1,  // 56: google.cloud.kms.v1.KeyManagementService.ListCryptoKeys:input_type -> google.cloud.kms.v1.ListCryptoKeysRequest
-	2,  // 57: google.cloud.kms.v1.KeyManagementService.ListCryptoKeyVersions:input_type -> google.cloud.kms.v1.ListCryptoKeyVersionsRequest
-	3,  // 58: google.cloud.kms.v1.KeyManagementService.ListImportJobs:input_type -> google.cloud.kms.v1.ListImportJobsRequest
-	4,  // 59: google.cloud.kms.v1.KeyManagementService.ListRetiredResources:input_type -> google.cloud.kms.v1.ListRetiredResourcesRequest
-	10, // 60: google.cloud.kms.v1.KeyManagementService.GetKeyRing:input_type -> google.cloud.kms.v1.GetKeyRingRequest
-	11, // 61: google.cloud.kms.v1.KeyManagementService.GetCryptoKey:input_type -> google.cloud.kms.v1.GetCryptoKeyRequest
-	12, // 62: google.cloud.kms.v1.KeyManagementService.GetCryptoKeyVersion:input_type -> google.cloud.kms.v1.GetCryptoKeyVersionRequest
-	13, // 63: google.cloud.kms.v1.KeyManagementService.GetPublicKey:input_type -> google.cloud.kms.v1.GetPublicKeyRequest
-	14, // 64: google.cloud.kms.v1.KeyManagementService.GetImportJob:input_type -> google.cloud.kms.v1.GetImportJobRequest
-	15, // 65: google.cloud.kms.v1.KeyManagementService.GetRetiredResource:input_type -> google.cloud.kms.v1.GetRetiredResourceRequest
-	16, // 66: google.cloud.kms.v1.KeyManagementService.CreateKeyRing:input_type -> google.cloud.kms.v1.CreateKeyRingRequest
-	17, // 67: google.cloud.kms.v1.KeyManagementService.CreateCryptoKey:input_type -> google.cloud.kms.v1.CreateCryptoKeyRequest
-	18, // 68: google.cloud.kms.v1.KeyManagementService.CreateCryptoKeyVersion:input_type -> google.cloud.kms.v1.CreateCryptoKeyVersionRequest
-	19, // 69: google.cloud.kms.v1.KeyManagementService.DeleteCryptoKey:input_type -> google.cloud.kms.v1.DeleteCryptoKeyRequest
-	20, // 70: google.cloud.kms.v1.KeyManagementService.DeleteCryptoKeyVersion:input_type -> google.cloud.kms.v1.DeleteCryptoKeyVersionRequest
-	21, // 71: google.cloud.kms.v1.KeyManagementService.ImportCryptoKeyVersion:input_type -> google.cloud.kms.v1.ImportCryptoKeyVersionRequest
-	22, // 72: google.cloud.kms.v1.KeyManagementService.CreateImportJob:input_type -> google.cloud.kms.v1.CreateImportJobRequest
-	23, // 73: google.cloud.kms.v1.KeyManagementService.UpdateCryptoKey:input_type -> google.cloud.kms.v1.UpdateCryptoKeyRequest
-	24, // 74: google.cloud.kms.v1.KeyManagementService.UpdateCryptoKeyVersion:input_type -> google.cloud.kms.v1.UpdateCryptoKeyVersionRequest
-	25, // 75: google.cloud.kms.v1.KeyManagementService.UpdateCryptoKeyPrimaryVersion:input_type -> google.cloud.kms.v1.UpdateCryptoKeyPrimaryVersionRequest
-	26, // 76: google.cloud.kms.v1.KeyManagementService.DestroyCryptoKeyVersion:input_type -> google.cloud.kms.v1.DestroyCryptoKeyVersionRequest
-	27, // 77: google.cloud.kms.v1.KeyManagementService.RestoreCryptoKeyVersion:input_type -> google.cloud.kms.v1.RestoreCryptoKeyVersionRequest
-	28, // 78: google.cloud.kms.v1.KeyManagementService.Encrypt:input_type -> google.cloud.kms.v1.EncryptRequest
-	29, // 79: google.cloud.kms.v1.KeyManagementService.Decrypt:input_type -> google.cloud.kms.v1.DecryptRequest
-	30, // 80: google.cloud.kms.v1.KeyManagementService.RawEncrypt:input_type -> google.cloud.kms.v1.RawEncryptRequest
-	31, // 81: google.cloud.kms.v1.KeyManagementService.RawDecrypt:input_type -> google.cloud.kms.v1.RawDecryptRequest
-	32, // 82: google.cloud.kms.v1.KeyManagementService.AsymmetricSign:input_type -> google.cloud.kms.v1.AsymmetricSignRequest
-	33, // 83: google.cloud.kms.v1.KeyManagementService.AsymmetricDecrypt:input_type -> google.cloud.kms.v1.AsymmetricDecryptRequest
-	34, // 84: google.cloud.kms.v1.KeyManagementService.MacSign:input_type -> google.cloud.kms.v1.MacSignRequest
-	35, // 85: google.cloud.kms.v1.KeyManagementService.MacVerify:input_type -> google.cloud.kms.v1.MacVerifyRequest
-	36, // 86: google.cloud.kms.v1.KeyManagementService.Decapsulate:input_type -> google.cloud.kms.v1.DecapsulateRequest
-	37, // 87: google.cloud.kms.v1.KeyManagementService.GenerateRandomBytes:input_type -> google.cloud.kms.v1.GenerateRandomBytesRequest
-	5,  // 88: google.cloud.kms.v1.KeyManagementService.ListKeyRings:output_type -> google.cloud.kms.v1.ListKeyRingsResponse
-	6,  // 89: google.cloud.kms.v1.KeyManagementService.ListCryptoKeys:output_type -> google.cloud.kms.v1.ListCryptoKeysResponse
-	7,  // 90: google.cloud.kms.v1.KeyManagementService.ListCryptoKeyVersions:output_type -> google.cloud.kms.v1.ListCryptoKeyVersionsResponse
-	8,  // 91: google.cloud.kms.v1.KeyManagementService.ListImportJobs:output_type -> google.cloud.kms.v1.ListImportJobsResponse
-	9,  // 92: google.cloud.kms.v1.KeyManagementService.ListRetiredResources:output_type -> google.cloud.kms.v1.ListRetiredResourcesResponse
-	53, // 93: google.cloud.kms.v1.KeyManagementService.GetKeyRing:output_type -> google.cloud.kms.v1.KeyRing
-	54, // 94: google.cloud.kms.v1.KeyManagementService.GetCryptoKey:output_type -> google.cloud.kms.v1.CryptoKey
-	55, // 95: google.cloud.kms.v1.KeyManagementService.GetCryptoKeyVersion:output_type -> google.cloud.kms.v1.CryptoKeyVersion
-	63, // 96: google.cloud.kms.v1.KeyManagementService.GetPublicKey:output_type -> google.cloud.kms.v1.PublicKey
-	56, // 97: google.cloud.kms.v1.KeyManagementService.GetImportJob:output_type -> google.cloud.kms.v1.ImportJob
-	57, // 98: google.cloud.kms.v1.KeyManagementService.GetRetiredResource:output_type -> google.cloud.kms.v1.RetiredResource
-	53, // 99: google.cloud.kms.v1.KeyManagementService.CreateKeyRing:output_type -> google.cloud.kms.v1.KeyRing
-	54, // 100: google.cloud.kms.v1.KeyManagementService.CreateCryptoKey:output_type -> google.cloud.kms.v1.CryptoKey
-	55, // 101: google.cloud.kms.v1.KeyManagementService.CreateCryptoKeyVersion:output_type -> google.cloud.kms.v1.CryptoKeyVersion
-	64, // 102: google.cloud.kms.v1.KeyManagementService.DeleteCryptoKey:output_type -> google.longrunning.Operation
-	64, // 103: google.cloud.kms.v1.KeyManagementService.DeleteCryptoKeyVersion:output_type -> google.longrunning.Operation
-	55, // 104: google.cloud.kms.v1.KeyManagementService.ImportCryptoKeyVersion:output_type -> google.cloud.kms.v1.CryptoKeyVersion
-	56, // 105: google.cloud.kms.v1.KeyManagementService.CreateImportJob:output_type -> google.cloud.kms.v1.ImportJob
-	54, // 106: google.cloud.kms.v1.KeyManagementService.UpdateCryptoKey:output_type -> google.cloud.kms.v1.CryptoKey
-	55, // 107: google.cloud.kms.v1.KeyManagementService.UpdateCryptoKeyVersion:output_type -> google.cloud.kms.v1.CryptoKeyVersion
-	54, // 108: google.cloud.kms.v1.KeyManagementService.UpdateCryptoKeyPrimaryVersion:output_type -> google.cloud.kms.v1.CryptoKey
-	55, // 109: google.cloud.kms.v1.KeyManagementService.DestroyCryptoKeyVersion:output_type -> google.cloud.kms.v1.CryptoKeyVersion
-	55, // 110: google.cloud.kms.v1.KeyManagementService.RestoreCryptoKeyVersion:output_type -> google.cloud.kms.v1.CryptoKeyVersion
-	38, // 111: google.cloud.kms.v1.KeyManagementService.Encrypt:output_type -> google.cloud.kms.v1.EncryptResponse
-	39, // 112: google.cloud.kms.v1.KeyManagementService.Decrypt:output_type -> google.cloud.kms.v1.DecryptResponse
-	40, // 113: google.cloud.kms.v1.KeyManagementService.RawEncrypt:output_type -> google.cloud.kms.v1.RawEncryptResponse
-	41, // 114: google.cloud.kms.v1.KeyManagementService.RawDecrypt:output_type -> google.cloud.kms.v1.RawDecryptResponse
-	42, // 115: google.cloud.kms.v1.KeyManagementService.AsymmetricSign:output_type -> google.cloud.kms.v1.AsymmetricSignResponse
-	43, // 116: google.cloud.kms.v1.KeyManagementService.AsymmetricDecrypt:output_type -> google.cloud.kms.v1.AsymmetricDecryptResponse
-	44, // 117: google.cloud.kms.v1.KeyManagementService.MacSign:output_type -> google.cloud.kms.v1.MacSignResponse
-	45, // 118: google.cloud.kms.v1.KeyManagementService.MacVerify:output_type -> google.cloud.kms.v1.MacVerifyResponse
-	46, // 119: google.cloud.kms.v1.KeyManagementService.Decapsulate:output_type -> google.cloud.kms.v1.DecapsulateResponse
-	47, // 120: google.cloud.kms.v1.KeyManagementService.GenerateRandomBytes:output_type -> google.cloud.kms.v1.GenerateRandomBytesResponse
-	88, // [88:121] is the sub-list for method output_type
-	55, // [55:88] is the sub-list for method input_type
-	55, // [55:55] is the sub-list for extension type_name
-	55, // [55:55] is the sub-list for extension extendee
-	0,  // [0:55] is the sub-list for field type_name
+	55, // 0: google.cloud.kms.v1.ListCryptoKeysRequest.version_view:type_name -> google.cloud.kms.v1.CryptoKeyVersion.CryptoKeyVersionView
+	55, // 1: google.cloud.kms.v1.ListCryptoKeyVersionsRequest.view:type_name -> google.cloud.kms.v1.CryptoKeyVersion.CryptoKeyVersionView
+	56, // 2: google.cloud.kms.v1.ListKeyRingsResponse.key_rings:type_name -> google.cloud.kms.v1.KeyRing
+	57, // 3: google.cloud.kms.v1.ListCryptoKeysResponse.crypto_keys:type_name -> google.cloud.kms.v1.CryptoKey
+	58, // 4: google.cloud.kms.v1.ListCryptoKeyVersionsResponse.crypto_key_versions:type_name -> google.cloud.kms.v1.CryptoKeyVersion
+	59, // 5: google.cloud.kms.v1.ListImportJobsResponse.import_jobs:type_name -> google.cloud.kms.v1.ImportJob
+	60, // 6: google.cloud.kms.v1.ListRetiredResourcesResponse.retired_resources:type_name -> google.cloud.kms.v1.RetiredResource
+	61, // 7: google.cloud.kms.v1.GetPublicKeyRequest.public_key_format:type_name -> google.cloud.kms.v1.PublicKey.PublicKeyFormat
+	61, // 8: google.cloud.kms.v1.GetImportJobRequest.public_key_format:type_name -> google.cloud.kms.v1.PublicKey.PublicKeyFormat
+	56, // 9: google.cloud.kms.v1.CreateKeyRingRequest.key_ring:type_name -> google.cloud.kms.v1.KeyRing
+	57, // 10: google.cloud.kms.v1.CreateCryptoKeyRequest.crypto_key:type_name -> google.cloud.kms.v1.CryptoKey
+	58, // 11: google.cloud.kms.v1.CreateCryptoKeyVersionRequest.crypto_key_version:type_name -> google.cloud.kms.v1.CryptoKeyVersion
+	62, // 12: google.cloud.kms.v1.ImportCryptoKeyVersionRequest.algorithm:type_name -> google.cloud.kms.v1.CryptoKeyVersion.CryptoKeyVersionAlgorithm
+	62, // 13: google.cloud.kms.v1.ImportTrustedKeyWrappedCryptoKeyVersionRequest.algorithm:type_name -> google.cloud.kms.v1.CryptoKeyVersion.CryptoKeyVersionAlgorithm
+	63, // 14: google.cloud.kms.v1.ExportTrustedKeyWrappedCryptoKeyVersionResponse.wrapped_key_crc32c:type_name -> google.protobuf.Int64Value
+	59, // 15: google.cloud.kms.v1.CreateImportJobRequest.import_job:type_name -> google.cloud.kms.v1.ImportJob
+	57, // 16: google.cloud.kms.v1.UpdateCryptoKeyRequest.crypto_key:type_name -> google.cloud.kms.v1.CryptoKey
+	64, // 17: google.cloud.kms.v1.UpdateCryptoKeyRequest.update_mask:type_name -> google.protobuf.FieldMask
+	58, // 18: google.cloud.kms.v1.UpdateCryptoKeyVersionRequest.crypto_key_version:type_name -> google.cloud.kms.v1.CryptoKeyVersion
+	64, // 19: google.cloud.kms.v1.UpdateCryptoKeyVersionRequest.update_mask:type_name -> google.protobuf.FieldMask
+	63, // 20: google.cloud.kms.v1.EncryptRequest.plaintext_crc32c:type_name -> google.protobuf.Int64Value
+	63, // 21: google.cloud.kms.v1.EncryptRequest.additional_authenticated_data_crc32c:type_name -> google.protobuf.Int64Value
+	63, // 22: google.cloud.kms.v1.DecryptRequest.ciphertext_crc32c:type_name -> google.protobuf.Int64Value
+	63, // 23: google.cloud.kms.v1.DecryptRequest.additional_authenticated_data_crc32c:type_name -> google.protobuf.Int64Value
+	63, // 24: google.cloud.kms.v1.RawEncryptRequest.plaintext_crc32c:type_name -> google.protobuf.Int64Value
+	63, // 25: google.cloud.kms.v1.RawEncryptRequest.additional_authenticated_data_crc32c:type_name -> google.protobuf.Int64Value
+	63, // 26: google.cloud.kms.v1.RawEncryptRequest.initialization_vector_crc32c:type_name -> google.protobuf.Int64Value
+	63, // 27: google.cloud.kms.v1.RawDecryptRequest.ciphertext_crc32c:type_name -> google.protobuf.Int64Value
+	63, // 28: google.cloud.kms.v1.RawDecryptRequest.additional_authenticated_data_crc32c:type_name -> google.protobuf.Int64Value
+	63, // 29: google.cloud.kms.v1.RawDecryptRequest.initialization_vector_crc32c:type_name -> google.protobuf.Int64Value
+	51, // 30: google.cloud.kms.v1.AsymmetricSignRequest.digest:type_name -> google.cloud.kms.v1.Digest
+	63, // 31: google.cloud.kms.v1.AsymmetricSignRequest.digest_crc32c:type_name -> google.protobuf.Int64Value
+	63, // 32: google.cloud.kms.v1.AsymmetricSignRequest.data_crc32c:type_name -> google.protobuf.Int64Value
+	63, // 33: google.cloud.kms.v1.AsymmetricDecryptRequest.ciphertext_crc32c:type_name -> google.protobuf.Int64Value
+	63, // 34: google.cloud.kms.v1.MacSignRequest.data_crc32c:type_name -> google.protobuf.Int64Value
+	63, // 35: google.cloud.kms.v1.MacVerifyRequest.data_crc32c:type_name -> google.protobuf.Int64Value
+	63, // 36: google.cloud.kms.v1.MacVerifyRequest.mac_crc32c:type_name -> google.protobuf.Int64Value
+	63, // 37: google.cloud.kms.v1.DecapsulateRequest.ciphertext_crc32c:type_name -> google.protobuf.Int64Value
+	65, // 38: google.cloud.kms.v1.GenerateRandomBytesRequest.protection_level:type_name -> google.cloud.kms.v1.ProtectionLevel
+	63, // 39: google.cloud.kms.v1.EncryptResponse.ciphertext_crc32c:type_name -> google.protobuf.Int64Value
+	65, // 40: google.cloud.kms.v1.EncryptResponse.protection_level:type_name -> google.cloud.kms.v1.ProtectionLevel
+	63, // 41: google.cloud.kms.v1.DecryptResponse.plaintext_crc32c:type_name -> google.protobuf.Int64Value
+	65, // 42: google.cloud.kms.v1.DecryptResponse.protection_level:type_name -> google.cloud.kms.v1.ProtectionLevel
+	63, // 43: google.cloud.kms.v1.RawEncryptResponse.ciphertext_crc32c:type_name -> google.protobuf.Int64Value
+	63, // 44: google.cloud.kms.v1.RawEncryptResponse.initialization_vector_crc32c:type_name -> google.protobuf.Int64Value
+	65, // 45: google.cloud.kms.v1.RawEncryptResponse.protection_level:type_name -> google.cloud.kms.v1.ProtectionLevel
+	63, // 46: google.cloud.kms.v1.RawDecryptResponse.plaintext_crc32c:type_name -> google.protobuf.Int64Value
+	65, // 47: google.cloud.kms.v1.RawDecryptResponse.protection_level:type_name -> google.cloud.kms.v1.ProtectionLevel
+	63, // 48: google.cloud.kms.v1.AsymmetricSignResponse.signature_crc32c:type_name -> google.protobuf.Int64Value
+	65, // 49: google.cloud.kms.v1.AsymmetricSignResponse.protection_level:type_name -> google.cloud.kms.v1.ProtectionLevel
+	63, // 50: google.cloud.kms.v1.AsymmetricDecryptResponse.plaintext_crc32c:type_name -> google.protobuf.Int64Value
+	65, // 51: google.cloud.kms.v1.AsymmetricDecryptResponse.protection_level:type_name -> google.cloud.kms.v1.ProtectionLevel
+	63, // 52: google.cloud.kms.v1.MacSignResponse.mac_crc32c:type_name -> google.protobuf.Int64Value
+	65, // 53: google.cloud.kms.v1.MacSignResponse.protection_level:type_name -> google.cloud.kms.v1.ProtectionLevel
+	65, // 54: google.cloud.kms.v1.MacVerifyResponse.protection_level:type_name -> google.cloud.kms.v1.ProtectionLevel
+	65, // 55: google.cloud.kms.v1.DecapsulateResponse.protection_level:type_name -> google.cloud.kms.v1.ProtectionLevel
+	63, // 56: google.cloud.kms.v1.GenerateRandomBytesResponse.data_crc32c:type_name -> google.protobuf.Int64Value
+	0,  // 57: google.cloud.kms.v1.KeyManagementService.ListKeyRings:input_type -> google.cloud.kms.v1.ListKeyRingsRequest
+	1,  // 58: google.cloud.kms.v1.KeyManagementService.ListCryptoKeys:input_type -> google.cloud.kms.v1.ListCryptoKeysRequest
+	2,  // 59: google.cloud.kms.v1.KeyManagementService.ListCryptoKeyVersions:input_type -> google.cloud.kms.v1.ListCryptoKeyVersionsRequest
+	3,  // 60: google.cloud.kms.v1.KeyManagementService.ListImportJobs:input_type -> google.cloud.kms.v1.ListImportJobsRequest
+	4,  // 61: google.cloud.kms.v1.KeyManagementService.ListRetiredResources:input_type -> google.cloud.kms.v1.ListRetiredResourcesRequest
+	10, // 62: google.cloud.kms.v1.KeyManagementService.GetKeyRing:input_type -> google.cloud.kms.v1.GetKeyRingRequest
+	11, // 63: google.cloud.kms.v1.KeyManagementService.GetCryptoKey:input_type -> google.cloud.kms.v1.GetCryptoKeyRequest
+	12, // 64: google.cloud.kms.v1.KeyManagementService.GetCryptoKeyVersion:input_type -> google.cloud.kms.v1.GetCryptoKeyVersionRequest
+	13, // 65: google.cloud.kms.v1.KeyManagementService.GetPublicKey:input_type -> google.cloud.kms.v1.GetPublicKeyRequest
+	14, // 66: google.cloud.kms.v1.KeyManagementService.GetImportJob:input_type -> google.cloud.kms.v1.GetImportJobRequest
+	15, // 67: google.cloud.kms.v1.KeyManagementService.GetRetiredResource:input_type -> google.cloud.kms.v1.GetRetiredResourceRequest
+	16, // 68: google.cloud.kms.v1.KeyManagementService.CreateKeyRing:input_type -> google.cloud.kms.v1.CreateKeyRingRequest
+	17, // 69: google.cloud.kms.v1.KeyManagementService.CreateCryptoKey:input_type -> google.cloud.kms.v1.CreateCryptoKeyRequest
+	18, // 70: google.cloud.kms.v1.KeyManagementService.CreateCryptoKeyVersion:input_type -> google.cloud.kms.v1.CreateCryptoKeyVersionRequest
+	19, // 71: google.cloud.kms.v1.KeyManagementService.DeleteCryptoKey:input_type -> google.cloud.kms.v1.DeleteCryptoKeyRequest
+	20, // 72: google.cloud.kms.v1.KeyManagementService.DeleteCryptoKeyVersion:input_type -> google.cloud.kms.v1.DeleteCryptoKeyVersionRequest
+	21, // 73: google.cloud.kms.v1.KeyManagementService.ImportCryptoKeyVersion:input_type -> google.cloud.kms.v1.ImportCryptoKeyVersionRequest
+	22, // 74: google.cloud.kms.v1.KeyManagementService.ImportTrustedKeyWrappedCryptoKeyVersion:input_type -> google.cloud.kms.v1.ImportTrustedKeyWrappedCryptoKeyVersionRequest
+	23, // 75: google.cloud.kms.v1.KeyManagementService.ExportTrustedKeyWrappedCryptoKeyVersion:input_type -> google.cloud.kms.v1.ExportTrustedKeyWrappedCryptoKeyVersionRequest
+	25, // 76: google.cloud.kms.v1.KeyManagementService.CreateImportJob:input_type -> google.cloud.kms.v1.CreateImportJobRequest
+	26, // 77: google.cloud.kms.v1.KeyManagementService.UpdateCryptoKey:input_type -> google.cloud.kms.v1.UpdateCryptoKeyRequest
+	27, // 78: google.cloud.kms.v1.KeyManagementService.UpdateCryptoKeyVersion:input_type -> google.cloud.kms.v1.UpdateCryptoKeyVersionRequest
+	28, // 79: google.cloud.kms.v1.KeyManagementService.UpdateCryptoKeyPrimaryVersion:input_type -> google.cloud.kms.v1.UpdateCryptoKeyPrimaryVersionRequest
+	29, // 80: google.cloud.kms.v1.KeyManagementService.DestroyCryptoKeyVersion:input_type -> google.cloud.kms.v1.DestroyCryptoKeyVersionRequest
+	30, // 81: google.cloud.kms.v1.KeyManagementService.RestoreCryptoKeyVersion:input_type -> google.cloud.kms.v1.RestoreCryptoKeyVersionRequest
+	31, // 82: google.cloud.kms.v1.KeyManagementService.Encrypt:input_type -> google.cloud.kms.v1.EncryptRequest
+	32, // 83: google.cloud.kms.v1.KeyManagementService.Decrypt:input_type -> google.cloud.kms.v1.DecryptRequest
+	33, // 84: google.cloud.kms.v1.KeyManagementService.RawEncrypt:input_type -> google.cloud.kms.v1.RawEncryptRequest
+	34, // 85: google.cloud.kms.v1.KeyManagementService.RawDecrypt:input_type -> google.cloud.kms.v1.RawDecryptRequest
+	35, // 86: google.cloud.kms.v1.KeyManagementService.AsymmetricSign:input_type -> google.cloud.kms.v1.AsymmetricSignRequest
+	36, // 87: google.cloud.kms.v1.KeyManagementService.AsymmetricDecrypt:input_type -> google.cloud.kms.v1.AsymmetricDecryptRequest
+	37, // 88: google.cloud.kms.v1.KeyManagementService.MacSign:input_type -> google.cloud.kms.v1.MacSignRequest
+	38, // 89: google.cloud.kms.v1.KeyManagementService.MacVerify:input_type -> google.cloud.kms.v1.MacVerifyRequest
+	39, // 90: google.cloud.kms.v1.KeyManagementService.Decapsulate:input_type -> google.cloud.kms.v1.DecapsulateRequest
+	40, // 91: google.cloud.kms.v1.KeyManagementService.GenerateRandomBytes:input_type -> google.cloud.kms.v1.GenerateRandomBytesRequest
+	5,  // 92: google.cloud.kms.v1.KeyManagementService.ListKeyRings:output_type -> google.cloud.kms.v1.ListKeyRingsResponse
+	6,  // 93: google.cloud.kms.v1.KeyManagementService.ListCryptoKeys:output_type -> google.cloud.kms.v1.ListCryptoKeysResponse
+	7,  // 94: google.cloud.kms.v1.KeyManagementService.ListCryptoKeyVersions:output_type -> google.cloud.kms.v1.ListCryptoKeyVersionsResponse
+	8,  // 95: google.cloud.kms.v1.KeyManagementService.ListImportJobs:output_type -> google.cloud.kms.v1.ListImportJobsResponse
+	9,  // 96: google.cloud.kms.v1.KeyManagementService.ListRetiredResources:output_type -> google.cloud.kms.v1.ListRetiredResourcesResponse
+	56, // 97: google.cloud.kms.v1.KeyManagementService.GetKeyRing:output_type -> google.cloud.kms.v1.KeyRing
+	57, // 98: google.cloud.kms.v1.KeyManagementService.GetCryptoKey:output_type -> google.cloud.kms.v1.CryptoKey
+	58, // 99: google.cloud.kms.v1.KeyManagementService.GetCryptoKeyVersion:output_type -> google.cloud.kms.v1.CryptoKeyVersion
+	66, // 100: google.cloud.kms.v1.KeyManagementService.GetPublicKey:output_type -> google.cloud.kms.v1.PublicKey
+	59, // 101: google.cloud.kms.v1.KeyManagementService.GetImportJob:output_type -> google.cloud.kms.v1.ImportJob
+	60, // 102: google.cloud.kms.v1.KeyManagementService.GetRetiredResource:output_type -> google.cloud.kms.v1.RetiredResource
+	56, // 103: google.cloud.kms.v1.KeyManagementService.CreateKeyRing:output_type -> google.cloud.kms.v1.KeyRing
+	57, // 104: google.cloud.kms.v1.KeyManagementService.CreateCryptoKey:output_type -> google.cloud.kms.v1.CryptoKey
+	58, // 105: google.cloud.kms.v1.KeyManagementService.CreateCryptoKeyVersion:output_type -> google.cloud.kms.v1.CryptoKeyVersion
+	67, // 106: google.cloud.kms.v1.KeyManagementService.DeleteCryptoKey:output_type -> google.longrunning.Operation
+	67, // 107: google.cloud.kms.v1.KeyManagementService.DeleteCryptoKeyVersion:output_type -> google.longrunning.Operation
+	58, // 108: google.cloud.kms.v1.KeyManagementService.ImportCryptoKeyVersion:output_type -> google.cloud.kms.v1.CryptoKeyVersion
+	58, // 109: google.cloud.kms.v1.KeyManagementService.ImportTrustedKeyWrappedCryptoKeyVersion:output_type -> google.cloud.kms.v1.CryptoKeyVersion
+	24, // 110: google.cloud.kms.v1.KeyManagementService.ExportTrustedKeyWrappedCryptoKeyVersion:output_type -> google.cloud.kms.v1.ExportTrustedKeyWrappedCryptoKeyVersionResponse
+	59, // 111: google.cloud.kms.v1.KeyManagementService.CreateImportJob:output_type -> google.cloud.kms.v1.ImportJob
+	57, // 112: google.cloud.kms.v1.KeyManagementService.UpdateCryptoKey:output_type -> google.cloud.kms.v1.CryptoKey
+	58, // 113: google.cloud.kms.v1.KeyManagementService.UpdateCryptoKeyVersion:output_type -> google.cloud.kms.v1.CryptoKeyVersion
+	57, // 114: google.cloud.kms.v1.KeyManagementService.UpdateCryptoKeyPrimaryVersion:output_type -> google.cloud.kms.v1.CryptoKey
+	58, // 115: google.cloud.kms.v1.KeyManagementService.DestroyCryptoKeyVersion:output_type -> google.cloud.kms.v1.CryptoKeyVersion
+	58, // 116: google.cloud.kms.v1.KeyManagementService.RestoreCryptoKeyVersion:output_type -> google.cloud.kms.v1.CryptoKeyVersion
+	41, // 117: google.cloud.kms.v1.KeyManagementService.Encrypt:output_type -> google.cloud.kms.v1.EncryptResponse
+	42, // 118: google.cloud.kms.v1.KeyManagementService.Decrypt:output_type -> google.cloud.kms.v1.DecryptResponse
+	43, // 119: google.cloud.kms.v1.KeyManagementService.RawEncrypt:output_type -> google.cloud.kms.v1.RawEncryptResponse
+	44, // 120: google.cloud.kms.v1.KeyManagementService.RawDecrypt:output_type -> google.cloud.kms.v1.RawDecryptResponse
+	45, // 121: google.cloud.kms.v1.KeyManagementService.AsymmetricSign:output_type -> google.cloud.kms.v1.AsymmetricSignResponse
+	46, // 122: google.cloud.kms.v1.KeyManagementService.AsymmetricDecrypt:output_type -> google.cloud.kms.v1.AsymmetricDecryptResponse
+	47, // 123: google.cloud.kms.v1.KeyManagementService.MacSign:output_type -> google.cloud.kms.v1.MacSignResponse
+	48, // 124: google.cloud.kms.v1.KeyManagementService.MacVerify:output_type -> google.cloud.kms.v1.MacVerifyResponse
+	49, // 125: google.cloud.kms.v1.KeyManagementService.Decapsulate:output_type -> google.cloud.kms.v1.DecapsulateResponse
+	50, // 126: google.cloud.kms.v1.KeyManagementService.GenerateRandomBytes:output_type -> google.cloud.kms.v1.GenerateRandomBytesResponse
+	92, // [92:127] is the sub-list for method output_type
+	57, // [57:92] is the sub-list for method input_type
+	57, // [57:57] is the sub-list for extension type_name
+	57, // [57:57] is the sub-list for extension extendee
+	0,  // [0:57] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_kms_v1_service_proto_init() }
@@ -5309,8 +5613,8 @@ func file_google_cloud_kms_v1_service_proto_init() {
 	file_google_cloud_kms_v1_service_proto_msgTypes[21].OneofWrappers = []any{
 		(*ImportCryptoKeyVersionRequest_RsaAesWrappedKey)(nil),
 	}
-	file_google_cloud_kms_v1_service_proto_msgTypes[46].OneofWrappers = []any{}
-	file_google_cloud_kms_v1_service_proto_msgTypes[48].OneofWrappers = []any{
+	file_google_cloud_kms_v1_service_proto_msgTypes[49].OneofWrappers = []any{}
+	file_google_cloud_kms_v1_service_proto_msgTypes[51].OneofWrappers = []any{
 		(*Digest_Sha256)(nil),
 		(*Digest_Sha384)(nil),
 		(*Digest_Sha512)(nil),
@@ -5322,7 +5626,7 @@ func file_google_cloud_kms_v1_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_kms_v1_service_proto_rawDesc), len(file_google_cloud_kms_v1_service_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   52,
+			NumMessages:   55,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

@@ -349,6 +349,49 @@ func NewLicenseConfigClient(ctx context.Context, opts ...option.ClientOption) (*
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "discoveryengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/discoveryengine/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "discoveryengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateLicenseConfig = append(client.CallOptions.CreateLicenseConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateLicenseConfig = append(client.CallOptions.UpdateLicenseConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLicenseConfig = append(client.CallOptions.GetLicenseConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLicenseConfigs = append(client.CallOptions.ListLicenseConfigs, gax.WithClientTracing(tracing))
+		client.CallOptions.DistributeLicenseConfig = append(client.CallOptions.DistributeLicenseConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.RetractLicenseConfig = append(client.CallOptions.RetractLicenseConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "discoveryengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/discoveryengine/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "discoveryengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateLicenseConfig = append(client.CallOptions.CreateLicenseConfig, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateLicenseConfig = append(client.CallOptions.UpdateLicenseConfig, gax.WithClientLogging(logging))
+		client.CallOptions.GetLicenseConfig = append(client.CallOptions.GetLicenseConfig, gax.WithClientLogging(logging))
+		client.CallOptions.ListLicenseConfigs = append(client.CallOptions.ListLicenseConfigs, gax.WithClientLogging(logging))
+		client.CallOptions.DistributeLicenseConfig = append(client.CallOptions.DistributeLicenseConfig, gax.WithClientLogging(logging))
+		client.CallOptions.RetractLicenseConfig = append(client.CallOptions.RetractLicenseConfig, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -448,6 +491,49 @@ func NewLicenseConfigRESTClient(ctx context.Context, opts ...option.ClientOption
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "discoveryengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/discoveryengine/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "discoveryengine.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateLicenseConfig = append(callOpts.CreateLicenseConfig, gax.WithClientTracing(tracing))
+		callOpts.UpdateLicenseConfig = append(callOpts.UpdateLicenseConfig, gax.WithClientTracing(tracing))
+		callOpts.GetLicenseConfig = append(callOpts.GetLicenseConfig, gax.WithClientTracing(tracing))
+		callOpts.ListLicenseConfigs = append(callOpts.ListLicenseConfigs, gax.WithClientTracing(tracing))
+		callOpts.DistributeLicenseConfig = append(callOpts.DistributeLicenseConfig, gax.WithClientTracing(tracing))
+		callOpts.RetractLicenseConfig = append(callOpts.RetractLicenseConfig, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "discoveryengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/discoveryengine/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "discoveryengine.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateLicenseConfig = append(callOpts.CreateLicenseConfig, gax.WithClientLogging(logging))
+		callOpts.UpdateLicenseConfig = append(callOpts.UpdateLicenseConfig, gax.WithClientLogging(logging))
+		callOpts.GetLicenseConfig = append(callOpts.GetLicenseConfig, gax.WithClientLogging(logging))
+		callOpts.ListLicenseConfigs = append(callOpts.ListLicenseConfigs, gax.WithClientLogging(logging))
+		callOpts.DistributeLicenseConfig = append(callOpts.DistributeLicenseConfig, gax.WithClientLogging(logging))
+		callOpts.RetractLicenseConfig = append(callOpts.RetractLicenseConfig, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	return &LicenseConfigClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -494,9 +580,6 @@ func (c *licenseConfigGRPCClient) CreateLicenseConfig(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1beta.LicenseConfigService/CreateLicenseConfig")
 	}
@@ -539,9 +622,6 @@ func (c *licenseConfigGRPCClient) GetLicenseConfig(ctx context.Context, req *dis
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1beta.LicenseConfigService/GetLicenseConfig")
 	}
@@ -563,9 +643,6 @@ func (c *licenseConfigGRPCClient) ListLicenseConfigs(ctx context.Context, req *d
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1beta.LicenseConfigService/ListLicenseConfigs")
 	}
@@ -615,9 +692,6 @@ func (c *licenseConfigGRPCClient) DistributeLicenseConfig(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetBillingAccountLicenseConfig()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1beta.LicenseConfigService/DistributeLicenseConfig")
 	}
@@ -639,9 +713,6 @@ func (c *licenseConfigGRPCClient) RetractLicenseConfig(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetBillingAccountLicenseConfig()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1beta.LicenseConfigService/RetractLicenseConfig")
 	}
@@ -777,9 +848,6 @@ func (c *licenseConfigRESTClient) CreateLicenseConfig(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1beta.LicenseConfigService/CreateLicenseConfig")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*}/licenseConfigs")
@@ -903,9 +971,6 @@ func (c *licenseConfigRESTClient) GetLicenseConfig(ctx context.Context, req *dis
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1beta.LicenseConfigService/GetLicenseConfig")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/licenseConfigs/*}")
@@ -1051,9 +1116,6 @@ func (c *licenseConfigRESTClient) DistributeLicenseConfig(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetBillingAccountLicenseConfig()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1beta.LicenseConfigService/DistributeLicenseConfig")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{billing_account_license_config=billingAccounts/*/billingAccountLicenseConfigs/*}:distributeLicenseConfig")
@@ -1116,9 +1178,6 @@ func (c *licenseConfigRESTClient) RetractLicenseConfig(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetBillingAccountLicenseConfig()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1beta.LicenseConfigService/RetractLicenseConfig")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{billing_account_license_config=billingAccounts/*/billingAccountLicenseConfigs/*}:retractLicenseConfig")

@@ -18,11 +18,13 @@ package iam
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	iampb "cloud.google.com/go/iam/apiv2/iampb"
 	"cloud.google.com/go/longrunning"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
 
@@ -216,6 +218,12 @@ func (op *UpdatePolicyOperation) Done() bool {
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *UpdatePolicyOperation) Name() string {
 	return op.lro.Name()
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PolicyIterator) All() iter.Seq2[*iampb.Policy, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // PolicyIterator manages a stream of *iampb.Policy.

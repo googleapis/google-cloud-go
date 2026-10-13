@@ -37,6 +37,76 @@ func findPacemakerMetric(rm metricdata.ResourceMetrics, name string) (metricdata
 	return metricdata.Metrics{}, false
 }
 
+// sumPacemakerDelays returns the total of every recorded pacemaker_delays
+// value, in microseconds, along with the number of recordings.
+func sumPacemakerDelays(t *testing.T, reader sdkmetric.Reader) (sum float64, count uint64) {
+	t.Helper()
+	var rm metricdata.ResourceMetrics
+	if err := reader.Collect(context.Background(), &rm); err != nil {
+		t.Fatalf("Collect: %v", err)
+	}
+	m, ok := findPacemakerMetric(rm, "pacemaker_delays")
+	if !ok {
+		t.Fatal("Metric 'pacemaker_delays' not found in exported metrics")
+	}
+	hist, ok := m.Data.(metricdata.Histogram[float64])
+	if !ok {
+		t.Fatalf("Metric data type mismatch: expected Histogram[float64], got %T", m.Data)
+	}
+	for _, dp := range hist.DataPoints {
+		sum += dp.Sum
+		count += dp.Count
+	}
+	return sum, count
+}
+
+// The delay reported for a tick is how late the goroutine was to handle it,
+// measured against the time the tick was due. In particular it does not depend
+// on the previous tick, so starvation shorter than one full interval -- which
+// drops no ticks at all -- is still reported.
+func TestPacemakerRecordTick(t *testing.T) {
+	for _, tc := range []struct {
+		name   string
+		late   time.Duration
+		wantUs float64
+	}{
+		{name: "on time", late: 0, wantUs: 0},
+		{name: "later than a tick interval", late: 250 * time.Millisecond, wantUs: 250000},
+		{name: "shorter than a tick interval", late: 20 * time.Millisecond, wantUs: 20000},
+		{name: "sub-millisecond", late: 300 * time.Microsecond, wantUs: 300},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			reader := sdkmetric.NewManualReader()
+			pm := NewPacemaker(sdkmetric.NewMeterProvider(sdkmetric.WithReader(reader)), log.New(io.Discard, "", 0))
+
+			now := time.Now()
+			pm.recordTick(context.Background(), now.Add(-tc.late), now)
+
+			got, count := sumPacemakerDelays(t, reader)
+			if count != 1 {
+				t.Fatalf("recorded %d values, want 1", count)
+			}
+			if got != tc.wantUs {
+				t.Errorf("delay = %vus, want %vus", got, tc.wantUs)
+			}
+		})
+	}
+}
+
+// A clock that runs backwards between the due time and the read must not
+// record a negative delay into the histogram.
+func TestPacemakerRecordTickNeverNegative(t *testing.T) {
+	reader := sdkmetric.NewManualReader()
+	pm := NewPacemaker(sdkmetric.NewMeterProvider(sdkmetric.WithReader(reader)), log.New(io.Discard, "", 0))
+
+	now := time.Now()
+	pm.recordTick(context.Background(), now.Add(time.Second), now)
+
+	if got, _ := sumPacemakerDelays(t, reader); got != 0 {
+		t.Errorf("delay = %vus, want 0", got)
+	}
+}
+
 func TestPacemakerExporting(t *testing.T) {
 	reader := sdkmetric.NewManualReader()
 	provider := sdkmetric.NewMeterProvider(sdkmetric.WithReader(reader))

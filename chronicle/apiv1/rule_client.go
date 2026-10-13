@@ -567,6 +567,65 @@ func NewRuleClient(ctx context.Context, opts ...option.ClientOption) (*RuleClien
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "chronicle",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/chronicle/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "chronicle.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateRule = append(client.CallOptions.CreateRule, gax.WithClientTracing(tracing))
+		client.CallOptions.GetRule = append(client.CallOptions.GetRule, gax.WithClientTracing(tracing))
+		client.CallOptions.ListRules = append(client.CallOptions.ListRules, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateRule = append(client.CallOptions.UpdateRule, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteRule = append(client.CallOptions.DeleteRule, gax.WithClientTracing(tracing))
+		client.CallOptions.VerifyRuleText = append(client.CallOptions.VerifyRuleText, gax.WithClientTracing(tracing))
+		client.CallOptions.ListRuleRevisions = append(client.CallOptions.ListRuleRevisions, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateRetrohunt = append(client.CallOptions.CreateRetrohunt, gax.WithClientTracing(tracing))
+		client.CallOptions.GetRetrohunt = append(client.CallOptions.GetRetrohunt, gax.WithClientTracing(tracing))
+		client.CallOptions.ListRetrohunts = append(client.CallOptions.ListRetrohunts, gax.WithClientTracing(tracing))
+		client.CallOptions.GetRuleDeployment = append(client.CallOptions.GetRuleDeployment, gax.WithClientTracing(tracing))
+		client.CallOptions.ListRuleDeployments = append(client.CallOptions.ListRuleDeployments, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateRuleDeployment = append(client.CallOptions.UpdateRuleDeployment, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "chronicle",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/chronicle/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "chronicle.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateRule = append(client.CallOptions.CreateRule, gax.WithClientLogging(logging))
+		client.CallOptions.GetRule = append(client.CallOptions.GetRule, gax.WithClientLogging(logging))
+		client.CallOptions.ListRules = append(client.CallOptions.ListRules, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateRule = append(client.CallOptions.UpdateRule, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteRule = append(client.CallOptions.DeleteRule, gax.WithClientLogging(logging))
+		client.CallOptions.VerifyRuleText = append(client.CallOptions.VerifyRuleText, gax.WithClientLogging(logging))
+		client.CallOptions.ListRuleRevisions = append(client.CallOptions.ListRuleRevisions, gax.WithClientLogging(logging))
+		client.CallOptions.CreateRetrohunt = append(client.CallOptions.CreateRetrohunt, gax.WithClientLogging(logging))
+		client.CallOptions.GetRetrohunt = append(client.CallOptions.GetRetrohunt, gax.WithClientLogging(logging))
+		client.CallOptions.ListRetrohunts = append(client.CallOptions.ListRetrohunts, gax.WithClientLogging(logging))
+		client.CallOptions.GetRuleDeployment = append(client.CallOptions.GetRuleDeployment, gax.WithClientLogging(logging))
+		client.CallOptions.ListRuleDeployments = append(client.CallOptions.ListRuleDeployments, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateRuleDeployment = append(client.CallOptions.UpdateRuleDeployment, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -690,6 +749,65 @@ func NewRuleRESTClient(ctx context.Context, opts ...option.ClientOption) (*RuleC
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "chronicle",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/chronicle/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "chronicle.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateRule = append(callOpts.CreateRule, gax.WithClientTracing(tracing))
+		callOpts.GetRule = append(callOpts.GetRule, gax.WithClientTracing(tracing))
+		callOpts.ListRules = append(callOpts.ListRules, gax.WithClientTracing(tracing))
+		callOpts.UpdateRule = append(callOpts.UpdateRule, gax.WithClientTracing(tracing))
+		callOpts.DeleteRule = append(callOpts.DeleteRule, gax.WithClientTracing(tracing))
+		callOpts.VerifyRuleText = append(callOpts.VerifyRuleText, gax.WithClientTracing(tracing))
+		callOpts.ListRuleRevisions = append(callOpts.ListRuleRevisions, gax.WithClientTracing(tracing))
+		callOpts.CreateRetrohunt = append(callOpts.CreateRetrohunt, gax.WithClientTracing(tracing))
+		callOpts.GetRetrohunt = append(callOpts.GetRetrohunt, gax.WithClientTracing(tracing))
+		callOpts.ListRetrohunts = append(callOpts.ListRetrohunts, gax.WithClientTracing(tracing))
+		callOpts.GetRuleDeployment = append(callOpts.GetRuleDeployment, gax.WithClientTracing(tracing))
+		callOpts.ListRuleDeployments = append(callOpts.ListRuleDeployments, gax.WithClientTracing(tracing))
+		callOpts.UpdateRuleDeployment = append(callOpts.UpdateRuleDeployment, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "chronicle",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/chronicle/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "chronicle.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateRule = append(callOpts.CreateRule, gax.WithClientLogging(logging))
+		callOpts.GetRule = append(callOpts.GetRule, gax.WithClientLogging(logging))
+		callOpts.ListRules = append(callOpts.ListRules, gax.WithClientLogging(logging))
+		callOpts.UpdateRule = append(callOpts.UpdateRule, gax.WithClientLogging(logging))
+		callOpts.DeleteRule = append(callOpts.DeleteRule, gax.WithClientLogging(logging))
+		callOpts.VerifyRuleText = append(callOpts.VerifyRuleText, gax.WithClientLogging(logging))
+		callOpts.ListRuleRevisions = append(callOpts.ListRuleRevisions, gax.WithClientLogging(logging))
+		callOpts.CreateRetrohunt = append(callOpts.CreateRetrohunt, gax.WithClientLogging(logging))
+		callOpts.GetRetrohunt = append(callOpts.GetRetrohunt, gax.WithClientLogging(logging))
+		callOpts.ListRetrohunts = append(callOpts.ListRetrohunts, gax.WithClientLogging(logging))
+		callOpts.GetRuleDeployment = append(callOpts.GetRuleDeployment, gax.WithClientLogging(logging))
+		callOpts.ListRuleDeployments = append(callOpts.ListRuleDeployments, gax.WithClientLogging(logging))
+		callOpts.UpdateRuleDeployment = append(callOpts.UpdateRuleDeployment, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -746,9 +864,6 @@ func (c *ruleGRPCClient) CreateRule(ctx context.Context, req *chroniclepb.Create
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.RuleService/CreateRule")
 	}
@@ -770,9 +885,6 @@ func (c *ruleGRPCClient) GetRule(ctx context.Context, req *chroniclepb.GetRuleRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.RuleService/GetRule")
 	}
@@ -794,9 +906,6 @@ func (c *ruleGRPCClient) ListRules(ctx context.Context, req *chroniclepb.ListRul
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.RuleService/ListRules")
 	}
@@ -867,9 +976,6 @@ func (c *ruleGRPCClient) DeleteRule(ctx context.Context, req *chroniclepb.Delete
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.RuleService/DeleteRule")
 	}
@@ -887,9 +993,6 @@ func (c *ruleGRPCClient) VerifyRuleText(ctx context.Context, req *chroniclepb.Ve
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetInstance()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.RuleService/VerifyRuleText")
 	}
@@ -911,9 +1014,6 @@ func (c *ruleGRPCClient) ListRuleRevisions(ctx context.Context, req *chroniclepb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.RuleService/ListRuleRevisions")
 	}
@@ -963,9 +1063,6 @@ func (c *ruleGRPCClient) CreateRetrohunt(ctx context.Context, req *chroniclepb.C
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.RuleService/CreateRetrohunt")
 	}
@@ -993,9 +1090,6 @@ func (c *ruleGRPCClient) GetRetrohunt(ctx context.Context, req *chroniclepb.GetR
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.RuleService/GetRetrohunt")
 	}
@@ -1017,9 +1111,6 @@ func (c *ruleGRPCClient) ListRetrohunts(ctx context.Context, req *chroniclepb.Li
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.RuleService/ListRetrohunts")
 	}
@@ -1069,9 +1160,6 @@ func (c *ruleGRPCClient) GetRuleDeployment(ctx context.Context, req *chroniclepb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.RuleService/GetRuleDeployment")
 	}
@@ -1093,9 +1181,6 @@ func (c *ruleGRPCClient) ListRuleDeployments(ctx context.Context, req *chronicle
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.RuleService/ListRuleDeployments")
 	}
@@ -1291,9 +1376,6 @@ func (c *ruleRESTClient) CreateRule(ctx context.Context, req *chroniclepb.Create
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.RuleService/CreateRule")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/instances/*}/rules")
@@ -1351,9 +1433,6 @@ func (c *ruleRESTClient) GetRule(ctx context.Context, req *chroniclepb.GetRuleRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.RuleService/GetRule")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/rules/*}")
@@ -1563,9 +1642,6 @@ func (c *ruleRESTClient) DeleteRule(ctx context.Context, req *chroniclepb.Delete
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.RuleService/DeleteRule")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/rules/*}")
@@ -1611,9 +1687,6 @@ func (c *ruleRESTClient) VerifyRuleText(ctx context.Context, req *chroniclepb.Ve
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetInstance()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.RuleService/VerifyRuleText")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{instance=projects/*/locations/*/instances/*}:verifyRuleText")
@@ -1756,9 +1829,6 @@ func (c *ruleRESTClient) CreateRetrohunt(ctx context.Context, req *chroniclepb.C
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.RuleService/CreateRetrohunt")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/instances/*/rules/*}/retrohunts")
@@ -1820,9 +1890,6 @@ func (c *ruleRESTClient) GetRetrohunt(ctx context.Context, req *chroniclepb.GetR
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.RuleService/GetRetrohunt")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/rules/*/retrohunts/*}")
@@ -1958,9 +2025,6 @@ func (c *ruleRESTClient) GetRuleDeployment(ctx context.Context, req *chroniclepb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.RuleService/GetRuleDeployment")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/rules/*/deployment}")

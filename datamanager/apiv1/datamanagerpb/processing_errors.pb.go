@@ -141,6 +141,9 @@ const (
 	ProcessingErrorReason_PROCESSING_ERROR_REASON_INVALID_OPERATING_ACCOUNT_FOR_CLICK ProcessingErrorReason = 42
 	// A corresponding click can't be found that matches the provided attributes.
 	ProcessingErrorReason_PROCESSING_ERROR_REASON_CLICK_NOT_FOUND ProcessingErrorReason = 43
+	// External attribution data is missing. Sending events to a destination for
+	// an external attribution conversion action isn't supported.
+	ProcessingErrorReason_PROCESSING_ERROR_REASON_EXTERNAL_ATTRIBUTION_DATA_MISSING ProcessingErrorReason = 44
 )
 
 // Enum value maps for ProcessingErrorReason.
@@ -190,6 +193,7 @@ var (
 		41: "PROCESSING_ERROR_REASON_INVALID_CLICK",
 		42: "PROCESSING_ERROR_REASON_INVALID_OPERATING_ACCOUNT_FOR_CLICK",
 		43: "PROCESSING_ERROR_REASON_CLICK_NOT_FOUND",
+		44: "PROCESSING_ERROR_REASON_EXTERNAL_ATTRIBUTION_DATA_MISSING",
 	}
 	ProcessingErrorReason_value = map[string]int32{
 		"PROCESSING_ERROR_REASON_UNSPECIFIED":                                               0,
@@ -236,6 +240,7 @@ var (
 		"PROCESSING_ERROR_REASON_INVALID_CLICK":                                             41,
 		"PROCESSING_ERROR_REASON_INVALID_OPERATING_ACCOUNT_FOR_CLICK":                       42,
 		"PROCESSING_ERROR_REASON_CLICK_NOT_FOUND":                                           43,
+		"PROCESSING_ERROR_REASON_EXTERNAL_ATTRIBUTION_DATA_MISSING":                         44,
 	}
 )
 
@@ -349,6 +354,130 @@ func (x ProcessingWarningReason) Number() protoreflect.EnumNumber {
 // Deprecated: Use ProcessingWarningReason.Descriptor instead.
 func (ProcessingWarningReason) EnumDescriptor() ([]byte, []int) {
 	return file_google_ads_datamanager_v1_processing_errors_proto_rawDescGZIP(), []int{1}
+}
+
+// Reasons for non-blocking warnings returned during ingestion.
+type WarningReason int32
+
+const (
+	// Unspecified warning reason.
+	WarningReason_WARNING_REASON_UNSPECIFIED WarningReason = 0
+	// A custom variable in
+	// [`custom_variables`][google.ads.datamanager.v1.Event.custom_variables] is
+	// not enabled in the account.
+	WarningReason_WARNING_REASON_CUSTOM_VARIABLE_NOT_ENABLED WarningReason = 1
+	// A custom variable value in
+	// [`custom_variables`][google.ads.datamanager.v1.Event.custom_variables] is
+	// not among the predefined allowed values configured for the custom variable
+	// on the destination account.
+	WarningReason_WARNING_REASON_CUSTOM_VARIABLE_NOT_PREDEFINED WarningReason = 2
+	// The [`cart_data`][google.ads.datamanager.v1.Event.cart_data] is not
+	// supported with [`gbraid`][google.ads.datamanager.v1.AdIdentifiers.gbraid]
+	// or [`wbraid`][google.ads.datamanager.v1.AdIdentifiers.wbraid].
+	WarningReason_WARNING_REASON_CART_DATA_NOT_SUPPORTED_WITH_GBRAID_OR_WBRAID WarningReason = 3
+	// The
+	// [`merchant_product_id`][google.ads.datamanager.v1.Item.merchant_product_id]
+	// is missing in the cart item.
+	WarningReason_WARNING_REASON_CART_DATA_ITEM_MERCHANT_PRODUCT_ID_MISSING WarningReason = 4
+	// The [`unit_price`][google.ads.datamanager.v1.Item.unit_price] is missing in
+	// the cart item.
+	WarningReason_WARNING_REASON_CART_DATA_ITEM_UNIT_PRICE_MISSING WarningReason = 5
+	// Generic warning reason for issues that do not fit into other specific
+	// categories.
+	WarningReason_WARNING_REASON_GENERIC WarningReason = 6
+	// The [`client_id`][google.ads.datamanager.v1.Event.client_id] is invalid.
+	WarningReason_WARNING_REASON_INVALID_CLIENT_ID WarningReason = 7
+	// The
+	// [`subdivision_code`][google.ads.datamanager.v1.EventLocation.subdivision_code]
+	// is invalid.
+	WarningReason_WARNING_REASON_INVALID_SUBDIVISION_CODE WarningReason = 8
+	// The [`region_code`][google.ads.datamanager.v1.EventLocation.region_code]
+	// is invalid.
+	WarningReason_WARNING_REASON_INVALID_REGION_CODE WarningReason = 9
+	// The
+	// [`subcontinent_code`][google.ads.datamanager.v1.EventLocation.subcontinent_code]
+	// is invalid.
+	WarningReason_WARNING_REASON_INVALID_SUBCONTINENT_CODE WarningReason = 10
+	// The
+	// [`continent_code`][google.ads.datamanager.v1.EventLocation.continent_code]
+	// is invalid.
+	WarningReason_WARNING_REASON_INVALID_CONTINENT_CODE WarningReason = 11
+	// The device [`category`][google.ads.datamanager.v1.DeviceInfo.category]
+	// is invalid.
+	WarningReason_WARNING_REASON_INVALID_DEVICE_CATEGORY WarningReason = 12
+	// The device
+	// [`screen_height`][google.ads.datamanager.v1.DeviceInfo.screen_height] or
+	// [`screen_width`][google.ads.datamanager.v1.DeviceInfo.screen_width] is
+	// invalid.
+	WarningReason_WARNING_REASON_INVALID_DEVICE_SCREEN_RESOLUTION WarningReason = 13
+	// The [`merchant_id`][google.ads.datamanager.v1.CartData.merchant_id] is
+	// invalid.
+	WarningReason_WARNING_REASON_INVALID_MERCHANT_ID WarningReason = 14
+)
+
+// Enum value maps for WarningReason.
+var (
+	WarningReason_name = map[int32]string{
+		0:  "WARNING_REASON_UNSPECIFIED",
+		1:  "WARNING_REASON_CUSTOM_VARIABLE_NOT_ENABLED",
+		2:  "WARNING_REASON_CUSTOM_VARIABLE_NOT_PREDEFINED",
+		3:  "WARNING_REASON_CART_DATA_NOT_SUPPORTED_WITH_GBRAID_OR_WBRAID",
+		4:  "WARNING_REASON_CART_DATA_ITEM_MERCHANT_PRODUCT_ID_MISSING",
+		5:  "WARNING_REASON_CART_DATA_ITEM_UNIT_PRICE_MISSING",
+		6:  "WARNING_REASON_GENERIC",
+		7:  "WARNING_REASON_INVALID_CLIENT_ID",
+		8:  "WARNING_REASON_INVALID_SUBDIVISION_CODE",
+		9:  "WARNING_REASON_INVALID_REGION_CODE",
+		10: "WARNING_REASON_INVALID_SUBCONTINENT_CODE",
+		11: "WARNING_REASON_INVALID_CONTINENT_CODE",
+		12: "WARNING_REASON_INVALID_DEVICE_CATEGORY",
+		13: "WARNING_REASON_INVALID_DEVICE_SCREEN_RESOLUTION",
+		14: "WARNING_REASON_INVALID_MERCHANT_ID",
+	}
+	WarningReason_value = map[string]int32{
+		"WARNING_REASON_UNSPECIFIED":                                   0,
+		"WARNING_REASON_CUSTOM_VARIABLE_NOT_ENABLED":                   1,
+		"WARNING_REASON_CUSTOM_VARIABLE_NOT_PREDEFINED":                2,
+		"WARNING_REASON_CART_DATA_NOT_SUPPORTED_WITH_GBRAID_OR_WBRAID": 3,
+		"WARNING_REASON_CART_DATA_ITEM_MERCHANT_PRODUCT_ID_MISSING":    4,
+		"WARNING_REASON_CART_DATA_ITEM_UNIT_PRICE_MISSING":             5,
+		"WARNING_REASON_GENERIC":                                       6,
+		"WARNING_REASON_INVALID_CLIENT_ID":                             7,
+		"WARNING_REASON_INVALID_SUBDIVISION_CODE":                      8,
+		"WARNING_REASON_INVALID_REGION_CODE":                           9,
+		"WARNING_REASON_INVALID_SUBCONTINENT_CODE":                     10,
+		"WARNING_REASON_INVALID_CONTINENT_CODE":                        11,
+		"WARNING_REASON_INVALID_DEVICE_CATEGORY":                       12,
+		"WARNING_REASON_INVALID_DEVICE_SCREEN_RESOLUTION":              13,
+		"WARNING_REASON_INVALID_MERCHANT_ID":                           14,
+	}
+)
+
+func (x WarningReason) Enum() *WarningReason {
+	p := new(WarningReason)
+	*p = x
+	return p
+}
+
+func (x WarningReason) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (WarningReason) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_ads_datamanager_v1_processing_errors_proto_enumTypes[2].Descriptor()
+}
+
+func (WarningReason) Type() protoreflect.EnumType {
+	return &file_google_ads_datamanager_v1_processing_errors_proto_enumTypes[2]
+}
+
+func (x WarningReason) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use WarningReason.Descriptor instead.
+func (WarningReason) EnumDescriptor() ([]byte, []int) {
+	return file_google_ads_datamanager_v1_processing_errors_proto_rawDescGZIP(), []int{2}
 }
 
 // Error counts for each type of error.
@@ -554,6 +683,71 @@ func (x *WarningCount) GetReason() ProcessingWarningReason {
 	return ProcessingWarningReason_PROCESSING_WARNING_REASON_UNSPECIFIED
 }
 
+// Detailed row-level warning with field paths.
+type FieldWarning struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The warning reason.
+	Reason WarningReason `protobuf:"varint,1,opt,name=reason,proto3,enum=google.ads.datamanager.v1.WarningReason" json:"reason,omitempty"`
+	// The detailed warning message describing the issue.
+	Description string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	// The field path that triggered the warning. Uses the same format as
+	// [google.rpc.BadRequest.FieldViolation.field][google.rpc.BadRequest.FieldViolation.field].
+	Field         string `protobuf:"bytes,3,opt,name=field,proto3" json:"field,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *FieldWarning) Reset() {
+	*x = FieldWarning{}
+	mi := &file_google_ads_datamanager_v1_processing_errors_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FieldWarning) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FieldWarning) ProtoMessage() {}
+
+func (x *FieldWarning) ProtoReflect() protoreflect.Message {
+	mi := &file_google_ads_datamanager_v1_processing_errors_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FieldWarning.ProtoReflect.Descriptor instead.
+func (*FieldWarning) Descriptor() ([]byte, []int) {
+	return file_google_ads_datamanager_v1_processing_errors_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *FieldWarning) GetReason() WarningReason {
+	if x != nil {
+		return x.Reason
+	}
+	return WarningReason_WARNING_REASON_UNSPECIFIED
+}
+
+func (x *FieldWarning) GetDescription() string {
+	if x != nil {
+		return x.Description
+	}
+	return ""
+}
+
+func (x *FieldWarning) GetField() string {
+	if x != nil {
+		return x.Field
+	}
+	return ""
+}
+
 var File_google_ads_datamanager_v1_processing_errors_proto protoreflect.FileDescriptor
 
 const file_google_ads_datamanager_v1_processing_errors_proto_rawDesc = "" +
@@ -569,7 +763,11 @@ const file_google_ads_datamanager_v1_processing_errors_proto_rawDesc = "" +
 	"\x0ewarning_counts\x18\x01 \x03(\v2'.google.ads.datamanager.v1.WarningCountR\rwarningCounts\"}\n" +
 	"\fWarningCount\x12!\n" +
 	"\frecord_count\x18\x01 \x01(\x03R\vrecordCount\x12J\n" +
-	"\x06reason\x18\x02 \x01(\x0e22.google.ads.datamanager.v1.ProcessingWarningReasonR\x06reason*\xfc\x11\n" +
+	"\x06reason\x18\x02 \x01(\x0e22.google.ads.datamanager.v1.ProcessingWarningReasonR\x06reason\"\x88\x01\n" +
+	"\fFieldWarning\x12@\n" +
+	"\x06reason\x18\x01 \x01(\x0e2(.google.ads.datamanager.v1.WarningReasonR\x06reason\x12 \n" +
+	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x14\n" +
+	"\x05field\x18\x03 \x01(\tR\x05field*\xbb\x12\n" +
 	"\x15ProcessingErrorReason\x12'\n" +
 	"#PROCESSING_ERROR_REASON_UNSPECIFIED\x10\x00\x123\n" +
 	"/PROCESSING_ERROR_REASON_INVALID_CUSTOM_VARIABLE\x10\x01\x127\n" +
@@ -615,7 +813,8 @@ const file_google_ads_datamanager_v1_processing_errors_proto_rawDesc = "" +
 	"(PROCESSING_ERROR_REASON_TOO_RECENT_CLICK\x10(\x12)\n" +
 	"%PROCESSING_ERROR_REASON_INVALID_CLICK\x10)\x12?\n" +
 	";PROCESSING_ERROR_REASON_INVALID_OPERATING_ACCOUNT_FOR_CLICK\x10*\x12+\n" +
-	"'PROCESSING_ERROR_REASON_CLICK_NOT_FOUND\x10+*\xff\x03\n" +
+	"'PROCESSING_ERROR_REASON_CLICK_NOT_FOUND\x10+\x12=\n" +
+	"9PROCESSING_ERROR_REASON_EXTERNAL_ATTRIBUTION_DATA_MISSING\x10,*\xff\x03\n" +
 	"\x17ProcessingWarningReason\x12)\n" +
 	"%PROCESSING_WARNING_REASON_UNSPECIFIED\x10\x00\x123\n" +
 	"/PROCESSING_WARNING_REASON_KEK_PERMISSION_DENIED\x10\x01\x122\n" +
@@ -626,7 +825,24 @@ const file_google_ads_datamanager_v1_processing_errors_proto_rawDesc = "" +
 	"%PROCESSING_WARNING_REASON_INVALID_KEK\x10\x06\x12>\n" +
 	":PROCESSING_WARNING_REASON_USER_IDENTIFIER_DECRYPTION_ERROR\x10\a\x12,\n" +
 	"(PROCESSING_WARNING_REASON_INTERNAL_ERROR\x10\b\x12-\n" +
-	")PROCESSING_WARNING_REASON_AWS_AUTH_FAILED\x10\tB\xd2\x01\n" +
+	")PROCESSING_WARNING_REASON_AWS_AUTH_FAILED\x10\t*\xc2\x05\n" +
+	"\rWarningReason\x12\x1e\n" +
+	"\x1aWARNING_REASON_UNSPECIFIED\x10\x00\x12.\n" +
+	"*WARNING_REASON_CUSTOM_VARIABLE_NOT_ENABLED\x10\x01\x121\n" +
+	"-WARNING_REASON_CUSTOM_VARIABLE_NOT_PREDEFINED\x10\x02\x12@\n" +
+	"<WARNING_REASON_CART_DATA_NOT_SUPPORTED_WITH_GBRAID_OR_WBRAID\x10\x03\x12=\n" +
+	"9WARNING_REASON_CART_DATA_ITEM_MERCHANT_PRODUCT_ID_MISSING\x10\x04\x124\n" +
+	"0WARNING_REASON_CART_DATA_ITEM_UNIT_PRICE_MISSING\x10\x05\x12\x1a\n" +
+	"\x16WARNING_REASON_GENERIC\x10\x06\x12$\n" +
+	" WARNING_REASON_INVALID_CLIENT_ID\x10\a\x12+\n" +
+	"'WARNING_REASON_INVALID_SUBDIVISION_CODE\x10\b\x12&\n" +
+	"\"WARNING_REASON_INVALID_REGION_CODE\x10\t\x12,\n" +
+	"(WARNING_REASON_INVALID_SUBCONTINENT_CODE\x10\n" +
+	"\x12)\n" +
+	"%WARNING_REASON_INVALID_CONTINENT_CODE\x10\v\x12*\n" +
+	"&WARNING_REASON_INVALID_DEVICE_CATEGORY\x10\f\x123\n" +
+	"/WARNING_REASON_INVALID_DEVICE_SCREEN_RESOLUTION\x10\r\x12&\n" +
+	"\"WARNING_REASON_INVALID_MERCHANT_ID\x10\x0eB\xd2\x01\n" +
 	"\x1dcom.google.ads.datamanager.v1B\x15ProcessingErrorsProtoP\x01ZAcloud.google.com/go/datamanager/apiv1/datamanagerpb;datamanagerpb\xaa\x02\x19Google.Ads.DataManager.V1\xca\x02\x19Google\\Ads\\DataManager\\V1\xea\x02\x1cGoogle::Ads::DataManager::V1b\x06proto3"
 
 var (
@@ -641,26 +857,29 @@ func file_google_ads_datamanager_v1_processing_errors_proto_rawDescGZIP() []byte
 	return file_google_ads_datamanager_v1_processing_errors_proto_rawDescData
 }
 
-var file_google_ads_datamanager_v1_processing_errors_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_google_ads_datamanager_v1_processing_errors_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_google_ads_datamanager_v1_processing_errors_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
+var file_google_ads_datamanager_v1_processing_errors_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_google_ads_datamanager_v1_processing_errors_proto_goTypes = []any{
 	(ProcessingErrorReason)(0),   // 0: google.ads.datamanager.v1.ProcessingErrorReason
 	(ProcessingWarningReason)(0), // 1: google.ads.datamanager.v1.ProcessingWarningReason
-	(*ErrorInfo)(nil),            // 2: google.ads.datamanager.v1.ErrorInfo
-	(*ErrorCount)(nil),           // 3: google.ads.datamanager.v1.ErrorCount
-	(*WarningInfo)(nil),          // 4: google.ads.datamanager.v1.WarningInfo
-	(*WarningCount)(nil),         // 5: google.ads.datamanager.v1.WarningCount
+	(WarningReason)(0),           // 2: google.ads.datamanager.v1.WarningReason
+	(*ErrorInfo)(nil),            // 3: google.ads.datamanager.v1.ErrorInfo
+	(*ErrorCount)(nil),           // 4: google.ads.datamanager.v1.ErrorCount
+	(*WarningInfo)(nil),          // 5: google.ads.datamanager.v1.WarningInfo
+	(*WarningCount)(nil),         // 6: google.ads.datamanager.v1.WarningCount
+	(*FieldWarning)(nil),         // 7: google.ads.datamanager.v1.FieldWarning
 }
 var file_google_ads_datamanager_v1_processing_errors_proto_depIdxs = []int32{
-	3, // 0: google.ads.datamanager.v1.ErrorInfo.error_counts:type_name -> google.ads.datamanager.v1.ErrorCount
+	4, // 0: google.ads.datamanager.v1.ErrorInfo.error_counts:type_name -> google.ads.datamanager.v1.ErrorCount
 	0, // 1: google.ads.datamanager.v1.ErrorCount.reason:type_name -> google.ads.datamanager.v1.ProcessingErrorReason
-	5, // 2: google.ads.datamanager.v1.WarningInfo.warning_counts:type_name -> google.ads.datamanager.v1.WarningCount
+	6, // 2: google.ads.datamanager.v1.WarningInfo.warning_counts:type_name -> google.ads.datamanager.v1.WarningCount
 	1, // 3: google.ads.datamanager.v1.WarningCount.reason:type_name -> google.ads.datamanager.v1.ProcessingWarningReason
-	4, // [4:4] is the sub-list for method output_type
-	4, // [4:4] is the sub-list for method input_type
-	4, // [4:4] is the sub-list for extension type_name
-	4, // [4:4] is the sub-list for extension extendee
-	0, // [0:4] is the sub-list for field type_name
+	2, // 4: google.ads.datamanager.v1.FieldWarning.reason:type_name -> google.ads.datamanager.v1.WarningReason
+	5, // [5:5] is the sub-list for method output_type
+	5, // [5:5] is the sub-list for method input_type
+	5, // [5:5] is the sub-list for extension type_name
+	5, // [5:5] is the sub-list for extension extendee
+	0, // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_google_ads_datamanager_v1_processing_errors_proto_init() }
@@ -673,8 +892,8 @@ func file_google_ads_datamanager_v1_processing_errors_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_ads_datamanager_v1_processing_errors_proto_rawDesc), len(file_google_ads_datamanager_v1_processing_errors_proto_rawDesc)),
-			NumEnums:      2,
-			NumMessages:   4,
+			NumEnums:      3,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

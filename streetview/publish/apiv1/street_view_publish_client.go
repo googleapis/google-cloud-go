@@ -714,6 +714,59 @@ func NewStreetViewPublishClient(ctx context.Context, opts ...option.ClientOption
 		client.CallOptions.ListPhotoSequences = append(client.CallOptions.ListPhotoSequences, gax.WithClientMetrics(metrics))
 		client.CallOptions.DeletePhotoSequence = append(client.CallOptions.DeletePhotoSequence, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "streetviewpublish",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/streetview/publish/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "streetviewpublish.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.StartUpload = append(client.CallOptions.StartUpload, gax.WithClientTracing(tracing))
+		client.CallOptions.CreatePhoto = append(client.CallOptions.CreatePhoto, gax.WithClientTracing(tracing))
+		client.CallOptions.GetPhoto = append(client.CallOptions.GetPhoto, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchGetPhotos = append(client.CallOptions.BatchGetPhotos, gax.WithClientTracing(tracing))
+		client.CallOptions.ListPhotos = append(client.CallOptions.ListPhotos, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdatePhoto = append(client.CallOptions.UpdatePhoto, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchUpdatePhotos = append(client.CallOptions.BatchUpdatePhotos, gax.WithClientTracing(tracing))
+		client.CallOptions.DeletePhoto = append(client.CallOptions.DeletePhoto, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchDeletePhotos = append(client.CallOptions.BatchDeletePhotos, gax.WithClientTracing(tracing))
+		client.CallOptions.StartPhotoSequenceUpload = append(client.CallOptions.StartPhotoSequenceUpload, gax.WithClientTracing(tracing))
+		client.CallOptions.CreatePhotoSequence = append(client.CallOptions.CreatePhotoSequence, gax.WithClientTracing(tracing))
+		client.CallOptions.GetPhotoSequence = append(client.CallOptions.GetPhotoSequence, gax.WithClientTracing(tracing))
+		client.CallOptions.ListPhotoSequences = append(client.CallOptions.ListPhotoSequences, gax.WithClientTracing(tracing))
+		client.CallOptions.DeletePhotoSequence = append(client.CallOptions.DeletePhotoSequence, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "streetviewpublish",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/streetview/publish/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "streetviewpublish.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.StartUpload = append(client.CallOptions.StartUpload, gax.WithClientLogging(logging))
+		client.CallOptions.CreatePhoto = append(client.CallOptions.CreatePhoto, gax.WithClientLogging(logging))
+		client.CallOptions.GetPhoto = append(client.CallOptions.GetPhoto, gax.WithClientLogging(logging))
+		client.CallOptions.BatchGetPhotos = append(client.CallOptions.BatchGetPhotos, gax.WithClientLogging(logging))
+		client.CallOptions.ListPhotos = append(client.CallOptions.ListPhotos, gax.WithClientLogging(logging))
+		client.CallOptions.UpdatePhoto = append(client.CallOptions.UpdatePhoto, gax.WithClientLogging(logging))
+		client.CallOptions.BatchUpdatePhotos = append(client.CallOptions.BatchUpdatePhotos, gax.WithClientLogging(logging))
+		client.CallOptions.DeletePhoto = append(client.CallOptions.DeletePhoto, gax.WithClientLogging(logging))
+		client.CallOptions.BatchDeletePhotos = append(client.CallOptions.BatchDeletePhotos, gax.WithClientLogging(logging))
+		client.CallOptions.StartPhotoSequenceUpload = append(client.CallOptions.StartPhotoSequenceUpload, gax.WithClientLogging(logging))
+		client.CallOptions.CreatePhotoSequence = append(client.CallOptions.CreatePhotoSequence, gax.WithClientLogging(logging))
+		client.CallOptions.GetPhotoSequence = append(client.CallOptions.GetPhotoSequence, gax.WithClientLogging(logging))
+		client.CallOptions.ListPhotoSequences = append(client.CallOptions.ListPhotoSequences, gax.WithClientLogging(logging))
+		client.CallOptions.DeletePhotoSequence = append(client.CallOptions.DeletePhotoSequence, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -833,6 +886,59 @@ func NewStreetViewPublishRESTClient(ctx context.Context, opts ...option.ClientOp
 		callOpts.GetPhotoSequence = append(callOpts.GetPhotoSequence, gax.WithClientMetrics(metrics))
 		callOpts.ListPhotoSequences = append(callOpts.ListPhotoSequences, gax.WithClientMetrics(metrics))
 		callOpts.DeletePhotoSequence = append(callOpts.DeletePhotoSequence, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "streetviewpublish",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/streetview/publish/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "streetviewpublish.googleapis.com",
+			}),
+		)
+
+		callOpts.StartUpload = append(callOpts.StartUpload, gax.WithClientTracing(tracing))
+		callOpts.CreatePhoto = append(callOpts.CreatePhoto, gax.WithClientTracing(tracing))
+		callOpts.GetPhoto = append(callOpts.GetPhoto, gax.WithClientTracing(tracing))
+		callOpts.BatchGetPhotos = append(callOpts.BatchGetPhotos, gax.WithClientTracing(tracing))
+		callOpts.ListPhotos = append(callOpts.ListPhotos, gax.WithClientTracing(tracing))
+		callOpts.UpdatePhoto = append(callOpts.UpdatePhoto, gax.WithClientTracing(tracing))
+		callOpts.BatchUpdatePhotos = append(callOpts.BatchUpdatePhotos, gax.WithClientTracing(tracing))
+		callOpts.DeletePhoto = append(callOpts.DeletePhoto, gax.WithClientTracing(tracing))
+		callOpts.BatchDeletePhotos = append(callOpts.BatchDeletePhotos, gax.WithClientTracing(tracing))
+		callOpts.StartPhotoSequenceUpload = append(callOpts.StartPhotoSequenceUpload, gax.WithClientTracing(tracing))
+		callOpts.CreatePhotoSequence = append(callOpts.CreatePhotoSequence, gax.WithClientTracing(tracing))
+		callOpts.GetPhotoSequence = append(callOpts.GetPhotoSequence, gax.WithClientTracing(tracing))
+		callOpts.ListPhotoSequences = append(callOpts.ListPhotoSequences, gax.WithClientTracing(tracing))
+		callOpts.DeletePhotoSequence = append(callOpts.DeletePhotoSequence, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "streetviewpublish",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/streetview/publish/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "streetviewpublish.googleapis.com",
+			}),
+		)
+
+		callOpts.StartUpload = append(callOpts.StartUpload, gax.WithClientLogging(logging))
+		callOpts.CreatePhoto = append(callOpts.CreatePhoto, gax.WithClientLogging(logging))
+		callOpts.GetPhoto = append(callOpts.GetPhoto, gax.WithClientLogging(logging))
+		callOpts.BatchGetPhotos = append(callOpts.BatchGetPhotos, gax.WithClientLogging(logging))
+		callOpts.ListPhotos = append(callOpts.ListPhotos, gax.WithClientLogging(logging))
+		callOpts.UpdatePhoto = append(callOpts.UpdatePhoto, gax.WithClientLogging(logging))
+		callOpts.BatchUpdatePhotos = append(callOpts.BatchUpdatePhotos, gax.WithClientLogging(logging))
+		callOpts.DeletePhoto = append(callOpts.DeletePhoto, gax.WithClientLogging(logging))
+		callOpts.BatchDeletePhotos = append(callOpts.BatchDeletePhotos, gax.WithClientLogging(logging))
+		callOpts.StartPhotoSequenceUpload = append(callOpts.StartPhotoSequenceUpload, gax.WithClientLogging(logging))
+		callOpts.CreatePhotoSequence = append(callOpts.CreatePhotoSequence, gax.WithClientLogging(logging))
+		callOpts.GetPhotoSequence = append(callOpts.GetPhotoSequence, gax.WithClientLogging(logging))
+		callOpts.ListPhotoSequences = append(callOpts.ListPhotoSequences, gax.WithClientLogging(logging))
+		callOpts.DeletePhotoSequence = append(callOpts.DeletePhotoSequence, gax.WithClientLogging(logging))
 	}
 
 	lroOpts := []option.ClientOption{

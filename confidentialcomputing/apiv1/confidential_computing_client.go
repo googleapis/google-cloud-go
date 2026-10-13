@@ -348,6 +348,43 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "confidentialcomputing",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/confidentialcomputing/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "confidentialcomputing.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateChallenge = append(client.CallOptions.CreateChallenge, gax.WithClientTracing(tracing))
+		client.CallOptions.VerifyAttestation = append(client.CallOptions.VerifyAttestation, gax.WithClientTracing(tracing))
+		client.CallOptions.VerifyConfidentialSpace = append(client.CallOptions.VerifyConfidentialSpace, gax.WithClientTracing(tracing))
+		client.CallOptions.VerifyConfidentialGke = append(client.CallOptions.VerifyConfidentialGke, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "confidentialcomputing",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/confidentialcomputing/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "confidentialcomputing.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateChallenge = append(client.CallOptions.CreateChallenge, gax.WithClientLogging(logging))
+		client.CallOptions.VerifyAttestation = append(client.CallOptions.VerifyAttestation, gax.WithClientLogging(logging))
+		client.CallOptions.VerifyConfidentialSpace = append(client.CallOptions.VerifyConfidentialSpace, gax.WithClientLogging(logging))
+		client.CallOptions.VerifyConfidentialGke = append(client.CallOptions.VerifyConfidentialGke, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -444,6 +481,43 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
 		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "confidentialcomputing",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/confidentialcomputing/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "confidentialcomputing.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateChallenge = append(callOpts.CreateChallenge, gax.WithClientTracing(tracing))
+		callOpts.VerifyAttestation = append(callOpts.VerifyAttestation, gax.WithClientTracing(tracing))
+		callOpts.VerifyConfidentialSpace = append(callOpts.VerifyConfidentialSpace, gax.WithClientTracing(tracing))
+		callOpts.VerifyConfidentialGke = append(callOpts.VerifyConfidentialGke, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "confidentialcomputing",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/confidentialcomputing/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "confidentialcomputing.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateChallenge = append(callOpts.CreateChallenge, gax.WithClientLogging(logging))
+		callOpts.VerifyAttestation = append(callOpts.VerifyAttestation, gax.WithClientLogging(logging))
+		callOpts.VerifyConfidentialSpace = append(callOpts.VerifyConfidentialSpace, gax.WithClientLogging(logging))
+		callOpts.VerifyConfidentialGke = append(callOpts.VerifyConfidentialGke, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -490,9 +564,6 @@ func (c *gRPCClient) CreateChallenge(ctx context.Context, req *confidentialcompu
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//confidentialcomputing.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.confidentialcomputing.v1.ConfidentialComputing/CreateChallenge")
 	}
@@ -514,9 +585,6 @@ func (c *gRPCClient) VerifyAttestation(ctx context.Context, req *confidentialcom
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//confidentialcomputing.googleapis.com/%v", req.GetChallenge()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.confidentialcomputing.v1.ConfidentialComputing/VerifyAttestation")
 	}
@@ -538,9 +606,6 @@ func (c *gRPCClient) VerifyConfidentialSpace(ctx context.Context, req *confident
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//confidentialcomputing.googleapis.com/%v", req.GetChallenge()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.confidentialcomputing.v1.ConfidentialComputing/VerifyConfidentialSpace")
 	}
@@ -562,9 +627,6 @@ func (c *gRPCClient) VerifyConfidentialGke(ctx context.Context, req *confidentia
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//confidentialcomputing.googleapis.com/%v", req.GetChallenge()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.confidentialcomputing.v1.ConfidentialComputing/VerifyConfidentialGke")
 	}
@@ -677,9 +739,6 @@ func (c *restClient) CreateChallenge(ctx context.Context, req *confidentialcompu
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//confidentialcomputing.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.confidentialcomputing.v1.ConfidentialComputing/CreateChallenge")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/challenges")
@@ -741,9 +800,6 @@ func (c *restClient) VerifyAttestation(ctx context.Context, req *confidentialcom
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//confidentialcomputing.googleapis.com/%v", req.GetChallenge()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.confidentialcomputing.v1.ConfidentialComputing/VerifyAttestation")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{challenge=projects/*/locations/*/challenges/*}:verifyAttestation")
@@ -805,9 +861,6 @@ func (c *restClient) VerifyConfidentialSpace(ctx context.Context, req *confident
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//confidentialcomputing.googleapis.com/%v", req.GetChallenge()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.confidentialcomputing.v1.ConfidentialComputing/VerifyConfidentialSpace")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{challenge=projects/*/locations/*/challenges/*}:verifyConfidentialSpace")
@@ -869,9 +922,6 @@ func (c *restClient) VerifyConfidentialGke(ctx context.Context, req *confidentia
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//confidentialcomputing.googleapis.com/%v", req.GetChallenge()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.confidentialcomputing.v1.ConfidentialComputing/VerifyConfidentialGke")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{challenge=projects/*/locations/*/challenges/*}:verifyConfidentialGke")

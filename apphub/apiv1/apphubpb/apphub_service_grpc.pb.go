@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -62,6 +62,10 @@ const (
 	AppHub_GetApplication_FullMethodName                 = "/google.cloud.apphub.v1.AppHub/GetApplication"
 	AppHub_UpdateApplication_FullMethodName              = "/google.cloud.apphub.v1.AppHub/UpdateApplication"
 	AppHub_DeleteApplication_FullMethodName              = "/google.cloud.apphub.v1.AppHub/DeleteApplication"
+	AppHub_GetBoundary_FullMethodName                    = "/google.cloud.apphub.v1.AppHub/GetBoundary"
+	AppHub_UpdateBoundary_FullMethodName                 = "/google.cloud.apphub.v1.AppHub/UpdateBoundary"
+	AppHub_GetExtendedMetadataSchema_FullMethodName      = "/google.cloud.apphub.v1.AppHub/GetExtendedMetadataSchema"
+	AppHub_ListExtendedMetadataSchemas_FullMethodName    = "/google.cloud.apphub.v1.AppHub/ListExtendedMetadataSchemas"
 )
 
 // AppHubClient is the client API for AppHub service.
@@ -129,6 +133,14 @@ type AppHubClient interface {
 	UpdateApplication(ctx context.Context, in *UpdateApplicationRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes an Application in a host project and location.
 	DeleteApplication(ctx context.Context, in *DeleteApplicationRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Gets a Boundary.
+	GetBoundary(ctx context.Context, in *GetBoundaryRequest, opts ...grpc.CallOption) (*Boundary, error)
+	// Updates a Boundary.
+	UpdateBoundary(ctx context.Context, in *UpdateBoundaryRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Gets an Extended Metadata Schema.
+	GetExtendedMetadataSchema(ctx context.Context, in *GetExtendedMetadataSchemaRequest, opts ...grpc.CallOption) (*ExtendedMetadataSchema, error)
+	// Lists Extended Metadata Schemas available in a host project and location.
+	ListExtendedMetadataSchemas(ctx context.Context, in *ListExtendedMetadataSchemasRequest, opts ...grpc.CallOption) (*ListExtendedMetadataSchemasResponse, error)
 }
 
 type appHubClient struct {
@@ -382,6 +394,42 @@ func (c *appHubClient) DeleteApplication(ctx context.Context, in *DeleteApplicat
 	return out, nil
 }
 
+func (c *appHubClient) GetBoundary(ctx context.Context, in *GetBoundaryRequest, opts ...grpc.CallOption) (*Boundary, error) {
+	out := new(Boundary)
+	err := c.cc.Invoke(ctx, AppHub_GetBoundary_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *appHubClient) UpdateBoundary(ctx context.Context, in *UpdateBoundaryRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, AppHub_UpdateBoundary_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *appHubClient) GetExtendedMetadataSchema(ctx context.Context, in *GetExtendedMetadataSchemaRequest, opts ...grpc.CallOption) (*ExtendedMetadataSchema, error) {
+	out := new(ExtendedMetadataSchema)
+	err := c.cc.Invoke(ctx, AppHub_GetExtendedMetadataSchema_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *appHubClient) ListExtendedMetadataSchemas(ctx context.Context, in *ListExtendedMetadataSchemasRequest, opts ...grpc.CallOption) (*ListExtendedMetadataSchemasResponse, error) {
+	out := new(ListExtendedMetadataSchemasResponse)
+	err := c.cc.Invoke(ctx, AppHub_ListExtendedMetadataSchemas_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AppHubServer is the server API for AppHub service.
 // All implementations should embed UnimplementedAppHubServer
 // for forward compatibility
@@ -447,6 +495,14 @@ type AppHubServer interface {
 	UpdateApplication(context.Context, *UpdateApplicationRequest) (*longrunningpb.Operation, error)
 	// Deletes an Application in a host project and location.
 	DeleteApplication(context.Context, *DeleteApplicationRequest) (*longrunningpb.Operation, error)
+	// Gets a Boundary.
+	GetBoundary(context.Context, *GetBoundaryRequest) (*Boundary, error)
+	// Updates a Boundary.
+	UpdateBoundary(context.Context, *UpdateBoundaryRequest) (*longrunningpb.Operation, error)
+	// Gets an Extended Metadata Schema.
+	GetExtendedMetadataSchema(context.Context, *GetExtendedMetadataSchemaRequest) (*ExtendedMetadataSchema, error)
+	// Lists Extended Metadata Schemas available in a host project and location.
+	ListExtendedMetadataSchemas(context.Context, *ListExtendedMetadataSchemasRequest) (*ListExtendedMetadataSchemasResponse, error)
 }
 
 // UnimplementedAppHubServer should be embedded to have forward compatible implementations.
@@ -533,6 +589,18 @@ func (UnimplementedAppHubServer) UpdateApplication(context.Context, *UpdateAppli
 }
 func (UnimplementedAppHubServer) DeleteApplication(context.Context, *DeleteApplicationRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteApplication not implemented")
+}
+func (UnimplementedAppHubServer) GetBoundary(context.Context, *GetBoundaryRequest) (*Boundary, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetBoundary not implemented")
+}
+func (UnimplementedAppHubServer) UpdateBoundary(context.Context, *UpdateBoundaryRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateBoundary not implemented")
+}
+func (UnimplementedAppHubServer) GetExtendedMetadataSchema(context.Context, *GetExtendedMetadataSchemaRequest) (*ExtendedMetadataSchema, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetExtendedMetadataSchema not implemented")
+}
+func (UnimplementedAppHubServer) ListExtendedMetadataSchemas(context.Context, *ListExtendedMetadataSchemasRequest) (*ListExtendedMetadataSchemasResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListExtendedMetadataSchemas not implemented")
 }
 
 // UnsafeAppHubServer may be embedded to opt out of forward compatibility for this service.
@@ -1032,6 +1100,78 @@ func _AppHub_DeleteApplication_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AppHub_GetBoundary_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetBoundaryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AppHubServer).GetBoundary(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AppHub_GetBoundary_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AppHubServer).GetBoundary(ctx, req.(*GetBoundaryRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AppHub_UpdateBoundary_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateBoundaryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AppHubServer).UpdateBoundary(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AppHub_UpdateBoundary_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AppHubServer).UpdateBoundary(ctx, req.(*UpdateBoundaryRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AppHub_GetExtendedMetadataSchema_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetExtendedMetadataSchemaRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AppHubServer).GetExtendedMetadataSchema(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AppHub_GetExtendedMetadataSchema_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AppHubServer).GetExtendedMetadataSchema(ctx, req.(*GetExtendedMetadataSchemaRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AppHub_ListExtendedMetadataSchemas_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListExtendedMetadataSchemasRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AppHubServer).ListExtendedMetadataSchemas(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AppHub_ListExtendedMetadataSchemas_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AppHubServer).ListExtendedMetadataSchemas(ctx, req.(*ListExtendedMetadataSchemasRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AppHub_ServiceDesc is the grpc.ServiceDesc for AppHub service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -1146,6 +1286,22 @@ var AppHub_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteApplication",
 			Handler:    _AppHub_DeleteApplication_Handler,
+		},
+		{
+			MethodName: "GetBoundary",
+			Handler:    _AppHub_GetBoundary_Handler,
+		},
+		{
+			MethodName: "UpdateBoundary",
+			Handler:    _AppHub_UpdateBoundary_Handler,
+		},
+		{
+			MethodName: "GetExtendedMetadataSchema",
+			Handler:    _AppHub_GetExtendedMetadataSchema_Handler,
+		},
+		{
+			MethodName: "ListExtendedMetadataSchemas",
+			Handler:    _AppHub_ListExtendedMetadataSchemas_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

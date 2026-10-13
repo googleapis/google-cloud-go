@@ -284,6 +284,37 @@ func NewWebRiskServiceV1Beta1Client(ctx context.Context, opts ...option.ClientOp
 		client.CallOptions.SearchUris = append(client.CallOptions.SearchUris, gax.WithClientMetrics(metrics))
 		client.CallOptions.SearchHashes = append(client.CallOptions.SearchHashes, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "webrisk",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/webrisk/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "webrisk.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ComputeThreatListDiff = append(client.CallOptions.ComputeThreatListDiff, gax.WithClientTracing(tracing))
+		client.CallOptions.SearchUris = append(client.CallOptions.SearchUris, gax.WithClientTracing(tracing))
+		client.CallOptions.SearchHashes = append(client.CallOptions.SearchHashes, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "webrisk",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/webrisk/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "webrisk.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ComputeThreatListDiff = append(client.CallOptions.ComputeThreatListDiff, gax.WithClientLogging(logging))
+		client.CallOptions.SearchUris = append(client.CallOptions.SearchUris, gax.WithClientLogging(logging))
+		client.CallOptions.SearchHashes = append(client.CallOptions.SearchHashes, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -377,6 +408,37 @@ func NewWebRiskServiceV1Beta1RESTClient(ctx context.Context, opts ...option.Clie
 		callOpts.ComputeThreatListDiff = append(callOpts.ComputeThreatListDiff, gax.WithClientMetrics(metrics))
 		callOpts.SearchUris = append(callOpts.SearchUris, gax.WithClientMetrics(metrics))
 		callOpts.SearchHashes = append(callOpts.SearchHashes, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "webrisk",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/webrisk/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "webrisk.googleapis.com",
+			}),
+		)
+
+		callOpts.ComputeThreatListDiff = append(callOpts.ComputeThreatListDiff, gax.WithClientTracing(tracing))
+		callOpts.SearchUris = append(callOpts.SearchUris, gax.WithClientTracing(tracing))
+		callOpts.SearchHashes = append(callOpts.SearchHashes, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "webrisk",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/webrisk/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "webrisk.googleapis.com",
+			}),
+		)
+
+		callOpts.ComputeThreatListDiff = append(callOpts.ComputeThreatListDiff, gax.WithClientLogging(logging))
+		callOpts.SearchUris = append(callOpts.SearchUris, gax.WithClientLogging(logging))
+		callOpts.SearchHashes = append(callOpts.SearchHashes, gax.WithClientLogging(logging))
 	}
 
 	return &WebRiskServiceV1Beta1Client{internalClient: c, CallOptions: callOpts}, nil

@@ -219,6 +219,33 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 		client.CallOptions.ComputeInsights = append(client.CallOptions.ComputeInsights, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "areainsights",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/areainsights/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "areainsights.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ComputeInsights = append(client.CallOptions.ComputeInsights, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "areainsights",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/areainsights/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "areainsights.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ComputeInsights = append(client.CallOptions.ComputeInsights, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -309,6 +336,33 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		)
 
 		callOpts.ComputeInsights = append(callOpts.ComputeInsights, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "areainsights",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/areainsights/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "areainsights.googleapis.com",
+			}),
+		)
+
+		callOpts.ComputeInsights = append(callOpts.ComputeInsights, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "areainsights",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/areainsights/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "areainsights.googleapis.com",
+			}),
+		)
+
+		callOpts.ComputeInsights = append(callOpts.ComputeInsights, gax.WithClientLogging(logging))
 	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil

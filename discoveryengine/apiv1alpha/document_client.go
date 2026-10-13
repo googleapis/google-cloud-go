@@ -614,6 +614,55 @@ func NewDocumentClient(ctx context.Context, opts ...option.ClientOption) (*Docum
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "discoveryengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/discoveryengine/apiv1alpha",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "discoveryengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetDocument = append(client.CallOptions.GetDocument, gax.WithClientTracing(tracing))
+		client.CallOptions.ListDocuments = append(client.CallOptions.ListDocuments, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateDocument = append(client.CallOptions.CreateDocument, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateDocument = append(client.CallOptions.UpdateDocument, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteDocument = append(client.CallOptions.DeleteDocument, gax.WithClientTracing(tracing))
+		client.CallOptions.ImportDocuments = append(client.CallOptions.ImportDocuments, gax.WithClientTracing(tracing))
+		client.CallOptions.PurgeDocuments = append(client.CallOptions.PurgeDocuments, gax.WithClientTracing(tracing))
+		client.CallOptions.GetProcessedDocument = append(client.CallOptions.GetProcessedDocument, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchGetDocumentsMetadata = append(client.CallOptions.BatchGetDocumentsMetadata, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "discoveryengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/discoveryengine/apiv1alpha",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "discoveryengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetDocument = append(client.CallOptions.GetDocument, gax.WithClientLogging(logging))
+		client.CallOptions.ListDocuments = append(client.CallOptions.ListDocuments, gax.WithClientLogging(logging))
+		client.CallOptions.CreateDocument = append(client.CallOptions.CreateDocument, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateDocument = append(client.CallOptions.UpdateDocument, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteDocument = append(client.CallOptions.DeleteDocument, gax.WithClientLogging(logging))
+		client.CallOptions.ImportDocuments = append(client.CallOptions.ImportDocuments, gax.WithClientLogging(logging))
+		client.CallOptions.PurgeDocuments = append(client.CallOptions.PurgeDocuments, gax.WithClientLogging(logging))
+		client.CallOptions.GetProcessedDocument = append(client.CallOptions.GetProcessedDocument, gax.WithClientLogging(logging))
+		client.CallOptions.BatchGetDocumentsMetadata = append(client.CallOptions.BatchGetDocumentsMetadata, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -734,6 +783,55 @@ func NewDocumentRESTClient(ctx context.Context, opts ...option.ClientOption) (*D
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "discoveryengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/discoveryengine/apiv1alpha",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "discoveryengine.googleapis.com",
+			}),
+		)
+
+		callOpts.GetDocument = append(callOpts.GetDocument, gax.WithClientTracing(tracing))
+		callOpts.ListDocuments = append(callOpts.ListDocuments, gax.WithClientTracing(tracing))
+		callOpts.CreateDocument = append(callOpts.CreateDocument, gax.WithClientTracing(tracing))
+		callOpts.UpdateDocument = append(callOpts.UpdateDocument, gax.WithClientTracing(tracing))
+		callOpts.DeleteDocument = append(callOpts.DeleteDocument, gax.WithClientTracing(tracing))
+		callOpts.ImportDocuments = append(callOpts.ImportDocuments, gax.WithClientTracing(tracing))
+		callOpts.PurgeDocuments = append(callOpts.PurgeDocuments, gax.WithClientTracing(tracing))
+		callOpts.GetProcessedDocument = append(callOpts.GetProcessedDocument, gax.WithClientTracing(tracing))
+		callOpts.BatchGetDocumentsMetadata = append(callOpts.BatchGetDocumentsMetadata, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "discoveryengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/discoveryengine/apiv1alpha",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "discoveryengine.googleapis.com",
+			}),
+		)
+
+		callOpts.GetDocument = append(callOpts.GetDocument, gax.WithClientLogging(logging))
+		callOpts.ListDocuments = append(callOpts.ListDocuments, gax.WithClientLogging(logging))
+		callOpts.CreateDocument = append(callOpts.CreateDocument, gax.WithClientLogging(logging))
+		callOpts.UpdateDocument = append(callOpts.UpdateDocument, gax.WithClientLogging(logging))
+		callOpts.DeleteDocument = append(callOpts.DeleteDocument, gax.WithClientLogging(logging))
+		callOpts.ImportDocuments = append(callOpts.ImportDocuments, gax.WithClientLogging(logging))
+		callOpts.PurgeDocuments = append(callOpts.PurgeDocuments, gax.WithClientLogging(logging))
+		callOpts.GetProcessedDocument = append(callOpts.GetProcessedDocument, gax.WithClientLogging(logging))
+		callOpts.BatchGetDocumentsMetadata = append(callOpts.BatchGetDocumentsMetadata, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -790,9 +888,6 @@ func (c *documentGRPCClient) GetDocument(ctx context.Context, req *discoveryengi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1alpha.DocumentService/GetDocument")
 	}
@@ -814,9 +909,6 @@ func (c *documentGRPCClient) ListDocuments(ctx context.Context, req *discoveryen
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1alpha.DocumentService/ListDocuments")
 	}
@@ -866,9 +958,6 @@ func (c *documentGRPCClient) CreateDocument(ctx context.Context, req *discoverye
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1alpha.DocumentService/CreateDocument")
 	}
@@ -911,9 +1000,6 @@ func (c *documentGRPCClient) DeleteDocument(ctx context.Context, req *discoverye
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1alpha.DocumentService/DeleteDocument")
 	}
@@ -931,9 +1017,6 @@ func (c *documentGRPCClient) ImportDocuments(ctx context.Context, req *discovery
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1alpha.DocumentService/ImportDocuments")
 	}
@@ -961,9 +1044,6 @@ func (c *documentGRPCClient) PurgeDocuments(ctx context.Context, req *discoverye
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1alpha.DocumentService/PurgeDocuments")
 	}
@@ -991,9 +1071,6 @@ func (c *documentGRPCClient) GetProcessedDocument(ctx context.Context, req *disc
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1alpha.DocumentService/GetProcessedDocument")
 	}
@@ -1015,9 +1092,6 @@ func (c *documentGRPCClient) BatchGetDocumentsMetadata(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1alpha.DocumentService/BatchGetDocumentsMetadata")
 	}
@@ -1140,9 +1214,6 @@ func (c *documentRESTClient) GetDocument(ctx context.Context, req *discoveryengi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1alpha.DocumentService/GetDocument")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=projects/*/locations/*/dataStores/*/branches/*/documents/*}")
@@ -1283,9 +1354,6 @@ func (c *documentRESTClient) CreateDocument(ctx context.Context, req *discoverye
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1alpha.DocumentService/CreateDocument")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{parent=projects/*/locations/*/dataStores/*/branches/*}/documents")
@@ -1411,9 +1479,6 @@ func (c *documentRESTClient) DeleteDocument(ctx context.Context, req *discoverye
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1alpha.DocumentService/DeleteDocument")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=projects/*/locations/*/dataStores/*/branches/*/documents/*}")
@@ -1465,9 +1530,6 @@ func (c *documentRESTClient) ImportDocuments(ctx context.Context, req *discovery
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1alpha.DocumentService/ImportDocuments")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{parent=projects/*/locations/*/dataStores/*/branches/*}/documents:import")
@@ -1551,9 +1613,6 @@ func (c *documentRESTClient) PurgeDocuments(ctx context.Context, req *discoverye
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1alpha.DocumentService/PurgeDocuments")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{parent=projects/*/locations/*/dataStores/*/branches/*}/documents:purge")
@@ -1620,9 +1679,6 @@ func (c *documentRESTClient) GetProcessedDocument(ctx context.Context, req *disc
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1alpha.DocumentService/GetProcessedDocument")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=projects/*/locations/*/dataStores/*/branches/*/documents/*}:getProcessedDocument")
@@ -1684,9 +1740,6 @@ func (c *documentRESTClient) BatchGetDocumentsMetadata(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1alpha.DocumentService/BatchGetDocumentsMetadata")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{parent=projects/*/locations/*/dataStores/*/branches/*}/batchGetDocumentsMetadata")

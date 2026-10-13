@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -115,6 +115,12 @@ type ImportDataRequest struct {
 	RequestId string `protobuf:"bytes,4,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
 	// Optional. User-specified service account used to perform the transfer.
 	// If unspecified, the default Managed Lustre service agent will be used.
+	//
+	// Use one of the following formats:
+	//
+	// * `{EMAIL_ADDRESS_OR_UNIQUE_ID}`
+	// * `projects/{PROJECT_ID}/serviceAccounts/{EMAIL_ADDRESS_OR_UNIQUE_ID}`
+	// * `projects/-/serviceAccounts/{EMAIL_ADDRESS_OR_UNIQUE_ID}`
 	ServiceAccount string `protobuf:"bytes,5,opt,name=service_account,json=serviceAccount,proto3" json:"service_account,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
@@ -249,6 +255,12 @@ type ExportDataRequest struct {
 	RequestId string `protobuf:"bytes,4,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
 	// Optional. User-specified service account used to perform the transfer.
 	// If unspecified, the Managed Lustre service agent is used.
+	//
+	// Use one of the following formats:
+	//
+	// * `{EMAIL_ADDRESS_OR_UNIQUE_ID}`
+	// * `projects/{PROJECT_ID}/serviceAccounts/{EMAIL_ADDRESS_OR_UNIQUE_ID}`
+	// * `projects/-/serviceAccounts/{EMAIL_ADDRESS_OR_UNIQUE_ID}`
 	ServiceAccount string `protobuf:"bytes,5,opt,name=service_account,json=serviceAccount,proto3" json:"service_account,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache

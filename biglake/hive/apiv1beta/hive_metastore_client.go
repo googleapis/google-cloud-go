@@ -65,6 +65,7 @@ type HiveMetastoreCallOptions struct {
 	BatchDeletePartitions []gax.CallOption
 	BatchUpdatePartitions []gax.CallOption
 	ListPartitions        []gax.CallOption
+	FailoverHiveCatalog   []gax.CallOption
 }
 
 func defaultHiveMetastoreGRPCClientOptions() []option.ClientOption {
@@ -330,6 +331,19 @@ func defaultHiveMetastoreCallOptions() *HiveMetastoreCallOptions {
 				})
 			}),
 		},
+		FailoverHiveCatalog: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 	}
 }
 
@@ -563,6 +577,18 @@ func defaultHiveMetastoreRESTCallOptions() *HiveMetastoreCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		FailoverHiveCatalog: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
 	}
 }
 
@@ -590,6 +616,7 @@ type internalHiveMetastoreClient interface {
 	BatchDeletePartitions(context.Context, *hivepb.BatchDeletePartitionsRequest, ...gax.CallOption) error
 	BatchUpdatePartitions(context.Context, *hivepb.BatchUpdatePartitionsRequest, ...gax.CallOption) (*hivepb.BatchUpdatePartitionsResponse, error)
 	ListPartitions(context.Context, *hivepb.ListPartitionsRequest, ...gax.CallOption) (hivepb.HiveMetastoreService_ListPartitionsClient, error)
+	FailoverHiveCatalog(context.Context, *hivepb.FailoverHiveCatalogRequest, ...gax.CallOption) (*hivepb.FailoverHiveCatalogResponse, error)
 }
 
 // HiveMetastoreClient is a client for interacting with Lakehouse API.
@@ -740,6 +767,11 @@ func (c *HiveMetastoreClient) ListPartitions(ctx context.Context, req *hivepb.Li
 	return c.internalClient.ListPartitions(ctx, req, opts...)
 }
 
+// FailoverHiveCatalog failover the catalog to a new primary replica region.
+func (c *HiveMetastoreClient) FailoverHiveCatalog(ctx context.Context, req *hivepb.FailoverHiveCatalogRequest, opts ...gax.CallOption) (*hivepb.FailoverHiveCatalogResponse, error) {
+	return c.internalClient.FailoverHiveCatalog(ctx, req, opts...)
+}
+
 // hiveMetastoreGRPCClient is a client for interacting with Lakehouse API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -843,6 +875,72 @@ func NewHiveMetastoreClient(ctx context.Context, opts ...option.ClientOption) (*
 		client.CallOptions.BatchDeletePartitions = append(client.CallOptions.BatchDeletePartitions, gax.WithClientMetrics(metrics))
 		client.CallOptions.BatchUpdatePartitions = append(client.CallOptions.BatchUpdatePartitions, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListPartitions = append(client.CallOptions.ListPartitions, gax.WithClientMetrics(metrics))
+		client.CallOptions.FailoverHiveCatalog = append(client.CallOptions.FailoverHiveCatalog, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "biglake",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/biglake/hive/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "biglake.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateHiveCatalog = append(client.CallOptions.CreateHiveCatalog, gax.WithClientTracing(tracing))
+		client.CallOptions.GetHiveCatalog = append(client.CallOptions.GetHiveCatalog, gax.WithClientTracing(tracing))
+		client.CallOptions.ListHiveCatalogs = append(client.CallOptions.ListHiveCatalogs, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateHiveCatalog = append(client.CallOptions.UpdateHiveCatalog, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteHiveCatalog = append(client.CallOptions.DeleteHiveCatalog, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateHiveDatabase = append(client.CallOptions.CreateHiveDatabase, gax.WithClientTracing(tracing))
+		client.CallOptions.GetHiveDatabase = append(client.CallOptions.GetHiveDatabase, gax.WithClientTracing(tracing))
+		client.CallOptions.ListHiveDatabases = append(client.CallOptions.ListHiveDatabases, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateHiveDatabase = append(client.CallOptions.UpdateHiveDatabase, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteHiveDatabase = append(client.CallOptions.DeleteHiveDatabase, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateHiveTable = append(client.CallOptions.CreateHiveTable, gax.WithClientTracing(tracing))
+		client.CallOptions.GetHiveTable = append(client.CallOptions.GetHiveTable, gax.WithClientTracing(tracing))
+		client.CallOptions.ListHiveTables = append(client.CallOptions.ListHiveTables, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateHiveTable = append(client.CallOptions.UpdateHiveTable, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteHiveTable = append(client.CallOptions.DeleteHiveTable, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchCreatePartitions = append(client.CallOptions.BatchCreatePartitions, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchDeletePartitions = append(client.CallOptions.BatchDeletePartitions, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchUpdatePartitions = append(client.CallOptions.BatchUpdatePartitions, gax.WithClientTracing(tracing))
+		client.CallOptions.ListPartitions = append(client.CallOptions.ListPartitions, gax.WithClientTracing(tracing))
+		client.CallOptions.FailoverHiveCatalog = append(client.CallOptions.FailoverHiveCatalog, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "biglake",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/biglake/hive/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "biglake.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateHiveCatalog = append(client.CallOptions.CreateHiveCatalog, gax.WithClientLogging(logging))
+		client.CallOptions.GetHiveCatalog = append(client.CallOptions.GetHiveCatalog, gax.WithClientLogging(logging))
+		client.CallOptions.ListHiveCatalogs = append(client.CallOptions.ListHiveCatalogs, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateHiveCatalog = append(client.CallOptions.UpdateHiveCatalog, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteHiveCatalog = append(client.CallOptions.DeleteHiveCatalog, gax.WithClientLogging(logging))
+		client.CallOptions.CreateHiveDatabase = append(client.CallOptions.CreateHiveDatabase, gax.WithClientLogging(logging))
+		client.CallOptions.GetHiveDatabase = append(client.CallOptions.GetHiveDatabase, gax.WithClientLogging(logging))
+		client.CallOptions.ListHiveDatabases = append(client.CallOptions.ListHiveDatabases, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateHiveDatabase = append(client.CallOptions.UpdateHiveDatabase, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteHiveDatabase = append(client.CallOptions.DeleteHiveDatabase, gax.WithClientLogging(logging))
+		client.CallOptions.CreateHiveTable = append(client.CallOptions.CreateHiveTable, gax.WithClientLogging(logging))
+		client.CallOptions.GetHiveTable = append(client.CallOptions.GetHiveTable, gax.WithClientLogging(logging))
+		client.CallOptions.ListHiveTables = append(client.CallOptions.ListHiveTables, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateHiveTable = append(client.CallOptions.UpdateHiveTable, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteHiveTable = append(client.CallOptions.DeleteHiveTable, gax.WithClientLogging(logging))
+		client.CallOptions.BatchCreatePartitions = append(client.CallOptions.BatchCreatePartitions, gax.WithClientLogging(logging))
+		client.CallOptions.BatchDeletePartitions = append(client.CallOptions.BatchDeletePartitions, gax.WithClientLogging(logging))
+		client.CallOptions.BatchUpdatePartitions = append(client.CallOptions.BatchUpdatePartitions, gax.WithClientLogging(logging))
+		client.CallOptions.ListPartitions = append(client.CallOptions.ListPartitions, gax.WithClientLogging(logging))
+		client.CallOptions.FailoverHiveCatalog = append(client.CallOptions.FailoverHiveCatalog, gax.WithClientLogging(logging))
 	}
 
 	client.internalClient = c
@@ -968,6 +1066,72 @@ func NewHiveMetastoreRESTClient(ctx context.Context, opts ...option.ClientOption
 		callOpts.BatchDeletePartitions = append(callOpts.BatchDeletePartitions, gax.WithClientMetrics(metrics))
 		callOpts.BatchUpdatePartitions = append(callOpts.BatchUpdatePartitions, gax.WithClientMetrics(metrics))
 		callOpts.ListPartitions = append(callOpts.ListPartitions, gax.WithClientMetrics(metrics))
+		callOpts.FailoverHiveCatalog = append(callOpts.FailoverHiveCatalog, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "biglake",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/biglake/hive/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "biglake.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateHiveCatalog = append(callOpts.CreateHiveCatalog, gax.WithClientTracing(tracing))
+		callOpts.GetHiveCatalog = append(callOpts.GetHiveCatalog, gax.WithClientTracing(tracing))
+		callOpts.ListHiveCatalogs = append(callOpts.ListHiveCatalogs, gax.WithClientTracing(tracing))
+		callOpts.UpdateHiveCatalog = append(callOpts.UpdateHiveCatalog, gax.WithClientTracing(tracing))
+		callOpts.DeleteHiveCatalog = append(callOpts.DeleteHiveCatalog, gax.WithClientTracing(tracing))
+		callOpts.CreateHiveDatabase = append(callOpts.CreateHiveDatabase, gax.WithClientTracing(tracing))
+		callOpts.GetHiveDatabase = append(callOpts.GetHiveDatabase, gax.WithClientTracing(tracing))
+		callOpts.ListHiveDatabases = append(callOpts.ListHiveDatabases, gax.WithClientTracing(tracing))
+		callOpts.UpdateHiveDatabase = append(callOpts.UpdateHiveDatabase, gax.WithClientTracing(tracing))
+		callOpts.DeleteHiveDatabase = append(callOpts.DeleteHiveDatabase, gax.WithClientTracing(tracing))
+		callOpts.CreateHiveTable = append(callOpts.CreateHiveTable, gax.WithClientTracing(tracing))
+		callOpts.GetHiveTable = append(callOpts.GetHiveTable, gax.WithClientTracing(tracing))
+		callOpts.ListHiveTables = append(callOpts.ListHiveTables, gax.WithClientTracing(tracing))
+		callOpts.UpdateHiveTable = append(callOpts.UpdateHiveTable, gax.WithClientTracing(tracing))
+		callOpts.DeleteHiveTable = append(callOpts.DeleteHiveTable, gax.WithClientTracing(tracing))
+		callOpts.BatchCreatePartitions = append(callOpts.BatchCreatePartitions, gax.WithClientTracing(tracing))
+		callOpts.BatchDeletePartitions = append(callOpts.BatchDeletePartitions, gax.WithClientTracing(tracing))
+		callOpts.BatchUpdatePartitions = append(callOpts.BatchUpdatePartitions, gax.WithClientTracing(tracing))
+		callOpts.ListPartitions = append(callOpts.ListPartitions, gax.WithClientTracing(tracing))
+		callOpts.FailoverHiveCatalog = append(callOpts.FailoverHiveCatalog, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "biglake",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/biglake/hive/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "biglake.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateHiveCatalog = append(callOpts.CreateHiveCatalog, gax.WithClientLogging(logging))
+		callOpts.GetHiveCatalog = append(callOpts.GetHiveCatalog, gax.WithClientLogging(logging))
+		callOpts.ListHiveCatalogs = append(callOpts.ListHiveCatalogs, gax.WithClientLogging(logging))
+		callOpts.UpdateHiveCatalog = append(callOpts.UpdateHiveCatalog, gax.WithClientLogging(logging))
+		callOpts.DeleteHiveCatalog = append(callOpts.DeleteHiveCatalog, gax.WithClientLogging(logging))
+		callOpts.CreateHiveDatabase = append(callOpts.CreateHiveDatabase, gax.WithClientLogging(logging))
+		callOpts.GetHiveDatabase = append(callOpts.GetHiveDatabase, gax.WithClientLogging(logging))
+		callOpts.ListHiveDatabases = append(callOpts.ListHiveDatabases, gax.WithClientLogging(logging))
+		callOpts.UpdateHiveDatabase = append(callOpts.UpdateHiveDatabase, gax.WithClientLogging(logging))
+		callOpts.DeleteHiveDatabase = append(callOpts.DeleteHiveDatabase, gax.WithClientLogging(logging))
+		callOpts.CreateHiveTable = append(callOpts.CreateHiveTable, gax.WithClientLogging(logging))
+		callOpts.GetHiveTable = append(callOpts.GetHiveTable, gax.WithClientLogging(logging))
+		callOpts.ListHiveTables = append(callOpts.ListHiveTables, gax.WithClientLogging(logging))
+		callOpts.UpdateHiveTable = append(callOpts.UpdateHiveTable, gax.WithClientLogging(logging))
+		callOpts.DeleteHiveTable = append(callOpts.DeleteHiveTable, gax.WithClientLogging(logging))
+		callOpts.BatchCreatePartitions = append(callOpts.BatchCreatePartitions, gax.WithClientLogging(logging))
+		callOpts.BatchDeletePartitions = append(callOpts.BatchDeletePartitions, gax.WithClientLogging(logging))
+		callOpts.BatchUpdatePartitions = append(callOpts.BatchUpdatePartitions, gax.WithClientLogging(logging))
+		callOpts.ListPartitions = append(callOpts.ListPartitions, gax.WithClientLogging(logging))
+		callOpts.FailoverHiveCatalog = append(callOpts.FailoverHiveCatalog, gax.WithClientLogging(logging))
 	}
 
 	return &HiveMetastoreClient{internalClient: c, CallOptions: callOpts}, nil
@@ -1015,9 +1179,6 @@ func (c *hiveMetastoreGRPCClient) CreateHiveCatalog(ctx context.Context, req *hi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.hive.v1beta.HiveMetastoreService/CreateHiveCatalog")
 	}
@@ -1039,9 +1200,6 @@ func (c *hiveMetastoreGRPCClient) GetHiveCatalog(ctx context.Context, req *hivep
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.hive.v1beta.HiveMetastoreService/GetHiveCatalog")
 	}
@@ -1063,9 +1221,6 @@ func (c *hiveMetastoreGRPCClient) ListHiveCatalogs(ctx context.Context, req *hiv
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.hive.v1beta.HiveMetastoreService/ListHiveCatalogs")
 	}
@@ -1136,9 +1291,6 @@ func (c *hiveMetastoreGRPCClient) DeleteHiveCatalog(ctx context.Context, req *hi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.hive.v1beta.HiveMetastoreService/DeleteHiveCatalog")
 	}
@@ -1156,9 +1308,6 @@ func (c *hiveMetastoreGRPCClient) CreateHiveDatabase(ctx context.Context, req *h
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.hive.v1beta.HiveMetastoreService/CreateHiveDatabase")
 	}
@@ -1180,9 +1329,6 @@ func (c *hiveMetastoreGRPCClient) GetHiveDatabase(ctx context.Context, req *hive
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.hive.v1beta.HiveMetastoreService/GetHiveDatabase")
 	}
@@ -1204,9 +1350,6 @@ func (c *hiveMetastoreGRPCClient) ListHiveDatabases(ctx context.Context, req *hi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.hive.v1beta.HiveMetastoreService/ListHiveDatabases")
 	}
@@ -1277,9 +1420,6 @@ func (c *hiveMetastoreGRPCClient) DeleteHiveDatabase(ctx context.Context, req *h
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.hive.v1beta.HiveMetastoreService/DeleteHiveDatabase")
 	}
@@ -1297,9 +1437,6 @@ func (c *hiveMetastoreGRPCClient) CreateHiveTable(ctx context.Context, req *hive
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.hive.v1beta.HiveMetastoreService/CreateHiveTable")
 	}
@@ -1321,9 +1458,6 @@ func (c *hiveMetastoreGRPCClient) GetHiveTable(ctx context.Context, req *hivepb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.hive.v1beta.HiveMetastoreService/GetHiveTable")
 	}
@@ -1345,9 +1479,6 @@ func (c *hiveMetastoreGRPCClient) ListHiveTables(ctx context.Context, req *hivep
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.hive.v1beta.HiveMetastoreService/ListHiveTables")
 	}
@@ -1418,9 +1549,6 @@ func (c *hiveMetastoreGRPCClient) DeleteHiveTable(ctx context.Context, req *hive
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.hive.v1beta.HiveMetastoreService/DeleteHiveTable")
 	}
@@ -1438,9 +1566,6 @@ func (c *hiveMetastoreGRPCClient) BatchCreatePartitions(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.hive.v1beta.HiveMetastoreService/BatchCreatePartitions")
 	}
@@ -1462,9 +1587,6 @@ func (c *hiveMetastoreGRPCClient) BatchDeletePartitions(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.hive.v1beta.HiveMetastoreService/BatchDeletePartitions")
 	}
@@ -1482,9 +1604,6 @@ func (c *hiveMetastoreGRPCClient) BatchUpdatePartitions(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.hive.v1beta.HiveMetastoreService/BatchUpdatePartitions")
 	}
@@ -1506,9 +1625,6 @@ func (c *hiveMetastoreGRPCClient) ListPartitions(ctx context.Context, req *hivep
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.hive.v1beta.HiveMetastoreService/ListPartitions")
 	}
@@ -1519,6 +1635,27 @@ func (c *hiveMetastoreGRPCClient) ListPartitions(ctx context.Context, req *hivep
 		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "ListPartitions")
 		resp, err = c.hiveMetastoreClient.ListPartitions(ctx, req, settings.GRPC...)
 		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "ListPartitions")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *hiveMetastoreGRPCClient) FailoverHiveCatalog(ctx context.Context, req *hivepb.FailoverHiveCatalogRequest, opts ...gax.CallOption) (*hivepb.FailoverHiveCatalogResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.hive.v1beta.HiveMetastoreService/FailoverHiveCatalog")
+	}
+	opts = append((*c.CallOptions).FailoverHiveCatalog[0:len((*c.CallOptions).FailoverHiveCatalog):len((*c.CallOptions).FailoverHiveCatalog)], opts...)
+	var resp *hivepb.FailoverHiveCatalogResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.hiveMetastoreClient.FailoverHiveCatalog, req, settings.GRPC, c.logger, "FailoverHiveCatalog")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1555,9 +1692,6 @@ func (c *hiveMetastoreRESTClient) CreateHiveCatalog(ctx context.Context, req *hi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.hive.v1beta.HiveMetastoreService/CreateHiveCatalog")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/hive/v1beta/{parent=projects/*}/catalogs")
@@ -1612,9 +1746,6 @@ func (c *hiveMetastoreRESTClient) GetHiveCatalog(ctx context.Context, req *hivep
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.hive.v1beta.HiveMetastoreService/GetHiveCatalog")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/hive/v1beta/{name=projects/*/catalogs/*}")
@@ -1816,9 +1947,6 @@ func (c *hiveMetastoreRESTClient) DeleteHiveCatalog(ctx context.Context, req *hi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.hive.v1beta.HiveMetastoreService/DeleteHiveCatalog")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/hive/v1beta/{name=projects/*/catalogs/*}")
@@ -1866,9 +1994,6 @@ func (c *hiveMetastoreRESTClient) CreateHiveDatabase(ctx context.Context, req *h
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.hive.v1beta.HiveMetastoreService/CreateHiveDatabase")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/hive/v1beta/{parent=projects/*/catalogs/*}/databases")
@@ -1923,9 +2048,6 @@ func (c *hiveMetastoreRESTClient) GetHiveDatabase(ctx context.Context, req *hive
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.hive.v1beta.HiveMetastoreService/GetHiveDatabase")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/hive/v1beta/{name=projects/*/catalogs/*/databases/*}")
@@ -2126,9 +2248,6 @@ func (c *hiveMetastoreRESTClient) DeleteHiveDatabase(ctx context.Context, req *h
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.hive.v1beta.HiveMetastoreService/DeleteHiveDatabase")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/hive/v1beta/{name=projects/*/catalogs/*/databases/*}")
@@ -2176,9 +2295,6 @@ func (c *hiveMetastoreRESTClient) CreateHiveTable(ctx context.Context, req *hive
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.hive.v1beta.HiveMetastoreService/CreateHiveTable")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/hive/v1beta/{parent=projects/*/catalogs/*/databases/*}/tables")
@@ -2233,9 +2349,6 @@ func (c *hiveMetastoreRESTClient) GetHiveTable(ctx context.Context, req *hivepb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.hive.v1beta.HiveMetastoreService/GetHiveTable")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/hive/v1beta/{name=projects/*/catalogs/*/databases/*/tables/*}")
@@ -2437,9 +2550,6 @@ func (c *hiveMetastoreRESTClient) DeleteHiveTable(ctx context.Context, req *hive
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.hive.v1beta.HiveMetastoreService/DeleteHiveTable")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/hive/v1beta/{name=projects/*/catalogs/*/databases/*/tables/*}")
@@ -2485,9 +2595,6 @@ func (c *hiveMetastoreRESTClient) BatchCreatePartitions(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.hive.v1beta.HiveMetastoreService/BatchCreatePartitions")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/hive/v1beta/{parent=projects/*/catalogs/*/databases/*/tables/*}/partitions:batchCreate")
@@ -2548,9 +2655,6 @@ func (c *hiveMetastoreRESTClient) BatchDeletePartitions(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.hive.v1beta.HiveMetastoreService/BatchDeletePartitions")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/hive/v1beta/{parent=projects/*/catalogs/*/databases/*/tables/*}/partitions:batchDelete")
@@ -2596,9 +2700,6 @@ func (c *hiveMetastoreRESTClient) BatchUpdatePartitions(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.hive.v1beta.HiveMetastoreService/BatchUpdatePartitions")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/hive/v1beta/{parent=projects/*/catalogs/*/databases/*/tables/*}/partitions:batchUpdate")
@@ -2656,9 +2757,6 @@ func (c *hiveMetastoreRESTClient) ListPartitions(ctx context.Context, req *hivep
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.hive.v1beta.HiveMetastoreService/ListPartitions")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/hive/v1beta/{parent=projects/*/catalogs/*/databases/*/tables/*}/partitions:list")
@@ -2738,4 +2836,64 @@ func (c *listPartitionsRESTStreamClient) SendMsg(m interface{}) error {
 func (c *listPartitionsRESTStreamClient) RecvMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
 	return errors.New("this method is not implemented, use Recv")
+}
+
+// FailoverHiveCatalog failover the catalog to a new primary replica region.
+func (c *hiveMetastoreRESTClient) FailoverHiveCatalog(ctx context.Context, req *hivepb.FailoverHiveCatalogRequest, opts ...gax.CallOption) (*hivepb.FailoverHiveCatalogResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/hive/v1beta/%v:failover", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.hive.v1beta.HiveMetastoreService/FailoverHiveCatalog")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/hive/v1beta/{name=projects/*/catalogs/*}:failover")
+	}
+	opts = append((*c.CallOptions).FailoverHiveCatalog[0:len((*c.CallOptions).FailoverHiveCatalog):len((*c.CallOptions).FailoverHiveCatalog)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &hivepb.FailoverHiveCatalogResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "FailoverHiveCatalog")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }

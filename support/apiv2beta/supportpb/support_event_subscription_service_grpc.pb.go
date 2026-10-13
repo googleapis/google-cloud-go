@@ -26,6 +26,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -40,6 +41,7 @@ const (
 	SupportEventSubscriptionService_UpdateSupportEventSubscription_FullMethodName   = "/google.cloud.support.v2beta.SupportEventSubscriptionService/UpdateSupportEventSubscription"
 	SupportEventSubscriptionService_DeleteSupportEventSubscription_FullMethodName   = "/google.cloud.support.v2beta.SupportEventSubscriptionService/DeleteSupportEventSubscription"
 	SupportEventSubscriptionService_UndeleteSupportEventSubscription_FullMethodName = "/google.cloud.support.v2beta.SupportEventSubscriptionService/UndeleteSupportEventSubscription"
+	SupportEventSubscriptionService_ExpungeSupportEventSubscription_FullMethodName  = "/google.cloud.support.v2beta.SupportEventSubscriptionService/ExpungeSupportEventSubscription"
 )
 
 // SupportEventSubscriptionServiceClient is the client API for SupportEventSubscriptionService service.
@@ -50,7 +52,7 @@ type SupportEventSubscriptionServiceClient interface {
 	CreateSupportEventSubscription(ctx context.Context, in *CreateSupportEventSubscriptionRequest, opts ...grpc.CallOption) (*SupportEventSubscription, error)
 	// Gets a support event subscription.
 	GetSupportEventSubscription(ctx context.Context, in *GetSupportEventSubscriptionRequest, opts ...grpc.CallOption) (*SupportEventSubscription, error)
-	// Lists support event subscriptions.
+	// Lists support event subscriptions for an organization.
 	ListSupportEventSubscriptions(ctx context.Context, in *ListSupportEventSubscriptionsRequest, opts ...grpc.CallOption) (*ListSupportEventSubscriptionsResponse, error)
 	// Updates a support event subscription.
 	UpdateSupportEventSubscription(ctx context.Context, in *UpdateSupportEventSubscriptionRequest, opts ...grpc.CallOption) (*SupportEventSubscription, error)
@@ -58,6 +60,44 @@ type SupportEventSubscriptionServiceClient interface {
 	DeleteSupportEventSubscription(ctx context.Context, in *DeleteSupportEventSubscriptionRequest, opts ...grpc.CallOption) (*SupportEventSubscription, error)
 	// Undeletes a support event subscription.
 	UndeleteSupportEventSubscription(ctx context.Context, in *UndeleteSupportEventSubscriptionRequest, opts ...grpc.CallOption) (*SupportEventSubscription, error)
+	// Expunges a support event subscription.
+	//
+	// EXAMPLES:
+	//
+	// cURL:
+	//
+	// ```shell
+	// support_event_subscription="organizations/123456789/supportEventSubscriptions/abcdef123456"
+	//
+	//	curl \
+	//	  --request POST \
+	//	  --header "Authorization: Bearer $(gcloud auth print-access-token)" \
+	//	  "https://cloudsupport.googleapis.com/v2beta/$support_event_subscription:expunge"
+	//
+	// ```
+	//
+	// Python:
+	//
+	// ```python
+	// import googleapiclient.discovery
+	//
+	// api_version = "v2beta"
+	// supportApiService = googleapiclient.discovery.build(
+	//
+	//	serviceName="cloudsupport",
+	//	version=api_version,
+	//	discoveryServiceUrl=f"https://cloudsupport.googleapis.com/$discovery/rest?version={api_version}",
+	//
+	// )
+	//
+	// request = supportApiService.supportEventSubscriptions().expunge(
+	//
+	//	name="organizations/123456789/supportEventSubscriptions/abcdef123456"
+	//
+	// )
+	// print(request.execute())
+	// ```
+	ExpungeSupportEventSubscription(ctx context.Context, in *ExpungeSupportEventSubscriptionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type supportEventSubscriptionServiceClient struct {
@@ -122,6 +162,15 @@ func (c *supportEventSubscriptionServiceClient) UndeleteSupportEventSubscription
 	return out, nil
 }
 
+func (c *supportEventSubscriptionServiceClient) ExpungeSupportEventSubscription(ctx context.Context, in *ExpungeSupportEventSubscriptionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, SupportEventSubscriptionService_ExpungeSupportEventSubscription_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // SupportEventSubscriptionServiceServer is the server API for SupportEventSubscriptionService service.
 // All implementations should embed UnimplementedSupportEventSubscriptionServiceServer
 // for forward compatibility
@@ -130,7 +179,7 @@ type SupportEventSubscriptionServiceServer interface {
 	CreateSupportEventSubscription(context.Context, *CreateSupportEventSubscriptionRequest) (*SupportEventSubscription, error)
 	// Gets a support event subscription.
 	GetSupportEventSubscription(context.Context, *GetSupportEventSubscriptionRequest) (*SupportEventSubscription, error)
-	// Lists support event subscriptions.
+	// Lists support event subscriptions for an organization.
 	ListSupportEventSubscriptions(context.Context, *ListSupportEventSubscriptionsRequest) (*ListSupportEventSubscriptionsResponse, error)
 	// Updates a support event subscription.
 	UpdateSupportEventSubscription(context.Context, *UpdateSupportEventSubscriptionRequest) (*SupportEventSubscription, error)
@@ -138,6 +187,44 @@ type SupportEventSubscriptionServiceServer interface {
 	DeleteSupportEventSubscription(context.Context, *DeleteSupportEventSubscriptionRequest) (*SupportEventSubscription, error)
 	// Undeletes a support event subscription.
 	UndeleteSupportEventSubscription(context.Context, *UndeleteSupportEventSubscriptionRequest) (*SupportEventSubscription, error)
+	// Expunges a support event subscription.
+	//
+	// EXAMPLES:
+	//
+	// cURL:
+	//
+	// ```shell
+	// support_event_subscription="organizations/123456789/supportEventSubscriptions/abcdef123456"
+	//
+	//	curl \
+	//	  --request POST \
+	//	  --header "Authorization: Bearer $(gcloud auth print-access-token)" \
+	//	  "https://cloudsupport.googleapis.com/v2beta/$support_event_subscription:expunge"
+	//
+	// ```
+	//
+	// Python:
+	//
+	// ```python
+	// import googleapiclient.discovery
+	//
+	// api_version = "v2beta"
+	// supportApiService = googleapiclient.discovery.build(
+	//
+	//	serviceName="cloudsupport",
+	//	version=api_version,
+	//	discoveryServiceUrl=f"https://cloudsupport.googleapis.com/$discovery/rest?version={api_version}",
+	//
+	// )
+	//
+	// request = supportApiService.supportEventSubscriptions().expunge(
+	//
+	//	name="organizations/123456789/supportEventSubscriptions/abcdef123456"
+	//
+	// )
+	// print(request.execute())
+	// ```
+	ExpungeSupportEventSubscription(context.Context, *ExpungeSupportEventSubscriptionRequest) (*emptypb.Empty, error)
 }
 
 // UnimplementedSupportEventSubscriptionServiceServer should be embedded to have forward compatible implementations.
@@ -161,6 +248,9 @@ func (UnimplementedSupportEventSubscriptionServiceServer) DeleteSupportEventSubs
 }
 func (UnimplementedSupportEventSubscriptionServiceServer) UndeleteSupportEventSubscription(context.Context, *UndeleteSupportEventSubscriptionRequest) (*SupportEventSubscription, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UndeleteSupportEventSubscription not implemented")
+}
+func (UnimplementedSupportEventSubscriptionServiceServer) ExpungeSupportEventSubscription(context.Context, *ExpungeSupportEventSubscriptionRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ExpungeSupportEventSubscription not implemented")
 }
 
 // UnsafeSupportEventSubscriptionServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -282,6 +372,24 @@ func _SupportEventSubscriptionService_UndeleteSupportEventSubscription_Handler(s
 	return interceptor(ctx, in, info, handler)
 }
 
+func _SupportEventSubscriptionService_ExpungeSupportEventSubscription_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ExpungeSupportEventSubscriptionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SupportEventSubscriptionServiceServer).ExpungeSupportEventSubscription(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SupportEventSubscriptionService_ExpungeSupportEventSubscription_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SupportEventSubscriptionServiceServer).ExpungeSupportEventSubscription(ctx, req.(*ExpungeSupportEventSubscriptionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // SupportEventSubscriptionService_ServiceDesc is the grpc.ServiceDesc for SupportEventSubscriptionService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -312,6 +420,10 @@ var SupportEventSubscriptionService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UndeleteSupportEventSubscription",
 			Handler:    _SupportEventSubscriptionService_UndeleteSupportEventSubscription_Handler,
+		},
+		{
+			MethodName: "ExpungeSupportEventSubscription",
+			Handler:    _SupportEventSubscriptionService_ExpungeSupportEventSubscription_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

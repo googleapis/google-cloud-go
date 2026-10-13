@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -301,7 +301,16 @@ type WorkloadProperties struct {
 	Location string `protobuf:"bytes,2,opt,name=location,proto3" json:"location,omitempty"`
 	// Output only. The location that the underlying compute resource resides in
 	// if it is zonal (for example, us-west1-a).
-	Zone          string `protobuf:"bytes,3,opt,name=zone,proto3" json:"zone,omitempty"`
+	Zone string `protobuf:"bytes,3,opt,name=zone,proto3" json:"zone,omitempty"`
+	// Output only. The type of the workload.
+	FunctionalType *FunctionalType `protobuf:"bytes,4,opt,name=functional_type,json=functionalType,proto3" json:"functional_type,omitempty"`
+	// Output only. Additional metadata specific to the resource type.
+	// The key is a string that identifies the type of metadata and the value is
+	// the metadata contents specific to that type.
+	// Key format: `apphub.googleapis.com/{metadataType}`
+	ExtendedMetadata map[string]*ExtendedMetadata `protobuf:"bytes,5,rep,name=extended_metadata,json=extendedMetadata,proto3" json:"extended_metadata,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// Output only. The identity associated with the workload.
+	Identity      *Identity `protobuf:"bytes,6,opt,name=identity,proto3" json:"identity,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -355,6 +364,27 @@ func (x *WorkloadProperties) GetZone() string {
 		return x.Zone
 	}
 	return ""
+}
+
+func (x *WorkloadProperties) GetFunctionalType() *FunctionalType {
+	if x != nil {
+		return x.FunctionalType
+	}
+	return nil
+}
+
+func (x *WorkloadProperties) GetExtendedMetadata() map[string]*ExtendedMetadata {
+	if x != nil {
+		return x.ExtendedMetadata
+	}
+	return nil
+}
+
+func (x *WorkloadProperties) GetIdentity() *Identity {
+	if x != nil {
+		return x.Identity
+	}
+	return nil
 }
 
 // DiscoveredWorkload is a binary deployment (such as managed instance groups
@@ -431,7 +461,7 @@ var File_google_cloud_apphub_v1_workload_proto protoreflect.FileDescriptor
 
 const file_google_cloud_apphub_v1_workload_proto_rawDesc = "" +
 	"\n" +
-	"%google/cloud/apphub/v1/workload.proto\x12\x16google.cloud.apphub.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a'google/cloud/apphub/v1/attributes.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb3\a\n" +
+	"%google/cloud/apphub/v1/workload.proto\x12\x16google.cloud.apphub.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a'google/cloud/apphub/v1/attributes.proto\x1a'google/cloud/apphub/v1/properties.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb3\a\n" +
 	"\bWorkload\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12&\n" +
 	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12%\n" +
@@ -458,12 +488,18 @@ const file_google_cloud_apphub_v1_workload_proto_rawDesc = "" +
 	"\bDETACHED\x10\x04:\x92\x01\xeaA\x8e\x01\n" +
 	"\x1eapphub.googleapis.com/Workload\x12Wprojects/{project}/locations/{location}/applications/{application}/workloads/{workload}*\tworkloads2\bworkload\"*\n" +
 	"\x11WorkloadReference\x12\x15\n" +
-	"\x03uri\x18\x01 \x01(\tB\x03\xe0A\x03R\x03uri\"t\n" +
+	"\x03uri\x18\x01 \x01(\tB\x03\xe0A\x03R\x03uri\"\xf0\x03\n" +
 	"\x12WorkloadProperties\x12$\n" +
 	"\vgcp_project\x18\x01 \x01(\tB\x03\xe0A\x03R\n" +
 	"gcpProject\x12\x1f\n" +
 	"\blocation\x18\x02 \x01(\tB\x03\xe0A\x03R\blocation\x12\x17\n" +
-	"\x04zone\x18\x03 \x01(\tB\x03\xe0A\x03R\x04zone\"\x9b\x03\n" +
+	"\x04zone\x18\x03 \x01(\tB\x03\xe0A\x03R\x04zone\x12T\n" +
+	"\x0ffunctional_type\x18\x04 \x01(\v2&.google.cloud.apphub.v1.FunctionalTypeB\x03\xe0A\x03R\x0efunctionalType\x12r\n" +
+	"\x11extended_metadata\x18\x05 \x03(\v2@.google.cloud.apphub.v1.WorkloadProperties.ExtendedMetadataEntryB\x03\xe0A\x03R\x10extendedMetadata\x12A\n" +
+	"\bidentity\x18\x06 \x01(\v2 .google.cloud.apphub.v1.IdentityB\x03\xe0A\x03R\bidentity\x1am\n" +
+	"\x15ExtendedMetadataEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12>\n" +
+	"\x05value\x18\x02 \x01(\v2(.google.cloud.apphub.v1.ExtendedMetadataR\x05value:\x028\x01\"\x9b\x03\n" +
 	"\x12DiscoveredWorkload\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12]\n" +
 	"\x12workload_reference\x18\x02 \x01(\v2).google.cloud.apphub.v1.WorkloadReferenceB\x03\xe0A\x03R\x11workloadReference\x12`\n" +
@@ -484,30 +520,38 @@ func file_google_cloud_apphub_v1_workload_proto_rawDescGZIP() []byte {
 }
 
 var file_google_cloud_apphub_v1_workload_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_google_cloud_apphub_v1_workload_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_google_cloud_apphub_v1_workload_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_google_cloud_apphub_v1_workload_proto_goTypes = []any{
 	(Workload_State)(0),           // 0: google.cloud.apphub.v1.Workload.State
 	(*Workload)(nil),              // 1: google.cloud.apphub.v1.Workload
 	(*WorkloadReference)(nil),     // 2: google.cloud.apphub.v1.WorkloadReference
 	(*WorkloadProperties)(nil),    // 3: google.cloud.apphub.v1.WorkloadProperties
 	(*DiscoveredWorkload)(nil),    // 4: google.cloud.apphub.v1.DiscoveredWorkload
-	(*Attributes)(nil),            // 5: google.cloud.apphub.v1.Attributes
-	(*timestamppb.Timestamp)(nil), // 6: google.protobuf.Timestamp
+	nil,                           // 5: google.cloud.apphub.v1.WorkloadProperties.ExtendedMetadataEntry
+	(*Attributes)(nil),            // 6: google.cloud.apphub.v1.Attributes
+	(*timestamppb.Timestamp)(nil), // 7: google.protobuf.Timestamp
+	(*FunctionalType)(nil),        // 8: google.cloud.apphub.v1.FunctionalType
+	(*Identity)(nil),              // 9: google.cloud.apphub.v1.Identity
+	(*ExtendedMetadata)(nil),      // 10: google.cloud.apphub.v1.ExtendedMetadata
 }
 var file_google_cloud_apphub_v1_workload_proto_depIdxs = []int32{
-	2, // 0: google.cloud.apphub.v1.Workload.workload_reference:type_name -> google.cloud.apphub.v1.WorkloadReference
-	3, // 1: google.cloud.apphub.v1.Workload.workload_properties:type_name -> google.cloud.apphub.v1.WorkloadProperties
-	5, // 2: google.cloud.apphub.v1.Workload.attributes:type_name -> google.cloud.apphub.v1.Attributes
-	6, // 3: google.cloud.apphub.v1.Workload.create_time:type_name -> google.protobuf.Timestamp
-	6, // 4: google.cloud.apphub.v1.Workload.update_time:type_name -> google.protobuf.Timestamp
-	0, // 5: google.cloud.apphub.v1.Workload.state:type_name -> google.cloud.apphub.v1.Workload.State
-	2, // 6: google.cloud.apphub.v1.DiscoveredWorkload.workload_reference:type_name -> google.cloud.apphub.v1.WorkloadReference
-	3, // 7: google.cloud.apphub.v1.DiscoveredWorkload.workload_properties:type_name -> google.cloud.apphub.v1.WorkloadProperties
-	8, // [8:8] is the sub-list for method output_type
-	8, // [8:8] is the sub-list for method input_type
-	8, // [8:8] is the sub-list for extension type_name
-	8, // [8:8] is the sub-list for extension extendee
-	0, // [0:8] is the sub-list for field type_name
+	2,  // 0: google.cloud.apphub.v1.Workload.workload_reference:type_name -> google.cloud.apphub.v1.WorkloadReference
+	3,  // 1: google.cloud.apphub.v1.Workload.workload_properties:type_name -> google.cloud.apphub.v1.WorkloadProperties
+	6,  // 2: google.cloud.apphub.v1.Workload.attributes:type_name -> google.cloud.apphub.v1.Attributes
+	7,  // 3: google.cloud.apphub.v1.Workload.create_time:type_name -> google.protobuf.Timestamp
+	7,  // 4: google.cloud.apphub.v1.Workload.update_time:type_name -> google.protobuf.Timestamp
+	0,  // 5: google.cloud.apphub.v1.Workload.state:type_name -> google.cloud.apphub.v1.Workload.State
+	8,  // 6: google.cloud.apphub.v1.WorkloadProperties.functional_type:type_name -> google.cloud.apphub.v1.FunctionalType
+	5,  // 7: google.cloud.apphub.v1.WorkloadProperties.extended_metadata:type_name -> google.cloud.apphub.v1.WorkloadProperties.ExtendedMetadataEntry
+	9,  // 8: google.cloud.apphub.v1.WorkloadProperties.identity:type_name -> google.cloud.apphub.v1.Identity
+	2,  // 9: google.cloud.apphub.v1.DiscoveredWorkload.workload_reference:type_name -> google.cloud.apphub.v1.WorkloadReference
+	3,  // 10: google.cloud.apphub.v1.DiscoveredWorkload.workload_properties:type_name -> google.cloud.apphub.v1.WorkloadProperties
+	10, // 11: google.cloud.apphub.v1.WorkloadProperties.ExtendedMetadataEntry.value:type_name -> google.cloud.apphub.v1.ExtendedMetadata
+	12, // [12:12] is the sub-list for method output_type
+	12, // [12:12] is the sub-list for method input_type
+	12, // [12:12] is the sub-list for extension type_name
+	12, // [12:12] is the sub-list for extension extendee
+	0,  // [0:12] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_apphub_v1_workload_proto_init() }
@@ -516,13 +560,14 @@ func file_google_cloud_apphub_v1_workload_proto_init() {
 		return
 	}
 	file_google_cloud_apphub_v1_attributes_proto_init()
+	file_google_cloud_apphub_v1_properties_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_apphub_v1_workload_proto_rawDesc), len(file_google_cloud_apphub_v1_workload_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   4,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

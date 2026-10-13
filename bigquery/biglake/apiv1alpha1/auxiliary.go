@@ -17,9 +17,18 @@
 package biglake
 
 import (
+	"iter"
+
 	biglakepb "cloud.google.com/go/bigquery/biglake/apiv1alpha1/biglakepb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CatalogIterator) All() iter.Seq2[*biglakepb.Catalog, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // CatalogIterator manages a stream of *biglakepb.Catalog.
 type CatalogIterator struct {
@@ -66,6 +75,12 @@ func (it *CatalogIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DatabaseIterator) All() iter.Seq2[*biglakepb.Database, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // DatabaseIterator manages a stream of *biglakepb.Database.
@@ -115,6 +130,12 @@ func (it *DatabaseIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LockIterator) All() iter.Seq2[*biglakepb.Lock, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // LockIterator manages a stream of *biglakepb.Lock.
 type LockIterator struct {
 	items    []*biglakepb.Lock
@@ -160,6 +181,12 @@ func (it *LockIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TableIterator) All() iter.Seq2[*biglakepb.Table, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // TableIterator manages a stream of *biglakepb.Table.

@@ -17,9 +17,18 @@
 package inventories
 
 import (
+	"iter"
+
 	inventoriespb "cloud.google.com/go/shopping/merchant/inventories/apiv1/inventoriespb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocalInventoryIterator) All() iter.Seq2[*inventoriespb.LocalInventory, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // LocalInventoryIterator manages a stream of *inventoriespb.LocalInventory.
 type LocalInventoryIterator struct {
@@ -66,6 +75,12 @@ func (it *LocalInventoryIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RegionalInventoryIterator) All() iter.Seq2[*inventoriespb.RegionalInventory, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // RegionalInventoryIterator manages a stream of *inventoriespb.RegionalInventory.

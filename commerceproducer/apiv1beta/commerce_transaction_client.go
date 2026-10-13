@@ -50,6 +50,7 @@ type CommerceTransactionCallOptions struct {
 	GetService                 []gax.CallOption
 	ListPrivateOffers          []gax.CallOption
 	GetPrivateOffer            []gax.CallOption
+	ResolveAmendmentTarget     []gax.CallOption
 	CreatePrivateOffer         []gax.CallOption
 	UpdatePrivateOffer         []gax.CallOption
 	PublishPrivateOffer        []gax.CallOption
@@ -138,6 +139,9 @@ func defaultCommerceTransactionCallOptions() *CommerceTransactionCallOptions {
 					Multiplier: 1.30,
 				})
 			}),
+		},
+		ResolveAmendmentTarget: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		CreatePrivateOffer: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
@@ -314,6 +318,9 @@ func defaultCommerceTransactionRESTCallOptions() *CommerceTransactionCallOptions
 					http.StatusServiceUnavailable)
 			}),
 		},
+		ResolveAmendmentTarget: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		CreatePrivateOffer: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
@@ -444,6 +451,7 @@ type internalCommerceTransactionClient interface {
 	GetService(context.Context, *commerceproducerpb.GetServiceRequest, ...gax.CallOption) (*commerceproducerpb.Service, error)
 	ListPrivateOffers(context.Context, *commerceproducerpb.ListPrivateOffersRequest, ...gax.CallOption) *PrivateOfferIterator
 	GetPrivateOffer(context.Context, *commerceproducerpb.GetPrivateOfferRequest, ...gax.CallOption) (*commerceproducerpb.PrivateOffer, error)
+	ResolveAmendmentTarget(context.Context, *commerceproducerpb.ResolveAmendmentTargetRequest, ...gax.CallOption) (*commerceproducerpb.ResolveAmendmentTargetResponse, error)
 	CreatePrivateOffer(context.Context, *commerceproducerpb.CreatePrivateOfferRequest, ...gax.CallOption) (*commerceproducerpb.PrivateOffer, error)
 	UpdatePrivateOffer(context.Context, *commerceproducerpb.UpdatePrivateOfferRequest, ...gax.CallOption) (*commerceproducerpb.PrivateOffer, error)
 	PublishPrivateOffer(context.Context, *commerceproducerpb.PublishPrivateOfferRequest, ...gax.CallOption) (*commerceproducerpb.PrivateOffer, error)
@@ -521,6 +529,13 @@ func (c *CommerceTransactionClient) ListPrivateOffers(ctx context.Context, req *
 // GetPrivateOffer gets details of a single PrivateOffer.
 func (c *CommerceTransactionClient) GetPrivateOffer(ctx context.Context, req *commerceproducerpb.GetPrivateOfferRequest, opts ...gax.CallOption) (*commerceproducerpb.PrivateOffer, error) {
 	return c.internalClient.GetPrivateOffer(ctx, req, opts...)
+}
+
+// ResolveAmendmentTarget resolves the existing offer that must be amended when creating a new
+// PrivateOffer. Use this method to determine the correct amendment target
+// before creating or publishing an offer.
+func (c *CommerceTransactionClient) ResolveAmendmentTarget(ctx context.Context, req *commerceproducerpb.ResolveAmendmentTargetRequest, opts ...gax.CallOption) (*commerceproducerpb.ResolveAmendmentTargetResponse, error) {
+	return c.internalClient.ResolveAmendmentTarget(ctx, req, opts...)
 }
 
 // CreatePrivateOffer creates a new PrivateOffer in a given project and location.
@@ -726,6 +741,7 @@ func NewCommerceTransactionClient(ctx context.Context, opts ...option.ClientOpti
 		client.CallOptions.GetService = append(client.CallOptions.GetService, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListPrivateOffers = append(client.CallOptions.ListPrivateOffers, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetPrivateOffer = append(client.CallOptions.GetPrivateOffer, gax.WithClientMetrics(metrics))
+		client.CallOptions.ResolveAmendmentTarget = append(client.CallOptions.ResolveAmendmentTarget, gax.WithClientMetrics(metrics))
 		client.CallOptions.CreatePrivateOffer = append(client.CallOptions.CreatePrivateOffer, gax.WithClientMetrics(metrics))
 		client.CallOptions.UpdatePrivateOffer = append(client.CallOptions.UpdatePrivateOffer, gax.WithClientMetrics(metrics))
 		client.CallOptions.PublishPrivateOffer = append(client.CallOptions.PublishPrivateOffer, gax.WithClientMetrics(metrics))
@@ -748,6 +764,85 @@ func NewCommerceTransactionClient(ctx context.Context, opts ...option.ClientOpti
 		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "commerceproducer",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/commerceproducer/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "commerceproducer.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListServices = append(client.CallOptions.ListServices, gax.WithClientTracing(tracing))
+		client.CallOptions.GetService = append(client.CallOptions.GetService, gax.WithClientTracing(tracing))
+		client.CallOptions.ListPrivateOffers = append(client.CallOptions.ListPrivateOffers, gax.WithClientTracing(tracing))
+		client.CallOptions.GetPrivateOffer = append(client.CallOptions.GetPrivateOffer, gax.WithClientTracing(tracing))
+		client.CallOptions.ResolveAmendmentTarget = append(client.CallOptions.ResolveAmendmentTarget, gax.WithClientTracing(tracing))
+		client.CallOptions.CreatePrivateOffer = append(client.CallOptions.CreatePrivateOffer, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdatePrivateOffer = append(client.CallOptions.UpdatePrivateOffer, gax.WithClientTracing(tracing))
+		client.CallOptions.PublishPrivateOffer = append(client.CallOptions.PublishPrivateOffer, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelPrivateOffer = append(client.CallOptions.CancelPrivateOffer, gax.WithClientTracing(tracing))
+		client.CallOptions.DeletePrivateOffer = append(client.CallOptions.DeletePrivateOffer, gax.WithClientTracing(tracing))
+		client.CallOptions.ListPrivateOfferDocuments = append(client.CallOptions.ListPrivateOfferDocuments, gax.WithClientTracing(tracing))
+		client.CallOptions.GetPrivateOfferDocument = append(client.CallOptions.GetPrivateOfferDocument, gax.WithClientTracing(tracing))
+		client.CallOptions.CreatePrivateOfferDocument = append(client.CallOptions.CreatePrivateOfferDocument, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdatePrivateOfferDocument = append(client.CallOptions.UpdatePrivateOfferDocument, gax.WithClientTracing(tracing))
+		client.CallOptions.DeletePrivateOfferDocument = append(client.CallOptions.DeletePrivateOfferDocument, gax.WithClientTracing(tracing))
+		client.CallOptions.ListStandardOffers = append(client.CallOptions.ListStandardOffers, gax.WithClientTracing(tracing))
+		client.CallOptions.GetStandardOffer = append(client.CallOptions.GetStandardOffer, gax.WithClientTracing(tracing))
+		client.CallOptions.GetSku = append(client.CallOptions.GetSku, gax.WithClientTracing(tracing))
+		client.CallOptions.ListSkus = append(client.CallOptions.ListSkus, gax.WithClientTracing(tracing))
+		client.CallOptions.GetSkuGroup = append(client.CallOptions.GetSkuGroup, gax.WithClientTracing(tracing))
+		client.CallOptions.ListSkuGroups = append(client.CallOptions.ListSkuGroups, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "commerceproducer",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/commerceproducer/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "commerceproducer.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListServices = append(client.CallOptions.ListServices, gax.WithClientLogging(logging))
+		client.CallOptions.GetService = append(client.CallOptions.GetService, gax.WithClientLogging(logging))
+		client.CallOptions.ListPrivateOffers = append(client.CallOptions.ListPrivateOffers, gax.WithClientLogging(logging))
+		client.CallOptions.GetPrivateOffer = append(client.CallOptions.GetPrivateOffer, gax.WithClientLogging(logging))
+		client.CallOptions.ResolveAmendmentTarget = append(client.CallOptions.ResolveAmendmentTarget, gax.WithClientLogging(logging))
+		client.CallOptions.CreatePrivateOffer = append(client.CallOptions.CreatePrivateOffer, gax.WithClientLogging(logging))
+		client.CallOptions.UpdatePrivateOffer = append(client.CallOptions.UpdatePrivateOffer, gax.WithClientLogging(logging))
+		client.CallOptions.PublishPrivateOffer = append(client.CallOptions.PublishPrivateOffer, gax.WithClientLogging(logging))
+		client.CallOptions.CancelPrivateOffer = append(client.CallOptions.CancelPrivateOffer, gax.WithClientLogging(logging))
+		client.CallOptions.DeletePrivateOffer = append(client.CallOptions.DeletePrivateOffer, gax.WithClientLogging(logging))
+		client.CallOptions.ListPrivateOfferDocuments = append(client.CallOptions.ListPrivateOfferDocuments, gax.WithClientLogging(logging))
+		client.CallOptions.GetPrivateOfferDocument = append(client.CallOptions.GetPrivateOfferDocument, gax.WithClientLogging(logging))
+		client.CallOptions.CreatePrivateOfferDocument = append(client.CallOptions.CreatePrivateOfferDocument, gax.WithClientLogging(logging))
+		client.CallOptions.UpdatePrivateOfferDocument = append(client.CallOptions.UpdatePrivateOfferDocument, gax.WithClientLogging(logging))
+		client.CallOptions.DeletePrivateOfferDocument = append(client.CallOptions.DeletePrivateOfferDocument, gax.WithClientLogging(logging))
+		client.CallOptions.ListStandardOffers = append(client.CallOptions.ListStandardOffers, gax.WithClientLogging(logging))
+		client.CallOptions.GetStandardOffer = append(client.CallOptions.GetStandardOffer, gax.WithClientLogging(logging))
+		client.CallOptions.GetSku = append(client.CallOptions.GetSku, gax.WithClientLogging(logging))
+		client.CallOptions.ListSkus = append(client.CallOptions.ListSkus, gax.WithClientLogging(logging))
+		client.CallOptions.GetSkuGroup = append(client.CallOptions.GetSkuGroup, gax.WithClientLogging(logging))
+		client.CallOptions.ListSkuGroups = append(client.CallOptions.ListSkuGroups, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
 	}
 
 	client.internalClient = c
@@ -842,6 +937,7 @@ func NewCommerceTransactionRESTClient(ctx context.Context, opts ...option.Client
 		callOpts.GetService = append(callOpts.GetService, gax.WithClientMetrics(metrics))
 		callOpts.ListPrivateOffers = append(callOpts.ListPrivateOffers, gax.WithClientMetrics(metrics))
 		callOpts.GetPrivateOffer = append(callOpts.GetPrivateOffer, gax.WithClientMetrics(metrics))
+		callOpts.ResolveAmendmentTarget = append(callOpts.ResolveAmendmentTarget, gax.WithClientMetrics(metrics))
 		callOpts.CreatePrivateOffer = append(callOpts.CreatePrivateOffer, gax.WithClientMetrics(metrics))
 		callOpts.UpdatePrivateOffer = append(callOpts.UpdatePrivateOffer, gax.WithClientMetrics(metrics))
 		callOpts.PublishPrivateOffer = append(callOpts.PublishPrivateOffer, gax.WithClientMetrics(metrics))
@@ -864,6 +960,85 @@ func NewCommerceTransactionRESTClient(ctx context.Context, opts ...option.Client
 		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientMetrics(metrics))
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "commerceproducer",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/commerceproducer/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "commerceproducer.googleapis.com",
+			}),
+		)
+
+		callOpts.ListServices = append(callOpts.ListServices, gax.WithClientTracing(tracing))
+		callOpts.GetService = append(callOpts.GetService, gax.WithClientTracing(tracing))
+		callOpts.ListPrivateOffers = append(callOpts.ListPrivateOffers, gax.WithClientTracing(tracing))
+		callOpts.GetPrivateOffer = append(callOpts.GetPrivateOffer, gax.WithClientTracing(tracing))
+		callOpts.ResolveAmendmentTarget = append(callOpts.ResolveAmendmentTarget, gax.WithClientTracing(tracing))
+		callOpts.CreatePrivateOffer = append(callOpts.CreatePrivateOffer, gax.WithClientTracing(tracing))
+		callOpts.UpdatePrivateOffer = append(callOpts.UpdatePrivateOffer, gax.WithClientTracing(tracing))
+		callOpts.PublishPrivateOffer = append(callOpts.PublishPrivateOffer, gax.WithClientTracing(tracing))
+		callOpts.CancelPrivateOffer = append(callOpts.CancelPrivateOffer, gax.WithClientTracing(tracing))
+		callOpts.DeletePrivateOffer = append(callOpts.DeletePrivateOffer, gax.WithClientTracing(tracing))
+		callOpts.ListPrivateOfferDocuments = append(callOpts.ListPrivateOfferDocuments, gax.WithClientTracing(tracing))
+		callOpts.GetPrivateOfferDocument = append(callOpts.GetPrivateOfferDocument, gax.WithClientTracing(tracing))
+		callOpts.CreatePrivateOfferDocument = append(callOpts.CreatePrivateOfferDocument, gax.WithClientTracing(tracing))
+		callOpts.UpdatePrivateOfferDocument = append(callOpts.UpdatePrivateOfferDocument, gax.WithClientTracing(tracing))
+		callOpts.DeletePrivateOfferDocument = append(callOpts.DeletePrivateOfferDocument, gax.WithClientTracing(tracing))
+		callOpts.ListStandardOffers = append(callOpts.ListStandardOffers, gax.WithClientTracing(tracing))
+		callOpts.GetStandardOffer = append(callOpts.GetStandardOffer, gax.WithClientTracing(tracing))
+		callOpts.GetSku = append(callOpts.GetSku, gax.WithClientTracing(tracing))
+		callOpts.ListSkus = append(callOpts.ListSkus, gax.WithClientTracing(tracing))
+		callOpts.GetSkuGroup = append(callOpts.GetSkuGroup, gax.WithClientTracing(tracing))
+		callOpts.ListSkuGroups = append(callOpts.ListSkuGroups, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "commerceproducer",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/commerceproducer/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "commerceproducer.googleapis.com",
+			}),
+		)
+
+		callOpts.ListServices = append(callOpts.ListServices, gax.WithClientLogging(logging))
+		callOpts.GetService = append(callOpts.GetService, gax.WithClientLogging(logging))
+		callOpts.ListPrivateOffers = append(callOpts.ListPrivateOffers, gax.WithClientLogging(logging))
+		callOpts.GetPrivateOffer = append(callOpts.GetPrivateOffer, gax.WithClientLogging(logging))
+		callOpts.ResolveAmendmentTarget = append(callOpts.ResolveAmendmentTarget, gax.WithClientLogging(logging))
+		callOpts.CreatePrivateOffer = append(callOpts.CreatePrivateOffer, gax.WithClientLogging(logging))
+		callOpts.UpdatePrivateOffer = append(callOpts.UpdatePrivateOffer, gax.WithClientLogging(logging))
+		callOpts.PublishPrivateOffer = append(callOpts.PublishPrivateOffer, gax.WithClientLogging(logging))
+		callOpts.CancelPrivateOffer = append(callOpts.CancelPrivateOffer, gax.WithClientLogging(logging))
+		callOpts.DeletePrivateOffer = append(callOpts.DeletePrivateOffer, gax.WithClientLogging(logging))
+		callOpts.ListPrivateOfferDocuments = append(callOpts.ListPrivateOfferDocuments, gax.WithClientLogging(logging))
+		callOpts.GetPrivateOfferDocument = append(callOpts.GetPrivateOfferDocument, gax.WithClientLogging(logging))
+		callOpts.CreatePrivateOfferDocument = append(callOpts.CreatePrivateOfferDocument, gax.WithClientLogging(logging))
+		callOpts.UpdatePrivateOfferDocument = append(callOpts.UpdatePrivateOfferDocument, gax.WithClientLogging(logging))
+		callOpts.DeletePrivateOfferDocument = append(callOpts.DeletePrivateOfferDocument, gax.WithClientLogging(logging))
+		callOpts.ListStandardOffers = append(callOpts.ListStandardOffers, gax.WithClientLogging(logging))
+		callOpts.GetStandardOffer = append(callOpts.GetStandardOffer, gax.WithClientLogging(logging))
+		callOpts.GetSku = append(callOpts.GetSku, gax.WithClientLogging(logging))
+		callOpts.ListSkus = append(callOpts.ListSkus, gax.WithClientLogging(logging))
+		callOpts.GetSkuGroup = append(callOpts.GetSkuGroup, gax.WithClientLogging(logging))
+		callOpts.ListSkuGroups = append(callOpts.ListSkuGroups, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
 	}
 
 	return &CommerceTransactionClient{internalClient: c, CallOptions: callOpts}, nil
@@ -911,9 +1086,6 @@ func (c *commerceTransactionGRPCClient) ListServices(ctx context.Context, req *c
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//commerceproducer.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.commerceproducer.v1beta.CommerceTransaction/ListServices")
 	}
@@ -963,9 +1135,6 @@ func (c *commerceTransactionGRPCClient) GetService(ctx context.Context, req *com
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//commerceproducer.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.commerceproducer.v1beta.CommerceTransaction/GetService")
 	}
@@ -987,9 +1156,6 @@ func (c *commerceTransactionGRPCClient) ListPrivateOffers(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//commerceproducer.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.commerceproducer.v1beta.CommerceTransaction/ListPrivateOffers")
 	}
@@ -1039,9 +1205,6 @@ func (c *commerceTransactionGRPCClient) GetPrivateOffer(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//commerceproducer.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.commerceproducer.v1beta.CommerceTransaction/GetPrivateOffer")
 	}
@@ -1058,14 +1221,32 @@ func (c *commerceTransactionGRPCClient) GetPrivateOffer(ctx context.Context, req
 	return resp, nil
 }
 
+func (c *commerceTransactionGRPCClient) ResolveAmendmentTarget(ctx context.Context, req *commerceproducerpb.ResolveAmendmentTargetRequest, opts ...gax.CallOption) (*commerceproducerpb.ResolveAmendmentTargetResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.commerceproducer.v1beta.CommerceTransaction/ResolveAmendmentTarget")
+	}
+	opts = append((*c.CallOptions).ResolveAmendmentTarget[0:len((*c.CallOptions).ResolveAmendmentTarget):len((*c.CallOptions).ResolveAmendmentTarget)], opts...)
+	var resp *commerceproducerpb.ResolveAmendmentTargetResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.commerceTransactionClient.ResolveAmendmentTarget, req, settings.GRPC, c.logger, "ResolveAmendmentTarget")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *commerceTransactionGRPCClient) CreatePrivateOffer(ctx context.Context, req *commerceproducerpb.CreatePrivateOfferRequest, opts ...gax.CallOption) (*commerceproducerpb.PrivateOffer, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//commerceproducer.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.commerceproducer.v1beta.CommerceTransaction/CreatePrivateOffer")
 	}
@@ -1108,9 +1289,6 @@ func (c *commerceTransactionGRPCClient) PublishPrivateOffer(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//commerceproducer.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.commerceproducer.v1beta.CommerceTransaction/PublishPrivateOffer")
 	}
@@ -1132,9 +1310,6 @@ func (c *commerceTransactionGRPCClient) CancelPrivateOffer(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//commerceproducer.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.commerceproducer.v1beta.CommerceTransaction/CancelPrivateOffer")
 	}
@@ -1156,9 +1331,6 @@ func (c *commerceTransactionGRPCClient) DeletePrivateOffer(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//commerceproducer.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.commerceproducer.v1beta.CommerceTransaction/DeletePrivateOffer")
 	}
@@ -1176,9 +1348,6 @@ func (c *commerceTransactionGRPCClient) ListPrivateOfferDocuments(ctx context.Co
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//commerceproducer.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.commerceproducer.v1beta.CommerceTransaction/ListPrivateOfferDocuments")
 	}
@@ -1228,9 +1397,6 @@ func (c *commerceTransactionGRPCClient) GetPrivateOfferDocument(ctx context.Cont
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//commerceproducer.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.commerceproducer.v1beta.CommerceTransaction/GetPrivateOfferDocument")
 	}
@@ -1252,9 +1418,6 @@ func (c *commerceTransactionGRPCClient) CreatePrivateOfferDocument(ctx context.C
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//commerceproducer.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.commerceproducer.v1beta.CommerceTransaction/CreatePrivateOfferDocument")
 	}
@@ -1297,9 +1460,6 @@ func (c *commerceTransactionGRPCClient) DeletePrivateOfferDocument(ctx context.C
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//commerceproducer.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.commerceproducer.v1beta.CommerceTransaction/DeletePrivateOfferDocument")
 	}
@@ -1317,9 +1477,6 @@ func (c *commerceTransactionGRPCClient) ListStandardOffers(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//commerceproducer.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.commerceproducer.v1beta.CommerceTransaction/ListStandardOffers")
 	}
@@ -1369,9 +1526,6 @@ func (c *commerceTransactionGRPCClient) GetStandardOffer(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//commerceproducer.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.commerceproducer.v1beta.CommerceTransaction/GetStandardOffer")
 	}
@@ -1393,9 +1547,6 @@ func (c *commerceTransactionGRPCClient) GetSku(ctx context.Context, req *commerc
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//commerceproducer.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.commerceproducer.v1beta.CommerceTransaction/GetSku")
 	}
@@ -1417,9 +1568,6 @@ func (c *commerceTransactionGRPCClient) ListSkus(ctx context.Context, req *comme
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//commerceproducer.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.commerceproducer.v1beta.CommerceTransaction/ListSkus")
 	}
@@ -1469,9 +1617,6 @@ func (c *commerceTransactionGRPCClient) GetSkuGroup(ctx context.Context, req *co
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//commerceproducer.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.commerceproducer.v1beta.CommerceTransaction/GetSkuGroup")
 	}
@@ -1493,9 +1638,6 @@ func (c *commerceTransactionGRPCClient) ListSkuGroups(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//commerceproducer.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.commerceproducer.v1beta.CommerceTransaction/ListSkuGroups")
 	}
@@ -1814,9 +1956,6 @@ func (c *commerceTransactionRESTClient) GetService(ctx context.Context, req *com
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//commerceproducer.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.commerceproducer.v1beta.CommerceTransaction/GetService")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/services/*}")
@@ -1958,9 +2097,6 @@ func (c *commerceTransactionRESTClient) GetPrivateOffer(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//commerceproducer.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.commerceproducer.v1beta.CommerceTransaction/GetPrivateOffer")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/privateOffers/*}")
@@ -1980,6 +2116,64 @@ func (c *commerceTransactionRESTClient) GetPrivateOffer(ctx context.Context, req
 		httpReq.Header = headers
 
 		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetPrivateOffer")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ResolveAmendmentTarget resolves the existing offer that must be amended when creating a new
+// PrivateOffer. Use this method to determine the correct amendment target
+// before creating or publishing an offer.
+func (c *commerceTransactionRESTClient) ResolveAmendmentTarget(ctx context.Context, req *commerceproducerpb.ResolveAmendmentTargetRequest, opts ...gax.CallOption) (*commerceproducerpb.ResolveAmendmentTargetResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v/privateOffers:resolveAmendmentTarget", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("baseStandardOffer", fmt.Sprintf("%v", req.GetBaseStandardOffer()))
+	params.Add("targetBillingAccount", fmt.Sprintf("%v", req.GetTargetBillingAccount()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.commerceproducer.v1beta.CommerceTransaction/ResolveAmendmentTarget")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*}/privateOffers:resolveAmendmentTarget")
+	}
+	opts = append((*c.CallOptions).ResolveAmendmentTarget[0:len((*c.CallOptions).ResolveAmendmentTarget):len((*c.CallOptions).ResolveAmendmentTarget)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &commerceproducerpb.ResolveAmendmentTargetResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ResolveAmendmentTarget")
 		if err != nil {
 			return err
 		}
@@ -2022,9 +2216,6 @@ func (c *commerceTransactionRESTClient) CreatePrivateOffer(ctx context.Context, 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//commerceproducer.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.commerceproducer.v1beta.CommerceTransaction/CreatePrivateOffer")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*}/privateOffers")
@@ -2153,9 +2344,6 @@ func (c *commerceTransactionRESTClient) PublishPrivateOffer(ctx context.Context,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//commerceproducer.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.commerceproducer.v1beta.CommerceTransaction/PublishPrivateOffer")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/privateOffers/*}:publish")
@@ -2216,9 +2404,6 @@ func (c *commerceTransactionRESTClient) CancelPrivateOffer(ctx context.Context, 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//commerceproducer.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.commerceproducer.v1beta.CommerceTransaction/CancelPrivateOffer")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/privateOffers/*}:cancel")
@@ -2276,9 +2461,6 @@ func (c *commerceTransactionRESTClient) DeletePrivateOffer(ctx context.Context, 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//commerceproducer.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.commerceproducer.v1beta.CommerceTransaction/DeletePrivateOffer")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/privateOffers/*}")
@@ -2396,9 +2578,6 @@ func (c *commerceTransactionRESTClient) GetPrivateOfferDocument(ctx context.Cont
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//commerceproducer.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.commerceproducer.v1beta.CommerceTransaction/GetPrivateOfferDocument")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/privateOffers/*/documents/*}")
@@ -2460,9 +2639,6 @@ func (c *commerceTransactionRESTClient) CreatePrivateOfferDocument(ctx context.C
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//commerceproducer.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.commerceproducer.v1beta.CommerceTransaction/CreatePrivateOfferDocument")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*/privateOffers/*}/documents")
@@ -2585,9 +2761,6 @@ func (c *commerceTransactionRESTClient) DeletePrivateOfferDocument(ctx context.C
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//commerceproducer.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.commerceproducer.v1beta.CommerceTransaction/DeletePrivateOfferDocument")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/privateOffers/*/documents/*}")
@@ -2714,9 +2887,6 @@ func (c *commerceTransactionRESTClient) GetStandardOffer(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//commerceproducer.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.commerceproducer.v1beta.CommerceTransaction/GetStandardOffer")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/services/*/standardOffers/*}")
@@ -2771,9 +2941,6 @@ func (c *commerceTransactionRESTClient) GetSku(ctx context.Context, req *commerc
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//commerceproducer.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.commerceproducer.v1beta.CommerceTransaction/GetSku")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/services/*/skus/*}")
@@ -2906,9 +3073,6 @@ func (c *commerceTransactionRESTClient) GetSkuGroup(ctx context.Context, req *co
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//commerceproducer.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.commerceproducer.v1beta.CommerceTransaction/GetSkuGroup")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/skuGroups/*}")

@@ -1,6 +1,48 @@
 # Changes
 
 
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v1.16.0...shopping/v1.17.0) (2026-10-01)
+
+
+### Features
+
+* Update API sources and regenerate ([#20607](https://github.com/googleapis/google-cloud-go/issues/20607)) ([395fc59](https://github.com/googleapis/google-cloud-go/commit/395fc59e067ed2576a1c8c961edf3f749633520c))
+
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v1.15.0...shopping/v1.16.0) (2026-09-23)
+
+
+### Features
+
+* **all:** Update supported go versions ([#20520](https://github.com/googleapis/google-cloud-go/issues/20520)) ([90413d3](https://github.com/googleapis/google-cloud-go/commit/90413d3e9d381ef4b92e3c496d98b023c5b2d8cc))
+
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v1.14.0...shopping/v1.15.0) (2026-09-10)
+
+
+### Features
+
+* Update API sources and regenerate ([#20502](https://github.com/googleapis/google-cloud-go/issues/20502)) ([95479e9](https://github.com/googleapis/google-cloud-go/commit/95479e9b74215f969b04d3ebfd01b8f98f11f5ed))
+
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v1.13.0...shopping/v1.14.0) (2026-09-03)
+
+
+### Features
+
+* **google/shopping/merchant/loyaltycustomers/v1:** Add shopping ([#20470](https://github.com/googleapis/google-cloud-go/issues/20470)) ([0578e01](https://github.com/googleapis/google-cloud-go/commit/0578e0112250e9b42506226d8e51a50b13f324a4))
+
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v1.12.0...shopping/v1.13.0) (2026-07-23)
+
+
+### Features
+
+* Update API sources and regenerate ([#20188](https://github.com/googleapis/google-cloud-go/issues/20188)) ([104e0de](https://github.com/googleapis/google-cloud-go/commit/104e0de4fb40e0008232a9a01f100f089ec18d8b))
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v1.11.0...shopping/v1.12.0) (2026-07-20)
+
+
+### Features
+
+* Update API sources and regenerate ([#20159](https://github.com/googleapis/google-cloud-go/issues/20159)) ([6395ba5](https://github.com/googleapis/google-cloud-go/commit/6395ba5d059d7e0d6ccfbf57b15d8d5ffcd70d0e))
+
 ## [1.11.0](https://github.com/googleapis/google-cloud-go/releases/tag/shopping%2Fv1.11.0) (2026-05-07)
 
 ### Features

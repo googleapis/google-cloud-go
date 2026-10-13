@@ -17,9 +17,18 @@
 package mapmanagement
 
 import (
+	"iter"
+
 	mapmanagementpb "cloud.google.com/go/maps/mapmanagement/apiv2beta/mapmanagementpb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *MapConfigIterator) All() iter.Seq2[*mapmanagementpb.MapConfig, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // MapConfigIterator manages a stream of *mapmanagementpb.MapConfig.
 type MapConfigIterator struct {
@@ -68,6 +77,12 @@ func (it *MapConfigIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *MapContextConfigIterator) All() iter.Seq2[*mapmanagementpb.MapContextConfig, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // MapContextConfigIterator manages a stream of *mapmanagementpb.MapContextConfig.
 type MapContextConfigIterator struct {
 	items    []*mapmanagementpb.MapContextConfig
@@ -113,6 +128,12 @@ func (it *MapContextConfigIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *StyleConfigIterator) All() iter.Seq2[*mapmanagementpb.StyleConfig, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // StyleConfigIterator manages a stream of *mapmanagementpb.StyleConfig.

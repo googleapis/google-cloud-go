@@ -2307,6 +2307,195 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "vmwareengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/vmwareengine/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "vmwareengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListPrivateClouds = append(client.CallOptions.ListPrivateClouds, gax.WithClientTracing(tracing))
+		client.CallOptions.GetPrivateCloud = append(client.CallOptions.GetPrivateCloud, gax.WithClientTracing(tracing))
+		client.CallOptions.CreatePrivateCloud = append(client.CallOptions.CreatePrivateCloud, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdatePrivateCloud = append(client.CallOptions.UpdatePrivateCloud, gax.WithClientTracing(tracing))
+		client.CallOptions.DeletePrivateCloud = append(client.CallOptions.DeletePrivateCloud, gax.WithClientTracing(tracing))
+		client.CallOptions.UndeletePrivateCloud = append(client.CallOptions.UndeletePrivateCloud, gax.WithClientTracing(tracing))
+		client.CallOptions.ListClusters = append(client.CallOptions.ListClusters, gax.WithClientTracing(tracing))
+		client.CallOptions.GetCluster = append(client.CallOptions.GetCluster, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateCluster = append(client.CallOptions.CreateCluster, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateCluster = append(client.CallOptions.UpdateCluster, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteCluster = append(client.CallOptions.DeleteCluster, gax.WithClientTracing(tracing))
+		client.CallOptions.ListNodes = append(client.CallOptions.ListNodes, gax.WithClientTracing(tracing))
+		client.CallOptions.GetNode = append(client.CallOptions.GetNode, gax.WithClientTracing(tracing))
+		client.CallOptions.ListExternalAddresses = append(client.CallOptions.ListExternalAddresses, gax.WithClientTracing(tracing))
+		client.CallOptions.FetchNetworkPolicyExternalAddresses = append(client.CallOptions.FetchNetworkPolicyExternalAddresses, gax.WithClientTracing(tracing))
+		client.CallOptions.GetExternalAddress = append(client.CallOptions.GetExternalAddress, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateExternalAddress = append(client.CallOptions.CreateExternalAddress, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateExternalAddress = append(client.CallOptions.UpdateExternalAddress, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteExternalAddress = append(client.CallOptions.DeleteExternalAddress, gax.WithClientTracing(tracing))
+		client.CallOptions.ListSubnets = append(client.CallOptions.ListSubnets, gax.WithClientTracing(tracing))
+		client.CallOptions.GetSubnet = append(client.CallOptions.GetSubnet, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateSubnet = append(client.CallOptions.UpdateSubnet, gax.WithClientTracing(tracing))
+		client.CallOptions.ListExternalAccessRules = append(client.CallOptions.ListExternalAccessRules, gax.WithClientTracing(tracing))
+		client.CallOptions.GetExternalAccessRule = append(client.CallOptions.GetExternalAccessRule, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateExternalAccessRule = append(client.CallOptions.CreateExternalAccessRule, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateExternalAccessRule = append(client.CallOptions.UpdateExternalAccessRule, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteExternalAccessRule = append(client.CallOptions.DeleteExternalAccessRule, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLoggingServers = append(client.CallOptions.ListLoggingServers, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLoggingServer = append(client.CallOptions.GetLoggingServer, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateLoggingServer = append(client.CallOptions.CreateLoggingServer, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateLoggingServer = append(client.CallOptions.UpdateLoggingServer, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteLoggingServer = append(client.CallOptions.DeleteLoggingServer, gax.WithClientTracing(tracing))
+		client.CallOptions.ListNodeTypes = append(client.CallOptions.ListNodeTypes, gax.WithClientTracing(tracing))
+		client.CallOptions.GetNodeType = append(client.CallOptions.GetNodeType, gax.WithClientTracing(tracing))
+		client.CallOptions.ShowNsxCredentials = append(client.CallOptions.ShowNsxCredentials, gax.WithClientTracing(tracing))
+		client.CallOptions.ShowVcenterCredentials = append(client.CallOptions.ShowVcenterCredentials, gax.WithClientTracing(tracing))
+		client.CallOptions.ResetNsxCredentials = append(client.CallOptions.ResetNsxCredentials, gax.WithClientTracing(tracing))
+		client.CallOptions.ResetVcenterCredentials = append(client.CallOptions.ResetVcenterCredentials, gax.WithClientTracing(tracing))
+		client.CallOptions.GetDnsForwarding = append(client.CallOptions.GetDnsForwarding, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateDnsForwarding = append(client.CallOptions.UpdateDnsForwarding, gax.WithClientTracing(tracing))
+		client.CallOptions.GetNetworkPeering = append(client.CallOptions.GetNetworkPeering, gax.WithClientTracing(tracing))
+		client.CallOptions.ListNetworkPeerings = append(client.CallOptions.ListNetworkPeerings, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateNetworkPeering = append(client.CallOptions.CreateNetworkPeering, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteNetworkPeering = append(client.CallOptions.DeleteNetworkPeering, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateNetworkPeering = append(client.CallOptions.UpdateNetworkPeering, gax.WithClientTracing(tracing))
+		client.CallOptions.ListPeeringRoutes = append(client.CallOptions.ListPeeringRoutes, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateHcxActivationKey = append(client.CallOptions.CreateHcxActivationKey, gax.WithClientTracing(tracing))
+		client.CallOptions.ListHcxActivationKeys = append(client.CallOptions.ListHcxActivationKeys, gax.WithClientTracing(tracing))
+		client.CallOptions.GetHcxActivationKey = append(client.CallOptions.GetHcxActivationKey, gax.WithClientTracing(tracing))
+		client.CallOptions.GetNetworkPolicy = append(client.CallOptions.GetNetworkPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.ListNetworkPolicies = append(client.CallOptions.ListNetworkPolicies, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateNetworkPolicy = append(client.CallOptions.CreateNetworkPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateNetworkPolicy = append(client.CallOptions.UpdateNetworkPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteNetworkPolicy = append(client.CallOptions.DeleteNetworkPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.ListManagementDnsZoneBindings = append(client.CallOptions.ListManagementDnsZoneBindings, gax.WithClientTracing(tracing))
+		client.CallOptions.GetManagementDnsZoneBinding = append(client.CallOptions.GetManagementDnsZoneBinding, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateManagementDnsZoneBinding = append(client.CallOptions.CreateManagementDnsZoneBinding, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateManagementDnsZoneBinding = append(client.CallOptions.UpdateManagementDnsZoneBinding, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteManagementDnsZoneBinding = append(client.CallOptions.DeleteManagementDnsZoneBinding, gax.WithClientTracing(tracing))
+		client.CallOptions.RepairManagementDnsZoneBinding = append(client.CallOptions.RepairManagementDnsZoneBinding, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateVmwareEngineNetwork = append(client.CallOptions.CreateVmwareEngineNetwork, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateVmwareEngineNetwork = append(client.CallOptions.UpdateVmwareEngineNetwork, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteVmwareEngineNetwork = append(client.CallOptions.DeleteVmwareEngineNetwork, gax.WithClientTracing(tracing))
+		client.CallOptions.GetVmwareEngineNetwork = append(client.CallOptions.GetVmwareEngineNetwork, gax.WithClientTracing(tracing))
+		client.CallOptions.ListVmwareEngineNetworks = append(client.CallOptions.ListVmwareEngineNetworks, gax.WithClientTracing(tracing))
+		client.CallOptions.CreatePrivateConnection = append(client.CallOptions.CreatePrivateConnection, gax.WithClientTracing(tracing))
+		client.CallOptions.GetPrivateConnection = append(client.CallOptions.GetPrivateConnection, gax.WithClientTracing(tracing))
+		client.CallOptions.ListPrivateConnections = append(client.CallOptions.ListPrivateConnections, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdatePrivateConnection = append(client.CallOptions.UpdatePrivateConnection, gax.WithClientTracing(tracing))
+		client.CallOptions.DeletePrivateConnection = append(client.CallOptions.DeletePrivateConnection, gax.WithClientTracing(tracing))
+		client.CallOptions.ListPrivateConnectionPeeringRoutes = append(client.CallOptions.ListPrivateConnectionPeeringRoutes, gax.WithClientTracing(tracing))
+		client.CallOptions.GrantDnsBindPermission = append(client.CallOptions.GrantDnsBindPermission, gax.WithClientTracing(tracing))
+		client.CallOptions.GetDnsBindPermission = append(client.CallOptions.GetDnsBindPermission, gax.WithClientTracing(tracing))
+		client.CallOptions.RevokeDnsBindPermission = append(client.CallOptions.RevokeDnsBindPermission, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "vmwareengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/vmwareengine/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "vmwareengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListPrivateClouds = append(client.CallOptions.ListPrivateClouds, gax.WithClientLogging(logging))
+		client.CallOptions.GetPrivateCloud = append(client.CallOptions.GetPrivateCloud, gax.WithClientLogging(logging))
+		client.CallOptions.CreatePrivateCloud = append(client.CallOptions.CreatePrivateCloud, gax.WithClientLogging(logging))
+		client.CallOptions.UpdatePrivateCloud = append(client.CallOptions.UpdatePrivateCloud, gax.WithClientLogging(logging))
+		client.CallOptions.DeletePrivateCloud = append(client.CallOptions.DeletePrivateCloud, gax.WithClientLogging(logging))
+		client.CallOptions.UndeletePrivateCloud = append(client.CallOptions.UndeletePrivateCloud, gax.WithClientLogging(logging))
+		client.CallOptions.ListClusters = append(client.CallOptions.ListClusters, gax.WithClientLogging(logging))
+		client.CallOptions.GetCluster = append(client.CallOptions.GetCluster, gax.WithClientLogging(logging))
+		client.CallOptions.CreateCluster = append(client.CallOptions.CreateCluster, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateCluster = append(client.CallOptions.UpdateCluster, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteCluster = append(client.CallOptions.DeleteCluster, gax.WithClientLogging(logging))
+		client.CallOptions.ListNodes = append(client.CallOptions.ListNodes, gax.WithClientLogging(logging))
+		client.CallOptions.GetNode = append(client.CallOptions.GetNode, gax.WithClientLogging(logging))
+		client.CallOptions.ListExternalAddresses = append(client.CallOptions.ListExternalAddresses, gax.WithClientLogging(logging))
+		client.CallOptions.FetchNetworkPolicyExternalAddresses = append(client.CallOptions.FetchNetworkPolicyExternalAddresses, gax.WithClientLogging(logging))
+		client.CallOptions.GetExternalAddress = append(client.CallOptions.GetExternalAddress, gax.WithClientLogging(logging))
+		client.CallOptions.CreateExternalAddress = append(client.CallOptions.CreateExternalAddress, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateExternalAddress = append(client.CallOptions.UpdateExternalAddress, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteExternalAddress = append(client.CallOptions.DeleteExternalAddress, gax.WithClientLogging(logging))
+		client.CallOptions.ListSubnets = append(client.CallOptions.ListSubnets, gax.WithClientLogging(logging))
+		client.CallOptions.GetSubnet = append(client.CallOptions.GetSubnet, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateSubnet = append(client.CallOptions.UpdateSubnet, gax.WithClientLogging(logging))
+		client.CallOptions.ListExternalAccessRules = append(client.CallOptions.ListExternalAccessRules, gax.WithClientLogging(logging))
+		client.CallOptions.GetExternalAccessRule = append(client.CallOptions.GetExternalAccessRule, gax.WithClientLogging(logging))
+		client.CallOptions.CreateExternalAccessRule = append(client.CallOptions.CreateExternalAccessRule, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateExternalAccessRule = append(client.CallOptions.UpdateExternalAccessRule, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteExternalAccessRule = append(client.CallOptions.DeleteExternalAccessRule, gax.WithClientLogging(logging))
+		client.CallOptions.ListLoggingServers = append(client.CallOptions.ListLoggingServers, gax.WithClientLogging(logging))
+		client.CallOptions.GetLoggingServer = append(client.CallOptions.GetLoggingServer, gax.WithClientLogging(logging))
+		client.CallOptions.CreateLoggingServer = append(client.CallOptions.CreateLoggingServer, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateLoggingServer = append(client.CallOptions.UpdateLoggingServer, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteLoggingServer = append(client.CallOptions.DeleteLoggingServer, gax.WithClientLogging(logging))
+		client.CallOptions.ListNodeTypes = append(client.CallOptions.ListNodeTypes, gax.WithClientLogging(logging))
+		client.CallOptions.GetNodeType = append(client.CallOptions.GetNodeType, gax.WithClientLogging(logging))
+		client.CallOptions.ShowNsxCredentials = append(client.CallOptions.ShowNsxCredentials, gax.WithClientLogging(logging))
+		client.CallOptions.ShowVcenterCredentials = append(client.CallOptions.ShowVcenterCredentials, gax.WithClientLogging(logging))
+		client.CallOptions.ResetNsxCredentials = append(client.CallOptions.ResetNsxCredentials, gax.WithClientLogging(logging))
+		client.CallOptions.ResetVcenterCredentials = append(client.CallOptions.ResetVcenterCredentials, gax.WithClientLogging(logging))
+		client.CallOptions.GetDnsForwarding = append(client.CallOptions.GetDnsForwarding, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateDnsForwarding = append(client.CallOptions.UpdateDnsForwarding, gax.WithClientLogging(logging))
+		client.CallOptions.GetNetworkPeering = append(client.CallOptions.GetNetworkPeering, gax.WithClientLogging(logging))
+		client.CallOptions.ListNetworkPeerings = append(client.CallOptions.ListNetworkPeerings, gax.WithClientLogging(logging))
+		client.CallOptions.CreateNetworkPeering = append(client.CallOptions.CreateNetworkPeering, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteNetworkPeering = append(client.CallOptions.DeleteNetworkPeering, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateNetworkPeering = append(client.CallOptions.UpdateNetworkPeering, gax.WithClientLogging(logging))
+		client.CallOptions.ListPeeringRoutes = append(client.CallOptions.ListPeeringRoutes, gax.WithClientLogging(logging))
+		client.CallOptions.CreateHcxActivationKey = append(client.CallOptions.CreateHcxActivationKey, gax.WithClientLogging(logging))
+		client.CallOptions.ListHcxActivationKeys = append(client.CallOptions.ListHcxActivationKeys, gax.WithClientLogging(logging))
+		client.CallOptions.GetHcxActivationKey = append(client.CallOptions.GetHcxActivationKey, gax.WithClientLogging(logging))
+		client.CallOptions.GetNetworkPolicy = append(client.CallOptions.GetNetworkPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.ListNetworkPolicies = append(client.CallOptions.ListNetworkPolicies, gax.WithClientLogging(logging))
+		client.CallOptions.CreateNetworkPolicy = append(client.CallOptions.CreateNetworkPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateNetworkPolicy = append(client.CallOptions.UpdateNetworkPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteNetworkPolicy = append(client.CallOptions.DeleteNetworkPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.ListManagementDnsZoneBindings = append(client.CallOptions.ListManagementDnsZoneBindings, gax.WithClientLogging(logging))
+		client.CallOptions.GetManagementDnsZoneBinding = append(client.CallOptions.GetManagementDnsZoneBinding, gax.WithClientLogging(logging))
+		client.CallOptions.CreateManagementDnsZoneBinding = append(client.CallOptions.CreateManagementDnsZoneBinding, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateManagementDnsZoneBinding = append(client.CallOptions.UpdateManagementDnsZoneBinding, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteManagementDnsZoneBinding = append(client.CallOptions.DeleteManagementDnsZoneBinding, gax.WithClientLogging(logging))
+		client.CallOptions.RepairManagementDnsZoneBinding = append(client.CallOptions.RepairManagementDnsZoneBinding, gax.WithClientLogging(logging))
+		client.CallOptions.CreateVmwareEngineNetwork = append(client.CallOptions.CreateVmwareEngineNetwork, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateVmwareEngineNetwork = append(client.CallOptions.UpdateVmwareEngineNetwork, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteVmwareEngineNetwork = append(client.CallOptions.DeleteVmwareEngineNetwork, gax.WithClientLogging(logging))
+		client.CallOptions.GetVmwareEngineNetwork = append(client.CallOptions.GetVmwareEngineNetwork, gax.WithClientLogging(logging))
+		client.CallOptions.ListVmwareEngineNetworks = append(client.CallOptions.ListVmwareEngineNetworks, gax.WithClientLogging(logging))
+		client.CallOptions.CreatePrivateConnection = append(client.CallOptions.CreatePrivateConnection, gax.WithClientLogging(logging))
+		client.CallOptions.GetPrivateConnection = append(client.CallOptions.GetPrivateConnection, gax.WithClientLogging(logging))
+		client.CallOptions.ListPrivateConnections = append(client.CallOptions.ListPrivateConnections, gax.WithClientLogging(logging))
+		client.CallOptions.UpdatePrivateConnection = append(client.CallOptions.UpdatePrivateConnection, gax.WithClientLogging(logging))
+		client.CallOptions.DeletePrivateConnection = append(client.CallOptions.DeletePrivateConnection, gax.WithClientLogging(logging))
+		client.CallOptions.ListPrivateConnectionPeeringRoutes = append(client.CallOptions.ListPrivateConnectionPeeringRoutes, gax.WithClientLogging(logging))
+		client.CallOptions.GrantDnsBindPermission = append(client.CallOptions.GrantDnsBindPermission, gax.WithClientLogging(logging))
+		client.CallOptions.GetDnsBindPermission = append(client.CallOptions.GetDnsBindPermission, gax.WithClientLogging(logging))
+		client.CallOptions.RevokeDnsBindPermission = append(client.CallOptions.RevokeDnsBindPermission, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -2495,6 +2684,195 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "vmwareengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/vmwareengine/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "vmwareengine.googleapis.com",
+			}),
+		)
+
+		callOpts.ListPrivateClouds = append(callOpts.ListPrivateClouds, gax.WithClientTracing(tracing))
+		callOpts.GetPrivateCloud = append(callOpts.GetPrivateCloud, gax.WithClientTracing(tracing))
+		callOpts.CreatePrivateCloud = append(callOpts.CreatePrivateCloud, gax.WithClientTracing(tracing))
+		callOpts.UpdatePrivateCloud = append(callOpts.UpdatePrivateCloud, gax.WithClientTracing(tracing))
+		callOpts.DeletePrivateCloud = append(callOpts.DeletePrivateCloud, gax.WithClientTracing(tracing))
+		callOpts.UndeletePrivateCloud = append(callOpts.UndeletePrivateCloud, gax.WithClientTracing(tracing))
+		callOpts.ListClusters = append(callOpts.ListClusters, gax.WithClientTracing(tracing))
+		callOpts.GetCluster = append(callOpts.GetCluster, gax.WithClientTracing(tracing))
+		callOpts.CreateCluster = append(callOpts.CreateCluster, gax.WithClientTracing(tracing))
+		callOpts.UpdateCluster = append(callOpts.UpdateCluster, gax.WithClientTracing(tracing))
+		callOpts.DeleteCluster = append(callOpts.DeleteCluster, gax.WithClientTracing(tracing))
+		callOpts.ListNodes = append(callOpts.ListNodes, gax.WithClientTracing(tracing))
+		callOpts.GetNode = append(callOpts.GetNode, gax.WithClientTracing(tracing))
+		callOpts.ListExternalAddresses = append(callOpts.ListExternalAddresses, gax.WithClientTracing(tracing))
+		callOpts.FetchNetworkPolicyExternalAddresses = append(callOpts.FetchNetworkPolicyExternalAddresses, gax.WithClientTracing(tracing))
+		callOpts.GetExternalAddress = append(callOpts.GetExternalAddress, gax.WithClientTracing(tracing))
+		callOpts.CreateExternalAddress = append(callOpts.CreateExternalAddress, gax.WithClientTracing(tracing))
+		callOpts.UpdateExternalAddress = append(callOpts.UpdateExternalAddress, gax.WithClientTracing(tracing))
+		callOpts.DeleteExternalAddress = append(callOpts.DeleteExternalAddress, gax.WithClientTracing(tracing))
+		callOpts.ListSubnets = append(callOpts.ListSubnets, gax.WithClientTracing(tracing))
+		callOpts.GetSubnet = append(callOpts.GetSubnet, gax.WithClientTracing(tracing))
+		callOpts.UpdateSubnet = append(callOpts.UpdateSubnet, gax.WithClientTracing(tracing))
+		callOpts.ListExternalAccessRules = append(callOpts.ListExternalAccessRules, gax.WithClientTracing(tracing))
+		callOpts.GetExternalAccessRule = append(callOpts.GetExternalAccessRule, gax.WithClientTracing(tracing))
+		callOpts.CreateExternalAccessRule = append(callOpts.CreateExternalAccessRule, gax.WithClientTracing(tracing))
+		callOpts.UpdateExternalAccessRule = append(callOpts.UpdateExternalAccessRule, gax.WithClientTracing(tracing))
+		callOpts.DeleteExternalAccessRule = append(callOpts.DeleteExternalAccessRule, gax.WithClientTracing(tracing))
+		callOpts.ListLoggingServers = append(callOpts.ListLoggingServers, gax.WithClientTracing(tracing))
+		callOpts.GetLoggingServer = append(callOpts.GetLoggingServer, gax.WithClientTracing(tracing))
+		callOpts.CreateLoggingServer = append(callOpts.CreateLoggingServer, gax.WithClientTracing(tracing))
+		callOpts.UpdateLoggingServer = append(callOpts.UpdateLoggingServer, gax.WithClientTracing(tracing))
+		callOpts.DeleteLoggingServer = append(callOpts.DeleteLoggingServer, gax.WithClientTracing(tracing))
+		callOpts.ListNodeTypes = append(callOpts.ListNodeTypes, gax.WithClientTracing(tracing))
+		callOpts.GetNodeType = append(callOpts.GetNodeType, gax.WithClientTracing(tracing))
+		callOpts.ShowNsxCredentials = append(callOpts.ShowNsxCredentials, gax.WithClientTracing(tracing))
+		callOpts.ShowVcenterCredentials = append(callOpts.ShowVcenterCredentials, gax.WithClientTracing(tracing))
+		callOpts.ResetNsxCredentials = append(callOpts.ResetNsxCredentials, gax.WithClientTracing(tracing))
+		callOpts.ResetVcenterCredentials = append(callOpts.ResetVcenterCredentials, gax.WithClientTracing(tracing))
+		callOpts.GetDnsForwarding = append(callOpts.GetDnsForwarding, gax.WithClientTracing(tracing))
+		callOpts.UpdateDnsForwarding = append(callOpts.UpdateDnsForwarding, gax.WithClientTracing(tracing))
+		callOpts.GetNetworkPeering = append(callOpts.GetNetworkPeering, gax.WithClientTracing(tracing))
+		callOpts.ListNetworkPeerings = append(callOpts.ListNetworkPeerings, gax.WithClientTracing(tracing))
+		callOpts.CreateNetworkPeering = append(callOpts.CreateNetworkPeering, gax.WithClientTracing(tracing))
+		callOpts.DeleteNetworkPeering = append(callOpts.DeleteNetworkPeering, gax.WithClientTracing(tracing))
+		callOpts.UpdateNetworkPeering = append(callOpts.UpdateNetworkPeering, gax.WithClientTracing(tracing))
+		callOpts.ListPeeringRoutes = append(callOpts.ListPeeringRoutes, gax.WithClientTracing(tracing))
+		callOpts.CreateHcxActivationKey = append(callOpts.CreateHcxActivationKey, gax.WithClientTracing(tracing))
+		callOpts.ListHcxActivationKeys = append(callOpts.ListHcxActivationKeys, gax.WithClientTracing(tracing))
+		callOpts.GetHcxActivationKey = append(callOpts.GetHcxActivationKey, gax.WithClientTracing(tracing))
+		callOpts.GetNetworkPolicy = append(callOpts.GetNetworkPolicy, gax.WithClientTracing(tracing))
+		callOpts.ListNetworkPolicies = append(callOpts.ListNetworkPolicies, gax.WithClientTracing(tracing))
+		callOpts.CreateNetworkPolicy = append(callOpts.CreateNetworkPolicy, gax.WithClientTracing(tracing))
+		callOpts.UpdateNetworkPolicy = append(callOpts.UpdateNetworkPolicy, gax.WithClientTracing(tracing))
+		callOpts.DeleteNetworkPolicy = append(callOpts.DeleteNetworkPolicy, gax.WithClientTracing(tracing))
+		callOpts.ListManagementDnsZoneBindings = append(callOpts.ListManagementDnsZoneBindings, gax.WithClientTracing(tracing))
+		callOpts.GetManagementDnsZoneBinding = append(callOpts.GetManagementDnsZoneBinding, gax.WithClientTracing(tracing))
+		callOpts.CreateManagementDnsZoneBinding = append(callOpts.CreateManagementDnsZoneBinding, gax.WithClientTracing(tracing))
+		callOpts.UpdateManagementDnsZoneBinding = append(callOpts.UpdateManagementDnsZoneBinding, gax.WithClientTracing(tracing))
+		callOpts.DeleteManagementDnsZoneBinding = append(callOpts.DeleteManagementDnsZoneBinding, gax.WithClientTracing(tracing))
+		callOpts.RepairManagementDnsZoneBinding = append(callOpts.RepairManagementDnsZoneBinding, gax.WithClientTracing(tracing))
+		callOpts.CreateVmwareEngineNetwork = append(callOpts.CreateVmwareEngineNetwork, gax.WithClientTracing(tracing))
+		callOpts.UpdateVmwareEngineNetwork = append(callOpts.UpdateVmwareEngineNetwork, gax.WithClientTracing(tracing))
+		callOpts.DeleteVmwareEngineNetwork = append(callOpts.DeleteVmwareEngineNetwork, gax.WithClientTracing(tracing))
+		callOpts.GetVmwareEngineNetwork = append(callOpts.GetVmwareEngineNetwork, gax.WithClientTracing(tracing))
+		callOpts.ListVmwareEngineNetworks = append(callOpts.ListVmwareEngineNetworks, gax.WithClientTracing(tracing))
+		callOpts.CreatePrivateConnection = append(callOpts.CreatePrivateConnection, gax.WithClientTracing(tracing))
+		callOpts.GetPrivateConnection = append(callOpts.GetPrivateConnection, gax.WithClientTracing(tracing))
+		callOpts.ListPrivateConnections = append(callOpts.ListPrivateConnections, gax.WithClientTracing(tracing))
+		callOpts.UpdatePrivateConnection = append(callOpts.UpdatePrivateConnection, gax.WithClientTracing(tracing))
+		callOpts.DeletePrivateConnection = append(callOpts.DeletePrivateConnection, gax.WithClientTracing(tracing))
+		callOpts.ListPrivateConnectionPeeringRoutes = append(callOpts.ListPrivateConnectionPeeringRoutes, gax.WithClientTracing(tracing))
+		callOpts.GrantDnsBindPermission = append(callOpts.GrantDnsBindPermission, gax.WithClientTracing(tracing))
+		callOpts.GetDnsBindPermission = append(callOpts.GetDnsBindPermission, gax.WithClientTracing(tracing))
+		callOpts.RevokeDnsBindPermission = append(callOpts.RevokeDnsBindPermission, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "vmwareengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/vmwareengine/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "vmwareengine.googleapis.com",
+			}),
+		)
+
+		callOpts.ListPrivateClouds = append(callOpts.ListPrivateClouds, gax.WithClientLogging(logging))
+		callOpts.GetPrivateCloud = append(callOpts.GetPrivateCloud, gax.WithClientLogging(logging))
+		callOpts.CreatePrivateCloud = append(callOpts.CreatePrivateCloud, gax.WithClientLogging(logging))
+		callOpts.UpdatePrivateCloud = append(callOpts.UpdatePrivateCloud, gax.WithClientLogging(logging))
+		callOpts.DeletePrivateCloud = append(callOpts.DeletePrivateCloud, gax.WithClientLogging(logging))
+		callOpts.UndeletePrivateCloud = append(callOpts.UndeletePrivateCloud, gax.WithClientLogging(logging))
+		callOpts.ListClusters = append(callOpts.ListClusters, gax.WithClientLogging(logging))
+		callOpts.GetCluster = append(callOpts.GetCluster, gax.WithClientLogging(logging))
+		callOpts.CreateCluster = append(callOpts.CreateCluster, gax.WithClientLogging(logging))
+		callOpts.UpdateCluster = append(callOpts.UpdateCluster, gax.WithClientLogging(logging))
+		callOpts.DeleteCluster = append(callOpts.DeleteCluster, gax.WithClientLogging(logging))
+		callOpts.ListNodes = append(callOpts.ListNodes, gax.WithClientLogging(logging))
+		callOpts.GetNode = append(callOpts.GetNode, gax.WithClientLogging(logging))
+		callOpts.ListExternalAddresses = append(callOpts.ListExternalAddresses, gax.WithClientLogging(logging))
+		callOpts.FetchNetworkPolicyExternalAddresses = append(callOpts.FetchNetworkPolicyExternalAddresses, gax.WithClientLogging(logging))
+		callOpts.GetExternalAddress = append(callOpts.GetExternalAddress, gax.WithClientLogging(logging))
+		callOpts.CreateExternalAddress = append(callOpts.CreateExternalAddress, gax.WithClientLogging(logging))
+		callOpts.UpdateExternalAddress = append(callOpts.UpdateExternalAddress, gax.WithClientLogging(logging))
+		callOpts.DeleteExternalAddress = append(callOpts.DeleteExternalAddress, gax.WithClientLogging(logging))
+		callOpts.ListSubnets = append(callOpts.ListSubnets, gax.WithClientLogging(logging))
+		callOpts.GetSubnet = append(callOpts.GetSubnet, gax.WithClientLogging(logging))
+		callOpts.UpdateSubnet = append(callOpts.UpdateSubnet, gax.WithClientLogging(logging))
+		callOpts.ListExternalAccessRules = append(callOpts.ListExternalAccessRules, gax.WithClientLogging(logging))
+		callOpts.GetExternalAccessRule = append(callOpts.GetExternalAccessRule, gax.WithClientLogging(logging))
+		callOpts.CreateExternalAccessRule = append(callOpts.CreateExternalAccessRule, gax.WithClientLogging(logging))
+		callOpts.UpdateExternalAccessRule = append(callOpts.UpdateExternalAccessRule, gax.WithClientLogging(logging))
+		callOpts.DeleteExternalAccessRule = append(callOpts.DeleteExternalAccessRule, gax.WithClientLogging(logging))
+		callOpts.ListLoggingServers = append(callOpts.ListLoggingServers, gax.WithClientLogging(logging))
+		callOpts.GetLoggingServer = append(callOpts.GetLoggingServer, gax.WithClientLogging(logging))
+		callOpts.CreateLoggingServer = append(callOpts.CreateLoggingServer, gax.WithClientLogging(logging))
+		callOpts.UpdateLoggingServer = append(callOpts.UpdateLoggingServer, gax.WithClientLogging(logging))
+		callOpts.DeleteLoggingServer = append(callOpts.DeleteLoggingServer, gax.WithClientLogging(logging))
+		callOpts.ListNodeTypes = append(callOpts.ListNodeTypes, gax.WithClientLogging(logging))
+		callOpts.GetNodeType = append(callOpts.GetNodeType, gax.WithClientLogging(logging))
+		callOpts.ShowNsxCredentials = append(callOpts.ShowNsxCredentials, gax.WithClientLogging(logging))
+		callOpts.ShowVcenterCredentials = append(callOpts.ShowVcenterCredentials, gax.WithClientLogging(logging))
+		callOpts.ResetNsxCredentials = append(callOpts.ResetNsxCredentials, gax.WithClientLogging(logging))
+		callOpts.ResetVcenterCredentials = append(callOpts.ResetVcenterCredentials, gax.WithClientLogging(logging))
+		callOpts.GetDnsForwarding = append(callOpts.GetDnsForwarding, gax.WithClientLogging(logging))
+		callOpts.UpdateDnsForwarding = append(callOpts.UpdateDnsForwarding, gax.WithClientLogging(logging))
+		callOpts.GetNetworkPeering = append(callOpts.GetNetworkPeering, gax.WithClientLogging(logging))
+		callOpts.ListNetworkPeerings = append(callOpts.ListNetworkPeerings, gax.WithClientLogging(logging))
+		callOpts.CreateNetworkPeering = append(callOpts.CreateNetworkPeering, gax.WithClientLogging(logging))
+		callOpts.DeleteNetworkPeering = append(callOpts.DeleteNetworkPeering, gax.WithClientLogging(logging))
+		callOpts.UpdateNetworkPeering = append(callOpts.UpdateNetworkPeering, gax.WithClientLogging(logging))
+		callOpts.ListPeeringRoutes = append(callOpts.ListPeeringRoutes, gax.WithClientLogging(logging))
+		callOpts.CreateHcxActivationKey = append(callOpts.CreateHcxActivationKey, gax.WithClientLogging(logging))
+		callOpts.ListHcxActivationKeys = append(callOpts.ListHcxActivationKeys, gax.WithClientLogging(logging))
+		callOpts.GetHcxActivationKey = append(callOpts.GetHcxActivationKey, gax.WithClientLogging(logging))
+		callOpts.GetNetworkPolicy = append(callOpts.GetNetworkPolicy, gax.WithClientLogging(logging))
+		callOpts.ListNetworkPolicies = append(callOpts.ListNetworkPolicies, gax.WithClientLogging(logging))
+		callOpts.CreateNetworkPolicy = append(callOpts.CreateNetworkPolicy, gax.WithClientLogging(logging))
+		callOpts.UpdateNetworkPolicy = append(callOpts.UpdateNetworkPolicy, gax.WithClientLogging(logging))
+		callOpts.DeleteNetworkPolicy = append(callOpts.DeleteNetworkPolicy, gax.WithClientLogging(logging))
+		callOpts.ListManagementDnsZoneBindings = append(callOpts.ListManagementDnsZoneBindings, gax.WithClientLogging(logging))
+		callOpts.GetManagementDnsZoneBinding = append(callOpts.GetManagementDnsZoneBinding, gax.WithClientLogging(logging))
+		callOpts.CreateManagementDnsZoneBinding = append(callOpts.CreateManagementDnsZoneBinding, gax.WithClientLogging(logging))
+		callOpts.UpdateManagementDnsZoneBinding = append(callOpts.UpdateManagementDnsZoneBinding, gax.WithClientLogging(logging))
+		callOpts.DeleteManagementDnsZoneBinding = append(callOpts.DeleteManagementDnsZoneBinding, gax.WithClientLogging(logging))
+		callOpts.RepairManagementDnsZoneBinding = append(callOpts.RepairManagementDnsZoneBinding, gax.WithClientLogging(logging))
+		callOpts.CreateVmwareEngineNetwork = append(callOpts.CreateVmwareEngineNetwork, gax.WithClientLogging(logging))
+		callOpts.UpdateVmwareEngineNetwork = append(callOpts.UpdateVmwareEngineNetwork, gax.WithClientLogging(logging))
+		callOpts.DeleteVmwareEngineNetwork = append(callOpts.DeleteVmwareEngineNetwork, gax.WithClientLogging(logging))
+		callOpts.GetVmwareEngineNetwork = append(callOpts.GetVmwareEngineNetwork, gax.WithClientLogging(logging))
+		callOpts.ListVmwareEngineNetworks = append(callOpts.ListVmwareEngineNetworks, gax.WithClientLogging(logging))
+		callOpts.CreatePrivateConnection = append(callOpts.CreatePrivateConnection, gax.WithClientLogging(logging))
+		callOpts.GetPrivateConnection = append(callOpts.GetPrivateConnection, gax.WithClientLogging(logging))
+		callOpts.ListPrivateConnections = append(callOpts.ListPrivateConnections, gax.WithClientLogging(logging))
+		callOpts.UpdatePrivateConnection = append(callOpts.UpdatePrivateConnection, gax.WithClientLogging(logging))
+		callOpts.DeletePrivateConnection = append(callOpts.DeletePrivateConnection, gax.WithClientLogging(logging))
+		callOpts.ListPrivateConnectionPeeringRoutes = append(callOpts.ListPrivateConnectionPeeringRoutes, gax.WithClientLogging(logging))
+		callOpts.GrantDnsBindPermission = append(callOpts.GrantDnsBindPermission, gax.WithClientLogging(logging))
+		callOpts.GetDnsBindPermission = append(callOpts.GetDnsBindPermission, gax.WithClientLogging(logging))
+		callOpts.RevokeDnsBindPermission = append(callOpts.RevokeDnsBindPermission, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -2551,9 +2929,6 @@ func (c *gRPCClient) ListPrivateClouds(ctx context.Context, req *vmwareenginepb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/ListPrivateClouds")
 	}
@@ -2603,9 +2978,6 @@ func (c *gRPCClient) GetPrivateCloud(ctx context.Context, req *vmwareenginepb.Ge
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/GetPrivateCloud")
 	}
@@ -2627,9 +2999,6 @@ func (c *gRPCClient) CreatePrivateCloud(ctx context.Context, req *vmwareenginepb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/CreatePrivateCloud")
 	}
@@ -2684,9 +3053,6 @@ func (c *gRPCClient) DeletePrivateCloud(ctx context.Context, req *vmwareenginepb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/DeletePrivateCloud")
 	}
@@ -2714,9 +3080,6 @@ func (c *gRPCClient) UndeletePrivateCloud(ctx context.Context, req *vmwareengine
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/UndeletePrivateCloud")
 	}
@@ -2744,9 +3107,6 @@ func (c *gRPCClient) ListClusters(ctx context.Context, req *vmwareenginepb.ListC
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/ListClusters")
 	}
@@ -2796,9 +3156,6 @@ func (c *gRPCClient) GetCluster(ctx context.Context, req *vmwareenginepb.GetClus
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/GetCluster")
 	}
@@ -2820,9 +3177,6 @@ func (c *gRPCClient) CreateCluster(ctx context.Context, req *vmwareenginepb.Crea
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/CreateCluster")
 	}
@@ -2877,9 +3231,6 @@ func (c *gRPCClient) DeleteCluster(ctx context.Context, req *vmwareenginepb.Dele
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/DeleteCluster")
 	}
@@ -2907,9 +3258,6 @@ func (c *gRPCClient) ListNodes(ctx context.Context, req *vmwareenginepb.ListNode
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/ListNodes")
 	}
@@ -2959,9 +3307,6 @@ func (c *gRPCClient) GetNode(ctx context.Context, req *vmwareenginepb.GetNodeReq
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/GetNode")
 	}
@@ -2983,9 +3328,6 @@ func (c *gRPCClient) ListExternalAddresses(ctx context.Context, req *vmwareengin
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/ListExternalAddresses")
 	}
@@ -3035,9 +3377,6 @@ func (c *gRPCClient) FetchNetworkPolicyExternalAddresses(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetNetworkPolicy()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/FetchNetworkPolicyExternalAddresses")
 	}
@@ -3087,9 +3426,6 @@ func (c *gRPCClient) GetExternalAddress(ctx context.Context, req *vmwareenginepb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/GetExternalAddress")
 	}
@@ -3111,9 +3447,6 @@ func (c *gRPCClient) CreateExternalAddress(ctx context.Context, req *vmwareengin
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/CreateExternalAddress")
 	}
@@ -3168,9 +3501,6 @@ func (c *gRPCClient) DeleteExternalAddress(ctx context.Context, req *vmwareengin
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/DeleteExternalAddress")
 	}
@@ -3198,9 +3528,6 @@ func (c *gRPCClient) ListSubnets(ctx context.Context, req *vmwareenginepb.ListSu
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/ListSubnets")
 	}
@@ -3250,9 +3577,6 @@ func (c *gRPCClient) GetSubnet(ctx context.Context, req *vmwareenginepb.GetSubne
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/GetSubnet")
 	}
@@ -3301,9 +3625,6 @@ func (c *gRPCClient) ListExternalAccessRules(ctx context.Context, req *vmwareeng
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/ListExternalAccessRules")
 	}
@@ -3353,9 +3674,6 @@ func (c *gRPCClient) GetExternalAccessRule(ctx context.Context, req *vmwareengin
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/GetExternalAccessRule")
 	}
@@ -3377,9 +3695,6 @@ func (c *gRPCClient) CreateExternalAccessRule(ctx context.Context, req *vmwareen
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/CreateExternalAccessRule")
 	}
@@ -3434,9 +3749,6 @@ func (c *gRPCClient) DeleteExternalAccessRule(ctx context.Context, req *vmwareen
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/DeleteExternalAccessRule")
 	}
@@ -3464,9 +3776,6 @@ func (c *gRPCClient) ListLoggingServers(ctx context.Context, req *vmwareenginepb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/ListLoggingServers")
 	}
@@ -3516,9 +3825,6 @@ func (c *gRPCClient) GetLoggingServer(ctx context.Context, req *vmwareenginepb.G
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/GetLoggingServer")
 	}
@@ -3540,9 +3846,6 @@ func (c *gRPCClient) CreateLoggingServer(ctx context.Context, req *vmwareenginep
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/CreateLoggingServer")
 	}
@@ -3597,9 +3900,6 @@ func (c *gRPCClient) DeleteLoggingServer(ctx context.Context, req *vmwareenginep
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/DeleteLoggingServer")
 	}
@@ -3627,9 +3927,6 @@ func (c *gRPCClient) ListNodeTypes(ctx context.Context, req *vmwareenginepb.List
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/ListNodeTypes")
 	}
@@ -3679,9 +3976,6 @@ func (c *gRPCClient) GetNodeType(ctx context.Context, req *vmwareenginepb.GetNod
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/GetNodeType")
 	}
@@ -3703,9 +3997,6 @@ func (c *gRPCClient) ShowNsxCredentials(ctx context.Context, req *vmwareenginepb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetPrivateCloud()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/ShowNsxCredentials")
 	}
@@ -3727,9 +4018,6 @@ func (c *gRPCClient) ShowVcenterCredentials(ctx context.Context, req *vmwareengi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetPrivateCloud()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/ShowVcenterCredentials")
 	}
@@ -3751,9 +4039,6 @@ func (c *gRPCClient) ResetNsxCredentials(ctx context.Context, req *vmwareenginep
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetPrivateCloud()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/ResetNsxCredentials")
 	}
@@ -3781,9 +4066,6 @@ func (c *gRPCClient) ResetVcenterCredentials(ctx context.Context, req *vmwareeng
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetPrivateCloud()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/ResetVcenterCredentials")
 	}
@@ -3811,9 +4093,6 @@ func (c *gRPCClient) GetDnsForwarding(ctx context.Context, req *vmwareenginepb.G
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/GetDnsForwarding")
 	}
@@ -3862,9 +4141,6 @@ func (c *gRPCClient) GetNetworkPeering(ctx context.Context, req *vmwareenginepb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/GetNetworkPeering")
 	}
@@ -3886,9 +4162,6 @@ func (c *gRPCClient) ListNetworkPeerings(ctx context.Context, req *vmwareenginep
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/ListNetworkPeerings")
 	}
@@ -3938,9 +4211,6 @@ func (c *gRPCClient) CreateNetworkPeering(ctx context.Context, req *vmwareengine
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/CreateNetworkPeering")
 	}
@@ -3968,9 +4238,6 @@ func (c *gRPCClient) DeleteNetworkPeering(ctx context.Context, req *vmwareengine
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/DeleteNetworkPeering")
 	}
@@ -4025,9 +4292,6 @@ func (c *gRPCClient) ListPeeringRoutes(ctx context.Context, req *vmwareenginepb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/ListPeeringRoutes")
 	}
@@ -4077,9 +4341,6 @@ func (c *gRPCClient) CreateHcxActivationKey(ctx context.Context, req *vmwareengi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/CreateHcxActivationKey")
 	}
@@ -4107,9 +4368,6 @@ func (c *gRPCClient) ListHcxActivationKeys(ctx context.Context, req *vmwareengin
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/ListHcxActivationKeys")
 	}
@@ -4159,9 +4417,6 @@ func (c *gRPCClient) GetHcxActivationKey(ctx context.Context, req *vmwareenginep
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/GetHcxActivationKey")
 	}
@@ -4183,9 +4438,6 @@ func (c *gRPCClient) GetNetworkPolicy(ctx context.Context, req *vmwareenginepb.G
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/GetNetworkPolicy")
 	}
@@ -4207,9 +4459,6 @@ func (c *gRPCClient) ListNetworkPolicies(ctx context.Context, req *vmwareenginep
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/ListNetworkPolicies")
 	}
@@ -4259,9 +4508,6 @@ func (c *gRPCClient) CreateNetworkPolicy(ctx context.Context, req *vmwareenginep
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/CreateNetworkPolicy")
 	}
@@ -4316,9 +4562,6 @@ func (c *gRPCClient) DeleteNetworkPolicy(ctx context.Context, req *vmwareenginep
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/DeleteNetworkPolicy")
 	}
@@ -4346,9 +4589,6 @@ func (c *gRPCClient) ListManagementDnsZoneBindings(ctx context.Context, req *vmw
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/ListManagementDnsZoneBindings")
 	}
@@ -4398,9 +4638,6 @@ func (c *gRPCClient) GetManagementDnsZoneBinding(ctx context.Context, req *vmwar
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/GetManagementDnsZoneBinding")
 	}
@@ -4422,9 +4659,6 @@ func (c *gRPCClient) CreateManagementDnsZoneBinding(ctx context.Context, req *vm
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/CreateManagementDnsZoneBinding")
 	}
@@ -4479,9 +4713,6 @@ func (c *gRPCClient) DeleteManagementDnsZoneBinding(ctx context.Context, req *vm
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/DeleteManagementDnsZoneBinding")
 	}
@@ -4509,9 +4740,6 @@ func (c *gRPCClient) RepairManagementDnsZoneBinding(ctx context.Context, req *vm
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/RepairManagementDnsZoneBinding")
 	}
@@ -4539,9 +4767,6 @@ func (c *gRPCClient) CreateVmwareEngineNetwork(ctx context.Context, req *vmwaree
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/CreateVmwareEngineNetwork")
 	}
@@ -4596,9 +4821,6 @@ func (c *gRPCClient) DeleteVmwareEngineNetwork(ctx context.Context, req *vmwaree
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/DeleteVmwareEngineNetwork")
 	}
@@ -4626,9 +4848,6 @@ func (c *gRPCClient) GetVmwareEngineNetwork(ctx context.Context, req *vmwareengi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/GetVmwareEngineNetwork")
 	}
@@ -4650,9 +4869,6 @@ func (c *gRPCClient) ListVmwareEngineNetworks(ctx context.Context, req *vmwareen
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/ListVmwareEngineNetworks")
 	}
@@ -4702,9 +4918,6 @@ func (c *gRPCClient) CreatePrivateConnection(ctx context.Context, req *vmwareeng
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/CreatePrivateConnection")
 	}
@@ -4732,9 +4945,6 @@ func (c *gRPCClient) GetPrivateConnection(ctx context.Context, req *vmwareengine
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/GetPrivateConnection")
 	}
@@ -4756,9 +4966,6 @@ func (c *gRPCClient) ListPrivateConnections(ctx context.Context, req *vmwareengi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/ListPrivateConnections")
 	}
@@ -4835,9 +5042,6 @@ func (c *gRPCClient) DeletePrivateConnection(ctx context.Context, req *vmwareeng
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/DeletePrivateConnection")
 	}
@@ -4865,9 +5069,6 @@ func (c *gRPCClient) ListPrivateConnectionPeeringRoutes(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/ListPrivateConnectionPeeringRoutes")
 	}
@@ -4917,9 +5118,6 @@ func (c *gRPCClient) GrantDnsBindPermission(ctx context.Context, req *vmwareengi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/GrantDnsBindPermission")
 	}
@@ -4947,9 +5145,6 @@ func (c *gRPCClient) GetDnsBindPermission(ctx context.Context, req *vmwareengine
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/GetDnsBindPermission")
 	}
@@ -4971,9 +5166,6 @@ func (c *gRPCClient) RevokeDnsBindPermission(ctx context.Context, req *vmwareeng
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/RevokeDnsBindPermission")
 	}
@@ -5071,9 +5263,6 @@ func (c *gRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
 	}
@@ -5095,9 +5284,6 @@ func (c *gRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
 	}
@@ -5119,9 +5305,6 @@ func (c *gRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
 	}
@@ -5328,9 +5511,6 @@ func (c *restClient) GetPrivateCloud(ctx context.Context, req *vmwareenginepb.Ge
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/GetPrivateCloud")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/privateClouds/*}")
@@ -5405,9 +5585,6 @@ func (c *restClient) CreatePrivateCloud(ctx context.Context, req *vmwareenginepb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/CreatePrivateCloud")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/privateClouds")
@@ -5577,9 +5754,6 @@ func (c *restClient) DeletePrivateCloud(ctx context.Context, req *vmwareenginepb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/DeletePrivateCloud")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/privateClouds/*}")
@@ -5650,9 +5824,6 @@ func (c *restClient) UndeletePrivateCloud(ctx context.Context, req *vmwareengine
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/UndeletePrivateCloud")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/privateClouds/*}:undelete")
@@ -5798,9 +5969,6 @@ func (c *restClient) GetCluster(ctx context.Context, req *vmwareenginepb.GetClus
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/GetCluster")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/privateClouds/*/clusters/*}")
@@ -5872,9 +6040,6 @@ func (c *restClient) CreateCluster(ctx context.Context, req *vmwareenginepb.Crea
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/CreateCluster")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/privateClouds/*}/clusters")
@@ -6029,9 +6194,6 @@ func (c *restClient) DeleteCluster(ctx context.Context, req *vmwareenginepb.Dele
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/DeleteCluster")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/privateClouds/*/clusters/*}")
@@ -6171,9 +6333,6 @@ func (c *restClient) GetNode(ctx context.Context, req *vmwareenginepb.GetNodeReq
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/GetNode")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/privateClouds/*/clusters/*/nodes/*}")
@@ -6392,9 +6551,6 @@ func (c *restClient) GetExternalAddress(ctx context.Context, req *vmwareenginepb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/GetExternalAddress")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/privateClouds/*/externalAddresses/*}")
@@ -6462,9 +6618,6 @@ func (c *restClient) CreateExternalAddress(ctx context.Context, req *vmwareengin
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/CreateExternalAddress")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/privateClouds/*}/externalAddresses")
@@ -6615,9 +6768,6 @@ func (c *restClient) DeleteExternalAddress(ctx context.Context, req *vmwareengin
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/DeleteExternalAddress")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/privateClouds/*/externalAddresses/*}")
@@ -6757,9 +6907,6 @@ func (c *restClient) GetSubnet(ctx context.Context, req *vmwareenginepb.GetSubne
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/GetSubnet")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/privateClouds/*/subnets/*}")
@@ -6978,9 +7125,6 @@ func (c *restClient) GetExternalAccessRule(ctx context.Context, req *vmwareengin
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/GetExternalAccessRule")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/networkPolicies/*/externalAccessRules/*}")
@@ -7046,9 +7190,6 @@ func (c *restClient) CreateExternalAccessRule(ctx context.Context, req *vmwareen
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/CreateExternalAccessRule")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/networkPolicies/*}/externalAccessRules")
@@ -7192,9 +7333,6 @@ func (c *restClient) DeleteExternalAccessRule(ctx context.Context, req *vmwareen
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/DeleteExternalAccessRule")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/networkPolicies/*/externalAccessRules/*}")
@@ -7341,9 +7479,6 @@ func (c *restClient) GetLoggingServer(ctx context.Context, req *vmwareenginepb.G
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/GetLoggingServer")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/privateClouds/*/loggingServers/*}")
@@ -7409,9 +7544,6 @@ func (c *restClient) CreateLoggingServer(ctx context.Context, req *vmwareenginep
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/CreateLoggingServer")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/privateClouds/*}/loggingServers")
@@ -7555,9 +7687,6 @@ func (c *restClient) DeleteLoggingServer(ctx context.Context, req *vmwareenginep
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/DeleteLoggingServer")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/privateClouds/*/loggingServers/*}")
@@ -7700,9 +7829,6 @@ func (c *restClient) GetNodeType(ctx context.Context, req *vmwareenginepb.GetNod
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/GetNodeType")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/nodeTypes/*}")
@@ -7757,9 +7883,6 @@ func (c *restClient) ShowNsxCredentials(ctx context.Context, req *vmwareenginepb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetPrivateCloud()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/ShowNsxCredentials")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{private_cloud=projects/*/locations/*/privateClouds/*}:showNsxCredentials")
@@ -7817,9 +7940,6 @@ func (c *restClient) ShowVcenterCredentials(ctx context.Context, req *vmwareengi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetPrivateCloud()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/ShowVcenterCredentials")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{private_cloud=projects/*/locations/*/privateClouds/*}:showVcenterCredentials")
@@ -7880,9 +8000,6 @@ func (c *restClient) ResetNsxCredentials(ctx context.Context, req *vmwareenginep
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetPrivateCloud()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/ResetNsxCredentials")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{private_cloud=projects/*/locations/*/privateClouds/*}:resetNsxCredentials")
@@ -7950,9 +8067,6 @@ func (c *restClient) ResetVcenterCredentials(ctx context.Context, req *vmwareeng
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetPrivateCloud()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/ResetVcenterCredentials")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{private_cloud=projects/*/locations/*/privateClouds/*}:resetVcenterCredentials")
@@ -8014,9 +8128,6 @@ func (c *restClient) GetDnsForwarding(ctx context.Context, req *vmwareenginepb.G
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/GetDnsForwarding")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/privateClouds/*/dnsForwarding}")
@@ -8153,9 +8264,6 @@ func (c *restClient) GetNetworkPeering(ctx context.Context, req *vmwareenginepb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/GetNetworkPeering")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/networkPeerings/*}")
@@ -8308,9 +8416,6 @@ func (c *restClient) CreateNetworkPeering(ctx context.Context, req *vmwareengine
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/CreateNetworkPeering")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/networkPeerings")
@@ -8378,9 +8483,6 @@ func (c *restClient) DeleteNetworkPeering(ctx context.Context, req *vmwareengine
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/DeleteNetworkPeering")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/networkPeerings/*}")
@@ -8615,9 +8717,6 @@ func (c *restClient) CreateHcxActivationKey(ctx context.Context, req *vmwareengi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/CreateHcxActivationKey")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/privateClouds/*}/hcxActivationKeys")
@@ -8757,9 +8856,6 @@ func (c *restClient) GetHcxActivationKey(ctx context.Context, req *vmwareenginep
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/GetHcxActivationKey")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/privateClouds/*/hcxActivationKeys/*}")
@@ -8814,9 +8910,6 @@ func (c *restClient) GetNetworkPolicy(ctx context.Context, req *vmwareenginepb.G
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/GetNetworkPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/networkPolicies/*}")
@@ -8968,9 +9061,6 @@ func (c *restClient) CreateNetworkPolicy(ctx context.Context, req *vmwareenginep
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/CreateNetworkPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/networkPolicies")
@@ -9126,9 +9216,6 @@ func (c *restClient) DeleteNetworkPolicy(ctx context.Context, req *vmwareenginep
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/DeleteNetworkPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/networkPolicies/*}")
@@ -9274,9 +9361,6 @@ func (c *restClient) GetManagementDnsZoneBinding(ctx context.Context, req *vmwar
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/GetManagementDnsZoneBinding")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/privateClouds/*/managementDnsZoneBindings/*}")
@@ -9348,9 +9432,6 @@ func (c *restClient) CreateManagementDnsZoneBinding(ctx context.Context, req *vm
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/CreateManagementDnsZoneBinding")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/privateClouds/*}/managementDnsZoneBindings")
@@ -9496,9 +9577,6 @@ func (c *restClient) DeleteManagementDnsZoneBinding(ctx context.Context, req *vm
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/DeleteManagementDnsZoneBinding")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/privateClouds/*/managementDnsZoneBindings/*}")
@@ -9567,9 +9645,6 @@ func (c *restClient) RepairManagementDnsZoneBinding(ctx context.Context, req *vm
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/RepairManagementDnsZoneBinding")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/privateClouds/*/managementDnsZoneBindings/*}:repair")
@@ -9642,9 +9717,6 @@ func (c *restClient) CreateVmwareEngineNetwork(ctx context.Context, req *vmwaree
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/CreateVmwareEngineNetwork")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/vmwareEngineNetworks")
@@ -9795,9 +9867,6 @@ func (c *restClient) DeleteVmwareEngineNetwork(ctx context.Context, req *vmwaree
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/DeleteVmwareEngineNetwork")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/vmwareEngineNetworks/*}")
@@ -9862,9 +9931,6 @@ func (c *restClient) GetVmwareEngineNetwork(ctx context.Context, req *vmwareengi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/GetVmwareEngineNetwork")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/vmwareEngineNetworks/*}")
@@ -10015,9 +10081,6 @@ func (c *restClient) CreatePrivateConnection(ctx context.Context, req *vmwareeng
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/CreatePrivateConnection")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/privateConnections")
@@ -10081,9 +10144,6 @@ func (c *restClient) GetPrivateConnection(ctx context.Context, req *vmwareengine
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/GetPrivateConnection")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/privateConnections/*}")
@@ -10307,9 +10367,6 @@ func (c *restClient) DeletePrivateConnection(ctx context.Context, req *vmwareeng
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/DeletePrivateConnection")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/privateConnections/*}")
@@ -10458,9 +10515,6 @@ func (c *restClient) GrantDnsBindPermission(ctx context.Context, req *vmwareengi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/GrantDnsBindPermission")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/dnsBindPermission}:grant")
@@ -10524,9 +10578,6 @@ func (c *restClient) GetDnsBindPermission(ctx context.Context, req *vmwareengine
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/GetDnsBindPermission")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/dnsBindPermission}")
@@ -10589,9 +10640,6 @@ func (c *restClient) RevokeDnsBindPermission(ctx context.Context, req *vmwareeng
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vmwareengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vmwareengine.v1.VmwareEngine/RevokeDnsBindPermission")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/dnsBindPermission}:revoke")
@@ -10792,9 +10840,6 @@ func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/privateClouds/*}:getIamPolicy")
@@ -10859,9 +10904,6 @@ func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/privateClouds/*}:setIamPolicy")
@@ -10928,9 +10970,6 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/privateClouds/*}:testIamPermissions")

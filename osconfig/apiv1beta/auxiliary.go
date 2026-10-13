@@ -17,9 +17,18 @@
 package osconfig
 
 import (
+	"iter"
+
 	osconfigpb "cloud.google.com/go/osconfig/apiv1beta/osconfigpb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *GuestPolicyIterator) All() iter.Seq2[*osconfigpb.GuestPolicy, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // GuestPolicyIterator manages a stream of *osconfigpb.GuestPolicy.
 type GuestPolicyIterator struct {
@@ -66,6 +75,12 @@ func (it *GuestPolicyIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PatchDeploymentIterator) All() iter.Seq2[*osconfigpb.PatchDeployment, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // PatchDeploymentIterator manages a stream of *osconfigpb.PatchDeployment.
@@ -115,6 +130,12 @@ func (it *PatchDeploymentIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PatchJobInstanceDetailsIterator) All() iter.Seq2[*osconfigpb.PatchJobInstanceDetails, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // PatchJobInstanceDetailsIterator manages a stream of *osconfigpb.PatchJobInstanceDetails.
 type PatchJobInstanceDetailsIterator struct {
 	items    []*osconfigpb.PatchJobInstanceDetails
@@ -160,6 +181,12 @@ func (it *PatchJobInstanceDetailsIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PatchJobIterator) All() iter.Seq2[*osconfigpb.PatchJob, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // PatchJobIterator manages a stream of *osconfigpb.PatchJob.

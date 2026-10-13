@@ -56,7 +56,7 @@ type Binding struct {
 	// Optional. User-defined description of a Binding.
 	// Can have a maximum length of `2048` characters.
 	Description string `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
-	// Required. The target Agent of the Binding.
+	// Optional. The source Agent of the Binding.
 	Source *Binding_Source `protobuf:"bytes,4,opt,name=source,proto3" json:"source,omitempty"`
 	// Required. The target Agent Registry Resource of the Binding.
 	Target *Binding_Target `protobuf:"bytes,5,opt,name=target,proto3" json:"target,omitempty"`
@@ -404,7 +404,7 @@ const file_google_cloud_agentregistry_v1_binding_proto_rawDesc = "" +
 	"\x04name\x18\x01 \x01(\tB\x06\xe0A\b\xe0A\x02R\x04name\x12&\n" +
 	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x01R\vdisplayName\x12%\n" +
 	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12J\n" +
-	"\x06source\x18\x04 \x01(\v2-.google.cloud.agentregistry.v1.Binding.SourceB\x03\xe0A\x02R\x06source\x12J\n" +
+	"\x06source\x18\x04 \x01(\v2-.google.cloud.agentregistry.v1.Binding.SourceB\x03\xe0A\x01R\x06source\x12J\n" +
 	"\x06target\x18\x05 \x01(\v2-.google.cloud.agentregistry.v1.Binding.TargetB\x03\xe0A\x02R\x06target\x12@\n" +
 	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
 	"createTime\x12@\n" +

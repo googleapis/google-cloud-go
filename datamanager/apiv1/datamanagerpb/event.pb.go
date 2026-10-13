@@ -402,8 +402,14 @@ type AdIdentifiers struct {
 	MatchId string `protobuf:"bytes,9,opt,name=match_id,json=matchId,proto3" json:"match_id,omitempty"`
 	// Optional. Any number of encrypted user IDs.
 	EncryptedUserIds []*EncryptedUserId `protobuf:"bytes,10,rep,name=encrypted_user_ids,json=encryptedUserIds,proto3" json:"encrypted_user_ids,omitempty"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	// Optional. A unique identifier for an authenticated user (signed-in), as
+	// defined by the publisher.
+	Ppid string `protobuf:"bytes,11,opt,name=ppid,proto3" json:"ppid,omitempty"`
+	// Optional. A unique identifier for an unauthenticated user (user who is not
+	// signed-in), as defined by the publisher.
+	VisitorPpid   string `protobuf:"bytes,12,opt,name=visitor_ppid,json=visitorPpid,proto3" json:"visitor_ppid,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *AdIdentifiers) Reset() {
@@ -504,6 +510,20 @@ func (x *AdIdentifiers) GetEncryptedUserIds() []*EncryptedUserId {
 		return x.EncryptedUserIds
 	}
 	return nil
+}
+
+func (x *AdIdentifiers) GetPpid() string {
+	if x != nil {
+		return x.Ppid
+	}
+	return ""
+}
+
+func (x *AdIdentifiers) GetVisitorPpid() string {
+	if x != nil {
+		return x.VisitorPpid
+	}
+	return ""
 }
 
 // Custom variable for ads conversions.
@@ -754,7 +774,7 @@ const file_google_ads_datamanager_v1_event_proto_rawDesc = "" +
 	"\x0eevent_location\x18\x15 \x01(\v2(.google.ads.datamanager.v1.EventLocationB\x03\xe0A\x01R\reventLocation\x12+\n" +
 	"\x0fapp_instance_id\x18\x16 \x01(\tB\x03\xe0A\x01R\rappInstanceIdB\x13\n" +
 	"\x11_conversion_valueB\x13\n" +
-	"\x11_conversion_count\"\xf0\x03\n" +
+	"\x11_conversion_count\"\xb1\x04\n" +
 	"\rAdIdentifiers\x122\n" +
 	"\x12session_attributes\x18\x01 \x01(\tB\x03\xe0A\x01R\x11sessionAttributes\x12\x19\n" +
 	"\x05gclid\x18\x02 \x01(\tB\x03\xe0A\x01R\x05gclid\x12\x1b\n" +
@@ -766,7 +786,9 @@ const file_google_ads_datamanager_v1_event_proto_rawDesc = "" +
 	"\rimpression_id\x18\b \x01(\tB\x03\xe0A\x01R\fimpressionId\x12\x1e\n" +
 	"\bmatch_id\x18\t \x01(\tB\x03\xe0A\x01R\amatchId\x12]\n" +
 	"\x12encrypted_user_ids\x18\n" +
-	" \x03(\v2*.google.ads.datamanager.v1.EncryptedUserIdB\x03\xe0A\x01R\x10encryptedUserIds\"\x88\x01\n" +
+	" \x03(\v2*.google.ads.datamanager.v1.EncryptedUserIdB\x03\xe0A\x01R\x10encryptedUserIds\x12\x17\n" +
+	"\x04ppid\x18\v \x01(\tB\x03\xe0A\x01R\x04ppid\x12&\n" +
+	"\fvisitor_ppid\x18\f \x01(\tB\x03\xe0A\x01R\vvisitorPpid\"\x88\x01\n" +
 	"\x0eCustomVariable\x12\x1f\n" +
 	"\bvariable\x18\x01 \x01(\tB\x03\xe0A\x01R\bvariable\x12\x19\n" +
 	"\x05value\x18\x02 \x01(\tB\x03\xe0A\x01R\x05value\x12:\n" +

@@ -1777,10 +1777,22 @@ type HumanAgentAssistantConfig_SuggestionConfig struct {
 	// use unredacted ingested context (Supported features: All Agent Assist
 	// features)
 	UseUnredactedConversationData bool `protobuf:"varint,8,opt,name=use_unredacted_conversation_data,json=useUnredactedConversationData,proto3" json:"use_unredacted_conversation_data,omitempty"`
-	// Optional. If true, enable asynchronous execution of tools.
+	// Optional. Deprecated: This field is not consulted for tool execution.
+	// Configure asynchronous execution per tool using
+	// [CesToolSpec.async_execution][google.cloud.dialogflow.v2beta1.CesToolSpec.async_execution]
+	// or
+	// [ToolsetTool.async_execution][google.cloud.dialogflow.v2beta1.ToolsetTool.async_execution]
+	// instead.
+	//
+	// Deprecated: Marked as deprecated in google/cloud/dialogflow/v2beta1/conversation_profile.proto.
 	EnableAsyncToolCall bool `protobuf:"varint,9,opt,name=enable_async_tool_call,json=enableAsyncToolCall,proto3" json:"enable_async_tool_call,omitempty"`
-	unknownFields       protoimpl.UnknownFields
-	sizeCache           protoimpl.SizeCache
+	// Optional. The resource name of the companion agent to link.
+	// This is only supported for `human_agent_suggestion_config`.
+	// Format:
+	// `projects/{project}/locations/{location}/companionAgents/{companion_agent}`
+	CompanionAgent string `protobuf:"bytes,11,opt,name=companion_agent,json=companionAgent,proto3" json:"companion_agent,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *HumanAgentAssistantConfig_SuggestionConfig) Reset() {
@@ -1855,11 +1867,19 @@ func (x *HumanAgentAssistantConfig_SuggestionConfig) GetUseUnredactedConversatio
 	return false
 }
 
+// Deprecated: Marked as deprecated in google/cloud/dialogflow/v2beta1/conversation_profile.proto.
 func (x *HumanAgentAssistantConfig_SuggestionConfig) GetEnableAsyncToolCall() bool {
 	if x != nil {
 		return x.EnableAsyncToolCall
 	}
 	return false
+}
+
+func (x *HumanAgentAssistantConfig_SuggestionConfig) GetCompanionAgent() string {
+	if x != nil {
+		return x.CompanionAgent
+	}
+	return ""
 }
 
 // Config for suggestion query.
@@ -2686,7 +2706,7 @@ const file_google_cloud_dialogflow_v2beta1_conversation_profile_proto_rawDesc = 
 	"\x05agent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
 	"\x1fdialogflow.googleapis.com/AgentR\x05agent\x12?\n" +
 	"\vsession_ttl\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\n" +
-	"sessionTtl\"\xd1%\n" +
+	"sessionTtl\"\xae&\n" +
 	"\x19HumanAgentAssistantConfig\x12d\n" +
 	"\x13notification_config\x18\x02 \x01(\v23.google.cloud.dialogflow.v2beta1.NotificationConfigR\x12notificationConfig\x12\x8e\x01\n" +
 	"\x1dhuman_agent_suggestion_config\x18\x03 \x01(\v2K.google.cloud.dialogflow.v2beta1.HumanAgentAssistantConfig.SuggestionConfigR\x1ahumanAgentSuggestionConfig\x12\x88\x01\n" +
@@ -2709,7 +2729,7 @@ const file_google_cloud_dialogflow_v2beta1_conversation_profile_proto_rawDesc = 
 	"\x1bsuggestion_trigger_settings\x18\n" +
 	" \x01(\v2T.google.cloud.dialogflow.v2beta1.HumanAgentAssistantConfig.SuggestionTriggerSettingsR\x19suggestionTriggerSettings\x12s\n" +
 	"\fquery_config\x18\x06 \x01(\v2P.google.cloud.dialogflow.v2beta1.HumanAgentAssistantConfig.SuggestionQueryConfigR\vqueryConfig\x12\x94\x01\n" +
-	"\x1bconversation_process_config\x18\b \x01(\v2T.google.cloud.dialogflow.v2beta1.HumanAgentAssistantConfig.ConversationProcessConfigR\x19conversationProcessConfig\x1a\xd3\x04\n" +
+	"\x1bconversation_process_config\x18\b \x01(\v2T.google.cloud.dialogflow.v2beta1.HumanAgentAssistantConfig.ConversationProcessConfigR\x19conversationProcessConfig\x1a\xb0\x05\n" +
 	"\x10SuggestionConfig\x12{\n" +
 	"\x0ffeature_configs\x18\x02 \x03(\v2R.google.cloud.dialogflow.v2beta1.HumanAgentAssistantConfig.SuggestionFeatureConfigR\x0efeatureConfigs\x12<\n" +
 	"\x1agroup_suggestion_responses\x18\x03 \x01(\bR\x18groupSuggestionResponses\x12K\n" +
@@ -2719,8 +2739,10 @@ const file_google_cloud_dialogflow_v2beta1_conversation_profile_proto_rawDesc = 
 	"generators\x12`\n" +
 	"+disable_high_latency_features_sync_delivery\x18\x05 \x01(\bB\x03\xe0A\x01R&disableHighLatencyFeaturesSyncDelivery\x12M\n" +
 	"!skip_empty_event_based_suggestion\x18\x06 \x01(\bB\x03\xe0A\x01R\x1dskipEmptyEventBasedSuggestion\x12L\n" +
-	" use_unredacted_conversation_data\x18\b \x01(\bB\x03\xe0A\x01R\x1duseUnredactedConversationData\x128\n" +
-	"\x16enable_async_tool_call\x18\t \x01(\bB\x03\xe0A\x01R\x13enableAsyncToolCall\x1a\xdb\x0f\n" +
+	" use_unredacted_conversation_data\x18\b \x01(\bB\x03\xe0A\x01R\x1duseUnredactedConversationData\x12:\n" +
+	"\x16enable_async_tool_call\x18\t \x01(\bB\x05\xe0A\x01\x18\x01R\x13enableAsyncToolCall\x12Y\n" +
+	"\x0fcompanion_agent\x18\v \x01(\tB0\xe0A\x01\xfaA*\n" +
+	"(dialogflow.googleapis.com/CompanionAgentR\x0ecompanionAgent\x1a\xdb\x0f\n" +
 	"\x15SuggestionQueryConfig\x12\xaa\x01\n" +
 	"\x1bknowledge_base_query_source\x18\x01 \x01(\v2i.google.cloud.dialogflow.v2beta1.HumanAgentAssistantConfig.SuggestionQueryConfig.KnowledgeBaseQuerySourceH\x00R\x18knowledgeBaseQuerySource\x12\x9a\x01\n" +
 	"\x15document_query_source\x18\x02 \x01(\v2d.google.cloud.dialogflow.v2beta1.HumanAgentAssistantConfig.SuggestionQueryConfig.DocumentQuerySourceH\x00R\x13documentQuerySource\x12\xa0\x01\n" +

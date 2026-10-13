@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -136,7 +136,8 @@ const (
 	// This is never used.
 	QuotaError_UNSPECIFIED QuotaError_Code = 0
 	// Quota allocation failed.
-	// Same as [google.rpc.Code.RESOURCE_EXHAUSTED][google.rpc.Code.RESOURCE_EXHAUSTED].
+	// Same as
+	// [google.rpc.Code.RESOURCE_EXHAUSTED][google.rpc.Code.RESOURCE_EXHAUSTED].
 	QuotaError_RESOURCE_EXHAUSTED QuotaError_Code = 8
 	// Consumer cannot access the service because the service requires active
 	// billing.
@@ -202,7 +203,8 @@ type AllocateQuotaRequest struct {
 	// Name of the service as specified in the service configuration. For example,
 	// `"pubsub.googleapis.com"`.
 	//
-	// See [google.api.Service][google.api.Service] for the definition of a service name.
+	// See [google.api.Service][google.api.Service] for the definition of a
+	// service name.
 	ServiceName string `protobuf:"bytes,1,opt,name=service_name,json=serviceName,proto3" json:"service_name,omitempty"`
 	// Operation that describes the quota allocation.
 	AllocateOperation *QuotaOperation `protobuf:"bytes,2,opt,name=allocate_operation,json=allocateOperation,proto3" json:"allocate_operation,omitempty"`
@@ -268,9 +270,9 @@ func (x *AllocateQuotaRequest) GetServiceConfigId() string {
 // Represents information regarding a quota operation.
 type QuotaOperation struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Identity of the operation. This is expected to be unique within the scope
-	// of the service that generated the operation, and guarantees idempotency in
-	// case of retries.
+	// Identity of the operation. For Allocation Quota, this is expected to be
+	// unique within the scope of the service that generated the operation, and
+	// guarantees idempotency in case of retries.
 	//
 	// In order to ensure best performance and latency in the Quota backends,
 	// operation_ids are optimally associated with time, so that related
@@ -476,7 +478,8 @@ func (x *AllocateQuotaResponse) GetServiceConfigId() string {
 	return ""
 }
 
-// Represents error information for [QuotaOperation][google.api.servicecontrol.v1.QuotaOperation].
+// Represents error information for
+// [QuotaOperation][google.api.servicecontrol.v1.QuotaOperation].
 type QuotaError struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Error code.
@@ -556,7 +559,7 @@ var File_google_api_servicecontrol_v1_quota_controller_proto protoreflect.FileDe
 
 const file_google_api_servicecontrol_v1_quota_controller_proto_rawDesc = "" +
 	"\n" +
-	"3google/api/servicecontrol/v1/quota_controller.proto\x12\x1cgoogle.api.servicecontrol.v1\x1a\x1cgoogle/api/annotations.proto\x1a/google/api/servicecontrol/v1/metric_value.proto\x1a\x17google/rpc/status.proto\x1a\x17google/api/client.proto\"\xc2\x01\n" +
+	"3google/api/servicecontrol/v1/quota_controller.proto\x12\x1cgoogle.api.servicecontrol.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a/google/api/servicecontrol/v1/metric_value.proto\x1a\x17google/rpc/status.proto\"\xc2\x01\n" +
 	"\x14AllocateQuotaRequest\x12!\n" +
 	"\fservice_name\x18\x01 \x01(\tR\vserviceName\x12[\n" +
 	"\x12allocate_operation\x18\x02 \x01(\v2,.google.api.servicecontrol.v1.QuotaOperationR\x11allocateOperation\x12*\n" +
@@ -603,8 +606,8 @@ const file_google_api_servicecontrol_v1_quota_controller_proto_rawDesc = "" +
 	"\x0fAPI_KEY_INVALID\x10i\x12\x13\n" +
 	"\x0fAPI_KEY_EXPIRED\x10p2\xc5\x02\n" +
 	"\x0fQuotaController\x12\xae\x01\n" +
-	"\rAllocateQuota\x122.google.api.servicecontrol.v1.AllocateQuotaRequest\x1a3.google.api.servicecontrol.v1.AllocateQuotaResponse\"4\x82\xd3\xe4\x93\x02.:\x01*\")/v1/services/{service_name}:allocateQuota\x1a\x80\x01\xcaA\x1dservicecontrol.googleapis.com\xd2A]https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/servicecontrolB\xef\x01\n" +
-	" com.google.api.servicecontrol.v1B\x14QuotaControllerProtoP\x01ZJcloud.google.com/go/servicecontrol/apiv1/servicecontrolpb;servicecontrolpb\xf8\x01\x01\xaa\x02\x1eGoogle.Cloud.ServiceControl.V1\xca\x02\x1eGoogle\\Cloud\\ServiceControl\\V1\xea\x02!Google::Cloud::ServiceControl::V1b\x06proto3"
+	"\rAllocateQuota\x122.google.api.servicecontrol.v1.AllocateQuotaRequest\x1a3.google.api.servicecontrol.v1.AllocateQuotaResponse\"4\x82\xd3\xe4\x93\x02.:\x01*\")/v1/services/{service_name}:allocateQuota\x1a\x80\x01\xcaA\x1dservicecontrol.googleapis.com\xd2A]https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/servicecontrolB\xec\x01\n" +
+	" com.google.api.servicecontrol.v1B\x14QuotaControllerProtoP\x01ZJcloud.google.com/go/servicecontrol/apiv1/servicecontrolpb;servicecontrolpb\xaa\x02\x1eGoogle.Cloud.ServiceControl.V1\xca\x02\x1eGoogle\\Cloud\\ServiceControl\\V1\xea\x02!Google::Cloud::ServiceControl::V1b\x06proto3"
 
 var (
 	file_google_api_servicecontrol_v1_quota_controller_proto_rawDescOnce sync.Once

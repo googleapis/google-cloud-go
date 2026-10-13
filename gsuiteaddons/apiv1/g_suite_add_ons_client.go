@@ -480,6 +480,49 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.UninstallDeployment = append(client.CallOptions.UninstallDeployment, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetInstallStatus = append(client.CallOptions.GetInstallStatus, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "gsuiteaddons",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/gsuiteaddons/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "gsuiteaddons.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetAuthorization = append(client.CallOptions.GetAuthorization, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateDeployment = append(client.CallOptions.CreateDeployment, gax.WithClientTracing(tracing))
+		client.CallOptions.ReplaceDeployment = append(client.CallOptions.ReplaceDeployment, gax.WithClientTracing(tracing))
+		client.CallOptions.GetDeployment = append(client.CallOptions.GetDeployment, gax.WithClientTracing(tracing))
+		client.CallOptions.ListDeployments = append(client.CallOptions.ListDeployments, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteDeployment = append(client.CallOptions.DeleteDeployment, gax.WithClientTracing(tracing))
+		client.CallOptions.InstallDeployment = append(client.CallOptions.InstallDeployment, gax.WithClientTracing(tracing))
+		client.CallOptions.UninstallDeployment = append(client.CallOptions.UninstallDeployment, gax.WithClientTracing(tracing))
+		client.CallOptions.GetInstallStatus = append(client.CallOptions.GetInstallStatus, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "gsuiteaddons",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/gsuiteaddons/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "gsuiteaddons.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetAuthorization = append(client.CallOptions.GetAuthorization, gax.WithClientLogging(logging))
+		client.CallOptions.CreateDeployment = append(client.CallOptions.CreateDeployment, gax.WithClientLogging(logging))
+		client.CallOptions.ReplaceDeployment = append(client.CallOptions.ReplaceDeployment, gax.WithClientLogging(logging))
+		client.CallOptions.GetDeployment = append(client.CallOptions.GetDeployment, gax.WithClientLogging(logging))
+		client.CallOptions.ListDeployments = append(client.CallOptions.ListDeployments, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteDeployment = append(client.CallOptions.DeleteDeployment, gax.WithClientLogging(logging))
+		client.CallOptions.InstallDeployment = append(client.CallOptions.InstallDeployment, gax.WithClientLogging(logging))
+		client.CallOptions.UninstallDeployment = append(client.CallOptions.UninstallDeployment, gax.WithClientLogging(logging))
+		client.CallOptions.GetInstallStatus = append(client.CallOptions.GetInstallStatus, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -606,6 +649,49 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.UninstallDeployment = append(callOpts.UninstallDeployment, gax.WithClientMetrics(metrics))
 		callOpts.GetInstallStatus = append(callOpts.GetInstallStatus, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "gsuiteaddons",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/gsuiteaddons/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "gsuiteaddons.googleapis.com",
+			}),
+		)
+
+		callOpts.GetAuthorization = append(callOpts.GetAuthorization, gax.WithClientTracing(tracing))
+		callOpts.CreateDeployment = append(callOpts.CreateDeployment, gax.WithClientTracing(tracing))
+		callOpts.ReplaceDeployment = append(callOpts.ReplaceDeployment, gax.WithClientTracing(tracing))
+		callOpts.GetDeployment = append(callOpts.GetDeployment, gax.WithClientTracing(tracing))
+		callOpts.ListDeployments = append(callOpts.ListDeployments, gax.WithClientTracing(tracing))
+		callOpts.DeleteDeployment = append(callOpts.DeleteDeployment, gax.WithClientTracing(tracing))
+		callOpts.InstallDeployment = append(callOpts.InstallDeployment, gax.WithClientTracing(tracing))
+		callOpts.UninstallDeployment = append(callOpts.UninstallDeployment, gax.WithClientTracing(tracing))
+		callOpts.GetInstallStatus = append(callOpts.GetInstallStatus, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "gsuiteaddons",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/gsuiteaddons/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "gsuiteaddons.googleapis.com",
+			}),
+		)
+
+		callOpts.GetAuthorization = append(callOpts.GetAuthorization, gax.WithClientLogging(logging))
+		callOpts.CreateDeployment = append(callOpts.CreateDeployment, gax.WithClientLogging(logging))
+		callOpts.ReplaceDeployment = append(callOpts.ReplaceDeployment, gax.WithClientLogging(logging))
+		callOpts.GetDeployment = append(callOpts.GetDeployment, gax.WithClientLogging(logging))
+		callOpts.ListDeployments = append(callOpts.ListDeployments, gax.WithClientLogging(logging))
+		callOpts.DeleteDeployment = append(callOpts.DeleteDeployment, gax.WithClientLogging(logging))
+		callOpts.InstallDeployment = append(callOpts.InstallDeployment, gax.WithClientLogging(logging))
+		callOpts.UninstallDeployment = append(callOpts.UninstallDeployment, gax.WithClientLogging(logging))
+		callOpts.GetInstallStatus = append(callOpts.GetInstallStatus, gax.WithClientLogging(logging))
+	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -652,9 +738,6 @@ func (c *gRPCClient) GetAuthorization(ctx context.Context, req *gsuiteaddonspb.G
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gsuiteaddons.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gsuiteaddons.v1.GSuiteAddOns/GetAuthorization")
 	}
@@ -676,9 +759,6 @@ func (c *gRPCClient) CreateDeployment(ctx context.Context, req *gsuiteaddonspb.C
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gsuiteaddons.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gsuiteaddons.v1.GSuiteAddOns/CreateDeployment")
 	}
@@ -721,9 +801,6 @@ func (c *gRPCClient) GetDeployment(ctx context.Context, req *gsuiteaddonspb.GetD
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gsuiteaddons.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gsuiteaddons.v1.GSuiteAddOns/GetDeployment")
 	}
@@ -745,9 +822,6 @@ func (c *gRPCClient) ListDeployments(ctx context.Context, req *gsuiteaddonspb.Li
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gsuiteaddons.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gsuiteaddons.v1.GSuiteAddOns/ListDeployments")
 	}
@@ -797,9 +871,6 @@ func (c *gRPCClient) DeleteDeployment(ctx context.Context, req *gsuiteaddonspb.D
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gsuiteaddons.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gsuiteaddons.v1.GSuiteAddOns/DeleteDeployment")
 	}
@@ -817,9 +888,6 @@ func (c *gRPCClient) InstallDeployment(ctx context.Context, req *gsuiteaddonspb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gsuiteaddons.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gsuiteaddons.v1.GSuiteAddOns/InstallDeployment")
 	}
@@ -837,9 +905,6 @@ func (c *gRPCClient) UninstallDeployment(ctx context.Context, req *gsuiteaddonsp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gsuiteaddons.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gsuiteaddons.v1.GSuiteAddOns/UninstallDeployment")
 	}
@@ -857,9 +922,6 @@ func (c *gRPCClient) GetInstallStatus(ctx context.Context, req *gsuiteaddonspb.G
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gsuiteaddons.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gsuiteaddons.v1.GSuiteAddOns/GetInstallStatus")
 	}
@@ -895,9 +957,6 @@ func (c *restClient) GetAuthorization(ctx context.Context, req *gsuiteaddonspb.G
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gsuiteaddons.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gsuiteaddons.v1.GSuiteAddOns/GetAuthorization")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/authorization}")
@@ -960,9 +1019,6 @@ func (c *restClient) CreateDeployment(ctx context.Context, req *gsuiteaddonspb.C
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gsuiteaddons.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gsuiteaddons.v1.GSuiteAddOns/CreateDeployment")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*}/deployments")
@@ -1078,9 +1134,6 @@ func (c *restClient) GetDeployment(ctx context.Context, req *gsuiteaddonspb.GetD
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gsuiteaddons.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gsuiteaddons.v1.GSuiteAddOns/GetDeployment")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/deployments/*}")
@@ -1216,9 +1269,6 @@ func (c *restClient) DeleteDeployment(ctx context.Context, req *gsuiteaddonspb.D
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gsuiteaddons.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gsuiteaddons.v1.GSuiteAddOns/DeleteDeployment")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/deployments/*}")
@@ -1266,9 +1316,6 @@ func (c *restClient) InstallDeployment(ctx context.Context, req *gsuiteaddonspb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gsuiteaddons.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gsuiteaddons.v1.GSuiteAddOns/InstallDeployment")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/deployments/*}:install")
@@ -1316,9 +1363,6 @@ func (c *restClient) UninstallDeployment(ctx context.Context, req *gsuiteaddonsp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gsuiteaddons.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gsuiteaddons.v1.GSuiteAddOns/UninstallDeployment")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/deployments/*}:uninstall")
@@ -1358,9 +1402,6 @@ func (c *restClient) GetInstallStatus(ctx context.Context, req *gsuiteaddonspb.G
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gsuiteaddons.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gsuiteaddons.v1.GSuiteAddOns/GetInstallStatus")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/deployments/*/installStatus}")

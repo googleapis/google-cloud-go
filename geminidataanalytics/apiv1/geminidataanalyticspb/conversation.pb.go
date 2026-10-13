@@ -28,6 +28,7 @@ import (
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -67,15 +68,15 @@ type Conversation struct {
 	// to tag a conversation (e.g. to filter conversations for specific
 	// surfaces/products).
 	Labels map[string]string `protobuf:"bytes,9,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// Optional. The display name for the conversation (max 63 chars).
+	Title string `protobuf:"bytes,6,opt,name=title,proto3" json:"title,omitempty"`
 	// Optional. Customer managed encryption key (CMEK) to use for encrypting the
 	// Conversation resources. Encryption will happen at Titan layer, we will pass
 	// the KMS key to Titan.
 	//
 	// Format:
 	// projects/{project_id}/locations/{location}/keyRings/{key_ring_name}/cryptoKeys/{key_name}.
-	KmsKey *string `protobuf:"bytes,10,opt,name=kms_key,json=kmsKey,proto3,oneof" json:"kms_key,omitempty"`
-	// Optional. Whether memory is paused for this conversation.
-	MemoryPaused  *bool `protobuf:"varint,11,opt,name=memory_paused,json=memoryPaused,proto3,oneof" json:"memory_paused,omitempty"`
+	KmsKey        *string `protobuf:"bytes,10,opt,name=kms_key,json=kmsKey,proto3,oneof" json:"kms_key,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -145,18 +146,18 @@ func (x *Conversation) GetLabels() map[string]string {
 	return nil
 }
 
+func (x *Conversation) GetTitle() string {
+	if x != nil {
+		return x.Title
+	}
+	return ""
+}
+
 func (x *Conversation) GetKmsKey() string {
 	if x != nil && x.KmsKey != nil {
 		return *x.KmsKey
 	}
 	return ""
-}
-
-func (x *Conversation) GetMemoryPaused() bool {
-	if x != nil && x.MemoryPaused != nil {
-		return *x.MemoryPaused
-	}
-	return false
 }
 
 // Request for creating a conversation.
@@ -239,6 +240,79 @@ func (x *CreateConversationRequest) GetRequestId() string {
 	return ""
 }
 
+// Request for updating a conversation.
+type UpdateConversationRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The resource being updated.
+	Conversation *Conversation `protobuf:"bytes,1,opt,name=conversation,proto3" json:"conversation,omitempty"`
+	// Optional. Field mask is used to specify the fields to be overwritten in the
+	// Conversation resource by the update.
+	// The fields specified in the update_mask are relative to the resource, not
+	// the full request. A field will be overwritten if it is in the mask. If the
+	// user does not provide a mask then all fields with non-default values
+	// present in the request will be overwritten. If a wildcard mask is provided,
+	// all fields will be overwritten.
+	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
+	// Optional. An optional request ID to identify requests. Specify a unique
+	// request ID so that if you must retry your request, the server will know to
+	// ignore the request if it has already been completed. The server will
+	// guarantee that for at least 60 minutes since the first request.
+	RequestId     string `protobuf:"bytes,3,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateConversationRequest) Reset() {
+	*x = UpdateConversationRequest{}
+	mi := &file_google_cloud_geminidataanalytics_v1_conversation_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateConversationRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateConversationRequest) ProtoMessage() {}
+
+func (x *UpdateConversationRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_geminidataanalytics_v1_conversation_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateConversationRequest.ProtoReflect.Descriptor instead.
+func (*UpdateConversationRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_geminidataanalytics_v1_conversation_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *UpdateConversationRequest) GetConversation() *Conversation {
+	if x != nil {
+		return x.Conversation
+	}
+	return nil
+}
+
+func (x *UpdateConversationRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
+	if x != nil {
+		return x.UpdateMask
+	}
+	return nil
+}
+
+func (x *UpdateConversationRequest) GetRequestId() string {
+	if x != nil {
+		return x.RequestId
+	}
+	return ""
+}
+
 // Request for getting a conversation based on parent and conversation id.
 type GetConversationRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -252,7 +326,7 @@ type GetConversationRequest struct {
 
 func (x *GetConversationRequest) Reset() {
 	*x = GetConversationRequest{}
-	mi := &file_google_cloud_geminidataanalytics_v1_conversation_proto_msgTypes[2]
+	mi := &file_google_cloud_geminidataanalytics_v1_conversation_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -264,7 +338,7 @@ func (x *GetConversationRequest) String() string {
 func (*GetConversationRequest) ProtoMessage() {}
 
 func (x *GetConversationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1_conversation_proto_msgTypes[2]
+	mi := &file_google_cloud_geminidataanalytics_v1_conversation_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -277,7 +351,7 @@ func (x *GetConversationRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetConversationRequest.ProtoReflect.Descriptor instead.
 func (*GetConversationRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1_conversation_proto_rawDescGZIP(), []int{2}
+	return file_google_cloud_geminidataanalytics_v1_conversation_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *GetConversationRequest) GetName() string {
@@ -311,7 +385,7 @@ type ListConversationsRequest struct {
 
 func (x *ListConversationsRequest) Reset() {
 	*x = ListConversationsRequest{}
-	mi := &file_google_cloud_geminidataanalytics_v1_conversation_proto_msgTypes[3]
+	mi := &file_google_cloud_geminidataanalytics_v1_conversation_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -323,7 +397,7 @@ func (x *ListConversationsRequest) String() string {
 func (*ListConversationsRequest) ProtoMessage() {}
 
 func (x *ListConversationsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1_conversation_proto_msgTypes[3]
+	mi := &file_google_cloud_geminidataanalytics_v1_conversation_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -336,7 +410,7 @@ func (x *ListConversationsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListConversationsRequest.ProtoReflect.Descriptor instead.
 func (*ListConversationsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1_conversation_proto_rawDescGZIP(), []int{3}
+	return file_google_cloud_geminidataanalytics_v1_conversation_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *ListConversationsRequest) GetParent() string {
@@ -380,7 +454,7 @@ type ListConversationsResponse struct {
 
 func (x *ListConversationsResponse) Reset() {
 	*x = ListConversationsResponse{}
-	mi := &file_google_cloud_geminidataanalytics_v1_conversation_proto_msgTypes[4]
+	mi := &file_google_cloud_geminidataanalytics_v1_conversation_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -392,7 +466,7 @@ func (x *ListConversationsResponse) String() string {
 func (*ListConversationsResponse) ProtoMessage() {}
 
 func (x *ListConversationsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1_conversation_proto_msgTypes[4]
+	mi := &file_google_cloud_geminidataanalytics_v1_conversation_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -405,7 +479,7 @@ func (x *ListConversationsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListConversationsResponse.ProtoReflect.Descriptor instead.
 func (*ListConversationsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1_conversation_proto_rawDescGZIP(), []int{4}
+	return file_google_cloud_geminidataanalytics_v1_conversation_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *ListConversationsResponse) GetConversations() []*Conversation {
@@ -435,7 +509,7 @@ type DeleteConversationRequest struct {
 
 func (x *DeleteConversationRequest) Reset() {
 	*x = DeleteConversationRequest{}
-	mi := &file_google_cloud_geminidataanalytics_v1_conversation_proto_msgTypes[5]
+	mi := &file_google_cloud_geminidataanalytics_v1_conversation_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -447,7 +521,7 @@ func (x *DeleteConversationRequest) String() string {
 func (*DeleteConversationRequest) ProtoMessage() {}
 
 func (x *DeleteConversationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1_conversation_proto_msgTypes[5]
+	mi := &file_google_cloud_geminidataanalytics_v1_conversation_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -460,7 +534,7 @@ func (x *DeleteConversationRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteConversationRequest.ProtoReflect.Descriptor instead.
 func (*DeleteConversationRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1_conversation_proto_rawDescGZIP(), []int{5}
+	return file_google_cloud_geminidataanalytics_v1_conversation_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *DeleteConversationRequest) GetName() string {
@@ -474,31 +548,36 @@ var File_google_cloud_geminidataanalytics_v1_conversation_proto protoreflect.Fil
 
 const file_google_cloud_geminidataanalytics_v1_conversation_proto_rawDesc = "" +
 	"\n" +
-	"6google/cloud/geminidataanalytics/v1/conversation.proto\x12#google.cloud.geminidataanalytics.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x98\x05\n" +
+	"6google/cloud/geminidataanalytics/v1/conversation.proto\x12#google.cloud.geminidataanalytics.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf2\x04\n" +
 	"\fConversation\x12\x1a\n" +
 	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x01\xe0A\bR\x04name\x12\x1b\n" +
 	"\x06agents\x18\x02 \x03(\tB\x03\xe0A\x02R\x06agents\x12@\n" +
 	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
 	"createTime\x12E\n" +
 	"\x0elast_used_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\flastUsedTime\x12Z\n" +
-	"\x06labels\x18\t \x03(\v2=.google.cloud.geminidataanalytics.v1.Conversation.LabelsEntryB\x03\xe0A\x01R\x06labels\x12G\n" +
+	"\x06labels\x18\t \x03(\v2=.google.cloud.geminidataanalytics.v1.Conversation.LabelsEntryB\x03\xe0A\x01R\x06labels\x12\x19\n" +
+	"\x05title\x18\x06 \x01(\tB\x03\xe0A\x01R\x05title\x12G\n" +
 	"\akms_key\x18\n" +
 	" \x01(\tB)\xe0A\x01\xfaA#\n" +
-	"!cloudkms.googleapis.com/CryptoKeyH\x00R\x06kmsKey\x88\x01\x01\x12-\n" +
-	"\rmemory_paused\x18\v \x01(\bB\x03\xe0A\x01H\x01R\fmemoryPaused\x88\x01\x01\x1a9\n" +
+	"!cloudkms.googleapis.com/CryptoKeyH\x00R\x06kmsKey\x88\x01\x01\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x98\x01\xeaA\x94\x01\n" +
 	"/geminidataanalytics.googleapis.com/Conversation\x12Dprojects/{project}/locations/{location}/conversations/{conversation}*\rconversations2\fconversationB\n" +
 	"\n" +
-	"\b_kms_keyB\x10\n" +
-	"\x0e_memory_paused\"\xa2\x02\n" +
+	"\b_kms_key\"\xa2\x02\n" +
 	"\x19CreateConversationRequest\x12O\n" +
 	"\x06parent\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\x12/geminidataanalytics.googleapis.com/ConversationR\x06parent\x12,\n" +
 	"\x0fconversation_id\x18\x02 \x01(\tB\x03\xe0A\x01R\x0econversationId\x12Z\n" +
 	"\fconversation\x18\x03 \x01(\v21.google.cloud.geminidataanalytics.v1.ConversationB\x03\xe0A\x02R\fconversation\x12*\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"e\n" +
+	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xe5\x01\n" +
+	"\x19UpdateConversationRequest\x12Z\n" +
+	"\fconversation\x18\x01 \x01(\v21.google.cloud.geminidataanalytics.v1.ConversationB\x03\xe0A\x02R\fconversation\x12@\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
+	"updateMask\x12*\n" +
+	"\n" +
+	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"e\n" +
 	"\x16GetConversationRequest\x12K\n" +
 	"\x04name\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
 	"/geminidataanalytics.googleapis.com/ConversationR\x04name\"\xce\x01\n" +
@@ -530,28 +609,32 @@ func file_google_cloud_geminidataanalytics_v1_conversation_proto_rawDescGZIP() [
 	return file_google_cloud_geminidataanalytics_v1_conversation_proto_rawDescData
 }
 
-var file_google_cloud_geminidataanalytics_v1_conversation_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_google_cloud_geminidataanalytics_v1_conversation_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_google_cloud_geminidataanalytics_v1_conversation_proto_goTypes = []any{
 	(*Conversation)(nil),              // 0: google.cloud.geminidataanalytics.v1.Conversation
 	(*CreateConversationRequest)(nil), // 1: google.cloud.geminidataanalytics.v1.CreateConversationRequest
-	(*GetConversationRequest)(nil),    // 2: google.cloud.geminidataanalytics.v1.GetConversationRequest
-	(*ListConversationsRequest)(nil),  // 3: google.cloud.geminidataanalytics.v1.ListConversationsRequest
-	(*ListConversationsResponse)(nil), // 4: google.cloud.geminidataanalytics.v1.ListConversationsResponse
-	(*DeleteConversationRequest)(nil), // 5: google.cloud.geminidataanalytics.v1.DeleteConversationRequest
-	nil,                               // 6: google.cloud.geminidataanalytics.v1.Conversation.LabelsEntry
-	(*timestamppb.Timestamp)(nil),     // 7: google.protobuf.Timestamp
+	(*UpdateConversationRequest)(nil), // 2: google.cloud.geminidataanalytics.v1.UpdateConversationRequest
+	(*GetConversationRequest)(nil),    // 3: google.cloud.geminidataanalytics.v1.GetConversationRequest
+	(*ListConversationsRequest)(nil),  // 4: google.cloud.geminidataanalytics.v1.ListConversationsRequest
+	(*ListConversationsResponse)(nil), // 5: google.cloud.geminidataanalytics.v1.ListConversationsResponse
+	(*DeleteConversationRequest)(nil), // 6: google.cloud.geminidataanalytics.v1.DeleteConversationRequest
+	nil,                               // 7: google.cloud.geminidataanalytics.v1.Conversation.LabelsEntry
+	(*timestamppb.Timestamp)(nil),     // 8: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil),     // 9: google.protobuf.FieldMask
 }
 var file_google_cloud_geminidataanalytics_v1_conversation_proto_depIdxs = []int32{
-	7, // 0: google.cloud.geminidataanalytics.v1.Conversation.create_time:type_name -> google.protobuf.Timestamp
-	7, // 1: google.cloud.geminidataanalytics.v1.Conversation.last_used_time:type_name -> google.protobuf.Timestamp
-	6, // 2: google.cloud.geminidataanalytics.v1.Conversation.labels:type_name -> google.cloud.geminidataanalytics.v1.Conversation.LabelsEntry
+	8, // 0: google.cloud.geminidataanalytics.v1.Conversation.create_time:type_name -> google.protobuf.Timestamp
+	8, // 1: google.cloud.geminidataanalytics.v1.Conversation.last_used_time:type_name -> google.protobuf.Timestamp
+	7, // 2: google.cloud.geminidataanalytics.v1.Conversation.labels:type_name -> google.cloud.geminidataanalytics.v1.Conversation.LabelsEntry
 	0, // 3: google.cloud.geminidataanalytics.v1.CreateConversationRequest.conversation:type_name -> google.cloud.geminidataanalytics.v1.Conversation
-	0, // 4: google.cloud.geminidataanalytics.v1.ListConversationsResponse.conversations:type_name -> google.cloud.geminidataanalytics.v1.Conversation
-	5, // [5:5] is the sub-list for method output_type
-	5, // [5:5] is the sub-list for method input_type
-	5, // [5:5] is the sub-list for extension type_name
-	5, // [5:5] is the sub-list for extension extendee
-	0, // [0:5] is the sub-list for field type_name
+	0, // 4: google.cloud.geminidataanalytics.v1.UpdateConversationRequest.conversation:type_name -> google.cloud.geminidataanalytics.v1.Conversation
+	9, // 5: google.cloud.geminidataanalytics.v1.UpdateConversationRequest.update_mask:type_name -> google.protobuf.FieldMask
+	0, // 6: google.cloud.geminidataanalytics.v1.ListConversationsResponse.conversations:type_name -> google.cloud.geminidataanalytics.v1.Conversation
+	7, // [7:7] is the sub-list for method output_type
+	7, // [7:7] is the sub-list for method input_type
+	7, // [7:7] is the sub-list for extension type_name
+	7, // [7:7] is the sub-list for extension extendee
+	0, // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_geminidataanalytics_v1_conversation_proto_init() }
@@ -566,7 +649,7 @@ func file_google_cloud_geminidataanalytics_v1_conversation_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_geminidataanalytics_v1_conversation_proto_rawDesc), len(file_google_cloud_geminidataanalytics_v1_conversation_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   7,
+			NumMessages:   8,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

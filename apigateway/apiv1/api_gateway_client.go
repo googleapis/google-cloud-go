@@ -616,6 +616,61 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.UpdateApiConfig = append(client.CallOptions.UpdateApiConfig, gax.WithClientMetrics(metrics))
 		client.CallOptions.DeleteApiConfig = append(client.CallOptions.DeleteApiConfig, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "apigateway",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/apigateway/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "apigateway.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListGateways = append(client.CallOptions.ListGateways, gax.WithClientTracing(tracing))
+		client.CallOptions.GetGateway = append(client.CallOptions.GetGateway, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateGateway = append(client.CallOptions.CreateGateway, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateGateway = append(client.CallOptions.UpdateGateway, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteGateway = append(client.CallOptions.DeleteGateway, gax.WithClientTracing(tracing))
+		client.CallOptions.ListApis = append(client.CallOptions.ListApis, gax.WithClientTracing(tracing))
+		client.CallOptions.GetApi = append(client.CallOptions.GetApi, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateApi = append(client.CallOptions.CreateApi, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateApi = append(client.CallOptions.UpdateApi, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteApi = append(client.CallOptions.DeleteApi, gax.WithClientTracing(tracing))
+		client.CallOptions.ListApiConfigs = append(client.CallOptions.ListApiConfigs, gax.WithClientTracing(tracing))
+		client.CallOptions.GetApiConfig = append(client.CallOptions.GetApiConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateApiConfig = append(client.CallOptions.CreateApiConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateApiConfig = append(client.CallOptions.UpdateApiConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteApiConfig = append(client.CallOptions.DeleteApiConfig, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "apigateway",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/apigateway/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "apigateway.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListGateways = append(client.CallOptions.ListGateways, gax.WithClientLogging(logging))
+		client.CallOptions.GetGateway = append(client.CallOptions.GetGateway, gax.WithClientLogging(logging))
+		client.CallOptions.CreateGateway = append(client.CallOptions.CreateGateway, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateGateway = append(client.CallOptions.UpdateGateway, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteGateway = append(client.CallOptions.DeleteGateway, gax.WithClientLogging(logging))
+		client.CallOptions.ListApis = append(client.CallOptions.ListApis, gax.WithClientLogging(logging))
+		client.CallOptions.GetApi = append(client.CallOptions.GetApi, gax.WithClientLogging(logging))
+		client.CallOptions.CreateApi = append(client.CallOptions.CreateApi, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateApi = append(client.CallOptions.UpdateApi, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteApi = append(client.CallOptions.DeleteApi, gax.WithClientLogging(logging))
+		client.CallOptions.ListApiConfigs = append(client.CallOptions.ListApiConfigs, gax.WithClientLogging(logging))
+		client.CallOptions.GetApiConfig = append(client.CallOptions.GetApiConfig, gax.WithClientLogging(logging))
+		client.CallOptions.CreateApiConfig = append(client.CallOptions.CreateApiConfig, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateApiConfig = append(client.CallOptions.UpdateApiConfig, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteApiConfig = append(client.CallOptions.DeleteApiConfig, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -737,6 +792,61 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.UpdateApiConfig = append(callOpts.UpdateApiConfig, gax.WithClientMetrics(metrics))
 		callOpts.DeleteApiConfig = append(callOpts.DeleteApiConfig, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "apigateway",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/apigateway/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "apigateway.googleapis.com",
+			}),
+		)
+
+		callOpts.ListGateways = append(callOpts.ListGateways, gax.WithClientTracing(tracing))
+		callOpts.GetGateway = append(callOpts.GetGateway, gax.WithClientTracing(tracing))
+		callOpts.CreateGateway = append(callOpts.CreateGateway, gax.WithClientTracing(tracing))
+		callOpts.UpdateGateway = append(callOpts.UpdateGateway, gax.WithClientTracing(tracing))
+		callOpts.DeleteGateway = append(callOpts.DeleteGateway, gax.WithClientTracing(tracing))
+		callOpts.ListApis = append(callOpts.ListApis, gax.WithClientTracing(tracing))
+		callOpts.GetApi = append(callOpts.GetApi, gax.WithClientTracing(tracing))
+		callOpts.CreateApi = append(callOpts.CreateApi, gax.WithClientTracing(tracing))
+		callOpts.UpdateApi = append(callOpts.UpdateApi, gax.WithClientTracing(tracing))
+		callOpts.DeleteApi = append(callOpts.DeleteApi, gax.WithClientTracing(tracing))
+		callOpts.ListApiConfigs = append(callOpts.ListApiConfigs, gax.WithClientTracing(tracing))
+		callOpts.GetApiConfig = append(callOpts.GetApiConfig, gax.WithClientTracing(tracing))
+		callOpts.CreateApiConfig = append(callOpts.CreateApiConfig, gax.WithClientTracing(tracing))
+		callOpts.UpdateApiConfig = append(callOpts.UpdateApiConfig, gax.WithClientTracing(tracing))
+		callOpts.DeleteApiConfig = append(callOpts.DeleteApiConfig, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "apigateway",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/apigateway/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "apigateway.googleapis.com",
+			}),
+		)
+
+		callOpts.ListGateways = append(callOpts.ListGateways, gax.WithClientLogging(logging))
+		callOpts.GetGateway = append(callOpts.GetGateway, gax.WithClientLogging(logging))
+		callOpts.CreateGateway = append(callOpts.CreateGateway, gax.WithClientLogging(logging))
+		callOpts.UpdateGateway = append(callOpts.UpdateGateway, gax.WithClientLogging(logging))
+		callOpts.DeleteGateway = append(callOpts.DeleteGateway, gax.WithClientLogging(logging))
+		callOpts.ListApis = append(callOpts.ListApis, gax.WithClientLogging(logging))
+		callOpts.GetApi = append(callOpts.GetApi, gax.WithClientLogging(logging))
+		callOpts.CreateApi = append(callOpts.CreateApi, gax.WithClientLogging(logging))
+		callOpts.UpdateApi = append(callOpts.UpdateApi, gax.WithClientLogging(logging))
+		callOpts.DeleteApi = append(callOpts.DeleteApi, gax.WithClientLogging(logging))
+		callOpts.ListApiConfigs = append(callOpts.ListApiConfigs, gax.WithClientLogging(logging))
+		callOpts.GetApiConfig = append(callOpts.GetApiConfig, gax.WithClientLogging(logging))
+		callOpts.CreateApiConfig = append(callOpts.CreateApiConfig, gax.WithClientLogging(logging))
+		callOpts.UpdateApiConfig = append(callOpts.UpdateApiConfig, gax.WithClientLogging(logging))
+		callOpts.DeleteApiConfig = append(callOpts.DeleteApiConfig, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -793,9 +903,6 @@ func (c *gRPCClient) ListGateways(ctx context.Context, req *apigatewaypb.ListGat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apigateway.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigateway.v1.ApiGatewayService/ListGateways")
 	}
@@ -845,9 +952,6 @@ func (c *gRPCClient) GetGateway(ctx context.Context, req *apigatewaypb.GetGatewa
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apigateway.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigateway.v1.ApiGatewayService/GetGateway")
 	}
@@ -869,9 +973,6 @@ func (c *gRPCClient) CreateGateway(ctx context.Context, req *apigatewaypb.Create
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apigateway.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigateway.v1.ApiGatewayService/CreateGateway")
 	}
@@ -926,9 +1027,6 @@ func (c *gRPCClient) DeleteGateway(ctx context.Context, req *apigatewaypb.Delete
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apigateway.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigateway.v1.ApiGatewayService/DeleteGateway")
 	}
@@ -956,9 +1054,6 @@ func (c *gRPCClient) ListApis(ctx context.Context, req *apigatewaypb.ListApisReq
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apigateway.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigateway.v1.ApiGatewayService/ListApis")
 	}
@@ -1008,9 +1103,6 @@ func (c *gRPCClient) GetApi(ctx context.Context, req *apigatewaypb.GetApiRequest
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apigateway.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigateway.v1.ApiGatewayService/GetApi")
 	}
@@ -1032,9 +1124,6 @@ func (c *gRPCClient) CreateApi(ctx context.Context, req *apigatewaypb.CreateApiR
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apigateway.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigateway.v1.ApiGatewayService/CreateApi")
 	}
@@ -1089,9 +1178,6 @@ func (c *gRPCClient) DeleteApi(ctx context.Context, req *apigatewaypb.DeleteApiR
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apigateway.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigateway.v1.ApiGatewayService/DeleteApi")
 	}
@@ -1119,9 +1205,6 @@ func (c *gRPCClient) ListApiConfigs(ctx context.Context, req *apigatewaypb.ListA
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apigateway.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigateway.v1.ApiGatewayService/ListApiConfigs")
 	}
@@ -1171,9 +1254,6 @@ func (c *gRPCClient) GetApiConfig(ctx context.Context, req *apigatewaypb.GetApiC
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apigateway.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigateway.v1.ApiGatewayService/GetApiConfig")
 	}
@@ -1195,9 +1275,6 @@ func (c *gRPCClient) CreateApiConfig(ctx context.Context, req *apigatewaypb.Crea
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apigateway.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigateway.v1.ApiGatewayService/CreateApiConfig")
 	}
@@ -1252,9 +1329,6 @@ func (c *gRPCClient) DeleteApiConfig(ctx context.Context, req *apigatewaypb.Dele
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apigateway.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigateway.v1.ApiGatewayService/DeleteApiConfig")
 	}
@@ -1380,9 +1454,6 @@ func (c *restClient) GetGateway(ctx context.Context, req *apigatewaypb.GetGatewa
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apigateway.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigateway.v1.ApiGatewayService/GetGateway")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/gateways/*}")
@@ -1445,9 +1516,6 @@ func (c *restClient) CreateGateway(ctx context.Context, req *apigatewaypb.Create
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apigateway.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigateway.v1.ApiGatewayService/CreateGateway")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/gateways")
@@ -1584,9 +1652,6 @@ func (c *restClient) DeleteGateway(ctx context.Context, req *apigatewaypb.Delete
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apigateway.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigateway.v1.ApiGatewayService/DeleteGateway")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/gateways/*}")
@@ -1732,9 +1797,6 @@ func (c *restClient) GetApi(ctx context.Context, req *apigatewaypb.GetApiRequest
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apigateway.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigateway.v1.ApiGatewayService/GetApi")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/apis/*}")
@@ -1797,9 +1859,6 @@ func (c *restClient) CreateApi(ctx context.Context, req *apigatewaypb.CreateApiR
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apigateway.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigateway.v1.ApiGatewayService/CreateApi")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/apis")
@@ -1936,9 +1995,6 @@ func (c *restClient) DeleteApi(ctx context.Context, req *apigatewaypb.DeleteApiR
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apigateway.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigateway.v1.ApiGatewayService/DeleteApi")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/apis/*}")
@@ -2087,9 +2143,6 @@ func (c *restClient) GetApiConfig(ctx context.Context, req *apigatewaypb.GetApiC
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apigateway.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigateway.v1.ApiGatewayService/GetApiConfig")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/apis/*/configs/*}")
@@ -2152,9 +2205,6 @@ func (c *restClient) CreateApiConfig(ctx context.Context, req *apigatewaypb.Crea
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apigateway.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigateway.v1.ApiGatewayService/CreateApiConfig")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/apis/*}/configs")
@@ -2291,9 +2341,6 @@ func (c *restClient) DeleteApiConfig(ctx context.Context, req *apigatewaypb.Dele
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apigateway.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigateway.v1.ApiGatewayService/DeleteApiConfig")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/apis/*/configs/*}")

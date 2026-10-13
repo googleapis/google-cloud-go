@@ -1,5 +1,19 @@
 # Changes
 
+## [1.47.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.46.0...securitycenter/v1.47.0) (2026-09-23)
+
+
+### Features
+
+* **all:** Update supported go versions ([#20520](https://github.com/googleapis/google-cloud-go/issues/20520)) ([90413d3](https://github.com/googleapis/google-cloud-go/commit/90413d3e9d381ef4b92e3c496d98b023c5b2d8cc))
+
+## [1.46.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.45.0...securitycenter/v1.46.0) (2026-07-20)
+
+
+### Features
+
+* Update API sources and regenerate ([#20159](https://github.com/googleapis/google-cloud-go/issues/20159)) ([6395ba5](https://github.com/googleapis/google-cloud-go/commit/6395ba5d059d7e0d6ccfbf57b15d8d5ffcd70d0e))
+
 ## [1.45.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.44.0...securitycenter/v1.45.0) (2026-07-13)
 
 

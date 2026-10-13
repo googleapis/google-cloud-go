@@ -284,7 +284,7 @@ type Intent struct {
 	// head intent. "sys.contextual" means the intent is a contextual intent.
 	Labels map[string]string `protobuf:"bytes,7,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	// Human readable description for better understanding an intent like its
-	// scope, content, result etc. Maximum character limit: 140 characters.
+	// scope, content, result etc. Maximum character limit: 1000 characters.
 	Description string `protobuf:"bytes,8,opt,name=description,proto3" json:"description,omitempty"`
 	// Optional. Matching DTMF pattern for the intent.
 	DtmfPattern   string `protobuf:"bytes,16,opt,name=dtmf_pattern,json=dtmfPattern,proto3" json:"dtmf_pattern,omitempty"`

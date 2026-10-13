@@ -355,6 +355,55 @@ func NewDocumentClient(ctx context.Context, opts ...option.ClientOption) (*Docum
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "documentai",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/documentai/apiv1beta3",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "documentai.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.UpdateDataset = append(client.CallOptions.UpdateDataset, gax.WithClientTracing(tracing))
+		client.CallOptions.ImportDocuments = append(client.CallOptions.ImportDocuments, gax.WithClientTracing(tracing))
+		client.CallOptions.GetDocument = append(client.CallOptions.GetDocument, gax.WithClientTracing(tracing))
+		client.CallOptions.ListDocuments = append(client.CallOptions.ListDocuments, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchDeleteDocuments = append(client.CallOptions.BatchDeleteDocuments, gax.WithClientTracing(tracing))
+		client.CallOptions.GetDatasetSchema = append(client.CallOptions.GetDatasetSchema, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateDatasetSchema = append(client.CallOptions.UpdateDatasetSchema, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "documentai",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/documentai/apiv1beta3",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "documentai.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.UpdateDataset = append(client.CallOptions.UpdateDataset, gax.WithClientLogging(logging))
+		client.CallOptions.ImportDocuments = append(client.CallOptions.ImportDocuments, gax.WithClientLogging(logging))
+		client.CallOptions.GetDocument = append(client.CallOptions.GetDocument, gax.WithClientLogging(logging))
+		client.CallOptions.ListDocuments = append(client.CallOptions.ListDocuments, gax.WithClientLogging(logging))
+		client.CallOptions.BatchDeleteDocuments = append(client.CallOptions.BatchDeleteDocuments, gax.WithClientLogging(logging))
+		client.CallOptions.GetDatasetSchema = append(client.CallOptions.GetDatasetSchema, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateDatasetSchema = append(client.CallOptions.UpdateDatasetSchema, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -473,6 +522,55 @@ func NewDocumentRESTClient(ctx context.Context, opts ...option.ClientOption) (*D
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "documentai",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/documentai/apiv1beta3",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "documentai.googleapis.com",
+			}),
+		)
+
+		callOpts.UpdateDataset = append(callOpts.UpdateDataset, gax.WithClientTracing(tracing))
+		callOpts.ImportDocuments = append(callOpts.ImportDocuments, gax.WithClientTracing(tracing))
+		callOpts.GetDocument = append(callOpts.GetDocument, gax.WithClientTracing(tracing))
+		callOpts.ListDocuments = append(callOpts.ListDocuments, gax.WithClientTracing(tracing))
+		callOpts.BatchDeleteDocuments = append(callOpts.BatchDeleteDocuments, gax.WithClientTracing(tracing))
+		callOpts.GetDatasetSchema = append(callOpts.GetDatasetSchema, gax.WithClientTracing(tracing))
+		callOpts.UpdateDatasetSchema = append(callOpts.UpdateDatasetSchema, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "documentai",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/documentai/apiv1beta3",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "documentai.googleapis.com",
+			}),
+		)
+
+		callOpts.UpdateDataset = append(callOpts.UpdateDataset, gax.WithClientLogging(logging))
+		callOpts.ImportDocuments = append(callOpts.ImportDocuments, gax.WithClientLogging(logging))
+		callOpts.GetDocument = append(callOpts.GetDocument, gax.WithClientLogging(logging))
+		callOpts.ListDocuments = append(callOpts.ListDocuments, gax.WithClientLogging(logging))
+		callOpts.BatchDeleteDocuments = append(callOpts.BatchDeleteDocuments, gax.WithClientLogging(logging))
+		callOpts.GetDatasetSchema = append(callOpts.GetDatasetSchema, gax.WithClientLogging(logging))
+		callOpts.UpdateDatasetSchema = append(callOpts.UpdateDatasetSchema, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -556,9 +654,6 @@ func (c *documentGRPCClient) ImportDocuments(ctx context.Context, req *documenta
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetDataset()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentService/ImportDocuments")
 	}
@@ -586,9 +681,6 @@ func (c *documentGRPCClient) GetDocument(ctx context.Context, req *documentaipb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetDataset()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentService/GetDocument")
 	}
@@ -610,9 +702,6 @@ func (c *documentGRPCClient) ListDocuments(ctx context.Context, req *documentaip
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetDataset()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentService/ListDocuments")
 	}
@@ -689,9 +778,6 @@ func (c *documentGRPCClient) GetDatasetSchema(ctx context.Context, req *document
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentService/GetDatasetSchema")
 	}
@@ -991,9 +1077,6 @@ func (c *documentRESTClient) ImportDocuments(ctx context.Context, req *documenta
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetDataset()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentService/ImportDocuments")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta3/{dataset=projects/*/locations/*/processors/*/dataset}:importDocuments")
@@ -1082,9 +1165,6 @@ func (c *documentRESTClient) GetDocument(ctx context.Context, req *documentaipb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetDataset()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentService/GetDocument")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta3/{dataset=projects/*/locations/*/processors/*/dataset}:getDocument")
@@ -1287,9 +1367,6 @@ func (c *documentRESTClient) GetDatasetSchema(ctx context.Context, req *document
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentService/GetDatasetSchema")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta3/{name=projects/*/locations/*/processors/*/dataset/datasetSchema}")

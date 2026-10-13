@@ -714,6 +714,99 @@ func NewVideoStitcherClient(ctx context.Context, opts ...option.ClientOption) (*
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "videostitcher",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/video/stitcher/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "videostitcher.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateCdnKey = append(client.CallOptions.CreateCdnKey, gax.WithClientTracing(tracing))
+		client.CallOptions.ListCdnKeys = append(client.CallOptions.ListCdnKeys, gax.WithClientTracing(tracing))
+		client.CallOptions.GetCdnKey = append(client.CallOptions.GetCdnKey, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteCdnKey = append(client.CallOptions.DeleteCdnKey, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateCdnKey = append(client.CallOptions.UpdateCdnKey, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateVodSession = append(client.CallOptions.CreateVodSession, gax.WithClientTracing(tracing))
+		client.CallOptions.GetVodSession = append(client.CallOptions.GetVodSession, gax.WithClientTracing(tracing))
+		client.CallOptions.ListVodStitchDetails = append(client.CallOptions.ListVodStitchDetails, gax.WithClientTracing(tracing))
+		client.CallOptions.GetVodStitchDetail = append(client.CallOptions.GetVodStitchDetail, gax.WithClientTracing(tracing))
+		client.CallOptions.ListVodAdTagDetails = append(client.CallOptions.ListVodAdTagDetails, gax.WithClientTracing(tracing))
+		client.CallOptions.GetVodAdTagDetail = append(client.CallOptions.GetVodAdTagDetail, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLiveAdTagDetails = append(client.CallOptions.ListLiveAdTagDetails, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLiveAdTagDetail = append(client.CallOptions.GetLiveAdTagDetail, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateSlate = append(client.CallOptions.CreateSlate, gax.WithClientTracing(tracing))
+		client.CallOptions.ListSlates = append(client.CallOptions.ListSlates, gax.WithClientTracing(tracing))
+		client.CallOptions.GetSlate = append(client.CallOptions.GetSlate, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateSlate = append(client.CallOptions.UpdateSlate, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteSlate = append(client.CallOptions.DeleteSlate, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateLiveSession = append(client.CallOptions.CreateLiveSession, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLiveSession = append(client.CallOptions.GetLiveSession, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateLiveConfig = append(client.CallOptions.CreateLiveConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLiveConfigs = append(client.CallOptions.ListLiveConfigs, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLiveConfig = append(client.CallOptions.GetLiveConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteLiveConfig = append(client.CallOptions.DeleteLiveConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateLiveConfig = append(client.CallOptions.UpdateLiveConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateVodConfig = append(client.CallOptions.CreateVodConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.ListVodConfigs = append(client.CallOptions.ListVodConfigs, gax.WithClientTracing(tracing))
+		client.CallOptions.GetVodConfig = append(client.CallOptions.GetVodConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteVodConfig = append(client.CallOptions.DeleteVodConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateVodConfig = append(client.CallOptions.UpdateVodConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "videostitcher",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/video/stitcher/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "videostitcher.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateCdnKey = append(client.CallOptions.CreateCdnKey, gax.WithClientLogging(logging))
+		client.CallOptions.ListCdnKeys = append(client.CallOptions.ListCdnKeys, gax.WithClientLogging(logging))
+		client.CallOptions.GetCdnKey = append(client.CallOptions.GetCdnKey, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteCdnKey = append(client.CallOptions.DeleteCdnKey, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateCdnKey = append(client.CallOptions.UpdateCdnKey, gax.WithClientLogging(logging))
+		client.CallOptions.CreateVodSession = append(client.CallOptions.CreateVodSession, gax.WithClientLogging(logging))
+		client.CallOptions.GetVodSession = append(client.CallOptions.GetVodSession, gax.WithClientLogging(logging))
+		client.CallOptions.ListVodStitchDetails = append(client.CallOptions.ListVodStitchDetails, gax.WithClientLogging(logging))
+		client.CallOptions.GetVodStitchDetail = append(client.CallOptions.GetVodStitchDetail, gax.WithClientLogging(logging))
+		client.CallOptions.ListVodAdTagDetails = append(client.CallOptions.ListVodAdTagDetails, gax.WithClientLogging(logging))
+		client.CallOptions.GetVodAdTagDetail = append(client.CallOptions.GetVodAdTagDetail, gax.WithClientLogging(logging))
+		client.CallOptions.ListLiveAdTagDetails = append(client.CallOptions.ListLiveAdTagDetails, gax.WithClientLogging(logging))
+		client.CallOptions.GetLiveAdTagDetail = append(client.CallOptions.GetLiveAdTagDetail, gax.WithClientLogging(logging))
+		client.CallOptions.CreateSlate = append(client.CallOptions.CreateSlate, gax.WithClientLogging(logging))
+		client.CallOptions.ListSlates = append(client.CallOptions.ListSlates, gax.WithClientLogging(logging))
+		client.CallOptions.GetSlate = append(client.CallOptions.GetSlate, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateSlate = append(client.CallOptions.UpdateSlate, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteSlate = append(client.CallOptions.DeleteSlate, gax.WithClientLogging(logging))
+		client.CallOptions.CreateLiveSession = append(client.CallOptions.CreateLiveSession, gax.WithClientLogging(logging))
+		client.CallOptions.GetLiveSession = append(client.CallOptions.GetLiveSession, gax.WithClientLogging(logging))
+		client.CallOptions.CreateLiveConfig = append(client.CallOptions.CreateLiveConfig, gax.WithClientLogging(logging))
+		client.CallOptions.ListLiveConfigs = append(client.CallOptions.ListLiveConfigs, gax.WithClientLogging(logging))
+		client.CallOptions.GetLiveConfig = append(client.CallOptions.GetLiveConfig, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteLiveConfig = append(client.CallOptions.DeleteLiveConfig, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateLiveConfig = append(client.CallOptions.UpdateLiveConfig, gax.WithClientLogging(logging))
+		client.CallOptions.CreateVodConfig = append(client.CallOptions.CreateVodConfig, gax.WithClientLogging(logging))
+		client.CallOptions.ListVodConfigs = append(client.CallOptions.ListVodConfigs, gax.WithClientLogging(logging))
+		client.CallOptions.GetVodConfig = append(client.CallOptions.GetVodConfig, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteVodConfig = append(client.CallOptions.DeleteVodConfig, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateVodConfig = append(client.CallOptions.UpdateVodConfig, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -761,9 +854,6 @@ func (c *videoStitcherGRPCClient) CreateCdnKey(ctx context.Context, req *stitche
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//videostitcher.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.stitcher.v1.VideoStitcherService/CreateCdnKey")
 	}
@@ -791,9 +881,6 @@ func (c *videoStitcherGRPCClient) ListCdnKeys(ctx context.Context, req *stitcher
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//videostitcher.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.stitcher.v1.VideoStitcherService/ListCdnKeys")
 	}
@@ -843,9 +930,6 @@ func (c *videoStitcherGRPCClient) GetCdnKey(ctx context.Context, req *stitcherpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//videostitcher.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.stitcher.v1.VideoStitcherService/GetCdnKey")
 	}
@@ -867,9 +951,6 @@ func (c *videoStitcherGRPCClient) DeleteCdnKey(ctx context.Context, req *stitche
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//videostitcher.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.stitcher.v1.VideoStitcherService/DeleteCdnKey")
 	}
@@ -924,9 +1005,6 @@ func (c *videoStitcherGRPCClient) CreateVodSession(ctx context.Context, req *sti
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//videostitcher.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.stitcher.v1.VideoStitcherService/CreateVodSession")
 	}
@@ -948,9 +1026,6 @@ func (c *videoStitcherGRPCClient) GetVodSession(ctx context.Context, req *stitch
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//videostitcher.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.stitcher.v1.VideoStitcherService/GetVodSession")
 	}
@@ -972,9 +1047,6 @@ func (c *videoStitcherGRPCClient) ListVodStitchDetails(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//videostitcher.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.stitcher.v1.VideoStitcherService/ListVodStitchDetails")
 	}
@@ -1024,9 +1096,6 @@ func (c *videoStitcherGRPCClient) GetVodStitchDetail(ctx context.Context, req *s
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//videostitcher.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.stitcher.v1.VideoStitcherService/GetVodStitchDetail")
 	}
@@ -1048,9 +1117,6 @@ func (c *videoStitcherGRPCClient) ListVodAdTagDetails(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//videostitcher.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.stitcher.v1.VideoStitcherService/ListVodAdTagDetails")
 	}
@@ -1100,9 +1166,6 @@ func (c *videoStitcherGRPCClient) GetVodAdTagDetail(ctx context.Context, req *st
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//videostitcher.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.stitcher.v1.VideoStitcherService/GetVodAdTagDetail")
 	}
@@ -1124,9 +1187,6 @@ func (c *videoStitcherGRPCClient) ListLiveAdTagDetails(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//videostitcher.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.stitcher.v1.VideoStitcherService/ListLiveAdTagDetails")
 	}
@@ -1176,9 +1236,6 @@ func (c *videoStitcherGRPCClient) GetLiveAdTagDetail(ctx context.Context, req *s
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//videostitcher.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.stitcher.v1.VideoStitcherService/GetLiveAdTagDetail")
 	}
@@ -1200,9 +1257,6 @@ func (c *videoStitcherGRPCClient) CreateSlate(ctx context.Context, req *stitcher
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//videostitcher.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.stitcher.v1.VideoStitcherService/CreateSlate")
 	}
@@ -1230,9 +1284,6 @@ func (c *videoStitcherGRPCClient) ListSlates(ctx context.Context, req *stitcherp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//videostitcher.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.stitcher.v1.VideoStitcherService/ListSlates")
 	}
@@ -1282,9 +1333,6 @@ func (c *videoStitcherGRPCClient) GetSlate(ctx context.Context, req *stitcherpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//videostitcher.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.stitcher.v1.VideoStitcherService/GetSlate")
 	}
@@ -1333,9 +1381,6 @@ func (c *videoStitcherGRPCClient) DeleteSlate(ctx context.Context, req *stitcher
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//videostitcher.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.stitcher.v1.VideoStitcherService/DeleteSlate")
 	}
@@ -1363,9 +1408,6 @@ func (c *videoStitcherGRPCClient) CreateLiveSession(ctx context.Context, req *st
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//videostitcher.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.stitcher.v1.VideoStitcherService/CreateLiveSession")
 	}
@@ -1387,9 +1429,6 @@ func (c *videoStitcherGRPCClient) GetLiveSession(ctx context.Context, req *stitc
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//videostitcher.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.stitcher.v1.VideoStitcherService/GetLiveSession")
 	}
@@ -1411,9 +1450,6 @@ func (c *videoStitcherGRPCClient) CreateLiveConfig(ctx context.Context, req *sti
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//videostitcher.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.stitcher.v1.VideoStitcherService/CreateLiveConfig")
 	}
@@ -1441,9 +1477,6 @@ func (c *videoStitcherGRPCClient) ListLiveConfigs(ctx context.Context, req *stit
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//videostitcher.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.stitcher.v1.VideoStitcherService/ListLiveConfigs")
 	}
@@ -1493,9 +1526,6 @@ func (c *videoStitcherGRPCClient) GetLiveConfig(ctx context.Context, req *stitch
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//videostitcher.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.stitcher.v1.VideoStitcherService/GetLiveConfig")
 	}
@@ -1517,9 +1547,6 @@ func (c *videoStitcherGRPCClient) DeleteLiveConfig(ctx context.Context, req *sti
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//videostitcher.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.stitcher.v1.VideoStitcherService/DeleteLiveConfig")
 	}
@@ -1574,9 +1601,6 @@ func (c *videoStitcherGRPCClient) CreateVodConfig(ctx context.Context, req *stit
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//videostitcher.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.stitcher.v1.VideoStitcherService/CreateVodConfig")
 	}
@@ -1604,9 +1628,6 @@ func (c *videoStitcherGRPCClient) ListVodConfigs(ctx context.Context, req *stitc
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//videostitcher.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.stitcher.v1.VideoStitcherService/ListVodConfigs")
 	}
@@ -1656,9 +1677,6 @@ func (c *videoStitcherGRPCClient) GetVodConfig(ctx context.Context, req *stitche
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//videostitcher.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.stitcher.v1.VideoStitcherService/GetVodConfig")
 	}
@@ -1680,9 +1698,6 @@ func (c *videoStitcherGRPCClient) DeleteVodConfig(ctx context.Context, req *stit
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//videostitcher.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.video.stitcher.v1.VideoStitcherService/DeleteVodConfig")
 	}

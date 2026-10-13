@@ -300,6 +300,39 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.CreateEndpoint = append(client.CallOptions.CreateEndpoint, gax.WithClientMetrics(metrics))
 		client.CallOptions.DeleteEndpoint = append(client.CallOptions.DeleteEndpoint, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "ids",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/ids/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "ids.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListEndpoints = append(client.CallOptions.ListEndpoints, gax.WithClientTracing(tracing))
+		client.CallOptions.GetEndpoint = append(client.CallOptions.GetEndpoint, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateEndpoint = append(client.CallOptions.CreateEndpoint, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteEndpoint = append(client.CallOptions.DeleteEndpoint, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "ids",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/ids/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "ids.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListEndpoints = append(client.CallOptions.ListEndpoints, gax.WithClientLogging(logging))
+		client.CallOptions.GetEndpoint = append(client.CallOptions.GetEndpoint, gax.WithClientLogging(logging))
+		client.CallOptions.CreateEndpoint = append(client.CallOptions.CreateEndpoint, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteEndpoint = append(client.CallOptions.DeleteEndpoint, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -410,6 +443,39 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.CreateEndpoint = append(callOpts.CreateEndpoint, gax.WithClientMetrics(metrics))
 		callOpts.DeleteEndpoint = append(callOpts.DeleteEndpoint, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "ids",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/ids/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "ids.googleapis.com",
+			}),
+		)
+
+		callOpts.ListEndpoints = append(callOpts.ListEndpoints, gax.WithClientTracing(tracing))
+		callOpts.GetEndpoint = append(callOpts.GetEndpoint, gax.WithClientTracing(tracing))
+		callOpts.CreateEndpoint = append(callOpts.CreateEndpoint, gax.WithClientTracing(tracing))
+		callOpts.DeleteEndpoint = append(callOpts.DeleteEndpoint, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "ids",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/ids/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "ids.googleapis.com",
+			}),
+		)
+
+		callOpts.ListEndpoints = append(callOpts.ListEndpoints, gax.WithClientLogging(logging))
+		callOpts.GetEndpoint = append(callOpts.GetEndpoint, gax.WithClientLogging(logging))
+		callOpts.CreateEndpoint = append(callOpts.CreateEndpoint, gax.WithClientLogging(logging))
+		callOpts.DeleteEndpoint = append(callOpts.DeleteEndpoint, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -466,9 +532,6 @@ func (c *gRPCClient) ListEndpoints(ctx context.Context, req *idspb.ListEndpoints
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ids.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ids.v1.IDS/ListEndpoints")
 	}
@@ -518,9 +581,6 @@ func (c *gRPCClient) GetEndpoint(ctx context.Context, req *idspb.GetEndpointRequ
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ids.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ids.v1.IDS/GetEndpoint")
 	}
@@ -542,9 +602,6 @@ func (c *gRPCClient) CreateEndpoint(ctx context.Context, req *idspb.CreateEndpoi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ids.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ids.v1.IDS/CreateEndpoint")
 	}
@@ -572,9 +629,6 @@ func (c *gRPCClient) DeleteEndpoint(ctx context.Context, req *idspb.DeleteEndpoi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ids.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ids.v1.IDS/DeleteEndpoint")
 	}
@@ -700,9 +754,6 @@ func (c *restClient) GetEndpoint(ctx context.Context, req *idspb.GetEndpointRequ
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ids.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ids.v1.IDS/GetEndpoint")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/endpoints/*}")
@@ -768,9 +819,6 @@ func (c *restClient) CreateEndpoint(ctx context.Context, req *idspb.CreateEndpoi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ids.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ids.v1.IDS/CreateEndpoint")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/endpoints")
@@ -835,9 +883,6 @@ func (c *restClient) DeleteEndpoint(ctx context.Context, req *idspb.DeleteEndpoi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//ids.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.ids.v1.IDS/DeleteEndpoint")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/endpoints/*}")

@@ -122,7 +122,7 @@ func defaultServingConfigRESTCallOptions() *ServingConfigCallOptions {
 	}
 }
 
-// internalServingConfigClient is an interface that defines the methods available from Vertex AI Search for commerce API.
+// internalServingConfigClient is an interface that defines the methods available from AI Commerce Search API.
 type internalServingConfigClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -138,7 +138,7 @@ type internalServingConfigClient interface {
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
-// ServingConfigClient is a client for interacting with Vertex AI Search for commerce API.
+// ServingConfigClient is a client for interacting with AI Commerce Search API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // Service for modifying ServingConfig.
@@ -236,7 +236,7 @@ func (c *ServingConfigClient) ListOperations(ctx context.Context, req *longrunni
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
-// servingConfigGRPCClient is a client for interacting with Vertex AI Search for commerce API over gRPC transport.
+// servingConfigGRPCClient is a client for interacting with AI Commerce Search API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type servingConfigGRPCClient struct {
@@ -316,6 +316,49 @@ func NewServingConfigClient(ctx context.Context, opts ...option.ClientOption) (*
 		client.CallOptions.RemoveControl = append(client.CallOptions.RemoveControl, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "retail",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/retail/apiv2alpha",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "retail.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateServingConfig = append(client.CallOptions.CreateServingConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteServingConfig = append(client.CallOptions.DeleteServingConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateServingConfig = append(client.CallOptions.UpdateServingConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.GetServingConfig = append(client.CallOptions.GetServingConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.ListServingConfigs = append(client.CallOptions.ListServingConfigs, gax.WithClientTracing(tracing))
+		client.CallOptions.AddControl = append(client.CallOptions.AddControl, gax.WithClientTracing(tracing))
+		client.CallOptions.RemoveControl = append(client.CallOptions.RemoveControl, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "retail",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/retail/apiv2alpha",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "retail.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateServingConfig = append(client.CallOptions.CreateServingConfig, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteServingConfig = append(client.CallOptions.DeleteServingConfig, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateServingConfig = append(client.CallOptions.UpdateServingConfig, gax.WithClientLogging(logging))
+		client.CallOptions.GetServingConfig = append(client.CallOptions.GetServingConfig, gax.WithClientLogging(logging))
+		client.CallOptions.ListServingConfigs = append(client.CallOptions.ListServingConfigs, gax.WithClientLogging(logging))
+		client.CallOptions.AddControl = append(client.CallOptions.AddControl, gax.WithClientLogging(logging))
+		client.CallOptions.RemoveControl = append(client.CallOptions.RemoveControl, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
 	}
 
 	client.internalClient = c
@@ -416,6 +459,49 @@ func NewServingConfigRESTClient(ctx context.Context, opts ...option.ClientOption
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "retail",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/retail/apiv2alpha",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "retail.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateServingConfig = append(callOpts.CreateServingConfig, gax.WithClientTracing(tracing))
+		callOpts.DeleteServingConfig = append(callOpts.DeleteServingConfig, gax.WithClientTracing(tracing))
+		callOpts.UpdateServingConfig = append(callOpts.UpdateServingConfig, gax.WithClientTracing(tracing))
+		callOpts.GetServingConfig = append(callOpts.GetServingConfig, gax.WithClientTracing(tracing))
+		callOpts.ListServingConfigs = append(callOpts.ListServingConfigs, gax.WithClientTracing(tracing))
+		callOpts.AddControl = append(callOpts.AddControl, gax.WithClientTracing(tracing))
+		callOpts.RemoveControl = append(callOpts.RemoveControl, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "retail",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/retail/apiv2alpha",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "retail.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateServingConfig = append(callOpts.CreateServingConfig, gax.WithClientLogging(logging))
+		callOpts.DeleteServingConfig = append(callOpts.DeleteServingConfig, gax.WithClientLogging(logging))
+		callOpts.UpdateServingConfig = append(callOpts.UpdateServingConfig, gax.WithClientLogging(logging))
+		callOpts.GetServingConfig = append(callOpts.GetServingConfig, gax.WithClientLogging(logging))
+		callOpts.ListServingConfigs = append(callOpts.ListServingConfigs, gax.WithClientLogging(logging))
+		callOpts.AddControl = append(callOpts.AddControl, gax.WithClientLogging(logging))
+		callOpts.RemoveControl = append(callOpts.RemoveControl, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	return &ServingConfigClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -462,9 +548,6 @@ func (c *servingConfigGRPCClient) CreateServingConfig(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ServingConfigService/CreateServingConfig")
 	}
@@ -486,9 +569,6 @@ func (c *servingConfigGRPCClient) DeleteServingConfig(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ServingConfigService/DeleteServingConfig")
 	}
@@ -527,9 +607,6 @@ func (c *servingConfigGRPCClient) GetServingConfig(ctx context.Context, req *ret
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ServingConfigService/GetServingConfig")
 	}
@@ -551,9 +628,6 @@ func (c *servingConfigGRPCClient) ListServingConfigs(ctx context.Context, req *r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ServingConfigService/ListServingConfigs")
 	}
@@ -603,9 +677,6 @@ func (c *servingConfigGRPCClient) AddControl(ctx context.Context, req *retailpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetServingConfig()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ServingConfigService/AddControl")
 	}
@@ -627,9 +698,6 @@ func (c *servingConfigGRPCClient) RemoveControl(ctx context.Context, req *retail
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetServingConfig()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ServingConfigService/RemoveControl")
 	}
@@ -748,9 +816,6 @@ func (c *servingConfigRESTClient) CreateServingConfig(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ServingConfigService/CreateServingConfig")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2alpha/{parent=projects/*/locations/*/catalogs/*}/servingConfigs")
@@ -807,9 +872,6 @@ func (c *servingConfigRESTClient) DeleteServingConfig(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ServingConfigService/DeleteServingConfig")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2alpha/{name=projects/*/locations/*/catalogs/*/servingConfigs/*}")
@@ -919,9 +981,6 @@ func (c *servingConfigRESTClient) GetServingConfig(ctx context.Context, req *ret
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ServingConfigService/GetServingConfig")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2alpha/{name=projects/*/locations/*/catalogs/*/servingConfigs/*}")
@@ -1066,9 +1125,6 @@ func (c *servingConfigRESTClient) AddControl(ctx context.Context, req *retailpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetServingConfig()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ServingConfigService/AddControl")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2alpha/{serving_config=projects/*/locations/*/catalogs/*/servingConfigs/*}:addControl")
@@ -1132,9 +1188,6 @@ func (c *servingConfigRESTClient) RemoveControl(ctx context.Context, req *retail
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetServingConfig()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ServingConfigService/RemoveControl")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2alpha/{serving_config=projects/*/locations/*/catalogs/*/servingConfigs/*}:removeControl")

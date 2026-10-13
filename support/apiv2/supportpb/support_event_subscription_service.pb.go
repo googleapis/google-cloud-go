@@ -28,6 +28,7 @@ import (
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 )
 
@@ -449,11 +450,59 @@ func (x *UndeleteSupportEventSubscriptionRequest) GetName() string {
 	return ""
 }
 
+// Request message for ExpungeSupportEventSubscription.
+type ExpungeSupportEventSubscriptionRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The name of the support event subscription to expunge.
+	// Format:
+	// organizations/{organization_id}/supportEventSubscriptions/{subscription_id}
+	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ExpungeSupportEventSubscriptionRequest) Reset() {
+	*x = ExpungeSupportEventSubscriptionRequest{}
+	mi := &file_google_cloud_support_v2_support_event_subscription_service_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ExpungeSupportEventSubscriptionRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ExpungeSupportEventSubscriptionRequest) ProtoMessage() {}
+
+func (x *ExpungeSupportEventSubscriptionRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_support_v2_support_event_subscription_service_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ExpungeSupportEventSubscriptionRequest.ProtoReflect.Descriptor instead.
+func (*ExpungeSupportEventSubscriptionRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_support_v2_support_event_subscription_service_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *ExpungeSupportEventSubscriptionRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
 var File_google_cloud_support_v2_support_event_subscription_service_proto protoreflect.FileDescriptor
 
 const file_google_cloud_support_v2_support_event_subscription_service_proto_rawDesc = "" +
 	"\n" +
-	"@google/cloud/support/v2/support_event_subscription_service.proto\x12\x17google.cloud.support.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a8google/cloud/support/v2/support_event_subscription.proto\x1a google/protobuf/field_mask.proto\"\xf3\x01\n" +
+	"@google/cloud/support/v2/support_event_subscription_service.proto\x12\x17google.cloud.support.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a8google/cloud/support/v2/support_event_subscription.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xf3\x01\n" +
 	"%CreateSupportEventSubscriptionRequest\x12T\n" +
 	"\x06parent\x18\x01 \x01(\tB<\xe0A\x02\xfaA6\x124cloudsupport.googleapis.com/SupportEventSubscriptionR\x06parent\x12t\n" +
 	"\x1asupport_event_subscription\x18\x02 \x01(\v21.google.cloud.support.v2.SupportEventSubscriptionB\x03\xe0A\x02R\x18supportEventSubscription\"v\n" +
@@ -479,14 +528,18 @@ const file_google_cloud_support_v2_support_event_subscription_service_proto_rawD
 	"4cloudsupport.googleapis.com/SupportEventSubscriptionR\x04name\"{\n" +
 	"'UndeleteSupportEventSubscriptionRequest\x12P\n" +
 	"\x04name\x18\x01 \x01(\tB<\xe0A\x02\xfaA6\n" +
-	"4cloudsupport.googleapis.com/SupportEventSubscriptionR\x04name2\xfb\v\n" +
-	"\x1fSupportEventSubscriptionService\x12\x87\x02\n" +
-	"\x1eCreateSupportEventSubscription\x12>.google.cloud.support.v2.CreateSupportEventSubscriptionRequest\x1a1.google.cloud.support.v2.SupportEventSubscription\"r\xdaA!parent,support_event_subscription\x82\xd3\xe4\x93\x02H:\x1asupport_event_subscription\"*/v2/{parent=*/*}/supportEventSubscriptions\x12\xc8\x01\n" +
-	"\x1bGetSupportEventSubscription\x12;.google.cloud.support.v2.GetSupportEventSubscriptionRequest\x1a1.google.cloud.support.v2.SupportEventSubscription\"9\xdaA\x04name\x82\xd3\xe4\x93\x02,\x12*/v2/{name=*/*/supportEventSubscriptions/*}\x12\xdb\x01\n" +
-	"\x1dListSupportEventSubscriptions\x12=.google.cloud.support.v2.ListSupportEventSubscriptionsRequest\x1a>.google.cloud.support.v2.ListSupportEventSubscriptionsResponse\";\xdaA\x06parent\x82\xd3\xe4\x93\x02,\x12*/v2/{parent=*/*}/supportEventSubscriptions\x12\xa8\x02\n" +
-	"\x1eUpdateSupportEventSubscription\x12>.google.cloud.support.v2.UpdateSupportEventSubscriptionRequest\x1a1.google.cloud.support.v2.SupportEventSubscription\"\x92\x01\xdaA&support_event_subscription,update_mask\x82\xd3\xe4\x93\x02c:\x1asupport_event_subscription2E/v2/{support_event_subscription.name=*/*/supportEventSubscriptions/*}\x12\xce\x01\n" +
-	"\x1eDeleteSupportEventSubscription\x12>.google.cloud.support.v2.DeleteSupportEventSubscriptionRequest\x1a1.google.cloud.support.v2.SupportEventSubscription\"9\xdaA\x04name\x82\xd3\xe4\x93\x02,**/v2/{name=*/*/supportEventSubscriptions/*}\x12\xd7\x01\n" +
-	" UndeleteSupportEventSubscription\x12@.google.cloud.support.v2.UndeleteSupportEventSubscriptionRequest\x1a1.google.cloud.support.v2.SupportEventSubscription\">\x82\xd3\xe4\x93\x028:\x01*\"3/v2/{name=*/*/supportEventSubscriptions/*}:undelete\x1aO\xcaA\x1bcloudsupport.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\xcd\x01\n" +
+	"4cloudsupport.googleapis.com/SupportEventSubscriptionR\x04name\"z\n" +
+	"&ExpungeSupportEventSubscriptionRequest\x12P\n" +
+	"\x04name\x18\x01 \x01(\tB<\xe0A\x02\xfaA6\n" +
+	"4cloudsupport.googleapis.com/SupportEventSubscriptionR\x04name2\x92\x0e\n" +
+	"\x1fSupportEventSubscriptionService\x12\x93\x02\n" +
+	"\x1eCreateSupportEventSubscription\x12>.google.cloud.support.v2.CreateSupportEventSubscriptionRequest\x1a1.google.cloud.support.v2.SupportEventSubscription\"~\xdaA!parent,support_event_subscription\x82\xd3\xe4\x93\x02T:\x1asupport_event_subscription\"6/v2/{parent=organizations/*}/supportEventSubscriptions\x12\xd4\x01\n" +
+	"\x1bGetSupportEventSubscription\x12;.google.cloud.support.v2.GetSupportEventSubscriptionRequest\x1a1.google.cloud.support.v2.SupportEventSubscription\"E\xdaA\x04name\x82\xd3\xe4\x93\x028\x126/v2/{name=organizations/*/supportEventSubscriptions/*}\x12\xe7\x01\n" +
+	"\x1dListSupportEventSubscriptions\x12=.google.cloud.support.v2.ListSupportEventSubscriptionsRequest\x1a>.google.cloud.support.v2.ListSupportEventSubscriptionsResponse\"G\xdaA\x06parent\x82\xd3\xe4\x93\x028\x126/v2/{parent=organizations/*}/supportEventSubscriptions\x12\xb4\x02\n" +
+	"\x1eUpdateSupportEventSubscription\x12>.google.cloud.support.v2.UpdateSupportEventSubscriptionRequest\x1a1.google.cloud.support.v2.SupportEventSubscription\"\x9e\x01\xdaA&support_event_subscription,update_mask\x82\xd3\xe4\x93\x02o:\x1asupport_event_subscription2Q/v2/{support_event_subscription.name=organizations/*/supportEventSubscriptions/*}\x12\xda\x01\n" +
+	"\x1eDeleteSupportEventSubscription\x12>.google.cloud.support.v2.DeleteSupportEventSubscriptionRequest\x1a1.google.cloud.support.v2.SupportEventSubscription\"E\xdaA\x04name\x82\xd3\xe4\x93\x028*6/v2/{name=organizations/*/supportEventSubscriptions/*}\x12\xe3\x01\n" +
+	" UndeleteSupportEventSubscription\x12@.google.cloud.support.v2.UndeleteSupportEventSubscriptionRequest\x1a1.google.cloud.support.v2.SupportEventSubscription\"J\x82\xd3\xe4\x93\x02D:\x01*\"?/v2/{name=organizations/*/supportEventSubscriptions/*}:undelete\x12\xcc\x01\n" +
+	"\x1fExpungeSupportEventSubscription\x12?.google.cloud.support.v2.ExpungeSupportEventSubscriptionRequest\x1a\x16.google.protobuf.Empty\"P\xdaA\x04name\x82\xd3\xe4\x93\x02C:\x01*\">/v2/{name=organizations/*/supportEventSubscriptions/*}:expunge\x1aO\xcaA\x1bcloudsupport.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\xcd\x01\n" +
 	"\x1bcom.google.cloud.support.v2B$SupportEventSubscriptionServiceProtoP\x01Z5cloud.google.com/go/support/apiv2/supportpb;supportpb\xaa\x02\x17Google.Cloud.Support.V2\xca\x02\x17Google\\Cloud\\Support\\V2\xea\x02\x1aGoogle::Cloud::Support::V2b\x06proto3"
 
 var (
@@ -501,7 +554,7 @@ func file_google_cloud_support_v2_support_event_subscription_service_proto_rawDe
 	return file_google_cloud_support_v2_support_event_subscription_service_proto_rawDescData
 }
 
-var file_google_cloud_support_v2_support_event_subscription_service_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_google_cloud_support_v2_support_event_subscription_service_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_google_cloud_support_v2_support_event_subscription_service_proto_goTypes = []any{
 	(*CreateSupportEventSubscriptionRequest)(nil),   // 0: google.cloud.support.v2.CreateSupportEventSubscriptionRequest
 	(*GetSupportEventSubscriptionRequest)(nil),      // 1: google.cloud.support.v2.GetSupportEventSubscriptionRequest
@@ -510,28 +563,32 @@ var file_google_cloud_support_v2_support_event_subscription_service_proto_goType
 	(*UpdateSupportEventSubscriptionRequest)(nil),   // 4: google.cloud.support.v2.UpdateSupportEventSubscriptionRequest
 	(*DeleteSupportEventSubscriptionRequest)(nil),   // 5: google.cloud.support.v2.DeleteSupportEventSubscriptionRequest
 	(*UndeleteSupportEventSubscriptionRequest)(nil), // 6: google.cloud.support.v2.UndeleteSupportEventSubscriptionRequest
-	(*SupportEventSubscription)(nil),                // 7: google.cloud.support.v2.SupportEventSubscription
-	(*fieldmaskpb.FieldMask)(nil),                   // 8: google.protobuf.FieldMask
+	(*ExpungeSupportEventSubscriptionRequest)(nil),  // 7: google.cloud.support.v2.ExpungeSupportEventSubscriptionRequest
+	(*SupportEventSubscription)(nil),                // 8: google.cloud.support.v2.SupportEventSubscription
+	(*fieldmaskpb.FieldMask)(nil),                   // 9: google.protobuf.FieldMask
+	(*emptypb.Empty)(nil),                           // 10: google.protobuf.Empty
 }
 var file_google_cloud_support_v2_support_event_subscription_service_proto_depIdxs = []int32{
-	7,  // 0: google.cloud.support.v2.CreateSupportEventSubscriptionRequest.support_event_subscription:type_name -> google.cloud.support.v2.SupportEventSubscription
-	7,  // 1: google.cloud.support.v2.ListSupportEventSubscriptionsResponse.support_event_subscriptions:type_name -> google.cloud.support.v2.SupportEventSubscription
-	7,  // 2: google.cloud.support.v2.UpdateSupportEventSubscriptionRequest.support_event_subscription:type_name -> google.cloud.support.v2.SupportEventSubscription
-	8,  // 3: google.cloud.support.v2.UpdateSupportEventSubscriptionRequest.update_mask:type_name -> google.protobuf.FieldMask
+	8,  // 0: google.cloud.support.v2.CreateSupportEventSubscriptionRequest.support_event_subscription:type_name -> google.cloud.support.v2.SupportEventSubscription
+	8,  // 1: google.cloud.support.v2.ListSupportEventSubscriptionsResponse.support_event_subscriptions:type_name -> google.cloud.support.v2.SupportEventSubscription
+	8,  // 2: google.cloud.support.v2.UpdateSupportEventSubscriptionRequest.support_event_subscription:type_name -> google.cloud.support.v2.SupportEventSubscription
+	9,  // 3: google.cloud.support.v2.UpdateSupportEventSubscriptionRequest.update_mask:type_name -> google.protobuf.FieldMask
 	0,  // 4: google.cloud.support.v2.SupportEventSubscriptionService.CreateSupportEventSubscription:input_type -> google.cloud.support.v2.CreateSupportEventSubscriptionRequest
 	1,  // 5: google.cloud.support.v2.SupportEventSubscriptionService.GetSupportEventSubscription:input_type -> google.cloud.support.v2.GetSupportEventSubscriptionRequest
 	2,  // 6: google.cloud.support.v2.SupportEventSubscriptionService.ListSupportEventSubscriptions:input_type -> google.cloud.support.v2.ListSupportEventSubscriptionsRequest
 	4,  // 7: google.cloud.support.v2.SupportEventSubscriptionService.UpdateSupportEventSubscription:input_type -> google.cloud.support.v2.UpdateSupportEventSubscriptionRequest
 	5,  // 8: google.cloud.support.v2.SupportEventSubscriptionService.DeleteSupportEventSubscription:input_type -> google.cloud.support.v2.DeleteSupportEventSubscriptionRequest
 	6,  // 9: google.cloud.support.v2.SupportEventSubscriptionService.UndeleteSupportEventSubscription:input_type -> google.cloud.support.v2.UndeleteSupportEventSubscriptionRequest
-	7,  // 10: google.cloud.support.v2.SupportEventSubscriptionService.CreateSupportEventSubscription:output_type -> google.cloud.support.v2.SupportEventSubscription
-	7,  // 11: google.cloud.support.v2.SupportEventSubscriptionService.GetSupportEventSubscription:output_type -> google.cloud.support.v2.SupportEventSubscription
-	3,  // 12: google.cloud.support.v2.SupportEventSubscriptionService.ListSupportEventSubscriptions:output_type -> google.cloud.support.v2.ListSupportEventSubscriptionsResponse
-	7,  // 13: google.cloud.support.v2.SupportEventSubscriptionService.UpdateSupportEventSubscription:output_type -> google.cloud.support.v2.SupportEventSubscription
-	7,  // 14: google.cloud.support.v2.SupportEventSubscriptionService.DeleteSupportEventSubscription:output_type -> google.cloud.support.v2.SupportEventSubscription
-	7,  // 15: google.cloud.support.v2.SupportEventSubscriptionService.UndeleteSupportEventSubscription:output_type -> google.cloud.support.v2.SupportEventSubscription
-	10, // [10:16] is the sub-list for method output_type
-	4,  // [4:10] is the sub-list for method input_type
+	7,  // 10: google.cloud.support.v2.SupportEventSubscriptionService.ExpungeSupportEventSubscription:input_type -> google.cloud.support.v2.ExpungeSupportEventSubscriptionRequest
+	8,  // 11: google.cloud.support.v2.SupportEventSubscriptionService.CreateSupportEventSubscription:output_type -> google.cloud.support.v2.SupportEventSubscription
+	8,  // 12: google.cloud.support.v2.SupportEventSubscriptionService.GetSupportEventSubscription:output_type -> google.cloud.support.v2.SupportEventSubscription
+	3,  // 13: google.cloud.support.v2.SupportEventSubscriptionService.ListSupportEventSubscriptions:output_type -> google.cloud.support.v2.ListSupportEventSubscriptionsResponse
+	8,  // 14: google.cloud.support.v2.SupportEventSubscriptionService.UpdateSupportEventSubscription:output_type -> google.cloud.support.v2.SupportEventSubscription
+	8,  // 15: google.cloud.support.v2.SupportEventSubscriptionService.DeleteSupportEventSubscription:output_type -> google.cloud.support.v2.SupportEventSubscription
+	8,  // 16: google.cloud.support.v2.SupportEventSubscriptionService.UndeleteSupportEventSubscription:output_type -> google.cloud.support.v2.SupportEventSubscription
+	10, // 17: google.cloud.support.v2.SupportEventSubscriptionService.ExpungeSupportEventSubscription:output_type -> google.protobuf.Empty
+	11, // [11:18] is the sub-list for method output_type
+	4,  // [4:11] is the sub-list for method input_type
 	4,  // [4:4] is the sub-list for extension type_name
 	4,  // [4:4] is the sub-list for extension extendee
 	0,  // [0:4] is the sub-list for field type_name
@@ -549,7 +606,7 @@ func file_google_cloud_support_v2_support_event_subscription_service_proto_init(
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_support_v2_support_event_subscription_service_proto_rawDesc), len(file_google_cloud_support_v2_support_event_subscription_service_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   7,
+			NumMessages:   8,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

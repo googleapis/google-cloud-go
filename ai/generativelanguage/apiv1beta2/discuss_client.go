@@ -248,6 +248,35 @@ func NewDiscussClient(ctx context.Context, opts ...option.ClientOption) (*Discus
 		client.CallOptions.GenerateMessage = append(client.CallOptions.GenerateMessage, gax.WithClientMetrics(metrics))
 		client.CallOptions.CountMessageTokens = append(client.CallOptions.CountMessageTokens, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "generativelanguage",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/ai/generativelanguage/apiv1beta2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "generativelanguage.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GenerateMessage = append(client.CallOptions.GenerateMessage, gax.WithClientTracing(tracing))
+		client.CallOptions.CountMessageTokens = append(client.CallOptions.CountMessageTokens, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "generativelanguage",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/ai/generativelanguage/apiv1beta2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "generativelanguage.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GenerateMessage = append(client.CallOptions.GenerateMessage, gax.WithClientLogging(logging))
+		client.CallOptions.CountMessageTokens = append(client.CallOptions.CountMessageTokens, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -343,6 +372,35 @@ func NewDiscussRESTClient(ctx context.Context, opts ...option.ClientOption) (*Di
 		callOpts.GenerateMessage = append(callOpts.GenerateMessage, gax.WithClientMetrics(metrics))
 		callOpts.CountMessageTokens = append(callOpts.CountMessageTokens, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "generativelanguage",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/ai/generativelanguage/apiv1beta2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "generativelanguage.googleapis.com",
+			}),
+		)
+
+		callOpts.GenerateMessage = append(callOpts.GenerateMessage, gax.WithClientTracing(tracing))
+		callOpts.CountMessageTokens = append(callOpts.CountMessageTokens, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "generativelanguage",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/ai/generativelanguage/apiv1beta2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "generativelanguage.googleapis.com",
+			}),
+		)
+
+		callOpts.GenerateMessage = append(callOpts.GenerateMessage, gax.WithClientLogging(logging))
+		callOpts.CountMessageTokens = append(callOpts.CountMessageTokens, gax.WithClientLogging(logging))
+	}
 
 	return &DiscussClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -389,9 +447,6 @@ func (c *discussGRPCClient) GenerateMessage(ctx context.Context, req *generative
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetModel()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1beta2.DiscussService/GenerateMessage")
 	}
@@ -413,9 +468,6 @@ func (c *discussGRPCClient) CountMessageTokens(ctx context.Context, req *generat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetModel()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1beta2.DiscussService/CountMessageTokens")
 	}
@@ -457,9 +509,6 @@ func (c *discussRESTClient) GenerateMessage(ctx context.Context, req *generative
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetModel()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1beta2.DiscussService/GenerateMessage")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta2/{model=models/*}:generateMessage")
@@ -520,9 +569,6 @@ func (c *discussRESTClient) CountMessageTokens(ctx context.Context, req *generat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//generativelanguage.googleapis.com/%v", req.GetModel()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1beta2.DiscussService/CountMessageTokens")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta2/{model=models/*}:countMessageTokens")

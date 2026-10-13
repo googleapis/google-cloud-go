@@ -53,7 +53,7 @@ const (
 	TableReplicationInfo_SOURCE_DELETED TableReplicationInfo_ReplicationStatus = 2
 	// Source revoked replication permissions.
 	TableReplicationInfo_PERMISSION_DENIED TableReplicationInfo_ReplicationStatus = 3
-	// Source configuration doesn’t allow replication.
+	// Source configuration doesn't allow replication.
 	TableReplicationInfo_UNSUPPORTED_CONFIGURATION TableReplicationInfo_ReplicationStatus = 4
 )
 

@@ -191,15 +191,13 @@ func TestRetryApplyBulk_OverallRequestFailure(t *testing.T) {
 	errCount := 0
 	errInjector := func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
 		if strings.HasSuffix(info.FullMethod, "MutateRows") {
-			return func() error {
-				if errCount < 3 {
-					errCount++
-					return status.Errorf(codes.Aborted, "")
-				}
-				return nil
-			}()
+			if errCount < 3 {
+				errCount++
+				return status.Errorf(codes.Aborted, "")
+			}
+			return handler(srv, ss)
 		}
-		return handler(ctx, ss)
+		return handler(srv, ss)
 	}
 
 	tbl, cleanup, err := setupDefaultFakeServer(grpc.StreamInterceptor(errInjector))
@@ -617,39 +615,6 @@ func TestRetryReverseReadRows(t *testing.T) {
 	if !testutil.Equal(got, want) {
 		t.Errorf("retry range integration: got %v, want %v", got, want)
 	}
-}
-
-func TestRetryOptionSelection(t *testing.T) {
-	t.Setenv("CBT_BIGTABLE_CONN_POOL", "false")
-	ctx := context.Background()
-	project := "test-project"
-	instance := "test-instance"
-
-	t.Run("DefaultRetryLogic", func(t *testing.T) {
-		client, err := NewClientWithConfig(ctx, project, instance, disableMetricsConfig)
-		if err != nil {
-			t.Fatalf("NewClientWithConfig: %v", err)
-		}
-		defer client.Close()
-
-		if client.disableRetryInfo {
-			t.Errorf("client.disableRetryInfo got: true, want: false")
-		}
-	})
-
-	t.Run("ClientOnlyRetryLogic", func(t *testing.T) {
-		t.Setenv("DISABLE_RETRY_INFO", "1")
-
-		client, err := NewClientWithConfig(ctx, project, instance, disableMetricsConfig)
-		if err != nil {
-			t.Fatalf("NewClientWithConfig: %v", err)
-		}
-		defer client.Close()
-
-		if !client.disableRetryInfo {
-			t.Errorf("client.disableRetryInfo got: false, want: true")
-		}
-	})
 }
 
 func writeReadRowsResponse(ss grpc.ServerStream, rowKeys ...string) error {

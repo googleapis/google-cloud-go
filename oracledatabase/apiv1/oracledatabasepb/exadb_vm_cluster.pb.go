@@ -260,8 +260,11 @@ type ExadbVmCluster struct {
 	// Output only. The ID of the subscription entitlement associated with the
 	// ExadbVmCluster.
 	EntitlementId string `protobuf:"bytes,11,opt,name=entitlement_id,json=entitlementId,proto3" json:"entitlement_id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	// Output only. The identity connector details which will allow OCI to
+	// securely access the resources in the customer project.
+	IdentityConnector *IdentityConnector `protobuf:"bytes,12,opt,name=identity_connector,json=identityConnector,proto3" json:"identity_connector,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *ExadbVmCluster) Reset() {
@@ -362,6 +365,13 @@ func (x *ExadbVmCluster) GetEntitlementId() string {
 		return x.EntitlementId
 	}
 	return ""
+}
+
+func (x *ExadbVmCluster) GetIdentityConnector() *IdentityConnector {
+	if x != nil {
+		return x.IdentityConnector
+	}
+	return nil
 }
 
 // The storage allocation for the exadbvmcluster, in gigabytes (GB).
@@ -638,7 +648,7 @@ var File_google_cloud_oracledatabase_v1_exadb_vm_cluster_proto protoreflect.File
 
 const file_google_cloud_oracledatabase_v1_exadb_vm_cluster_proto_rawDesc = "" +
 	"\n" +
-	"5google/cloud/oracledatabase/v1/exadb_vm_cluster.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a+google/cloud/oracledatabase/v1/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1agoogle/type/datetime.proto\"\x90\a\n" +
+	"5google/cloud/oracledatabase/v1/exadb_vm_cluster.proto\x12\x1egoogle.cloud.oracledatabase.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a+google/cloud/oracledatabase/v1/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1agoogle/type/datetime.proto\"\xf7\a\n" +
 	"\x0eExadbVmCluster\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12]\n" +
 	"\n" +
@@ -658,7 +668,8 @@ const file_google_cloud_oracledatabase_v1_exadb_vm_cluster_proto_rawDesc = "" +
 	"\vcreate_time\x18\n" +
 	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
 	"createTime\x12*\n" +
-	"\x0eentitlement_id\x18\v \x01(\tB\x03\xe0A\x03R\rentitlementId\x1a9\n" +
+	"\x0eentitlement_id\x18\v \x01(\tB\x03\xe0A\x03R\rentitlementId\x12e\n" +
+	"\x12identity_connector\x18\f \x01(\v21.google.cloud.oracledatabase.v1.IdentityConnectorB\x03\xe0A\x03R\x11identityConnector\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x9f\x01\xeaA\x9b\x01\n" +
@@ -733,24 +744,26 @@ var file_google_cloud_oracledatabase_v1_exadb_vm_cluster_proto_goTypes = []any{
 	(*ExadbVmClusterProperties)(nil),                           // 5: google.cloud.oracledatabase.v1.ExadbVmClusterProperties
 	nil,                                                        // 6: google.cloud.oracledatabase.v1.ExadbVmCluster.LabelsEntry
 	(*timestamppb.Timestamp)(nil),                              // 7: google.protobuf.Timestamp
-	(*DataCollectionOptionsCommon)(nil),                        // 8: google.cloud.oracledatabase.v1.DataCollectionOptionsCommon
-	(*datetime.TimeZone)(nil),                                  // 9: google.type.TimeZone
+	(*IdentityConnector)(nil),                                  // 8: google.cloud.oracledatabase.v1.IdentityConnector
+	(*DataCollectionOptionsCommon)(nil),                        // 9: google.cloud.oracledatabase.v1.DataCollectionOptionsCommon
+	(*datetime.TimeZone)(nil),                                  // 10: google.type.TimeZone
 }
 var file_google_cloud_oracledatabase_v1_exadb_vm_cluster_proto_depIdxs = []int32{
-	5, // 0: google.cloud.oracledatabase.v1.ExadbVmCluster.properties:type_name -> google.cloud.oracledatabase.v1.ExadbVmClusterProperties
-	6, // 1: google.cloud.oracledatabase.v1.ExadbVmCluster.labels:type_name -> google.cloud.oracledatabase.v1.ExadbVmCluster.LabelsEntry
-	7, // 2: google.cloud.oracledatabase.v1.ExadbVmCluster.create_time:type_name -> google.protobuf.Timestamp
-	4, // 3: google.cloud.oracledatabase.v1.ExadbVmClusterProperties.vm_file_system_storage:type_name -> google.cloud.oracledatabase.v1.ExadbVmClusterStorageDetails
-	0, // 4: google.cloud.oracledatabase.v1.ExadbVmClusterProperties.license_model:type_name -> google.cloud.oracledatabase.v1.ExadbVmClusterProperties.LicenseModel
-	8, // 5: google.cloud.oracledatabase.v1.ExadbVmClusterProperties.data_collection_options:type_name -> google.cloud.oracledatabase.v1.DataCollectionOptionsCommon
-	9, // 6: google.cloud.oracledatabase.v1.ExadbVmClusterProperties.time_zone:type_name -> google.type.TimeZone
-	1, // 7: google.cloud.oracledatabase.v1.ExadbVmClusterProperties.lifecycle_state:type_name -> google.cloud.oracledatabase.v1.ExadbVmClusterProperties.ExadbVmClusterLifecycleState
-	2, // 8: google.cloud.oracledatabase.v1.ExadbVmClusterProperties.shape_attribute:type_name -> google.cloud.oracledatabase.v1.ExadbVmClusterProperties.ShapeAttribute
-	9, // [9:9] is the sub-list for method output_type
-	9, // [9:9] is the sub-list for method input_type
-	9, // [9:9] is the sub-list for extension type_name
-	9, // [9:9] is the sub-list for extension extendee
-	0, // [0:9] is the sub-list for field type_name
+	5,  // 0: google.cloud.oracledatabase.v1.ExadbVmCluster.properties:type_name -> google.cloud.oracledatabase.v1.ExadbVmClusterProperties
+	6,  // 1: google.cloud.oracledatabase.v1.ExadbVmCluster.labels:type_name -> google.cloud.oracledatabase.v1.ExadbVmCluster.LabelsEntry
+	7,  // 2: google.cloud.oracledatabase.v1.ExadbVmCluster.create_time:type_name -> google.protobuf.Timestamp
+	8,  // 3: google.cloud.oracledatabase.v1.ExadbVmCluster.identity_connector:type_name -> google.cloud.oracledatabase.v1.IdentityConnector
+	4,  // 4: google.cloud.oracledatabase.v1.ExadbVmClusterProperties.vm_file_system_storage:type_name -> google.cloud.oracledatabase.v1.ExadbVmClusterStorageDetails
+	0,  // 5: google.cloud.oracledatabase.v1.ExadbVmClusterProperties.license_model:type_name -> google.cloud.oracledatabase.v1.ExadbVmClusterProperties.LicenseModel
+	9,  // 6: google.cloud.oracledatabase.v1.ExadbVmClusterProperties.data_collection_options:type_name -> google.cloud.oracledatabase.v1.DataCollectionOptionsCommon
+	10, // 7: google.cloud.oracledatabase.v1.ExadbVmClusterProperties.time_zone:type_name -> google.type.TimeZone
+	1,  // 8: google.cloud.oracledatabase.v1.ExadbVmClusterProperties.lifecycle_state:type_name -> google.cloud.oracledatabase.v1.ExadbVmClusterProperties.ExadbVmClusterLifecycleState
+	2,  // 9: google.cloud.oracledatabase.v1.ExadbVmClusterProperties.shape_attribute:type_name -> google.cloud.oracledatabase.v1.ExadbVmClusterProperties.ShapeAttribute
+	10, // [10:10] is the sub-list for method output_type
+	10, // [10:10] is the sub-list for method input_type
+	10, // [10:10] is the sub-list for extension type_name
+	10, // [10:10] is the sub-list for extension extendee
+	0,  // [0:10] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_oracledatabase_v1_exadb_vm_cluster_proto_init() }

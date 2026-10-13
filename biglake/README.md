@@ -1,8 +1,8 @@
-# BigLake API
+# Lakehouse API
 
 [![Go Reference](https://pkg.go.dev/badge/cloud.google.com/go/biglake.svg)](https://pkg.go.dev/cloud.google.com/go/biglake)
 
-Go Client Library for BigLake API.
+Go Client Library for Lakehouse API.
 
 ## Install
 

@@ -807,6 +807,81 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "agentregistry",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/agentregistry/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "agentregistry.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListAgents = append(client.CallOptions.ListAgents, gax.WithClientTracing(tracing))
+		client.CallOptions.SearchAgents = append(client.CallOptions.SearchAgents, gax.WithClientTracing(tracing))
+		client.CallOptions.GetAgent = append(client.CallOptions.GetAgent, gax.WithClientTracing(tracing))
+		client.CallOptions.ListEndpoints = append(client.CallOptions.ListEndpoints, gax.WithClientTracing(tracing))
+		client.CallOptions.GetEndpoint = append(client.CallOptions.GetEndpoint, gax.WithClientTracing(tracing))
+		client.CallOptions.ListMcpServers = append(client.CallOptions.ListMcpServers, gax.WithClientTracing(tracing))
+		client.CallOptions.SearchMcpServers = append(client.CallOptions.SearchMcpServers, gax.WithClientTracing(tracing))
+		client.CallOptions.GetMcpServer = append(client.CallOptions.GetMcpServer, gax.WithClientTracing(tracing))
+		client.CallOptions.ListServices = append(client.CallOptions.ListServices, gax.WithClientTracing(tracing))
+		client.CallOptions.GetService = append(client.CallOptions.GetService, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateService = append(client.CallOptions.CreateService, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateService = append(client.CallOptions.UpdateService, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteService = append(client.CallOptions.DeleteService, gax.WithClientTracing(tracing))
+		client.CallOptions.ListBindings = append(client.CallOptions.ListBindings, gax.WithClientTracing(tracing))
+		client.CallOptions.GetBinding = append(client.CallOptions.GetBinding, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateBinding = append(client.CallOptions.CreateBinding, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateBinding = append(client.CallOptions.UpdateBinding, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteBinding = append(client.CallOptions.DeleteBinding, gax.WithClientTracing(tracing))
+		client.CallOptions.FetchAvailableBindings = append(client.CallOptions.FetchAvailableBindings, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "agentregistry",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/agentregistry/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "agentregistry.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListAgents = append(client.CallOptions.ListAgents, gax.WithClientLogging(logging))
+		client.CallOptions.SearchAgents = append(client.CallOptions.SearchAgents, gax.WithClientLogging(logging))
+		client.CallOptions.GetAgent = append(client.CallOptions.GetAgent, gax.WithClientLogging(logging))
+		client.CallOptions.ListEndpoints = append(client.CallOptions.ListEndpoints, gax.WithClientLogging(logging))
+		client.CallOptions.GetEndpoint = append(client.CallOptions.GetEndpoint, gax.WithClientLogging(logging))
+		client.CallOptions.ListMcpServers = append(client.CallOptions.ListMcpServers, gax.WithClientLogging(logging))
+		client.CallOptions.SearchMcpServers = append(client.CallOptions.SearchMcpServers, gax.WithClientLogging(logging))
+		client.CallOptions.GetMcpServer = append(client.CallOptions.GetMcpServer, gax.WithClientLogging(logging))
+		client.CallOptions.ListServices = append(client.CallOptions.ListServices, gax.WithClientLogging(logging))
+		client.CallOptions.GetService = append(client.CallOptions.GetService, gax.WithClientLogging(logging))
+		client.CallOptions.CreateService = append(client.CallOptions.CreateService, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateService = append(client.CallOptions.UpdateService, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteService = append(client.CallOptions.DeleteService, gax.WithClientLogging(logging))
+		client.CallOptions.ListBindings = append(client.CallOptions.ListBindings, gax.WithClientLogging(logging))
+		client.CallOptions.GetBinding = append(client.CallOptions.GetBinding, gax.WithClientLogging(logging))
+		client.CallOptions.CreateBinding = append(client.CallOptions.CreateBinding, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateBinding = append(client.CallOptions.UpdateBinding, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteBinding = append(client.CallOptions.DeleteBinding, gax.WithClientLogging(logging))
+		client.CallOptions.FetchAvailableBindings = append(client.CallOptions.FetchAvailableBindings, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -938,6 +1013,81 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "agentregistry",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/agentregistry/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "agentregistry.googleapis.com",
+			}),
+		)
+
+		callOpts.ListAgents = append(callOpts.ListAgents, gax.WithClientTracing(tracing))
+		callOpts.SearchAgents = append(callOpts.SearchAgents, gax.WithClientTracing(tracing))
+		callOpts.GetAgent = append(callOpts.GetAgent, gax.WithClientTracing(tracing))
+		callOpts.ListEndpoints = append(callOpts.ListEndpoints, gax.WithClientTracing(tracing))
+		callOpts.GetEndpoint = append(callOpts.GetEndpoint, gax.WithClientTracing(tracing))
+		callOpts.ListMcpServers = append(callOpts.ListMcpServers, gax.WithClientTracing(tracing))
+		callOpts.SearchMcpServers = append(callOpts.SearchMcpServers, gax.WithClientTracing(tracing))
+		callOpts.GetMcpServer = append(callOpts.GetMcpServer, gax.WithClientTracing(tracing))
+		callOpts.ListServices = append(callOpts.ListServices, gax.WithClientTracing(tracing))
+		callOpts.GetService = append(callOpts.GetService, gax.WithClientTracing(tracing))
+		callOpts.CreateService = append(callOpts.CreateService, gax.WithClientTracing(tracing))
+		callOpts.UpdateService = append(callOpts.UpdateService, gax.WithClientTracing(tracing))
+		callOpts.DeleteService = append(callOpts.DeleteService, gax.WithClientTracing(tracing))
+		callOpts.ListBindings = append(callOpts.ListBindings, gax.WithClientTracing(tracing))
+		callOpts.GetBinding = append(callOpts.GetBinding, gax.WithClientTracing(tracing))
+		callOpts.CreateBinding = append(callOpts.CreateBinding, gax.WithClientTracing(tracing))
+		callOpts.UpdateBinding = append(callOpts.UpdateBinding, gax.WithClientTracing(tracing))
+		callOpts.DeleteBinding = append(callOpts.DeleteBinding, gax.WithClientTracing(tracing))
+		callOpts.FetchAvailableBindings = append(callOpts.FetchAvailableBindings, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "agentregistry",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/agentregistry/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "agentregistry.googleapis.com",
+			}),
+		)
+
+		callOpts.ListAgents = append(callOpts.ListAgents, gax.WithClientLogging(logging))
+		callOpts.SearchAgents = append(callOpts.SearchAgents, gax.WithClientLogging(logging))
+		callOpts.GetAgent = append(callOpts.GetAgent, gax.WithClientLogging(logging))
+		callOpts.ListEndpoints = append(callOpts.ListEndpoints, gax.WithClientLogging(logging))
+		callOpts.GetEndpoint = append(callOpts.GetEndpoint, gax.WithClientLogging(logging))
+		callOpts.ListMcpServers = append(callOpts.ListMcpServers, gax.WithClientLogging(logging))
+		callOpts.SearchMcpServers = append(callOpts.SearchMcpServers, gax.WithClientLogging(logging))
+		callOpts.GetMcpServer = append(callOpts.GetMcpServer, gax.WithClientLogging(logging))
+		callOpts.ListServices = append(callOpts.ListServices, gax.WithClientLogging(logging))
+		callOpts.GetService = append(callOpts.GetService, gax.WithClientLogging(logging))
+		callOpts.CreateService = append(callOpts.CreateService, gax.WithClientLogging(logging))
+		callOpts.UpdateService = append(callOpts.UpdateService, gax.WithClientLogging(logging))
+		callOpts.DeleteService = append(callOpts.DeleteService, gax.WithClientLogging(logging))
+		callOpts.ListBindings = append(callOpts.ListBindings, gax.WithClientLogging(logging))
+		callOpts.GetBinding = append(callOpts.GetBinding, gax.WithClientLogging(logging))
+		callOpts.CreateBinding = append(callOpts.CreateBinding, gax.WithClientLogging(logging))
+		callOpts.UpdateBinding = append(callOpts.UpdateBinding, gax.WithClientLogging(logging))
+		callOpts.DeleteBinding = append(callOpts.DeleteBinding, gax.WithClientLogging(logging))
+		callOpts.FetchAvailableBindings = append(callOpts.FetchAvailableBindings, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -994,9 +1144,6 @@ func (c *gRPCClient) ListAgents(ctx context.Context, req *agentregistrypb.ListAg
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//agentregistry.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.agentregistry.v1.AgentRegistry/ListAgents")
 	}
@@ -1046,9 +1193,6 @@ func (c *gRPCClient) SearchAgents(ctx context.Context, req *agentregistrypb.Sear
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//agentregistry.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.agentregistry.v1.AgentRegistry/SearchAgents")
 	}
@@ -1098,9 +1242,6 @@ func (c *gRPCClient) GetAgent(ctx context.Context, req *agentregistrypb.GetAgent
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//agentregistry.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.agentregistry.v1.AgentRegistry/GetAgent")
 	}
@@ -1122,9 +1263,6 @@ func (c *gRPCClient) ListEndpoints(ctx context.Context, req *agentregistrypb.Lis
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//agentregistry.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.agentregistry.v1.AgentRegistry/ListEndpoints")
 	}
@@ -1174,9 +1312,6 @@ func (c *gRPCClient) GetEndpoint(ctx context.Context, req *agentregistrypb.GetEn
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//agentregistry.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.agentregistry.v1.AgentRegistry/GetEndpoint")
 	}
@@ -1198,9 +1333,6 @@ func (c *gRPCClient) ListMcpServers(ctx context.Context, req *agentregistrypb.Li
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//agentregistry.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.agentregistry.v1.AgentRegistry/ListMcpServers")
 	}
@@ -1250,9 +1382,6 @@ func (c *gRPCClient) SearchMcpServers(ctx context.Context, req *agentregistrypb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//agentregistry.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.agentregistry.v1.AgentRegistry/SearchMcpServers")
 	}
@@ -1302,9 +1431,6 @@ func (c *gRPCClient) GetMcpServer(ctx context.Context, req *agentregistrypb.GetM
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//agentregistry.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.agentregistry.v1.AgentRegistry/GetMcpServer")
 	}
@@ -1326,9 +1452,6 @@ func (c *gRPCClient) ListServices(ctx context.Context, req *agentregistrypb.List
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//agentregistry.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.agentregistry.v1.AgentRegistry/ListServices")
 	}
@@ -1378,9 +1501,6 @@ func (c *gRPCClient) GetService(ctx context.Context, req *agentregistrypb.GetSer
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//agentregistry.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.agentregistry.v1.AgentRegistry/GetService")
 	}
@@ -1402,9 +1522,6 @@ func (c *gRPCClient) CreateService(ctx context.Context, req *agentregistrypb.Cre
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//agentregistry.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.agentregistry.v1.AgentRegistry/CreateService")
 	}
@@ -1459,9 +1576,6 @@ func (c *gRPCClient) DeleteService(ctx context.Context, req *agentregistrypb.Del
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//agentregistry.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.agentregistry.v1.AgentRegistry/DeleteService")
 	}
@@ -1489,9 +1603,6 @@ func (c *gRPCClient) ListBindings(ctx context.Context, req *agentregistrypb.List
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//agentregistry.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.agentregistry.v1.AgentRegistry/ListBindings")
 	}
@@ -1541,9 +1652,6 @@ func (c *gRPCClient) GetBinding(ctx context.Context, req *agentregistrypb.GetBin
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//agentregistry.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.agentregistry.v1.AgentRegistry/GetBinding")
 	}
@@ -1565,9 +1673,6 @@ func (c *gRPCClient) CreateBinding(ctx context.Context, req *agentregistrypb.Cre
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//agentregistry.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.agentregistry.v1.AgentRegistry/CreateBinding")
 	}
@@ -1622,9 +1727,6 @@ func (c *gRPCClient) DeleteBinding(ctx context.Context, req *agentregistrypb.Del
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//agentregistry.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.agentregistry.v1.AgentRegistry/DeleteBinding")
 	}
@@ -1652,9 +1754,6 @@ func (c *gRPCClient) FetchAvailableBindings(ctx context.Context, req *agentregis
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//agentregistry.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.agentregistry.v1.AgentRegistry/FetchAvailableBindings")
 	}
@@ -2054,9 +2153,6 @@ func (c *restClient) GetAgent(ctx context.Context, req *agentregistrypb.GetAgent
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//agentregistry.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.agentregistry.v1.AgentRegistry/GetAgent")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/agents/*}")
@@ -2192,9 +2288,6 @@ func (c *restClient) GetEndpoint(ctx context.Context, req *agentregistrypb.GetEn
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//agentregistry.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.agentregistry.v1.AgentRegistry/GetEndpoint")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/endpoints/*}")
@@ -2411,9 +2504,6 @@ func (c *restClient) GetMcpServer(ctx context.Context, req *agentregistrypb.GetM
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//agentregistry.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.agentregistry.v1.AgentRegistry/GetMcpServer")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/mcpServers/*}")
@@ -2549,9 +2639,6 @@ func (c *restClient) GetService(ctx context.Context, req *agentregistrypb.GetSer
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//agentregistry.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.agentregistry.v1.AgentRegistry/GetService")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/services/*}")
@@ -2617,9 +2704,6 @@ func (c *restClient) CreateService(ctx context.Context, req *agentregistrypb.Cre
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//agentregistry.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.agentregistry.v1.AgentRegistry/CreateService")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/services")
@@ -2762,9 +2846,6 @@ func (c *restClient) DeleteService(ctx context.Context, req *agentregistrypb.Del
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//agentregistry.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.agentregistry.v1.AgentRegistry/DeleteService")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/services/*}")
@@ -2910,9 +2991,6 @@ func (c *restClient) GetBinding(ctx context.Context, req *agentregistrypb.GetBin
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//agentregistry.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.agentregistry.v1.AgentRegistry/GetBinding")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/bindings/*}")
@@ -2978,9 +3056,6 @@ func (c *restClient) CreateBinding(ctx context.Context, req *agentregistrypb.Cre
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//agentregistry.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.agentregistry.v1.AgentRegistry/CreateBinding")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/bindings")
@@ -3123,9 +3198,6 @@ func (c *restClient) DeleteBinding(ctx context.Context, req *agentregistrypb.Del
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//agentregistry.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.agentregistry.v1.AgentRegistry/DeleteBinding")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/bindings/*}")

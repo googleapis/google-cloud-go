@@ -392,6 +392,43 @@ func NewNotificationsApiClient(ctx context.Context, opts ...option.ClientOption)
 		client.CallOptions.ListNotificationSubscriptions = append(client.CallOptions.ListNotificationSubscriptions, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetNotificationSubscriptionHealthMetrics = append(client.CallOptions.GetNotificationSubscriptionHealthMetrics, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/notifications/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetNotificationSubscription = append(client.CallOptions.GetNotificationSubscription, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateNotificationSubscription = append(client.CallOptions.CreateNotificationSubscription, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateNotificationSubscription = append(client.CallOptions.UpdateNotificationSubscription, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteNotificationSubscription = append(client.CallOptions.DeleteNotificationSubscription, gax.WithClientTracing(tracing))
+		client.CallOptions.ListNotificationSubscriptions = append(client.CallOptions.ListNotificationSubscriptions, gax.WithClientTracing(tracing))
+		client.CallOptions.GetNotificationSubscriptionHealthMetrics = append(client.CallOptions.GetNotificationSubscriptionHealthMetrics, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/notifications/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetNotificationSubscription = append(client.CallOptions.GetNotificationSubscription, gax.WithClientLogging(logging))
+		client.CallOptions.CreateNotificationSubscription = append(client.CallOptions.CreateNotificationSubscription, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateNotificationSubscription = append(client.CallOptions.UpdateNotificationSubscription, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteNotificationSubscription = append(client.CallOptions.DeleteNotificationSubscription, gax.WithClientLogging(logging))
+		client.CallOptions.ListNotificationSubscriptions = append(client.CallOptions.ListNotificationSubscriptions, gax.WithClientLogging(logging))
+		client.CallOptions.GetNotificationSubscriptionHealthMetrics = append(client.CallOptions.GetNotificationSubscriptionHealthMetrics, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -488,6 +525,43 @@ func NewNotificationsApiRESTClient(ctx context.Context, opts ...option.ClientOpt
 		callOpts.ListNotificationSubscriptions = append(callOpts.ListNotificationSubscriptions, gax.WithClientMetrics(metrics))
 		callOpts.GetNotificationSubscriptionHealthMetrics = append(callOpts.GetNotificationSubscriptionHealthMetrics, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/notifications/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.GetNotificationSubscription = append(callOpts.GetNotificationSubscription, gax.WithClientTracing(tracing))
+		callOpts.CreateNotificationSubscription = append(callOpts.CreateNotificationSubscription, gax.WithClientTracing(tracing))
+		callOpts.UpdateNotificationSubscription = append(callOpts.UpdateNotificationSubscription, gax.WithClientTracing(tracing))
+		callOpts.DeleteNotificationSubscription = append(callOpts.DeleteNotificationSubscription, gax.WithClientTracing(tracing))
+		callOpts.ListNotificationSubscriptions = append(callOpts.ListNotificationSubscriptions, gax.WithClientTracing(tracing))
+		callOpts.GetNotificationSubscriptionHealthMetrics = append(callOpts.GetNotificationSubscriptionHealthMetrics, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/notifications/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.GetNotificationSubscription = append(callOpts.GetNotificationSubscription, gax.WithClientLogging(logging))
+		callOpts.CreateNotificationSubscription = append(callOpts.CreateNotificationSubscription, gax.WithClientLogging(logging))
+		callOpts.UpdateNotificationSubscription = append(callOpts.UpdateNotificationSubscription, gax.WithClientLogging(logging))
+		callOpts.DeleteNotificationSubscription = append(callOpts.DeleteNotificationSubscription, gax.WithClientLogging(logging))
+		callOpts.ListNotificationSubscriptions = append(callOpts.ListNotificationSubscriptions, gax.WithClientLogging(logging))
+		callOpts.GetNotificationSubscriptionHealthMetrics = append(callOpts.GetNotificationSubscriptionHealthMetrics, gax.WithClientLogging(logging))
+	}
 
 	return &NotificationsApiClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -534,9 +608,6 @@ func (c *notificationsApiGRPCClient) GetNotificationSubscription(ctx context.Con
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.notifications.v1.NotificationsApiService/GetNotificationSubscription")
 	}
@@ -558,9 +629,6 @@ func (c *notificationsApiGRPCClient) CreateNotificationSubscription(ctx context.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.notifications.v1.NotificationsApiService/CreateNotificationSubscription")
 	}
@@ -603,9 +671,6 @@ func (c *notificationsApiGRPCClient) DeleteNotificationSubscription(ctx context.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.notifications.v1.NotificationsApiService/DeleteNotificationSubscription")
 	}
@@ -623,9 +688,6 @@ func (c *notificationsApiGRPCClient) ListNotificationSubscriptions(ctx context.C
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.notifications.v1.NotificationsApiService/ListNotificationSubscriptions")
 	}
@@ -675,9 +737,6 @@ func (c *notificationsApiGRPCClient) GetNotificationSubscriptionHealthMetrics(ct
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.notifications.v1.NotificationsApiService/GetNotificationSubscriptionHealthMetrics")
 	}
@@ -713,9 +772,6 @@ func (c *notificationsApiRESTClient) GetNotificationSubscription(ctx context.Con
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.notifications.v1.NotificationsApiService/GetNotificationSubscription")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/notifications/v1/{name=accounts/*/notificationsubscriptions/*}")
@@ -799,9 +855,6 @@ func (c *notificationsApiRESTClient) CreateNotificationSubscription(ctx context.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.notifications.v1.NotificationsApiService/CreateNotificationSubscription")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/notifications/v1/{parent=accounts/*}/notificationsubscriptions")
@@ -924,9 +977,6 @@ func (c *notificationsApiRESTClient) DeleteNotificationSubscription(ctx context.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.notifications.v1.NotificationsApiService/DeleteNotificationSubscription")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/notifications/v1/{name=accounts/*/notificationsubscriptions/*}")
@@ -1046,9 +1096,6 @@ func (c *notificationsApiRESTClient) GetNotificationSubscriptionHealthMetrics(ct
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.notifications.v1.NotificationsApiService/GetNotificationSubscriptionHealthMetrics")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/notifications/v1/{name=accounts/*/notificationsubscriptions/*}:getHealth")

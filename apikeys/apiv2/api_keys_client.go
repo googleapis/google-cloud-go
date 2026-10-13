@@ -377,6 +377,49 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.LookupKey = append(client.CallOptions.LookupKey, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "apikeys",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/apikeys/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "apikeys.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateKey = append(client.CallOptions.CreateKey, gax.WithClientTracing(tracing))
+		client.CallOptions.ListKeys = append(client.CallOptions.ListKeys, gax.WithClientTracing(tracing))
+		client.CallOptions.GetKey = append(client.CallOptions.GetKey, gax.WithClientTracing(tracing))
+		client.CallOptions.GetKeyString = append(client.CallOptions.GetKeyString, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateKey = append(client.CallOptions.UpdateKey, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteKey = append(client.CallOptions.DeleteKey, gax.WithClientTracing(tracing))
+		client.CallOptions.UndeleteKey = append(client.CallOptions.UndeleteKey, gax.WithClientTracing(tracing))
+		client.CallOptions.LookupKey = append(client.CallOptions.LookupKey, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "apikeys",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/apikeys/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "apikeys.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateKey = append(client.CallOptions.CreateKey, gax.WithClientLogging(logging))
+		client.CallOptions.ListKeys = append(client.CallOptions.ListKeys, gax.WithClientLogging(logging))
+		client.CallOptions.GetKey = append(client.CallOptions.GetKey, gax.WithClientLogging(logging))
+		client.CallOptions.GetKeyString = append(client.CallOptions.GetKeyString, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateKey = append(client.CallOptions.UpdateKey, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteKey = append(client.CallOptions.DeleteKey, gax.WithClientLogging(logging))
+		client.CallOptions.UndeleteKey = append(client.CallOptions.UndeleteKey, gax.WithClientLogging(logging))
+		client.CallOptions.LookupKey = append(client.CallOptions.LookupKey, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -492,6 +535,49 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.LookupKey = append(callOpts.LookupKey, gax.WithClientMetrics(metrics))
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "apikeys",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/apikeys/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "apikeys.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateKey = append(callOpts.CreateKey, gax.WithClientTracing(tracing))
+		callOpts.ListKeys = append(callOpts.ListKeys, gax.WithClientTracing(tracing))
+		callOpts.GetKey = append(callOpts.GetKey, gax.WithClientTracing(tracing))
+		callOpts.GetKeyString = append(callOpts.GetKeyString, gax.WithClientTracing(tracing))
+		callOpts.UpdateKey = append(callOpts.UpdateKey, gax.WithClientTracing(tracing))
+		callOpts.DeleteKey = append(callOpts.DeleteKey, gax.WithClientTracing(tracing))
+		callOpts.UndeleteKey = append(callOpts.UndeleteKey, gax.WithClientTracing(tracing))
+		callOpts.LookupKey = append(callOpts.LookupKey, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "apikeys",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/apikeys/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "apikeys.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateKey = append(callOpts.CreateKey, gax.WithClientLogging(logging))
+		callOpts.ListKeys = append(callOpts.ListKeys, gax.WithClientLogging(logging))
+		callOpts.GetKey = append(callOpts.GetKey, gax.WithClientLogging(logging))
+		callOpts.GetKeyString = append(callOpts.GetKeyString, gax.WithClientLogging(logging))
+		callOpts.UpdateKey = append(callOpts.UpdateKey, gax.WithClientLogging(logging))
+		callOpts.DeleteKey = append(callOpts.DeleteKey, gax.WithClientLogging(logging))
+		callOpts.UndeleteKey = append(callOpts.UndeleteKey, gax.WithClientLogging(logging))
+		callOpts.LookupKey = append(callOpts.LookupKey, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -548,9 +634,6 @@ func (c *gRPCClient) CreateKey(ctx context.Context, req *apikeyspb.CreateKeyRequ
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apikeys.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.api.apikeys.v2.ApiKeys/CreateKey")
 	}
@@ -578,9 +661,6 @@ func (c *gRPCClient) ListKeys(ctx context.Context, req *apikeyspb.ListKeysReques
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apikeys.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.api.apikeys.v2.ApiKeys/ListKeys")
 	}
@@ -630,9 +710,6 @@ func (c *gRPCClient) GetKey(ctx context.Context, req *apikeyspb.GetKeyRequest, o
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apikeys.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.api.apikeys.v2.ApiKeys/GetKey")
 	}
@@ -654,9 +731,6 @@ func (c *gRPCClient) GetKeyString(ctx context.Context, req *apikeyspb.GetKeyStri
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apikeys.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.api.apikeys.v2.ApiKeys/GetKeyString")
 	}
@@ -705,9 +779,6 @@ func (c *gRPCClient) DeleteKey(ctx context.Context, req *apikeyspb.DeleteKeyRequ
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apikeys.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.api.apikeys.v2.ApiKeys/DeleteKey")
 	}
@@ -735,9 +806,6 @@ func (c *gRPCClient) UndeleteKey(ctx context.Context, req *apikeyspb.UndeleteKey
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apikeys.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.api.apikeys.v2.ApiKeys/UndeleteKey")
 	}
@@ -831,9 +899,6 @@ func (c *restClient) CreateKey(ctx context.Context, req *apikeyspb.CreateKeyRequ
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apikeys.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.api.apikeys.v2.ApiKeys/CreateKey")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{parent=projects/*/locations/*}/keys")
@@ -984,9 +1049,6 @@ func (c *restClient) GetKey(ctx context.Context, req *apikeyspb.GetKeyRequest, o
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apikeys.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.api.apikeys.v2.ApiKeys/GetKey")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/keys/*}")
@@ -1044,9 +1106,6 @@ func (c *restClient) GetKeyString(ctx context.Context, req *apikeyspb.GetKeyStri
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apikeys.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.api.apikeys.v2.ApiKeys/GetKeyString")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/keys/*}/keyString")
@@ -1187,9 +1246,6 @@ func (c *restClient) DeleteKey(ctx context.Context, req *apikeyspb.DeleteKeyRequ
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apikeys.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.api.apikeys.v2.ApiKeys/DeleteKey")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/keys/*}")
@@ -1260,9 +1316,6 @@ func (c *restClient) UndeleteKey(ctx context.Context, req *apikeyspb.UndeleteKey
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apikeys.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.api.apikeys.v2.ApiKeys/UndeleteKey")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/keys/*}:undelete")

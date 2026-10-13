@@ -17,7 +17,10 @@ package internal
 import (
 	"context"
 
+	btopt "cloud.google.com/go/bigtable/internal/option"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
 )
 
 // ChannelPrimer warms a freshly-dialed Bigtable channel before it is put
@@ -30,11 +33,27 @@ import (
 //   - pingAndWarmChannelPrimer issues a PingAndWarm against the configured
 //     instance / app profile with the supplied feature-flag metadata
 //     (today's only behavior, used by the classic channel pool factory).
+//   - NoOpChannelPrimer skips priming entirely. Prefer this over nil at
+//     construction sites where "no priming" is a deliberate architectural
+//     choice (e.g. session channel pools that warm via OpenSession on
+//     each stream) rather than a placeholder waiting for a real primer.
 type ChannelPrimer interface {
 	// Prime warms conn so the next request served by it does not pay the
 	// first-RPC connection-setup cost. The factory wraps Prime in a retry
 	// loop, so transient errors should propagate as-is.
 	Prime(ctx context.Context, conn *BigtableConn) error
+}
+
+// NoOpChannelPrimer explicitly disables per-connection priming. Session
+// channel pools warm their channels via the OpenSession handshake on
+// each newly-opened stream, so a PingAndWarm at dial time is redundant.
+// Passing NoOpChannelPrimer{} makes the "no priming" choice explicit at
+// the construction site instead of relying on nil-as-sentinel.
+type NoOpChannelPrimer struct{}
+
+// Prime is a no-op — the channel is returned unprimed.
+func (NoOpChannelPrimer) Prime(_ context.Context, _ *BigtableConn) error {
+	return nil
 }
 
 // pingAndWarmChannelPrimer primes a channel by issuing a PingAndWarm RPC
@@ -58,6 +77,18 @@ func newPingAndWarmChannelPrimer(instanceName, appProfile string, featureFlagsMD
 
 // Prime delegates to BigtableConn.Prime, which sends PingAndWarm and
 // records the ALTS / IP-protocol observations on conn as a side effect.
+//
+// A NotFound response is treated as a successful prime: the server
+// returns NotFound for a valid but empty instance ("No tables found for
+// instance ..."), and blocking client creation in that case would
+// prevent admin flows (create the first table, migrations). Typo'd
+// instance names also produce NotFound but surface on the first real
+// RPC, so nothing is silently masked here.
 func (p *pingAndWarmChannelPrimer) Prime(ctx context.Context, conn *BigtableConn) error {
-	return conn.Prime(ctx, p.instanceName, p.appProfile, p.featureFlagsMD)
+	err := conn.Prime(ctx, p.instanceName, p.appProfile, p.featureFlagsMD)
+	if err != nil && status.Code(err) == codes.NotFound {
+		btopt.Debugf(nil, "bigtable_connpool: PingAndWarm returned NotFound (instance likely empty); treating as primed: %v", err)
+		return nil
+	}
+	return err
 }

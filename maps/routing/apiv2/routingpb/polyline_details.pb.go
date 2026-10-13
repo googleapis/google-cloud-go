@@ -95,12 +95,21 @@ func (PolylineDetails_RoadFeatureState) EnumDescriptor() ([]byte, []int) {
 // `PolylineDetails` defines an interval and associated metadata.
 type PolylineDetails struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
+	// Tunnel details along the polyline. This field is populated if the request
+	// specifies the `avoid_tunnels` route modifier and the resultant route fails
+	// to avoid them, OR if `TUNNEL_INFO_ON_POLYLINE` is specified in
+	// `extra_computations` and the route contains tunnels.
+	TunnelInfo []*PolylineDetails_TunnelInfo `protobuf:"bytes,8,rep,name=tunnel_info,json=tunnelInfo,proto3" json:"tunnel_info,omitempty"`
 	// Flyover details along the polyline.
 	FlyoverInfo []*PolylineDetails_FlyoverInfo `protobuf:"bytes,12,rep,name=flyover_info,json=flyoverInfo,proto3" json:"flyover_info,omitempty"`
 	// Narrow road details along the polyline.
 	NarrowRoadInfo []*PolylineDetails_NarrowRoadInfo `protobuf:"bytes,13,rep,name=narrow_road_info,json=narrowRoadInfo,proto3" json:"narrow_road_info,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	// Bridge details along the polyline.
+	BridgeInfo []*PolylineDetails_BridgeInfo `protobuf:"bytes,14,rep,name=bridge_info,json=bridgeInfo,proto3" json:"bridge_info,omitempty"`
+	// Skyway details along the polyline.
+	SkywayInfo    []*PolylineDetails_SkywayInfo `protobuf:"bytes,15,rep,name=skyway_info,json=skywayInfo,proto3" json:"skyway_info,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *PolylineDetails) Reset() {
@@ -133,6 +142,13 @@ func (*PolylineDetails) Descriptor() ([]byte, []int) {
 	return file_google_maps_routing_v2_polyline_details_proto_rawDescGZIP(), []int{0}
 }
 
+func (x *PolylineDetails) GetTunnelInfo() []*PolylineDetails_TunnelInfo {
+	if x != nil {
+		return x.TunnelInfo
+	}
+	return nil
+}
+
 func (x *PolylineDetails) GetFlyoverInfo() []*PolylineDetails_FlyoverInfo {
 	if x != nil {
 		return x.FlyoverInfo
@@ -143,6 +159,20 @@ func (x *PolylineDetails) GetFlyoverInfo() []*PolylineDetails_FlyoverInfo {
 func (x *PolylineDetails) GetNarrowRoadInfo() []*PolylineDetails_NarrowRoadInfo {
 	if x != nil {
 		return x.NarrowRoadInfo
+	}
+	return nil
+}
+
+func (x *PolylineDetails) GetBridgeInfo() []*PolylineDetails_BridgeInfo {
+	if x != nil {
+		return x.BridgeInfo
+	}
+	return nil
+}
+
+func (x *PolylineDetails) GetSkywayInfo() []*PolylineDetails_SkywayInfo {
+	if x != nil {
+		return x.SkywayInfo
 	}
 	return nil
 }
@@ -204,6 +234,171 @@ func (x *PolylineDetails_PolylinePointIndex) GetEndIndex() int32 {
 	return 0
 }
 
+// Encapsulates information about tunnels along the polyline.
+type PolylineDetails_TunnelInfo struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Denotes whether a tunnel exists for a given stretch of the polyline.
+	TunnelPresence PolylineDetails_RoadFeatureState `protobuf:"varint,1,opt,name=tunnel_presence,json=tunnelPresence,proto3,enum=google.maps.routing.v2.PolylineDetails_RoadFeatureState" json:"tunnel_presence,omitempty"`
+	// The location of tunnel related information along the polyline.
+	PolylinePointIndex *PolylineDetails_PolylinePointIndex `protobuf:"bytes,2,opt,name=polyline_point_index,json=polylinePointIndex,proto3" json:"polyline_point_index,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
+}
+
+func (x *PolylineDetails_TunnelInfo) Reset() {
+	*x = PolylineDetails_TunnelInfo{}
+	mi := &file_google_maps_routing_v2_polyline_details_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PolylineDetails_TunnelInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PolylineDetails_TunnelInfo) ProtoMessage() {}
+
+func (x *PolylineDetails_TunnelInfo) ProtoReflect() protoreflect.Message {
+	mi := &file_google_maps_routing_v2_polyline_details_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PolylineDetails_TunnelInfo.ProtoReflect.Descriptor instead.
+func (*PolylineDetails_TunnelInfo) Descriptor() ([]byte, []int) {
+	return file_google_maps_routing_v2_polyline_details_proto_rawDescGZIP(), []int{0, 1}
+}
+
+func (x *PolylineDetails_TunnelInfo) GetTunnelPresence() PolylineDetails_RoadFeatureState {
+	if x != nil {
+		return x.TunnelPresence
+	}
+	return PolylineDetails_ROAD_FEATURE_STATE_UNSPECIFIED
+}
+
+func (x *PolylineDetails_TunnelInfo) GetPolylinePointIndex() *PolylineDetails_PolylinePointIndex {
+	if x != nil {
+		return x.PolylinePointIndex
+	}
+	return nil
+}
+
+// Encapsulates information about bridges along the polyline.
+type PolylineDetails_BridgeInfo struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Denotes whether a bridge exists for a given stretch of the polyline.
+	BridgePresence PolylineDetails_RoadFeatureState `protobuf:"varint,1,opt,name=bridge_presence,json=bridgePresence,proto3,enum=google.maps.routing.v2.PolylineDetails_RoadFeatureState" json:"bridge_presence,omitempty"`
+	// The location of bridge related information along the polyline.
+	PolylinePointIndex *PolylineDetails_PolylinePointIndex `protobuf:"bytes,2,opt,name=polyline_point_index,json=polylinePointIndex,proto3" json:"polyline_point_index,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
+}
+
+func (x *PolylineDetails_BridgeInfo) Reset() {
+	*x = PolylineDetails_BridgeInfo{}
+	mi := &file_google_maps_routing_v2_polyline_details_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PolylineDetails_BridgeInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PolylineDetails_BridgeInfo) ProtoMessage() {}
+
+func (x *PolylineDetails_BridgeInfo) ProtoReflect() protoreflect.Message {
+	mi := &file_google_maps_routing_v2_polyline_details_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PolylineDetails_BridgeInfo.ProtoReflect.Descriptor instead.
+func (*PolylineDetails_BridgeInfo) Descriptor() ([]byte, []int) {
+	return file_google_maps_routing_v2_polyline_details_proto_rawDescGZIP(), []int{0, 2}
+}
+
+func (x *PolylineDetails_BridgeInfo) GetBridgePresence() PolylineDetails_RoadFeatureState {
+	if x != nil {
+		return x.BridgePresence
+	}
+	return PolylineDetails_ROAD_FEATURE_STATE_UNSPECIFIED
+}
+
+func (x *PolylineDetails_BridgeInfo) GetPolylinePointIndex() *PolylineDetails_PolylinePointIndex {
+	if x != nil {
+		return x.PolylinePointIndex
+	}
+	return nil
+}
+
+// Encapsulates information about skyways along the polyline.
+type PolylineDetails_SkywayInfo struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Denotes whether a skyway exists for a given stretch of the polyline.
+	SkywayPresence PolylineDetails_RoadFeatureState `protobuf:"varint,1,opt,name=skyway_presence,json=skywayPresence,proto3,enum=google.maps.routing.v2.PolylineDetails_RoadFeatureState" json:"skyway_presence,omitempty"`
+	// The location of skyway related information along the polyline.
+	PolylinePointIndex *PolylineDetails_PolylinePointIndex `protobuf:"bytes,2,opt,name=polyline_point_index,json=polylinePointIndex,proto3" json:"polyline_point_index,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
+}
+
+func (x *PolylineDetails_SkywayInfo) Reset() {
+	*x = PolylineDetails_SkywayInfo{}
+	mi := &file_google_maps_routing_v2_polyline_details_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PolylineDetails_SkywayInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PolylineDetails_SkywayInfo) ProtoMessage() {}
+
+func (x *PolylineDetails_SkywayInfo) ProtoReflect() protoreflect.Message {
+	mi := &file_google_maps_routing_v2_polyline_details_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PolylineDetails_SkywayInfo.ProtoReflect.Descriptor instead.
+func (*PolylineDetails_SkywayInfo) Descriptor() ([]byte, []int) {
+	return file_google_maps_routing_v2_polyline_details_proto_rawDescGZIP(), []int{0, 3}
+}
+
+func (x *PolylineDetails_SkywayInfo) GetSkywayPresence() PolylineDetails_RoadFeatureState {
+	if x != nil {
+		return x.SkywayPresence
+	}
+	return PolylineDetails_ROAD_FEATURE_STATE_UNSPECIFIED
+}
+
+func (x *PolylineDetails_SkywayInfo) GetPolylinePointIndex() *PolylineDetails_PolylinePointIndex {
+	if x != nil {
+		return x.PolylinePointIndex
+	}
+	return nil
+}
+
 // Encapsulates information about flyovers along the polyline.
 type PolylineDetails_FlyoverInfo struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -218,7 +413,7 @@ type PolylineDetails_FlyoverInfo struct {
 
 func (x *PolylineDetails_FlyoverInfo) Reset() {
 	*x = PolylineDetails_FlyoverInfo{}
-	mi := &file_google_maps_routing_v2_polyline_details_proto_msgTypes[2]
+	mi := &file_google_maps_routing_v2_polyline_details_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -230,7 +425,7 @@ func (x *PolylineDetails_FlyoverInfo) String() string {
 func (*PolylineDetails_FlyoverInfo) ProtoMessage() {}
 
 func (x *PolylineDetails_FlyoverInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_google_maps_routing_v2_polyline_details_proto_msgTypes[2]
+	mi := &file_google_maps_routing_v2_polyline_details_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -243,7 +438,7 @@ func (x *PolylineDetails_FlyoverInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PolylineDetails_FlyoverInfo.ProtoReflect.Descriptor instead.
 func (*PolylineDetails_FlyoverInfo) Descriptor() ([]byte, []int) {
-	return file_google_maps_routing_v2_polyline_details_proto_rawDescGZIP(), []int{0, 1}
+	return file_google_maps_routing_v2_polyline_details_proto_rawDescGZIP(), []int{0, 4}
 }
 
 func (x *PolylineDetails_FlyoverInfo) GetFlyoverPresence() PolylineDetails_RoadFeatureState {
@@ -274,7 +469,7 @@ type PolylineDetails_NarrowRoadInfo struct {
 
 func (x *PolylineDetails_NarrowRoadInfo) Reset() {
 	*x = PolylineDetails_NarrowRoadInfo{}
-	mi := &file_google_maps_routing_v2_polyline_details_proto_msgTypes[3]
+	mi := &file_google_maps_routing_v2_polyline_details_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -286,7 +481,7 @@ func (x *PolylineDetails_NarrowRoadInfo) String() string {
 func (*PolylineDetails_NarrowRoadInfo) ProtoMessage() {}
 
 func (x *PolylineDetails_NarrowRoadInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_google_maps_routing_v2_polyline_details_proto_msgTypes[3]
+	mi := &file_google_maps_routing_v2_polyline_details_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -299,7 +494,7 @@ func (x *PolylineDetails_NarrowRoadInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PolylineDetails_NarrowRoadInfo.ProtoReflect.Descriptor instead.
 func (*PolylineDetails_NarrowRoadInfo) Descriptor() ([]byte, []int) {
-	return file_google_maps_routing_v2_polyline_details_proto_rawDescGZIP(), []int{0, 2}
+	return file_google_maps_routing_v2_polyline_details_proto_rawDescGZIP(), []int{0, 5}
 }
 
 func (x *PolylineDetails_NarrowRoadInfo) GetNarrowRoadPresence() PolylineDetails_RoadFeatureState {
@@ -320,17 +515,35 @@ var File_google_maps_routing_v2_polyline_details_proto protoreflect.FileDescript
 
 const file_google_maps_routing_v2_polyline_details_proto_rawDesc = "" +
 	"\n" +
-	"-google/maps/routing/v2/polyline_details.proto\x12\x16google.maps.routing.v2\x1a\x1fgoogle/api/field_behavior.proto\"\xf9\x06\n" +
-	"\x0fPolylineDetails\x12V\n" +
+	"-google/maps/routing/v2/polyline_details.proto\x12\x16google.maps.routing.v2\x1a\x1fgoogle/api/field_behavior.proto\"\x98\x0e\n" +
+	"\x0fPolylineDetails\x12S\n" +
+	"\vtunnel_info\x18\b \x03(\v22.google.maps.routing.v2.PolylineDetails.TunnelInfoR\n" +
+	"tunnelInfo\x12V\n" +
 	"\fflyover_info\x18\f \x03(\v23.google.maps.routing.v2.PolylineDetails.FlyoverInfoR\vflyoverInfo\x12`\n" +
-	"\x10narrow_road_info\x18\r \x03(\v26.google.maps.routing.v2.PolylineDetails.NarrowRoadInfoR\x0enarrowRoadInfo\x1az\n" +
+	"\x10narrow_road_info\x18\r \x03(\v26.google.maps.routing.v2.PolylineDetails.NarrowRoadInfoR\x0enarrowRoadInfo\x12S\n" +
+	"\vbridge_info\x18\x0e \x03(\v22.google.maps.routing.v2.PolylineDetails.BridgeInfoR\n" +
+	"bridgeInfo\x12S\n" +
+	"\vskyway_info\x18\x0f \x03(\v22.google.maps.routing.v2.PolylineDetails.SkywayInfoR\n" +
+	"skywayInfo\x1az\n" +
 	"\x12PolylinePointIndex\x12$\n" +
 	"\vstart_index\x18\x01 \x01(\x05H\x00R\n" +
 	"startIndex\x88\x01\x01\x12 \n" +
 	"\tend_index\x18\x02 \x01(\x05H\x01R\bendIndex\x88\x01\x01B\x0e\n" +
 	"\f_start_indexB\f\n" +
 	"\n" +
-	"_end_index\x1a\xe5\x01\n" +
+	"_end_index\x1a\xdd\x01\n" +
+	"\n" +
+	"TunnelInfo\x12a\n" +
+	"\x0ftunnel_presence\x18\x01 \x01(\x0e28.google.maps.routing.v2.PolylineDetails.RoadFeatureStateR\x0etunnelPresence\x12l\n" +
+	"\x14polyline_point_index\x18\x02 \x01(\v2:.google.maps.routing.v2.PolylineDetails.PolylinePointIndexR\x12polylinePointIndex\x1a\xdd\x01\n" +
+	"\n" +
+	"BridgeInfo\x12a\n" +
+	"\x0fbridge_presence\x18\x01 \x01(\x0e28.google.maps.routing.v2.PolylineDetails.RoadFeatureStateR\x0ebridgePresence\x12l\n" +
+	"\x14polyline_point_index\x18\x02 \x01(\v2:.google.maps.routing.v2.PolylineDetails.PolylinePointIndexR\x12polylinePointIndex\x1a\xdd\x01\n" +
+	"\n" +
+	"SkywayInfo\x12a\n" +
+	"\x0fskyway_presence\x18\x01 \x01(\x0e28.google.maps.routing.v2.PolylineDetails.RoadFeatureStateR\x0eskywayPresence\x12l\n" +
+	"\x14polyline_point_index\x18\x02 \x01(\v2:.google.maps.routing.v2.PolylineDetails.PolylinePointIndexR\x12polylinePointIndex\x1a\xe5\x01\n" +
 	"\vFlyoverInfo\x12h\n" +
 	"\x10flyover_presence\x18\x01 \x01(\x0e28.google.maps.routing.v2.PolylineDetails.RoadFeatureStateB\x03\xe0A\x03R\x0fflyoverPresence\x12l\n" +
 	"\x14polyline_point_index\x18\x02 \x01(\v2:.google.maps.routing.v2.PolylineDetails.PolylinePointIndexR\x12polylinePointIndex\x1a\xef\x01\n" +
@@ -357,26 +570,38 @@ func file_google_maps_routing_v2_polyline_details_proto_rawDescGZIP() []byte {
 }
 
 var file_google_maps_routing_v2_polyline_details_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_google_maps_routing_v2_polyline_details_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_google_maps_routing_v2_polyline_details_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_google_maps_routing_v2_polyline_details_proto_goTypes = []any{
 	(PolylineDetails_RoadFeatureState)(0),      // 0: google.maps.routing.v2.PolylineDetails.RoadFeatureState
 	(*PolylineDetails)(nil),                    // 1: google.maps.routing.v2.PolylineDetails
 	(*PolylineDetails_PolylinePointIndex)(nil), // 2: google.maps.routing.v2.PolylineDetails.PolylinePointIndex
-	(*PolylineDetails_FlyoverInfo)(nil),        // 3: google.maps.routing.v2.PolylineDetails.FlyoverInfo
-	(*PolylineDetails_NarrowRoadInfo)(nil),     // 4: google.maps.routing.v2.PolylineDetails.NarrowRoadInfo
+	(*PolylineDetails_TunnelInfo)(nil),         // 3: google.maps.routing.v2.PolylineDetails.TunnelInfo
+	(*PolylineDetails_BridgeInfo)(nil),         // 4: google.maps.routing.v2.PolylineDetails.BridgeInfo
+	(*PolylineDetails_SkywayInfo)(nil),         // 5: google.maps.routing.v2.PolylineDetails.SkywayInfo
+	(*PolylineDetails_FlyoverInfo)(nil),        // 6: google.maps.routing.v2.PolylineDetails.FlyoverInfo
+	(*PolylineDetails_NarrowRoadInfo)(nil),     // 7: google.maps.routing.v2.PolylineDetails.NarrowRoadInfo
 }
 var file_google_maps_routing_v2_polyline_details_proto_depIdxs = []int32{
-	3, // 0: google.maps.routing.v2.PolylineDetails.flyover_info:type_name -> google.maps.routing.v2.PolylineDetails.FlyoverInfo
-	4, // 1: google.maps.routing.v2.PolylineDetails.narrow_road_info:type_name -> google.maps.routing.v2.PolylineDetails.NarrowRoadInfo
-	0, // 2: google.maps.routing.v2.PolylineDetails.FlyoverInfo.flyover_presence:type_name -> google.maps.routing.v2.PolylineDetails.RoadFeatureState
-	2, // 3: google.maps.routing.v2.PolylineDetails.FlyoverInfo.polyline_point_index:type_name -> google.maps.routing.v2.PolylineDetails.PolylinePointIndex
-	0, // 4: google.maps.routing.v2.PolylineDetails.NarrowRoadInfo.narrow_road_presence:type_name -> google.maps.routing.v2.PolylineDetails.RoadFeatureState
-	2, // 5: google.maps.routing.v2.PolylineDetails.NarrowRoadInfo.polyline_point_index:type_name -> google.maps.routing.v2.PolylineDetails.PolylinePointIndex
-	6, // [6:6] is the sub-list for method output_type
-	6, // [6:6] is the sub-list for method input_type
-	6, // [6:6] is the sub-list for extension type_name
-	6, // [6:6] is the sub-list for extension extendee
-	0, // [0:6] is the sub-list for field type_name
+	3,  // 0: google.maps.routing.v2.PolylineDetails.tunnel_info:type_name -> google.maps.routing.v2.PolylineDetails.TunnelInfo
+	6,  // 1: google.maps.routing.v2.PolylineDetails.flyover_info:type_name -> google.maps.routing.v2.PolylineDetails.FlyoverInfo
+	7,  // 2: google.maps.routing.v2.PolylineDetails.narrow_road_info:type_name -> google.maps.routing.v2.PolylineDetails.NarrowRoadInfo
+	4,  // 3: google.maps.routing.v2.PolylineDetails.bridge_info:type_name -> google.maps.routing.v2.PolylineDetails.BridgeInfo
+	5,  // 4: google.maps.routing.v2.PolylineDetails.skyway_info:type_name -> google.maps.routing.v2.PolylineDetails.SkywayInfo
+	0,  // 5: google.maps.routing.v2.PolylineDetails.TunnelInfo.tunnel_presence:type_name -> google.maps.routing.v2.PolylineDetails.RoadFeatureState
+	2,  // 6: google.maps.routing.v2.PolylineDetails.TunnelInfo.polyline_point_index:type_name -> google.maps.routing.v2.PolylineDetails.PolylinePointIndex
+	0,  // 7: google.maps.routing.v2.PolylineDetails.BridgeInfo.bridge_presence:type_name -> google.maps.routing.v2.PolylineDetails.RoadFeatureState
+	2,  // 8: google.maps.routing.v2.PolylineDetails.BridgeInfo.polyline_point_index:type_name -> google.maps.routing.v2.PolylineDetails.PolylinePointIndex
+	0,  // 9: google.maps.routing.v2.PolylineDetails.SkywayInfo.skyway_presence:type_name -> google.maps.routing.v2.PolylineDetails.RoadFeatureState
+	2,  // 10: google.maps.routing.v2.PolylineDetails.SkywayInfo.polyline_point_index:type_name -> google.maps.routing.v2.PolylineDetails.PolylinePointIndex
+	0,  // 11: google.maps.routing.v2.PolylineDetails.FlyoverInfo.flyover_presence:type_name -> google.maps.routing.v2.PolylineDetails.RoadFeatureState
+	2,  // 12: google.maps.routing.v2.PolylineDetails.FlyoverInfo.polyline_point_index:type_name -> google.maps.routing.v2.PolylineDetails.PolylinePointIndex
+	0,  // 13: google.maps.routing.v2.PolylineDetails.NarrowRoadInfo.narrow_road_presence:type_name -> google.maps.routing.v2.PolylineDetails.RoadFeatureState
+	2,  // 14: google.maps.routing.v2.PolylineDetails.NarrowRoadInfo.polyline_point_index:type_name -> google.maps.routing.v2.PolylineDetails.PolylinePointIndex
+	15, // [15:15] is the sub-list for method output_type
+	15, // [15:15] is the sub-list for method input_type
+	15, // [15:15] is the sub-list for extension type_name
+	15, // [15:15] is the sub-list for extension extendee
+	0,  // [0:15] is the sub-list for field type_name
 }
 
 func init() { file_google_maps_routing_v2_polyline_details_proto_init() }
@@ -391,7 +616,7 @@ func file_google_maps_routing_v2_polyline_details_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_maps_routing_v2_polyline_details_proto_rawDesc), len(file_google_maps_routing_v2_polyline_details_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   4,
+			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
