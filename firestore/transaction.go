@@ -332,15 +332,15 @@ type Queryer interface {
 // results will be in the context of the transaction.
 func (t *Transaction) Documents(q Queryer) *DocumentIterator {
 	if t.err != nil {
-		return &DocumentIterator{err: t.err}
+		return &DocumentIterator{err: t.err, ctx: t.ctx}
 	}
 	if len(t.writes) > 0 {
 		t.readAfterWrite = true
-		return &DocumentIterator{err: errReadAfterWrite}
+		return &DocumentIterator{err: errReadAfterWrite, ctx: t.ctx}
 	}
 	query := q.query()
 	return &DocumentIterator{
-		iter: newQueryDocumentIterator(t.ctx, query, t.id, t.readSettings), q: query,
+		iter: newQueryDocumentIterator(t.ctx, query, t.id, t.readSettings), q: query, ctx: t.ctx,
 	}
 }
 
