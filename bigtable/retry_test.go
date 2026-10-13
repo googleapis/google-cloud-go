@@ -278,6 +278,114 @@ func TestRetryApplyBulk_FailuresAndRetriesInOneRequest(t *testing.T) {
 	}
 }
 
+// TestRetryApplyBulk_MidStreamErrorBlocksRetryOnNonIdempotentBatch
+// verifies that when the MutateRows stream fails mid-way AND the group
+// contains any non-idempotent mutation (SetCell with Timestamp =
+// ServerTime), applyGroup wraps the error in a non-retryable code so
+// gax does NOT retry the group. Without this guard, a retry would
+// re-send the already-committed ServerTime entry and the server would
+// write a second cell at a new server timestamp.
+func TestRetryApplyBulk_MidStreamErrorBlocksRetryOnNonIdempotentBatch(t *testing.T) {
+	ctx := context.Background()
+
+	attempts := 0
+	errInjector := func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
+		if !strings.HasSuffix(info.FullMethod, "MutateRows") {
+			return handler(srv, ss)
+		}
+		req := new(btpb.MutateRowsRequest)
+		must(ss.RecvMsg(req))
+		attempts++
+		if attempts > 1 {
+			t.Errorf("attempt %d: gax must not retry a non-idempotent batch after a mid-stream failure", attempts)
+		}
+		// Commit row1 (index 0), then fail mid-stream.
+		must(writeMutateRowsResponse(ss, codes.OK))
+		return status.Errorf(codes.Unavailable, "injected mid-stream failure")
+	}
+
+	tbl, cleanup, err := setupDefaultFakeServer(grpc.StreamInterceptor(errInjector))
+	defer cleanup()
+	if err != nil {
+		t.Fatalf("fake server setup: %v", err)
+	}
+
+	m1 := NewMutation()
+	m1.Set("cf", "c1", 1000, []byte("v1"))
+	m2 := NewMutation()
+	m2.Set("cf", "c2", ServerTime, []byte("v2")) // non-idempotent -- forces the retry block
+	m3 := NewMutation()
+	m3.Set("cf", "c3", 3000, []byte("v3"))
+
+	errs, topErr := tbl.ApplyBulk(ctx, []string{"row1", "row2", "row3"}, []*Mutation{m1, m2, m3})
+	if topErr == nil {
+		t.Fatalf("ApplyBulk returned nil top-level err; want FailedPrecondition wrap of mid-stream Unavailable (errs=%v)", errs)
+	}
+	if got, want := status.Code(topErr), codes.FailedPrecondition; got != want {
+		t.Errorf("ApplyBulk top-level err code = %v, want %v (so gax doesn't retry a non-idempotent batch)", got, want)
+	}
+	if attempts != 1 {
+		t.Errorf("attempts = %d, want 1 (non-idempotent batch must not trigger a retry)", attempts)
+	}
+}
+
+// TestRetryApplyBulk_MidStreamErrorRetriesIdempotentBatch verifies that
+// the mid-stream retry suppression does NOT fire for all-idempotent
+// batches. Those keep the pre-existing full-group retry behavior (the
+// server dedupes idempotent re-writes by (row, column, timestamp)).
+func TestRetryApplyBulk_MidStreamErrorRetriesIdempotentBatch(t *testing.T) {
+	ctx := context.Background()
+
+	attempts := 0
+	errInjector := func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
+		if !strings.HasSuffix(info.FullMethod, "MutateRows") {
+			return handler(srv, ss)
+		}
+		req := new(btpb.MutateRowsRequest)
+		must(ss.RecvMsg(req))
+		attempts++
+		switch attempts {
+		case 1:
+			// Mid-stream failure after committing row1.
+			must(writeMutateRowsResponse(ss, codes.OK))
+			return status.Errorf(codes.Unavailable, "injected mid-stream failure")
+		case 2:
+			// Pre-existing behavior: full group is re-sent (server would
+			// dedupe idempotent re-writes). Return OK for all.
+			if got, want := len(req.Entries), 3; got != want {
+				t.Errorf("attempt 2: req.Entries len = %d, want %d (full-group retry preserved for idempotent batch)", got, want)
+			}
+			return writeMutateRowsResponse(ss, codes.OK, codes.OK, codes.OK)
+		}
+		t.Fatalf("unexpected extra attempt %d", attempts)
+		return nil
+	}
+
+	tbl, cleanup, err := setupDefaultFakeServer(grpc.StreamInterceptor(errInjector))
+	defer cleanup()
+	if err != nil {
+		t.Fatalf("fake server setup: %v", err)
+	}
+
+	m1 := NewMutation()
+	m1.Set("cf", "c1", 1000, []byte("v1"))
+	m2 := NewMutation()
+	m2.Set("cf", "c2", 2000, []byte("v2"))
+	m3 := NewMutation()
+	m3.Set("cf", "c3", 3000, []byte("v3"))
+
+	errs, topErr := tbl.ApplyBulk(ctx, []string{"row1", "row2", "row3"}, []*Mutation{m1, m2, m3})
+	if topErr != nil {
+		t.Fatalf("ApplyBulk returned top-level err: %v (errs=%v)", topErr, errs)
+	}
+	if errs != nil {
+		t.Errorf("errs = %v, want nil (all entries OK after retry)", errs)
+	}
+	if attempts != 2 {
+		t.Errorf("attempts = %d, want 2 (idempotent batch must still retry)", attempts)
+	}
+}
+
 func TestRetryApplyBulk_UnretryableErrors(t *testing.T) {
 	ctx := context.Background()
 
