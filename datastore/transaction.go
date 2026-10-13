@@ -435,11 +435,16 @@ func (t *Transaction) Commit() (c *Commit, err error) {
 		return nil, err
 	}
 
+	t.stateLock.Lock()
+	mutations := append([]*pb.Mutation(nil), t.mutations...)
+	txID := t.id
+	t.stateLock.Unlock()
+
 	req := &pb.CommitRequest{
 		ProjectId:           t.client.dataset,
 		DatabaseId:          t.client.databaseID,
-		TransactionSelector: &pb.CommitRequest_Transaction{Transaction: t.id},
-		Mutations:           t.mutations,
+		TransactionSelector: &pb.CommitRequest_Transaction{Transaction: txID},
+		Mutations:           mutations,
 		Mode:                pb.CommitRequest_TRANSACTIONAL,
 	}
 	resp, err := t.client.client.Commit(ctx, req)
@@ -451,8 +456,8 @@ func (t *Transaction) Commit() (c *Commit, err error) {
 	}
 
 	t.stateLock.Lock()
+	defer t.stateLock.Unlock()
 	t.state = transactionStateExpired
-	t.stateLock.Unlock()
 
 	c = &Commit{}
 	// Copy any newly minted keys into the returned keys.
@@ -510,30 +515,40 @@ func (t *Transaction) Rollback() (err error) {
 	ctx := trace.StartSpan(t.ctx, "cloud.google.com/go/datastore.Transaction.Rollback")
 	defer func() { trace.EndSpan(ctx, err) }()
 
+	t.stateLock.Lock()
 	if t.state == transactionStateExpired {
+		t.stateLock.Unlock()
 		return errExpiredTransaction
 	}
 
 	if t.id == nil && t.state == transactionStateNotStarted {
+		t.stateLock.Unlock()
 		// no transaction to rollback
 		return nil
 	}
+	t.stateLock.Unlock()
 
 	err = t.beginLaterTransaction()
 	if err != nil {
 		return err
 	}
 
+	t.stateLock.Lock()
+	txID := t.id
+	t.stateLock.Unlock()
+
 	_, err = t.client.client.Rollback(ctx, &pb.RollbackRequest{
 		ProjectId:   t.client.dataset,
 		DatabaseId:  t.client.databaseID,
-		Transaction: t.id,
+		Transaction: txID,
 	})
 	if err != nil {
 		return err
 	}
 
+	t.stateLock.Lock()
 	t.state = transactionStateExpired
+	t.stateLock.Unlock()
 	return nil
 }
 
@@ -655,12 +670,20 @@ func (t *Transaction) PutMultiWithOptions(reqs []*PutRequest, opts ...PutOption)
 }
 
 func (t *Transaction) putMultiInternal(keys []*Key, src interface{}, transforms [][]PropertyTransform) (ret []*PendingKey, err error) {
-	if t.state == transactionStateExpired {
+	t.stateLock.Lock()
+	expired := t.state == transactionStateExpired
+	t.stateLock.Unlock()
+	if expired {
 		return nil, errExpiredTransaction
 	}
 	mutations, err := putMutations(keys, src, transforms)
 	if err != nil {
 		return nil, err
+	}
+	t.stateLock.Lock()
+	defer t.stateLock.Unlock()
+	if t.state == transactionStateExpired {
+		return nil, errExpiredTransaction
 	}
 	origin := len(t.mutations)
 	t.mutations = append(t.mutations, mutations...)
@@ -695,12 +718,20 @@ func (t *Transaction) Delete(key *Key) error {
 // DeleteMulti is a batch version of Delete.
 // TODO(jba): rewrite in terms of Mutate.
 func (t *Transaction) DeleteMulti(keys []*Key) (err error) {
-	if t.state == transactionStateExpired {
+	t.stateLock.Lock()
+	expired := t.state == transactionStateExpired
+	t.stateLock.Unlock()
+	if expired {
 		return errExpiredTransaction
 	}
 	mutations, err := deleteMutations(keys)
 	if err != nil {
 		return err
+	}
+	t.stateLock.Lock()
+	defer t.stateLock.Unlock()
+	if t.state == transactionStateExpired {
+		return errExpiredTransaction
 	}
 	t.mutations = append(t.mutations, mutations...)
 	return nil
@@ -715,12 +746,20 @@ func (t *Transaction) DeleteMulti(keys []*Key) (err error) {
 //
 // For an example, see Client.Mutate.
 func (t *Transaction) Mutate(muts ...*Mutation) ([]*PendingKey, error) {
-	if t.state == transactionStateExpired {
+	t.stateLock.Lock()
+	expired := t.state == transactionStateExpired
+	t.stateLock.Unlock()
+	if expired {
 		return nil, errExpiredTransaction
 	}
 	pmuts, err := mutationProtos(muts)
 	if err != nil {
 		return nil, err
+	}
+	t.stateLock.Lock()
+	defer t.stateLock.Unlock()
+	if t.state == transactionStateExpired {
+		return nil, errExpiredTransaction
 	}
 	origin := len(t.mutations)
 	t.mutations = append(t.mutations, pmuts...)

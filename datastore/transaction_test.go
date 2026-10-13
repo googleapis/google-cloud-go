@@ -908,3 +908,66 @@ func TestRunInTransaction_ContextCanceled(t *testing.T) {
 		t.Errorf("mock server has %d remaining expected RPCs (Rollback likely not called)", len(srv.reqItems))
 	}
 }
+
+func TestTransaction_ConcurrentMutations(t *testing.T) {
+	ctx := context.Background()
+	client, srv, cleanup := newMock(t)
+	defer cleanup()
+
+	srv.addRPC(&pb.BeginTransactionRequest{ProjectId: mockProjectID}, &pb.BeginTransactionResponse{Transaction: []byte("tid")})
+
+	tx, err := client.NewTransaction(ctx)
+	if err != nil {
+		t.Fatalf("NewTransaction: %v", err)
+	}
+
+	const numGoroutines = 10
+	errCh := make(chan error, numGoroutines*3)
+	doneCh := make(chan struct{}, numGoroutines*3)
+
+	for i := 0; i < numGoroutines; i++ {
+		i := i
+		go func() {
+			defer func() { doneCh <- struct{}{} }()
+			k := IncompleteKey("Task", nil)
+			if _, err := tx.Put(k, &struct{ N int }{N: i}); err != nil {
+				errCh <- err
+			}
+		}()
+		go func() {
+			defer func() { doneCh <- struct{}{} }()
+			k := NameKey("Task", "del", nil)
+			if err := tx.Delete(k); err != nil {
+				errCh <- err
+			}
+		}()
+		go func() {
+			defer func() { doneCh <- struct{}{} }()
+			k := IncompleteKey("Task", nil)
+			if _, err := tx.Mutate(NewInsert(k, &struct{ N int }{N: i})); err != nil {
+				errCh <- err
+			}
+		}()
+	}
+
+	for i := 0; i < numGoroutines*3; i++ {
+		<-doneCh
+	}
+	close(errCh)
+	for err := range errCh {
+		t.Errorf("unexpected error during concurrent mutations: %v", err)
+	}
+
+	tx.stateLock.Lock()
+	gotMuts := len(tx.mutations)
+	gotPending := len(tx.pending)
+	tx.stateLock.Unlock()
+
+	if want := numGoroutines * 3; gotMuts != want {
+		t.Errorf("len(tx.mutations) = %d, want %d", gotMuts, want)
+	}
+	if want := numGoroutines * 2; gotPending != want {
+		t.Errorf("len(tx.pending) = %d, want %d", gotPending, want)
+	}
+}
+

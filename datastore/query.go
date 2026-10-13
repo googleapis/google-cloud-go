@@ -987,7 +987,10 @@ func validateReadOptions(eventual bool, t *Transaction, clientReadSettings *read
 		if eventual {
 			return errEventualConsistencyTransaction
 		}
-		if t.state == transactionStateExpired {
+		t.stateLock.Lock()
+		expired := t.state == transactionStateExpired
+		t.stateLock.Unlock()
+		if expired {
 			return errExpiredTransaction
 		}
 		return nil
