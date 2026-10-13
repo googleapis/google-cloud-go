@@ -278,6 +278,107 @@ func TestRetryApplyBulk_FailuresAndRetriesInOneRequest(t *testing.T) {
 	}
 }
 
+// TestRetryApplyBulk_MidStreamErrorNarrowsRetry verifies that when the
+// MutateRows stream fails mid-way after some entries have already received
+// per-entry responses, the retry attempt only re-sends the entries that
+// did not commit AND are safe to retry. In particular:
+//
+//   - Entries whose per-entry OK response was received before the mid-stream
+//     RPC error must NOT be re-sent (they committed; re-sending wastes work
+//     and, for ServerTime SetCell, writes duplicate cells).
+//   - Entries with non-idempotent mutations (SetCell at ServerTime) must NOT
+//     be retried after an RPC-level failure: we cannot distinguish "server
+//     committed, response lost" from "server never processed", so a second
+//     write would risk a duplicate cell with a different server timestamp.
+//   - Entries that were unseen on the failed attempt AND carry only
+//     idempotent mutations are the only ones re-sent on retry.
+//
+// This is the regression test for the apply_bulk.go bug where applyGroup
+// returned mid-stream errors from doApplyBulk before calling
+// getApplyBulkRetries, causing the gax retry loop to re-send the full
+// original group.
+func TestRetryApplyBulk_MidStreamErrorNarrowsRetry(t *testing.T) {
+	ctx := context.Background()
+
+	attempts := 0
+	var attempt2RowKeys []string
+	errInjector := func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
+		if !strings.HasSuffix(info.FullMethod, "MutateRows") {
+			return handler(srv, ss)
+		}
+		req := new(btpb.MutateRowsRequest)
+		must(ss.RecvMsg(req))
+		attempts++
+		switch attempts {
+		case 1:
+			if want, got := 3, len(req.Entries); want != got {
+				t.Fatalf("attempt 1: req.Entries len = %d, want %d", got, want)
+			}
+			// Commit row1 (index 0 in the request), then fail mid-stream.
+			must(writeMutateRowsResponse(ss, codes.OK))
+			return status.Errorf(codes.Unavailable, "injected mid-stream failure")
+		case 2:
+			for _, e := range req.Entries {
+				attempt2RowKeys = append(attempt2RowKeys, string(e.RowKey))
+			}
+			if want, got := 1, len(req.Entries); want != got {
+				t.Fatalf("attempt 2: req.Entries len = %d, want %d; got rowKeys=%v", got, want, attempt2RowKeys)
+			}
+			return writeMutateRowsResponse(ss, codes.OK)
+		}
+		t.Fatalf("unexpected extra attempt %d", attempts)
+		return nil
+	}
+
+	tbl, cleanup, err := setupDefaultFakeServer(grpc.StreamInterceptor(errInjector))
+	defer cleanup()
+	if err != nil {
+		t.Fatalf("fake server setup: %v", err)
+	}
+
+	m1 := NewMutation()
+	m1.Set("cf", "c1", 1000, []byte("v1"))
+	m2 := NewMutation()
+	m2.Set("cf", "c2", ServerTime, []byte("v2")) // non-idempotent: must not be retried
+	m3 := NewMutation()
+	m3.Set("cf", "c3", 3000, []byte("v3"))
+
+	errs, topErr := tbl.ApplyBulk(ctx, []string{"row1", "row2", "row3"}, []*Mutation{m1, m2, m3})
+	if topErr != nil {
+		t.Fatalf("ApplyBulk returned top-level err: %v", topErr)
+	}
+	if len(errs) != 3 {
+		t.Fatalf("errs len = %d, want 3 (errs=%v)", len(errs), errs)
+	}
+	if errs[0] != nil {
+		t.Errorf("errs[0] = %v, want nil (committed on attempt 1)", errs[0])
+	}
+	if errs[1] == nil || status.Code(errs[1]) != codes.Unavailable {
+		t.Errorf("errs[1] = %v, want Unavailable (ServerTime must not be retried)", errs[1])
+	}
+	if errs[2] != nil {
+		t.Errorf("errs[2] = %v, want nil (retried on attempt 2)", errs[2])
+	}
+	if attempts != 2 {
+		t.Errorf("attempts = %d, want 2", attempts)
+	}
+	if want, got := []string{"row3"}, attempt2RowKeys; !equalStrings(want, got) {
+		t.Errorf("attempt 2 rowKeys = %v, want %v (row1 already committed, row2 is ServerTime)", got, want)
+	}
+}
+
+func equalStrings(a, b []string) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i := range a {
+		if a[i] != b[i] {
+			return false
+		}
+	}
+	return true
+}
+
 func TestRetryApplyBulk_UnretryableErrors(t *testing.T) {
 	ctx := context.Background()
 

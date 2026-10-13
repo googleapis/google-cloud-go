@@ -105,8 +105,26 @@ func (t *Table) applyGroup(ctx context.Context, group []*entryErr, opts ...Apply
 		trace.TracePrintf(ctx, attrMap, "Row count in ApplyBulk")
 		err := t.doApplyBulk(ctx, group, headerMD, trailerMD, opts...)
 		if err != nil {
-			// We want to retry the entire request with the current group
-			return err
+			// Mid-stream RPC failure: doApplyBulk has already stamped the
+			// stream error onto each entry that did not receive a per-entry
+			// response. Narrow the retry group via getApplyBulkRetries so
+			// that entries which already committed (seen=true, Err=nil) are
+			// not re-sent on retry -- re-sending them wastes work for
+			// idempotent writes and, for ServerTime SetCell mutations,
+			// creates duplicate cells with new server timestamps.
+			//
+			// Initial-stream failures (the MutateRows call itself returned
+			// before any entries were sent) leave every entry with Err nil
+			// here, so getApplyBulkRetries returns an empty slice and we
+			// fall through to returning the raw err -- gax will retry the
+			// full group if the code is retryable, which is safe because
+			// nothing was committed in that case.
+			retries := t.getApplyBulkRetries(group)
+			if len(retries) == 0 {
+				return err
+			}
+			group = retries
+			return status.Errorf(idempotentRetryCodes[0], "Synthetic error: partial failure of ApplyBulk after RPC error")
 		}
 		// Get the entries that need to be retried
 		group = t.getApplyBulkRetries(group)
@@ -186,7 +204,21 @@ func (t *Table) doApplyBulk(ctx context.Context, entryErrs []*entryErr, headerMD
 		}
 		if err != nil {
 			*trailerMD = stream.Trailer()
-			_, topLevelErr = metrics.ConvertToGrpcStatusErr(err)
+			// Attribute the stream error to each entry that did not
+			// receive a per-entry response. Entries that already received
+			// a response (seen=true) keep whatever Err the server set --
+			// including nil for OK, which marks them as committed and
+			// lets applyGroup's narrowing step exclude them from retry.
+			for i, s := range seen {
+				if !s {
+					entryErrs[i].Err = err
+				}
+			}
+			// topLevelErr intentionally stays nil here: the per-entry Err
+			// set above is the authoritative attribution. Leaving
+			// topLevelErr nil keeps the deferred populateTopLevelError
+			// from stamping err onto committed entries, which the
+			// ApplyBulk collator would otherwise misreport as failures.
 			return err
 		}
 
