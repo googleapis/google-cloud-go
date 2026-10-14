@@ -303,11 +303,11 @@ type ClientConfig struct {
 	// It is ignored with multi-endpoint clients, the emulator, and location-aware
 	// routing.
 	//
-	// Without it, the client uses NumChannels channels and assigns transactions
-	// to them round robin. Set GOOGLE_SPANNER_ENABLE_LEGACY_STATIC_CHANNEL_POOL=true
-	// to use the channel pool of earlier releases. Multi-endpoint clients and
-	// DirectPath clients with GOOGLE_SPANNER_ENABLE_GCP_FALLBACK=true also use
-	// that pool.
+	// Unless DCPEnabled is true, the client uses a fixed pool of NumChannels
+	// channels and assigns transactions to them round robin. Set
+	// GOOGLE_SPANNER_ENABLE_LEGACY_STATIC_CHANNEL_POOL=true to use the earlier
+	// static pool instead. Multi-endpoint and GCP fallback clients keep their
+	// own pools.
 	DynamicChannelPoolConfig DynamicChannelPoolConfig
 
 	// SessionLabels for the sessions created by this client.
@@ -630,7 +630,7 @@ func createFixedConnPool(
 	}
 	if dialedPool.Num() <= 0 {
 		dialedPool.Close()
-		return nil, nil, nil, spannerErrorf(codes.InvalidArgument, "spanner: the gRPC connection pool has no connections")
+		return nil, nil, nil, spannerError(codes.InvalidArgument, "gRPC connection pool has no connections")
 	}
 	sc := newSessionClient(nil, database, config.UserAgent, sessionLabels, config.DatabaseRole, config.DisableRouteToLeader, md, config.BatchTimeout, config.Logger, config.CallOptions)
 	sc.metricsTracerFactory = metricsTracerFactory
@@ -881,13 +881,8 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 			return nil, spannerErrorf(codes.InvalidArgument, "Connection pool mismatch: NumChannels=%v, WithGRPCConnectionPool=%v. Only set one of these options, or set both to the same value.", config.NumChannels, pool.Num())
 		}
 	} else {
-		if config.DynamicChannelPoolConfig.DCPEnabled {
-			logger := internaloption.GetLogger(opts)
-			if emulatorEnabled {
-				logger.DebugContext(ctx, "spanner: DynamicChannelPoolConfig is ignored with the emulator; using a fixed-size channel pool")
-			} else {
-				logger.WarnContext(ctx, "spanner: DynamicChannelPoolConfig is ignored with location-aware routing; using a fixed-size channel pool")
-			}
+		if config.DynamicChannelPoolConfig.DCPEnabled && isExperimentalLocationAPIEnabledForConfig(config) {
+			logf(config.Logger, "spanner: DynamicChannelPoolConfig is ignored with location-aware routing; using a fixed-size channel pool")
 		}
 		pool, sc, endpointClientOpts, err = createFixedConnPool(ctx, database, config, hasNumChannelsConfig, sessionLabels, md, metricsTracerFactory, opts...)
 		if err != nil {

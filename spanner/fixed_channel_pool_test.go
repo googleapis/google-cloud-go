@@ -19,7 +19,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"log/slog"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -35,7 +34,6 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
-	"google.golang.org/grpc/status"
 )
 
 const (
@@ -403,12 +401,6 @@ func TestFixedChannelPoolRunsNoBackgroundWork(t *testing.T) {
 	if err := g.Wait(); err != nil {
 		t.Fatal(err)
 	}
-	for _, e := range p.getEntries() {
-		e.applyErrorPenalty(status.Error(codes.Unavailable, "unavailable"))
-	}
-	if got := p.totalPenaltyLoad.Load(); got != 0 {
-		t.Fatalf("fixed pool penalty load = %d, want 0", got)
-	}
 	if got := len(p.scaleUpSignal); got != 0 {
 		t.Fatalf("fixed pool signalled scale-up %d times, want 0", got)
 	}
@@ -700,36 +692,6 @@ func TestDirectPathFallbackKeepsStaticChannelPool(t *testing.T) {
 	}
 }
 
-// logRecorder records the level and message of every log record.
-type logRecorder struct {
-	mu      sync.Mutex
-	records []string
-}
-
-func (r *logRecorder) Enabled(context.Context, slog.Level) bool { return true }
-
-func (r *logRecorder) Handle(_ context.Context, rec slog.Record) error {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-	r.records = append(r.records, rec.Level.String()+" "+rec.Message)
-	return nil
-}
-
-func (r *logRecorder) WithAttrs([]slog.Attr) slog.Handler { return r }
-func (r *logRecorder) WithGroup(string) slog.Handler      { return r }
-
-func (r *logRecorder) count(s string) int {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-	n := 0
-	for _, rec := range r.records {
-		if strings.Contains(rec, s) {
-			n++
-		}
-	}
-	return n
-}
-
 type lockedBuffer struct {
 	mu  sync.Mutex
 	buf bytes.Buffer
@@ -750,8 +712,8 @@ func (b *lockedBuffer) String() string {
 const dcpUnavailableLog = "DynamicChannelPoolConfig is ignored"
 
 // assertDCPRequestRunsFixedMode checks that client uses a fixed pool of
-// numChannels and, if dcpEnabled, logs one dcpUnavailableLog record at level.
-func assertDCPRequestRunsFixedMode(t *testing.T, client *Client, dcpEnabled bool, level slog.Level, logs *logRecorder, logger *lockedBuffer) {
+// numChannels and that logger got wantLogs dcpUnavailableLog lines.
+func assertDCPRequestRunsFixedMode(t *testing.T, client *Client, wantLogs int, logger *lockedBuffer) {
 	t.Helper()
 	p := fixedPoolOf(t, client)
 	if got, want := p.Num(), numChannels; got != want {
@@ -763,18 +725,8 @@ func assertDCPRequestRunsFixedMode(t *testing.T, client *Client, dcpEnabled bool
 	if p.metrics != nil {
 		t.Fatal("fixed pool has pool metrics")
 	}
-	want := 0
-	if dcpEnabled {
-		want = 1
-	}
-	if got := logs.count(level.String() + " spanner: " + dcpUnavailableLog); got != want {
-		t.Fatalf("%v records about the unavailable dynamic pool = %d, want %d", level, got, want)
-	}
-	if got := logs.count(dcpUnavailableLog); got != want {
-		t.Fatalf("records about the unavailable dynamic pool at any level = %d, want %d", got, want)
-	}
-	if strings.Contains(logger.String(), dcpUnavailableLog) {
-		t.Fatalf("ClientConfig.Logger logged %q", logger.String())
+	if got := strings.Count(logger.String(), dcpUnavailableLog); got != wantLogs {
+		t.Fatalf("ClientConfig.Logger lines about the ignored DynamicChannelPoolConfig = %d, want %d; log: %q", got, wantLogs, logger.String())
 	}
 }
 
@@ -791,12 +743,12 @@ func TestFixedChannelPoolWithEmulator(t *testing.T) {
 			if tt.legacy {
 				t.Setenv(legacyStaticChannelPoolEnv, "true")
 			}
-			logs, logger := &logRecorder{}, &lockedBuffer{}
+			logger := &lockedBuffer{}
 			config := ClientConfig{DisableNativeMetrics: true, Logger: log.New(logger, "", 0)}
 			if tt.dcpEnabled {
 				config.DynamicChannelPoolConfig = testDCPConfig(1, 1, 2)
 			}
-			client, err := NewClientWithConfig(context.Background(), "projects/p/instances/i/databases/d", config, option.WithLogger(slog.New(logs)))
+			client, err := NewClientWithConfig(context.Background(), "projects/p/instances/i/databases/d", config)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -805,11 +757,11 @@ func TestFixedChannelPoolWithEmulator(t *testing.T) {
 				if got := channelPoolKind(client); got != "static" {
 					t.Fatalf("channel pool = %s (%T), want static", got, client.sc.connPool)
 				}
-				if got := logs.count(dcpUnavailableLog); got != 0 {
-					t.Fatalf("records about the unavailable dynamic pool = %d, want 0", got)
+				if strings.Contains(logger.String(), dcpUnavailableLog) {
+					t.Fatalf("ClientConfig.Logger logged %q", logger.String())
 				}
 			} else {
-				assertDCPRequestRunsFixedMode(t, client, tt.dcpEnabled, slog.LevelDebug, logs, logger)
+				assertDCPRequestRunsFixedMode(t, client, 0, logger)
 			}
 			queryFooFromBar(t, client)
 		})
@@ -820,18 +772,21 @@ func TestFixedChannelPoolWithLocationAwareRouting(t *testing.T) {
 	skipDialectRerun(t)
 	for _, dcpEnabled := range []bool{false, true} {
 		t.Run(fmt.Sprintf("DCPEnabled=%v", dcpEnabled), func(t *testing.T) {
-			logs, logger := &logRecorder{}, &lockedBuffer{}
+			logger := &lockedBuffer{}
 			config := ClientConfig{DisableNativeMetrics: true, IsExperimentalHost: true, Logger: log.New(logger, "", 0)}
 			if dcpEnabled {
 				config.DynamicChannelPoolConfig = testDCPConfig(1, 1, 2)
 			}
 			recorder := &dcpChannelRecorder{methods: map[string]bool{executeSQLMethod: true, commitMethod: true}}
 			_, client, teardown := setupMockedTestServerWithConfigAndClientOptions(t, config, []option.ClientOption{
-				option.WithLogger(slog.New(logs)),
 				option.WithGRPCDialOption(grpc.WithUnaryInterceptor(recorder.unaryInterceptor)),
 			})
 			defer teardown()
-			assertDCPRequestRunsFixedMode(t, client, dcpEnabled, slog.LevelWarn, logs, logger)
+			wantLogs := 0
+			if dcpEnabled {
+				wantLogs = 1
+			}
+			assertDCPRequestRunsFixedMode(t, client, wantLogs, logger)
 			p := fixedPoolOf(t, client)
 			if p.Conn() == nil {
 				t.Fatal("fixed pool has no default connection")

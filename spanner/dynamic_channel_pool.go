@@ -305,11 +305,10 @@ func newFixedChannelPool(ctx context.Context, sc *sessionClient, underlying gtra
 	}
 	n := len(conns)
 	cfg, err := normalizeDCPConfig(DynamicChannelPoolConfig{
-		DCPInitialChannels:      n,
-		DCPMinChannels:          n,
-		DCPMaxChannels:          n,
-		DCPSelectionStrategy:    DCPRoundRobin,
-		DCPErrorPenaltyDuration: -1,
+		DCPInitialChannels:   n,
+		DCPMinChannels:       n,
+		DCPMaxChannels:       n,
+		DCPSelectionStrategy: DCPRoundRobin,
 	})
 	if err != nil {
 		return nil, err
@@ -662,9 +661,6 @@ func (p *dynamicChannelPool) pickLeastLoaded() (*dcpEntry, error) {
 // average pool load exceeds DCPMaxRPCPerChannel. The signal channel is buffered
 // so many hot requests collapse into one scale-up evaluation.
 func (p *dynamicChannelPool) maybeSignalScaleUp(e *dcpEntry) {
-	if p.fixed {
-		return
-	}
 	active := p.Num()
 	avg := float64(0)
 	if active > 0 {
