@@ -1556,7 +1556,6 @@ func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRP
 			return
 		}
 		s.upid = upres.GetUploadId()
-		setUploadIDAttribute(ctx, s.upid)
 		s.startWriteRequest = nil
 	} else {
 		q, err := s.raw.QueryWriteStatus(ctx, &storagepb.QueryWriteStatusRequest{UploadId: s.upid}, opts...)
@@ -1567,6 +1566,7 @@ func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRP
 		}
 		cs.completions <- gRPCBidiWriteCompletion{flushOffset: q.GetPersistedSize()}
 	}
+	setUploadIDAttribute(ctx, s.upid)
 
 	stream, err := s.raw.BidiWriteObject(ctx, opts...)
 	if err != nil {

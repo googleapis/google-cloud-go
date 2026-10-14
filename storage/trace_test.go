@@ -356,28 +356,32 @@ func TestSetUploadIDAttribute(t *testing.T) {
 	spanName := "Object.Writer"
 
 	tests := []struct {
-		name       string
-		devTracing string
-		uploadID   string
-		wantAttrs  []attribute.KeyValue
+		name         string
+		devTracing   string
+		uploadID     string
+		wantUploadID string
+		wantAttrs    []attribute.KeyValue
 	}{
 		{
-			name:       "Records upload.id when dev tracing enabled",
-			devTracing: "true",
-			uploadID:   sampleUploadID,
-			wantAttrs:  append(getCommonAttributes(), attribute.String("gcp.storage.upload.id", sampleUploadID)),
+			name:         "Records upload.id when dev tracing enabled",
+			devTracing:   "true",
+			uploadID:     sampleUploadID,
+			wantUploadID: sampleUploadID,
+			wantAttrs:    append(getCommonAttributes(), attribute.String("gcp.storage.upload.id", sampleUploadID)),
 		},
 		{
-			name:       "Omits upload.id when upload_id is empty",
-			devTracing: "true",
-			uploadID:   "",
-			wantAttrs:  getCommonAttributes(),
+			name:         "Omits upload.id when upload_id is empty",
+			devTracing:   "true",
+			uploadID:     "",
+			wantUploadID: "",
+			wantAttrs:    getCommonAttributes(),
 		},
 		{
-			name:       "Omits upload.id when dev tracing disabled",
-			devTracing: "false",
-			uploadID:   sampleUploadID,
-			wantAttrs:  nil,
+			name:         "Omits upload.id when dev tracing disabled",
+			devTracing:   "false",
+			uploadID:     sampleUploadID,
+			wantUploadID: "",
+			wantAttrs:    nil,
 		},
 	}
 
@@ -416,6 +420,7 @@ func TestSetUploadIDAttribute(t *testing.T) {
 			} else if len(gotSpan.Attributes) != 0 {
 				t.Errorf("expected no attributes when dev tracing is disabled, got %v", gotSpan.Attributes)
 			}
+			verifyUploadIDAttribute(t, gotSpan, tc.wantUploadID)
 		})
 	}
 }
@@ -425,10 +430,11 @@ func TestTrackingTransportUploadID(t *testing.T) {
 	spanName := "Object.Writer"
 
 	tests := []struct {
-		name       string
-		reqURL     string
-		respHeader http.Header
-		wantAttrs  []attribute.KeyValue
+		name         string
+		reqURL       string
+		respHeader   http.Header
+		wantUploadID string
+		wantAttrs    []attribute.KeyValue
 	}{
 		{
 			name:   "Extracts upload_id from Location response header",
@@ -436,12 +442,14 @@ func TestTrackingTransportUploadID(t *testing.T) {
 			respHeader: http.Header{
 				"Location": {"http://example.com/upload/storage/v1/b/my-bucket/o?uploadType=resumable&upload_id=" + sampleUploadID},
 			},
-			wantAttrs: append(getCommonAttributes(), attribute.String("gcp.storage.upload.id", sampleUploadID)),
+			wantUploadID: sampleUploadID,
+			wantAttrs:    append(getCommonAttributes(), attribute.String("gcp.storage.upload.id", sampleUploadID)),
 		},
 		{
-			name:      "Omits upload.id when Location header not present",
-			reqURL:    "http://example.com/storage/v1/b/my-bucket/o",
-			wantAttrs: getCommonAttributes(),
+			name:         "Omits upload.id when Location header not present",
+			reqURL:       "http://example.com/storage/v1/b/my-bucket/o",
+			wantUploadID: "",
+			wantAttrs:    getCommonAttributes(),
 		},
 	}
 
@@ -482,6 +490,20 @@ func TestTrackingTransportUploadID(t *testing.T) {
 			if diff := testutil.Diff(gotSpan, wantSpan, opts...); diff != "" {
 				t.Errorf("diff: -got, +want:\n%s\n", diff)
 			}
+			verifyUploadIDAttribute(t, gotSpan, tc.wantUploadID)
 		})
+	}
+}
+
+func verifyUploadIDAttribute(t *testing.T, span tracetest.SpanStub, wantUploadID string) {
+	t.Helper()
+	var gotUploadID string
+	for _, attr := range span.Attributes {
+		if attr.Key == "gcp.storage.upload.id" {
+			gotUploadID = attr.Value.AsString()
+		}
+	}
+	if gotUploadID != wantUploadID {
+		t.Errorf("got upload_id %q, want %q", gotUploadID, wantUploadID)
 	}
 }
