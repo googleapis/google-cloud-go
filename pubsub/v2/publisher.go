@@ -527,8 +527,7 @@ func (t *Publisher) publishMessageBundle(ctx context.Context, bms []*bundledMess
 			gaxOpts = append(gaxOpts, gax.WithGRPCOptions(grpc.UseCompressor(gzip.Name)))
 		}
 
-		canHedge := t.hedgingDelay > 0 && orderingKey == "" &&
-			(t.PublishSettings.Timeout == 0 || t.PublishSettings.Timeout > t.hedgingDelay)
+		canHedge := t.hedgingDelay > 0 && orderingKey == "" && t.PublishSettings.Timeout > t.hedgingDelay
 
 		if canHedge {
 			res, err = t.publishHedged(ctx, start, pbMsgs, bms, gaxOpts)

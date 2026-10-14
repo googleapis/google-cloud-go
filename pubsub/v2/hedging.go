@@ -334,7 +334,7 @@ func (t *Publisher) drainDueHedgedRequests(now time.Time) []*hedgedRequest {
 func (t *Publisher) processHedgingQueue() {
 	ready := t.drainDueHedgedRequests(time.Now())
 	for _, req := range ready {
-		if !req.isDone() && t.tryAcquireHedgingToken() {
+		if !req.isDone() {
 			go t.fireHedgedAttempt(req)
 		}
 	}
@@ -350,22 +350,22 @@ func (t *Publisher) fireHedgedAttempt(req *hedgedRequest) {
 		return
 	}
 
-	t.enqueueHedgedRequest(&hedgedRequest{
-		attemptID: req.attemptID + 1,
-		sendAfter: time.Now().Add(t.hedgingDelay),
-		cs:        req.cs,
-	})
-
 	var timeout time.Duration
 	if deadline, ok := b.ctx.Deadline(); ok {
 		timeout = time.Until(deadline)
 	} else {
 		timeout = t.PublishSettings.Timeout - time.Since(b.startTime)
 	}
-	if timeout <= 0 {
+	if timeout <= 0 || !t.tryAcquireHedgingToken() {
 		return
 	}
 	timeout = min(timeout, 10*time.Second)
+
+	t.enqueueHedgedRequest(&hedgedRequest{
+		attemptID: req.attemptID + 1,
+		sendAfter: time.Now().Add(t.hedgingDelay),
+		cs:        req.cs,
+	})
 
 	// Hedged attempts are not retried; their errors are ignored so they do not
 	// fail the batch while the original attempt is still running.
