@@ -326,14 +326,20 @@ func (c *grpcStorageClient) prepareDirectPathMetadata(ctx context.Context, targe
 		}
 	}
 
-	// Client level feature tracking.
+	// Client level feature tracking. This client owns the feature header:
+	// it is always rewritten from the merged bitmask so that only a single,
+	// well-formed value is sent, and it is removed entirely when there is
+	// nothing to report (e.g. a value set on the context by a caller for an
+	// unrelated client must not be forwarded on data-path requests).
 	features := featureAttributes(ctx)
 	features |= c.configFeatureAttributes
 	// Merge all existing headers for this key from metadata.
 	features |= mergeFeatureAttributes(md[featureTrackerHeaderName])
 
 	if features > 0 {
-		md.Set(featureTrackerHeaderName, encodeUint32(features))
+		md.Set(featureTrackerHeaderName, encodeFeatureMask(features))
+	} else {
+		md.Delete(featureTrackerHeaderName)
 	}
 
 	return metadata.NewOutgoingContext(ctx, md), nil
