@@ -186,12 +186,14 @@ func (p *SessionPoolImpl) createSession(ctx context.Context) error {
 		return fmt.Errorf("failed to acquire session creation budget: %w", err)
 	}
 
-	// budgetReleased is the sole gate: the success path calls
-	// budget.Release(true) explicitly and sets budgetReleased=true, so
-	// any deferred fallback only fires on failure. Passing false is
-	// correct because the only way we reach the defer with
-	// budgetReleased=false is when streamFactory / cap-gate /
-	// Session.Start returned an error.
+	// budgetReleased disarms the deferred fallback once the budget
+	// transitions to the onActive/onClose single-fire gate. It must be
+	// set true before Start() so that if Start() fails via the normal
+	// path (Send → ForceClose → onClose fires synchronously), the defer
+	// does not double-release the slot that onClose's starting branch
+	// already released. For all failures before the startingSessions
+	// transfer, budgetReleased stays false and the defer applies the
+	// penalty.
 	budgetReleased := false
 	defer func() {
 		if !budgetReleased {
@@ -257,21 +259,27 @@ func (p *SessionPoolImpl) createSession(ctx context.Context) error {
 	p.mu.Unlock()
 	reserved = false
 
-	// Disarm the deferred fallback. From here, exactly one of onActive or
-	// the onClose starting branch releases the budget: both paths delete
-	// sh from startingSessions under p.mu, so the delete is the single-
-	// fire gate. Start calling ForceClose on a synchronous Send failure
-	// fires onClose before returning, so the starting branch covers that
-	// path too.
+	// Transfer budget management to onActive/onClose. budgetReleased=true
+	// disarms the deferred fallback so it cannot double-release with
+	// onClose's starting branch when Start() fails normally (Send →
+	// ForceClose → onClose fires synchronously before Start returns).
 	budgetReleased = true
 
 	if err := s.Start(dialCtx, p.openSessionRequest); err != nil {
-		// onClose fired synchronously (ForceClose inside Start) and already
-		// released the budget via the starting branch. Clean up in case
-		// something unexpected left sh in startingSessions.
+		// Normal failure path: Send() failed → ForceClose → onClose's
+		// starting branch already deleted sh and called Release(false).
+		// In that case wasStarting is false and we do nothing extra.
+		//
+		// Defensive path: Start() failed before Send() (e.g. state-machine
+		// check), so onClose never fired, sh is still in startingSessions,
+		// and we must release the budget ourselves.
 		p.mu.Lock()
+		_, wasStarting := p.startingSessions[sh]
 		delete(p.startingSessions, sh)
 		p.mu.Unlock()
+		if wasStarting {
+			p.budget.Release(false)
+		}
 		btopt.Debugf(nil, "POOL %p createSession Start failed for %s: %v", p, sessionName, err)
 		return fmt.Errorf("failed to start session: %w", err)
 	}
