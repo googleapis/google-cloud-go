@@ -45,13 +45,10 @@ const (
 	legacyStaticChannelPoolEnv = "GOOGLE_SPANNER_ENABLE_LEGACY_STATIC_CHANNEL_POOL"
 )
 
-// sawGoogleSQLPass records that TestMain's GoogleSQL pass ran in this process.
 var sawGoogleSQLPass atomic.Bool
 
-// skipDialectRerun skips a dialect-independent test in TestMain's PostgreSQL
-// pass when the GoogleSQL pass already ran it. TestMain runs the whole suite
-// once per dialect, and the channel pool tests do not depend on the dialect.
-// A run with only the PostgreSQL pass still runs them.
+// skipDialectRerun skips a dialect-independent test in the PostgreSQL pass of
+// TestMain if the GoogleSQL pass already ran it.
 func skipDialectRerun(t *testing.T) {
 	t.Helper()
 	if testDialect != adminpb.DatabaseDialect_POSTGRESQL {
@@ -76,9 +73,9 @@ func queryFooFromBar(t *testing.T, client *Client) {
 	}
 }
 
-// runReadWriteTransactionsOnChannels runs n read-write transactions of two
-// statements each and returns the channel ids each transaction used, in order.
-func runReadWriteTransactionsOnChannels(t *testing.T, client *Client, recorder *dcpChannelRecorder, n int) [][]uint64 {
+// transactionChannelIDs returns the channel ids used by each of n read-write
+// transactions.
+func transactionChannelIDs(t *testing.T, client *Client, recorder *dcpChannelRecorder, n int) [][]uint64 {
 	t.Helper()
 	var txns [][]uint64
 	for i := 0; i < n; i++ {
@@ -103,13 +100,12 @@ func runReadWriteTransactionsOnChannels(t *testing.T, client *Client, recorder *
 	return txns
 }
 
-// assertTransactionsBindToChannels runs 2*n read-write transactions and checks
-// that each one sends all of its RPCs on one channel with an id in 1..n, and
-// that the transactions use all n channels.
+// assertTransactionsBindToChannels checks that each transaction stays on one
+// of the channels 1..n and that all n channels are used.
 func assertTransactionsBindToChannels(t *testing.T, client *Client, recorder *dcpChannelRecorder, n int) {
 	t.Helper()
 	used := map[uint64]int{}
-	for i, ids := range runReadWriteTransactionsOnChannels(t, client, recorder, 2*n) {
+	for i, ids := range transactionChannelIDs(t, client, recorder, 2*n) {
 		if len(ids) != 3 {
 			t.Fatalf("transaction %d recorded %d RPCs, want 2 updates and a commit (%v)", i, len(ids), ids)
 		}
@@ -128,8 +124,6 @@ func assertTransactionsBindToChannels(t *testing.T, client *Client, recorder *dc
 	}
 }
 
-// fixedPoolOf returns the client's channel pool and checks that it is the
-// dynamic channel pool in fixed mode.
 func fixedPoolOf(t *testing.T, client *Client) *dynamicChannelPool {
 	t.Helper()
 	p := client.sc.dynamicPool
@@ -139,7 +133,6 @@ func fixedPoolOf(t *testing.T, client *Client) *dynamicChannelPool {
 	return p
 }
 
-// channelPoolKind names the kind of channel pool a client uses.
 func channelPoolKind(client *Client) string {
 	switch p := client.sc.connPool.(type) {
 	case *dynamicChannelPool:
@@ -177,9 +170,6 @@ func TestFixedChannelPoolBindsTransactionsToEntries(t *testing.T) {
 	assertTransactionsBindToChannels(t, client, recorder, 4)
 }
 
-// TestChannelPoolSelection checks which channel pool a client uses for each
-// combination of the dynamic channel pool request, DirectPath, DirectPath
-// fallback and GOOGLE_SPANNER_ENABLE_LEGACY_STATIC_CHANNEL_POOL.
 func TestChannelPoolSelection(t *testing.T) {
 	skipDialectRerun(t)
 	const (
@@ -267,7 +257,6 @@ func TestFixedChannelPoolKeepsNumChannelsMismatchCheck(t *testing.T) {
 	}
 }
 
-// emptyConnPool is a caller-supplied pool without connections.
 type emptyConnPool struct{ gtransport.ConnPool }
 
 func (emptyConnPool) Num() int { return 0 }
@@ -292,15 +281,13 @@ func TestFixedChannelPoolRejectsPoolWithoutConnections(t *testing.T) {
 	}
 }
 
-// clientOrdinal returns the ordinal of the last client created for database.
 func clientOrdinal(database string) int {
 	cidGen.mu.Lock()
 	defer cidGen.mu.Unlock()
 	return cidGen.ids[database]
 }
 
-// repeatingConnPool is a caller-supplied pool whose Conn always returns the
-// same one of its connections.
+// repeatingConnPool returns the same connection from every Conn call.
 type repeatingConnPool struct {
 	gtransport.ConnPool
 	conn *grpc.ClientConn
@@ -308,10 +295,6 @@ type repeatingConnPool struct {
 
 func (p repeatingConnPool) Conn() *grpc.ClientConn { return p.conn }
 
-// TestFixedChannelPoolWithPoolThatRepeatsAConnection gives the client a pool
-// of two connections whose Conn always returns the first one. That one
-// connection gets one entry and one request-id channel id, as in the static
-// pool.
 func TestFixedChannelPoolWithPoolThatRepeatsAConnection(t *testing.T) {
 	skipDialectRerun(t)
 	_, opts, teardown := NewMockedSpannerInMemTestServer(t)
@@ -335,9 +318,6 @@ func TestFixedChannelPoolWithPoolThatRepeatsAConnection(t *testing.T) {
 	assertTransactionsBindToChannels(t, client, recorder, 1)
 }
 
-// TestFixedChannelPoolPicksWithoutActivityTracking checks that picking an
-// entry for a session handle does not record activity, which only
-// scale-down uses.
 func TestFixedChannelPoolPicksWithoutActivityTracking(t *testing.T) {
 	skipDialectRerun(t)
 	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, NumChannels: 2})
@@ -356,13 +336,9 @@ func TestFixedChannelPoolPicksWithoutActivityTracking(t *testing.T) {
 	}
 }
 
-// TestFixedChannelPoolConnPoolMethodsSkipLoadAccounting sends RPCs through
-// the fixed pool's own Invoke and NewStream, then abandons the streams by
-// cancelling their context. A fixed pool forwards them to the picked entry
-// without load accounting, activity tracking or stream wrappers.
 func TestFixedChannelPoolConnPoolMethodsSkipLoadAccounting(t *testing.T) {
 	skipDialectRerun(t)
-	// The bare server, since these RPCs carry none of the client's headers.
+	// Use a bare server: these raw RPCs lack headers that setupMockedTestServer checks.
 	_, opts, teardown := NewMockedSpannerInMemTestServer(t)
 	defer teardown()
 	client, err := NewClientWithConfig(context.Background(), "projects/p/instances/i/databases/d", ClientConfig{DisableNativeMetrics: true, NumChannels: 1}, opts...)
@@ -374,13 +350,13 @@ func TestFixedChannelPoolConnPoolMethodsSkipLoadAccounting(t *testing.T) {
 	e := p.getEntries()[0]
 	e.lastActivity.Store(0)
 	ctx, cancel := context.WithCancel(context.Background())
+	// More streams than the default DCPMaxRPCPerChannel (25).
 	for i := 0; i < 26; i++ {
 		if _, err := p.NewStream(ctx, &grpc.StreamDesc{ServerStreams: true}, "/google.spanner.v1.Spanner/ExecuteStreamingSql"); err != nil {
 			t.Fatalf("NewStream() failed: %v", err)
 		}
 	}
 	cancel()
-	// The call may fail; only its accounting matters.
 	_ = p.Invoke(context.Background(), "/google.spanner.v1.Spanner/GetSession", &spannerpb.GetSessionRequest{Name: "s"}, &spannerpb.Session{})
 	if load, total := e.rpcLoad(), p.totalRPCLoad.Load(); load != 0 || total != 0 {
 		t.Fatalf("load after abandoned streams = {entry: %d, pool: %d}, want {0, 0}", load, total)
@@ -390,10 +366,6 @@ func TestFixedChannelPoolConnPoolMethodsSkipLoadAccounting(t *testing.T) {
 	}
 }
 
-// TestFixedChannelPoolDoesNotRetainCallerContext creates a client with a
-// context that is cancelled right after NewClientWithConfig returns. The
-// fixed pool keeps no context derived from it, nor the state that only
-// background work uses, and the client keeps working.
 func TestFixedChannelPoolDoesNotRetainCallerContext(t *testing.T) {
 	skipDialectRerun(t)
 	_, opts, teardown := NewMockedSpannerInMemTestServer(t)
@@ -412,9 +384,6 @@ func TestFixedChannelPoolDoesNotRetainCallerContext(t *testing.T) {
 	queryFooFromBar(t, client)
 }
 
-// TestFixedChannelPoolRunsNoBackgroundWork checks that the fixed pool under
-// load neither scales nor signals scale-up, records no penalties, and keeps no
-// pool metrics.
 func TestFixedChannelPoolRunsNoBackgroundWork(t *testing.T) {
 	skipDialectRerun(t)
 	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, NumChannels: 2})
@@ -451,10 +420,8 @@ func TestFixedChannelPoolRunsNoBackgroundWork(t *testing.T) {
 	}
 }
 
-// TestFixedChannelPoolStreamsSkipLoadAccounting holds a query stream open on a
-// fixed pool and then stops it early, the way an abandoned RowIterator does.
-// Fixed entries hand out their gRPC clients directly, so the stream takes no
-// entry reference, counts no load, and starts no per-stream cleanup.
+// TestFixedChannelPoolStreamsSkipLoadAccounting checks that an open query
+// stream adds no load or references to its entry.
 func TestFixedChannelPoolStreamsSkipLoadAccounting(t *testing.T) {
 	skipDialectRerun(t)
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{DisableNativeMetrics: true, NumChannels: 2})
@@ -533,7 +500,6 @@ func TestFixedChannelPoolWithCallerSuppliedConnection(t *testing.T) {
 	queryFooFromBar(t, client)
 }
 
-// closeCountingConnPool wraps a dialed pool and counts Close calls.
 type closeCountingConnPool struct {
 	gtransport.ConnPool
 	closes atomic.Int32
@@ -544,15 +510,11 @@ func (p *closeCountingConnPool) Close() error {
 	return p.ConnPool.Close()
 }
 
-// hiddenConnPool sends RPCs through a dialed pool but, like a
-// GCPMultiEndpoint, does not expose its connections.
+// hiddenConnPool does not expose its connections, like a GCPMultiEndpoint.
 type hiddenConnPool struct{ gtransport.ConnPool }
 
 func (hiddenConnPool) Conn() *grpc.ClientConn { return nil }
 
-// TestFixedChannelPoolWithPoolThatHidesItsConnections gives the client a pool
-// whose Conn returns nil: the fixed pool sends RPCs through the pool itself,
-// and only closing the client closes it, once.
 func TestFixedChannelPoolWithPoolThatHidesItsConnections(t *testing.T) {
 	skipDialectRerun(t)
 	_, opts, teardown := NewMockedSpannerInMemTestServer(t)
@@ -593,10 +555,10 @@ func TestFixedChannelPoolClosesDialedPoolOnce(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	direct := &closeCountingConnPool{ConnPool: dialed}
+	underlying := &closeCountingConnPool{ConnPool: dialed}
 	database := "projects/p/instances/i/databases/d"
 	sc := newSessionClient(nil, database, "", nil, "", false, metadata.Pairs(resourcePrefixHeader, database), 0, nil, nil)
-	p, err := newFixedChannelPool(context.Background(), sc, direct)
+	p, err := newFixedChannelPool(context.Background(), sc, underlying)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -612,15 +574,13 @@ func TestFixedChannelPoolClosesDialedPoolOnce(t *testing.T) {
 	}
 	p.Close()
 	p.Close()
-	if got := direct.closes.Load(); got != 1 {
+	if got := underlying.closes.Load(); got != 1 {
 		t.Fatalf("dialed pool closes = %d, want 1", got)
 	}
 }
 
-// TestFixedChannelPoolAfterClientClose uses a transaction, a batch read-only
-// transaction and a session that outlive Client.Close. Their RPCs fail with
-// CANCELED, as on any closed gRPC connection, which callers do not retry,
-// and no step reports an internal error.
+// TestFixedChannelPoolAfterClientClose checks that RPCs after Client.Close
+// fail with CANCELED, as with the static pool.
 func TestFixedChannelPoolAfterClientClose(t *testing.T) {
 	skipDialectRerun(t)
 	logger := &lockedBuffer{}
@@ -654,10 +614,6 @@ func TestFixedChannelPoolAfterClientClose(t *testing.T) {
 	}
 }
 
-// TestLegacyStaticChannelPool sets GOOGLE_SPANNER_ENABLE_LEGACY_STATIC_CHANNEL_POOL
-// and checks that the client uses the static channel pool as before the fixed
-// pool: a dialed pool of the configured size whose connections session
-// handles bind to directly, with request-id channel ids 1..N.
 func TestLegacyStaticChannelPool(t *testing.T) {
 	skipDialectRerun(t)
 	for _, tt := range []struct {
@@ -699,12 +655,6 @@ func TestLegacyStaticChannelPool(t *testing.T) {
 	}
 }
 
-// TestDirectPathFallbackKeepsStaticChannelPool enables DirectPath with
-// GOOGLE_SPANNER_ENABLE_GCP_FALLBACK=true. With or without the legacy static
-// pool, the client wraps the static channel pool in grpc-gcp-go's
-// GCPFallback, as before the fixed pool: a primary and a fallback pool of
-// NumChannels connections each, and session handles with request-id channel
-// id 0, since GCPFallback picks the connection of each RPC.
 func TestDirectPathFallbackKeepsStaticChannelPool(t *testing.T) {
 	skipDialectRerun(t)
 	for _, legacy := range []string{"", "true"} {
@@ -750,8 +700,7 @@ func TestDirectPathFallbackKeepsStaticChannelPool(t *testing.T) {
 	}
 }
 
-// logRecorder is a slog.Handler that records the level and message of every
-// record.
+// logRecorder records the level and message of every log record.
 type logRecorder struct {
 	mu      sync.Mutex
 	records []string
@@ -769,7 +718,6 @@ func (r *logRecorder) Handle(_ context.Context, rec slog.Record) error {
 func (r *logRecorder) WithAttrs([]slog.Attr) slog.Handler { return r }
 func (r *logRecorder) WithGroup(string) slog.Handler      { return r }
 
-// count returns the number of records that contain s.
 func (r *logRecorder) count(s string) int {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -782,7 +730,6 @@ func (r *logRecorder) count(s string) int {
 	return n
 }
 
-// lockedBuffer is a bytes.Buffer that is safe for concurrent use.
 type lockedBuffer struct {
 	mu  sync.Mutex
 	buf bytes.Buffer
@@ -800,13 +747,11 @@ func (b *lockedBuffer) String() string {
 	return b.buf.String()
 }
 
-const dcpUnavailableLog = "the dynamic channel pool is not available"
+const dcpUnavailableLog = "DynamicChannelPoolConfig is ignored"
 
-// assertDCPRequestRunsFixedMode checks that a client runs the fixed pool where
-// the dynamic channel pool is not available, whether or not it requested the
-// dynamic pool: NumChannels entries picked round robin, with no pool metrics.
-// A request for the dynamic pool is logged at debug level only.
-func assertDCPRequestRunsFixedMode(t *testing.T, client *Client, dcpEnabled bool, debug *logRecorder, logger *lockedBuffer) {
+// assertDCPRequestRunsFixedMode checks that client uses a fixed pool of
+// numChannels and, if dcpEnabled, logs one dcpUnavailableLog record at level.
+func assertDCPRequestRunsFixedMode(t *testing.T, client *Client, dcpEnabled bool, level slog.Level, logs *logRecorder, logger *lockedBuffer) {
 	t.Helper()
 	p := fixedPoolOf(t, client)
 	if got, want := p.Num(), numChannels; got != want {
@@ -822,10 +767,10 @@ func assertDCPRequestRunsFixedMode(t *testing.T, client *Client, dcpEnabled bool
 	if dcpEnabled {
 		want = 1
 	}
-	if got := debug.count(slog.LevelDebug.String() + " spanner: " + dcpUnavailableLog); got != want {
-		t.Fatalf("debug records about the unavailable dynamic pool = %d, want %d", got, want)
+	if got := logs.count(level.String() + " spanner: " + dcpUnavailableLog); got != want {
+		t.Fatalf("%v records about the unavailable dynamic pool = %d, want %d", level, got, want)
 	}
-	if got := debug.count(dcpUnavailableLog); got != want {
+	if got := logs.count(dcpUnavailableLog); got != want {
 		t.Fatalf("records about the unavailable dynamic pool at any level = %d, want %d", got, want)
 	}
 	if strings.Contains(logger.String(), dcpUnavailableLog) {
@@ -833,10 +778,6 @@ func assertDCPRequestRunsFixedMode(t *testing.T, client *Client, dcpEnabled bool
 	}
 }
 
-// TestFixedChannelPoolWithEmulator runs a client against the emulator, where
-// the dynamic channel pool is not available: the client uses fixed mode even
-// when the dynamic pool is requested. With the legacy static pool, the
-// client uses the static pool and logs nothing about the dynamic pool.
 func TestFixedChannelPoolWithEmulator(t *testing.T) {
 	skipDialectRerun(t)
 	for _, tt := range []struct {
@@ -850,12 +791,12 @@ func TestFixedChannelPoolWithEmulator(t *testing.T) {
 			if tt.legacy {
 				t.Setenv(legacyStaticChannelPoolEnv, "true")
 			}
-			debug, logger := &logRecorder{}, &lockedBuffer{}
+			logs, logger := &logRecorder{}, &lockedBuffer{}
 			config := ClientConfig{DisableNativeMetrics: true, Logger: log.New(logger, "", 0)}
 			if tt.dcpEnabled {
 				config.DynamicChannelPoolConfig = testDCPConfig(1, 1, 2)
 			}
-			client, err := NewClientWithConfig(context.Background(), "projects/p/instances/i/databases/d", config, option.WithLogger(slog.New(debug)))
+			client, err := NewClientWithConfig(context.Background(), "projects/p/instances/i/databases/d", config, option.WithLogger(slog.New(logs)))
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -864,38 +805,33 @@ func TestFixedChannelPoolWithEmulator(t *testing.T) {
 				if got := channelPoolKind(client); got != "static" {
 					t.Fatalf("channel pool = %s (%T), want static", got, client.sc.connPool)
 				}
-				if got := debug.count(dcpUnavailableLog); got != 0 {
+				if got := logs.count(dcpUnavailableLog); got != 0 {
 					t.Fatalf("records about the unavailable dynamic pool = %d, want 0", got)
 				}
 			} else {
-				assertDCPRequestRunsFixedMode(t, client, tt.dcpEnabled, debug, logger)
+				assertDCPRequestRunsFixedMode(t, client, tt.dcpEnabled, slog.LevelDebug, logs, logger)
 			}
 			queryFooFromBar(t, client)
 		})
 	}
 }
 
-// TestFixedChannelPoolWithLocationAwareRouting runs location-aware routing,
-// where the dynamic channel pool is not available: the client uses fixed
-// mode even when the dynamic pool is requested, derives its default endpoint
-// authority from the pool's connection, and routes queries and transactions
-// through it, each transaction on one of the pool's channels.
 func TestFixedChannelPoolWithLocationAwareRouting(t *testing.T) {
 	skipDialectRerun(t)
 	for _, dcpEnabled := range []bool{false, true} {
 		t.Run(fmt.Sprintf("DCPEnabled=%v", dcpEnabled), func(t *testing.T) {
-			debug, logger := &logRecorder{}, &lockedBuffer{}
+			logs, logger := &logRecorder{}, &lockedBuffer{}
 			config := ClientConfig{DisableNativeMetrics: true, IsExperimentalHost: true, Logger: log.New(logger, "", 0)}
 			if dcpEnabled {
 				config.DynamicChannelPoolConfig = testDCPConfig(1, 1, 2)
 			}
 			recorder := &dcpChannelRecorder{methods: map[string]bool{executeSQLMethod: true, commitMethod: true}}
 			_, client, teardown := setupMockedTestServerWithConfigAndClientOptions(t, config, []option.ClientOption{
-				option.WithLogger(slog.New(debug)),
+				option.WithLogger(slog.New(logs)),
 				option.WithGRPCDialOption(grpc.WithUnaryInterceptor(recorder.unaryInterceptor)),
 			})
 			defer teardown()
-			assertDCPRequestRunsFixedMode(t, client, dcpEnabled, debug, logger)
+			assertDCPRequestRunsFixedMode(t, client, dcpEnabled, slog.LevelWarn, logs, logger)
 			p := fixedPoolOf(t, client)
 			if p.Conn() == nil {
 				t.Fatal("fixed pool has no default connection")
@@ -905,7 +841,7 @@ func TestFixedChannelPoolWithLocationAwareRouting(t *testing.T) {
 			}
 			queryFooFromBar(t, client)
 			used := map[uint64]bool{}
-			for i, ids := range runReadWriteTransactionsOnChannels(t, client, recorder, 2*numChannels) {
+			for i, ids := range transactionChannelIDs(t, client, recorder, 2*numChannels) {
 				if len(ids) != 3 {
 					t.Fatalf("transaction %d RPCs = %d, want 2 updates and a commit", i, len(ids))
 				}

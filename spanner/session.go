@@ -448,8 +448,7 @@ func (p *sessionManager) newSessionHandleLocked(ctx context.Context, s *session)
 			return nil, err
 		}
 		if p.sc.dynamicPool.fixed {
-			// Fixed entries never drain, so the handle binds to the entry's
-			// client for its lifetime.
+			// Fixed entries never drain, so the handle can keep the client.
 			sh.client = entry.client
 		} else {
 			sh.client = newDCPResolvingSpannerClient(p.sc.dynamicPool, entry)

@@ -245,13 +245,8 @@ type dynamicChannelPool struct {
 	drainingCount  atomic.Int64
 	drainIdleFloor time.Duration // dcpDrainIdleFloor when the pool was created
 
-	// fixed marks a pool in fixed mode: a constant set of entries over
-	// borrowed connections, picked round robin, that never scales, primes or
-	// records pool metrics.
-	fixed bool
-	// shared is the dialed pool whose connections fixed-mode entries borrow.
-	// The pool closes it once, on Close.
-	shared gtransport.ConnPool
+	fixed      bool                // constant round-robin entries; no scaling, priming, or metrics
+	underlying gtransport.ConnPool // owns a fixed pool's connections
 }
 
 // dcpEntry represents one logical DCP slot.
@@ -278,7 +273,7 @@ func newDynamicChannelPool(ctx context.Context, sc *sessionClient, cfg DynamicCh
 	if err != nil {
 		return nil, err
 	}
-	p := newDCPCore(sc, cfg, dial)
+	p := newEmptyDCP(sc, cfg, dial)
 	p.ctx, p.cancel = context.WithCancel(ctx)
 	p.scaleUpSignal = make(chan struct{}, 1)
 	p.done = make(chan struct{})
@@ -292,23 +287,14 @@ func newDynamicChannelPool(ctx context.Context, sc *sessionClient, cfg DynamicCh
 	return p, nil
 }
 
-// newFixedChannelPool returns the dynamic channel pool in fixed mode, the
-// client's default pool: one entry per connection of direct, which must have
-// at least one connection. The entries borrow their connections and the pool
-// closes direct once. An entry for a connection that direct does not expose
-// sends its RPCs through direct. Session handles bind to entries round robin,
-// and entry ids, which are the request-id channel ids, are 1..N. A fixed pool
-// runs no background work: it never scales, never primes a channel, and
-// records no pool metrics.
-func newFixedChannelPool(ctx context.Context, sc *sessionClient, direct gtransport.ConnPool) (*dynamicChannelPool, error) {
-	// Conn round-robins over a dialed pool, so Num calls visit every
-	// connection once. A caller-supplied pool may return a connection more
-	// than once; that connection gets one entry, so that it has one
-	// request-id channel id, as in the static pool.
+// newFixedChannelPool returns a fixed pool with one entry per connection of
+// underlying. The pool takes ownership of underlying.
+func newFixedChannelPool(ctx context.Context, sc *sessionClient, underlying gtransport.ConnPool) (*dynamicChannelPool, error) {
+	// Deduplicate so each connection has one request-id channel id.
 	var conns []*grpc.ClientConn
 	seen := make(map[*grpc.ClientConn]bool)
-	for i := 0; i < direct.Num(); i++ {
-		c := direct.Conn()
+	for i := 0; i < underlying.Num(); i++ {
+		c := underlying.Conn()
 		if c != nil {
 			if seen[c] {
 				continue
@@ -319,39 +305,37 @@ func newFixedChannelPool(ctx context.Context, sc *sessionClient, direct gtranspo
 	}
 	n := len(conns)
 	cfg, err := normalizeDCPConfig(DynamicChannelPoolConfig{
-		DCPInitialChannels:   n,
-		DCPMinChannels:       n,
-		DCPMaxChannels:       n,
-		DCPSelectionStrategy: DCPRoundRobin,
-		// Error penalties only steer power-of-two picks and scale-up.
+		DCPInitialChannels:      n,
+		DCPMinChannels:          n,
+		DCPMaxChannels:          n,
+		DCPSelectionStrategy:    DCPRoundRobin,
 		DCPErrorPenaltyDuration: -1,
 	})
 	if err != nil {
 		return nil, err
 	}
+	// next needs no lock: createInitialEntries calls dial n times, in sequence.
 	next := 0
 	dial := func(context.Context) (gtransport.ConnPool, error) {
 		c := conns[next]
 		next++
 		if c == nil {
-			// A pool that does not expose its connections, such as a
-			// GCPMultiEndpoint, sends the entry's RPCs itself.
-			return unownedPool{direct}, nil
+			// underlying hides its connections, so the entry routes through it.
+			return borrowedPool{underlying}, nil
 		}
 		return borrowedConn{c}, nil
 	}
-	p := newDCPCore(sc, cfg, dial)
+	p := newEmptyDCP(sc, cfg, dial)
 	p.fixed = true
-	p.shared = direct
+	p.underlying = underlying
 	if err := p.createInitialEntries(ctx); err != nil {
 		return nil, err
 	}
 	return p, nil
 }
 
-// newDCPCore returns a pool with no entries and none of the state that
-// background work uses.
-func newDCPCore(sc *sessionClient, cfg DynamicChannelPoolConfig, dial func(context.Context) (gtransport.ConnPool, error)) *dynamicChannelPool {
+// newEmptyDCP returns a pool with no entries and no background state.
+func newEmptyDCP(sc *sessionClient, cfg DynamicChannelPoolConfig, dial func(context.Context) (gtransport.ConnPool, error)) *dynamicChannelPool {
 	return &dynamicChannelPool{
 		cfg:                 cfg,
 		targetRPCPerChannel: math.Max(1, math.Floor((cfg.DCPMinRPCPerChannel+cfg.DCPMaxRPCPerChannel)/2)),
@@ -362,8 +346,6 @@ func newDCPCore(sc *sessionClient, cfg DynamicChannelPoolConfig, dial func(conte
 	}
 }
 
-// createInitialEntries creates the pool's initial entries. On error it closes
-// the entries it created.
 func (p *dynamicChannelPool) createInitialEntries(ctx context.Context) error {
 	entries := make([]*dcpEntry, 0, p.cfg.DCPInitialChannels)
 	for i := 0; i < p.cfg.DCPInitialChannels; i++ {
@@ -394,7 +376,6 @@ func (p *dynamicChannelPool) Invoke(ctx context.Context, method string, args, re
 	if err != nil {
 		return err
 	}
-	// A fixed pool never scales or picks by load, so it tracks no load.
 	if p.fixed {
 		return e.pool.Invoke(ctx, method, args, reply, opts...)
 	}
@@ -417,7 +398,6 @@ func (p *dynamicChannelPool) NewStream(ctx context.Context, desc *grpc.StreamDes
 	if err != nil {
 		return nil, err
 	}
-	// A fixed pool never scales or picks by load, so it tracks no load.
 	if p.fixed {
 		return e.pool.NewStream(ctx, desc, method, opts...)
 	}
@@ -438,7 +418,6 @@ func (p *dynamicChannelPool) NewStream(ctx context.Context, desc *grpc.StreamDes
 func (p *dynamicChannelPool) Close() error {
 	p.stopOnce.Do(func() {
 		p.metrics.close(p.sc.logger)
-		// A fixed pool has no background work to stop.
 		if !p.fixed {
 			p.cancel()
 			close(p.done)
@@ -447,8 +426,8 @@ func (p *dynamicChannelPool) Close() error {
 	p.dialMu.Lock()
 	defer p.dialMu.Unlock()
 	entries := p.getEntries()
-	// A fixed pool keeps its closed entries, so that an RPC on a client picked
-	// after Close fails on a closed gRPC connection, with CANCELED.
+	// A fixed pool keeps its closed entries, so that RPCs after Close fail
+	// with CANCELED as they do with the static pool.
 	if !p.fixed {
 		p.entries.Store(&[]*dcpEntry{})
 	}
@@ -458,9 +437,9 @@ func (p *dynamicChannelPool) Close() error {
 			errs = append(errs, err)
 		}
 	}
-	if p.shared != nil {
-		errs = append(errs, p.shared.Close())
-		p.shared = nil
+	if p.underlying != nil {
+		errs = append(errs, p.underlying.Close())
+		p.underlying = nil
 	}
 	return errors.Join(errs...)
 }
@@ -514,8 +493,6 @@ func (p *dynamicChannelPool) newEntry(ctx context.Context, prime bool) (*dcpEntr
 	}
 	e.delegate = client
 	if p.fixed {
-		// A fixed pool never scales, drains or picks by load, so its RPCs
-		// need no load accounting and use the entry's gRPC client directly.
 		e.client = client
 	} else {
 		e.client = &dcpSpannerClient{entry: e, delegate: client}
@@ -575,7 +552,6 @@ func (p *dynamicChannelPool) pick(ctx context.Context) (*dcpEntry, error) {
 	if err != nil {
 		return nil, err
 	}
-	// Only scale-down reads the activity time, and a fixed pool never scales.
 	if !p.fixed {
 		e.lastActivity.Store(time.Now().UnixNano())
 	}
@@ -993,18 +969,17 @@ func (e *dcpEntry) NewStream(ctx context.Context, desc *grpc.StreamDesc, method 
 	return e.pool.NewStream(ctx, desc, method, opts...)
 }
 
-// borrowedConn is a single-connection ConnPool view of a connection that
-// another pool owns. Close is a no-op; the owner closes the connection.
+// borrowedConn is a ConnPool over one connection that it does not close.
 type borrowedConn struct{ *grpc.ClientConn }
 
 func (c borrowedConn) Conn() *grpc.ClientConn { return c.ClientConn }
 func (c borrowedConn) Num() int               { return 1 }
 func (c borrowedConn) Close() error           { return nil }
 
-// unownedPool uses a pool that something else closes. Close is a no-op.
-type unownedPool struct{ gtransport.ConnPool }
+// borrowedPool is a ConnPool that does not close the pool it wraps.
+type borrowedPool struct{ gtransport.ConnPool }
 
-func (unownedPool) Close() error { return nil }
+func (borrowedPool) Close() error { return nil }
 
 // acquire takes a reference that keeps drain from closing the entry until
 // release is called. It fails once the entry is closed.

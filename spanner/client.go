@@ -300,21 +300,14 @@ type ClientConfig struct {
 	SessionPoolConfig
 
 	// DynamicChannelPoolConfig is the opt-in configuration for dynamic gRPC channel pooling.
+	// It is ignored with multi-endpoint clients, the emulator, and location-aware
+	// routing.
 	//
-	// When dynamic channel pooling is not enabled, or is not available (with
-	// the emulator or location-aware routing), the client uses a fixed number
-	// of gRPC channels, set by option.WithGRPCConnectionPool or NumChannels.
-	// Transactions are assigned to the channels round robin, and each
-	// transaction sends all of its requests on one channel. Two kinds of
-	// clients keep the channel pool of earlier releases instead: a client
-	// created with NewMultiEndpointClient or NewMultiEndpointClientWithConfig,
-	// and a client that uses DirectPath with the
-	// GOOGLE_SPANNER_ENABLE_GCP_FALLBACK environment variable set to true.
-	//
-	// Setting the GOOGLE_SPANNER_ENABLE_LEGACY_STATIC_CHANNEL_POOL environment
-	// variable to true makes a client without dynamic channel pooling use the
-	// channel pool of earlier releases as well. It does not affect a client
-	// that enables dynamic channel pooling.
+	// Without it, the client uses NumChannels channels and assigns transactions
+	// to them round robin. Set GOOGLE_SPANNER_ENABLE_LEGACY_STATIC_CHANNEL_POOL=true
+	// to use the channel pool of earlier releases. Multi-endpoint clients and
+	// DirectPath clients with GOOGLE_SPANNER_ENABLE_GCP_FALLBACK=true also use
+	// that pool.
 	DynamicChannelPoolConfig DynamicChannelPoolConfig
 
 	// SessionLabels for the sessions created by this client.
@@ -608,11 +601,8 @@ func createDCPConnPool(
 	return dcp, sc, nil
 }
 
-// createFixedConnPool creates the client's default channel pool: the dynamic
-// channel pool in fixed mode over a dialed pool of NumChannels connections
-// (or the size WithGRPCConnectionPool sets, or a caller-supplied connection or
-// pool). It returns the options location-aware routing dials endpoint
-// connections with.
+// createFixedConnPool dials the default fixed-size channel pool. It returns
+// the client options used by location-aware routing to dial new endpoints.
 func createFixedConnPool(
 	ctx context.Context,
 	database string,
@@ -630,23 +620,23 @@ func createFixedConnPool(
 		option.WithGRPCDialOption(grpc.WithChainUnaryInterceptor(reqIDInjector.interceptUnary)),
 	)
 	allOpts := allClientOpts(config.NumChannels, config.Compression, config.EnableDirectAccess, fixedOpts...)
-	direct, err := gtransport.DialPool(ctx, allOpts...)
+	dialedPool, err := gtransport.DialPool(ctx, allOpts...)
 	if err != nil {
 		return nil, nil, nil, err
 	}
-	if hasNumChannelsConfig && direct.Num() != config.NumChannels {
-		direct.Close()
-		return nil, nil, nil, spannerErrorf(codes.InvalidArgument, "Connection pool mismatch: NumChannels=%v, WithGRPCConnectionPool=%v. Only set one of these options, or set both to the same value.", config.NumChannels, direct.Num())
+	if hasNumChannelsConfig && dialedPool.Num() != config.NumChannels {
+		dialedPool.Close()
+		return nil, nil, nil, spannerErrorf(codes.InvalidArgument, "Connection pool mismatch: NumChannels=%v, WithGRPCConnectionPool=%v. Only set one of these options, or set both to the same value.", config.NumChannels, dialedPool.Num())
 	}
-	if direct.Num() <= 0 {
-		direct.Close()
+	if dialedPool.Num() <= 0 {
+		dialedPool.Close()
 		return nil, nil, nil, spannerErrorf(codes.InvalidArgument, "spanner: the gRPC connection pool has no connections")
 	}
 	sc := newSessionClient(nil, database, config.UserAgent, sessionLabels, config.DatabaseRole, config.DisableRouteToLeader, md, config.BatchTimeout, config.Logger, config.CallOptions)
 	sc.metricsTracerFactory = metricsTracerFactory
-	pool, err := newFixedChannelPool(ctx, sc, direct)
+	pool, err := newFixedChannelPool(ctx, sc, dialedPool)
 	if err != nil {
-		direct.Close()
+		dialedPool.Close()
 		return nil, nil, nil, err
 	}
 	sc.connPool = pool
@@ -822,9 +812,6 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 		}
 	}
 
-	// Clients that do not enable the dynamic channel pool use it in fixed
-	// mode. Set GOOGLE_SPANNER_ENABLE_LEGACY_STATIC_CHANNEL_POOL=true to use
-	// the static channel pool instead.
 	isLegacyStaticChannelPoolEnabled := false
 	if val, ok := os.LookupEnv("GOOGLE_SPANNER_ENABLE_LEGACY_STATIC_CHANNEL_POOL"); ok {
 		if b, err := strconv.ParseBool(val); err == nil {
@@ -869,17 +856,12 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 		pool = &gmeWrapper{gme}
 		endpointClientOpts = append(endpointClientOpts, opts...)
 	} else if isFallbackEnabled && isDirectPathEnabled {
-		// DirectPath fallback wraps the static channel pool in grpc-gcp-go's
-		// GCPFallback, which hides the pool's connections, so a client with
-		// fallback keeps the static channel pool.
+		// The fixed-size channel pool does not support DirectPath fallback yet.
 		pool, endpointClientOpts, err = createFallbackConnPool(ctx, config, hasNumChannelsConfig, metricsTracerFactory, opts...)
 		if err != nil {
 			return nil, err
 		}
 	} else if isLegacyStaticChannelPoolEnabled {
-		// Use the static channel pool: a gtransport ConnPool whose connections
-		// session handles bind to directly.
-
 		// Add a unaryClientInterceptor and streamClientInterceptor.
 		reqIDInjector := new(requestIDHeaderInjector)
 		opts = append(opts,
@@ -900,11 +882,12 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 		}
 	} else {
 		if config.DynamicChannelPoolConfig.DCPEnabled {
-			reason := "location-aware routing"
+			logger := internaloption.GetLogger(opts)
 			if emulatorEnabled {
-				reason = "the emulator"
+				logger.DebugContext(ctx, "spanner: DynamicChannelPoolConfig is ignored with the emulator; using a fixed-size channel pool")
+			} else {
+				logger.WarnContext(ctx, "spanner: DynamicChannelPoolConfig is ignored with location-aware routing; using a fixed-size channel pool")
 			}
-			internaloption.GetLogger(opts).DebugContext(ctx, "spanner: the dynamic channel pool is not available with "+reason+"; using a fixed-size channel pool")
 		}
 		pool, sc, endpointClientOpts, err = createFixedConnPool(ctx, database, config, hasNumChannelsConfig, sessionLabels, md, metricsTracerFactory, opts...)
 		if err != nil {
