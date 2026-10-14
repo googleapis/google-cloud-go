@@ -27,7 +27,6 @@ package internal
 import (
 	"context"
 	"net"
-	"runtime"
 	"testing"
 	"time"
 
@@ -156,16 +155,15 @@ func TestBudget_SlotHeldUntilHandshake(t *testing.T) {
 	spawnOneCreateSession(p)
 
 	// Wait for the server to receive the OpenSessionRequest. At this point
-	// Start() has returned in the createSession goroutine. Sleep briefly so
-	// any Release(true) that the old code placed immediately after Start()
-	// would have had time to execute before we assert.
+	// Start() has returned in the createSession goroutine. On pre-fix code,
+	// Release(true) fired right after Start() returned — synchronous with
+	// the Send that requestReceived already observed — so any release would
+	// have landed before this select unblocks.
 	select {
 	case <-requestReceived:
 	case <-time.After(5 * time.Second):
 		t.Fatal("timeout waiting for server to receive OpenSessionRequest")
 	}
-	runtime.Gosched()
-	time.Sleep(20 * time.Millisecond)
 
 	// Slot must still be held: OpenSessionResponse not yet sent.
 	if snap := p.budget.Snapshot(); snap.InUse != 1 {
@@ -210,15 +208,13 @@ func TestBudget_PenaltyOnAsyncRejection(t *testing.T) {
 		t.Fatal("timeout waiting for server to receive OpenSessionRequest")
 	}
 
-	// Wait for onClose's starting branch to delete sh from startingSessions.
-	// After that delete (under p.mu), Release(false) is called in the same
-	// goroutine. Sleep briefly so that Release(false) has run before we check.
+	// Poll the actual post-condition: InUse==1 means Release(false) recorded
+	// a penalty slot (inUse decremented to 0, penalties=[t+500ms] → InUse=1).
+	// In the old broken code, Release(true) fired before requestReceived and
+	// left InUse==0, so this poll would time out, failing the test.
 	pollUntil(t, 5*time.Second, func() bool {
-		p.mu.Lock()
-		defer p.mu.Unlock()
-		return len(p.startingSessions) == 0
+		return p.budget.Snapshot().InUse == 1
 	})
-	time.Sleep(20 * time.Millisecond)
 
 	// InUse (= live slots + penalty slots) must be 1: Release(false) recorded
 	// a penalty for penaltyDuration instead of freeing the slot immediately.

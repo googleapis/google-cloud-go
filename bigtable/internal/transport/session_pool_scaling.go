@@ -255,12 +255,13 @@ func (p *SessionPoolImpl) createSession(ctx context.Context) error {
 	p.mu.Unlock()
 	reserved = false
 
-	// Transfer budget management to onActive/onClose. Setting ownsBudget=false
-	// here (before Start) disarms the deferred fallback so it cannot
+	// Disarm the deferred fallback before calling Start so it cannot
 	// double-release with onClose's starting branch when Start() fails via
-	// Send → ForceClose → onClose, which fires synchronously before Start
-	// returns.
-	ownsBudget = false // session lifecycle (onActive/onClose) owns the slot from here
+	// Send → ForceClose → onClose (synchronous before Start returns).
+	// ownsBudget=false does NOT mean the slot is free — it is still held;
+	// the defensive Start-error branch below releases it explicitly when
+	// onClose did not fire (e.g. pre-Send state-machine failure).
+	ownsBudget = false
 
 	if err := s.Start(dialCtx, p.openSessionRequest); err != nil {
 		// Normal failure path: Send() failed → ForceClose → onClose's
