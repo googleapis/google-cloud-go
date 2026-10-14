@@ -186,17 +186,13 @@ func (p *SessionPoolImpl) createSession(ctx context.Context) error {
 		return fmt.Errorf("failed to acquire session creation budget: %w", err)
 	}
 
-	// budgetReleased disarms the deferred fallback once the budget
-	// transitions to the onActive/onClose single-fire gate. It must be
-	// set true before Start() so that if Start() fails via the normal
-	// path (Send → ForceClose → onClose fires synchronously), the defer
-	// does not double-release the slot that onClose's starting branch
-	// already released. For all failures before the startingSessions
-	// transfer, budgetReleased stays false and the defer applies the
-	// penalty.
-	budgetReleased := false
+	// ownsBudget tracks whether this goroutine still holds the budget slot.
+	// True until ownership transfers to the session lifecycle (onActive or
+	// onClose's starting branch); the deferred fallback releases with a
+	// penalty on any early exit before that transfer.
+	ownsBudget := true
 	defer func() {
-		if !budgetReleased {
+		if ownsBudget {
 			p.budget.Release(false)
 		}
 	}()
@@ -263,7 +259,7 @@ func (p *SessionPoolImpl) createSession(ctx context.Context) error {
 	// disarms the deferred fallback so it cannot double-release with
 	// onClose's starting branch when Start() fails normally (Send →
 	// ForceClose → onClose fires synchronously before Start returns).
-	budgetReleased = true
+	ownsBudget = false // session lifecycle (onActive/onClose) owns the slot from here
 
 	if err := s.Start(dialCtx, p.openSessionRequest); err != nil {
 		// Normal failure path: Send() failed → ForceClose → onClose's
