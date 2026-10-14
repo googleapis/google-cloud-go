@@ -419,3 +419,74 @@ func TestSetUploadIDAttribute(t *testing.T) {
 		})
 	}
 }
+
+func TestTrackingTransportUploadID(t *testing.T) {
+	const sampleUploadID = "AJjja9aXX4R20FIZ2ddLnYddhJmD9Xm_Y2B_NEu5G2a6PzJiGRgPKLp6hEQpM"
+	spanName := "Object.Writer"
+
+	tests := []struct {
+		name       string
+		reqURL     string
+		respHeader http.Header
+		wantAttrs  []attribute.KeyValue
+	}{
+		{
+			name:   "Extracts upload_id from Location response header",
+			reqURL: "http://example.com/upload/storage/v1/b/my-bucket/o?uploadType=resumable",
+			respHeader: http.Header{
+				"Location": {"http://example.com/upload/storage/v1/b/my-bucket/o?uploadType=resumable&upload_id=" + sampleUploadID},
+			},
+			wantAttrs: append(getCommonAttributes(), attribute.String("gcp.storage.upload.id", sampleUploadID)),
+		},
+		{
+			name:      "Extracts upload_id from request URL query",
+			reqURL:    "http://example.com/upload/storage/v1/b/my-bucket/o?uploadType=resumable&upload_id=" + sampleUploadID,
+			wantAttrs: append(getCommonAttributes(), attribute.String("gcp.storage.upload.id", sampleUploadID)),
+		},
+		{
+			name:      "Omits upload.id when not present",
+			reqURL:    "http://example.com/storage/v1/b/my-bucket/o",
+			wantAttrs: getCommonAttributes(),
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			ctx := context.Background()
+			te := testutil.NewOpenTelemetryTestExporter()
+			t.Cleanup(func() {
+				te.Unregister(ctx)
+			})
+
+			// TODO: Remove setting development env var upon launch.
+			t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
+
+			mock := &mockTransport{}
+			mock.addResult(&http.Response{Status: "200 OK", Header: tc.respHeader}, nil)
+			tt := &trackingTransport{base: mock}
+
+			ctx, _ = startSpan(ctx, spanName)
+			req, err := http.NewRequestWithContext(ctx, "POST", tc.reqURL, nil)
+			if err != nil {
+				t.Fatalf("NewRequestWithContext failed: %v", err)
+			}
+			if _, err := tt.RoundTrip(req); err != nil {
+				t.Fatalf("RoundTrip failed: %v", err)
+			}
+			endSpan(ctx, nil)
+
+			spans := te.Spans()
+			if len(spans) != 1 {
+				t.Fatalf("expected one span, got %d", len(spans))
+			}
+			gotSpan := spans[0]
+			wantSpan := createWantSpanStub(spanName, tc.wantAttrs)
+			opts := []cmp.Option{
+				cmp.Comparer(spanAttributesComparer),
+			}
+			if diff := testutil.Diff(gotSpan, wantSpan, opts...); diff != "" {
+				t.Errorf("diff: -got, +want:\n%s\n", diff)
+			}
+		})
+	}
+}
