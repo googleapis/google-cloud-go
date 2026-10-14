@@ -76,7 +76,7 @@ func newGRPCBackedPool(t *testing.T, handler openTableStreamHandler) *SessionPoo
 	factory := func(ctx context.Context) (Stream, error) { return btClient.OpenTable(ctx) }
 
 	p := NewSessionPoolImpl(1, "budget-test", factory, &spb.OpenSessionRequest{}, nil, SessionTypeTable, false)
-	p.budget.UpdateConfig(1, time.Minute) // cap=1 makes slot occupancy easy to observe
+	p.budget.UpdateConfig(1, 500*time.Millisecond) // cap=1; short penalty avoids blocking test cleanup
 	p.sizer.UpdateConfig(&spb.SessionClientConfiguration_SessionPoolConfiguration{
 		MinSessionCount: 0, MaxSessionCount: 10,
 	})
