@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -71,6 +71,8 @@ type DiscoverConnectionProfileRequest struct {
 	//	*DiscoverConnectionProfileRequest_SqlServerRdbms
 	//	*DiscoverConnectionProfileRequest_SalesforceOrg
 	//	*DiscoverConnectionProfileRequest_MongodbCluster
+	//	*DiscoverConnectionProfileRequest_SpannerDatabase
+	//	*DiscoverConnectionProfileRequest_SourceCatalog
 	DataObject    isDiscoverConnectionProfileRequest_DataObject `protobuf_oneof:"data_object"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -224,17 +226,35 @@ func (x *DiscoverConnectionProfileRequest) GetMongodbCluster() *MongodbCluster {
 	return nil
 }
 
+func (x *DiscoverConnectionProfileRequest) GetSpannerDatabase() *SpannerDatabase {
+	if x != nil {
+		if x, ok := x.DataObject.(*DiscoverConnectionProfileRequest_SpannerDatabase); ok {
+			return x.SpannerDatabase
+		}
+	}
+	return nil
+}
+
+func (x *DiscoverConnectionProfileRequest) GetSourceCatalog() *SourceCatalog {
+	if x != nil {
+		if x, ok := x.DataObject.(*DiscoverConnectionProfileRequest_SourceCatalog); ok {
+			return x.SourceCatalog
+		}
+	}
+	return nil
+}
+
 type isDiscoverConnectionProfileRequest_Target interface {
 	isDiscoverConnectionProfileRequest_Target()
 }
 
 type DiscoverConnectionProfileRequest_ConnectionProfile struct {
-	// An ad-hoc connection profile configuration.
+	// Optional. An ad-hoc connection profile configuration.
 	ConnectionProfile *ConnectionProfile `protobuf:"bytes,200,opt,name=connection_profile,json=connectionProfile,proto3,oneof"`
 }
 
 type DiscoverConnectionProfileRequest_ConnectionProfileName struct {
-	// A reference to an existing connection profile.
+	// Optional. A reference to an existing connection profile.
 	ConnectionProfileName string `protobuf:"bytes,201,opt,name=connection_profile_name,json=connectionProfileName,proto3,oneof"`
 }
 
@@ -249,13 +269,14 @@ type isDiscoverConnectionProfileRequest_Hierarchy interface {
 }
 
 type DiscoverConnectionProfileRequest_FullHierarchy struct {
-	// Whether to retrieve the full hierarchy of data objects (TRUE) or only the
-	// current level (FALSE).
+	// Optional. Whether to retrieve the full hierarchy of data objects (TRUE)
+	// or only the current level (FALSE).
 	FullHierarchy bool `protobuf:"varint,3,opt,name=full_hierarchy,json=fullHierarchy,proto3,oneof"`
 }
 
 type DiscoverConnectionProfileRequest_HierarchyDepth struct {
-	// The number of hierarchy levels below the current level to be retrieved.
+	// Optional. The number of hierarchy levels below the current level to be
+	// retrieved.
 	HierarchyDepth int32 `protobuf:"varint,4,opt,name=hierarchy_depth,json=hierarchyDepth,proto3,oneof"`
 }
 
@@ -270,33 +291,47 @@ type isDiscoverConnectionProfileRequest_DataObject interface {
 }
 
 type DiscoverConnectionProfileRequest_OracleRdbms struct {
-	// Oracle RDBMS to enrich with child data objects and metadata.
+	// Optional. Oracle RDBMS to enrich with child data objects and metadata.
 	OracleRdbms *OracleRdbms `protobuf:"bytes,100,opt,name=oracle_rdbms,json=oracleRdbms,proto3,oneof"`
 }
 
 type DiscoverConnectionProfileRequest_MysqlRdbms struct {
-	// MySQL RDBMS to enrich with child data objects and metadata.
+	// Optional. MySQL RDBMS to enrich with child data objects and metadata.
 	MysqlRdbms *MysqlRdbms `protobuf:"bytes,101,opt,name=mysql_rdbms,json=mysqlRdbms,proto3,oneof"`
 }
 
 type DiscoverConnectionProfileRequest_PostgresqlRdbms struct {
-	// PostgreSQL RDBMS to enrich with child data objects and metadata.
+	// Optional. PostgreSQL RDBMS to enrich with child data objects and
+	// metadata.
 	PostgresqlRdbms *PostgresqlRdbms `protobuf:"bytes,102,opt,name=postgresql_rdbms,json=postgresqlRdbms,proto3,oneof"`
 }
 
 type DiscoverConnectionProfileRequest_SqlServerRdbms struct {
-	// SQLServer RDBMS to enrich with child data objects and metadata.
+	// Optional. SQLServer RDBMS to enrich with child data objects and metadata.
 	SqlServerRdbms *SqlServerRdbms `protobuf:"bytes,103,opt,name=sql_server_rdbms,json=sqlServerRdbms,proto3,oneof"`
 }
 
 type DiscoverConnectionProfileRequest_SalesforceOrg struct {
-	// Salesforce organization to enrich with child data objects and metadata.
+	// Optional. Salesforce organization to enrich with child data objects and
+	// metadata.
 	SalesforceOrg *SalesforceOrg `protobuf:"bytes,104,opt,name=salesforce_org,json=salesforceOrg,proto3,oneof"`
 }
 
 type DiscoverConnectionProfileRequest_MongodbCluster struct {
-	// MongoDB cluster to enrich with child data objects and metadata.
+	// Optional. MongoDB cluster to enrich with child data objects and metadata.
 	MongodbCluster *MongodbCluster `protobuf:"bytes,105,opt,name=mongodb_cluster,json=mongodbCluster,proto3,oneof"`
+}
+
+type DiscoverConnectionProfileRequest_SpannerDatabase struct {
+	// Optional. Spanner database to enrich with child data objects and
+	// metadata.
+	SpannerDatabase *SpannerDatabase `protobuf:"bytes,106,opt,name=spanner_database,json=spannerDatabase,proto3,oneof"`
+}
+
+type DiscoverConnectionProfileRequest_SourceCatalog struct {
+	// Optional. Source catalog to enrich with child data objects and metadata.
+	// This is mainly used to represent SaaS sources databases.
+	SourceCatalog *SourceCatalog `protobuf:"bytes,108,opt,name=source_catalog,json=sourceCatalog,proto3,oneof"`
 }
 
 func (*DiscoverConnectionProfileRequest_OracleRdbms) isDiscoverConnectionProfileRequest_DataObject() {
@@ -316,6 +351,12 @@ func (*DiscoverConnectionProfileRequest_SalesforceOrg) isDiscoverConnectionProfi
 func (*DiscoverConnectionProfileRequest_MongodbCluster) isDiscoverConnectionProfileRequest_DataObject() {
 }
 
+func (*DiscoverConnectionProfileRequest_SpannerDatabase) isDiscoverConnectionProfileRequest_DataObject() {
+}
+
+func (*DiscoverConnectionProfileRequest_SourceCatalog) isDiscoverConnectionProfileRequest_DataObject() {
+}
+
 // Response from a discover request.
 type DiscoverConnectionProfileResponse struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -329,6 +370,8 @@ type DiscoverConnectionProfileResponse struct {
 	//	*DiscoverConnectionProfileResponse_SqlServerRdbms
 	//	*DiscoverConnectionProfileResponse_SalesforceOrg
 	//	*DiscoverConnectionProfileResponse_MongodbCluster
+	//	*DiscoverConnectionProfileResponse_SpannerDatabase
+	//	*DiscoverConnectionProfileResponse_SourceCatalog
 	DataObject    isDiscoverConnectionProfileResponse_DataObject `protobuf_oneof:"data_object"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -425,6 +468,24 @@ func (x *DiscoverConnectionProfileResponse) GetMongodbCluster() *MongodbCluster 
 	return nil
 }
 
+func (x *DiscoverConnectionProfileResponse) GetSpannerDatabase() *SpannerDatabase {
+	if x != nil {
+		if x, ok := x.DataObject.(*DiscoverConnectionProfileResponse_SpannerDatabase); ok {
+			return x.SpannerDatabase
+		}
+	}
+	return nil
+}
+
+func (x *DiscoverConnectionProfileResponse) GetSourceCatalog() *SourceCatalog {
+	if x != nil {
+		if x, ok := x.DataObject.(*DiscoverConnectionProfileResponse_SourceCatalog); ok {
+			return x.SourceCatalog
+		}
+	}
+	return nil
+}
+
 type isDiscoverConnectionProfileResponse_DataObject interface {
 	isDiscoverConnectionProfileResponse_DataObject()
 }
@@ -459,6 +520,17 @@ type DiscoverConnectionProfileResponse_MongodbCluster struct {
 	MongodbCluster *MongodbCluster `protobuf:"bytes,105,opt,name=mongodb_cluster,json=mongodbCluster,proto3,oneof"`
 }
 
+type DiscoverConnectionProfileResponse_SpannerDatabase struct {
+	// Enriched Spanner database.
+	SpannerDatabase *SpannerDatabase `protobuf:"bytes,106,opt,name=spanner_database,json=spannerDatabase,proto3,oneof"`
+}
+
+type DiscoverConnectionProfileResponse_SourceCatalog struct {
+	// Enriched source catalog. This is mainly used to represent SaaS sources
+	// databases.
+	SourceCatalog *SourceCatalog `protobuf:"bytes,108,opt,name=source_catalog,json=sourceCatalog,proto3,oneof"`
+}
+
 func (*DiscoverConnectionProfileResponse_OracleRdbms) isDiscoverConnectionProfileResponse_DataObject() {
 }
 
@@ -477,15 +549,21 @@ func (*DiscoverConnectionProfileResponse_SalesforceOrg) isDiscoverConnectionProf
 func (*DiscoverConnectionProfileResponse_MongodbCluster) isDiscoverConnectionProfileResponse_DataObject() {
 }
 
+func (*DiscoverConnectionProfileResponse_SpannerDatabase) isDiscoverConnectionProfileResponse_DataObject() {
+}
+
+func (*DiscoverConnectionProfileResponse_SourceCatalog) isDiscoverConnectionProfileResponse_DataObject() {
+}
+
 // Request message for 'FetchStaticIps' request.
 type FetchStaticIpsRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The resource name for the location for which static IPs should be
 	// returned. Must be in the format `projects/*/locations/*`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Maximum number of Ips to return, will likely not be specified.
+	// Optional. Maximum number of Ips to return, will likely not be specified.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	// A page token, received from a previous `ListStaticIps` call.
+	// Optional. A page token, received from a previous `ListStaticIps` call.
 	// will likely not be specified.
 	PageToken     string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -604,19 +682,19 @@ type ListConnectionProfilesRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The parent that owns the collection of connection profiles.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// Maximum number of connection profiles to return.
+	// Optional. Maximum number of connection profiles to return.
 	// If unspecified, at most 50 connection profiles will be returned.
 	// The maximum value is 1000; values above 1000 will be coerced to 1000.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	// Page token received from a previous `ListConnectionProfiles` call.
-	// Provide this to retrieve the subsequent page.
+	// Optional. Page token received from a previous `ListConnectionProfiles`
+	// call. Provide this to retrieve the subsequent page.
 	//
 	// When paginating, all other parameters provided to `ListConnectionProfiles`
 	// must match the call that provided the page token.
 	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
-	// Filter request.
+	// Optional. Filter request.
 	Filter string `protobuf:"bytes,4,opt,name=filter,proto3" json:"filter,omitempty"`
-	// Order by fields for the result.
+	// Optional. Order by fields for the result.
 	OrderBy       string `protobuf:"bytes,5,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1073,19 +1151,19 @@ type ListStreamsRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The parent that owns the collection of streams.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// Maximum number of streams to return.
+	// Optional. Maximum number of streams to return.
 	// If unspecified, at most 50 streams will  be returned. The maximum
 	// value is 1000; values above 1000 will be coerced to 1000.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	// Page token received from a previous `ListStreams` call.
+	// Optional. Page token received from a previous `ListStreams` call.
 	// Provide this to retrieve the subsequent page.
 	//
 	// When paginating, all other parameters provided to `ListStreams`
 	// must match the call that provided the page token.
 	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
-	// Filter request.
+	// Optional. Filter request.
 	Filter string `protobuf:"bytes,4,opt,name=filter,proto3" json:"filter,omitempty"`
-	// Order by fields for the result.
+	// Optional. Order by fields for the result.
 	OrderBy       string `protobuf:"bytes,5,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1710,7 +1788,11 @@ type StartBackfillJobRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The name of the stream object resource to start a backfill job
 	// for.
-	Object        string `protobuf:"bytes,1,opt,name=object,proto3" json:"object,omitempty"`
+	Object string `protobuf:"bytes,1,opt,name=object,proto3" json:"object,omitempty"`
+	// Optional. Optional event filter. If not set, or empty, the backfill will be
+	// performed on the entire object. This is currently used for partial backfill
+	// and only supported for SQL sources.
+	EventFilter   *EventFilter `protobuf:"bytes,2,opt,name=event_filter,json=eventFilter,proto3" json:"event_filter,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1750,6 +1832,13 @@ func (x *StartBackfillJobRequest) GetObject() string {
 		return x.Object
 	}
 	return ""
+}
+
+func (x *StartBackfillJobRequest) GetEventFilter() *EventFilter {
+	if x != nil {
+		return x.EventFilter
+	}
+	return nil
 }
 
 // Response for manually initiating a backfill job for a specific stream object.
@@ -1897,11 +1986,11 @@ type ListStreamObjectsRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The parent stream that owns the collection of objects.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// Maximum number of objects to return. Default is 50.
+	// Optional. Maximum number of objects to return. Default is 50.
 	// The maximum value is 1000; values above 1000 will be coerced to 1000.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	// Page token received from a previous `ListStreamObjectsRequest` call.
-	// Provide this to retrieve the subsequent page.
+	// Optional. Page token received from a previous `ListStreamObjectsRequest`
+	// call. Provide this to retrieve the subsequent page.
 	//
 	// When paginating, all other parameters provided to
 	// `ListStreamObjectsRequest` must match the call that provided the page
@@ -2247,16 +2336,16 @@ type ListPrivateConnectionsRequest struct {
 	// returned. The maximum value is 1000; values above 1000 will be coerced to
 	// 1000.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	// Page token received from a previous `ListPrivateConnections` call.
-	// Provide this to retrieve the subsequent page.
+	// Optional. Page token received from a previous `ListPrivateConnections`
+	// call. Provide this to retrieve the subsequent page.
 	//
 	// When paginating, all other parameters provided to
 	// `ListPrivateConnections` must match the call that provided the page
 	// token.
 	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
-	// Filter request.
+	// Optional. Filter request.
 	Filter string `protobuf:"bytes,4,opt,name=filter,proto3" json:"filter,omitempty"`
-	// Order by fields for the result.
+	// Optional. Order by fields for the result.
 	OrderBy       string `protobuf:"bytes,5,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -2605,21 +2694,21 @@ type ListRoutesRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The parent that owns the collection of Routess.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// Maximum number of Routes to return. The service may return
+	// Optional. Maximum number of Routes to return. The service may return
 	// fewer than this value. If unspecified, at most 50 Routes
 	// will be returned. The maximum value is 1000; values above 1000 will be
 	// coerced to 1000.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	// Page token received from a previous `ListRoutes` call.
+	// Optional. Page token received from a previous `ListRoutes` call.
 	// Provide this to retrieve the subsequent page.
 	//
 	// When paginating, all other parameters provided to
 	// `ListRoutes` must match the call that provided the page
 	// token.
 	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
-	// Filter request.
+	// Optional. Filter request.
 	Filter string `protobuf:"bytes,4,opt,name=filter,proto3" json:"filter,omitempty"`
-	// Order by fields for the result.
+	// Optional. Order by fields for the result.
 	OrderBy       string `protobuf:"bytes,5,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -2872,23 +2961,25 @@ var File_google_cloud_datastream_v1_datastream_proto protoreflect.FileDescriptor
 
 const file_google_cloud_datastream_v1_datastream_proto_rawDesc = "" +
 	"\n" +
-	"+google/cloud/datastream/v1/datastream.proto\x12\x1agoogle.cloud.datastream.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a5google/cloud/datastream/v1/datastream_resources.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xfb\x06\n" +
+	"+google/cloud/datastream/v1/datastream.proto\x12\x1agoogle.cloud.datastream.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a5google/cloud/datastream/v1/datastream_resources.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe5\b\n" +
 	" DiscoverConnectionProfileRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\x12+datastream.googleapis.com/ConnectionProfileR\x06parent\x12_\n" +
-	"\x12connection_profile\x18\xc8\x01 \x01(\v2-.google.cloud.datastream.v1.ConnectionProfileH\x00R\x11connectionProfile\x129\n" +
-	"\x17connection_profile_name\x18\xc9\x01 \x01(\tH\x00R\x15connectionProfileName\x12'\n" +
-	"\x0efull_hierarchy\x18\x03 \x01(\bH\x01R\rfullHierarchy\x12)\n" +
-	"\x0fhierarchy_depth\x18\x04 \x01(\x05H\x01R\x0ehierarchyDepth\x12L\n" +
-	"\foracle_rdbms\x18d \x01(\v2'.google.cloud.datastream.v1.OracleRdbmsH\x02R\voracleRdbms\x12I\n" +
-	"\vmysql_rdbms\x18e \x01(\v2&.google.cloud.datastream.v1.MysqlRdbmsH\x02R\n" +
-	"mysqlRdbms\x12X\n" +
-	"\x10postgresql_rdbms\x18f \x01(\v2+.google.cloud.datastream.v1.PostgresqlRdbmsH\x02R\x0fpostgresqlRdbms\x12V\n" +
-	"\x10sql_server_rdbms\x18g \x01(\v2*.google.cloud.datastream.v1.SqlServerRdbmsH\x02R\x0esqlServerRdbms\x12R\n" +
-	"\x0esalesforce_org\x18h \x01(\v2).google.cloud.datastream.v1.SalesforceOrgH\x02R\rsalesforceOrg\x12U\n" +
-	"\x0fmongodb_cluster\x18i \x01(\v2*.google.cloud.datastream.v1.MongodbClusterH\x02R\x0emongodbClusterB\b\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\x12+datastream.googleapis.com/ConnectionProfileR\x06parent\x12d\n" +
+	"\x12connection_profile\x18\xc8\x01 \x01(\v2-.google.cloud.datastream.v1.ConnectionProfileB\x03\xe0A\x01H\x00R\x11connectionProfile\x12>\n" +
+	"\x17connection_profile_name\x18\xc9\x01 \x01(\tB\x03\xe0A\x01H\x00R\x15connectionProfileName\x12,\n" +
+	"\x0efull_hierarchy\x18\x03 \x01(\bB\x03\xe0A\x01H\x01R\rfullHierarchy\x12.\n" +
+	"\x0fhierarchy_depth\x18\x04 \x01(\x05B\x03\xe0A\x01H\x01R\x0ehierarchyDepth\x12Q\n" +
+	"\foracle_rdbms\x18d \x01(\v2'.google.cloud.datastream.v1.OracleRdbmsB\x03\xe0A\x01H\x02R\voracleRdbms\x12N\n" +
+	"\vmysql_rdbms\x18e \x01(\v2&.google.cloud.datastream.v1.MysqlRdbmsB\x03\xe0A\x01H\x02R\n" +
+	"mysqlRdbms\x12]\n" +
+	"\x10postgresql_rdbms\x18f \x01(\v2+.google.cloud.datastream.v1.PostgresqlRdbmsB\x03\xe0A\x01H\x02R\x0fpostgresqlRdbms\x12[\n" +
+	"\x10sql_server_rdbms\x18g \x01(\v2*.google.cloud.datastream.v1.SqlServerRdbmsB\x03\xe0A\x01H\x02R\x0esqlServerRdbms\x12W\n" +
+	"\x0esalesforce_org\x18h \x01(\v2).google.cloud.datastream.v1.SalesforceOrgB\x03\xe0A\x01H\x02R\rsalesforceOrg\x12Z\n" +
+	"\x0fmongodb_cluster\x18i \x01(\v2*.google.cloud.datastream.v1.MongodbClusterB\x03\xe0A\x01H\x02R\x0emongodbCluster\x12]\n" +
+	"\x10spanner_database\x18j \x01(\v2+.google.cloud.datastream.v1.SpannerDatabaseB\x03\xe0A\x01H\x02R\x0fspannerDatabase\x12W\n" +
+	"\x0esource_catalog\x18l \x01(\v2).google.cloud.datastream.v1.SourceCatalogB\x03\xe0A\x01H\x02R\rsourceCatalogB\b\n" +
 	"\x06targetB\v\n" +
 	"\thierarchyB\r\n" +
-	"\vdata_object\"\xa8\x04\n" +
+	"\vdata_object\"\xd6\x05\n" +
 	"!DiscoverConnectionProfileResponse\x12L\n" +
 	"\foracle_rdbms\x18d \x01(\v2'.google.cloud.datastream.v1.OracleRdbmsH\x00R\voracleRdbms\x12I\n" +
 	"\vmysql_rdbms\x18e \x01(\v2&.google.cloud.datastream.v1.MysqlRdbmsH\x00R\n" +
@@ -2896,25 +2987,27 @@ const file_google_cloud_datastream_v1_datastream_proto_rawDesc = "" +
 	"\x10postgresql_rdbms\x18f \x01(\v2+.google.cloud.datastream.v1.PostgresqlRdbmsH\x00R\x0fpostgresqlRdbms\x12V\n" +
 	"\x10sql_server_rdbms\x18g \x01(\v2*.google.cloud.datastream.v1.SqlServerRdbmsH\x00R\x0esqlServerRdbms\x12R\n" +
 	"\x0esalesforce_org\x18h \x01(\v2).google.cloud.datastream.v1.SalesforceOrgH\x00R\rsalesforceOrg\x12U\n" +
-	"\x0fmongodb_cluster\x18i \x01(\v2*.google.cloud.datastream.v1.MongodbClusterH\x00R\x0emongodbClusterB\r\n" +
-	"\vdata_object\"\x92\x01\n" +
+	"\x0fmongodb_cluster\x18i \x01(\v2*.google.cloud.datastream.v1.MongodbClusterH\x00R\x0emongodbCluster\x12X\n" +
+	"\x10spanner_database\x18j \x01(\v2+.google.cloud.datastream.v1.SpannerDatabaseH\x00R\x0fspannerDatabase\x12R\n" +
+	"\x0esource_catalog\x18l \x01(\v2).google.cloud.datastream.v1.SourceCatalogH\x00R\rsourceCatalogB\r\n" +
+	"\vdata_object\"\x9c\x01\n" +
 	"\x15FetchStaticIpsRequest\x12=\n" +
 	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\x04name\x12\x1b\n" +
-	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
+	"!locations.googleapis.com/LocationR\x04name\x12 \n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\"_\n" +
+	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"_\n" +
 	"\x16FetchStaticIpsResponse\x12\x1d\n" +
 	"\n" +
 	"static_ips\x18\x01 \x03(\tR\tstaticIps\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xdb\x01\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xef\x01\n" +
 	"\x1dListConnectionProfilesRequest\x12K\n" +
-	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\x12+datastream.googleapis.com/ConnectionProfileR\x06parent\x12\x1b\n" +
-	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
+	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\x12+datastream.googleapis.com/ConnectionProfileR\x06parent\x12 \n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
-	"\x06filter\x18\x04 \x01(\tR\x06filter\x12\x19\n" +
-	"\border_by\x18\x05 \x01(\tR\aorderBy\"\xca\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
+	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
+	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xca\x01\n" +
 	"\x1eListConnectionProfilesResponse\x12^\n" +
 	"\x13connection_profiles\x18\x01 \x03(\v2-.google.cloud.datastream.v1.ConnectionProfileR\x12connectionProfiles\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
@@ -2942,14 +3035,14 @@ const file_google_cloud_datastream_v1_datastream_proto_rawDesc = "" +
 	"\x04name\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
 	"+datastream.googleapis.com/ConnectionProfileR\x04name\x12\"\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"\xc5\x01\n" +
+	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\"\xd9\x01\n" +
 	"\x12ListStreamsRequest\x12@\n" +
-	"\x06parent\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\x12 datastream.googleapis.com/StreamR\x06parent\x12\x1b\n" +
-	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
+	"\x06parent\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\x12 datastream.googleapis.com/StreamR\x06parent\x12 \n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
-	"\x06filter\x18\x04 \x01(\tR\x06filter\x12\x19\n" +
-	"\border_by\x18\x05 \x01(\tR\aorderBy\"\x9d\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
+	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
+	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\x9d\x01\n" +
 	"\x13ListStreamsResponse\x12<\n" +
 	"\astreams\x18\x01 \x03(\v2\".google.cloud.datastream.v1.StreamR\astreams\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
@@ -2989,22 +3082,23 @@ const file_google_cloud_datastream_v1_datastream_proto_rawDesc = "" +
 	"\x19LookupStreamObjectRequest\x12@\n" +
 	"\x06parent\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
 	" datastream.googleapis.com/StreamR\x06parent\x12q\n" +
-	"\x18source_object_identifier\x18\x02 \x01(\v22.google.cloud.datastream.v1.SourceObjectIdentifierB\x03\xe0A\x02R\x16sourceObjectIdentifier\"a\n" +
+	"\x18source_object_identifier\x18\x02 \x01(\v22.google.cloud.datastream.v1.SourceObjectIdentifierB\x03\xe0A\x02R\x16sourceObjectIdentifier\"\xb2\x01\n" +
 	"\x17StartBackfillJobRequest\x12F\n" +
 	"\x06object\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
-	"&datastream.googleapis.com/StreamObjectR\x06object\"\\\n" +
+	"&datastream.googleapis.com/StreamObjectR\x06object\x12O\n" +
+	"\fevent_filter\x18\x02 \x01(\v2'.google.cloud.datastream.v1.EventFilterB\x03\xe0A\x01R\veventFilter\"\\\n" +
 	"\x18StartBackfillJobResponse\x12@\n" +
 	"\x06object\x18\x01 \x01(\v2(.google.cloud.datastream.v1.StreamObjectR\x06object\"`\n" +
 	"\x16StopBackfillJobRequest\x12F\n" +
 	"\x06object\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
 	"&datastream.googleapis.com/StreamObjectR\x06object\"[\n" +
 	"\x17StopBackfillJobResponse\x12@\n" +
-	"\x06object\x18\x01 \x01(\v2(.google.cloud.datastream.v1.StreamObjectR\x06object\"\x9e\x01\n" +
+	"\x06object\x18\x01 \x01(\v2(.google.cloud.datastream.v1.StreamObjectR\x06object\"\xa8\x01\n" +
 	"\x18ListStreamObjectsRequest\x12F\n" +
-	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\x12&datastream.googleapis.com/StreamObjectR\x06parent\x12\x1b\n" +
-	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
+	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\x12&datastream.googleapis.com/StreamObjectR\x06parent\x12 \n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\"\x94\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x94\x01\n" +
 	"\x19ListStreamObjectsResponse\x12O\n" +
 	"\x0estream_objects\x18\x01 \x03(\v2(.google.cloud.datastream.v1.StreamObjectR\rstreamObjects\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xb5\x03\n" +
@@ -3026,14 +3120,14 @@ const file_google_cloud_datastream_v1_datastream_proto_rawDesc = "" +
 	"\n" +
 	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\x12\x19\n" +
 	"\x05force\x18\x06 \x01(\bB\x03\xe0A\x01R\x05force\x12(\n" +
-	"\rvalidate_only\x18\b \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\xdb\x01\n" +
+	"\rvalidate_only\x18\b \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\xea\x01\n" +
 	"\x1dListPrivateConnectionsRequest\x12K\n" +
 	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\x12+datastream.googleapis.com/PrivateConnectionR\x06parent\x12\x1b\n" +
-	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
+	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\"\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
-	"\x06filter\x18\x04 \x01(\tR\x06filter\x12\x19\n" +
-	"\border_by\x18\x05 \x01(\tR\aorderBy\"\xca\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
+	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
+	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xca\x01\n" +
 	"\x1eListPrivateConnectionsResponse\x12^\n" +
 	"\x13private_connections\x18\x01 \x03(\v2-.google.cloud.datastream.v1.PrivateConnectionR\x12privateConnections\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
@@ -3052,14 +3146,14 @@ const file_google_cloud_datastream_v1_datastream_proto_rawDesc = "" +
 	"\broute_id\x18\x02 \x01(\tB\x03\xe0A\x02R\arouteId\x12<\n" +
 	"\x05route\x18\x03 \x01(\v2!.google.cloud.datastream.v1.RouteB\x03\xe0A\x02R\x05route\x12\"\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\xc3\x01\n" +
+	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\xd7\x01\n" +
 	"\x11ListRoutesRequest\x12?\n" +
-	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\x12\x1fdatastream.googleapis.com/RouteR\x06parent\x12\x1b\n" +
-	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
+	"\x06parent\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\x12\x1fdatastream.googleapis.com/RouteR\x06parent\x12 \n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x16\n" +
-	"\x06filter\x18\x04 \x01(\tR\x06filter\x12\x19\n" +
-	"\border_by\x18\x05 \x01(\tR\aorderBy\"\x99\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
+	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
+	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\x99\x01\n" +
 	"\x12ListRoutesResponse\x129\n" +
 	"\x06routes\x18\x01 \x03(\v2!.google.cloud.datastream.v1.RouteR\x06routes\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
@@ -3171,16 +3265,19 @@ var file_google_cloud_datastream_v1_datastream_proto_goTypes = []any{
 	(*SqlServerRdbms)(nil),                    // 40: google.cloud.datastream.v1.SqlServerRdbms
 	(*SalesforceOrg)(nil),                     // 41: google.cloud.datastream.v1.SalesforceOrg
 	(*MongodbCluster)(nil),                    // 42: google.cloud.datastream.v1.MongodbCluster
-	(*fieldmaskpb.FieldMask)(nil),             // 43: google.protobuf.FieldMask
-	(*Stream)(nil),                            // 44: google.cloud.datastream.v1.Stream
-	(*CdcStrategy)(nil),                       // 45: google.cloud.datastream.v1.CdcStrategy
-	(*SourceObjectIdentifier)(nil),            // 46: google.cloud.datastream.v1.SourceObjectIdentifier
-	(*StreamObject)(nil),                      // 47: google.cloud.datastream.v1.StreamObject
-	(*timestamppb.Timestamp)(nil),             // 48: google.protobuf.Timestamp
-	(*ValidationResult)(nil),                  // 49: google.cloud.datastream.v1.ValidationResult
-	(*PrivateConnection)(nil),                 // 50: google.cloud.datastream.v1.PrivateConnection
-	(*Route)(nil),                             // 51: google.cloud.datastream.v1.Route
-	(*longrunningpb.Operation)(nil),           // 52: google.longrunning.Operation
+	(*SpannerDatabase)(nil),                   // 43: google.cloud.datastream.v1.SpannerDatabase
+	(*SourceCatalog)(nil),                     // 44: google.cloud.datastream.v1.SourceCatalog
+	(*fieldmaskpb.FieldMask)(nil),             // 45: google.protobuf.FieldMask
+	(*Stream)(nil),                            // 46: google.cloud.datastream.v1.Stream
+	(*CdcStrategy)(nil),                       // 47: google.cloud.datastream.v1.CdcStrategy
+	(*SourceObjectIdentifier)(nil),            // 48: google.cloud.datastream.v1.SourceObjectIdentifier
+	(*EventFilter)(nil),                       // 49: google.cloud.datastream.v1.EventFilter
+	(*StreamObject)(nil),                      // 50: google.cloud.datastream.v1.StreamObject
+	(*timestamppb.Timestamp)(nil),             // 51: google.protobuf.Timestamp
+	(*ValidationResult)(nil),                  // 52: google.cloud.datastream.v1.ValidationResult
+	(*PrivateConnection)(nil),                 // 53: google.cloud.datastream.v1.PrivateConnection
+	(*Route)(nil),                             // 54: google.cloud.datastream.v1.Route
+	(*longrunningpb.Operation)(nil),           // 55: google.longrunning.Operation
 }
 var file_google_cloud_datastream_v1_datastream_proto_depIdxs = []int32{
 	36, // 0: google.cloud.datastream.v1.DiscoverConnectionProfileRequest.connection_profile:type_name -> google.cloud.datastream.v1.ConnectionProfile
@@ -3190,89 +3287,94 @@ var file_google_cloud_datastream_v1_datastream_proto_depIdxs = []int32{
 	40, // 4: google.cloud.datastream.v1.DiscoverConnectionProfileRequest.sql_server_rdbms:type_name -> google.cloud.datastream.v1.SqlServerRdbms
 	41, // 5: google.cloud.datastream.v1.DiscoverConnectionProfileRequest.salesforce_org:type_name -> google.cloud.datastream.v1.SalesforceOrg
 	42, // 6: google.cloud.datastream.v1.DiscoverConnectionProfileRequest.mongodb_cluster:type_name -> google.cloud.datastream.v1.MongodbCluster
-	37, // 7: google.cloud.datastream.v1.DiscoverConnectionProfileResponse.oracle_rdbms:type_name -> google.cloud.datastream.v1.OracleRdbms
-	38, // 8: google.cloud.datastream.v1.DiscoverConnectionProfileResponse.mysql_rdbms:type_name -> google.cloud.datastream.v1.MysqlRdbms
-	39, // 9: google.cloud.datastream.v1.DiscoverConnectionProfileResponse.postgresql_rdbms:type_name -> google.cloud.datastream.v1.PostgresqlRdbms
-	40, // 10: google.cloud.datastream.v1.DiscoverConnectionProfileResponse.sql_server_rdbms:type_name -> google.cloud.datastream.v1.SqlServerRdbms
-	41, // 11: google.cloud.datastream.v1.DiscoverConnectionProfileResponse.salesforce_org:type_name -> google.cloud.datastream.v1.SalesforceOrg
-	42, // 12: google.cloud.datastream.v1.DiscoverConnectionProfileResponse.mongodb_cluster:type_name -> google.cloud.datastream.v1.MongodbCluster
-	36, // 13: google.cloud.datastream.v1.ListConnectionProfilesResponse.connection_profiles:type_name -> google.cloud.datastream.v1.ConnectionProfile
-	36, // 14: google.cloud.datastream.v1.CreateConnectionProfileRequest.connection_profile:type_name -> google.cloud.datastream.v1.ConnectionProfile
-	43, // 15: google.cloud.datastream.v1.UpdateConnectionProfileRequest.update_mask:type_name -> google.protobuf.FieldMask
-	36, // 16: google.cloud.datastream.v1.UpdateConnectionProfileRequest.connection_profile:type_name -> google.cloud.datastream.v1.ConnectionProfile
-	44, // 17: google.cloud.datastream.v1.ListStreamsResponse.streams:type_name -> google.cloud.datastream.v1.Stream
-	44, // 18: google.cloud.datastream.v1.CreateStreamRequest.stream:type_name -> google.cloud.datastream.v1.Stream
-	43, // 19: google.cloud.datastream.v1.UpdateStreamRequest.update_mask:type_name -> google.protobuf.FieldMask
-	44, // 20: google.cloud.datastream.v1.UpdateStreamRequest.stream:type_name -> google.cloud.datastream.v1.Stream
-	45, // 21: google.cloud.datastream.v1.RunStreamRequest.cdc_strategy:type_name -> google.cloud.datastream.v1.CdcStrategy
-	46, // 22: google.cloud.datastream.v1.LookupStreamObjectRequest.source_object_identifier:type_name -> google.cloud.datastream.v1.SourceObjectIdentifier
-	47, // 23: google.cloud.datastream.v1.StartBackfillJobResponse.object:type_name -> google.cloud.datastream.v1.StreamObject
-	47, // 24: google.cloud.datastream.v1.StopBackfillJobResponse.object:type_name -> google.cloud.datastream.v1.StreamObject
-	47, // 25: google.cloud.datastream.v1.ListStreamObjectsResponse.stream_objects:type_name -> google.cloud.datastream.v1.StreamObject
-	48, // 26: google.cloud.datastream.v1.OperationMetadata.create_time:type_name -> google.protobuf.Timestamp
-	48, // 27: google.cloud.datastream.v1.OperationMetadata.end_time:type_name -> google.protobuf.Timestamp
-	49, // 28: google.cloud.datastream.v1.OperationMetadata.validation_result:type_name -> google.cloud.datastream.v1.ValidationResult
-	50, // 29: google.cloud.datastream.v1.CreatePrivateConnectionRequest.private_connection:type_name -> google.cloud.datastream.v1.PrivateConnection
-	50, // 30: google.cloud.datastream.v1.ListPrivateConnectionsResponse.private_connections:type_name -> google.cloud.datastream.v1.PrivateConnection
-	51, // 31: google.cloud.datastream.v1.CreateRouteRequest.route:type_name -> google.cloud.datastream.v1.Route
-	51, // 32: google.cloud.datastream.v1.ListRoutesResponse.routes:type_name -> google.cloud.datastream.v1.Route
-	4,  // 33: google.cloud.datastream.v1.Datastream.ListConnectionProfiles:input_type -> google.cloud.datastream.v1.ListConnectionProfilesRequest
-	6,  // 34: google.cloud.datastream.v1.Datastream.GetConnectionProfile:input_type -> google.cloud.datastream.v1.GetConnectionProfileRequest
-	7,  // 35: google.cloud.datastream.v1.Datastream.CreateConnectionProfile:input_type -> google.cloud.datastream.v1.CreateConnectionProfileRequest
-	8,  // 36: google.cloud.datastream.v1.Datastream.UpdateConnectionProfile:input_type -> google.cloud.datastream.v1.UpdateConnectionProfileRequest
-	9,  // 37: google.cloud.datastream.v1.Datastream.DeleteConnectionProfile:input_type -> google.cloud.datastream.v1.DeleteConnectionProfileRequest
-	0,  // 38: google.cloud.datastream.v1.Datastream.DiscoverConnectionProfile:input_type -> google.cloud.datastream.v1.DiscoverConnectionProfileRequest
-	10, // 39: google.cloud.datastream.v1.Datastream.ListStreams:input_type -> google.cloud.datastream.v1.ListStreamsRequest
-	12, // 40: google.cloud.datastream.v1.Datastream.GetStream:input_type -> google.cloud.datastream.v1.GetStreamRequest
-	13, // 41: google.cloud.datastream.v1.Datastream.CreateStream:input_type -> google.cloud.datastream.v1.CreateStreamRequest
-	14, // 42: google.cloud.datastream.v1.Datastream.UpdateStream:input_type -> google.cloud.datastream.v1.UpdateStreamRequest
-	15, // 43: google.cloud.datastream.v1.Datastream.DeleteStream:input_type -> google.cloud.datastream.v1.DeleteStreamRequest
-	16, // 44: google.cloud.datastream.v1.Datastream.RunStream:input_type -> google.cloud.datastream.v1.RunStreamRequest
-	17, // 45: google.cloud.datastream.v1.Datastream.GetStreamObject:input_type -> google.cloud.datastream.v1.GetStreamObjectRequest
-	18, // 46: google.cloud.datastream.v1.Datastream.LookupStreamObject:input_type -> google.cloud.datastream.v1.LookupStreamObjectRequest
-	23, // 47: google.cloud.datastream.v1.Datastream.ListStreamObjects:input_type -> google.cloud.datastream.v1.ListStreamObjectsRequest
-	19, // 48: google.cloud.datastream.v1.Datastream.StartBackfillJob:input_type -> google.cloud.datastream.v1.StartBackfillJobRequest
-	21, // 49: google.cloud.datastream.v1.Datastream.StopBackfillJob:input_type -> google.cloud.datastream.v1.StopBackfillJobRequest
-	2,  // 50: google.cloud.datastream.v1.Datastream.FetchStaticIps:input_type -> google.cloud.datastream.v1.FetchStaticIpsRequest
-	26, // 51: google.cloud.datastream.v1.Datastream.CreatePrivateConnection:input_type -> google.cloud.datastream.v1.CreatePrivateConnectionRequest
-	30, // 52: google.cloud.datastream.v1.Datastream.GetPrivateConnection:input_type -> google.cloud.datastream.v1.GetPrivateConnectionRequest
-	27, // 53: google.cloud.datastream.v1.Datastream.ListPrivateConnections:input_type -> google.cloud.datastream.v1.ListPrivateConnectionsRequest
-	29, // 54: google.cloud.datastream.v1.Datastream.DeletePrivateConnection:input_type -> google.cloud.datastream.v1.DeletePrivateConnectionRequest
-	31, // 55: google.cloud.datastream.v1.Datastream.CreateRoute:input_type -> google.cloud.datastream.v1.CreateRouteRequest
-	35, // 56: google.cloud.datastream.v1.Datastream.GetRoute:input_type -> google.cloud.datastream.v1.GetRouteRequest
-	32, // 57: google.cloud.datastream.v1.Datastream.ListRoutes:input_type -> google.cloud.datastream.v1.ListRoutesRequest
-	34, // 58: google.cloud.datastream.v1.Datastream.DeleteRoute:input_type -> google.cloud.datastream.v1.DeleteRouteRequest
-	5,  // 59: google.cloud.datastream.v1.Datastream.ListConnectionProfiles:output_type -> google.cloud.datastream.v1.ListConnectionProfilesResponse
-	36, // 60: google.cloud.datastream.v1.Datastream.GetConnectionProfile:output_type -> google.cloud.datastream.v1.ConnectionProfile
-	52, // 61: google.cloud.datastream.v1.Datastream.CreateConnectionProfile:output_type -> google.longrunning.Operation
-	52, // 62: google.cloud.datastream.v1.Datastream.UpdateConnectionProfile:output_type -> google.longrunning.Operation
-	52, // 63: google.cloud.datastream.v1.Datastream.DeleteConnectionProfile:output_type -> google.longrunning.Operation
-	1,  // 64: google.cloud.datastream.v1.Datastream.DiscoverConnectionProfile:output_type -> google.cloud.datastream.v1.DiscoverConnectionProfileResponse
-	11, // 65: google.cloud.datastream.v1.Datastream.ListStreams:output_type -> google.cloud.datastream.v1.ListStreamsResponse
-	44, // 66: google.cloud.datastream.v1.Datastream.GetStream:output_type -> google.cloud.datastream.v1.Stream
-	52, // 67: google.cloud.datastream.v1.Datastream.CreateStream:output_type -> google.longrunning.Operation
-	52, // 68: google.cloud.datastream.v1.Datastream.UpdateStream:output_type -> google.longrunning.Operation
-	52, // 69: google.cloud.datastream.v1.Datastream.DeleteStream:output_type -> google.longrunning.Operation
-	52, // 70: google.cloud.datastream.v1.Datastream.RunStream:output_type -> google.longrunning.Operation
-	47, // 71: google.cloud.datastream.v1.Datastream.GetStreamObject:output_type -> google.cloud.datastream.v1.StreamObject
-	47, // 72: google.cloud.datastream.v1.Datastream.LookupStreamObject:output_type -> google.cloud.datastream.v1.StreamObject
-	24, // 73: google.cloud.datastream.v1.Datastream.ListStreamObjects:output_type -> google.cloud.datastream.v1.ListStreamObjectsResponse
-	20, // 74: google.cloud.datastream.v1.Datastream.StartBackfillJob:output_type -> google.cloud.datastream.v1.StartBackfillJobResponse
-	22, // 75: google.cloud.datastream.v1.Datastream.StopBackfillJob:output_type -> google.cloud.datastream.v1.StopBackfillJobResponse
-	3,  // 76: google.cloud.datastream.v1.Datastream.FetchStaticIps:output_type -> google.cloud.datastream.v1.FetchStaticIpsResponse
-	52, // 77: google.cloud.datastream.v1.Datastream.CreatePrivateConnection:output_type -> google.longrunning.Operation
-	50, // 78: google.cloud.datastream.v1.Datastream.GetPrivateConnection:output_type -> google.cloud.datastream.v1.PrivateConnection
-	28, // 79: google.cloud.datastream.v1.Datastream.ListPrivateConnections:output_type -> google.cloud.datastream.v1.ListPrivateConnectionsResponse
-	52, // 80: google.cloud.datastream.v1.Datastream.DeletePrivateConnection:output_type -> google.longrunning.Operation
-	52, // 81: google.cloud.datastream.v1.Datastream.CreateRoute:output_type -> google.longrunning.Operation
-	51, // 82: google.cloud.datastream.v1.Datastream.GetRoute:output_type -> google.cloud.datastream.v1.Route
-	33, // 83: google.cloud.datastream.v1.Datastream.ListRoutes:output_type -> google.cloud.datastream.v1.ListRoutesResponse
-	52, // 84: google.cloud.datastream.v1.Datastream.DeleteRoute:output_type -> google.longrunning.Operation
-	59, // [59:85] is the sub-list for method output_type
-	33, // [33:59] is the sub-list for method input_type
-	33, // [33:33] is the sub-list for extension type_name
-	33, // [33:33] is the sub-list for extension extendee
-	0,  // [0:33] is the sub-list for field type_name
+	43, // 7: google.cloud.datastream.v1.DiscoverConnectionProfileRequest.spanner_database:type_name -> google.cloud.datastream.v1.SpannerDatabase
+	44, // 8: google.cloud.datastream.v1.DiscoverConnectionProfileRequest.source_catalog:type_name -> google.cloud.datastream.v1.SourceCatalog
+	37, // 9: google.cloud.datastream.v1.DiscoverConnectionProfileResponse.oracle_rdbms:type_name -> google.cloud.datastream.v1.OracleRdbms
+	38, // 10: google.cloud.datastream.v1.DiscoverConnectionProfileResponse.mysql_rdbms:type_name -> google.cloud.datastream.v1.MysqlRdbms
+	39, // 11: google.cloud.datastream.v1.DiscoverConnectionProfileResponse.postgresql_rdbms:type_name -> google.cloud.datastream.v1.PostgresqlRdbms
+	40, // 12: google.cloud.datastream.v1.DiscoverConnectionProfileResponse.sql_server_rdbms:type_name -> google.cloud.datastream.v1.SqlServerRdbms
+	41, // 13: google.cloud.datastream.v1.DiscoverConnectionProfileResponse.salesforce_org:type_name -> google.cloud.datastream.v1.SalesforceOrg
+	42, // 14: google.cloud.datastream.v1.DiscoverConnectionProfileResponse.mongodb_cluster:type_name -> google.cloud.datastream.v1.MongodbCluster
+	43, // 15: google.cloud.datastream.v1.DiscoverConnectionProfileResponse.spanner_database:type_name -> google.cloud.datastream.v1.SpannerDatabase
+	44, // 16: google.cloud.datastream.v1.DiscoverConnectionProfileResponse.source_catalog:type_name -> google.cloud.datastream.v1.SourceCatalog
+	36, // 17: google.cloud.datastream.v1.ListConnectionProfilesResponse.connection_profiles:type_name -> google.cloud.datastream.v1.ConnectionProfile
+	36, // 18: google.cloud.datastream.v1.CreateConnectionProfileRequest.connection_profile:type_name -> google.cloud.datastream.v1.ConnectionProfile
+	45, // 19: google.cloud.datastream.v1.UpdateConnectionProfileRequest.update_mask:type_name -> google.protobuf.FieldMask
+	36, // 20: google.cloud.datastream.v1.UpdateConnectionProfileRequest.connection_profile:type_name -> google.cloud.datastream.v1.ConnectionProfile
+	46, // 21: google.cloud.datastream.v1.ListStreamsResponse.streams:type_name -> google.cloud.datastream.v1.Stream
+	46, // 22: google.cloud.datastream.v1.CreateStreamRequest.stream:type_name -> google.cloud.datastream.v1.Stream
+	45, // 23: google.cloud.datastream.v1.UpdateStreamRequest.update_mask:type_name -> google.protobuf.FieldMask
+	46, // 24: google.cloud.datastream.v1.UpdateStreamRequest.stream:type_name -> google.cloud.datastream.v1.Stream
+	47, // 25: google.cloud.datastream.v1.RunStreamRequest.cdc_strategy:type_name -> google.cloud.datastream.v1.CdcStrategy
+	48, // 26: google.cloud.datastream.v1.LookupStreamObjectRequest.source_object_identifier:type_name -> google.cloud.datastream.v1.SourceObjectIdentifier
+	49, // 27: google.cloud.datastream.v1.StartBackfillJobRequest.event_filter:type_name -> google.cloud.datastream.v1.EventFilter
+	50, // 28: google.cloud.datastream.v1.StartBackfillJobResponse.object:type_name -> google.cloud.datastream.v1.StreamObject
+	50, // 29: google.cloud.datastream.v1.StopBackfillJobResponse.object:type_name -> google.cloud.datastream.v1.StreamObject
+	50, // 30: google.cloud.datastream.v1.ListStreamObjectsResponse.stream_objects:type_name -> google.cloud.datastream.v1.StreamObject
+	51, // 31: google.cloud.datastream.v1.OperationMetadata.create_time:type_name -> google.protobuf.Timestamp
+	51, // 32: google.cloud.datastream.v1.OperationMetadata.end_time:type_name -> google.protobuf.Timestamp
+	52, // 33: google.cloud.datastream.v1.OperationMetadata.validation_result:type_name -> google.cloud.datastream.v1.ValidationResult
+	53, // 34: google.cloud.datastream.v1.CreatePrivateConnectionRequest.private_connection:type_name -> google.cloud.datastream.v1.PrivateConnection
+	53, // 35: google.cloud.datastream.v1.ListPrivateConnectionsResponse.private_connections:type_name -> google.cloud.datastream.v1.PrivateConnection
+	54, // 36: google.cloud.datastream.v1.CreateRouteRequest.route:type_name -> google.cloud.datastream.v1.Route
+	54, // 37: google.cloud.datastream.v1.ListRoutesResponse.routes:type_name -> google.cloud.datastream.v1.Route
+	4,  // 38: google.cloud.datastream.v1.Datastream.ListConnectionProfiles:input_type -> google.cloud.datastream.v1.ListConnectionProfilesRequest
+	6,  // 39: google.cloud.datastream.v1.Datastream.GetConnectionProfile:input_type -> google.cloud.datastream.v1.GetConnectionProfileRequest
+	7,  // 40: google.cloud.datastream.v1.Datastream.CreateConnectionProfile:input_type -> google.cloud.datastream.v1.CreateConnectionProfileRequest
+	8,  // 41: google.cloud.datastream.v1.Datastream.UpdateConnectionProfile:input_type -> google.cloud.datastream.v1.UpdateConnectionProfileRequest
+	9,  // 42: google.cloud.datastream.v1.Datastream.DeleteConnectionProfile:input_type -> google.cloud.datastream.v1.DeleteConnectionProfileRequest
+	0,  // 43: google.cloud.datastream.v1.Datastream.DiscoverConnectionProfile:input_type -> google.cloud.datastream.v1.DiscoverConnectionProfileRequest
+	10, // 44: google.cloud.datastream.v1.Datastream.ListStreams:input_type -> google.cloud.datastream.v1.ListStreamsRequest
+	12, // 45: google.cloud.datastream.v1.Datastream.GetStream:input_type -> google.cloud.datastream.v1.GetStreamRequest
+	13, // 46: google.cloud.datastream.v1.Datastream.CreateStream:input_type -> google.cloud.datastream.v1.CreateStreamRequest
+	14, // 47: google.cloud.datastream.v1.Datastream.UpdateStream:input_type -> google.cloud.datastream.v1.UpdateStreamRequest
+	15, // 48: google.cloud.datastream.v1.Datastream.DeleteStream:input_type -> google.cloud.datastream.v1.DeleteStreamRequest
+	16, // 49: google.cloud.datastream.v1.Datastream.RunStream:input_type -> google.cloud.datastream.v1.RunStreamRequest
+	17, // 50: google.cloud.datastream.v1.Datastream.GetStreamObject:input_type -> google.cloud.datastream.v1.GetStreamObjectRequest
+	18, // 51: google.cloud.datastream.v1.Datastream.LookupStreamObject:input_type -> google.cloud.datastream.v1.LookupStreamObjectRequest
+	23, // 52: google.cloud.datastream.v1.Datastream.ListStreamObjects:input_type -> google.cloud.datastream.v1.ListStreamObjectsRequest
+	19, // 53: google.cloud.datastream.v1.Datastream.StartBackfillJob:input_type -> google.cloud.datastream.v1.StartBackfillJobRequest
+	21, // 54: google.cloud.datastream.v1.Datastream.StopBackfillJob:input_type -> google.cloud.datastream.v1.StopBackfillJobRequest
+	2,  // 55: google.cloud.datastream.v1.Datastream.FetchStaticIps:input_type -> google.cloud.datastream.v1.FetchStaticIpsRequest
+	26, // 56: google.cloud.datastream.v1.Datastream.CreatePrivateConnection:input_type -> google.cloud.datastream.v1.CreatePrivateConnectionRequest
+	30, // 57: google.cloud.datastream.v1.Datastream.GetPrivateConnection:input_type -> google.cloud.datastream.v1.GetPrivateConnectionRequest
+	27, // 58: google.cloud.datastream.v1.Datastream.ListPrivateConnections:input_type -> google.cloud.datastream.v1.ListPrivateConnectionsRequest
+	29, // 59: google.cloud.datastream.v1.Datastream.DeletePrivateConnection:input_type -> google.cloud.datastream.v1.DeletePrivateConnectionRequest
+	31, // 60: google.cloud.datastream.v1.Datastream.CreateRoute:input_type -> google.cloud.datastream.v1.CreateRouteRequest
+	35, // 61: google.cloud.datastream.v1.Datastream.GetRoute:input_type -> google.cloud.datastream.v1.GetRouteRequest
+	32, // 62: google.cloud.datastream.v1.Datastream.ListRoutes:input_type -> google.cloud.datastream.v1.ListRoutesRequest
+	34, // 63: google.cloud.datastream.v1.Datastream.DeleteRoute:input_type -> google.cloud.datastream.v1.DeleteRouteRequest
+	5,  // 64: google.cloud.datastream.v1.Datastream.ListConnectionProfiles:output_type -> google.cloud.datastream.v1.ListConnectionProfilesResponse
+	36, // 65: google.cloud.datastream.v1.Datastream.GetConnectionProfile:output_type -> google.cloud.datastream.v1.ConnectionProfile
+	55, // 66: google.cloud.datastream.v1.Datastream.CreateConnectionProfile:output_type -> google.longrunning.Operation
+	55, // 67: google.cloud.datastream.v1.Datastream.UpdateConnectionProfile:output_type -> google.longrunning.Operation
+	55, // 68: google.cloud.datastream.v1.Datastream.DeleteConnectionProfile:output_type -> google.longrunning.Operation
+	1,  // 69: google.cloud.datastream.v1.Datastream.DiscoverConnectionProfile:output_type -> google.cloud.datastream.v1.DiscoverConnectionProfileResponse
+	11, // 70: google.cloud.datastream.v1.Datastream.ListStreams:output_type -> google.cloud.datastream.v1.ListStreamsResponse
+	46, // 71: google.cloud.datastream.v1.Datastream.GetStream:output_type -> google.cloud.datastream.v1.Stream
+	55, // 72: google.cloud.datastream.v1.Datastream.CreateStream:output_type -> google.longrunning.Operation
+	55, // 73: google.cloud.datastream.v1.Datastream.UpdateStream:output_type -> google.longrunning.Operation
+	55, // 74: google.cloud.datastream.v1.Datastream.DeleteStream:output_type -> google.longrunning.Operation
+	55, // 75: google.cloud.datastream.v1.Datastream.RunStream:output_type -> google.longrunning.Operation
+	50, // 76: google.cloud.datastream.v1.Datastream.GetStreamObject:output_type -> google.cloud.datastream.v1.StreamObject
+	50, // 77: google.cloud.datastream.v1.Datastream.LookupStreamObject:output_type -> google.cloud.datastream.v1.StreamObject
+	24, // 78: google.cloud.datastream.v1.Datastream.ListStreamObjects:output_type -> google.cloud.datastream.v1.ListStreamObjectsResponse
+	20, // 79: google.cloud.datastream.v1.Datastream.StartBackfillJob:output_type -> google.cloud.datastream.v1.StartBackfillJobResponse
+	22, // 80: google.cloud.datastream.v1.Datastream.StopBackfillJob:output_type -> google.cloud.datastream.v1.StopBackfillJobResponse
+	3,  // 81: google.cloud.datastream.v1.Datastream.FetchStaticIps:output_type -> google.cloud.datastream.v1.FetchStaticIpsResponse
+	55, // 82: google.cloud.datastream.v1.Datastream.CreatePrivateConnection:output_type -> google.longrunning.Operation
+	53, // 83: google.cloud.datastream.v1.Datastream.GetPrivateConnection:output_type -> google.cloud.datastream.v1.PrivateConnection
+	28, // 84: google.cloud.datastream.v1.Datastream.ListPrivateConnections:output_type -> google.cloud.datastream.v1.ListPrivateConnectionsResponse
+	55, // 85: google.cloud.datastream.v1.Datastream.DeletePrivateConnection:output_type -> google.longrunning.Operation
+	55, // 86: google.cloud.datastream.v1.Datastream.CreateRoute:output_type -> google.longrunning.Operation
+	54, // 87: google.cloud.datastream.v1.Datastream.GetRoute:output_type -> google.cloud.datastream.v1.Route
+	33, // 88: google.cloud.datastream.v1.Datastream.ListRoutes:output_type -> google.cloud.datastream.v1.ListRoutesResponse
+	55, // 89: google.cloud.datastream.v1.Datastream.DeleteRoute:output_type -> google.longrunning.Operation
+	64, // [64:90] is the sub-list for method output_type
+	38, // [38:64] is the sub-list for method input_type
+	38, // [38:38] is the sub-list for extension type_name
+	38, // [38:38] is the sub-list for extension extendee
+	0,  // [0:38] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_datastream_v1_datastream_proto_init() }
@@ -3292,6 +3394,8 @@ func file_google_cloud_datastream_v1_datastream_proto_init() {
 		(*DiscoverConnectionProfileRequest_SqlServerRdbms)(nil),
 		(*DiscoverConnectionProfileRequest_SalesforceOrg)(nil),
 		(*DiscoverConnectionProfileRequest_MongodbCluster)(nil),
+		(*DiscoverConnectionProfileRequest_SpannerDatabase)(nil),
+		(*DiscoverConnectionProfileRequest_SourceCatalog)(nil),
 	}
 	file_google_cloud_datastream_v1_datastream_proto_msgTypes[1].OneofWrappers = []any{
 		(*DiscoverConnectionProfileResponse_OracleRdbms)(nil),
@@ -3300,6 +3404,8 @@ func file_google_cloud_datastream_v1_datastream_proto_init() {
 		(*DiscoverConnectionProfileResponse_SqlServerRdbms)(nil),
 		(*DiscoverConnectionProfileResponse_SalesforceOrg)(nil),
 		(*DiscoverConnectionProfileResponse_MongodbCluster)(nil),
+		(*DiscoverConnectionProfileResponse_SpannerDatabase)(nil),
+		(*DiscoverConnectionProfileResponse_SourceCatalog)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
