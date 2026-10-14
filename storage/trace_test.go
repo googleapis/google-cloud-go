@@ -18,7 +18,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"net/http/httptest"
 	"testing"
 	"time"
 
@@ -32,7 +31,6 @@ import (
 	"go.opentelemetry.io/otel/sdk/trace/tracetest"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/googleapi"
-	"google.golang.org/api/option"
 )
 
 func TestStorageTraceStartEndSpan(t *testing.T) {
@@ -363,6 +361,28 @@ func (s *staticAuthTokenProvider) Token(ctx context.Context) (*auth.Token, error
 	return s.token, s.err
 }
 
+func TestWrapAuthCredentialsForTracing(t *testing.T) {
+	if wrapAuthCredentialsForTracing(nil) != nil {
+		t.Errorf("expected nil when c is nil")
+	}
+	c := &auth.Credentials{}
+	if wrapAuthCredentialsForTracing(c) != c {
+		t.Errorf("expected original credentials when TokenProvider is nil")
+	}
+	c.TokenProvider = &staticAuthTokenProvider{token: &auth.Token{Value: "fake-token"}}
+	wrapped := wrapAuthCredentialsForTracing(c)
+	if wrapped == c {
+		t.Errorf("expected a new copy of credentials, got original")
+	}
+	if _, ok := wrapped.TokenProvider.(*tracedTokenProvider); !ok {
+		t.Errorf("expected TokenProvider to be *tracedTokenProvider")
+	}
+	wrapped2 := wrapAuthCredentialsForTracing(wrapped)
+	if wrapped2 != wrapped {
+		t.Errorf("expected original wrapped credentials on double wrap")
+	}
+}
+
 func TestTracedTokenProviderSpan(t *testing.T) {
 	ctx := context.Background()
 	te := testutil.NewOpenTelemetryTestExporter()
@@ -370,46 +390,30 @@ func TestTracedTokenProviderSpan(t *testing.T) {
 		te.Unregister(ctx)
 	})
 	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
-	t.Setenv("STORAGE_EMULATOR_HOST", "")
 
-	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		fmt.Fprintln(w, `{"name": "my-bucket", "location": "US"}`)
-	}))
-	defer srv.Close()
-
-	creds := auth.NewCredentials(&auth.CredentialsOptions{
+	creds := wrapAuthCredentialsForTracing(&auth.Credentials{
 		TokenProvider: &staticAuthTokenProvider{token: &auth.Token{Value: "fake-token"}},
 	})
 
-	client, err := NewClient(ctx, option.WithEndpoint(srv.URL), option.WithAuthCredentials(creds), WithDisabledClientMetrics())
+	parentCtx, parentSpan := startSpan(ctx, "Object.Writer")
+	tok, err := creds.Token(parentCtx)
+	endSpan(parentCtx, nil)
 	if err != nil {
-		t.Fatalf("NewClient: %v", err)
+		t.Fatalf("creds.Token: %v", err)
 	}
-	defer client.Close()
-
-	if _, err := client.Bucket("my-bucket").Attrs(ctx); err != nil {
-		t.Fatalf("Bucket.Attrs: %v", err)
+	if tok.Value != "fake-token" {
+		t.Fatalf("got access token %q, want %q", tok.Value, "fake-token")
 	}
 
-	var authSpan *tracetest.SpanStub
-	var bucketSpan *tracetest.SpanStub
-	for i := range te.Spans() {
-		s := &te.Spans()[i]
-		switch s.Name {
-		case "cloud.google.com/go/storage.Auth.RefreshAccessToken":
-			authSpan = s
-		case "cloud.google.com/go/storage.Bucket.Attrs":
-			bucketSpan = s
-		}
+	spans := te.Spans()
+	if len(spans) != 2 {
+		t.Fatalf("expected 2 spans, got %d", len(spans))
 	}
-	if authSpan == nil {
-		t.Fatalf("expected span %q to be recorded, got none", "cloud.google.com/go/storage.Auth.RefreshAccessToken")
+	if got, want := spans[0].Name, "cloud.google.com/go/storage.Auth.RefreshAccessToken"; got != want {
+		t.Errorf("got span name %q, want %q", got, want)
 	}
-	if bucketSpan != nil {
-		if got, want := authSpan.Parent.TraceID(), bucketSpan.SpanContext.TraceID(); got != want {
-			t.Errorf("got trace ID %v, want %v", got, want)
-		}
+	if got, want := spans[0].Parent.SpanID(), parentSpan.SpanContext().SpanID(); got != want {
+		t.Errorf("got parent span ID %v, want %v", got, want)
 	}
 }
 
@@ -420,42 +424,23 @@ func TestTracedTokenProviderError(t *testing.T) {
 		te.Unregister(ctx)
 	})
 	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
-	t.Setenv("STORAGE_EMULATOR_HOST", "")
-
-	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-	}))
-	defer srv.Close()
 
 	testErr := fmt.Errorf("oauth2: token expired")
-	creds := auth.NewCredentials(&auth.CredentialsOptions{
+	creds := wrapAuthCredentialsForTracing(&auth.Credentials{
 		TokenProvider: &staticAuthTokenProvider{err: testErr},
 	})
 
-	client, err := NewClient(ctx, option.WithEndpoint(srv.URL), option.WithAuthCredentials(creds), WithDisabledClientMetrics())
-	if err != nil {
-		t.Fatalf("NewClient: %v", err)
-	}
-	defer client.Close()
-
-	_, err = client.Bucket("my-bucket").Attrs(ctx)
+	_, err := creds.Token(ctx)
 	if err == nil {
-		t.Fatalf("expected error from Bucket.Attrs, got nil")
+		t.Fatalf("expected error from creds.Token, got nil")
 	}
 
-	var authSpan *tracetest.SpanStub
-	for i := range te.Spans() {
-		s := &te.Spans()[i]
-		if s.Name == "cloud.google.com/go/storage.Auth.RefreshAccessToken" {
-			authSpan = s
-			break
-		}
+	spans := te.Spans()
+	if len(spans) != 1 {
+		t.Fatalf("expected 1 span, got %d", len(spans))
 	}
-	if authSpan == nil {
-		t.Fatalf("expected span %q to be recorded on error, got none", "cloud.google.com/go/storage.Auth.RefreshAccessToken")
-	}
-	if authSpan.Status.Code != otcodes.Error {
-		t.Errorf("got span status code %v, want %v", authSpan.Status.Code, otcodes.Error)
+	if spans[0].Status.Code != otcodes.Error {
+		t.Errorf("got span status code %v, want %v", spans[0].Status.Code, otcodes.Error)
 	}
 }
 
@@ -466,31 +451,21 @@ func TestTracedTokenProviderDevTracingDisabled(t *testing.T) {
 		te.Unregister(ctx)
 	})
 	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "false")
-	t.Setenv("STORAGE_EMULATOR_HOST", "")
 
-	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		fmt.Fprintln(w, `{"name": "my-bucket", "location": "US"}`)
-	}))
-	defer srv.Close()
-
-	creds := auth.NewCredentials(&auth.CredentialsOptions{
+	creds := wrapAuthCredentialsForTracing(&auth.Credentials{
 		TokenProvider: &staticAuthTokenProvider{token: &auth.Token{Value: "fake-token"}},
 	})
 
-	client, err := NewClient(ctx, option.WithEndpoint(srv.URL), option.WithAuthCredentials(creds), WithDisabledClientMetrics())
+	tok, err := creds.Token(ctx)
 	if err != nil {
-		t.Fatalf("NewClient: %v", err)
+		t.Fatalf("creds.Token: %v", err)
 	}
-	defer client.Close()
-
-	if _, err := client.Bucket("my-bucket").Attrs(ctx); err != nil {
-		t.Fatalf("Bucket.Attrs: %v", err)
+	if tok.Value != "fake-token" {
+		t.Fatalf("got access token %q, want %q", tok.Value, "fake-token")
 	}
 
-	for _, s := range te.Spans() {
-		if s.Name == "cloud.google.com/go/storage.Auth.RefreshAccessToken" {
-			t.Fatalf("expected no Auth.RefreshAccessToken span when dev tracing is disabled, but found one")
-		}
+	spans := te.Spans()
+	if len(spans) > 0 {
+		t.Fatalf("expected 0 spans when dev tracing is disabled, got %d", len(spans))
 	}
 }
