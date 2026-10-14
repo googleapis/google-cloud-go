@@ -439,12 +439,7 @@ func TestTrackingTransportUploadID(t *testing.T) {
 			wantAttrs: append(getCommonAttributes(), attribute.String("gcp.storage.upload.id", sampleUploadID)),
 		},
 		{
-			name:      "Extracts upload_id from request URL query",
-			reqURL:    "http://example.com/upload/storage/v1/b/my-bucket/o?uploadType=resumable&upload_id=" + sampleUploadID,
-			wantAttrs: append(getCommonAttributes(), attribute.String("gcp.storage.upload.id", sampleUploadID)),
-		},
-		{
-			name:      "Omits upload.id when not present",
+			name:      "Omits upload.id when Location header not present",
 			reqURL:    "http://example.com/storage/v1/b/my-bucket/o",
 			wantAttrs: getCommonAttributes(),
 		},

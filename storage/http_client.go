@@ -244,19 +244,12 @@ func (t *trackingTransport) RoundTrip(req *http.Request) (*http.Response, error)
 	} else {
 		resp, err = baseRT.RoundTrip(req)
 	}
-	if isOTelTracingDevEnabled() {
-		if resp != nil {
-			if loc := resp.Header.Get("Location"); loc != "" {
-				if u, parseErr := url.Parse(loc); parseErr == nil {
-					if uploadID := u.Query().Get("upload_id"); uploadID != "" {
-						setUploadIDAttribute(req.Context(), uploadID)
-					}
+	if isOTelTracingDevEnabled() && resp != nil {
+		if loc := resp.Header.Get("Location"); loc != "" {
+			if u, parseErr := url.Parse(loc); parseErr == nil {
+				if uploadID := u.Query().Get("upload_id"); uploadID != "" {
+					setUploadIDAttribute(req.Context(), uploadID)
 				}
-			}
-		}
-		if req.URL != nil {
-			if uploadID := req.URL.Query().Get("upload_id"); uploadID != "" {
-				setUploadIDAttribute(req.Context(), uploadID)
 			}
 		}
 	}
