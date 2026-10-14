@@ -169,6 +169,11 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (client *g
 		return nil, errors.New("storage: GRPC is incompatible with any option that specifies an API for reads")
 	}
 
+	if config.grpcKeepalive != nil {
+		s.clientOption = append(s.clientOption,
+			option.WithGRPCDialOption(grpc.WithKeepaliveParams(*config.grpcKeepalive)))
+	}
+
 	if !config.disableClientMetrics {
 		// Do not fail client creation if enabling metrics fails.
 		if metricsContext, err := enableClientMetrics(ctx, s, config); err == nil {

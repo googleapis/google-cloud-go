@@ -24,6 +24,7 @@ import (
 	"go.opentelemetry.io/otel/sdk/metric"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
+	"google.golang.org/grpc/keepalive"
 )
 
 const (
@@ -93,6 +94,7 @@ type storageConfig struct {
 	grpcAppendableUploads  bool
 	grpcDirectPathEnforced bool
 	bufferPool             experimental.BufferPool
+	grpcKeepalive          *keepalive.ClientParameters
 }
 
 // newStorageConfig generates a new storageConfig with all the given
@@ -308,6 +310,47 @@ type withGRPCAppendableUploadsConfig struct {
 
 func (w *withGRPCAppendableUploadsConfig) ApplyStorageOpt(config *storageConfig) {
 	config.grpcAppendableUploads = true
+}
+
+// WithGRPCKeepalive provides an [option.ClientOption] that may be passed to
+// [NewGRPCClient].
+//
+// It configures HTTP/2 keepalive pings on the gRPC connections used by the
+// client, as described by [keepalive.ClientParameters]. Keepalive pings let
+// the client detect a connection whose peer has silently stopped responding
+// (for example after an ungraceful server or network failure) within
+// approximately Time+Timeout, instead of waiting for the operating system's
+// TCP retransmission limits, which can take many minutes. On detection the
+// connection is closed and in-flight operations fail fast so that the
+// client's retry logic can re-establish a healthy connection.
+//
+// By default keepalive pings are disabled. A reasonable starting point for
+// latency sensitive workloads is:
+//
+//	storage.WithGRPCKeepalive(keepalive.ClientParameters{
+//		Time:                30 * time.Second,
+//		Timeout:             20 * time.Second,
+//		PermitWithoutStream: false,
+//	})
+//
+// Note that gRPC enforces a minimum Time of 10 seconds. Servers may also
+// limit how frequently a client is allowed to ping; overly aggressive
+// settings can cause the server to close the connection.
+//
+// Note: This option is exclusively supported for gRPC clients and is ignored
+// by HTTP clients.
+func WithGRPCKeepalive(params keepalive.ClientParameters) option.ClientOption {
+	return &withGRPCKeepaliveConfig{params: params}
+}
+
+type withGRPCKeepaliveConfig struct {
+	internaloption.EmbeddableAdapter
+	params keepalive.ClientParameters
+}
+
+func (w *withGRPCKeepaliveConfig) ApplyStorageOpt(config *storageConfig) {
+	p := w.params
+	config.grpcKeepalive = &p
 }
 
 func withOtelMetrics() option.ClientOption {

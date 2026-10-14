@@ -32,6 +32,7 @@ import (
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/grpc/keepalive"
 )
 
 func ExampleNewClient() {
@@ -427,6 +428,21 @@ func ExampleObjectHandle_NewWriter() {
 	}
 	wc := client.Bucket("bucketname").Object("filename1").NewWriter(ctx)
 	_ = wc // TODO: Use the Writer.
+}
+
+func ExampleWithGRPCKeepalive() {
+	ctx := context.Background()
+	// Enable HTTP/2 keepalive pings so that a connection whose peer has
+	// silently stopped responding is detected and closed within roughly
+	// Time+Timeout, rather than waiting for the OS TCP retransmission limit.
+	client, err := storage.NewGRPCClient(ctx, storage.WithGRPCKeepalive(keepalive.ClientParameters{
+		Time:    30 * time.Second,
+		Timeout: 20 * time.Second,
+	}))
+	if err != nil {
+		// TODO: handle error.
+	}
+	_ = client // TODO: Use the client.
 }
 
 func ExampleObjectHandle_NewWriterFromAppendableObject() {
