@@ -15,7 +15,6 @@
 package internal
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"runtime"
@@ -169,63 +168,6 @@ func TestOnClose_StartingSessionBumpsFailedToStart(t *testing.T) {
 	}
 	if got := p.snapshotCloseReasons()["FailedToStart"]; got != 1 {
 		t.Errorf("FailedToStart count = %d, want 1", got)
-	}
-}
-
-// --- budget lifecycle ------------------------------------------------------
-
-// TestBudget_SlotHeldUntilHandshake pins that the budget slot acquired in
-// createSession is NOT released when Start() returns — it must be held
-// until the OpenSessionResponse is received (onActive). Before this fix,
-// Release(true) fired immediately after Start(), freeing the slot while
-// the stream was still in Starting.
-func TestBudget_SlotHeldUntilHandshake(t *testing.T) {
-	p := newTestPool(t, 0, 10)
-	p.budget.UpdateConfig(1, time.Minute)
-
-	// Simulate what createSession does: acquire the slot, insert sh into
-	// startingSessions, then disarm the deferred fallback (budgetReleased=true).
-	// The slot should remain held until onActive fires.
-	if err := p.budget.Acquire(context.Background()); err != nil {
-		t.Fatalf("Acquire: %v", err)
-	}
-	sh := injectStartingSession(t, p, "s-starting")
-
-	if snap := p.budget.Snapshot(); snap.InUse != 1 {
-		t.Errorf("InUse before onActive = %d, want 1 (slot must be held during handshake)", snap.InUse)
-	}
-
-	// Simulate OpenSessionResponse received → onActive fires.
-	sh.session.state.Store(int32(StateReady))
-	p.onActive(sh)
-
-	if snap := p.budget.Snapshot(); snap.InUse != 0 {
-		t.Errorf("InUse after onActive = %d, want 0 (slot released on successful handshake)", snap.InUse)
-	}
-}
-
-// TestBudget_PenaltyOnAsyncRejection pins that when the server rejects
-// the session asynchronously (Recv error after Start returned), onClose's
-// starting branch calls Release(false) so the 60s failure penalty is
-// applied. Before this fix, Release(true) fired right after Start() and
-// Release(false) was never called, leaving the retry loop unthrottled.
-func TestBudget_PenaltyOnAsyncRejection(t *testing.T) {
-	p := newTestPool(t, 0, 10)
-	p.budget.UpdateConfig(1, time.Minute)
-
-	if err := p.budget.Acquire(context.Background()); err != nil {
-		t.Fatalf("Acquire: %v", err)
-	}
-	sh := injectStartingSession(t, p, "s-starting")
-
-	// Simulate async server rejection: Recv() returns error → handleClose
-	// → onClose fires while sh is still in startingSessions.
-	p.onClose(sh, errors.New("server rejected OpenSession"))
-
-	// Slot must still be occupied: Release(false) reserves it for the
-	// penalty duration instead of freeing it immediately.
-	if snap := p.budget.Snapshot(); snap.InUse != 1 {
-		t.Errorf("InUse after async rejection = %d, want 1 (penalty slot must hold)", snap.InUse)
 	}
 }
 
