@@ -212,7 +212,7 @@ func (p *tracedTokenProvider) Token(ctx context.Context) (tok *auth.Token, err e
 	return p.base.Token(ctx)
 }
 
-// wrapAuthCredentialsForTracing wraps an auth.Credentials object to record T5
+// wrapAuthCredentialsForTracing wraps an auth.Credentials object to record
 // Auth.RefreshAccessToken internal operation spans when fetching or refreshing tokens.
 func wrapAuthCredentialsForTracing(c *auth.Credentials) *auth.Credentials {
 	if c == nil || c.TokenProvider == nil {
