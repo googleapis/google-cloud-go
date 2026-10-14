@@ -236,7 +236,7 @@ type BackupVault struct {
 	// Optional. Type of backup vault to be created.
 	// Default is IN_REGION.
 	BackupVaultType BackupVault_BackupVaultType `protobuf:"varint,6,opt,name=backup_vault_type,json=backupVaultType,proto3,enum=google.cloud.netapp.v1.BackupVault_BackupVaultType" json:"backup_vault_type,omitempty"`
-	// Output only. Region in which the backup vault is created.
+	// Optional. Region in which the backup vault is created.
 	// Format: `projects/{project_id}/locations/{location}`
 	SourceRegion string `protobuf:"bytes,7,opt,name=source_region,json=sourceRegion,proto3" json:"source_region,omitempty"`
 	// Optional. Region where the backups are stored.
@@ -870,7 +870,7 @@ const file_google_cloud_netapp_v1_backup_vault_proto_rawDesc = "" +
 	"\vdescription\x18\x04 \x01(\tR\vdescription\x12G\n" +
 	"\x06labels\x18\x05 \x03(\v2/.google.cloud.netapp.v1.BackupVault.LabelsEntryR\x06labels\x12d\n" +
 	"\x11backup_vault_type\x18\x06 \x01(\x0e23.google.cloud.netapp.v1.BackupVault.BackupVaultTypeB\x03\xe0A\x01R\x0fbackupVaultType\x12N\n" +
-	"\rsource_region\x18\a \x01(\tB)\xe0A\x03\xfaA#\n" +
+	"\rsource_region\x18\a \x01(\tB)\xe0A\x01\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\fsourceRegion\x12N\n" +
 	"\rbackup_region\x18\b \x01(\tB)\xe0A\x01\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\fbackupRegion\x12Y\n" +

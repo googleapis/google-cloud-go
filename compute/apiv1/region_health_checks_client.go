@@ -113,6 +113,8 @@ type internalRegionHealthChecksClient interface {
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The RegionHealthChecks API.
+//
+// This client uses RegionHealthChecks version 2026-09-01.
 type RegionHealthChecksClient struct {
 	// The internal transport-dependent client.
 	internalClient internalRegionHealthChecksClient
@@ -327,6 +329,7 @@ func (c *regionHealthChecksRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
+		"x-goog-api-version", "2026-09-01",
 	}
 }
 
@@ -567,9 +570,6 @@ func (c *regionHealthChecksRESTClient) List(ctx context.Context, req *computepb.
 		}
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()

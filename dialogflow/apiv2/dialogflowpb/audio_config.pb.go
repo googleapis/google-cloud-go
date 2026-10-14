@@ -522,6 +522,112 @@ func (CustomPronunciationParams_PhoneticEncoding) EnumDescriptor() ([]byte, []in
 	return file_google_cloud_dialogflow_v2_audio_config_proto_rawDescGZIP(), []int{5, 0}
 }
 
+// Start of speech sensitivity.
+type SpeechToTextConfig_GeminiAsrConfig_StartSensitivity int32
+
+const (
+	// The default is START_SENSITIVITY_LOW.
+	SpeechToTextConfig_GeminiAsrConfig_START_SENSITIVITY_UNSPECIFIED SpeechToTextConfig_GeminiAsrConfig_StartSensitivity = 0
+	// Automatic detection will detect the start of speech more often.
+	SpeechToTextConfig_GeminiAsrConfig_START_SENSITIVITY_HIGH SpeechToTextConfig_GeminiAsrConfig_StartSensitivity = 1
+	// Automatic detection will detect the start of speech less often.
+	SpeechToTextConfig_GeminiAsrConfig_START_SENSITIVITY_LOW SpeechToTextConfig_GeminiAsrConfig_StartSensitivity = 2
+)
+
+// Enum value maps for SpeechToTextConfig_GeminiAsrConfig_StartSensitivity.
+var (
+	SpeechToTextConfig_GeminiAsrConfig_StartSensitivity_name = map[int32]string{
+		0: "START_SENSITIVITY_UNSPECIFIED",
+		1: "START_SENSITIVITY_HIGH",
+		2: "START_SENSITIVITY_LOW",
+	}
+	SpeechToTextConfig_GeminiAsrConfig_StartSensitivity_value = map[string]int32{
+		"START_SENSITIVITY_UNSPECIFIED": 0,
+		"START_SENSITIVITY_HIGH":        1,
+		"START_SENSITIVITY_LOW":         2,
+	}
+)
+
+func (x SpeechToTextConfig_GeminiAsrConfig_StartSensitivity) Enum() *SpeechToTextConfig_GeminiAsrConfig_StartSensitivity {
+	p := new(SpeechToTextConfig_GeminiAsrConfig_StartSensitivity)
+	*p = x
+	return p
+}
+
+func (x SpeechToTextConfig_GeminiAsrConfig_StartSensitivity) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (SpeechToTextConfig_GeminiAsrConfig_StartSensitivity) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_dialogflow_v2_audio_config_proto_enumTypes[6].Descriptor()
+}
+
+func (SpeechToTextConfig_GeminiAsrConfig_StartSensitivity) Type() protoreflect.EnumType {
+	return &file_google_cloud_dialogflow_v2_audio_config_proto_enumTypes[6]
+}
+
+func (x SpeechToTextConfig_GeminiAsrConfig_StartSensitivity) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use SpeechToTextConfig_GeminiAsrConfig_StartSensitivity.Descriptor instead.
+func (SpeechToTextConfig_GeminiAsrConfig_StartSensitivity) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_dialogflow_v2_audio_config_proto_rawDescGZIP(), []int{8, 0, 0}
+}
+
+// End of speech sensitivity.
+type SpeechToTextConfig_GeminiAsrConfig_EndSensitivity int32
+
+const (
+	// The default is END_SENSITIVITY_LOW.
+	SpeechToTextConfig_GeminiAsrConfig_END_SENSITIVITY_UNSPECIFIED SpeechToTextConfig_GeminiAsrConfig_EndSensitivity = 0
+	// Automatic detection ends speech more often.
+	SpeechToTextConfig_GeminiAsrConfig_END_SENSITIVITY_HIGH SpeechToTextConfig_GeminiAsrConfig_EndSensitivity = 1
+	// Automatic detection ends speech less often.
+	SpeechToTextConfig_GeminiAsrConfig_END_SENSITIVITY_LOW SpeechToTextConfig_GeminiAsrConfig_EndSensitivity = 2
+)
+
+// Enum value maps for SpeechToTextConfig_GeminiAsrConfig_EndSensitivity.
+var (
+	SpeechToTextConfig_GeminiAsrConfig_EndSensitivity_name = map[int32]string{
+		0: "END_SENSITIVITY_UNSPECIFIED",
+		1: "END_SENSITIVITY_HIGH",
+		2: "END_SENSITIVITY_LOW",
+	}
+	SpeechToTextConfig_GeminiAsrConfig_EndSensitivity_value = map[string]int32{
+		"END_SENSITIVITY_UNSPECIFIED": 0,
+		"END_SENSITIVITY_HIGH":        1,
+		"END_SENSITIVITY_LOW":         2,
+	}
+)
+
+func (x SpeechToTextConfig_GeminiAsrConfig_EndSensitivity) Enum() *SpeechToTextConfig_GeminiAsrConfig_EndSensitivity {
+	p := new(SpeechToTextConfig_GeminiAsrConfig_EndSensitivity)
+	*p = x
+	return p
+}
+
+func (x SpeechToTextConfig_GeminiAsrConfig_EndSensitivity) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (SpeechToTextConfig_GeminiAsrConfig_EndSensitivity) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_dialogflow_v2_audio_config_proto_enumTypes[7].Descriptor()
+}
+
+func (SpeechToTextConfig_GeminiAsrConfig_EndSensitivity) Type() protoreflect.EnumType {
+	return &file_google_cloud_dialogflow_v2_audio_config_proto_enumTypes[7]
+}
+
+func (x SpeechToTextConfig_GeminiAsrConfig_EndSensitivity) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use SpeechToTextConfig_GeminiAsrConfig_EndSensitivity.Descriptor instead.
+func (SpeechToTextConfig_GeminiAsrConfig_EndSensitivity) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_dialogflow_v2_audio_config_proto_rawDescGZIP(), []int{8, 0, 1}
+}
+
 // Hints for the speech recognizer to help with recognition in a specific
 // conversation state.
 type SpeechContext struct {
@@ -763,8 +869,15 @@ type InputAudioConfig struct {
 	// 2024. Please refer to [Dialogflow ES Speech model
 	// migration](https://cloud.google.com/dialogflow/es/docs/speech-model-migration).
 	OptOutConformerModelMigration bool `protobuf:"varint,26,opt,name=opt_out_conformer_model_migration,json=optOutConformerModelMigration,proto3" json:"opt_out_conformer_model_migration,omitempty"`
-	unknownFields                 protoimpl.UnknownFields
-	sizeCache                     protoimpl.SizeCache
+	// Optional. Configuration for using Gemini ASR models served via Vertex AI.
+	// This field is only used when `use_gemini_asr` is true.
+	GeminiAsrConfig *SpeechToTextConfig_GeminiAsrConfig `protobuf:"bytes,30,opt,name=gemini_asr_config,json=geminiAsrConfig,proto3" json:"gemini_asr_config,omitempty"`
+	// Optional. If true, Gemini ASR will be used for transcription instead of
+	// Cloud Speech-to-Text. If false, Cloud Speech-to-Text will be used.
+	// If unset, this setting is inherited from the ConversationProfile.
+	UseGeminiAsr  *bool `protobuf:"varint,31,opt,name=use_gemini_asr,json=useGeminiAsr,proto3,oneof" json:"use_gemini_asr,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *InputAudioConfig) Reset() {
@@ -892,6 +1005,20 @@ func (x *InputAudioConfig) GetPhraseSets() []string {
 func (x *InputAudioConfig) GetOptOutConformerModelMigration() bool {
 	if x != nil {
 		return x.OptOutConformerModelMigration
+	}
+	return false
+}
+
+func (x *InputAudioConfig) GetGeminiAsrConfig() *SpeechToTextConfig_GeminiAsrConfig {
+	if x != nil {
+		return x.GeminiAsrConfig
+	}
+	return nil
+}
+
+func (x *InputAudioConfig) GetUseGeminiAsr() bool {
+	if x != nil && x.UseGeminiAsr != nil {
+		return *x.UseGeminiAsr
 	}
 	return false
 }
@@ -1313,8 +1440,15 @@ type SpeechToTextConfig struct {
 	// Use timeout based endpointing, interpreting endpointer sensitivity as
 	// seconds of timeout value.
 	UseTimeoutBasedEndpointing bool `protobuf:"varint,11,opt,name=use_timeout_based_endpointing,json=useTimeoutBasedEndpointing,proto3" json:"use_timeout_based_endpointing,omitempty"`
-	unknownFields              protoimpl.UnknownFields
-	sizeCache                  protoimpl.SizeCache
+	// Optional. Configuration for using Gemini ASR models served via Vertex AI,
+	// overriding the default Gemini ASR model or providing additional advanced
+	// parameters. This field is only used when `use_gemini_asr` is true.
+	GeminiAsrConfig *SpeechToTextConfig_GeminiAsrConfig `protobuf:"bytes,15,opt,name=gemini_asr_config,json=geminiAsrConfig,proto3" json:"gemini_asr_config,omitempty"`
+	// Optional. If true, Gemini ASR will be used for transcription instead of
+	// Cloud Speech-to-Text.
+	UseGeminiAsr  bool `protobuf:"varint,16,opt,name=use_gemini_asr,json=useGeminiAsr,proto3" json:"use_gemini_asr,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *SpeechToTextConfig) Reset() {
@@ -1403,6 +1537,108 @@ func (x *SpeechToTextConfig) GetUseTimeoutBasedEndpointing() bool {
 	return false
 }
 
+func (x *SpeechToTextConfig) GetGeminiAsrConfig() *SpeechToTextConfig_GeminiAsrConfig {
+	if x != nil {
+		return x.GeminiAsrConfig
+	}
+	return nil
+}
+
+func (x *SpeechToTextConfig) GetUseGeminiAsr() bool {
+	if x != nil {
+		return x.UseGeminiAsr
+	}
+	return false
+}
+
+// Configuration for using Gemini ASR models served via Vertex AI. This
+// message is used to override the default Gemini ASR model or provide
+// additional advanced parameters.
+type SpeechToTextConfig_GeminiAsrConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. The Gemini ASR model ID used for transcription.
+	// This value overrides the default model ID configured on the server.
+	// Example: "gemini-3-flash-lite-asr-preview"
+	ModelId string `protobuf:"bytes,1,opt,name=model_id,json=modelId,proto3" json:"model_id,omitempty"`
+	// Optional. The required duration of detected silence (or non-speech)
+	// before end-of-speech is committed.
+	SilenceDurationMs int32 `protobuf:"varint,2,opt,name=silence_duration_ms,json=silenceDurationMs,proto3" json:"silence_duration_ms,omitempty"`
+	// Optional. The required duration of detected speech before start-of-speech
+	// is committed.
+	PrefixPaddingMs int32 `protobuf:"varint,3,opt,name=prefix_padding_ms,json=prefixPaddingMs,proto3" json:"prefix_padding_ms,omitempty"`
+	// Optional. Start of speech sensitivity.
+	StartOfSpeechSensitivity SpeechToTextConfig_GeminiAsrConfig_StartSensitivity `protobuf:"varint,4,opt,name=start_of_speech_sensitivity,json=startOfSpeechSensitivity,proto3,enum=google.cloud.dialogflow.v2.SpeechToTextConfig_GeminiAsrConfig_StartSensitivity" json:"start_of_speech_sensitivity,omitempty"`
+	// Optional. End of speech sensitivity.
+	EndOfSpeechSensitivity SpeechToTextConfig_GeminiAsrConfig_EndSensitivity `protobuf:"varint,5,opt,name=end_of_speech_sensitivity,json=endOfSpeechSensitivity,proto3,enum=google.cloud.dialogflow.v2.SpeechToTextConfig_GeminiAsrConfig_EndSensitivity" json:"end_of_speech_sensitivity,omitempty"`
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *SpeechToTextConfig_GeminiAsrConfig) Reset() {
+	*x = SpeechToTextConfig_GeminiAsrConfig{}
+	mi := &file_google_cloud_dialogflow_v2_audio_config_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SpeechToTextConfig_GeminiAsrConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SpeechToTextConfig_GeminiAsrConfig) ProtoMessage() {}
+
+func (x *SpeechToTextConfig_GeminiAsrConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_dialogflow_v2_audio_config_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SpeechToTextConfig_GeminiAsrConfig.ProtoReflect.Descriptor instead.
+func (*SpeechToTextConfig_GeminiAsrConfig) Descriptor() ([]byte, []int) {
+	return file_google_cloud_dialogflow_v2_audio_config_proto_rawDescGZIP(), []int{8, 0}
+}
+
+func (x *SpeechToTextConfig_GeminiAsrConfig) GetModelId() string {
+	if x != nil {
+		return x.ModelId
+	}
+	return ""
+}
+
+func (x *SpeechToTextConfig_GeminiAsrConfig) GetSilenceDurationMs() int32 {
+	if x != nil {
+		return x.SilenceDurationMs
+	}
+	return 0
+}
+
+func (x *SpeechToTextConfig_GeminiAsrConfig) GetPrefixPaddingMs() int32 {
+	if x != nil {
+		return x.PrefixPaddingMs
+	}
+	return 0
+}
+
+func (x *SpeechToTextConfig_GeminiAsrConfig) GetStartOfSpeechSensitivity() SpeechToTextConfig_GeminiAsrConfig_StartSensitivity {
+	if x != nil {
+		return x.StartOfSpeechSensitivity
+	}
+	return SpeechToTextConfig_GeminiAsrConfig_START_SENSITIVITY_UNSPECIFIED
+}
+
+func (x *SpeechToTextConfig_GeminiAsrConfig) GetEndOfSpeechSensitivity() SpeechToTextConfig_GeminiAsrConfig_EndSensitivity {
+	if x != nil {
+		return x.EndOfSpeechSensitivity
+	}
+	return SpeechToTextConfig_GeminiAsrConfig_END_SENSITIVITY_UNSPECIFIED
+}
+
 var File_google_cloud_dialogflow_v2_audio_config_proto protoreflect.FileDescriptor
 
 const file_google_cloud_dialogflow_v2_audio_config_proto_rawDesc = "" +
@@ -1418,7 +1654,7 @@ const file_google_cloud_dialogflow_v2_audio_config_proto_rawDesc = "" +
 	"end_offset\x18\x02 \x01(\v2\x19.google.protobuf.DurationR\tendOffset\x12\x1e\n" +
 	"\n" +
 	"confidence\x18\x04 \x01(\x02R\n" +
-	"confidence\"\xe4\x06\n" +
+	"confidence\"\x98\b\n" +
 	"\x10InputAudioConfig\x12U\n" +
 	"\x0eaudio_encoding\x18\x01 \x01(\x0e2).google.cloud.dialogflow.v2.AudioEncodingB\x03\xe0A\x02R\raudioEncoding\x12/\n" +
 	"\x11sample_rate_hertz\x18\x02 \x01(\x05B\x03\xe0A\x02R\x0fsampleRateHertz\x12(\n" +
@@ -1436,7 +1672,10 @@ const file_google_cloud_dialogflow_v2_audio_config_proto_rawDesc = "" +
 	"\vphrase_sets\x18\x14 \x03(\tB$\xfaA!\n" +
 	"\x1fspeech.googleapis.com/PhraseSetR\n" +
 	"phraseSets\x12H\n" +
-	"!opt_out_conformer_model_migration\x18\x1a \x01(\bR\x1doptOutConformerModelMigration\"\x82\x01\n" +
+	"!opt_out_conformer_model_migration\x18\x1a \x01(\bR\x1doptOutConformerModelMigration\x12o\n" +
+	"\x11gemini_asr_config\x18\x1e \x01(\v2>.google.cloud.dialogflow.v2.SpeechToTextConfig.GeminiAsrConfigB\x03\xe0A\x01R\x0fgeminiAsrConfig\x12.\n" +
+	"\x0euse_gemini_asr\x18\x1f \x01(\bB\x03\xe0A\x01H\x00R\fuseGeminiAsr\x88\x01\x01B\x11\n" +
+	"\x0f_use_gemini_asr\"\x82\x01\n" +
 	"\x14VoiceSelectionParams\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x01R\x04name\x12Q\n" +
 	"\vssml_gender\x18\x02 \x01(\x0e2+.google.cloud.dialogflow.v2.SsmlVoiceGenderB\x03\xe0A\x01R\n" +
@@ -1462,7 +1701,8 @@ const file_google_cloud_dialogflow_v2_audio_config_proto_rawDesc = "" +
 	"\x18synthesize_speech_config\x18\x03 \x01(\v22.google.cloud.dialogflow.v2.SynthesizeSpeechConfigR\x16synthesizeSpeechConfig\"a\n" +
 	"\x13TelephonyDtmfEvents\x12J\n" +
 	"\vdtmf_events\x18\x01 \x03(\x0e2).google.cloud.dialogflow.v2.TelephonyDtmfR\n" +
-	"dtmfEvents\"\xe3\x03\n" +
+	"dtmfEvents\"\x93\n" +
+	"\n" +
 	"\x12SpeechToTextConfig\x12`\n" +
 	"\x14speech_model_variant\x18\x01 \x01(\x0e2..google.cloud.dialogflow.v2.SpeechModelVariantR\x12speechModelVariant\x12\x14\n" +
 	"\x05model\x18\x02 \x01(\tR\x05model\x12E\n" +
@@ -1473,7 +1713,23 @@ const file_google_cloud_dialogflow_v2_audio_config_proto_rawDesc = "" +
 	"\x11sample_rate_hertz\x18\a \x01(\x05R\x0fsampleRateHertz\x12#\n" +
 	"\rlanguage_code\x18\b \x01(\tR\flanguageCode\x12(\n" +
 	"\x10enable_word_info\x18\t \x01(\bR\x0eenableWordInfo\x12A\n" +
-	"\x1duse_timeout_based_endpointing\x18\v \x01(\bR\x1auseTimeoutBasedEndpointing*\x94\x02\n" +
+	"\x1duse_timeout_based_endpointing\x18\v \x01(\bR\x1auseTimeoutBasedEndpointing\x12o\n" +
+	"\x11gemini_asr_config\x18\x0f \x01(\v2>.google.cloud.dialogflow.v2.SpeechToTextConfig.GeminiAsrConfigB\x03\xe0A\x01R\x0fgeminiAsrConfig\x12)\n" +
+	"\x0euse_gemini_asr\x18\x10 \x01(\bB\x03\xe0A\x01R\fuseGeminiAsr\x1a\x91\x05\n" +
+	"\x0fGeminiAsrConfig\x12\x1e\n" +
+	"\bmodel_id\x18\x01 \x01(\tB\x03\xe0A\x01R\amodelId\x123\n" +
+	"\x13silence_duration_ms\x18\x02 \x01(\x05B\x03\xe0A\x01R\x11silenceDurationMs\x12/\n" +
+	"\x11prefix_padding_ms\x18\x03 \x01(\x05B\x03\xe0A\x01R\x0fprefixPaddingMs\x12\x93\x01\n" +
+	"\x1bstart_of_speech_sensitivity\x18\x04 \x01(\x0e2O.google.cloud.dialogflow.v2.SpeechToTextConfig.GeminiAsrConfig.StartSensitivityB\x03\xe0A\x01R\x18startOfSpeechSensitivity\x12\x8d\x01\n" +
+	"\x19end_of_speech_sensitivity\x18\x05 \x01(\x0e2M.google.cloud.dialogflow.v2.SpeechToTextConfig.GeminiAsrConfig.EndSensitivityB\x03\xe0A\x01R\x16endOfSpeechSensitivity\"l\n" +
+	"\x10StartSensitivity\x12!\n" +
+	"\x1dSTART_SENSITIVITY_UNSPECIFIED\x10\x00\x12\x1a\n" +
+	"\x16START_SENSITIVITY_HIGH\x10\x01\x12\x19\n" +
+	"\x15START_SENSITIVITY_LOW\x10\x02\"d\n" +
+	"\x0eEndSensitivity\x12\x1f\n" +
+	"\x1bEND_SENSITIVITY_UNSPECIFIED\x10\x00\x12\x18\n" +
+	"\x14END_SENSITIVITY_HIGH\x10\x01\x12\x17\n" +
+	"\x13END_SENSITIVITY_LOW\x10\x02*\x94\x02\n" +
 	"\rTelephonyDtmf\x12\x1e\n" +
 	"\x1aTELEPHONY_DTMF_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bDTMF_ONE\x10\x01\x12\f\n" +
@@ -1545,46 +1801,53 @@ func file_google_cloud_dialogflow_v2_audio_config_proto_rawDescGZIP() []byte {
 	return file_google_cloud_dialogflow_v2_audio_config_proto_rawDescData
 }
 
-var file_google_cloud_dialogflow_v2_audio_config_proto_enumTypes = make([]protoimpl.EnumInfo, 6)
-var file_google_cloud_dialogflow_v2_audio_config_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
+var file_google_cloud_dialogflow_v2_audio_config_proto_enumTypes = make([]protoimpl.EnumInfo, 8)
+var file_google_cloud_dialogflow_v2_audio_config_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
 var file_google_cloud_dialogflow_v2_audio_config_proto_goTypes = []any{
-	(TelephonyDtmf)(0),                              // 0: google.cloud.dialogflow.v2.TelephonyDtmf
-	(AudioEncoding)(0),                              // 1: google.cloud.dialogflow.v2.AudioEncoding
-	(SpeechModelVariant)(0),                         // 2: google.cloud.dialogflow.v2.SpeechModelVariant
-	(SsmlVoiceGender)(0),                            // 3: google.cloud.dialogflow.v2.SsmlVoiceGender
-	(OutputAudioEncoding)(0),                        // 4: google.cloud.dialogflow.v2.OutputAudioEncoding
-	(CustomPronunciationParams_PhoneticEncoding)(0), // 5: google.cloud.dialogflow.v2.CustomPronunciationParams.PhoneticEncoding
-	(*SpeechContext)(nil),                           // 6: google.cloud.dialogflow.v2.SpeechContext
-	(*SpeechWordInfo)(nil),                          // 7: google.cloud.dialogflow.v2.SpeechWordInfo
-	(*InputAudioConfig)(nil),                        // 8: google.cloud.dialogflow.v2.InputAudioConfig
-	(*VoiceSelectionParams)(nil),                    // 9: google.cloud.dialogflow.v2.VoiceSelectionParams
-	(*SynthesizeSpeechConfig)(nil),                  // 10: google.cloud.dialogflow.v2.SynthesizeSpeechConfig
-	(*CustomPronunciationParams)(nil),               // 11: google.cloud.dialogflow.v2.CustomPronunciationParams
-	(*OutputAudioConfig)(nil),                       // 12: google.cloud.dialogflow.v2.OutputAudioConfig
-	(*TelephonyDtmfEvents)(nil),                     // 13: google.cloud.dialogflow.v2.TelephonyDtmfEvents
-	(*SpeechToTextConfig)(nil),                      // 14: google.cloud.dialogflow.v2.SpeechToTextConfig
-	(*durationpb.Duration)(nil),                     // 15: google.protobuf.Duration
+	(TelephonyDtmf)(0),                                       // 0: google.cloud.dialogflow.v2.TelephonyDtmf
+	(AudioEncoding)(0),                                       // 1: google.cloud.dialogflow.v2.AudioEncoding
+	(SpeechModelVariant)(0),                                  // 2: google.cloud.dialogflow.v2.SpeechModelVariant
+	(SsmlVoiceGender)(0),                                     // 3: google.cloud.dialogflow.v2.SsmlVoiceGender
+	(OutputAudioEncoding)(0),                                 // 4: google.cloud.dialogflow.v2.OutputAudioEncoding
+	(CustomPronunciationParams_PhoneticEncoding)(0),          // 5: google.cloud.dialogflow.v2.CustomPronunciationParams.PhoneticEncoding
+	(SpeechToTextConfig_GeminiAsrConfig_StartSensitivity)(0), // 6: google.cloud.dialogflow.v2.SpeechToTextConfig.GeminiAsrConfig.StartSensitivity
+	(SpeechToTextConfig_GeminiAsrConfig_EndSensitivity)(0),   // 7: google.cloud.dialogflow.v2.SpeechToTextConfig.GeminiAsrConfig.EndSensitivity
+	(*SpeechContext)(nil),                                    // 8: google.cloud.dialogflow.v2.SpeechContext
+	(*SpeechWordInfo)(nil),                                   // 9: google.cloud.dialogflow.v2.SpeechWordInfo
+	(*InputAudioConfig)(nil),                                 // 10: google.cloud.dialogflow.v2.InputAudioConfig
+	(*VoiceSelectionParams)(nil),                             // 11: google.cloud.dialogflow.v2.VoiceSelectionParams
+	(*SynthesizeSpeechConfig)(nil),                           // 12: google.cloud.dialogflow.v2.SynthesizeSpeechConfig
+	(*CustomPronunciationParams)(nil),                        // 13: google.cloud.dialogflow.v2.CustomPronunciationParams
+	(*OutputAudioConfig)(nil),                                // 14: google.cloud.dialogflow.v2.OutputAudioConfig
+	(*TelephonyDtmfEvents)(nil),                              // 15: google.cloud.dialogflow.v2.TelephonyDtmfEvents
+	(*SpeechToTextConfig)(nil),                               // 16: google.cloud.dialogflow.v2.SpeechToTextConfig
+	(*SpeechToTextConfig_GeminiAsrConfig)(nil),               // 17: google.cloud.dialogflow.v2.SpeechToTextConfig.GeminiAsrConfig
+	(*durationpb.Duration)(nil),                              // 18: google.protobuf.Duration
 }
 var file_google_cloud_dialogflow_v2_audio_config_proto_depIdxs = []int32{
-	15, // 0: google.cloud.dialogflow.v2.SpeechWordInfo.start_offset:type_name -> google.protobuf.Duration
-	15, // 1: google.cloud.dialogflow.v2.SpeechWordInfo.end_offset:type_name -> google.protobuf.Duration
+	18, // 0: google.cloud.dialogflow.v2.SpeechWordInfo.start_offset:type_name -> google.protobuf.Duration
+	18, // 1: google.cloud.dialogflow.v2.SpeechWordInfo.end_offset:type_name -> google.protobuf.Duration
 	1,  // 2: google.cloud.dialogflow.v2.InputAudioConfig.audio_encoding:type_name -> google.cloud.dialogflow.v2.AudioEncoding
-	6,  // 3: google.cloud.dialogflow.v2.InputAudioConfig.speech_contexts:type_name -> google.cloud.dialogflow.v2.SpeechContext
+	8,  // 3: google.cloud.dialogflow.v2.InputAudioConfig.speech_contexts:type_name -> google.cloud.dialogflow.v2.SpeechContext
 	2,  // 4: google.cloud.dialogflow.v2.InputAudioConfig.model_variant:type_name -> google.cloud.dialogflow.v2.SpeechModelVariant
-	3,  // 5: google.cloud.dialogflow.v2.VoiceSelectionParams.ssml_gender:type_name -> google.cloud.dialogflow.v2.SsmlVoiceGender
-	9,  // 6: google.cloud.dialogflow.v2.SynthesizeSpeechConfig.voice:type_name -> google.cloud.dialogflow.v2.VoiceSelectionParams
-	11, // 7: google.cloud.dialogflow.v2.SynthesizeSpeechConfig.pronunciations:type_name -> google.cloud.dialogflow.v2.CustomPronunciationParams
-	5,  // 8: google.cloud.dialogflow.v2.CustomPronunciationParams.phonetic_encoding:type_name -> google.cloud.dialogflow.v2.CustomPronunciationParams.PhoneticEncoding
-	4,  // 9: google.cloud.dialogflow.v2.OutputAudioConfig.audio_encoding:type_name -> google.cloud.dialogflow.v2.OutputAudioEncoding
-	10, // 10: google.cloud.dialogflow.v2.OutputAudioConfig.synthesize_speech_config:type_name -> google.cloud.dialogflow.v2.SynthesizeSpeechConfig
-	0,  // 11: google.cloud.dialogflow.v2.TelephonyDtmfEvents.dtmf_events:type_name -> google.cloud.dialogflow.v2.TelephonyDtmf
-	2,  // 12: google.cloud.dialogflow.v2.SpeechToTextConfig.speech_model_variant:type_name -> google.cloud.dialogflow.v2.SpeechModelVariant
-	1,  // 13: google.cloud.dialogflow.v2.SpeechToTextConfig.audio_encoding:type_name -> google.cloud.dialogflow.v2.AudioEncoding
-	14, // [14:14] is the sub-list for method output_type
-	14, // [14:14] is the sub-list for method input_type
-	14, // [14:14] is the sub-list for extension type_name
-	14, // [14:14] is the sub-list for extension extendee
-	0,  // [0:14] is the sub-list for field type_name
+	17, // 5: google.cloud.dialogflow.v2.InputAudioConfig.gemini_asr_config:type_name -> google.cloud.dialogflow.v2.SpeechToTextConfig.GeminiAsrConfig
+	3,  // 6: google.cloud.dialogflow.v2.VoiceSelectionParams.ssml_gender:type_name -> google.cloud.dialogflow.v2.SsmlVoiceGender
+	11, // 7: google.cloud.dialogflow.v2.SynthesizeSpeechConfig.voice:type_name -> google.cloud.dialogflow.v2.VoiceSelectionParams
+	13, // 8: google.cloud.dialogflow.v2.SynthesizeSpeechConfig.pronunciations:type_name -> google.cloud.dialogflow.v2.CustomPronunciationParams
+	5,  // 9: google.cloud.dialogflow.v2.CustomPronunciationParams.phonetic_encoding:type_name -> google.cloud.dialogflow.v2.CustomPronunciationParams.PhoneticEncoding
+	4,  // 10: google.cloud.dialogflow.v2.OutputAudioConfig.audio_encoding:type_name -> google.cloud.dialogflow.v2.OutputAudioEncoding
+	12, // 11: google.cloud.dialogflow.v2.OutputAudioConfig.synthesize_speech_config:type_name -> google.cloud.dialogflow.v2.SynthesizeSpeechConfig
+	0,  // 12: google.cloud.dialogflow.v2.TelephonyDtmfEvents.dtmf_events:type_name -> google.cloud.dialogflow.v2.TelephonyDtmf
+	2,  // 13: google.cloud.dialogflow.v2.SpeechToTextConfig.speech_model_variant:type_name -> google.cloud.dialogflow.v2.SpeechModelVariant
+	1,  // 14: google.cloud.dialogflow.v2.SpeechToTextConfig.audio_encoding:type_name -> google.cloud.dialogflow.v2.AudioEncoding
+	17, // 15: google.cloud.dialogflow.v2.SpeechToTextConfig.gemini_asr_config:type_name -> google.cloud.dialogflow.v2.SpeechToTextConfig.GeminiAsrConfig
+	6,  // 16: google.cloud.dialogflow.v2.SpeechToTextConfig.GeminiAsrConfig.start_of_speech_sensitivity:type_name -> google.cloud.dialogflow.v2.SpeechToTextConfig.GeminiAsrConfig.StartSensitivity
+	7,  // 17: google.cloud.dialogflow.v2.SpeechToTextConfig.GeminiAsrConfig.end_of_speech_sensitivity:type_name -> google.cloud.dialogflow.v2.SpeechToTextConfig.GeminiAsrConfig.EndSensitivity
+	18, // [18:18] is the sub-list for method output_type
+	18, // [18:18] is the sub-list for method input_type
+	18, // [18:18] is the sub-list for extension type_name
+	18, // [18:18] is the sub-list for extension extendee
+	0,  // [0:18] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_dialogflow_v2_audio_config_proto_init() }
@@ -1592,13 +1855,14 @@ func file_google_cloud_dialogflow_v2_audio_config_proto_init() {
 	if File_google_cloud_dialogflow_v2_audio_config_proto != nil {
 		return
 	}
+	file_google_cloud_dialogflow_v2_audio_config_proto_msgTypes[2].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_dialogflow_v2_audio_config_proto_rawDesc), len(file_google_cloud_dialogflow_v2_audio_config_proto_rawDesc)),
-			NumEnums:      6,
-			NumMessages:   9,
+			NumEnums:      8,
+			NumMessages:   10,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

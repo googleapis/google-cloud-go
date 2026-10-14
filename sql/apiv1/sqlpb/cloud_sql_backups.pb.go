@@ -847,7 +847,7 @@ const file_google_cloud_sql_v1_cloud_sql_backups_proto_rawDesc = "" +
 	"updateMask\"Q\n" +
 	"\x13DeleteBackupRequest\x12:\n" +
 	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1esqladmin.googleapis.com/BackupR\x04name\"\xb4\f\n" +
+	"\x1esqladmin.googleapis.com/BackupR\x04name\"\x87\r\n" +
 	"\x06Backup\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\x17\n" +
 	"\x04kind\x18\x02 \x01(\tB\x03\xe0A\x03R\x04kind\x12 \n" +
@@ -859,9 +859,11 @@ const file_google_cloud_sql_v1_cloud_sql_backups_proto_rawDesc = "" +
 	"\x0fbackup_interval\x18\b \x01(\v2\x15.google.type.IntervalB\x03\xe0A\x03R\x0ebackupInterval\x12E\n" +
 	"\x05state\x18\t \x01(\x0e2*.google.cloud.sql.v1.Backup.SqlBackupStateB\x03\xe0A\x03R\x05state\x12>\n" +
 	"\x05error\x18\n" +
-	" \x01(\v2#.google.cloud.sql.v1.OperationErrorB\x03\xe0A\x03R\x05error\x12\x1c\n" +
-	"\akms_key\x18\v \x01(\tB\x03\xe0A\x03R\x06kmsKey\x12+\n" +
-	"\x0fkms_key_version\x18\f \x01(\tB\x03\xe0A\x03R\rkmsKeyVersion\x12H\n" +
+	" \x01(\v2#.google.cloud.sql.v1.OperationErrorB\x03\xe0A\x03R\x05error\x12B\n" +
+	"\akms_key\x18\v \x01(\tB)\xe0A\x03\xfaA#\n" +
+	"!cloudkms.googleapis.com/CryptoKeyR\x06kmsKey\x12X\n" +
+	"\x0fkms_key_version\x18\f \x01(\tB0\xe0A\x03\xfaA*\n" +
+	"(cloudkms.googleapis.com/CryptoKeyVersionR\rkmsKeyVersion\x12H\n" +
 	"\vbackup_kind\x18\r \x01(\x0e2\".google.cloud.sql.v1.SqlBackupKindB\x03\xe0A\x03R\n" +
 	"backupKind\x12 \n" +
 	"\ttime_zone\x18\x0f \x01(\tB\x03\xe0A\x03R\btimeZone\x12 \n" +

@@ -67,7 +67,18 @@ func defaultDeveloperKnowledgeGRPCClientOptions() []option.ClientOption {
 
 func defaultDeveloperKnowledgeCallOptions() *DeveloperKnowledgeCallOptions {
 	return &DeveloperKnowledgeCallOptions{
-		SearchDocumentChunks: []gax.CallOption{},
+		SearchDocumentChunks: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		GetDocument: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -98,7 +109,17 @@ func defaultDeveloperKnowledgeCallOptions() *DeveloperKnowledgeCallOptions {
 
 func defaultDeveloperKnowledgeRESTCallOptions() *DeveloperKnowledgeCallOptions {
 	return &DeveloperKnowledgeCallOptions{
-		SearchDocumentChunks: []gax.CallOption{},
+		SearchDocumentChunks: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		GetDocument: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -148,11 +169,14 @@ type internalDeveloperKnowledgeClient interface {
 //
 // A typical use case is to first use
 // DeveloperKnowledge.SearchDocumentChunks
-// to find relevant page URIs based on a query, and then use
+// to find relevant document chunks based on a query, and then use
 // DeveloperKnowledge.GetDocument
 // or
 // DeveloperKnowledge.BatchGetDocuments
-// to fetch the full content of the top results.
+// with document resource names (such as
+// DocumentChunk.parent
+// or documents/{uri_without_scheme}) to fetch the full content of the top
+// results.
 //
 // All document content is provided in Markdown format.
 type DeveloperKnowledgeClient struct {
@@ -248,11 +272,14 @@ type developerKnowledgeGRPCClient struct {
 //
 // A typical use case is to first use
 // DeveloperKnowledge.SearchDocumentChunks
-// to find relevant page URIs based on a query, and then use
+// to find relevant document chunks based on a query, and then use
 // DeveloperKnowledge.GetDocument
 // or
 // DeveloperKnowledge.BatchGetDocuments
-// to fetch the full content of the top results.
+// with document resource names (such as
+// DocumentChunk.parent
+// or documents/{uri_without_scheme}) to fetch the full content of the top
+// results.
 //
 // All document content is provided in Markdown format.
 func NewDeveloperKnowledgeClient(ctx context.Context, opts ...option.ClientOption) (*DeveloperKnowledgeClient, error) {
@@ -397,11 +424,14 @@ type developerKnowledgeRESTClient struct {
 //
 // A typical use case is to first use
 // DeveloperKnowledge.SearchDocumentChunks
-// to find relevant page URIs based on a query, and then use
+// to find relevant document chunks based on a query, and then use
 // DeveloperKnowledge.GetDocument
 // or
 // DeveloperKnowledge.BatchGetDocuments
-// to fetch the full content of the top results.
+// with document resource names (such as
+// DocumentChunk.parent
+// or documents/{uri_without_scheme}) to fetch the full content of the top
+// results.
 //
 // All document content is provided in Markdown format.
 func NewDeveloperKnowledgeRESTClient(ctx context.Context, opts ...option.ClientOption) (*DeveloperKnowledgeClient, error) {

@@ -447,7 +447,7 @@ func (p *sessionManager) newSessionHandleLocked(ctx context.Context, s *session)
 		if err != nil {
 			return nil, err
 		}
-		sh.client = newDCPResolvingSpannerClient(p.sc.dynamicPool, entry.id)
+		sh.client = newDCPResolvingSpannerClient(p.sc.dynamicPool, entry)
 		return sh, nil
 	}
 	client, idx := p.getRoundRobinClientLocked()

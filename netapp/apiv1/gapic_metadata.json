@@ -220,6 +220,11 @@
                 "GetSnapshot"
               ]
             },
+            "GetSplitStatus": {
+              "methods": [
+                "GetSplitStatus"
+              ]
+            },
             "GetStoragePool": {
               "methods": [
                 "GetStoragePool"
@@ -233,6 +238,11 @@
             "ListActiveDirectories": {
               "methods": [
                 "ListActiveDirectories"
+              ]
+            },
+            "ListBackupConfigs": {
+              "methods": [
+                "ListBackupConfigs"
               ]
             },
             "ListBackupPolicies": {
@@ -300,6 +310,11 @@
                 "RestoreBackupFiles"
               ]
             },
+            "RestoreVolume": {
+              "methods": [
+                "RestoreVolume"
+              ]
+            },
             "ResumeReplication": {
               "methods": [
                 "ResumeReplication"
@@ -313,6 +328,11 @@
             "RevertVolume": {
               "methods": [
                 "RevertVolume"
+              ]
+            },
+            "StartSplit": {
+              "methods": [
+                "StartSplit"
               ]
             },
             "StopReplication": {
@@ -338,6 +358,11 @@
             "UpdateBackup": {
               "methods": [
                 "UpdateBackup"
+              ]
+            },
+            "UpdateBackupConfig": {
+              "methods": [
+                "UpdateBackupConfig"
               ]
             },
             "UpdateBackupPolicy": {
@@ -610,6 +635,11 @@
                 "GetSnapshot"
               ]
             },
+            "GetSplitStatus": {
+              "methods": [
+                "GetSplitStatus"
+              ]
+            },
             "GetStoragePool": {
               "methods": [
                 "GetStoragePool"
@@ -623,6 +653,11 @@
             "ListActiveDirectories": {
               "methods": [
                 "ListActiveDirectories"
+              ]
+            },
+            "ListBackupConfigs": {
+              "methods": [
+                "ListBackupConfigs"
               ]
             },
             "ListBackupPolicies": {
@@ -690,6 +725,11 @@
                 "RestoreBackupFiles"
               ]
             },
+            "RestoreVolume": {
+              "methods": [
+                "RestoreVolume"
+              ]
+            },
             "ResumeReplication": {
               "methods": [
                 "ResumeReplication"
@@ -703,6 +743,11 @@
             "RevertVolume": {
               "methods": [
                 "RevertVolume"
+              ]
+            },
+            "StartSplit": {
+              "methods": [
+                "StartSplit"
               ]
             },
             "StopReplication": {
@@ -728,6 +773,11 @@
             "UpdateBackup": {
               "methods": [
                 "UpdateBackup"
+              ]
+            },
+            "UpdateBackupConfig": {
+              "methods": [
+                "UpdateBackupConfig"
               ]
             },
             "UpdateBackupPolicy": {

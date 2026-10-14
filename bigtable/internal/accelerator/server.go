@@ -63,7 +63,7 @@ type Server struct {
 	stdinReader  io.Reader     // stdin source; nil disables the stdin watchdog. Defaults to os.Stdin; override with WithStdinReader.
 	stdinBuf     *bufio.Reader // wraps stdinReader once in Start(); shared by readSecret + monitorStdin
 	authSecret   string
-	channel      *Channel
+	channel      channelConn
 	health       *health.Server
 
 	handshakeTimeout time.Duration // bounds readSecret; defaults to defaultHandshakeTimeout, override with WithHandshakeTimeout.
@@ -89,7 +89,7 @@ func WithHandshakeTimeout(d time.Duration) ServerOption {
 }
 
 // NewServer creates a new Server instance.
-func NewServer(udsPath string, channel *Channel, opts ...ServerOption) *Server {
+func NewServer(udsPath string, channel channelConn, opts ...ServerOption) *Server {
 	s := &Server{
 		udsPath:          udsPath,
 		shutdownChan:     make(chan struct{}),

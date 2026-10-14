@@ -745,8 +745,10 @@ type AgentAssistantFeedback struct {
 	KnowledgeSearchFeedback *AgentAssistantFeedback_KnowledgeSearchFeedback `protobuf:"bytes,5,opt,name=knowledge_search_feedback,json=knowledgeSearchFeedback,proto3" json:"knowledge_search_feedback,omitempty"`
 	// Optional. Feedback for knowledge assist.
 	KnowledgeAssistFeedback *AgentAssistantFeedback_KnowledgeAssistFeedback `protobuf:"bytes,6,opt,name=knowledge_assist_feedback,json=knowledgeAssistFeedback,proto3" json:"knowledge_assist_feedback,omitempty"`
-	unknownFields           protoimpl.UnknownFields
-	sizeCache               protoimpl.SizeCache
+	// Optional. Feedback for companion agent.
+	CompanionFeedback *AgentAssistantFeedback_CompanionFeedback `protobuf:"bytes,8,opt,name=companion_feedback,json=companionFeedback,proto3" json:"companion_feedback,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *AgentAssistantFeedback) Reset() {
@@ -821,6 +823,13 @@ func (x *AgentAssistantFeedback) GetKnowledgeAssistFeedback() *AgentAssistantFee
 	return nil
 }
 
+func (x *AgentAssistantFeedback) GetCompanionFeedback() *AgentAssistantFeedback_CompanionFeedback {
+	if x != nil {
+		return x.CompanionFeedback
+	}
+	return nil
+}
+
 // Represents a record of a human agent assist answer.
 type AgentAssistantRecord struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -832,6 +841,8 @@ type AgentAssistantRecord struct {
 	//	*AgentAssistantRecord_FaqAnswer
 	//	*AgentAssistantRecord_DialogflowAssistAnswer
 	//	*AgentAssistantRecord_GeneratorSuggestion
+	//	*AgentAssistantRecord_CompanionSuggestion
+	//	*AgentAssistantRecord_ReactiveCompanionSuggestion
 	Answer        isAgentAssistantRecord_Answer `protobuf_oneof:"answer"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -910,6 +921,24 @@ func (x *AgentAssistantRecord) GetGeneratorSuggestion() *GeneratorSuggestion {
 	return nil
 }
 
+func (x *AgentAssistantRecord) GetCompanionSuggestion() *CompanionSuggestion {
+	if x != nil {
+		if x, ok := x.Answer.(*AgentAssistantRecord_CompanionSuggestion); ok {
+			return x.CompanionSuggestion
+		}
+	}
+	return nil
+}
+
+func (x *AgentAssistantRecord) GetReactiveCompanionSuggestion() *StreamingReactiveCompanionSuggestionsResponse_ReactiveModeResponse {
+	if x != nil {
+		if x, ok := x.Answer.(*AgentAssistantRecord_ReactiveCompanionSuggestion); ok {
+			return x.ReactiveCompanionSuggestion
+		}
+	}
+	return nil
+}
+
 type isAgentAssistantRecord_Answer interface {
 	isAgentAssistantRecord_Answer()
 }
@@ -934,6 +963,16 @@ type AgentAssistantRecord_GeneratorSuggestion struct {
 	GeneratorSuggestion *GeneratorSuggestion `protobuf:"bytes,8,opt,name=generator_suggestion,json=generatorSuggestion,proto3,oneof"`
 }
 
+type AgentAssistantRecord_CompanionSuggestion struct {
+	// Output only. The companion suggestion.
+	CompanionSuggestion *CompanionSuggestion `protobuf:"bytes,9,opt,name=companion_suggestion,json=companionSuggestion,proto3,oneof"`
+}
+
+type AgentAssistantRecord_ReactiveCompanionSuggestion struct {
+	// Output only. The reactive companion suggestion.
+	ReactiveCompanionSuggestion *StreamingReactiveCompanionSuggestionsResponse_ReactiveModeResponse `protobuf:"bytes,10,opt,name=reactive_companion_suggestion,json=reactiveCompanionSuggestion,proto3,oneof"`
+}
+
 func (*AgentAssistantRecord_ArticleSuggestionAnswer) isAgentAssistantRecord_Answer() {}
 
 func (*AgentAssistantRecord_FaqAnswer) isAgentAssistantRecord_Answer() {}
@@ -941,6 +980,10 @@ func (*AgentAssistantRecord_FaqAnswer) isAgentAssistantRecord_Answer() {}
 func (*AgentAssistantRecord_DialogflowAssistAnswer) isAgentAssistantRecord_Answer() {}
 
 func (*AgentAssistantRecord_GeneratorSuggestion) isAgentAssistantRecord_Answer() {}
+
+func (*AgentAssistantRecord_CompanionSuggestion) isAgentAssistantRecord_Answer() {}
+
+func (*AgentAssistantRecord_ReactiveCompanionSuggestion) isAgentAssistantRecord_Answer() {}
 
 // Feedback for conversation summarization.
 type AgentAssistantFeedback_SummarizationFeedback struct {
@@ -1139,6 +1182,43 @@ func (x *AgentAssistantFeedback_KnowledgeAssistFeedback) GetClickedUris() []stri
 	return nil
 }
 
+// Feedback for companion agent.
+type AgentAssistantFeedback_CompanionFeedback struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AgentAssistantFeedback_CompanionFeedback) Reset() {
+	*x = AgentAssistantFeedback_CompanionFeedback{}
+	mi := &file_google_cloud_dialogflow_v2_answer_record_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AgentAssistantFeedback_CompanionFeedback) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AgentAssistantFeedback_CompanionFeedback) ProtoMessage() {}
+
+func (x *AgentAssistantFeedback_CompanionFeedback) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_dialogflow_v2_answer_record_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AgentAssistantFeedback_CompanionFeedback.ProtoReflect.Descriptor instead.
+func (*AgentAssistantFeedback_CompanionFeedback) Descriptor() ([]byte, []int) {
+	return file_google_cloud_dialogflow_v2_answer_record_proto_rawDescGZIP(), []int{5, 3}
+}
+
 var File_google_cloud_dialogflow_v2_answer_record_proto protoreflect.FileDescriptor
 
 const file_google_cloud_dialogflow_v2_answer_record_proto_rawDesc = "" +
@@ -1176,14 +1256,15 @@ const file_google_cloud_dialogflow_v2_answer_record_proto_rawDesc = "" +
 	"\vNOT_CORRECT\x10\x01\x12\x15\n" +
 	"\x11PARTIALLY_CORRECT\x10\x02\x12\x11\n" +
 	"\rFULLY_CORRECT\x10\x03B\x11\n" +
-	"\x0fdetail_feedback\"\xf6\f\n" +
+	"\x0fdetail_feedback\"\x85\x0e\n" +
 	"\x16AgentAssistantFeedback\x12r\n" +
 	"\x10answer_relevance\x18\x01 \x01(\x0e2B.google.cloud.dialogflow.v2.AgentAssistantFeedback.AnswerRelevanceB\x03\xe0A\x01R\x0fanswerRelevance\x12~\n" +
 	"\x14document_correctness\x18\x02 \x01(\x0e2F.google.cloud.dialogflow.v2.AgentAssistantFeedback.DocumentCorrectnessB\x03\xe0A\x01R\x13documentCorrectness\x12{\n" +
 	"\x13document_efficiency\x18\x03 \x01(\x0e2E.google.cloud.dialogflow.v2.AgentAssistantFeedback.DocumentEfficiencyB\x03\xe0A\x01R\x12documentEfficiency\x12\x84\x01\n" +
 	"\x16summarization_feedback\x18\x04 \x01(\v2H.google.cloud.dialogflow.v2.AgentAssistantFeedback.SummarizationFeedbackB\x03\xe0A\x01R\x15summarizationFeedback\x12\x8b\x01\n" +
 	"\x19knowledge_search_feedback\x18\x05 \x01(\v2J.google.cloud.dialogflow.v2.AgentAssistantFeedback.KnowledgeSearchFeedbackB\x03\xe0A\x01R\x17knowledgeSearchFeedback\x12\x8b\x01\n" +
-	"\x19knowledge_assist_feedback\x18\x06 \x01(\v2J.google.cloud.dialogflow.v2.AgentAssistantFeedback.KnowledgeAssistFeedbackB\x03\xe0A\x01R\x17knowledgeAssistFeedback\x1a\xfa\x02\n" +
+	"\x19knowledge_assist_feedback\x18\x06 \x01(\v2J.google.cloud.dialogflow.v2.AgentAssistantFeedback.KnowledgeAssistFeedbackB\x03\xe0A\x01R\x17knowledgeAssistFeedback\x12x\n" +
+	"\x12companion_feedback\x18\b \x01(\v2D.google.cloud.dialogflow.v2.AgentAssistantFeedback.CompanionFeedbackB\x03\xe0A\x01R\x11companionFeedback\x1a\xfa\x02\n" +
 	"\x15SummarizationFeedback\x129\n" +
 	"\n" +
 	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\tstartTime\x12;\n" +
@@ -1199,7 +1280,8 @@ const file_google_cloud_dialogflow_v2_answer_record_proto_rawDesc = "" +
 	"\fclicked_uris\x18\x02 \x03(\tR\vclickedUris\x1aa\n" +
 	"\x17KnowledgeAssistFeedback\x12#\n" +
 	"\ranswer_copied\x18\x01 \x01(\bR\fanswerCopied\x12!\n" +
-	"\fclicked_uris\x18\x02 \x03(\tR\vclickedUris\"Q\n" +
+	"\fclicked_uris\x18\x02 \x03(\tR\vclickedUris\x1a\x13\n" +
+	"\x11CompanionFeedback\"Q\n" +
 	"\x0fAnswerRelevance\x12 \n" +
 	"\x1cANSWER_RELEVANCE_UNSPECIFIED\x10\x00\x12\x0e\n" +
 	"\n" +
@@ -1212,13 +1294,16 @@ const file_google_cloud_dialogflow_v2_answer_record_proto_rawDesc = "" +
 	"\x12DocumentEfficiency\x12#\n" +
 	"\x1fDOCUMENT_EFFICIENCY_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vINEFFICIENT\x10\x01\x12\r\n" +
-	"\tEFFICIENT\x10\x02\"\xbb\x03\n" +
+	"\tEFFICIENT\x10\x02\"\xd2\x05\n" +
 	"\x14AgentAssistantRecord\x12l\n" +
 	"\x19article_suggestion_answer\x18\x05 \x01(\v2).google.cloud.dialogflow.v2.ArticleAnswerB\x03\xe0A\x03H\x00R\x17articleSuggestionAnswer\x12K\n" +
 	"\n" +
 	"faq_answer\x18\x06 \x01(\v2%.google.cloud.dialogflow.v2.FaqAnswerB\x03\xe0A\x03H\x00R\tfaqAnswer\x12s\n" +
 	"\x18dialogflow_assist_answer\x18\a \x01(\v22.google.cloud.dialogflow.v2.DialogflowAssistAnswerB\x03\xe0A\x03H\x00R\x16dialogflowAssistAnswer\x12i\n" +
-	"\x14generator_suggestion\x18\b \x01(\v2/.google.cloud.dialogflow.v2.GeneratorSuggestionB\x03\xe0A\x03H\x00R\x13generatorSuggestionB\b\n" +
+	"\x14generator_suggestion\x18\b \x01(\v2/.google.cloud.dialogflow.v2.GeneratorSuggestionB\x03\xe0A\x03H\x00R\x13generatorSuggestion\x12i\n" +
+	"\x14companion_suggestion\x18\t \x01(\v2/.google.cloud.dialogflow.v2.CompanionSuggestionB\x03\xe0A\x03H\x00R\x13companionSuggestion\x12\xa9\x01\n" +
+	"\x1dreactive_companion_suggestion\x18\n" +
+	" \x01(\v2^.google.cloud.dialogflow.v2.StreamingReactiveCompanionSuggestionsResponse.ReactiveModeResponseB\x03\xe0A\x03H\x00R\x1breactiveCompanionSuggestionB\b\n" +
 	"\x06answer2\xad\x05\n" +
 	"\rAnswerRecords\x12\xed\x01\n" +
 	"\x11ListAnswerRecords\x124.google.cloud.dialogflow.v2.ListAnswerRecordsRequest\x1a5.google.cloud.dialogflow.v2.ListAnswerRecordsResponse\"k\xdaA\x06parent\x82\xd3\xe4\x93\x02\\Z3\x121/v2/{parent=projects/*/locations/*}/answerRecords\x12%/v2/{parent=projects/*}/answerRecords\x12\xb1\x02\n" +
@@ -1238,7 +1323,7 @@ func file_google_cloud_dialogflow_v2_answer_record_proto_rawDescGZIP() []byte {
 }
 
 var file_google_cloud_dialogflow_v2_answer_record_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
-var file_google_cloud_dialogflow_v2_answer_record_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
+var file_google_cloud_dialogflow_v2_answer_record_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
 var file_google_cloud_dialogflow_v2_answer_record_proto_goTypes = []any{
 	(AnswerFeedback_CorrectnessLevel)(0),                   // 0: google.cloud.dialogflow.v2.AnswerFeedback.CorrectnessLevel
 	(AgentAssistantFeedback_AnswerRelevance)(0),            // 1: google.cloud.dialogflow.v2.AgentAssistantFeedback.AnswerRelevance
@@ -1254,46 +1339,52 @@ var file_google_cloud_dialogflow_v2_answer_record_proto_goTypes = []any{
 	(*AgentAssistantFeedback_SummarizationFeedback)(nil),   // 11: google.cloud.dialogflow.v2.AgentAssistantFeedback.SummarizationFeedback
 	(*AgentAssistantFeedback_KnowledgeSearchFeedback)(nil), // 12: google.cloud.dialogflow.v2.AgentAssistantFeedback.KnowledgeSearchFeedback
 	(*AgentAssistantFeedback_KnowledgeAssistFeedback)(nil), // 13: google.cloud.dialogflow.v2.AgentAssistantFeedback.KnowledgeAssistFeedback
-	nil,                            // 14: google.cloud.dialogflow.v2.AgentAssistantFeedback.SummarizationFeedback.TextSectionsEntry
-	(*fieldmaskpb.FieldMask)(nil),  // 15: google.protobuf.FieldMask
-	(*timestamppb.Timestamp)(nil),  // 16: google.protobuf.Timestamp
-	(*ArticleAnswer)(nil),          // 17: google.cloud.dialogflow.v2.ArticleAnswer
-	(*FaqAnswer)(nil),              // 18: google.cloud.dialogflow.v2.FaqAnswer
-	(*DialogflowAssistAnswer)(nil), // 19: google.cloud.dialogflow.v2.DialogflowAssistAnswer
-	(*GeneratorSuggestion)(nil),    // 20: google.cloud.dialogflow.v2.GeneratorSuggestion
+	(*AgentAssistantFeedback_CompanionFeedback)(nil),       // 14: google.cloud.dialogflow.v2.AgentAssistantFeedback.CompanionFeedback
+	nil,                            // 15: google.cloud.dialogflow.v2.AgentAssistantFeedback.SummarizationFeedback.TextSectionsEntry
+	(*fieldmaskpb.FieldMask)(nil),  // 16: google.protobuf.FieldMask
+	(*timestamppb.Timestamp)(nil),  // 17: google.protobuf.Timestamp
+	(*ArticleAnswer)(nil),          // 18: google.cloud.dialogflow.v2.ArticleAnswer
+	(*FaqAnswer)(nil),              // 19: google.cloud.dialogflow.v2.FaqAnswer
+	(*DialogflowAssistAnswer)(nil), // 20: google.cloud.dialogflow.v2.DialogflowAssistAnswer
+	(*GeneratorSuggestion)(nil),    // 21: google.cloud.dialogflow.v2.GeneratorSuggestion
+	(*CompanionSuggestion)(nil),    // 22: google.cloud.dialogflow.v2.CompanionSuggestion
+	(*StreamingReactiveCompanionSuggestionsResponse_ReactiveModeResponse)(nil), // 23: google.cloud.dialogflow.v2.StreamingReactiveCompanionSuggestionsResponse.ReactiveModeResponse
 }
 var file_google_cloud_dialogflow_v2_answer_record_proto_depIdxs = []int32{
 	8,  // 0: google.cloud.dialogflow.v2.AnswerRecord.answer_feedback:type_name -> google.cloud.dialogflow.v2.AnswerFeedback
 	10, // 1: google.cloud.dialogflow.v2.AnswerRecord.agent_assistant_record:type_name -> google.cloud.dialogflow.v2.AgentAssistantRecord
 	4,  // 2: google.cloud.dialogflow.v2.ListAnswerRecordsResponse.answer_records:type_name -> google.cloud.dialogflow.v2.AnswerRecord
 	4,  // 3: google.cloud.dialogflow.v2.UpdateAnswerRecordRequest.answer_record:type_name -> google.cloud.dialogflow.v2.AnswerRecord
-	15, // 4: google.cloud.dialogflow.v2.UpdateAnswerRecordRequest.update_mask:type_name -> google.protobuf.FieldMask
+	16, // 4: google.cloud.dialogflow.v2.UpdateAnswerRecordRequest.update_mask:type_name -> google.protobuf.FieldMask
 	0,  // 5: google.cloud.dialogflow.v2.AnswerFeedback.correctness_level:type_name -> google.cloud.dialogflow.v2.AnswerFeedback.CorrectnessLevel
 	9,  // 6: google.cloud.dialogflow.v2.AnswerFeedback.agent_assistant_detail_feedback:type_name -> google.cloud.dialogflow.v2.AgentAssistantFeedback
-	16, // 7: google.cloud.dialogflow.v2.AnswerFeedback.click_time:type_name -> google.protobuf.Timestamp
-	16, // 8: google.cloud.dialogflow.v2.AnswerFeedback.display_time:type_name -> google.protobuf.Timestamp
+	17, // 7: google.cloud.dialogflow.v2.AnswerFeedback.click_time:type_name -> google.protobuf.Timestamp
+	17, // 8: google.cloud.dialogflow.v2.AnswerFeedback.display_time:type_name -> google.protobuf.Timestamp
 	1,  // 9: google.cloud.dialogflow.v2.AgentAssistantFeedback.answer_relevance:type_name -> google.cloud.dialogflow.v2.AgentAssistantFeedback.AnswerRelevance
 	2,  // 10: google.cloud.dialogflow.v2.AgentAssistantFeedback.document_correctness:type_name -> google.cloud.dialogflow.v2.AgentAssistantFeedback.DocumentCorrectness
 	3,  // 11: google.cloud.dialogflow.v2.AgentAssistantFeedback.document_efficiency:type_name -> google.cloud.dialogflow.v2.AgentAssistantFeedback.DocumentEfficiency
 	11, // 12: google.cloud.dialogflow.v2.AgentAssistantFeedback.summarization_feedback:type_name -> google.cloud.dialogflow.v2.AgentAssistantFeedback.SummarizationFeedback
 	12, // 13: google.cloud.dialogflow.v2.AgentAssistantFeedback.knowledge_search_feedback:type_name -> google.cloud.dialogflow.v2.AgentAssistantFeedback.KnowledgeSearchFeedback
 	13, // 14: google.cloud.dialogflow.v2.AgentAssistantFeedback.knowledge_assist_feedback:type_name -> google.cloud.dialogflow.v2.AgentAssistantFeedback.KnowledgeAssistFeedback
-	17, // 15: google.cloud.dialogflow.v2.AgentAssistantRecord.article_suggestion_answer:type_name -> google.cloud.dialogflow.v2.ArticleAnswer
-	18, // 16: google.cloud.dialogflow.v2.AgentAssistantRecord.faq_answer:type_name -> google.cloud.dialogflow.v2.FaqAnswer
-	19, // 17: google.cloud.dialogflow.v2.AgentAssistantRecord.dialogflow_assist_answer:type_name -> google.cloud.dialogflow.v2.DialogflowAssistAnswer
-	20, // 18: google.cloud.dialogflow.v2.AgentAssistantRecord.generator_suggestion:type_name -> google.cloud.dialogflow.v2.GeneratorSuggestion
-	16, // 19: google.cloud.dialogflow.v2.AgentAssistantFeedback.SummarizationFeedback.start_time:type_name -> google.protobuf.Timestamp
-	16, // 20: google.cloud.dialogflow.v2.AgentAssistantFeedback.SummarizationFeedback.submit_time:type_name -> google.protobuf.Timestamp
-	14, // 21: google.cloud.dialogflow.v2.AgentAssistantFeedback.SummarizationFeedback.text_sections:type_name -> google.cloud.dialogflow.v2.AgentAssistantFeedback.SummarizationFeedback.TextSectionsEntry
-	5,  // 22: google.cloud.dialogflow.v2.AnswerRecords.ListAnswerRecords:input_type -> google.cloud.dialogflow.v2.ListAnswerRecordsRequest
-	7,  // 23: google.cloud.dialogflow.v2.AnswerRecords.UpdateAnswerRecord:input_type -> google.cloud.dialogflow.v2.UpdateAnswerRecordRequest
-	6,  // 24: google.cloud.dialogflow.v2.AnswerRecords.ListAnswerRecords:output_type -> google.cloud.dialogflow.v2.ListAnswerRecordsResponse
-	4,  // 25: google.cloud.dialogflow.v2.AnswerRecords.UpdateAnswerRecord:output_type -> google.cloud.dialogflow.v2.AnswerRecord
-	24, // [24:26] is the sub-list for method output_type
-	22, // [22:24] is the sub-list for method input_type
-	22, // [22:22] is the sub-list for extension type_name
-	22, // [22:22] is the sub-list for extension extendee
-	0,  // [0:22] is the sub-list for field type_name
+	14, // 15: google.cloud.dialogflow.v2.AgentAssistantFeedback.companion_feedback:type_name -> google.cloud.dialogflow.v2.AgentAssistantFeedback.CompanionFeedback
+	18, // 16: google.cloud.dialogflow.v2.AgentAssistantRecord.article_suggestion_answer:type_name -> google.cloud.dialogflow.v2.ArticleAnswer
+	19, // 17: google.cloud.dialogflow.v2.AgentAssistantRecord.faq_answer:type_name -> google.cloud.dialogflow.v2.FaqAnswer
+	20, // 18: google.cloud.dialogflow.v2.AgentAssistantRecord.dialogflow_assist_answer:type_name -> google.cloud.dialogflow.v2.DialogflowAssistAnswer
+	21, // 19: google.cloud.dialogflow.v2.AgentAssistantRecord.generator_suggestion:type_name -> google.cloud.dialogflow.v2.GeneratorSuggestion
+	22, // 20: google.cloud.dialogflow.v2.AgentAssistantRecord.companion_suggestion:type_name -> google.cloud.dialogflow.v2.CompanionSuggestion
+	23, // 21: google.cloud.dialogflow.v2.AgentAssistantRecord.reactive_companion_suggestion:type_name -> google.cloud.dialogflow.v2.StreamingReactiveCompanionSuggestionsResponse.ReactiveModeResponse
+	17, // 22: google.cloud.dialogflow.v2.AgentAssistantFeedback.SummarizationFeedback.start_time:type_name -> google.protobuf.Timestamp
+	17, // 23: google.cloud.dialogflow.v2.AgentAssistantFeedback.SummarizationFeedback.submit_time:type_name -> google.protobuf.Timestamp
+	15, // 24: google.cloud.dialogflow.v2.AgentAssistantFeedback.SummarizationFeedback.text_sections:type_name -> google.cloud.dialogflow.v2.AgentAssistantFeedback.SummarizationFeedback.TextSectionsEntry
+	5,  // 25: google.cloud.dialogflow.v2.AnswerRecords.ListAnswerRecords:input_type -> google.cloud.dialogflow.v2.ListAnswerRecordsRequest
+	7,  // 26: google.cloud.dialogflow.v2.AnswerRecords.UpdateAnswerRecord:input_type -> google.cloud.dialogflow.v2.UpdateAnswerRecordRequest
+	6,  // 27: google.cloud.dialogflow.v2.AnswerRecords.ListAnswerRecords:output_type -> google.cloud.dialogflow.v2.ListAnswerRecordsResponse
+	4,  // 28: google.cloud.dialogflow.v2.AnswerRecords.UpdateAnswerRecord:output_type -> google.cloud.dialogflow.v2.AnswerRecord
+	27, // [27:29] is the sub-list for method output_type
+	25, // [25:27] is the sub-list for method input_type
+	25, // [25:25] is the sub-list for extension type_name
+	25, // [25:25] is the sub-list for extension extendee
+	0,  // [0:25] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_dialogflow_v2_answer_record_proto_init() }
@@ -1314,6 +1405,8 @@ func file_google_cloud_dialogflow_v2_answer_record_proto_init() {
 		(*AgentAssistantRecord_FaqAnswer)(nil),
 		(*AgentAssistantRecord_DialogflowAssistAnswer)(nil),
 		(*AgentAssistantRecord_GeneratorSuggestion)(nil),
+		(*AgentAssistantRecord_CompanionSuggestion)(nil),
+		(*AgentAssistantRecord_ReactiveCompanionSuggestion)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -1321,7 +1414,7 @@ func file_google_cloud_dialogflow_v2_answer_record_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_dialogflow_v2_answer_record_proto_rawDesc), len(file_google_cloud_dialogflow_v2_answer_record_proto_rawDesc)),
 			NumEnums:      4,
-			NumMessages:   11,
+			NumMessages:   12,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

@@ -158,7 +158,7 @@ const file_google_cloud_netapp_v1_cloud_netapp_service_proto_rawDesc = "" +
 	"\x0estatus_message\x18\x05 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12:\n" +
 	"\x16requested_cancellation\x18\x06 \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
 	"\vapi_version\x18\a \x01(\tB\x03\xe0A\x03R\n" +
-	"apiVersion2\xceu\n" +
+	"apiVersion2\xa9~\n" +
 	"\x06NetApp\x12\xb8\x01\n" +
 	"\x10ListStoragePools\x12/.google.cloud.netapp.v1.ListStoragePoolsRequest\x1a0.google.cloud.netapp.v1.ListStoragePoolsResponse\"A\xdaA\x06parent\x82\xd3\xe4\x93\x022\x120/v1/{parent=projects/*/locations/*}/storagePools\x12\xf6\x01\n" +
 	"\x11CreateStoragePool\x120.google.cloud.netapp.v1.CreateStoragePoolRequest\x1a\x1d.google.longrunning.Operation\"\x8f\x01\xcaA \n" +
@@ -181,7 +181,11 @@ const file_google_cloud_netapp_v1_cloud_netapp_service_proto_rawDesc = "" +
 	"\fDeleteVolume\x12+.google.cloud.netapp.v1.DeleteVolumeRequest\x1a\x1d.google.longrunning.Operation\"g\xcaA*\n" +
 	"\x15google.protobuf.Empty\x12\x11OperationMetadata\xdaA\x04name\x82\xd3\xe4\x93\x02-*+/v1/{name=projects/*/locations/*/volumes/*}\x12\xb7\x01\n" +
 	"\fRevertVolume\x12+.google.cloud.netapp.v1.RevertVolumeRequest\x1a\x1d.google.longrunning.Operation\"[\xcaA\x1b\n" +
-	"\x06Volume\x12\x11OperationMetadata\x82\xd3\xe4\x93\x027:\x01*\"2/v1/{name=projects/*/locations/*/volumes/*}:revert\x12\xd5\x01\n" +
+	"\x06Volume\x12\x11OperationMetadata\x82\xd3\xe4\x93\x027:\x01*\"2/v1/{name=projects/*/locations/*/volumes/*}:revert\x12\xbe\x01\n" +
+	"\n" +
+	"StartSplit\x12).google.cloud.netapp.v1.StartSplitRequest\x1a\x1d.google.longrunning.Operation\"f\xcaA\x1b\n" +
+	"\x06Volume\x12\x11OperationMetadata\xdaA\x04name\x82\xd3\xe4\x93\x02;:\x01*\"6/v1/{name=projects/*/locations/*/volumes/*}:startSplit\x12\xaf\x01\n" +
+	"\x0eGetSplitStatus\x12-.google.cloud.netapp.v1.GetSplitStatusRequest\x1a#.google.cloud.netapp.v1.SplitStatus\"I\xdaA\x04name\x82\xd3\xe4\x93\x02<\x12:/v1/{name=projects/*/locations/*/volumes/*}:getSplitStatus\x12\xd5\x01\n" +
 	"\x16EstablishVolumePeering\x125.google.cloud.netapp.v1.EstablishVolumePeeringRequest\x1a\x1d.google.longrunning.Operation\"e\xcaA\x1b\n" +
 	"\x06Volume\x12\x11OperationMetadata\x82\xd3\xe4\x93\x02A:\x01*\"</v1/{name=projects/*/locations/*/volumes/*}:establishPeering\x12\xb6\x01\n" +
 	"\rListSnapshots\x12,.google.cloud.netapp.v1.ListSnapshotsRequest\x1a-.google.cloud.netapp.v1.ListSnapshotsResponse\"H\xdaA\x06parent\x82\xd3\xe4\x93\x029\x127/v1/{parent=projects/*/locations/*/volumes/*}/snapshots\x12\xa3\x01\n" +
@@ -280,7 +284,12 @@ const file_google_cloud_netapp_v1_cloud_netapp_service_proto_rawDesc = "" +
 	"\x10ExecuteOntapPost\x12/.google.cloud.netapp.v1.ExecuteOntapPostRequest\x1a0.google.cloud.netapp.v1.ExecuteOntapPostResponse\"J\x82\xd3\xe4\x93\x02D:\x01*\"?/v1/{ontap_path=projects/*/locations/*/storagePools/*/ontap/**}\x12\xbb\x01\n" +
 	"\x0fExecuteOntapGet\x12..google.cloud.netapp.v1.ExecuteOntapGetRequest\x1a/.google.cloud.netapp.v1.ExecuteOntapGetResponse\"G\x82\xd3\xe4\x93\x02A\x12?/v1/{ontap_path=projects/*/locations/*/storagePools/*/ontap/**}\x12\xc4\x01\n" +
 	"\x12ExecuteOntapDelete\x121.google.cloud.netapp.v1.ExecuteOntapDeleteRequest\x1a2.google.cloud.netapp.v1.ExecuteOntapDeleteResponse\"G\x82\xd3\xe4\x93\x02A*?/v1/{ontap_path=projects/*/locations/*/storagePools/*/ontap/**}\x12\xc4\x01\n" +
-	"\x11ExecuteOntapPatch\x120.google.cloud.netapp.v1.ExecuteOntapPatchRequest\x1a1.google.cloud.netapp.v1.ExecuteOntapPatchResponse\"J\x82\xd3\xe4\x93\x02D:\x01*2?/v1/{ontap_path=projects/*/locations/*/storagePools/*/ontap/**}\x1aI\xcaA\x15netapp.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\x8a\x02\xeaAN\n" +
+	"\x11ExecuteOntapPatch\x120.google.cloud.netapp.v1.ExecuteOntapPatchRequest\x1a1.google.cloud.netapp.v1.ExecuteOntapPatchResponse\"J\x82\xd3\xe4\x93\x02D:\x01*2?/v1/{ontap_path=projects/*/locations/*/storagePools/*/ontap/**}\x12\xfe\x01\n" +
+	"\rRestoreVolume\x12,.google.cloud.netapp.v1.RestoreVolumeRequest\x1a\x1d.google.longrunning.Operation\"\x9f\x01\xcaA*\n" +
+	"\x15RestoreVolumeResponse\x12\x11OperationMetadata\xdaA&name,backup_source,ontap_volume_target\x82\xd3\xe4\x93\x02C:\x01*\">/v1/{name=projects/*/locations/*/storagePools/*}:restoreVolume\x12\xcb\x01\n" +
+	"\x11ListBackupConfigs\x120.google.cloud.netapp.v1.ListBackupConfigsRequest\x1a1.google.cloud.netapp.v1.ListBackupConfigsResponse\"Q\xdaA\x06parent\x82\xd3\xe4\x93\x02B\x12@/v1/{parent=projects/*/locations/*/storagePools/*}/backupConfigs\x12\x96\x02\n" +
+	"\x12UpdateBackupConfig\x121.google.cloud.netapp.v1.UpdateBackupConfigRequest\x1a\x1d.google.longrunning.Operation\"\xad\x01\xcaA/\n" +
+	"\x1aUpdateBackupConfigResponse\x12\x11OperationMetadata\xdaA*name,volume_uuid,backup_config,update_mask\x82\xd3\xe4\x93\x02H:\x01*\"C/v1/{name=projects/*/locations/*/storagePools/*}:updateBackupConfig\x1aI\xcaA\x15netapp.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\x8a\x02\xeaAN\n" +
 	"\x1ecompute.googleapis.com/Network\x12,projects/{project}/global/networks/{network}\n" +
 	"\x1acom.google.cloud.netapp.v1B\x17CloudNetappServiceProtoP\x01Z2cloud.google.com/go/netapp/apiv1/netapppb;netapppb\xaa\x02\x16Google.Cloud.NetApp.V1\xca\x02\x16Google\\Cloud\\NetApp\\V1\xea\x02\x19Google::Cloud::NetApp::V1b\x06proto3"
 
@@ -313,92 +322,99 @@ var file_google_cloud_netapp_v1_cloud_netapp_service_proto_goTypes = []any{
 	(*UpdateVolumeRequest)(nil),                // 12: google.cloud.netapp.v1.UpdateVolumeRequest
 	(*DeleteVolumeRequest)(nil),                // 13: google.cloud.netapp.v1.DeleteVolumeRequest
 	(*RevertVolumeRequest)(nil),                // 14: google.cloud.netapp.v1.RevertVolumeRequest
-	(*EstablishVolumePeeringRequest)(nil),      // 15: google.cloud.netapp.v1.EstablishVolumePeeringRequest
-	(*ListSnapshotsRequest)(nil),               // 16: google.cloud.netapp.v1.ListSnapshotsRequest
-	(*GetSnapshotRequest)(nil),                 // 17: google.cloud.netapp.v1.GetSnapshotRequest
-	(*CreateSnapshotRequest)(nil),              // 18: google.cloud.netapp.v1.CreateSnapshotRequest
-	(*DeleteSnapshotRequest)(nil),              // 19: google.cloud.netapp.v1.DeleteSnapshotRequest
-	(*UpdateSnapshotRequest)(nil),              // 20: google.cloud.netapp.v1.UpdateSnapshotRequest
-	(*ListActiveDirectoriesRequest)(nil),       // 21: google.cloud.netapp.v1.ListActiveDirectoriesRequest
-	(*GetActiveDirectoryRequest)(nil),          // 22: google.cloud.netapp.v1.GetActiveDirectoryRequest
-	(*CreateActiveDirectoryRequest)(nil),       // 23: google.cloud.netapp.v1.CreateActiveDirectoryRequest
-	(*UpdateActiveDirectoryRequest)(nil),       // 24: google.cloud.netapp.v1.UpdateActiveDirectoryRequest
-	(*DeleteActiveDirectoryRequest)(nil),       // 25: google.cloud.netapp.v1.DeleteActiveDirectoryRequest
-	(*ListKmsConfigsRequest)(nil),              // 26: google.cloud.netapp.v1.ListKmsConfigsRequest
-	(*CreateKmsConfigRequest)(nil),             // 27: google.cloud.netapp.v1.CreateKmsConfigRequest
-	(*GetKmsConfigRequest)(nil),                // 28: google.cloud.netapp.v1.GetKmsConfigRequest
-	(*UpdateKmsConfigRequest)(nil),             // 29: google.cloud.netapp.v1.UpdateKmsConfigRequest
-	(*EncryptVolumesRequest)(nil),              // 30: google.cloud.netapp.v1.EncryptVolumesRequest
-	(*VerifyKmsConfigRequest)(nil),             // 31: google.cloud.netapp.v1.VerifyKmsConfigRequest
-	(*DeleteKmsConfigRequest)(nil),             // 32: google.cloud.netapp.v1.DeleteKmsConfigRequest
-	(*ListReplicationsRequest)(nil),            // 33: google.cloud.netapp.v1.ListReplicationsRequest
-	(*GetReplicationRequest)(nil),              // 34: google.cloud.netapp.v1.GetReplicationRequest
-	(*CreateReplicationRequest)(nil),           // 35: google.cloud.netapp.v1.CreateReplicationRequest
-	(*DeleteReplicationRequest)(nil),           // 36: google.cloud.netapp.v1.DeleteReplicationRequest
-	(*UpdateReplicationRequest)(nil),           // 37: google.cloud.netapp.v1.UpdateReplicationRequest
-	(*StopReplicationRequest)(nil),             // 38: google.cloud.netapp.v1.StopReplicationRequest
-	(*ResumeReplicationRequest)(nil),           // 39: google.cloud.netapp.v1.ResumeReplicationRequest
-	(*ReverseReplicationDirectionRequest)(nil), // 40: google.cloud.netapp.v1.ReverseReplicationDirectionRequest
-	(*EstablishPeeringRequest)(nil),            // 41: google.cloud.netapp.v1.EstablishPeeringRequest
-	(*SyncReplicationRequest)(nil),             // 42: google.cloud.netapp.v1.SyncReplicationRequest
-	(*CreateBackupVaultRequest)(nil),           // 43: google.cloud.netapp.v1.CreateBackupVaultRequest
-	(*GetBackupVaultRequest)(nil),              // 44: google.cloud.netapp.v1.GetBackupVaultRequest
-	(*ListBackupVaultsRequest)(nil),            // 45: google.cloud.netapp.v1.ListBackupVaultsRequest
-	(*UpdateBackupVaultRequest)(nil),           // 46: google.cloud.netapp.v1.UpdateBackupVaultRequest
-	(*DeleteBackupVaultRequest)(nil),           // 47: google.cloud.netapp.v1.DeleteBackupVaultRequest
-	(*CreateBackupRequest)(nil),                // 48: google.cloud.netapp.v1.CreateBackupRequest
-	(*GetBackupRequest)(nil),                   // 49: google.cloud.netapp.v1.GetBackupRequest
-	(*ListBackupsRequest)(nil),                 // 50: google.cloud.netapp.v1.ListBackupsRequest
-	(*DeleteBackupRequest)(nil),                // 51: google.cloud.netapp.v1.DeleteBackupRequest
-	(*UpdateBackupRequest)(nil),                // 52: google.cloud.netapp.v1.UpdateBackupRequest
-	(*CreateBackupPolicyRequest)(nil),          // 53: google.cloud.netapp.v1.CreateBackupPolicyRequest
-	(*GetBackupPolicyRequest)(nil),             // 54: google.cloud.netapp.v1.GetBackupPolicyRequest
-	(*ListBackupPoliciesRequest)(nil),          // 55: google.cloud.netapp.v1.ListBackupPoliciesRequest
-	(*UpdateBackupPolicyRequest)(nil),          // 56: google.cloud.netapp.v1.UpdateBackupPolicyRequest
-	(*DeleteBackupPolicyRequest)(nil),          // 57: google.cloud.netapp.v1.DeleteBackupPolicyRequest
-	(*ListQuotaRulesRequest)(nil),              // 58: google.cloud.netapp.v1.ListQuotaRulesRequest
-	(*GetQuotaRuleRequest)(nil),                // 59: google.cloud.netapp.v1.GetQuotaRuleRequest
-	(*CreateQuotaRuleRequest)(nil),             // 60: google.cloud.netapp.v1.CreateQuotaRuleRequest
-	(*UpdateQuotaRuleRequest)(nil),             // 61: google.cloud.netapp.v1.UpdateQuotaRuleRequest
-	(*DeleteQuotaRuleRequest)(nil),             // 62: google.cloud.netapp.v1.DeleteQuotaRuleRequest
-	(*RestoreBackupFilesRequest)(nil),          // 63: google.cloud.netapp.v1.RestoreBackupFilesRequest
-	(*ListHostGroupsRequest)(nil),              // 64: google.cloud.netapp.v1.ListHostGroupsRequest
-	(*GetHostGroupRequest)(nil),                // 65: google.cloud.netapp.v1.GetHostGroupRequest
-	(*CreateHostGroupRequest)(nil),             // 66: google.cloud.netapp.v1.CreateHostGroupRequest
-	(*UpdateHostGroupRequest)(nil),             // 67: google.cloud.netapp.v1.UpdateHostGroupRequest
-	(*DeleteHostGroupRequest)(nil),             // 68: google.cloud.netapp.v1.DeleteHostGroupRequest
-	(*ExecuteOntapPostRequest)(nil),            // 69: google.cloud.netapp.v1.ExecuteOntapPostRequest
-	(*ExecuteOntapGetRequest)(nil),             // 70: google.cloud.netapp.v1.ExecuteOntapGetRequest
-	(*ExecuteOntapDeleteRequest)(nil),          // 71: google.cloud.netapp.v1.ExecuteOntapDeleteRequest
-	(*ExecuteOntapPatchRequest)(nil),           // 72: google.cloud.netapp.v1.ExecuteOntapPatchRequest
-	(*ListStoragePoolsResponse)(nil),           // 73: google.cloud.netapp.v1.ListStoragePoolsResponse
-	(*longrunningpb.Operation)(nil),            // 74: google.longrunning.Operation
-	(*StoragePool)(nil),                        // 75: google.cloud.netapp.v1.StoragePool
-	(*ListVolumesResponse)(nil),                // 76: google.cloud.netapp.v1.ListVolumesResponse
-	(*Volume)(nil),                             // 77: google.cloud.netapp.v1.Volume
-	(*ListSnapshotsResponse)(nil),              // 78: google.cloud.netapp.v1.ListSnapshotsResponse
-	(*Snapshot)(nil),                           // 79: google.cloud.netapp.v1.Snapshot
-	(*ListActiveDirectoriesResponse)(nil),      // 80: google.cloud.netapp.v1.ListActiveDirectoriesResponse
-	(*ActiveDirectory)(nil),                    // 81: google.cloud.netapp.v1.ActiveDirectory
-	(*ListKmsConfigsResponse)(nil),             // 82: google.cloud.netapp.v1.ListKmsConfigsResponse
-	(*KmsConfig)(nil),                          // 83: google.cloud.netapp.v1.KmsConfig
-	(*VerifyKmsConfigResponse)(nil),            // 84: google.cloud.netapp.v1.VerifyKmsConfigResponse
-	(*ListReplicationsResponse)(nil),           // 85: google.cloud.netapp.v1.ListReplicationsResponse
-	(*Replication)(nil),                        // 86: google.cloud.netapp.v1.Replication
-	(*BackupVault)(nil),                        // 87: google.cloud.netapp.v1.BackupVault
-	(*ListBackupVaultsResponse)(nil),           // 88: google.cloud.netapp.v1.ListBackupVaultsResponse
-	(*Backup)(nil),                             // 89: google.cloud.netapp.v1.Backup
-	(*ListBackupsResponse)(nil),                // 90: google.cloud.netapp.v1.ListBackupsResponse
-	(*BackupPolicy)(nil),                       // 91: google.cloud.netapp.v1.BackupPolicy
-	(*ListBackupPoliciesResponse)(nil),         // 92: google.cloud.netapp.v1.ListBackupPoliciesResponse
-	(*ListQuotaRulesResponse)(nil),             // 93: google.cloud.netapp.v1.ListQuotaRulesResponse
-	(*QuotaRule)(nil),                          // 94: google.cloud.netapp.v1.QuotaRule
-	(*ListHostGroupsResponse)(nil),             // 95: google.cloud.netapp.v1.ListHostGroupsResponse
-	(*HostGroup)(nil),                          // 96: google.cloud.netapp.v1.HostGroup
-	(*ExecuteOntapPostResponse)(nil),           // 97: google.cloud.netapp.v1.ExecuteOntapPostResponse
-	(*ExecuteOntapGetResponse)(nil),            // 98: google.cloud.netapp.v1.ExecuteOntapGetResponse
-	(*ExecuteOntapDeleteResponse)(nil),         // 99: google.cloud.netapp.v1.ExecuteOntapDeleteResponse
-	(*ExecuteOntapPatchResponse)(nil),          // 100: google.cloud.netapp.v1.ExecuteOntapPatchResponse
+	(*StartSplitRequest)(nil),                  // 15: google.cloud.netapp.v1.StartSplitRequest
+	(*GetSplitStatusRequest)(nil),              // 16: google.cloud.netapp.v1.GetSplitStatusRequest
+	(*EstablishVolumePeeringRequest)(nil),      // 17: google.cloud.netapp.v1.EstablishVolumePeeringRequest
+	(*ListSnapshotsRequest)(nil),               // 18: google.cloud.netapp.v1.ListSnapshotsRequest
+	(*GetSnapshotRequest)(nil),                 // 19: google.cloud.netapp.v1.GetSnapshotRequest
+	(*CreateSnapshotRequest)(nil),              // 20: google.cloud.netapp.v1.CreateSnapshotRequest
+	(*DeleteSnapshotRequest)(nil),              // 21: google.cloud.netapp.v1.DeleteSnapshotRequest
+	(*UpdateSnapshotRequest)(nil),              // 22: google.cloud.netapp.v1.UpdateSnapshotRequest
+	(*ListActiveDirectoriesRequest)(nil),       // 23: google.cloud.netapp.v1.ListActiveDirectoriesRequest
+	(*GetActiveDirectoryRequest)(nil),          // 24: google.cloud.netapp.v1.GetActiveDirectoryRequest
+	(*CreateActiveDirectoryRequest)(nil),       // 25: google.cloud.netapp.v1.CreateActiveDirectoryRequest
+	(*UpdateActiveDirectoryRequest)(nil),       // 26: google.cloud.netapp.v1.UpdateActiveDirectoryRequest
+	(*DeleteActiveDirectoryRequest)(nil),       // 27: google.cloud.netapp.v1.DeleteActiveDirectoryRequest
+	(*ListKmsConfigsRequest)(nil),              // 28: google.cloud.netapp.v1.ListKmsConfigsRequest
+	(*CreateKmsConfigRequest)(nil),             // 29: google.cloud.netapp.v1.CreateKmsConfigRequest
+	(*GetKmsConfigRequest)(nil),                // 30: google.cloud.netapp.v1.GetKmsConfigRequest
+	(*UpdateKmsConfigRequest)(nil),             // 31: google.cloud.netapp.v1.UpdateKmsConfigRequest
+	(*EncryptVolumesRequest)(nil),              // 32: google.cloud.netapp.v1.EncryptVolumesRequest
+	(*VerifyKmsConfigRequest)(nil),             // 33: google.cloud.netapp.v1.VerifyKmsConfigRequest
+	(*DeleteKmsConfigRequest)(nil),             // 34: google.cloud.netapp.v1.DeleteKmsConfigRequest
+	(*ListReplicationsRequest)(nil),            // 35: google.cloud.netapp.v1.ListReplicationsRequest
+	(*GetReplicationRequest)(nil),              // 36: google.cloud.netapp.v1.GetReplicationRequest
+	(*CreateReplicationRequest)(nil),           // 37: google.cloud.netapp.v1.CreateReplicationRequest
+	(*DeleteReplicationRequest)(nil),           // 38: google.cloud.netapp.v1.DeleteReplicationRequest
+	(*UpdateReplicationRequest)(nil),           // 39: google.cloud.netapp.v1.UpdateReplicationRequest
+	(*StopReplicationRequest)(nil),             // 40: google.cloud.netapp.v1.StopReplicationRequest
+	(*ResumeReplicationRequest)(nil),           // 41: google.cloud.netapp.v1.ResumeReplicationRequest
+	(*ReverseReplicationDirectionRequest)(nil), // 42: google.cloud.netapp.v1.ReverseReplicationDirectionRequest
+	(*EstablishPeeringRequest)(nil),            // 43: google.cloud.netapp.v1.EstablishPeeringRequest
+	(*SyncReplicationRequest)(nil),             // 44: google.cloud.netapp.v1.SyncReplicationRequest
+	(*CreateBackupVaultRequest)(nil),           // 45: google.cloud.netapp.v1.CreateBackupVaultRequest
+	(*GetBackupVaultRequest)(nil),              // 46: google.cloud.netapp.v1.GetBackupVaultRequest
+	(*ListBackupVaultsRequest)(nil),            // 47: google.cloud.netapp.v1.ListBackupVaultsRequest
+	(*UpdateBackupVaultRequest)(nil),           // 48: google.cloud.netapp.v1.UpdateBackupVaultRequest
+	(*DeleteBackupVaultRequest)(nil),           // 49: google.cloud.netapp.v1.DeleteBackupVaultRequest
+	(*CreateBackupRequest)(nil),                // 50: google.cloud.netapp.v1.CreateBackupRequest
+	(*GetBackupRequest)(nil),                   // 51: google.cloud.netapp.v1.GetBackupRequest
+	(*ListBackupsRequest)(nil),                 // 52: google.cloud.netapp.v1.ListBackupsRequest
+	(*DeleteBackupRequest)(nil),                // 53: google.cloud.netapp.v1.DeleteBackupRequest
+	(*UpdateBackupRequest)(nil),                // 54: google.cloud.netapp.v1.UpdateBackupRequest
+	(*CreateBackupPolicyRequest)(nil),          // 55: google.cloud.netapp.v1.CreateBackupPolicyRequest
+	(*GetBackupPolicyRequest)(nil),             // 56: google.cloud.netapp.v1.GetBackupPolicyRequest
+	(*ListBackupPoliciesRequest)(nil),          // 57: google.cloud.netapp.v1.ListBackupPoliciesRequest
+	(*UpdateBackupPolicyRequest)(nil),          // 58: google.cloud.netapp.v1.UpdateBackupPolicyRequest
+	(*DeleteBackupPolicyRequest)(nil),          // 59: google.cloud.netapp.v1.DeleteBackupPolicyRequest
+	(*ListQuotaRulesRequest)(nil),              // 60: google.cloud.netapp.v1.ListQuotaRulesRequest
+	(*GetQuotaRuleRequest)(nil),                // 61: google.cloud.netapp.v1.GetQuotaRuleRequest
+	(*CreateQuotaRuleRequest)(nil),             // 62: google.cloud.netapp.v1.CreateQuotaRuleRequest
+	(*UpdateQuotaRuleRequest)(nil),             // 63: google.cloud.netapp.v1.UpdateQuotaRuleRequest
+	(*DeleteQuotaRuleRequest)(nil),             // 64: google.cloud.netapp.v1.DeleteQuotaRuleRequest
+	(*RestoreBackupFilesRequest)(nil),          // 65: google.cloud.netapp.v1.RestoreBackupFilesRequest
+	(*ListHostGroupsRequest)(nil),              // 66: google.cloud.netapp.v1.ListHostGroupsRequest
+	(*GetHostGroupRequest)(nil),                // 67: google.cloud.netapp.v1.GetHostGroupRequest
+	(*CreateHostGroupRequest)(nil),             // 68: google.cloud.netapp.v1.CreateHostGroupRequest
+	(*UpdateHostGroupRequest)(nil),             // 69: google.cloud.netapp.v1.UpdateHostGroupRequest
+	(*DeleteHostGroupRequest)(nil),             // 70: google.cloud.netapp.v1.DeleteHostGroupRequest
+	(*ExecuteOntapPostRequest)(nil),            // 71: google.cloud.netapp.v1.ExecuteOntapPostRequest
+	(*ExecuteOntapGetRequest)(nil),             // 72: google.cloud.netapp.v1.ExecuteOntapGetRequest
+	(*ExecuteOntapDeleteRequest)(nil),          // 73: google.cloud.netapp.v1.ExecuteOntapDeleteRequest
+	(*ExecuteOntapPatchRequest)(nil),           // 74: google.cloud.netapp.v1.ExecuteOntapPatchRequest
+	(*RestoreVolumeRequest)(nil),               // 75: google.cloud.netapp.v1.RestoreVolumeRequest
+	(*ListBackupConfigsRequest)(nil),           // 76: google.cloud.netapp.v1.ListBackupConfigsRequest
+	(*UpdateBackupConfigRequest)(nil),          // 77: google.cloud.netapp.v1.UpdateBackupConfigRequest
+	(*ListStoragePoolsResponse)(nil),           // 78: google.cloud.netapp.v1.ListStoragePoolsResponse
+	(*longrunningpb.Operation)(nil),            // 79: google.longrunning.Operation
+	(*StoragePool)(nil),                        // 80: google.cloud.netapp.v1.StoragePool
+	(*ListVolumesResponse)(nil),                // 81: google.cloud.netapp.v1.ListVolumesResponse
+	(*Volume)(nil),                             // 82: google.cloud.netapp.v1.Volume
+	(*SplitStatus)(nil),                        // 83: google.cloud.netapp.v1.SplitStatus
+	(*ListSnapshotsResponse)(nil),              // 84: google.cloud.netapp.v1.ListSnapshotsResponse
+	(*Snapshot)(nil),                           // 85: google.cloud.netapp.v1.Snapshot
+	(*ListActiveDirectoriesResponse)(nil),      // 86: google.cloud.netapp.v1.ListActiveDirectoriesResponse
+	(*ActiveDirectory)(nil),                    // 87: google.cloud.netapp.v1.ActiveDirectory
+	(*ListKmsConfigsResponse)(nil),             // 88: google.cloud.netapp.v1.ListKmsConfigsResponse
+	(*KmsConfig)(nil),                          // 89: google.cloud.netapp.v1.KmsConfig
+	(*VerifyKmsConfigResponse)(nil),            // 90: google.cloud.netapp.v1.VerifyKmsConfigResponse
+	(*ListReplicationsResponse)(nil),           // 91: google.cloud.netapp.v1.ListReplicationsResponse
+	(*Replication)(nil),                        // 92: google.cloud.netapp.v1.Replication
+	(*BackupVault)(nil),                        // 93: google.cloud.netapp.v1.BackupVault
+	(*ListBackupVaultsResponse)(nil),           // 94: google.cloud.netapp.v1.ListBackupVaultsResponse
+	(*Backup)(nil),                             // 95: google.cloud.netapp.v1.Backup
+	(*ListBackupsResponse)(nil),                // 96: google.cloud.netapp.v1.ListBackupsResponse
+	(*BackupPolicy)(nil),                       // 97: google.cloud.netapp.v1.BackupPolicy
+	(*ListBackupPoliciesResponse)(nil),         // 98: google.cloud.netapp.v1.ListBackupPoliciesResponse
+	(*ListQuotaRulesResponse)(nil),             // 99: google.cloud.netapp.v1.ListQuotaRulesResponse
+	(*QuotaRule)(nil),                          // 100: google.cloud.netapp.v1.QuotaRule
+	(*ListHostGroupsResponse)(nil),             // 101: google.cloud.netapp.v1.ListHostGroupsResponse
+	(*HostGroup)(nil),                          // 102: google.cloud.netapp.v1.HostGroup
+	(*ExecuteOntapPostResponse)(nil),           // 103: google.cloud.netapp.v1.ExecuteOntapPostResponse
+	(*ExecuteOntapGetResponse)(nil),            // 104: google.cloud.netapp.v1.ExecuteOntapGetResponse
+	(*ExecuteOntapDeleteResponse)(nil),         // 105: google.cloud.netapp.v1.ExecuteOntapDeleteResponse
+	(*ExecuteOntapPatchResponse)(nil),          // 106: google.cloud.netapp.v1.ExecuteOntapPatchResponse
+	(*ListBackupConfigsResponse)(nil),          // 107: google.cloud.netapp.v1.ListBackupConfigsResponse
 }
 var file_google_cloud_netapp_v1_cloud_netapp_service_proto_depIdxs = []int32{
 	1,   // 0: google.cloud.netapp.v1.OperationMetadata.create_time:type_name -> google.protobuf.Timestamp
@@ -416,137 +432,147 @@ var file_google_cloud_netapp_v1_cloud_netapp_service_proto_depIdxs = []int32{
 	12,  // 12: google.cloud.netapp.v1.NetApp.UpdateVolume:input_type -> google.cloud.netapp.v1.UpdateVolumeRequest
 	13,  // 13: google.cloud.netapp.v1.NetApp.DeleteVolume:input_type -> google.cloud.netapp.v1.DeleteVolumeRequest
 	14,  // 14: google.cloud.netapp.v1.NetApp.RevertVolume:input_type -> google.cloud.netapp.v1.RevertVolumeRequest
-	15,  // 15: google.cloud.netapp.v1.NetApp.EstablishVolumePeering:input_type -> google.cloud.netapp.v1.EstablishVolumePeeringRequest
-	16,  // 16: google.cloud.netapp.v1.NetApp.ListSnapshots:input_type -> google.cloud.netapp.v1.ListSnapshotsRequest
-	17,  // 17: google.cloud.netapp.v1.NetApp.GetSnapshot:input_type -> google.cloud.netapp.v1.GetSnapshotRequest
-	18,  // 18: google.cloud.netapp.v1.NetApp.CreateSnapshot:input_type -> google.cloud.netapp.v1.CreateSnapshotRequest
-	19,  // 19: google.cloud.netapp.v1.NetApp.DeleteSnapshot:input_type -> google.cloud.netapp.v1.DeleteSnapshotRequest
-	20,  // 20: google.cloud.netapp.v1.NetApp.UpdateSnapshot:input_type -> google.cloud.netapp.v1.UpdateSnapshotRequest
-	21,  // 21: google.cloud.netapp.v1.NetApp.ListActiveDirectories:input_type -> google.cloud.netapp.v1.ListActiveDirectoriesRequest
-	22,  // 22: google.cloud.netapp.v1.NetApp.GetActiveDirectory:input_type -> google.cloud.netapp.v1.GetActiveDirectoryRequest
-	23,  // 23: google.cloud.netapp.v1.NetApp.CreateActiveDirectory:input_type -> google.cloud.netapp.v1.CreateActiveDirectoryRequest
-	24,  // 24: google.cloud.netapp.v1.NetApp.UpdateActiveDirectory:input_type -> google.cloud.netapp.v1.UpdateActiveDirectoryRequest
-	25,  // 25: google.cloud.netapp.v1.NetApp.DeleteActiveDirectory:input_type -> google.cloud.netapp.v1.DeleteActiveDirectoryRequest
-	26,  // 26: google.cloud.netapp.v1.NetApp.ListKmsConfigs:input_type -> google.cloud.netapp.v1.ListKmsConfigsRequest
-	27,  // 27: google.cloud.netapp.v1.NetApp.CreateKmsConfig:input_type -> google.cloud.netapp.v1.CreateKmsConfigRequest
-	28,  // 28: google.cloud.netapp.v1.NetApp.GetKmsConfig:input_type -> google.cloud.netapp.v1.GetKmsConfigRequest
-	29,  // 29: google.cloud.netapp.v1.NetApp.UpdateKmsConfig:input_type -> google.cloud.netapp.v1.UpdateKmsConfigRequest
-	30,  // 30: google.cloud.netapp.v1.NetApp.EncryptVolumes:input_type -> google.cloud.netapp.v1.EncryptVolumesRequest
-	31,  // 31: google.cloud.netapp.v1.NetApp.VerifyKmsConfig:input_type -> google.cloud.netapp.v1.VerifyKmsConfigRequest
-	32,  // 32: google.cloud.netapp.v1.NetApp.DeleteKmsConfig:input_type -> google.cloud.netapp.v1.DeleteKmsConfigRequest
-	33,  // 33: google.cloud.netapp.v1.NetApp.ListReplications:input_type -> google.cloud.netapp.v1.ListReplicationsRequest
-	34,  // 34: google.cloud.netapp.v1.NetApp.GetReplication:input_type -> google.cloud.netapp.v1.GetReplicationRequest
-	35,  // 35: google.cloud.netapp.v1.NetApp.CreateReplication:input_type -> google.cloud.netapp.v1.CreateReplicationRequest
-	36,  // 36: google.cloud.netapp.v1.NetApp.DeleteReplication:input_type -> google.cloud.netapp.v1.DeleteReplicationRequest
-	37,  // 37: google.cloud.netapp.v1.NetApp.UpdateReplication:input_type -> google.cloud.netapp.v1.UpdateReplicationRequest
-	38,  // 38: google.cloud.netapp.v1.NetApp.StopReplication:input_type -> google.cloud.netapp.v1.StopReplicationRequest
-	39,  // 39: google.cloud.netapp.v1.NetApp.ResumeReplication:input_type -> google.cloud.netapp.v1.ResumeReplicationRequest
-	40,  // 40: google.cloud.netapp.v1.NetApp.ReverseReplicationDirection:input_type -> google.cloud.netapp.v1.ReverseReplicationDirectionRequest
-	41,  // 41: google.cloud.netapp.v1.NetApp.EstablishPeering:input_type -> google.cloud.netapp.v1.EstablishPeeringRequest
-	42,  // 42: google.cloud.netapp.v1.NetApp.SyncReplication:input_type -> google.cloud.netapp.v1.SyncReplicationRequest
-	43,  // 43: google.cloud.netapp.v1.NetApp.CreateBackupVault:input_type -> google.cloud.netapp.v1.CreateBackupVaultRequest
-	44,  // 44: google.cloud.netapp.v1.NetApp.GetBackupVault:input_type -> google.cloud.netapp.v1.GetBackupVaultRequest
-	45,  // 45: google.cloud.netapp.v1.NetApp.ListBackupVaults:input_type -> google.cloud.netapp.v1.ListBackupVaultsRequest
-	46,  // 46: google.cloud.netapp.v1.NetApp.UpdateBackupVault:input_type -> google.cloud.netapp.v1.UpdateBackupVaultRequest
-	47,  // 47: google.cloud.netapp.v1.NetApp.DeleteBackupVault:input_type -> google.cloud.netapp.v1.DeleteBackupVaultRequest
-	48,  // 48: google.cloud.netapp.v1.NetApp.CreateBackup:input_type -> google.cloud.netapp.v1.CreateBackupRequest
-	49,  // 49: google.cloud.netapp.v1.NetApp.GetBackup:input_type -> google.cloud.netapp.v1.GetBackupRequest
-	50,  // 50: google.cloud.netapp.v1.NetApp.ListBackups:input_type -> google.cloud.netapp.v1.ListBackupsRequest
-	51,  // 51: google.cloud.netapp.v1.NetApp.DeleteBackup:input_type -> google.cloud.netapp.v1.DeleteBackupRequest
-	52,  // 52: google.cloud.netapp.v1.NetApp.UpdateBackup:input_type -> google.cloud.netapp.v1.UpdateBackupRequest
-	53,  // 53: google.cloud.netapp.v1.NetApp.CreateBackupPolicy:input_type -> google.cloud.netapp.v1.CreateBackupPolicyRequest
-	54,  // 54: google.cloud.netapp.v1.NetApp.GetBackupPolicy:input_type -> google.cloud.netapp.v1.GetBackupPolicyRequest
-	55,  // 55: google.cloud.netapp.v1.NetApp.ListBackupPolicies:input_type -> google.cloud.netapp.v1.ListBackupPoliciesRequest
-	56,  // 56: google.cloud.netapp.v1.NetApp.UpdateBackupPolicy:input_type -> google.cloud.netapp.v1.UpdateBackupPolicyRequest
-	57,  // 57: google.cloud.netapp.v1.NetApp.DeleteBackupPolicy:input_type -> google.cloud.netapp.v1.DeleteBackupPolicyRequest
-	58,  // 58: google.cloud.netapp.v1.NetApp.ListQuotaRules:input_type -> google.cloud.netapp.v1.ListQuotaRulesRequest
-	59,  // 59: google.cloud.netapp.v1.NetApp.GetQuotaRule:input_type -> google.cloud.netapp.v1.GetQuotaRuleRequest
-	60,  // 60: google.cloud.netapp.v1.NetApp.CreateQuotaRule:input_type -> google.cloud.netapp.v1.CreateQuotaRuleRequest
-	61,  // 61: google.cloud.netapp.v1.NetApp.UpdateQuotaRule:input_type -> google.cloud.netapp.v1.UpdateQuotaRuleRequest
-	62,  // 62: google.cloud.netapp.v1.NetApp.DeleteQuotaRule:input_type -> google.cloud.netapp.v1.DeleteQuotaRuleRequest
-	63,  // 63: google.cloud.netapp.v1.NetApp.RestoreBackupFiles:input_type -> google.cloud.netapp.v1.RestoreBackupFilesRequest
-	64,  // 64: google.cloud.netapp.v1.NetApp.ListHostGroups:input_type -> google.cloud.netapp.v1.ListHostGroupsRequest
-	65,  // 65: google.cloud.netapp.v1.NetApp.GetHostGroup:input_type -> google.cloud.netapp.v1.GetHostGroupRequest
-	66,  // 66: google.cloud.netapp.v1.NetApp.CreateHostGroup:input_type -> google.cloud.netapp.v1.CreateHostGroupRequest
-	67,  // 67: google.cloud.netapp.v1.NetApp.UpdateHostGroup:input_type -> google.cloud.netapp.v1.UpdateHostGroupRequest
-	68,  // 68: google.cloud.netapp.v1.NetApp.DeleteHostGroup:input_type -> google.cloud.netapp.v1.DeleteHostGroupRequest
-	69,  // 69: google.cloud.netapp.v1.NetApp.ExecuteOntapPost:input_type -> google.cloud.netapp.v1.ExecuteOntapPostRequest
-	70,  // 70: google.cloud.netapp.v1.NetApp.ExecuteOntapGet:input_type -> google.cloud.netapp.v1.ExecuteOntapGetRequest
-	71,  // 71: google.cloud.netapp.v1.NetApp.ExecuteOntapDelete:input_type -> google.cloud.netapp.v1.ExecuteOntapDeleteRequest
-	72,  // 72: google.cloud.netapp.v1.NetApp.ExecuteOntapPatch:input_type -> google.cloud.netapp.v1.ExecuteOntapPatchRequest
-	73,  // 73: google.cloud.netapp.v1.NetApp.ListStoragePools:output_type -> google.cloud.netapp.v1.ListStoragePoolsResponse
-	74,  // 74: google.cloud.netapp.v1.NetApp.CreateStoragePool:output_type -> google.longrunning.Operation
-	75,  // 75: google.cloud.netapp.v1.NetApp.GetStoragePool:output_type -> google.cloud.netapp.v1.StoragePool
-	74,  // 76: google.cloud.netapp.v1.NetApp.UpdateStoragePool:output_type -> google.longrunning.Operation
-	74,  // 77: google.cloud.netapp.v1.NetApp.DeleteStoragePool:output_type -> google.longrunning.Operation
-	74,  // 78: google.cloud.netapp.v1.NetApp.ValidateDirectoryService:output_type -> google.longrunning.Operation
-	74,  // 79: google.cloud.netapp.v1.NetApp.SwitchActiveReplicaZone:output_type -> google.longrunning.Operation
-	76,  // 80: google.cloud.netapp.v1.NetApp.ListVolumes:output_type -> google.cloud.netapp.v1.ListVolumesResponse
-	77,  // 81: google.cloud.netapp.v1.NetApp.GetVolume:output_type -> google.cloud.netapp.v1.Volume
-	74,  // 82: google.cloud.netapp.v1.NetApp.CreateVolume:output_type -> google.longrunning.Operation
-	74,  // 83: google.cloud.netapp.v1.NetApp.UpdateVolume:output_type -> google.longrunning.Operation
-	74,  // 84: google.cloud.netapp.v1.NetApp.DeleteVolume:output_type -> google.longrunning.Operation
-	74,  // 85: google.cloud.netapp.v1.NetApp.RevertVolume:output_type -> google.longrunning.Operation
-	74,  // 86: google.cloud.netapp.v1.NetApp.EstablishVolumePeering:output_type -> google.longrunning.Operation
-	78,  // 87: google.cloud.netapp.v1.NetApp.ListSnapshots:output_type -> google.cloud.netapp.v1.ListSnapshotsResponse
-	79,  // 88: google.cloud.netapp.v1.NetApp.GetSnapshot:output_type -> google.cloud.netapp.v1.Snapshot
-	74,  // 89: google.cloud.netapp.v1.NetApp.CreateSnapshot:output_type -> google.longrunning.Operation
-	74,  // 90: google.cloud.netapp.v1.NetApp.DeleteSnapshot:output_type -> google.longrunning.Operation
-	74,  // 91: google.cloud.netapp.v1.NetApp.UpdateSnapshot:output_type -> google.longrunning.Operation
-	80,  // 92: google.cloud.netapp.v1.NetApp.ListActiveDirectories:output_type -> google.cloud.netapp.v1.ListActiveDirectoriesResponse
-	81,  // 93: google.cloud.netapp.v1.NetApp.GetActiveDirectory:output_type -> google.cloud.netapp.v1.ActiveDirectory
-	74,  // 94: google.cloud.netapp.v1.NetApp.CreateActiveDirectory:output_type -> google.longrunning.Operation
-	74,  // 95: google.cloud.netapp.v1.NetApp.UpdateActiveDirectory:output_type -> google.longrunning.Operation
-	74,  // 96: google.cloud.netapp.v1.NetApp.DeleteActiveDirectory:output_type -> google.longrunning.Operation
-	82,  // 97: google.cloud.netapp.v1.NetApp.ListKmsConfigs:output_type -> google.cloud.netapp.v1.ListKmsConfigsResponse
-	74,  // 98: google.cloud.netapp.v1.NetApp.CreateKmsConfig:output_type -> google.longrunning.Operation
-	83,  // 99: google.cloud.netapp.v1.NetApp.GetKmsConfig:output_type -> google.cloud.netapp.v1.KmsConfig
-	74,  // 100: google.cloud.netapp.v1.NetApp.UpdateKmsConfig:output_type -> google.longrunning.Operation
-	74,  // 101: google.cloud.netapp.v1.NetApp.EncryptVolumes:output_type -> google.longrunning.Operation
-	84,  // 102: google.cloud.netapp.v1.NetApp.VerifyKmsConfig:output_type -> google.cloud.netapp.v1.VerifyKmsConfigResponse
-	74,  // 103: google.cloud.netapp.v1.NetApp.DeleteKmsConfig:output_type -> google.longrunning.Operation
-	85,  // 104: google.cloud.netapp.v1.NetApp.ListReplications:output_type -> google.cloud.netapp.v1.ListReplicationsResponse
-	86,  // 105: google.cloud.netapp.v1.NetApp.GetReplication:output_type -> google.cloud.netapp.v1.Replication
-	74,  // 106: google.cloud.netapp.v1.NetApp.CreateReplication:output_type -> google.longrunning.Operation
-	74,  // 107: google.cloud.netapp.v1.NetApp.DeleteReplication:output_type -> google.longrunning.Operation
-	74,  // 108: google.cloud.netapp.v1.NetApp.UpdateReplication:output_type -> google.longrunning.Operation
-	74,  // 109: google.cloud.netapp.v1.NetApp.StopReplication:output_type -> google.longrunning.Operation
-	74,  // 110: google.cloud.netapp.v1.NetApp.ResumeReplication:output_type -> google.longrunning.Operation
-	74,  // 111: google.cloud.netapp.v1.NetApp.ReverseReplicationDirection:output_type -> google.longrunning.Operation
-	74,  // 112: google.cloud.netapp.v1.NetApp.EstablishPeering:output_type -> google.longrunning.Operation
-	74,  // 113: google.cloud.netapp.v1.NetApp.SyncReplication:output_type -> google.longrunning.Operation
-	74,  // 114: google.cloud.netapp.v1.NetApp.CreateBackupVault:output_type -> google.longrunning.Operation
-	87,  // 115: google.cloud.netapp.v1.NetApp.GetBackupVault:output_type -> google.cloud.netapp.v1.BackupVault
-	88,  // 116: google.cloud.netapp.v1.NetApp.ListBackupVaults:output_type -> google.cloud.netapp.v1.ListBackupVaultsResponse
-	74,  // 117: google.cloud.netapp.v1.NetApp.UpdateBackupVault:output_type -> google.longrunning.Operation
-	74,  // 118: google.cloud.netapp.v1.NetApp.DeleteBackupVault:output_type -> google.longrunning.Operation
-	74,  // 119: google.cloud.netapp.v1.NetApp.CreateBackup:output_type -> google.longrunning.Operation
-	89,  // 120: google.cloud.netapp.v1.NetApp.GetBackup:output_type -> google.cloud.netapp.v1.Backup
-	90,  // 121: google.cloud.netapp.v1.NetApp.ListBackups:output_type -> google.cloud.netapp.v1.ListBackupsResponse
-	74,  // 122: google.cloud.netapp.v1.NetApp.DeleteBackup:output_type -> google.longrunning.Operation
-	74,  // 123: google.cloud.netapp.v1.NetApp.UpdateBackup:output_type -> google.longrunning.Operation
-	74,  // 124: google.cloud.netapp.v1.NetApp.CreateBackupPolicy:output_type -> google.longrunning.Operation
-	91,  // 125: google.cloud.netapp.v1.NetApp.GetBackupPolicy:output_type -> google.cloud.netapp.v1.BackupPolicy
-	92,  // 126: google.cloud.netapp.v1.NetApp.ListBackupPolicies:output_type -> google.cloud.netapp.v1.ListBackupPoliciesResponse
-	74,  // 127: google.cloud.netapp.v1.NetApp.UpdateBackupPolicy:output_type -> google.longrunning.Operation
-	74,  // 128: google.cloud.netapp.v1.NetApp.DeleteBackupPolicy:output_type -> google.longrunning.Operation
-	93,  // 129: google.cloud.netapp.v1.NetApp.ListQuotaRules:output_type -> google.cloud.netapp.v1.ListQuotaRulesResponse
-	94,  // 130: google.cloud.netapp.v1.NetApp.GetQuotaRule:output_type -> google.cloud.netapp.v1.QuotaRule
-	74,  // 131: google.cloud.netapp.v1.NetApp.CreateQuotaRule:output_type -> google.longrunning.Operation
-	74,  // 132: google.cloud.netapp.v1.NetApp.UpdateQuotaRule:output_type -> google.longrunning.Operation
-	74,  // 133: google.cloud.netapp.v1.NetApp.DeleteQuotaRule:output_type -> google.longrunning.Operation
-	74,  // 134: google.cloud.netapp.v1.NetApp.RestoreBackupFiles:output_type -> google.longrunning.Operation
-	95,  // 135: google.cloud.netapp.v1.NetApp.ListHostGroups:output_type -> google.cloud.netapp.v1.ListHostGroupsResponse
-	96,  // 136: google.cloud.netapp.v1.NetApp.GetHostGroup:output_type -> google.cloud.netapp.v1.HostGroup
-	74,  // 137: google.cloud.netapp.v1.NetApp.CreateHostGroup:output_type -> google.longrunning.Operation
-	74,  // 138: google.cloud.netapp.v1.NetApp.UpdateHostGroup:output_type -> google.longrunning.Operation
-	74,  // 139: google.cloud.netapp.v1.NetApp.DeleteHostGroup:output_type -> google.longrunning.Operation
-	97,  // 140: google.cloud.netapp.v1.NetApp.ExecuteOntapPost:output_type -> google.cloud.netapp.v1.ExecuteOntapPostResponse
-	98,  // 141: google.cloud.netapp.v1.NetApp.ExecuteOntapGet:output_type -> google.cloud.netapp.v1.ExecuteOntapGetResponse
-	99,  // 142: google.cloud.netapp.v1.NetApp.ExecuteOntapDelete:output_type -> google.cloud.netapp.v1.ExecuteOntapDeleteResponse
-	100, // 143: google.cloud.netapp.v1.NetApp.ExecuteOntapPatch:output_type -> google.cloud.netapp.v1.ExecuteOntapPatchResponse
-	73,  // [73:144] is the sub-list for method output_type
-	2,   // [2:73] is the sub-list for method input_type
+	15,  // 15: google.cloud.netapp.v1.NetApp.StartSplit:input_type -> google.cloud.netapp.v1.StartSplitRequest
+	16,  // 16: google.cloud.netapp.v1.NetApp.GetSplitStatus:input_type -> google.cloud.netapp.v1.GetSplitStatusRequest
+	17,  // 17: google.cloud.netapp.v1.NetApp.EstablishVolumePeering:input_type -> google.cloud.netapp.v1.EstablishVolumePeeringRequest
+	18,  // 18: google.cloud.netapp.v1.NetApp.ListSnapshots:input_type -> google.cloud.netapp.v1.ListSnapshotsRequest
+	19,  // 19: google.cloud.netapp.v1.NetApp.GetSnapshot:input_type -> google.cloud.netapp.v1.GetSnapshotRequest
+	20,  // 20: google.cloud.netapp.v1.NetApp.CreateSnapshot:input_type -> google.cloud.netapp.v1.CreateSnapshotRequest
+	21,  // 21: google.cloud.netapp.v1.NetApp.DeleteSnapshot:input_type -> google.cloud.netapp.v1.DeleteSnapshotRequest
+	22,  // 22: google.cloud.netapp.v1.NetApp.UpdateSnapshot:input_type -> google.cloud.netapp.v1.UpdateSnapshotRequest
+	23,  // 23: google.cloud.netapp.v1.NetApp.ListActiveDirectories:input_type -> google.cloud.netapp.v1.ListActiveDirectoriesRequest
+	24,  // 24: google.cloud.netapp.v1.NetApp.GetActiveDirectory:input_type -> google.cloud.netapp.v1.GetActiveDirectoryRequest
+	25,  // 25: google.cloud.netapp.v1.NetApp.CreateActiveDirectory:input_type -> google.cloud.netapp.v1.CreateActiveDirectoryRequest
+	26,  // 26: google.cloud.netapp.v1.NetApp.UpdateActiveDirectory:input_type -> google.cloud.netapp.v1.UpdateActiveDirectoryRequest
+	27,  // 27: google.cloud.netapp.v1.NetApp.DeleteActiveDirectory:input_type -> google.cloud.netapp.v1.DeleteActiveDirectoryRequest
+	28,  // 28: google.cloud.netapp.v1.NetApp.ListKmsConfigs:input_type -> google.cloud.netapp.v1.ListKmsConfigsRequest
+	29,  // 29: google.cloud.netapp.v1.NetApp.CreateKmsConfig:input_type -> google.cloud.netapp.v1.CreateKmsConfigRequest
+	30,  // 30: google.cloud.netapp.v1.NetApp.GetKmsConfig:input_type -> google.cloud.netapp.v1.GetKmsConfigRequest
+	31,  // 31: google.cloud.netapp.v1.NetApp.UpdateKmsConfig:input_type -> google.cloud.netapp.v1.UpdateKmsConfigRequest
+	32,  // 32: google.cloud.netapp.v1.NetApp.EncryptVolumes:input_type -> google.cloud.netapp.v1.EncryptVolumesRequest
+	33,  // 33: google.cloud.netapp.v1.NetApp.VerifyKmsConfig:input_type -> google.cloud.netapp.v1.VerifyKmsConfigRequest
+	34,  // 34: google.cloud.netapp.v1.NetApp.DeleteKmsConfig:input_type -> google.cloud.netapp.v1.DeleteKmsConfigRequest
+	35,  // 35: google.cloud.netapp.v1.NetApp.ListReplications:input_type -> google.cloud.netapp.v1.ListReplicationsRequest
+	36,  // 36: google.cloud.netapp.v1.NetApp.GetReplication:input_type -> google.cloud.netapp.v1.GetReplicationRequest
+	37,  // 37: google.cloud.netapp.v1.NetApp.CreateReplication:input_type -> google.cloud.netapp.v1.CreateReplicationRequest
+	38,  // 38: google.cloud.netapp.v1.NetApp.DeleteReplication:input_type -> google.cloud.netapp.v1.DeleteReplicationRequest
+	39,  // 39: google.cloud.netapp.v1.NetApp.UpdateReplication:input_type -> google.cloud.netapp.v1.UpdateReplicationRequest
+	40,  // 40: google.cloud.netapp.v1.NetApp.StopReplication:input_type -> google.cloud.netapp.v1.StopReplicationRequest
+	41,  // 41: google.cloud.netapp.v1.NetApp.ResumeReplication:input_type -> google.cloud.netapp.v1.ResumeReplicationRequest
+	42,  // 42: google.cloud.netapp.v1.NetApp.ReverseReplicationDirection:input_type -> google.cloud.netapp.v1.ReverseReplicationDirectionRequest
+	43,  // 43: google.cloud.netapp.v1.NetApp.EstablishPeering:input_type -> google.cloud.netapp.v1.EstablishPeeringRequest
+	44,  // 44: google.cloud.netapp.v1.NetApp.SyncReplication:input_type -> google.cloud.netapp.v1.SyncReplicationRequest
+	45,  // 45: google.cloud.netapp.v1.NetApp.CreateBackupVault:input_type -> google.cloud.netapp.v1.CreateBackupVaultRequest
+	46,  // 46: google.cloud.netapp.v1.NetApp.GetBackupVault:input_type -> google.cloud.netapp.v1.GetBackupVaultRequest
+	47,  // 47: google.cloud.netapp.v1.NetApp.ListBackupVaults:input_type -> google.cloud.netapp.v1.ListBackupVaultsRequest
+	48,  // 48: google.cloud.netapp.v1.NetApp.UpdateBackupVault:input_type -> google.cloud.netapp.v1.UpdateBackupVaultRequest
+	49,  // 49: google.cloud.netapp.v1.NetApp.DeleteBackupVault:input_type -> google.cloud.netapp.v1.DeleteBackupVaultRequest
+	50,  // 50: google.cloud.netapp.v1.NetApp.CreateBackup:input_type -> google.cloud.netapp.v1.CreateBackupRequest
+	51,  // 51: google.cloud.netapp.v1.NetApp.GetBackup:input_type -> google.cloud.netapp.v1.GetBackupRequest
+	52,  // 52: google.cloud.netapp.v1.NetApp.ListBackups:input_type -> google.cloud.netapp.v1.ListBackupsRequest
+	53,  // 53: google.cloud.netapp.v1.NetApp.DeleteBackup:input_type -> google.cloud.netapp.v1.DeleteBackupRequest
+	54,  // 54: google.cloud.netapp.v1.NetApp.UpdateBackup:input_type -> google.cloud.netapp.v1.UpdateBackupRequest
+	55,  // 55: google.cloud.netapp.v1.NetApp.CreateBackupPolicy:input_type -> google.cloud.netapp.v1.CreateBackupPolicyRequest
+	56,  // 56: google.cloud.netapp.v1.NetApp.GetBackupPolicy:input_type -> google.cloud.netapp.v1.GetBackupPolicyRequest
+	57,  // 57: google.cloud.netapp.v1.NetApp.ListBackupPolicies:input_type -> google.cloud.netapp.v1.ListBackupPoliciesRequest
+	58,  // 58: google.cloud.netapp.v1.NetApp.UpdateBackupPolicy:input_type -> google.cloud.netapp.v1.UpdateBackupPolicyRequest
+	59,  // 59: google.cloud.netapp.v1.NetApp.DeleteBackupPolicy:input_type -> google.cloud.netapp.v1.DeleteBackupPolicyRequest
+	60,  // 60: google.cloud.netapp.v1.NetApp.ListQuotaRules:input_type -> google.cloud.netapp.v1.ListQuotaRulesRequest
+	61,  // 61: google.cloud.netapp.v1.NetApp.GetQuotaRule:input_type -> google.cloud.netapp.v1.GetQuotaRuleRequest
+	62,  // 62: google.cloud.netapp.v1.NetApp.CreateQuotaRule:input_type -> google.cloud.netapp.v1.CreateQuotaRuleRequest
+	63,  // 63: google.cloud.netapp.v1.NetApp.UpdateQuotaRule:input_type -> google.cloud.netapp.v1.UpdateQuotaRuleRequest
+	64,  // 64: google.cloud.netapp.v1.NetApp.DeleteQuotaRule:input_type -> google.cloud.netapp.v1.DeleteQuotaRuleRequest
+	65,  // 65: google.cloud.netapp.v1.NetApp.RestoreBackupFiles:input_type -> google.cloud.netapp.v1.RestoreBackupFilesRequest
+	66,  // 66: google.cloud.netapp.v1.NetApp.ListHostGroups:input_type -> google.cloud.netapp.v1.ListHostGroupsRequest
+	67,  // 67: google.cloud.netapp.v1.NetApp.GetHostGroup:input_type -> google.cloud.netapp.v1.GetHostGroupRequest
+	68,  // 68: google.cloud.netapp.v1.NetApp.CreateHostGroup:input_type -> google.cloud.netapp.v1.CreateHostGroupRequest
+	69,  // 69: google.cloud.netapp.v1.NetApp.UpdateHostGroup:input_type -> google.cloud.netapp.v1.UpdateHostGroupRequest
+	70,  // 70: google.cloud.netapp.v1.NetApp.DeleteHostGroup:input_type -> google.cloud.netapp.v1.DeleteHostGroupRequest
+	71,  // 71: google.cloud.netapp.v1.NetApp.ExecuteOntapPost:input_type -> google.cloud.netapp.v1.ExecuteOntapPostRequest
+	72,  // 72: google.cloud.netapp.v1.NetApp.ExecuteOntapGet:input_type -> google.cloud.netapp.v1.ExecuteOntapGetRequest
+	73,  // 73: google.cloud.netapp.v1.NetApp.ExecuteOntapDelete:input_type -> google.cloud.netapp.v1.ExecuteOntapDeleteRequest
+	74,  // 74: google.cloud.netapp.v1.NetApp.ExecuteOntapPatch:input_type -> google.cloud.netapp.v1.ExecuteOntapPatchRequest
+	75,  // 75: google.cloud.netapp.v1.NetApp.RestoreVolume:input_type -> google.cloud.netapp.v1.RestoreVolumeRequest
+	76,  // 76: google.cloud.netapp.v1.NetApp.ListBackupConfigs:input_type -> google.cloud.netapp.v1.ListBackupConfigsRequest
+	77,  // 77: google.cloud.netapp.v1.NetApp.UpdateBackupConfig:input_type -> google.cloud.netapp.v1.UpdateBackupConfigRequest
+	78,  // 78: google.cloud.netapp.v1.NetApp.ListStoragePools:output_type -> google.cloud.netapp.v1.ListStoragePoolsResponse
+	79,  // 79: google.cloud.netapp.v1.NetApp.CreateStoragePool:output_type -> google.longrunning.Operation
+	80,  // 80: google.cloud.netapp.v1.NetApp.GetStoragePool:output_type -> google.cloud.netapp.v1.StoragePool
+	79,  // 81: google.cloud.netapp.v1.NetApp.UpdateStoragePool:output_type -> google.longrunning.Operation
+	79,  // 82: google.cloud.netapp.v1.NetApp.DeleteStoragePool:output_type -> google.longrunning.Operation
+	79,  // 83: google.cloud.netapp.v1.NetApp.ValidateDirectoryService:output_type -> google.longrunning.Operation
+	79,  // 84: google.cloud.netapp.v1.NetApp.SwitchActiveReplicaZone:output_type -> google.longrunning.Operation
+	81,  // 85: google.cloud.netapp.v1.NetApp.ListVolumes:output_type -> google.cloud.netapp.v1.ListVolumesResponse
+	82,  // 86: google.cloud.netapp.v1.NetApp.GetVolume:output_type -> google.cloud.netapp.v1.Volume
+	79,  // 87: google.cloud.netapp.v1.NetApp.CreateVolume:output_type -> google.longrunning.Operation
+	79,  // 88: google.cloud.netapp.v1.NetApp.UpdateVolume:output_type -> google.longrunning.Operation
+	79,  // 89: google.cloud.netapp.v1.NetApp.DeleteVolume:output_type -> google.longrunning.Operation
+	79,  // 90: google.cloud.netapp.v1.NetApp.RevertVolume:output_type -> google.longrunning.Operation
+	79,  // 91: google.cloud.netapp.v1.NetApp.StartSplit:output_type -> google.longrunning.Operation
+	83,  // 92: google.cloud.netapp.v1.NetApp.GetSplitStatus:output_type -> google.cloud.netapp.v1.SplitStatus
+	79,  // 93: google.cloud.netapp.v1.NetApp.EstablishVolumePeering:output_type -> google.longrunning.Operation
+	84,  // 94: google.cloud.netapp.v1.NetApp.ListSnapshots:output_type -> google.cloud.netapp.v1.ListSnapshotsResponse
+	85,  // 95: google.cloud.netapp.v1.NetApp.GetSnapshot:output_type -> google.cloud.netapp.v1.Snapshot
+	79,  // 96: google.cloud.netapp.v1.NetApp.CreateSnapshot:output_type -> google.longrunning.Operation
+	79,  // 97: google.cloud.netapp.v1.NetApp.DeleteSnapshot:output_type -> google.longrunning.Operation
+	79,  // 98: google.cloud.netapp.v1.NetApp.UpdateSnapshot:output_type -> google.longrunning.Operation
+	86,  // 99: google.cloud.netapp.v1.NetApp.ListActiveDirectories:output_type -> google.cloud.netapp.v1.ListActiveDirectoriesResponse
+	87,  // 100: google.cloud.netapp.v1.NetApp.GetActiveDirectory:output_type -> google.cloud.netapp.v1.ActiveDirectory
+	79,  // 101: google.cloud.netapp.v1.NetApp.CreateActiveDirectory:output_type -> google.longrunning.Operation
+	79,  // 102: google.cloud.netapp.v1.NetApp.UpdateActiveDirectory:output_type -> google.longrunning.Operation
+	79,  // 103: google.cloud.netapp.v1.NetApp.DeleteActiveDirectory:output_type -> google.longrunning.Operation
+	88,  // 104: google.cloud.netapp.v1.NetApp.ListKmsConfigs:output_type -> google.cloud.netapp.v1.ListKmsConfigsResponse
+	79,  // 105: google.cloud.netapp.v1.NetApp.CreateKmsConfig:output_type -> google.longrunning.Operation
+	89,  // 106: google.cloud.netapp.v1.NetApp.GetKmsConfig:output_type -> google.cloud.netapp.v1.KmsConfig
+	79,  // 107: google.cloud.netapp.v1.NetApp.UpdateKmsConfig:output_type -> google.longrunning.Operation
+	79,  // 108: google.cloud.netapp.v1.NetApp.EncryptVolumes:output_type -> google.longrunning.Operation
+	90,  // 109: google.cloud.netapp.v1.NetApp.VerifyKmsConfig:output_type -> google.cloud.netapp.v1.VerifyKmsConfigResponse
+	79,  // 110: google.cloud.netapp.v1.NetApp.DeleteKmsConfig:output_type -> google.longrunning.Operation
+	91,  // 111: google.cloud.netapp.v1.NetApp.ListReplications:output_type -> google.cloud.netapp.v1.ListReplicationsResponse
+	92,  // 112: google.cloud.netapp.v1.NetApp.GetReplication:output_type -> google.cloud.netapp.v1.Replication
+	79,  // 113: google.cloud.netapp.v1.NetApp.CreateReplication:output_type -> google.longrunning.Operation
+	79,  // 114: google.cloud.netapp.v1.NetApp.DeleteReplication:output_type -> google.longrunning.Operation
+	79,  // 115: google.cloud.netapp.v1.NetApp.UpdateReplication:output_type -> google.longrunning.Operation
+	79,  // 116: google.cloud.netapp.v1.NetApp.StopReplication:output_type -> google.longrunning.Operation
+	79,  // 117: google.cloud.netapp.v1.NetApp.ResumeReplication:output_type -> google.longrunning.Operation
+	79,  // 118: google.cloud.netapp.v1.NetApp.ReverseReplicationDirection:output_type -> google.longrunning.Operation
+	79,  // 119: google.cloud.netapp.v1.NetApp.EstablishPeering:output_type -> google.longrunning.Operation
+	79,  // 120: google.cloud.netapp.v1.NetApp.SyncReplication:output_type -> google.longrunning.Operation
+	79,  // 121: google.cloud.netapp.v1.NetApp.CreateBackupVault:output_type -> google.longrunning.Operation
+	93,  // 122: google.cloud.netapp.v1.NetApp.GetBackupVault:output_type -> google.cloud.netapp.v1.BackupVault
+	94,  // 123: google.cloud.netapp.v1.NetApp.ListBackupVaults:output_type -> google.cloud.netapp.v1.ListBackupVaultsResponse
+	79,  // 124: google.cloud.netapp.v1.NetApp.UpdateBackupVault:output_type -> google.longrunning.Operation
+	79,  // 125: google.cloud.netapp.v1.NetApp.DeleteBackupVault:output_type -> google.longrunning.Operation
+	79,  // 126: google.cloud.netapp.v1.NetApp.CreateBackup:output_type -> google.longrunning.Operation
+	95,  // 127: google.cloud.netapp.v1.NetApp.GetBackup:output_type -> google.cloud.netapp.v1.Backup
+	96,  // 128: google.cloud.netapp.v1.NetApp.ListBackups:output_type -> google.cloud.netapp.v1.ListBackupsResponse
+	79,  // 129: google.cloud.netapp.v1.NetApp.DeleteBackup:output_type -> google.longrunning.Operation
+	79,  // 130: google.cloud.netapp.v1.NetApp.UpdateBackup:output_type -> google.longrunning.Operation
+	79,  // 131: google.cloud.netapp.v1.NetApp.CreateBackupPolicy:output_type -> google.longrunning.Operation
+	97,  // 132: google.cloud.netapp.v1.NetApp.GetBackupPolicy:output_type -> google.cloud.netapp.v1.BackupPolicy
+	98,  // 133: google.cloud.netapp.v1.NetApp.ListBackupPolicies:output_type -> google.cloud.netapp.v1.ListBackupPoliciesResponse
+	79,  // 134: google.cloud.netapp.v1.NetApp.UpdateBackupPolicy:output_type -> google.longrunning.Operation
+	79,  // 135: google.cloud.netapp.v1.NetApp.DeleteBackupPolicy:output_type -> google.longrunning.Operation
+	99,  // 136: google.cloud.netapp.v1.NetApp.ListQuotaRules:output_type -> google.cloud.netapp.v1.ListQuotaRulesResponse
+	100, // 137: google.cloud.netapp.v1.NetApp.GetQuotaRule:output_type -> google.cloud.netapp.v1.QuotaRule
+	79,  // 138: google.cloud.netapp.v1.NetApp.CreateQuotaRule:output_type -> google.longrunning.Operation
+	79,  // 139: google.cloud.netapp.v1.NetApp.UpdateQuotaRule:output_type -> google.longrunning.Operation
+	79,  // 140: google.cloud.netapp.v1.NetApp.DeleteQuotaRule:output_type -> google.longrunning.Operation
+	79,  // 141: google.cloud.netapp.v1.NetApp.RestoreBackupFiles:output_type -> google.longrunning.Operation
+	101, // 142: google.cloud.netapp.v1.NetApp.ListHostGroups:output_type -> google.cloud.netapp.v1.ListHostGroupsResponse
+	102, // 143: google.cloud.netapp.v1.NetApp.GetHostGroup:output_type -> google.cloud.netapp.v1.HostGroup
+	79,  // 144: google.cloud.netapp.v1.NetApp.CreateHostGroup:output_type -> google.longrunning.Operation
+	79,  // 145: google.cloud.netapp.v1.NetApp.UpdateHostGroup:output_type -> google.longrunning.Operation
+	79,  // 146: google.cloud.netapp.v1.NetApp.DeleteHostGroup:output_type -> google.longrunning.Operation
+	103, // 147: google.cloud.netapp.v1.NetApp.ExecuteOntapPost:output_type -> google.cloud.netapp.v1.ExecuteOntapPostResponse
+	104, // 148: google.cloud.netapp.v1.NetApp.ExecuteOntapGet:output_type -> google.cloud.netapp.v1.ExecuteOntapGetResponse
+	105, // 149: google.cloud.netapp.v1.NetApp.ExecuteOntapDelete:output_type -> google.cloud.netapp.v1.ExecuteOntapDeleteResponse
+	106, // 150: google.cloud.netapp.v1.NetApp.ExecuteOntapPatch:output_type -> google.cloud.netapp.v1.ExecuteOntapPatchResponse
+	79,  // 151: google.cloud.netapp.v1.NetApp.RestoreVolume:output_type -> google.longrunning.Operation
+	107, // 152: google.cloud.netapp.v1.NetApp.ListBackupConfigs:output_type -> google.cloud.netapp.v1.ListBackupConfigsResponse
+	79,  // 153: google.cloud.netapp.v1.NetApp.UpdateBackupConfig:output_type -> google.longrunning.Operation
+	78,  // [78:154] is the sub-list for method output_type
+	2,   // [2:78] is the sub-list for method input_type
 	2,   // [2:2] is the sub-list for extension type_name
 	2,   // [2:2] is the sub-list for extension extendee
 	0,   // [0:2] is the sub-list for field type_name

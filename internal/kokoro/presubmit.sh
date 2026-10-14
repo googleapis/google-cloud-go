@@ -58,7 +58,7 @@ exit_code=0
 # Run tests in the current directory, and retain log files which will
 # be pushed as build artifacts.
 runPresubmitTests() {
-  if [[ $PWD == *"/internal/"* ]] ||
+  if { [[ $PWD == *"/internal/"* ]] && [[ $PWD != *"/internal/testing/"* ]]; } ||
     [[ $PWD == *"/third_party/"* ]]; then
     # internal tools only expected to work with latest go version
     return
@@ -86,13 +86,13 @@ runPresubmitTests() {
     exit_code=$(($exit_code + $?))
   fi
 
-  if [[ $PWD != *"/internal/"* ]]; then
+  if [[ $PWD != *"/internal/"* ]] || [[ $PWD == *"/internal/testing/"* ]]; then
     go build ./...
     exit_code=$(($exit_code + $?))
   fi
 }
 
-SIGNIFICANT_CHANGES=$(git --no-pager diff --name-only origin/$KOKORO_GITHUB_PULL_REQUEST_TARGET_BRANCH_google_cloud_go...$KOKORO_GIT_COMMIT_google_cloud_go |
+SIGNIFICANT_CHANGES=$(git --no-pager diff --name-only origin/${KOKORO_GITHUB_PULL_REQUEST_TARGET_BRANCH:-main}...${KOKORO_GIT_COMMIT:-HEAD} |
   grep -Ev '(\.md$|^\.github|\.json$|\.yaml$)' | xargs dirname | sort -u || true)
 
 if [ -z "$SIGNIFICANT_CHANGES" ]; then

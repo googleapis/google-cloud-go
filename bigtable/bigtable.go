@@ -1024,6 +1024,20 @@ func NewMutation() *Mutation {
 	return new(Mutation)
 }
 
+// InternalNewMutationFromProto constructs a Mutation from a slice of proto Mutation ops.
+// Intended for use by the accelerator's classic fallback, which already holds
+// []*btpb.Mutation from the incoming MutateRowRequest and wraps them directly
+// rather than re-encoding through the Go Mutation API.
+//
+// This function must live in the bigtable package because Mutation.ops is an
+// unexported field; it cannot be moved to an internal package without a
+// circular dependency.
+func InternalNewMutationFromProto(ops []*btpb.Mutation) *Mutation {
+	m := NewMutation()
+	m.ops = ops
+	return m
+}
+
 // NewCondMutation returns a conditional mutation.
 // The given row filter determines which mutation is applied:
 // If the filter matches any cell in the row, mtrue is applied;

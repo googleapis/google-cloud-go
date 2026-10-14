@@ -47,21 +47,23 @@ var newParticipantsClientHook clientHook
 
 // ParticipantsCallOptions contains the retry settings for each method of ParticipantsClient.
 type ParticipantsCallOptions struct {
-	CreateParticipant       []gax.CallOption
-	GetParticipant          []gax.CallOption
-	ListParticipants        []gax.CallOption
-	UpdateParticipant       []gax.CallOption
-	AnalyzeContent          []gax.CallOption
-	StreamingAnalyzeContent []gax.CallOption
-	SuggestArticles         []gax.CallOption
-	SuggestFaqAnswers       []gax.CallOption
-	SuggestSmartReplies     []gax.CallOption
-	SuggestKnowledgeAssist  []gax.CallOption
-	GetLocation             []gax.CallOption
-	ListLocations           []gax.CallOption
-	CancelOperation         []gax.CallOption
-	GetOperation            []gax.CallOption
-	ListOperations          []gax.CallOption
+	CreateParticipant                     []gax.CallOption
+	GetParticipant                        []gax.CallOption
+	ListParticipants                      []gax.CallOption
+	UpdateParticipant                     []gax.CallOption
+	AnalyzeContent                        []gax.CallOption
+	StreamingAnalyzeContent               []gax.CallOption
+	BidiStreamingAnalyzeContent           []gax.CallOption
+	StreamingReactiveCompanionSuggestions []gax.CallOption
+	SuggestArticles                       []gax.CallOption
+	SuggestFaqAnswers                     []gax.CallOption
+	SuggestSmartReplies                   []gax.CallOption
+	SuggestKnowledgeAssist                []gax.CallOption
+	GetLocation                           []gax.CallOption
+	ListLocations                         []gax.CallOption
+	CancelOperation                       []gax.CallOption
+	GetOperation                          []gax.CallOption
+	ListOperations                        []gax.CallOption
 }
 
 func defaultParticipantsGRPCClientOptions() []option.ClientOption {
@@ -141,7 +143,9 @@ func defaultParticipantsCallOptions() *ParticipantsCallOptions {
 				})
 			}),
 		},
-		StreamingAnalyzeContent: []gax.CallOption{},
+		StreamingAnalyzeContent:               []gax.CallOption{},
+		BidiStreamingAnalyzeContent:           []gax.CallOption{},
+		StreamingReactiveCompanionSuggestions: []gax.CallOption{},
 		SuggestArticles: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -258,6 +262,12 @@ func defaultParticipantsRESTCallOptions() *ParticipantsCallOptions {
 		StreamingAnalyzeContent: []gax.CallOption{
 			gax.WithTimeout(220000 * time.Millisecond),
 		},
+		BidiStreamingAnalyzeContent: []gax.CallOption{
+			gax.WithTimeout(1800000 * time.Millisecond),
+		},
+		StreamingReactiveCompanionSuggestions: []gax.CallOption{
+			gax.WithTimeout(5400000 * time.Millisecond),
+		},
 		SuggestArticles: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -321,6 +331,8 @@ type internalParticipantsClient interface {
 	UpdateParticipant(context.Context, *dialogflowpb.UpdateParticipantRequest, ...gax.CallOption) (*dialogflowpb.Participant, error)
 	AnalyzeContent(context.Context, *dialogflowpb.AnalyzeContentRequest, ...gax.CallOption) (*dialogflowpb.AnalyzeContentResponse, error)
 	StreamingAnalyzeContent(context.Context, ...gax.CallOption) (dialogflowpb.Participants_StreamingAnalyzeContentClient, error)
+	BidiStreamingAnalyzeContent(context.Context, ...gax.CallOption) (dialogflowpb.Participants_BidiStreamingAnalyzeContentClient, error)
+	StreamingReactiveCompanionSuggestions(context.Context, ...gax.CallOption) (dialogflowpb.Participants_StreamingReactiveCompanionSuggestionsClient, error)
 	SuggestArticles(context.Context, *dialogflowpb.SuggestArticlesRequest, ...gax.CallOption) (*dialogflowpb.SuggestArticlesResponse, error)
 	SuggestFaqAnswers(context.Context, *dialogflowpb.SuggestFaqAnswersRequest, ...gax.CallOption) (*dialogflowpb.SuggestFaqAnswersResponse, error)
 	SuggestSmartReplies(context.Context, *dialogflowpb.SuggestSmartRepliesRequest, ...gax.CallOption) (*dialogflowpb.SuggestSmartRepliesResponse, error)
@@ -416,6 +428,21 @@ func (c *ParticipantsClient) AnalyzeContent(ctx context.Context, req *dialogflow
 // This method is not supported for the REST transport.
 func (c *ParticipantsClient) StreamingAnalyzeContent(ctx context.Context, opts ...gax.CallOption) (dialogflowpb.Participants_StreamingAnalyzeContentClient, error) {
 	return c.internalClient.StreamingAnalyzeContent(ctx, opts...)
+}
+
+// BidiStreamingAnalyzeContent bidirectional endless streaming version of
+// StreamingAnalyzeContent.
+//
+// This method is not supported for the REST transport.
+func (c *ParticipantsClient) BidiStreamingAnalyzeContent(ctx context.Context, opts ...gax.CallOption) (dialogflowpb.Participants_BidiStreamingAnalyzeContentClient, error) {
+	return c.internalClient.BidiStreamingAnalyzeContent(ctx, opts...)
+}
+
+// StreamingReactiveCompanionSuggestions external streaming API for direct human-agent-to-bot chats.
+//
+// This method is not supported for the REST transport.
+func (c *ParticipantsClient) StreamingReactiveCompanionSuggestions(ctx context.Context, opts ...gax.CallOption) (dialogflowpb.Participants_StreamingReactiveCompanionSuggestionsClient, error) {
+	return c.internalClient.StreamingReactiveCompanionSuggestions(ctx, opts...)
 }
 
 // SuggestArticles gets suggested articles for a participant based on specific historical
@@ -561,6 +588,8 @@ func NewParticipantsClient(ctx context.Context, opts ...option.ClientOption) (*P
 		client.CallOptions.UpdateParticipant = append(client.CallOptions.UpdateParticipant, gax.WithClientMetrics(metrics))
 		client.CallOptions.AnalyzeContent = append(client.CallOptions.AnalyzeContent, gax.WithClientMetrics(metrics))
 		client.CallOptions.StreamingAnalyzeContent = append(client.CallOptions.StreamingAnalyzeContent, gax.WithClientMetrics(metrics))
+		client.CallOptions.BidiStreamingAnalyzeContent = append(client.CallOptions.BidiStreamingAnalyzeContent, gax.WithClientMetrics(metrics))
+		client.CallOptions.StreamingReactiveCompanionSuggestions = append(client.CallOptions.StreamingReactiveCompanionSuggestions, gax.WithClientMetrics(metrics))
 		client.CallOptions.SuggestArticles = append(client.CallOptions.SuggestArticles, gax.WithClientMetrics(metrics))
 		client.CallOptions.SuggestFaqAnswers = append(client.CallOptions.SuggestFaqAnswers, gax.WithClientMetrics(metrics))
 		client.CallOptions.SuggestSmartReplies = append(client.CallOptions.SuggestSmartReplies, gax.WithClientMetrics(metrics))
@@ -588,6 +617,8 @@ func NewParticipantsClient(ctx context.Context, opts ...option.ClientOption) (*P
 		client.CallOptions.UpdateParticipant = append(client.CallOptions.UpdateParticipant, gax.WithClientTracing(tracing))
 		client.CallOptions.AnalyzeContent = append(client.CallOptions.AnalyzeContent, gax.WithClientTracing(tracing))
 		client.CallOptions.StreamingAnalyzeContent = append(client.CallOptions.StreamingAnalyzeContent, gax.WithClientTracing(tracing))
+		client.CallOptions.BidiStreamingAnalyzeContent = append(client.CallOptions.BidiStreamingAnalyzeContent, gax.WithClientTracing(tracing))
+		client.CallOptions.StreamingReactiveCompanionSuggestions = append(client.CallOptions.StreamingReactiveCompanionSuggestions, gax.WithClientTracing(tracing))
 		client.CallOptions.SuggestArticles = append(client.CallOptions.SuggestArticles, gax.WithClientTracing(tracing))
 		client.CallOptions.SuggestFaqAnswers = append(client.CallOptions.SuggestFaqAnswers, gax.WithClientTracing(tracing))
 		client.CallOptions.SuggestSmartReplies = append(client.CallOptions.SuggestSmartReplies, gax.WithClientTracing(tracing))
@@ -616,6 +647,8 @@ func NewParticipantsClient(ctx context.Context, opts ...option.ClientOption) (*P
 		client.CallOptions.UpdateParticipant = append(client.CallOptions.UpdateParticipant, gax.WithClientLogging(logging))
 		client.CallOptions.AnalyzeContent = append(client.CallOptions.AnalyzeContent, gax.WithClientLogging(logging))
 		client.CallOptions.StreamingAnalyzeContent = append(client.CallOptions.StreamingAnalyzeContent, gax.WithClientLogging(logging))
+		client.CallOptions.BidiStreamingAnalyzeContent = append(client.CallOptions.BidiStreamingAnalyzeContent, gax.WithClientLogging(logging))
+		client.CallOptions.StreamingReactiveCompanionSuggestions = append(client.CallOptions.StreamingReactiveCompanionSuggestions, gax.WithClientLogging(logging))
 		client.CallOptions.SuggestArticles = append(client.CallOptions.SuggestArticles, gax.WithClientLogging(logging))
 		client.CallOptions.SuggestFaqAnswers = append(client.CallOptions.SuggestFaqAnswers, gax.WithClientLogging(logging))
 		client.CallOptions.SuggestSmartReplies = append(client.CallOptions.SuggestSmartReplies, gax.WithClientLogging(logging))
@@ -721,6 +754,8 @@ func NewParticipantsRESTClient(ctx context.Context, opts ...option.ClientOption)
 		callOpts.UpdateParticipant = append(callOpts.UpdateParticipant, gax.WithClientMetrics(metrics))
 		callOpts.AnalyzeContent = append(callOpts.AnalyzeContent, gax.WithClientMetrics(metrics))
 		callOpts.StreamingAnalyzeContent = append(callOpts.StreamingAnalyzeContent, gax.WithClientMetrics(metrics))
+		callOpts.BidiStreamingAnalyzeContent = append(callOpts.BidiStreamingAnalyzeContent, gax.WithClientMetrics(metrics))
+		callOpts.StreamingReactiveCompanionSuggestions = append(callOpts.StreamingReactiveCompanionSuggestions, gax.WithClientMetrics(metrics))
 		callOpts.SuggestArticles = append(callOpts.SuggestArticles, gax.WithClientMetrics(metrics))
 		callOpts.SuggestFaqAnswers = append(callOpts.SuggestFaqAnswers, gax.WithClientMetrics(metrics))
 		callOpts.SuggestSmartReplies = append(callOpts.SuggestSmartReplies, gax.WithClientMetrics(metrics))
@@ -748,6 +783,8 @@ func NewParticipantsRESTClient(ctx context.Context, opts ...option.ClientOption)
 		callOpts.UpdateParticipant = append(callOpts.UpdateParticipant, gax.WithClientTracing(tracing))
 		callOpts.AnalyzeContent = append(callOpts.AnalyzeContent, gax.WithClientTracing(tracing))
 		callOpts.StreamingAnalyzeContent = append(callOpts.StreamingAnalyzeContent, gax.WithClientTracing(tracing))
+		callOpts.BidiStreamingAnalyzeContent = append(callOpts.BidiStreamingAnalyzeContent, gax.WithClientTracing(tracing))
+		callOpts.StreamingReactiveCompanionSuggestions = append(callOpts.StreamingReactiveCompanionSuggestions, gax.WithClientTracing(tracing))
 		callOpts.SuggestArticles = append(callOpts.SuggestArticles, gax.WithClientTracing(tracing))
 		callOpts.SuggestFaqAnswers = append(callOpts.SuggestFaqAnswers, gax.WithClientTracing(tracing))
 		callOpts.SuggestSmartReplies = append(callOpts.SuggestSmartReplies, gax.WithClientTracing(tracing))
@@ -776,6 +813,8 @@ func NewParticipantsRESTClient(ctx context.Context, opts ...option.ClientOption)
 		callOpts.UpdateParticipant = append(callOpts.UpdateParticipant, gax.WithClientLogging(logging))
 		callOpts.AnalyzeContent = append(callOpts.AnalyzeContent, gax.WithClientLogging(logging))
 		callOpts.StreamingAnalyzeContent = append(callOpts.StreamingAnalyzeContent, gax.WithClientLogging(logging))
+		callOpts.BidiStreamingAnalyzeContent = append(callOpts.BidiStreamingAnalyzeContent, gax.WithClientLogging(logging))
+		callOpts.StreamingReactiveCompanionSuggestions = append(callOpts.StreamingReactiveCompanionSuggestions, gax.WithClientLogging(logging))
 		callOpts.SuggestArticles = append(callOpts.SuggestArticles, gax.WithClientLogging(logging))
 		callOpts.SuggestFaqAnswers = append(callOpts.SuggestFaqAnswers, gax.WithClientLogging(logging))
 		callOpts.SuggestSmartReplies = append(callOpts.SuggestSmartReplies, gax.WithClientLogging(logging))
@@ -972,6 +1011,46 @@ func (c *participantsGRPCClient) StreamingAnalyzeContent(ctx context.Context, op
 		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "StreamingAnalyzeContent")
 		resp, err = c.participantsClient.StreamingAnalyzeContent(ctx, settings.GRPC...)
 		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "StreamingAnalyzeContent")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *participantsGRPCClient) BidiStreamingAnalyzeContent(ctx context.Context, opts ...gax.CallOption) (dialogflowpb.Participants_BidiStreamingAnalyzeContentClient, error) {
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2.Participants/BidiStreamingAnalyzeContent")
+	}
+	var resp dialogflowpb.Participants_BidiStreamingAnalyzeContentClient
+	opts = append((*c.CallOptions).BidiStreamingAnalyzeContent[0:len((*c.CallOptions).BidiStreamingAnalyzeContent):len((*c.CallOptions).BidiStreamingAnalyzeContent)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "BidiStreamingAnalyzeContent")
+		resp, err = c.participantsClient.BidiStreamingAnalyzeContent(ctx, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "BidiStreamingAnalyzeContent")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *participantsGRPCClient) StreamingReactiveCompanionSuggestions(ctx context.Context, opts ...gax.CallOption) (dialogflowpb.Participants_StreamingReactiveCompanionSuggestionsClient, error) {
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2.Participants/StreamingReactiveCompanionSuggestions")
+	}
+	var resp dialogflowpb.Participants_StreamingReactiveCompanionSuggestionsClient
+	opts = append((*c.CallOptions).StreamingReactiveCompanionSuggestions[0:len((*c.CallOptions).StreamingReactiveCompanionSuggestions):len((*c.CallOptions).StreamingReactiveCompanionSuggestions)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "StreamingReactiveCompanionSuggestions")
+		resp, err = c.participantsClient.StreamingReactiveCompanionSuggestions(ctx, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "StreamingReactiveCompanionSuggestions")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1566,6 +1645,21 @@ func (c *participantsRESTClient) AnalyzeContent(ctx context.Context, req *dialog
 // This method is not supported for the REST transport.
 func (c *participantsRESTClient) StreamingAnalyzeContent(ctx context.Context, opts ...gax.CallOption) (dialogflowpb.Participants_StreamingAnalyzeContentClient, error) {
 	return nil, errors.New("StreamingAnalyzeContent not yet supported for REST clients")
+}
+
+// BidiStreamingAnalyzeContent bidirectional endless streaming version of
+// StreamingAnalyzeContent.
+//
+// This method is not supported for the REST transport.
+func (c *participantsRESTClient) BidiStreamingAnalyzeContent(ctx context.Context, opts ...gax.CallOption) (dialogflowpb.Participants_BidiStreamingAnalyzeContentClient, error) {
+	return nil, errors.New("BidiStreamingAnalyzeContent not yet supported for REST clients")
+}
+
+// StreamingReactiveCompanionSuggestions external streaming API for direct human-agent-to-bot chats.
+//
+// This method is not supported for the REST transport.
+func (c *participantsRESTClient) StreamingReactiveCompanionSuggestions(ctx context.Context, opts ...gax.CallOption) (dialogflowpb.Participants_StreamingReactiveCompanionSuggestionsClient, error) {
+	return nil, errors.New("StreamingReactiveCompanionSuggestions not yet supported for REST clients")
 }
 
 // SuggestArticles gets suggested articles for a participant based on specific historical

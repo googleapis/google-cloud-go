@@ -333,6 +333,193 @@ func (x *GetSchemaRequest) GetName() string {
 	return ""
 }
 
+// Request for ExploreSchema.
+type ExploreSchemaRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The name of the singleton domain schema resource.
+	// Format: `projects/{project}/locations/{location}/domains/{domain}/schema`
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Optional. Starting label names to begin traversal.
+	// Substring, case-insensitive matches are performed against allowed label
+	// names in the schema. A maximum of 10 `start_labels` can be specified;
+	// providing more will result in an `INVALID_ARGUMENT` error.
+	// If `start_labels` is unset or empty, all authorized node types will be used
+	// as the starting set.
+	StartLabels []string `protobuf:"bytes,3,rep,name=start_labels,json=startLabels,proto3" json:"start_labels,omitempty"`
+	// Optional. The maximum depth of BFS traversal hops to perform from the
+	// starting node types or label names. Defaults to 0 if unspecified.
+	Depth int32 `protobuf:"varint,4,opt,name=depth,proto3" json:"depth,omitempty"`
+	// Optional. The maximum number of schema elements to return in a single page.
+	//
+	//   - The service might return fewer elements than this value if adding another
+	//     edge and its required endpoint nodes exceeds `page_size`.
+	//   - If omitted or set to 0, default (100) will be used.
+	//   - Minimum page_size is 3 to ensure at least one edge and its endpoint
+	//     nodes fit on a page; values below 3 (e.g. 1 or 2) are changed to 3.
+	//   - Maximum value is 500.
+	PageSize int32 `protobuf:"varint,5,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	// Optional. A page token received from a previous `ExploreSchema` call.
+	// Provide this to retrieve the subsequent page.
+	//
+	// When paginating, all other parameters (except page_size) provided to
+	// `ExploreSchema` must match the call that provided the page token.
+	PageToken     string `protobuf:"bytes,6,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ExploreSchemaRequest) Reset() {
+	*x = ExploreSchemaRequest{}
+	mi := &file_google_cloud_apptopology_v1_service_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ExploreSchemaRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ExploreSchemaRequest) ProtoMessage() {}
+
+func (x *ExploreSchemaRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_apptopology_v1_service_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ExploreSchemaRequest.ProtoReflect.Descriptor instead.
+func (*ExploreSchemaRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_apptopology_v1_service_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *ExploreSchemaRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *ExploreSchemaRequest) GetStartLabels() []string {
+	if x != nil {
+		return x.StartLabels
+	}
+	return nil
+}
+
+func (x *ExploreSchemaRequest) GetDepth() int32 {
+	if x != nil {
+		return x.Depth
+	}
+	return 0
+}
+
+func (x *ExploreSchemaRequest) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+func (x *ExploreSchemaRequest) GetPageToken() string {
+	if x != nil {
+		return x.PageToken
+	}
+	return ""
+}
+
+// Response for ExploreSchema.
+type ExploreSchemaResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// A list of `NodeType`s defined within this schema.
+	// Refer to the documentation of `NodeType` for more details.
+	NodeTypes []*NodeType `protobuf:"bytes,1,rep,name=node_types,json=nodeTypes,proto3" json:"node_types,omitempty"`
+	// A list of `EdgeType`s defined within this schema.
+	// Refer to the documentation of `EdgeType` for more details.
+	EdgeTypes []*EdgeType `protobuf:"bytes,2,rep,name=edge_types,json=edgeTypes,proto3" json:"edge_types,omitempty"`
+	// A list of supported labels and corresponding properties.
+	LabelProperties []*LabelProperties `protobuf:"bytes,3,rep,name=label_properties,json=labelProperties,proto3" json:"label_properties,omitempty"`
+	// Edge rules. These will indicate which node types can be connected and
+	// through what edge type. This is a list of (source_node_type, edge_type,
+	// destination_node_type) tuples.
+	EdgeRules []*EdgeRule `protobuf:"bytes,4,rep,name=edge_rules,json=edgeRules,proto3" json:"edge_rules,omitempty"`
+	// A token to retrieve the next page of results, or empty if there are no
+	// more results in the traversal set.
+	NextPageToken string `protobuf:"bytes,5,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ExploreSchemaResponse) Reset() {
+	*x = ExploreSchemaResponse{}
+	mi := &file_google_cloud_apptopology_v1_service_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ExploreSchemaResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ExploreSchemaResponse) ProtoMessage() {}
+
+func (x *ExploreSchemaResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_apptopology_v1_service_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ExploreSchemaResponse.ProtoReflect.Descriptor instead.
+func (*ExploreSchemaResponse) Descriptor() ([]byte, []int) {
+	return file_google_cloud_apptopology_v1_service_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *ExploreSchemaResponse) GetNodeTypes() []*NodeType {
+	if x != nil {
+		return x.NodeTypes
+	}
+	return nil
+}
+
+func (x *ExploreSchemaResponse) GetEdgeTypes() []*EdgeType {
+	if x != nil {
+		return x.EdgeTypes
+	}
+	return nil
+}
+
+func (x *ExploreSchemaResponse) GetLabelProperties() []*LabelProperties {
+	if x != nil {
+		return x.LabelProperties
+	}
+	return nil
+}
+
+func (x *ExploreSchemaResponse) GetEdgeRules() []*EdgeRule {
+	if x != nil {
+		return x.EdgeRules
+	}
+	return nil
+}
+
+func (x *ExploreSchemaResponse) GetNextPageToken() string {
+	if x != nil {
+		return x.NextPageToken
+	}
+	return ""
+}
+
 // Request for GetDomain.
 type GetDomainRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -345,7 +532,7 @@ type GetDomainRequest struct {
 
 func (x *GetDomainRequest) Reset() {
 	*x = GetDomainRequest{}
-	mi := &file_google_cloud_apptopology_v1_service_proto_msgTypes[4]
+	mi := &file_google_cloud_apptopology_v1_service_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -357,7 +544,7 @@ func (x *GetDomainRequest) String() string {
 func (*GetDomainRequest) ProtoMessage() {}
 
 func (x *GetDomainRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_apptopology_v1_service_proto_msgTypes[4]
+	mi := &file_google_cloud_apptopology_v1_service_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -370,7 +557,7 @@ func (x *GetDomainRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetDomainRequest.ProtoReflect.Descriptor instead.
 func (*GetDomainRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_apptopology_v1_service_proto_rawDescGZIP(), []int{4}
+	return file_google_cloud_apptopology_v1_service_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *GetDomainRequest) GetName() string {
@@ -403,7 +590,7 @@ type ListDomainsRequest struct {
 
 func (x *ListDomainsRequest) Reset() {
 	*x = ListDomainsRequest{}
-	mi := &file_google_cloud_apptopology_v1_service_proto_msgTypes[5]
+	mi := &file_google_cloud_apptopology_v1_service_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -415,7 +602,7 @@ func (x *ListDomainsRequest) String() string {
 func (*ListDomainsRequest) ProtoMessage() {}
 
 func (x *ListDomainsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_apptopology_v1_service_proto_msgTypes[5]
+	mi := &file_google_cloud_apptopology_v1_service_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -428,7 +615,7 @@ func (x *ListDomainsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListDomainsRequest.ProtoReflect.Descriptor instead.
 func (*ListDomainsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_apptopology_v1_service_proto_rawDescGZIP(), []int{5}
+	return file_google_cloud_apptopology_v1_service_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *ListDomainsRequest) GetParent() string {
@@ -466,7 +653,7 @@ type ListDomainsResponse struct {
 
 func (x *ListDomainsResponse) Reset() {
 	*x = ListDomainsResponse{}
-	mi := &file_google_cloud_apptopology_v1_service_proto_msgTypes[6]
+	mi := &file_google_cloud_apptopology_v1_service_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -478,7 +665,7 @@ func (x *ListDomainsResponse) String() string {
 func (*ListDomainsResponse) ProtoMessage() {}
 
 func (x *ListDomainsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_apptopology_v1_service_proto_msgTypes[6]
+	mi := &file_google_cloud_apptopology_v1_service_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -491,7 +678,7 @@ func (x *ListDomainsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListDomainsResponse.ProtoReflect.Descriptor instead.
 func (*ListDomainsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_apptopology_v1_service_proto_rawDescGZIP(), []int{6}
+	return file_google_cloud_apptopology_v1_service_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *ListDomainsResponse) GetDomains() []*Domain {
@@ -534,7 +721,24 @@ const file_google_cloud_apptopology_v1_service_proto_rawDesc = "" +
 	"\x05graph\x18\x01 \x01(\v2\".google.cloud.apptopology.v1.GraphR\x05graph\"Q\n" +
 	"\x10GetSchemaRequest\x12=\n" +
 	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
-	"!apptopology.googleapis.com/SchemaR\x04name\"Q\n" +
+	"!apptopology.googleapis.com/SchemaR\x04name\"\xde\x01\n" +
+	"\x14ExploreSchemaRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"!apptopology.googleapis.com/SchemaR\x04name\x12&\n" +
+	"\fstart_labels\x18\x03 \x03(\tB\x03\xe0A\x01R\vstartLabels\x12\x19\n" +
+	"\x05depth\x18\x04 \x01(\x05B\x03\xe0A\x01R\x05depth\x12 \n" +
+	"\tpage_size\x18\x05 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\n" +
+	"page_token\x18\x06 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xea\x02\n" +
+	"\x15ExploreSchemaResponse\x12D\n" +
+	"\n" +
+	"node_types\x18\x01 \x03(\v2%.google.cloud.apptopology.v1.NodeTypeR\tnodeTypes\x12D\n" +
+	"\n" +
+	"edge_types\x18\x02 \x03(\v2%.google.cloud.apptopology.v1.EdgeTypeR\tedgeTypes\x12W\n" +
+	"\x10label_properties\x18\x03 \x03(\v2,.google.cloud.apptopology.v1.LabelPropertiesR\x0flabelProperties\x12D\n" +
+	"\n" +
+	"edge_rules\x18\x04 \x03(\v2%.google.cloud.apptopology.v1.EdgeRuleR\tedgeRules\x12&\n" +
+	"\x0fnext_page_token\x18\x05 \x01(\tR\rnextPageToken\"Q\n" +
 	"\x10GetDomainRequest\x12=\n" +
 	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
 	"!apptopology.googleapis.com/DomainR\x04name\"\x9d\x01\n" +
@@ -545,10 +749,11 @@ const file_google_cloud_apptopology_v1_service_proto_rawDesc = "" +
 	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"|\n" +
 	"\x13ListDomainsResponse\x12=\n" +
 	"\adomains\x18\x01 \x03(\v2#.google.cloud.apptopology.v1.DomainR\adomains\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken2\xe6\a\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken2\xad\t\n" +
 	"\vAppTopology\x12\xa3\x02\n" +
 	"#GenerateDiscoveredResourcesTopology\x12G.google.cloud.apptopology.v1.GenerateDiscoveredResourcesTopologyRequest\x1aH.google.cloud.apptopology.v1.GenerateDiscoveredResourcesTopologyResponse\"i\xdaA\x15name,topology_domains\x82\xd3\xe4\x93\x02K:\x01*\"F/v1/{name=projects/*/locations/*/discoveredResourcesTopology}:generate\x12\xa2\x01\n" +
-	"\tGetSchema\x12-.google.cloud.apptopology.v1.GetSchemaRequest\x1a#.google.cloud.apptopology.v1.Schema\"A\xdaA\x04name\x82\xd3\xe4\x93\x024\x122/v1/{name=projects/*/locations/*/domains/*/schema}\x12\x9b\x01\n" +
+	"\tGetSchema\x12-.google.cloud.apptopology.v1.GetSchemaRequest\x1a#.google.cloud.apptopology.v1.Schema\"A\xdaA\x04name\x82\xd3\xe4\x93\x024\x122/v1/{name=projects/*/locations/*/domains/*/schema}\x12\xc4\x01\n" +
+	"\rExploreSchema\x121.google.cloud.apptopology.v1.ExploreSchemaRequest\x1a2.google.cloud.apptopology.v1.ExploreSchemaResponse\"L\xdaA\x04name\x82\xd3\xe4\x93\x02?:\x01*\":/v1/{name=projects/*/locations/*/domains/*/schema}:explore\x12\x9b\x01\n" +
 	"\tGetDomain\x12-.google.cloud.apptopology.v1.GetDomainRequest\x1a#.google.cloud.apptopology.v1.Domain\":\xdaA\x04name\x82\xd3\xe4\x93\x02-\x12+/v1/{name=projects/*/locations/*/domains/*}\x12\xae\x01\n" +
 	"\vListDomains\x12/.google.cloud.apptopology.v1.ListDomainsRequest\x1a0.google.cloud.apptopology.v1.ListDomainsResponse\"<\xdaA\x06parent\x82\xd3\xe4\x93\x02-\x12+/v1/{parent=projects/*/locations/*}/domains\x1a\xbc\x01\xcaA\x1aapptopology.googleapis.com\xd2A\x9b\x01https://www.googleapis.com/auth/apptopology.read-only,https://www.googleapis.com/auth/apptopology.read-write,https://www.googleapis.com/auth/cloud-platformB\x8e\x03\xeaA\xb9\x01\n" +
 	"6apptopology.googleapis.com/DiscoveredResourcesTopology\x12Cprojects/{project}/locations/{location}/discoveredResourcesTopology*\x1ddiscoveredResourcesTopologies2\x1bdiscoveredResourcesTopology\n" +
@@ -566,40 +771,52 @@ func file_google_cloud_apptopology_v1_service_proto_rawDescGZIP() []byte {
 	return file_google_cloud_apptopology_v1_service_proto_rawDescData
 }
 
-var file_google_cloud_apptopology_v1_service_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_google_cloud_apptopology_v1_service_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
 var file_google_cloud_apptopology_v1_service_proto_goTypes = []any{
 	(*OperationMetadata)(nil),                           // 0: google.cloud.apptopology.v1.OperationMetadata
 	(*GenerateDiscoveredResourcesTopologyRequest)(nil),  // 1: google.cloud.apptopology.v1.GenerateDiscoveredResourcesTopologyRequest
 	(*GenerateDiscoveredResourcesTopologyResponse)(nil), // 2: google.cloud.apptopology.v1.GenerateDiscoveredResourcesTopologyResponse
 	(*GetSchemaRequest)(nil),                            // 3: google.cloud.apptopology.v1.GetSchemaRequest
-	(*GetDomainRequest)(nil),                            // 4: google.cloud.apptopology.v1.GetDomainRequest
-	(*ListDomainsRequest)(nil),                          // 5: google.cloud.apptopology.v1.ListDomainsRequest
-	(*ListDomainsResponse)(nil),                         // 6: google.cloud.apptopology.v1.ListDomainsResponse
-	(*timestamppb.Timestamp)(nil),                       // 7: google.protobuf.Timestamp
-	(*GraphPattern)(nil),                                // 8: google.cloud.apptopology.v1.GraphPattern
-	(*Graph)(nil),                                       // 9: google.cloud.apptopology.v1.Graph
-	(*Domain)(nil),                                      // 10: google.cloud.apptopology.v1.Domain
-	(*Schema)(nil),                                      // 11: google.cloud.apptopology.v1.Schema
+	(*ExploreSchemaRequest)(nil),                        // 4: google.cloud.apptopology.v1.ExploreSchemaRequest
+	(*ExploreSchemaResponse)(nil),                       // 5: google.cloud.apptopology.v1.ExploreSchemaResponse
+	(*GetDomainRequest)(nil),                            // 6: google.cloud.apptopology.v1.GetDomainRequest
+	(*ListDomainsRequest)(nil),                          // 7: google.cloud.apptopology.v1.ListDomainsRequest
+	(*ListDomainsResponse)(nil),                         // 8: google.cloud.apptopology.v1.ListDomainsResponse
+	(*timestamppb.Timestamp)(nil),                       // 9: google.protobuf.Timestamp
+	(*GraphPattern)(nil),                                // 10: google.cloud.apptopology.v1.GraphPattern
+	(*Graph)(nil),                                       // 11: google.cloud.apptopology.v1.Graph
+	(*NodeType)(nil),                                    // 12: google.cloud.apptopology.v1.NodeType
+	(*EdgeType)(nil),                                    // 13: google.cloud.apptopology.v1.EdgeType
+	(*LabelProperties)(nil),                             // 14: google.cloud.apptopology.v1.LabelProperties
+	(*EdgeRule)(nil),                                    // 15: google.cloud.apptopology.v1.EdgeRule
+	(*Domain)(nil),                                      // 16: google.cloud.apptopology.v1.Domain
+	(*Schema)(nil),                                      // 17: google.cloud.apptopology.v1.Schema
 }
 var file_google_cloud_apptopology_v1_service_proto_depIdxs = []int32{
-	7,  // 0: google.cloud.apptopology.v1.OperationMetadata.create_time:type_name -> google.protobuf.Timestamp
-	7,  // 1: google.cloud.apptopology.v1.OperationMetadata.end_time:type_name -> google.protobuf.Timestamp
-	8,  // 2: google.cloud.apptopology.v1.GenerateDiscoveredResourcesTopologyRequest.filter:type_name -> google.cloud.apptopology.v1.GraphPattern
-	9,  // 3: google.cloud.apptopology.v1.GenerateDiscoveredResourcesTopologyResponse.graph:type_name -> google.cloud.apptopology.v1.Graph
-	10, // 4: google.cloud.apptopology.v1.ListDomainsResponse.domains:type_name -> google.cloud.apptopology.v1.Domain
-	1,  // 5: google.cloud.apptopology.v1.AppTopology.GenerateDiscoveredResourcesTopology:input_type -> google.cloud.apptopology.v1.GenerateDiscoveredResourcesTopologyRequest
-	3,  // 6: google.cloud.apptopology.v1.AppTopology.GetSchema:input_type -> google.cloud.apptopology.v1.GetSchemaRequest
-	4,  // 7: google.cloud.apptopology.v1.AppTopology.GetDomain:input_type -> google.cloud.apptopology.v1.GetDomainRequest
-	5,  // 8: google.cloud.apptopology.v1.AppTopology.ListDomains:input_type -> google.cloud.apptopology.v1.ListDomainsRequest
-	2,  // 9: google.cloud.apptopology.v1.AppTopology.GenerateDiscoveredResourcesTopology:output_type -> google.cloud.apptopology.v1.GenerateDiscoveredResourcesTopologyResponse
-	11, // 10: google.cloud.apptopology.v1.AppTopology.GetSchema:output_type -> google.cloud.apptopology.v1.Schema
-	10, // 11: google.cloud.apptopology.v1.AppTopology.GetDomain:output_type -> google.cloud.apptopology.v1.Domain
-	6,  // 12: google.cloud.apptopology.v1.AppTopology.ListDomains:output_type -> google.cloud.apptopology.v1.ListDomainsResponse
-	9,  // [9:13] is the sub-list for method output_type
-	5,  // [5:9] is the sub-list for method input_type
-	5,  // [5:5] is the sub-list for extension type_name
-	5,  // [5:5] is the sub-list for extension extendee
-	0,  // [0:5] is the sub-list for field type_name
+	9,  // 0: google.cloud.apptopology.v1.OperationMetadata.create_time:type_name -> google.protobuf.Timestamp
+	9,  // 1: google.cloud.apptopology.v1.OperationMetadata.end_time:type_name -> google.protobuf.Timestamp
+	10, // 2: google.cloud.apptopology.v1.GenerateDiscoveredResourcesTopologyRequest.filter:type_name -> google.cloud.apptopology.v1.GraphPattern
+	11, // 3: google.cloud.apptopology.v1.GenerateDiscoveredResourcesTopologyResponse.graph:type_name -> google.cloud.apptopology.v1.Graph
+	12, // 4: google.cloud.apptopology.v1.ExploreSchemaResponse.node_types:type_name -> google.cloud.apptopology.v1.NodeType
+	13, // 5: google.cloud.apptopology.v1.ExploreSchemaResponse.edge_types:type_name -> google.cloud.apptopology.v1.EdgeType
+	14, // 6: google.cloud.apptopology.v1.ExploreSchemaResponse.label_properties:type_name -> google.cloud.apptopology.v1.LabelProperties
+	15, // 7: google.cloud.apptopology.v1.ExploreSchemaResponse.edge_rules:type_name -> google.cloud.apptopology.v1.EdgeRule
+	16, // 8: google.cloud.apptopology.v1.ListDomainsResponse.domains:type_name -> google.cloud.apptopology.v1.Domain
+	1,  // 9: google.cloud.apptopology.v1.AppTopology.GenerateDiscoveredResourcesTopology:input_type -> google.cloud.apptopology.v1.GenerateDiscoveredResourcesTopologyRequest
+	3,  // 10: google.cloud.apptopology.v1.AppTopology.GetSchema:input_type -> google.cloud.apptopology.v1.GetSchemaRequest
+	4,  // 11: google.cloud.apptopology.v1.AppTopology.ExploreSchema:input_type -> google.cloud.apptopology.v1.ExploreSchemaRequest
+	6,  // 12: google.cloud.apptopology.v1.AppTopology.GetDomain:input_type -> google.cloud.apptopology.v1.GetDomainRequest
+	7,  // 13: google.cloud.apptopology.v1.AppTopology.ListDomains:input_type -> google.cloud.apptopology.v1.ListDomainsRequest
+	2,  // 14: google.cloud.apptopology.v1.AppTopology.GenerateDiscoveredResourcesTopology:output_type -> google.cloud.apptopology.v1.GenerateDiscoveredResourcesTopologyResponse
+	17, // 15: google.cloud.apptopology.v1.AppTopology.GetSchema:output_type -> google.cloud.apptopology.v1.Schema
+	5,  // 16: google.cloud.apptopology.v1.AppTopology.ExploreSchema:output_type -> google.cloud.apptopology.v1.ExploreSchemaResponse
+	16, // 17: google.cloud.apptopology.v1.AppTopology.GetDomain:output_type -> google.cloud.apptopology.v1.Domain
+	8,  // 18: google.cloud.apptopology.v1.AppTopology.ListDomains:output_type -> google.cloud.apptopology.v1.ListDomainsResponse
+	14, // [14:19] is the sub-list for method output_type
+	9,  // [9:14] is the sub-list for method input_type
+	9,  // [9:9] is the sub-list for extension type_name
+	9,  // [9:9] is the sub-list for extension extendee
+	0,  // [0:9] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_apptopology_v1_service_proto_init() }
@@ -619,7 +836,7 @@ func file_google_cloud_apptopology_v1_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_apptopology_v1_service_proto_rawDesc), len(file_google_cloud_apptopology_v1_service_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   7,
+			NumMessages:   9,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

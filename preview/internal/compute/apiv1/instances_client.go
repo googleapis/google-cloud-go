@@ -406,6 +406,8 @@ type internalInstancesClient interface {
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The Instances API.
+//
+// This client uses Instances version 2026-10-01-preview.
 type InstancesClient struct {
 	// The internal transport-dependent client.
 	internalClient internalInstancesClient
@@ -1051,6 +1053,7 @@ func (c *instancesRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
+		"x-goog-api-version", "2026-10-01-preview",
 	}
 }
 
@@ -1331,9 +1334,6 @@ func (c *instancesRESTClient) AggregatedList(ctx context.Context, req *computepb
 		}
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 		if req != nil && req.ServiceProjectNumber != nil {
 			params.Add("serviceProjectNumber", fmt.Sprintf("%v", req.GetServiceProjectNumber()))
@@ -2303,9 +2303,6 @@ func (c *instancesRESTClient) List(ctx context.Context, req *computepb.ListInsta
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
-		}
 
 		baseUrl.RawQuery = params.Encode()
 
@@ -2392,9 +2389,6 @@ func (c *instancesRESTClient) ListReferrers(ctx context.Context, req *computepb.
 		}
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -2664,6 +2658,9 @@ func (c *instancesRESTClient) Reset(ctx context.Context, req *computepb.ResetIns
 	params := url.Values{}
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+	if req != nil && req.ResetMode != nil {
+		params.Add("resetMode", fmt.Sprintf("%v", req.GetResetMode()))
 	}
 
 	baseUrl.RawQuery = params.Encode()

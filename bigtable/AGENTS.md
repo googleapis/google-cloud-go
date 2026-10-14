@@ -4,6 +4,24 @@ These instructions apply to any AI coding agent (Claude Code, GitHub
 Copilot, Gemini Code Assist, Cursor, Aider, etc.) editing files under
 `bigtable/`.
 
+## When editing admin operations
+
+Admin RPCs (table/cluster/instance CRUD, backups, IAM, etc.) are implemented
+in `bigtable/admin/apiv2/`, which is auto-generated from the Bigtable Admin
+proto. Two rules apply:
+
+- **Making changes to admin behavior** — `bigtable/admin/apiv2/` is
+  auto-generated from the Bigtable Admin proto; do not edit it directly.
+  Changes to admin RPCs must be made upstream in the proto definition.
+- **Writing application code that calls admin operations** — use
+  `bigtable/admin/apiv2` as the authoritative reference for correct client
+  construction, request building, and error handling. There are two clients:
+  - `bigtable/admin/apiv2/bigtable_instance_admin_client.go` — instance, cluster, and app-profile operations
+  - `bigtable/admin/apiv2/table_admin.go` — table, backup, and schema operations
+
+  The higher-level `bigtable.AdminClient` wraps these; check `bigtable/admin/apiv2`
+  when the wrapper's behavior is unclear.
+
 ## When editing the Session subsystem
 
 Before editing ANY file under:

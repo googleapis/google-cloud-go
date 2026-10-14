@@ -303,6 +303,8 @@ const (
 	// The destination does not have a custom variable with a name that matches
 	// the specified `variable`.
 	ErrorReason_CUSTOM_VARIABLE_NOT_FOUND ErrorReason = 120
+	// Maximum number of users allowed per request is 10,000.
+	ErrorReason_TOO_MANY_USERS ErrorReason = 121
 	// The
 	// [location_auto_detection_enabled][google.ads.datamanager.v1.Baseline.location_auto_detection_enabled]
 	// field of the request was set to `true`, but auto detection of baseline
@@ -321,6 +323,15 @@ const (
 	ErrorReason_REQUEST_TOO_OLD ErrorReason = 126
 	// The conversion action was created too recently.
 	ErrorReason_CONVERSION_ACTION_TOO_RECENTLY_CREATED ErrorReason = 127
+	// The ad identifier does not belong to the account.
+	//
+	// For example, the [`gclid`][google.ads.datamanager.v1.AdIdentifiers.gclid]
+	// isn't associated with the
+	// [`operating_account`][google.ads.datamanager.v1.Destination.operating_account]
+	// and
+	// [`product_destination_id`][google.ads.datamanager.v1.Destination.product_destination_id]
+	// of the destination.
+	ErrorReason_INVALID_AD_IDENTIFIER_FOR_ACCOUNT ErrorReason = 128
 )
 
 // Enum value maps for ErrorReason.
@@ -447,12 +458,14 @@ var (
 		118: "CUSTOM_VARIABLE_NOT_ENABLED",
 		119: "INVALID_CUSTOM_VARIABLE_VALUE",
 		120: "CUSTOM_VARIABLE_NOT_FOUND",
+		121: "TOO_MANY_USERS",
 		122: "BASELINE_LOCATION_AUTO_DETECTION_FAILED",
 		123: "INSIGHTS_MISSING_FOR_DIMENSION",
 		124: "REQUIRED_PREREQUISITE_LINK_MISSING",
 		125: "INVALID_REMOVE_AS_OF_TIME",
 		126: "REQUEST_TOO_OLD",
 		127: "CONVERSION_ACTION_TOO_RECENTLY_CREATED",
+		128: "INVALID_AD_IDENTIFIER_FOR_ACCOUNT",
 	}
 	ErrorReason_value = map[string]int32{
 		"ERROR_REASON_UNSPECIFIED":                              0,
@@ -576,12 +589,14 @@ var (
 		"CUSTOM_VARIABLE_NOT_ENABLED":                                    118,
 		"INVALID_CUSTOM_VARIABLE_VALUE":                                  119,
 		"CUSTOM_VARIABLE_NOT_FOUND":                                      120,
+		"TOO_MANY_USERS":                                                 121,
 		"BASELINE_LOCATION_AUTO_DETECTION_FAILED":                        122,
 		"INSIGHTS_MISSING_FOR_DIMENSION":                                 123,
 		"REQUIRED_PREREQUISITE_LINK_MISSING":                             124,
 		"INVALID_REMOVE_AS_OF_TIME":                                      125,
 		"REQUEST_TOO_OLD":                                                126,
 		"CONVERSION_ACTION_TOO_RECENTLY_CREATED":                         127,
+		"INVALID_AD_IDENTIFIER_FOR_ACCOUNT":                              128,
 	}
 )
 
@@ -616,7 +631,7 @@ var File_google_ads_datamanager_v1_error_proto protoreflect.FileDescriptor
 
 const file_google_ads_datamanager_v1_error_proto_rawDesc = "" +
 	"\n" +
-	"%google/ads/datamanager/v1/error.proto\x12\x19google.ads.datamanager.v1*\x83#\n" +
+	"%google/ads/datamanager/v1/error.proto\x12\x19google.ads.datamanager.v1*\xbf#\n" +
 	"\vErrorReason\x12\x1c\n" +
 	"\x18ERROR_REASON_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eINTERNAL_ERROR\x10\x01\x12\x15\n" +
@@ -739,13 +754,15 @@ const file_google_ads_datamanager_v1_error_proto_rawDesc = "" +
 	"\"CUSTOM_VARIABLE_VALUE_CONTAINS_PII\x10u\x12\x1f\n" +
 	"\x1bCUSTOM_VARIABLE_NOT_ENABLED\x10v\x12!\n" +
 	"\x1dINVALID_CUSTOM_VARIABLE_VALUE\x10w\x12\x1d\n" +
-	"\x19CUSTOM_VARIABLE_NOT_FOUND\x10x\x12+\n" +
+	"\x19CUSTOM_VARIABLE_NOT_FOUND\x10x\x12\x12\n" +
+	"\x0eTOO_MANY_USERS\x10y\x12+\n" +
 	"'BASELINE_LOCATION_AUTO_DETECTION_FAILED\x10z\x12\"\n" +
 	"\x1eINSIGHTS_MISSING_FOR_DIMENSION\x10{\x12&\n" +
 	"\"REQUIRED_PREREQUISITE_LINK_MISSING\x10|\x12\x1d\n" +
 	"\x19INVALID_REMOVE_AS_OF_TIME\x10}\x12\x13\n" +
 	"\x0fREQUEST_TOO_OLD\x10~\x12*\n" +
-	"&CONVERSION_ACTION_TOO_RECENTLY_CREATED\x10\x7fB\xc7\x01\n" +
+	"&CONVERSION_ACTION_TOO_RECENTLY_CREATED\x10\x7f\x12&\n" +
+	"!INVALID_AD_IDENTIFIER_FOR_ACCOUNT\x10\x80\x01B\xc7\x01\n" +
 	"\x1dcom.google.ads.datamanager.v1B\n" +
 	"ErrorProtoP\x01ZAcloud.google.com/go/datamanager/apiv1/datamanagerpb;datamanagerpb\xaa\x02\x19Google.Ads.DataManager.V1\xca\x02\x19Google\\Ads\\DataManager\\V1\xea\x02\x1cGoogle::Ads::DataManager::V1b\x06proto3"
 

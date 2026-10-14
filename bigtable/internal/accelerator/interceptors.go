@@ -175,7 +175,7 @@ func isProxied(fullMethod string) bool {
 // without per-method wiring here.
 //
 // Non-Bigtable RPCs are passed to their real handler -- see isProxied.
-func proxyUnaryInterceptor(channel *Channel) grpc.UnaryServerInterceptor {
+func proxyUnaryInterceptor(channel grpc.ClientConnInterface) grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 		if !isProxied(info.FullMethod) {
 			return handler(ctx, req)
@@ -209,7 +209,7 @@ func proxyUnaryInterceptor(channel *Channel) grpc.UnaryServerInterceptor {
 // methods this proxy is actually responsible for: grpc.health.v1.Health/Watch
 // is a legitimate server-streaming method served locally, and a locally-served
 // client-streaming method would be the local handler's business, not ours.
-func proxyStreamInterceptor(channel *Channel) grpc.StreamServerInterceptor {
+func proxyStreamInterceptor(channel grpc.ClientConnInterface) grpc.StreamServerInterceptor {
 	return func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
 		if !isProxied(info.FullMethod) {
 			return handler(srv, ss)
