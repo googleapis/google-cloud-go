@@ -257,19 +257,27 @@ func (p *SessionPoolImpl) createSession(ctx context.Context) error {
 	p.mu.Unlock()
 	reserved = false
 
+	// Disarm the deferred fallback. From here, exactly one of onActive or
+	// the onClose starting branch releases the budget: both paths delete
+	// sh from startingSessions under p.mu, so the delete is the single-
+	// fire gate. Start calling ForceClose on a synchronous Send failure
+	// fires onClose before returning, so the starting branch covers that
+	// path too.
+	budgetReleased = true
+
 	if err := s.Start(dialCtx, p.openSessionRequest); err != nil {
+		// onClose fired synchronously (ForceClose inside Start) and already
+		// released the budget via the starting branch. Clean up in case
+		// something unexpected left sh in startingSessions.
 		p.mu.Lock()
 		delete(p.startingSessions, sh)
 		p.mu.Unlock()
 		btopt.Debugf(nil, "POOL %p createSession Start failed for %s: %v", p, sessionName, err)
 		return fmt.Errorf("failed to start session: %w", err)
 	}
-
-	// Release budget now so the next scale-up isn't blocked by this
-	// session's lifetime (the deferred fallback would otherwise fire
-	// only after WaitGoroutines returns, i.e. after the session dies).
-	p.budget.Release(true)
-	budgetReleased = true
+	// Budget is released by onActive (handshake confirmed) or the onClose
+	// starting branch (stream died before Ready), whichever deletes sh
+	// from startingSessions first under p.mu.
 
 	// Block on WaitGoroutines so this createSession goroutine stays on
 	// p.spawns for the session's entire lifetime — Close's Phase-5 then
