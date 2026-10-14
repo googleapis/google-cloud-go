@@ -201,14 +201,15 @@ type tracedTokenProvider struct {
 	base auth.TokenProvider
 }
 
-func (p *tracedTokenProvider) Token(ctx context.Context) (*auth.Token, error) {
+func (p *tracedTokenProvider) Token(ctx context.Context) (tok *auth.Token, err error) {
 	if !isOTelTracingDevEnabled() {
 		return p.base.Token(ctx)
 	}
 	ctx, _ = startSpan(ctx, "Auth.RefreshAccessToken")
-	tok, err := p.base.Token(ctx)
-	endSpan(ctx, err)
-	return tok, err
+	defer func() {
+		endSpan(ctx, err)
+	}()
+	return p.base.Token(ctx)
 }
 
 // wrapAuthCredentialsForTracing wraps an auth.Credentials object to record T5
