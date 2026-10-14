@@ -350,3 +350,72 @@ func TestEndSpanEviction(t *testing.T) {
 		})
 	}
 }
+
+func TestSetUploadIDAttribute(t *testing.T) {
+	const sampleUploadID = "AJjja9aXX4R20FIZ2ddLnYddhJmD9Xm_Y2B_NEu5G2a6PzJiGRgPKLp6hEQpM"
+	spanName := "Object.Writer"
+
+	tests := []struct {
+		name       string
+		devTracing string
+		uploadID   string
+		wantAttrs  []attribute.KeyValue
+	}{
+		{
+			name:       "Records upload.id when dev tracing enabled",
+			devTracing: "true",
+			uploadID:   sampleUploadID,
+			wantAttrs:  append(getCommonAttributes(), attribute.String("gcp.storage.upload.id", sampleUploadID)),
+		},
+		{
+			name:       "Omits upload.id when upload_id is empty",
+			devTracing: "true",
+			uploadID:   "",
+			wantAttrs:  getCommonAttributes(),
+		},
+		{
+			name:       "Omits upload.id when dev tracing disabled",
+			devTracing: "false",
+			uploadID:   sampleUploadID,
+			wantAttrs:  nil,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			ctx := context.Background()
+			te := testutil.NewOpenTelemetryTestExporter()
+			t.Cleanup(func() {
+				te.Unregister(ctx)
+			})
+
+			// TODO: Remove setting development env var upon launch.
+			t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", tc.devTracing)
+
+			ctx, _ = startSpan(ctx, spanName)
+			setUploadIDAttribute(ctx, tc.uploadID)
+			endSpan(ctx, nil)
+
+			spans := te.Spans()
+			if len(spans) != 1 {
+				t.Fatalf("expected one span, got %d", len(spans))
+			}
+			gotSpan := spans[0]
+			if got, want := gotSpan.Name, appendPackageName(spanName); got != want {
+				t.Fatalf("got %s, want %s", got, want)
+			}
+
+			if tc.devTracing == "true" {
+				wantSpan := createWantSpanStub(spanName, tc.wantAttrs)
+				opts := []cmp.Option{
+					cmp.Comparer(spanAttributesComparer),
+				}
+				if diff := testutil.Diff(gotSpan, wantSpan, opts...); diff != "" {
+					t.Errorf("diff: -got, +want:\n%s\n", diff)
+				}
+			} else if len(gotSpan.Attributes) != 0 {
+				t.Errorf("expected no attributes when dev tracing is disabled, got %v", gotSpan.Attributes)
+			}
+		})
+	}
+}
