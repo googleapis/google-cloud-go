@@ -24,7 +24,7 @@ import (
 // TestShouldRecycleChannel_UNIMPLEMENTED: UNIMPLEMENTED close error triggers recycle.
 func TestShouldRecycleChannel_UNIMPLEMENTED(t *testing.T) {
 	err := status.Error(codes.Unimplemented, "sessions not supported on this backend")
-	if !shouldRecycleChannel("StreamEnd:Unimplemented", err, 0) {
+	if !shouldRecycleChannel(err, 0) {
 		t.Error("UNIMPLEMENTED should trigger channel recycle")
 	}
 }
@@ -32,7 +32,7 @@ func TestShouldRecycleChannel_UNIMPLEMENTED(t *testing.T) {
 // TestShouldRecycleChannel_ServerIsDraining: "server is draining" in description triggers recycle.
 func TestShouldRecycleChannel_ServerIsDraining(t *testing.T) {
 	err := status.Error(codes.Unavailable, "server is draining")
-	if !shouldRecycleChannel("StreamEnd:Unavailable", err, 0) {
+	if !shouldRecycleChannel(err, 0) {
 		t.Error(`"server is draining" in status message should trigger channel recycle`)
 	}
 }
@@ -40,53 +40,51 @@ func TestShouldRecycleChannel_ServerIsDraining(t *testing.T) {
 // TestShouldRecycleChannel_ServerIsDrainingCaseInsensitive: case-insensitive match.
 func TestShouldRecycleChannel_ServerIsDrainingCaseInsensitive(t *testing.T) {
 	err := status.Error(codes.Unavailable, "Server Is Draining")
-	if !shouldRecycleChannel("", err, 0) {
+	if !shouldRecycleChannel(err, 0) {
 		t.Error(`"Server Is Draining" (mixed case) should trigger channel recycle`)
 	}
 }
 
-// TestShouldRecycleChannel_GoAway: application-level GoAway close reason triggers recycle.
-func TestShouldRecycleChannel_GoAway(t *testing.T) {
-	if !shouldRecycleChannel("GoAway", nil, 0) {
-		t.Error("GoAway close reason should trigger channel recycle")
+// TestShouldRecycleChannel_GoAwayNotRecycled: application-level GoAway (session-level close
+// reason) must NOT trigger channel recycle — only gRPC-transport-level GOAWAY does.
+func TestShouldRecycleChannel_GoAwayNotRecycled(t *testing.T) {
+	// nil error, zero failures — only the close reason is "GoAway", but that is
+	// session-level and not a signal for channel recycling.
+	if shouldRecycleChannel(nil, 0) {
+		t.Error("GoAway close reason alone should NOT trigger channel recycle")
 	}
 }
 
 // TestShouldRecycleChannel_ConsecutiveFailures: hitting the threshold triggers recycle.
 func TestShouldRecycleChannel_ConsecutiveFailures(t *testing.T) {
-	if !shouldRecycleChannel("StreamEnd:Unavailable", nil, channelConsecutiveFailureThreshold) {
+	if !shouldRecycleChannel(nil, channelConsecutiveFailureThreshold) {
 		t.Errorf("consecutiveFailures=%d should trigger recycle", channelConsecutiveFailureThreshold)
 	}
 	// One below threshold — no recycle.
-	if shouldRecycleChannel("StreamEnd:Unavailable", nil, channelConsecutiveFailureThreshold-1) {
+	if shouldRecycleChannel(nil, channelConsecutiveFailureThreshold-1) {
 		t.Errorf("consecutiveFailures=%d should NOT trigger recycle", channelConsecutiveFailureThreshold-1)
 	}
 }
 
 // TestShouldRecycleChannel_NegativeCases: unrelated errors do not trigger recycle.
 func TestShouldRecycleChannel_NegativeCases(t *testing.T) {
-	cases := []struct {
-		reason string
-		err    error
-	}{
-		{"StreamEnd:Unavailable", status.Error(codes.Unavailable, "transient failure")},
-		{"StreamEnd:EOF", nil},
-		{"MissedHeartbeat", nil},
-		{"User", nil},
-		{"", nil},
+	cases := []error{
+		status.Error(codes.Unavailable, "transient failure"),
+		nil, // StreamEnd:EOF, MissedHeartbeat, GoAway, User, etc.
 	}
-	for _, c := range cases {
-		if shouldRecycleChannel(c.reason, c.err, 0) {
-			t.Errorf("reason=%q err=%v should NOT trigger recycle", c.reason, c.err)
+	for _, err := range cases {
+		if shouldRecycleChannel(err, 0) {
+			t.Errorf("err=%v should NOT trigger recycle", err)
 		}
 	}
 }
 
-// TestMaybeRecycleChannel_CallsRecyclerOnGoAway: recycler is called for a GoAway session.
-func TestMaybeRecycleChannel_CallsRecyclerOnGoAway(t *testing.T) {
-	var recycledIdx int32 = -1
+// TestMaybeRecycleChannel_GoAwayDoesNotRecycle: application-level GoAway must not
+// trigger channel recycling; only gRPC-transport-level GOAWAY ("server is draining") does.
+func TestMaybeRecycleChannel_GoAwayDoesNotRecycle(t *testing.T) {
+	called := false
 	p := newMinimalPool(t)
-	p.SetChannelRecycler(func(idx int32) { recycledIdx = idx })
+	p.SetChannelRecycler(func(idx int32) { called = true })
 
 	sh := &SessionHandle{}
 	sh.session = minimalSession(t, 3)
@@ -94,8 +92,8 @@ func TestMaybeRecycleChannel_CallsRecyclerOnGoAway(t *testing.T) {
 
 	p.maybeRecycleChannel(sh, 0)
 
-	if recycledIdx != 3 {
-		t.Errorf("recycledIdx = %d, want 3", recycledIdx)
+	if called {
+		t.Error("recycler should NOT be called for application-level GoAway (session drain, not channel fault)")
 	}
 }
 
@@ -156,14 +154,14 @@ func TestPerChannelFailureCounter(t *testing.T) {
 	// Simulate 4 failures — not yet at threshold.
 	for i := int32(1); i <= 4; i++ {
 		n := counter.Add(1)
-		if shouldRecycleChannel("StreamEnd:Unavailable", nil, n) {
+		if shouldRecycleChannel(nil, n) {
 			t.Errorf("failure %d should not yet trigger recycle (threshold=%d)", i, channelConsecutiveFailureThreshold)
 		}
 	}
 
 	// 5th failure crosses the threshold.
 	n := counter.Add(1)
-	if !shouldRecycleChannel("StreamEnd:Unavailable", nil, n) {
+	if !shouldRecycleChannel(nil, n) {
 		t.Errorf("failure %d should trigger recycle (threshold=%d)", n, channelConsecutiveFailureThreshold)
 	}
 
@@ -178,11 +176,8 @@ func TestPerChannelFailureCounter(t *testing.T) {
 // teardown) must not increment the per-channel failure counter.
 func TestCancelledErrorDoesNotIncrementChannelFailures(t *testing.T) {
 	cancelledErr := status.Error(codes.Canceled, "pool teardown")
-	if codes.Canceled != codes.Canceled {
-		t.Fatal("sanity")
-	}
 	// shouldRecycleChannel should not fire on CANCELLED even if failures is high.
-	if shouldRecycleChannel("", cancelledErr, 0) {
+	if shouldRecycleChannel(cancelledErr, 0) {
 		t.Error("CANCELLED should not trigger recycle")
 	}
 }

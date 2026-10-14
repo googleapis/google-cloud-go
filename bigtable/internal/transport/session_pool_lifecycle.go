@@ -371,8 +371,13 @@ func (p *SessionPoolImpl) onClose(sh *SessionHandle, err error) {
 		// Mirrors Java: consecutiveFailures++ when afeId==null (pre-ready) and
 		// the error is not CANCELLED (which indicates pool teardown or context
 		// cancel, not a channel fault). shouldRecycleChannel checks
-		// UNIMPLEMENTED, "server is draining", GoAway, and the per-channel
-		// threshold — mirroring Java's ChannelPoolDpImpl.shouldRecycleChannel.
+		// UNIMPLEMENTED, "server is draining", and the per-channel threshold —
+		// mirroring Java's ChannelPoolDpImpl.shouldRecycleChannel.
+		//
+		// We keep per-channel counts (not p.consecutiveFailures) because the
+		// pool-level counter resets whenever ANY channel opens a session
+		// successfully; a single bad channel in an otherwise-healthy pool would
+		// never accumulate enough failures to trigger recycling.
 		var channelFailures int32
 		if idx := sh.session.ChannelIndex(); idx >= 0 && status.Code(sh.session.closeError()) != codes.Canceled {
 			channelFailures = p.channelFailureCounter(idx).Add(1)
@@ -426,16 +431,16 @@ const channelConsecutiveFailureThreshold = 5
 // Returns true when the underlying gRPC connection should be replaced:
 //  1. UNIMPLEMENTED — server does not support sessions on this channel.
 //  2. "server is draining" in status description — gRPC-level transport GOAWAY.
-//  3. Application-level GoAway proto (Go-specific; server is draining the cell).
-//  4. Per-channel consecutive failures have reached the threshold.
-func shouldRecycleChannel(closeReason string, closeErr error, channelFailures int32) bool {
+//  3. Per-channel consecutive failures have reached the threshold.
+//
+// Application-level GoAway protos (session-level close reason "GoAway") are
+// intentionally excluded: they indicate graceful session drain, not a channel
+// fault, and are not recycled in Java's shouldRecycleChannel either.
+func shouldRecycleChannel(closeErr error, channelFailures int32) bool {
 	if status.Code(closeErr) == codes.Unimplemented {
 		return true
 	}
 	if msg := status.Convert(closeErr).Message(); strings.Contains(strings.ToLower(msg), "server is draining") {
-		return true
-	}
-	if closeReason == "GoAway" {
 		return true
 	}
 	return channelFailures >= channelConsecutiveFailureThreshold
@@ -444,6 +449,9 @@ func shouldRecycleChannel(closeReason string, closeErr error, channelFailures in
 // channelFailureCounter returns (or lazily creates) the per-channel
 // consecutive-failure counter for channelIdx.
 func (p *SessionPoolImpl) channelFailureCounter(channelIdx int32) *atomic.Int32 {
+	if v, ok := p.channelConsecutiveFailures.Load(channelIdx); ok {
+		return v.(*atomic.Int32)
+	}
 	v, _ := p.channelConsecutiveFailures.LoadOrStore(channelIdx, new(atomic.Int32))
 	return v.(*atomic.Int32)
 }
@@ -461,7 +469,7 @@ func (p *SessionPoolImpl) maybeRecycleChannel(sh *SessionHandle, channelFailures
 	if idx < 0 {
 		return
 	}
-	if shouldRecycleChannel(sh.session.CloseReason(), sh.session.closeError(), channelFailures) {
+	if shouldRecycleChannel(sh.session.closeError(), channelFailures) {
 		p.channelRecycler(idx)
 	}
 }
