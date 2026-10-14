@@ -1548,6 +1548,40 @@ func (s *gRPCResumableBidiWriteBufferSender) connectStage() string {
 	return rpcQueryWriteStatus
 }
 
+type flushTiming struct {
+	sentAt       time.Time
+	sendDuration time.Duration
+}
+
+// resumableStream encapsulates a single BidiWriteObject gRPC stream and its
+// background receiver goroutine for a resumable upload session.
+//
+// Adaptive stream rotation state machine:
+//  1. Active: The sender loop streams write quantums (r.flush == false) and
+//     flushes (r.flush == true) over st, while the receiver goroutine reads
+//     persisted_size acks, records chunk latency (sendDuration + commitWait),
+//     and sets rotate = true when latency exceeds the adaptive threshold.
+//  2. Drain & Half-Close (closeAndWait): At the next chunk boundary
+//     (!r.finishWrite && !unflushedDataSent) when rotate is true, closeAndWait
+//     calls CloseSend() and waits for the receiver goroutine to drain any
+//     remaining persisted_size acks until the server ends the stream with
+//     io.EOF (the normal gRPC response to CloseSend()).
+//  3. Re-attach (openStream): Once drained, openStream opens a fresh
+//     BidiWriteObject stream with the existing UploadId without calling
+//     QueryWriteStatus. The current stream is only replaced on success.
+type resumableStream struct {
+	st      storagepb.Storage_BidiWriteObjectClient
+	flushes chan flushTiming
+	done    chan struct{}
+	rErr    error
+}
+
+func (rs *resumableStream) closeAndWait() error {
+	rs.st.CloseSend()
+	<-rs.done
+	return rs.rErr
+}
+
 func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRPCBufSenderChans, opts ...gax.CallOption) {
 	s.streamErr = nil
 	ctx = gRPCWriteRequestParams{bucket: s.bucket}.apply(ctx)
@@ -1571,23 +1605,21 @@ func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRP
 		cs.completions <- gRPCBidiWriteCompletion{flushOffset: q.GetPersistedSize()}
 	}
 
-	type flushTiming struct {
-		sentAt       time.Time
-		sendDuration time.Duration
-	}
 	var rotate atomic.Bool
 
-	openStream := func() (storagepb.Storage_BidiWriteObjectClient, chan<- flushTiming, <-chan struct{}, func() error, error) {
+	openStream := func() (*resumableStream, error) {
 		st, err := s.raw.BidiWriteObject(ctx, opts...)
 		if err != nil {
-			return nil, nil, nil, nil, err
+			return nil, err
 		}
 		rotate.Store(false)
-		flushes := make(chan flushTiming, 16)
-		rDone := make(chan struct{})
-		var rErr error
+		rs := &resumableStream{
+			st:      st,
+			flushes: make(chan flushTiming, 16),
+			done:    make(chan struct{}),
+		}
 		go func() {
-			rErr = func() error {
+			rs.rErr = func() error {
 				var lastAck time.Time
 				for {
 					resp, err := st.Recv()
@@ -1597,7 +1629,7 @@ func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRP
 					if c := completion(resp); c != nil {
 						now := time.Now()
 						select {
-						case f := <-flushes:
+						case f := <-rs.flushes:
 							waitStart := f.sentAt
 							if lastAck.After(waitStart) {
 								waitStart = lastAck
@@ -1620,12 +1652,12 @@ func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRP
 					}
 				}
 			}()
-			close(rDone)
+			close(rs.done)
 		}()
-		return st, flushes, rDone, func() error { return rErr }, nil
+		return rs, nil
 	}
 
-	stream, flushes, recvDone, getRecvErr, err := openStream()
+	cur, err := openStream()
 	if err != nil {
 		s.streamErr = err
 		close(cs.completions)
@@ -1641,13 +1673,13 @@ func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRP
 		sendErr = func() error {
 			for {
 				select {
-				case <-recvDone:
+				case <-cur.done:
 					// Because `requests` is not connected to the gRPC machinery, we
 					// have to check for asynchronous termination on the receive side.
 					return nil
 				case r, ok := <-cs.requests:
 					if !ok {
-						stream.CloseSend()
+						cur.st.CloseSend()
 						return nil
 					}
 					if r.requestAck {
@@ -1656,16 +1688,18 @@ func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRP
 					}
 
 					if !r.finishWrite && !unflushedDataSent && rotate.Load() {
-						stream.CloseSend()
-						<-recvDone
-						if err := getRecvErr(); err != nil && err != io.EOF {
+						// Half-close the current stream and wait for the receiver
+						// goroutine to drain any remaining persisted_size acks.
+						// Receiving io.EOF from Recv() is the normal gRPC response
+						// once the server finishes replying to a half-closed stream.
+						if err := cur.closeAndWait(); err != nil && err != io.EOF {
 							return err
 						}
-						var err error
-						stream, flushes, recvDone, getRecvErr, err = openStream()
+						next, err := openStream()
 						if err != nil {
 							return err
 						}
+						cur = next
 						firstSend = true
 						chunkSendDuration = 0
 					}
@@ -1690,16 +1724,16 @@ func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRP
 					sendStart := time.Now()
 					if r.flush && !r.finishWrite && s.chunkDelay != nil {
 						select {
-						case flushes <- flushTiming{sentAt: sendStart, sendDuration: chunkSendDuration}:
-						case <-recvDone:
+						case cur.flushes <- flushTiming{sentAt: sendStart, sendDuration: chunkSendDuration}:
+						case <-cur.done:
 							return nil
 						}
 					}
-					if err := stream.Send(req); err != nil {
+					if err := cur.st.Send(req); err != nil {
 						return err
 					}
 					if r.finishWrite {
-						stream.CloseSend()
+						cur.st.CloseSend()
 						return nil
 					}
 					if s.chunkDelay != nil {
@@ -1718,8 +1752,8 @@ func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRP
 			}
 		}()
 
-		<-recvDone
-		s.streamErr = pickStreamError(getRecvErr(), sendErr)
+		<-cur.done
+		s.streamErr = pickStreamError(cur.rErr, sendErr)
 		close(cs.completions)
 	}()
 }

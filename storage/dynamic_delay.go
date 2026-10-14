@@ -342,6 +342,10 @@ func (d *dynamicDelay) recordLatency(latency time.Duration) bool {
 	defer d.mu.Unlock()
 	exceeded := latency > d.value
 	if exceeded {
+		// Anchor to the observed latency before applying increaseFactor so a
+		// slower link adapts immediately instead of climbing from minDelay one
+		// step at a time.
+		d.value = min(latency, d.maxDelay)
 		d.unsafeIncrease()
 	} else {
 		d.unsafeDecrease()

@@ -511,10 +511,10 @@ func TestWriteChunkDelay(t *testing.T) {
 		t.Fatal("expected recordLatency(300ms) to report exceeded=true")
 	}
 	afterIncrease := d.getValue()
-	if afterIncrease <= 210*time.Millisecond {
-		t.Fatalf("expected threshold to increase above 210ms, got %v", afterIncrease)
+	if afterIncrease <= 300*time.Millisecond {
+		t.Fatalf("expected threshold to anchor to 300ms and apply increaseFactor, got %v", afterIncrease)
 	}
-	if d.recordLatency(200 * time.Millisecond) {
-		t.Fatal("expected recordLatency(200ms) to report exceeded=false")
+	if d.recordLatency(300 * time.Millisecond) {
+		t.Fatal("expected recordLatency(300ms) to report exceeded=false after adapting above 300ms")
 	}
 }
