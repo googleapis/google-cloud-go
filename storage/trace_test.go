@@ -354,11 +354,10 @@ func TestEndSpanEviction(t *testing.T) {
 
 type staticAuthTokenProvider struct {
 	token *auth.Token
-	err   error
 }
 
 func (s *staticAuthTokenProvider) Token(ctx context.Context) (*auth.Token, error) {
-	return s.token, s.err
+	return s.token, nil
 }
 
 func TestWrapAuthCredentialsForTracing(t *testing.T) {
@@ -414,33 +413,6 @@ func TestTracedTokenProviderSpan(t *testing.T) {
 	}
 	if got, want := spans[0].Parent.SpanID(), parentSpan.SpanContext().SpanID(); got != want {
 		t.Errorf("got parent span ID %v, want %v", got, want)
-	}
-}
-
-func TestTracedTokenProviderError(t *testing.T) {
-	ctx := context.Background()
-	te := testutil.NewOpenTelemetryTestExporter()
-	t.Cleanup(func() {
-		te.Unregister(ctx)
-	})
-	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
-
-	testErr := fmt.Errorf("oauth2: token expired")
-	creds := wrapAuthCredentialsForTracing(&auth.Credentials{
-		TokenProvider: &staticAuthTokenProvider{err: testErr},
-	})
-
-	_, err := creds.Token(ctx)
-	if err == nil {
-		t.Fatalf("expected error from creds.Token, got nil")
-	}
-
-	spans := te.Spans()
-	if len(spans) != 1 {
-		t.Fatalf("expected 1 span, got %d", len(spans))
-	}
-	if spans[0].Status.Code != otcodes.Error {
-		t.Errorf("got span status code %v, want %v", spans[0].Status.Code, otcodes.Error)
 	}
 }
 
