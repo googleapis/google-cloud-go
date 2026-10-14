@@ -35,10 +35,17 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
+	Memorystore_ListAclPolicies_FullMethodName                       = "/google.cloud.memorystore.v1beta.Memorystore/ListAclPolicies"
 	Memorystore_ListInstances_FullMethodName                         = "/google.cloud.memorystore.v1beta.Memorystore/ListInstances"
+	Memorystore_GetAclPolicy_FullMethodName                          = "/google.cloud.memorystore.v1beta.Memorystore/GetAclPolicy"
 	Memorystore_GetInstance_FullMethodName                           = "/google.cloud.memorystore.v1beta.Memorystore/GetInstance"
+	Memorystore_CreateAclPolicy_FullMethodName                       = "/google.cloud.memorystore.v1beta.Memorystore/CreateAclPolicy"
 	Memorystore_CreateInstance_FullMethodName                        = "/google.cloud.memorystore.v1beta.Memorystore/CreateInstance"
+	Memorystore_UpdateAclPolicy_FullMethodName                       = "/google.cloud.memorystore.v1beta.Memorystore/UpdateAclPolicy"
 	Memorystore_UpdateInstance_FullMethodName                        = "/google.cloud.memorystore.v1beta.Memorystore/UpdateInstance"
+	Memorystore_DeleteAclPolicy_FullMethodName                       = "/google.cloud.memorystore.v1beta.Memorystore/DeleteAclPolicy"
+	Memorystore_GetAclPolicyRevision_FullMethodName                  = "/google.cloud.memorystore.v1beta.Memorystore/GetAclPolicyRevision"
+	Memorystore_ListAclPolicyRevisions_FullMethodName                = "/google.cloud.memorystore.v1beta.Memorystore/ListAclPolicyRevisions"
 	Memorystore_DeleteInstance_FullMethodName                        = "/google.cloud.memorystore.v1beta.Memorystore/DeleteInstance"
 	Memorystore_GetCertificateAuthority_FullMethodName               = "/google.cloud.memorystore.v1beta.Memorystore/GetCertificateAuthority"
 	Memorystore_GetSharedRegionalCertificateAuthority_FullMethodName = "/google.cloud.memorystore.v1beta.Memorystore/GetSharedRegionalCertificateAuthority"
@@ -66,14 +73,49 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type MemorystoreClient interface {
+	// Lists all ACL policies owned by a project in either the specified
+	// location (region) or all locations.
+	//
+	// The location should have the following format:
+	//
+	// * `projects/{project_id}/locations/{location_id}`
+	//
+	// If `location_id` is specified as `-` (wildcard), then all regions
+	// available to the project are queried, and the results are aggregated.
+	ListAclPolicies(ctx context.Context, in *ListAclPoliciesRequest, opts ...grpc.CallOption) (*ListAclPoliciesResponse, error)
 	// Lists Instances in a given project and location.
 	ListInstances(ctx context.Context, in *ListInstancesRequest, opts ...grpc.CallOption) (*ListInstancesResponse, error)
+	// Gets the details of a specific Memorystore ACL policy.
+	GetAclPolicy(ctx context.Context, in *GetAclPolicyRequest, opts ...grpc.CallOption) (*AclPolicy, error)
 	// Gets details of a single Instance.
 	GetInstance(ctx context.Context, in *GetInstanceRequest, opts ...grpc.CallOption) (*Instance, error)
+	// Creates an ACL policy.
+	// The creation is executed synchronously and the policy is available for use
+	// immediately after the RPC returns.
+	CreateAclPolicy(ctx context.Context, in *CreateAclPolicyRequest, opts ...grpc.CallOption) (*AclPolicy, error)
 	// Creates a new Instance in a given project and location.
 	CreateInstance(ctx context.Context, in *CreateInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Updates the ACL policy.
+	//
+	// The operation will apply the updated ACL policy to all the linked
+	// instances. The operation will return success if it successfully applied the
+	// policy to all the instances. If the operation completed with a failure, the
+	// service will continue to apply the policy via reconciliation for the failed
+	// instances even after operation completion to ensure eventual consistency.
+	//
+	// Completed longrunning.Operation will contain the new ACL policy object
+	// in the response field.
+	UpdateAclPolicy(ctx context.Context, in *UpdateAclPolicyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates the parameters of a single Instance.
 	UpdateInstance(ctx context.Context, in *UpdateInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Deletes a specific ACL policy. This action will delete the ACL policy and
+	// all the rules associated with it. An ACL policy cannot be deleted if it is
+	// attached to an instance.
+	DeleteAclPolicy(ctx context.Context, in *DeleteAclPolicyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Gets details of a specific ACL policy revision.
+	GetAclPolicyRevision(ctx context.Context, in *GetAclPolicyRevisionRequest, opts ...grpc.CallOption) (*AclPolicyRevision, error)
+	// Lists all ACL policy revisions in a given ACL policy.
+	ListAclPolicyRevisions(ctx context.Context, in *ListAclPolicyRevisionsRequest, opts ...grpc.CallOption) (*ListAclPolicyRevisionsResponse, error)
 	// Deletes a single Instance.
 	DeleteInstance(ctx context.Context, in *DeleteInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Gets details about the certificate authority for an Instance.
@@ -154,9 +196,27 @@ func NewMemorystoreClient(cc grpc.ClientConnInterface) MemorystoreClient {
 	return &memorystoreClient{cc}
 }
 
+func (c *memorystoreClient) ListAclPolicies(ctx context.Context, in *ListAclPoliciesRequest, opts ...grpc.CallOption) (*ListAclPoliciesResponse, error) {
+	out := new(ListAclPoliciesResponse)
+	err := c.cc.Invoke(ctx, Memorystore_ListAclPolicies_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *memorystoreClient) ListInstances(ctx context.Context, in *ListInstancesRequest, opts ...grpc.CallOption) (*ListInstancesResponse, error) {
 	out := new(ListInstancesResponse)
 	err := c.cc.Invoke(ctx, Memorystore_ListInstances_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *memorystoreClient) GetAclPolicy(ctx context.Context, in *GetAclPolicyRequest, opts ...grpc.CallOption) (*AclPolicy, error) {
+	out := new(AclPolicy)
+	err := c.cc.Invoke(ctx, Memorystore_GetAclPolicy_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -172,6 +232,15 @@ func (c *memorystoreClient) GetInstance(ctx context.Context, in *GetInstanceRequ
 	return out, nil
 }
 
+func (c *memorystoreClient) CreateAclPolicy(ctx context.Context, in *CreateAclPolicyRequest, opts ...grpc.CallOption) (*AclPolicy, error) {
+	out := new(AclPolicy)
+	err := c.cc.Invoke(ctx, Memorystore_CreateAclPolicy_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *memorystoreClient) CreateInstance(ctx context.Context, in *CreateInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
 	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, Memorystore_CreateInstance_FullMethodName, in, out, opts...)
@@ -181,9 +250,45 @@ func (c *memorystoreClient) CreateInstance(ctx context.Context, in *CreateInstan
 	return out, nil
 }
 
+func (c *memorystoreClient) UpdateAclPolicy(ctx context.Context, in *UpdateAclPolicyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, Memorystore_UpdateAclPolicy_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *memorystoreClient) UpdateInstance(ctx context.Context, in *UpdateInstanceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
 	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, Memorystore_UpdateInstance_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *memorystoreClient) DeleteAclPolicy(ctx context.Context, in *DeleteAclPolicyRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, Memorystore_DeleteAclPolicy_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *memorystoreClient) GetAclPolicyRevision(ctx context.Context, in *GetAclPolicyRevisionRequest, opts ...grpc.CallOption) (*AclPolicyRevision, error) {
+	out := new(AclPolicyRevision)
+	err := c.cc.Invoke(ctx, Memorystore_GetAclPolicyRevision_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *memorystoreClient) ListAclPolicyRevisions(ctx context.Context, in *ListAclPolicyRevisionsRequest, opts ...grpc.CallOption) (*ListAclPolicyRevisionsResponse, error) {
+	out := new(ListAclPolicyRevisionsResponse)
+	err := c.cc.Invoke(ctx, Memorystore_ListAclPolicyRevisions_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -383,14 +488,49 @@ func (c *memorystoreClient) DeleteAuthToken(ctx context.Context, in *DeleteAuthT
 // All implementations should embed UnimplementedMemorystoreServer
 // for forward compatibility
 type MemorystoreServer interface {
+	// Lists all ACL policies owned by a project in either the specified
+	// location (region) or all locations.
+	//
+	// The location should have the following format:
+	//
+	// * `projects/{project_id}/locations/{location_id}`
+	//
+	// If `location_id` is specified as `-` (wildcard), then all regions
+	// available to the project are queried, and the results are aggregated.
+	ListAclPolicies(context.Context, *ListAclPoliciesRequest) (*ListAclPoliciesResponse, error)
 	// Lists Instances in a given project and location.
 	ListInstances(context.Context, *ListInstancesRequest) (*ListInstancesResponse, error)
+	// Gets the details of a specific Memorystore ACL policy.
+	GetAclPolicy(context.Context, *GetAclPolicyRequest) (*AclPolicy, error)
 	// Gets details of a single Instance.
 	GetInstance(context.Context, *GetInstanceRequest) (*Instance, error)
+	// Creates an ACL policy.
+	// The creation is executed synchronously and the policy is available for use
+	// immediately after the RPC returns.
+	CreateAclPolicy(context.Context, *CreateAclPolicyRequest) (*AclPolicy, error)
 	// Creates a new Instance in a given project and location.
 	CreateInstance(context.Context, *CreateInstanceRequest) (*longrunningpb.Operation, error)
+	// Updates the ACL policy.
+	//
+	// The operation will apply the updated ACL policy to all the linked
+	// instances. The operation will return success if it successfully applied the
+	// policy to all the instances. If the operation completed with a failure, the
+	// service will continue to apply the policy via reconciliation for the failed
+	// instances even after operation completion to ensure eventual consistency.
+	//
+	// Completed longrunning.Operation will contain the new ACL policy object
+	// in the response field.
+	UpdateAclPolicy(context.Context, *UpdateAclPolicyRequest) (*longrunningpb.Operation, error)
 	// Updates the parameters of a single Instance.
 	UpdateInstance(context.Context, *UpdateInstanceRequest) (*longrunningpb.Operation, error)
+	// Deletes a specific ACL policy. This action will delete the ACL policy and
+	// all the rules associated with it. An ACL policy cannot be deleted if it is
+	// attached to an instance.
+	DeleteAclPolicy(context.Context, *DeleteAclPolicyRequest) (*longrunningpb.Operation, error)
+	// Gets details of a specific ACL policy revision.
+	GetAclPolicyRevision(context.Context, *GetAclPolicyRevisionRequest) (*AclPolicyRevision, error)
+	// Lists all ACL policy revisions in a given ACL policy.
+	ListAclPolicyRevisions(context.Context, *ListAclPolicyRevisionsRequest) (*ListAclPolicyRevisionsResponse, error)
 	// Deletes a single Instance.
 	DeleteInstance(context.Context, *DeleteInstanceRequest) (*longrunningpb.Operation, error)
 	// Gets details about the certificate authority for an Instance.
@@ -467,17 +607,38 @@ type MemorystoreServer interface {
 type UnimplementedMemorystoreServer struct {
 }
 
+func (UnimplementedMemorystoreServer) ListAclPolicies(context.Context, *ListAclPoliciesRequest) (*ListAclPoliciesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListAclPolicies not implemented")
+}
 func (UnimplementedMemorystoreServer) ListInstances(context.Context, *ListInstancesRequest) (*ListInstancesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListInstances not implemented")
+}
+func (UnimplementedMemorystoreServer) GetAclPolicy(context.Context, *GetAclPolicyRequest) (*AclPolicy, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAclPolicy not implemented")
 }
 func (UnimplementedMemorystoreServer) GetInstance(context.Context, *GetInstanceRequest) (*Instance, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetInstance not implemented")
 }
+func (UnimplementedMemorystoreServer) CreateAclPolicy(context.Context, *CreateAclPolicyRequest) (*AclPolicy, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateAclPolicy not implemented")
+}
 func (UnimplementedMemorystoreServer) CreateInstance(context.Context, *CreateInstanceRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateInstance not implemented")
 }
+func (UnimplementedMemorystoreServer) UpdateAclPolicy(context.Context, *UpdateAclPolicyRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateAclPolicy not implemented")
+}
 func (UnimplementedMemorystoreServer) UpdateInstance(context.Context, *UpdateInstanceRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateInstance not implemented")
+}
+func (UnimplementedMemorystoreServer) DeleteAclPolicy(context.Context, *DeleteAclPolicyRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteAclPolicy not implemented")
+}
+func (UnimplementedMemorystoreServer) GetAclPolicyRevision(context.Context, *GetAclPolicyRevisionRequest) (*AclPolicyRevision, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAclPolicyRevision not implemented")
+}
+func (UnimplementedMemorystoreServer) ListAclPolicyRevisions(context.Context, *ListAclPolicyRevisionsRequest) (*ListAclPolicyRevisionsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListAclPolicyRevisions not implemented")
 }
 func (UnimplementedMemorystoreServer) DeleteInstance(context.Context, *DeleteInstanceRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteInstance not implemented")
@@ -554,6 +715,24 @@ func RegisterMemorystoreServer(s grpc.ServiceRegistrar, srv MemorystoreServer) {
 	s.RegisterService(&Memorystore_ServiceDesc, srv)
 }
 
+func _Memorystore_ListAclPolicies_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListAclPoliciesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemorystoreServer).ListAclPolicies(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Memorystore_ListAclPolicies_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemorystoreServer).ListAclPolicies(ctx, req.(*ListAclPoliciesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Memorystore_ListInstances_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListInstancesRequest)
 	if err := dec(in); err != nil {
@@ -568,6 +747,24 @@ func _Memorystore_ListInstances_Handler(srv interface{}, ctx context.Context, de
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MemorystoreServer).ListInstances(ctx, req.(*ListInstancesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Memorystore_GetAclPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAclPolicyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemorystoreServer).GetAclPolicy(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Memorystore_GetAclPolicy_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemorystoreServer).GetAclPolicy(ctx, req.(*GetAclPolicyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -590,6 +787,24 @@ func _Memorystore_GetInstance_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Memorystore_CreateAclPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateAclPolicyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemorystoreServer).CreateAclPolicy(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Memorystore_CreateAclPolicy_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemorystoreServer).CreateAclPolicy(ctx, req.(*CreateAclPolicyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Memorystore_CreateInstance_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CreateInstanceRequest)
 	if err := dec(in); err != nil {
@@ -608,6 +823,24 @@ func _Memorystore_CreateInstance_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Memorystore_UpdateAclPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateAclPolicyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemorystoreServer).UpdateAclPolicy(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Memorystore_UpdateAclPolicy_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemorystoreServer).UpdateAclPolicy(ctx, req.(*UpdateAclPolicyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Memorystore_UpdateInstance_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdateInstanceRequest)
 	if err := dec(in); err != nil {
@@ -622,6 +855,60 @@ func _Memorystore_UpdateInstance_Handler(srv interface{}, ctx context.Context, d
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MemorystoreServer).UpdateInstance(ctx, req.(*UpdateInstanceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Memorystore_DeleteAclPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteAclPolicyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemorystoreServer).DeleteAclPolicy(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Memorystore_DeleteAclPolicy_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemorystoreServer).DeleteAclPolicy(ctx, req.(*DeleteAclPolicyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Memorystore_GetAclPolicyRevision_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAclPolicyRevisionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemorystoreServer).GetAclPolicyRevision(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Memorystore_GetAclPolicyRevision_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemorystoreServer).GetAclPolicyRevision(ctx, req.(*GetAclPolicyRevisionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Memorystore_ListAclPolicyRevisions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListAclPolicyRevisionsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemorystoreServer).ListAclPolicyRevisions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Memorystore_ListAclPolicyRevisions_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemorystoreServer).ListAclPolicyRevisions(ctx, req.(*ListAclPolicyRevisionsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1012,20 +1299,48 @@ var Memorystore_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*MemorystoreServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
+			MethodName: "ListAclPolicies",
+			Handler:    _Memorystore_ListAclPolicies_Handler,
+		},
+		{
 			MethodName: "ListInstances",
 			Handler:    _Memorystore_ListInstances_Handler,
+		},
+		{
+			MethodName: "GetAclPolicy",
+			Handler:    _Memorystore_GetAclPolicy_Handler,
 		},
 		{
 			MethodName: "GetInstance",
 			Handler:    _Memorystore_GetInstance_Handler,
 		},
 		{
+			MethodName: "CreateAclPolicy",
+			Handler:    _Memorystore_CreateAclPolicy_Handler,
+		},
+		{
 			MethodName: "CreateInstance",
 			Handler:    _Memorystore_CreateInstance_Handler,
 		},
 		{
+			MethodName: "UpdateAclPolicy",
+			Handler:    _Memorystore_UpdateAclPolicy_Handler,
+		},
+		{
 			MethodName: "UpdateInstance",
 			Handler:    _Memorystore_UpdateInstance_Handler,
+		},
+		{
+			MethodName: "DeleteAclPolicy",
+			Handler:    _Memorystore_DeleteAclPolicy_Handler,
+		},
+		{
+			MethodName: "GetAclPolicyRevision",
+			Handler:    _Memorystore_GetAclPolicyRevision_Handler,
+		},
+		{
+			MethodName: "ListAclPolicyRevisions",
+			Handler:    _Memorystore_ListAclPolicyRevisions_Handler,
 		},
 		{
 			MethodName: "DeleteInstance",

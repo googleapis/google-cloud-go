@@ -275,6 +275,55 @@ func (GceClusterConfig_PrivateIpv6GoogleAccess) EnumDescriptor() ([]byte, []int)
 	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{7, 0}
 }
 
+// The distribution shape of the nodes in the multi-zonal cluster.
+type MultiZoneConfig_TargetShape int32
+
+const (
+	// Target shape is unspecified. Setting this will cause error.
+	MultiZoneConfig_TARGET_SHAPE_UNSPECIFIED MultiZoneConfig_TargetShape = 0
+	// Instances may exist in any Zones within the Region.
+	MultiZoneConfig_ANY MultiZoneConfig_TargetShape = 1
+)
+
+// Enum value maps for MultiZoneConfig_TargetShape.
+var (
+	MultiZoneConfig_TargetShape_name = map[int32]string{
+		0: "TARGET_SHAPE_UNSPECIFIED",
+		1: "ANY",
+	}
+	MultiZoneConfig_TargetShape_value = map[string]int32{
+		"TARGET_SHAPE_UNSPECIFIED": 0,
+		"ANY":                      1,
+	}
+)
+
+func (x MultiZoneConfig_TargetShape) Enum() *MultiZoneConfig_TargetShape {
+	p := new(MultiZoneConfig_TargetShape)
+	*p = x
+	return p
+}
+
+func (x MultiZoneConfig_TargetShape) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (MultiZoneConfig_TargetShape) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_dataproc_v1_clusters_proto_enumTypes[4].Descriptor()
+}
+
+func (MultiZoneConfig_TargetShape) Type() protoreflect.EnumType {
+	return &file_google_cloud_dataproc_v1_clusters_proto_enumTypes[4]
+}
+
+func (x MultiZoneConfig_TargetShape) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use MultiZoneConfig_TargetShape.Descriptor instead.
+func (MultiZoneConfig_TargetShape) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{8, 0}
+}
+
 // The type of Confidential Compute technology as per [Confidential Computing
 // types](https://cloud.google.com/confidential-computing/confidential-vm/docs/create-a-confidential-vm-instance#create-instance).
 // New values may be added in the future.
@@ -321,11 +370,11 @@ func (x ConfidentialInstanceConfig_ConfidentialInstanceType) String() string {
 }
 
 func (ConfidentialInstanceConfig_ConfidentialInstanceType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_dataproc_v1_clusters_proto_enumTypes[4].Descriptor()
+	return file_google_cloud_dataproc_v1_clusters_proto_enumTypes[5].Descriptor()
 }
 
 func (ConfidentialInstanceConfig_ConfidentialInstanceType) Type() protoreflect.EnumType {
-	return &file_google_cloud_dataproc_v1_clusters_proto_enumTypes[4]
+	return &file_google_cloud_dataproc_v1_clusters_proto_enumTypes[5]
 }
 
 func (x ConfidentialInstanceConfig_ConfidentialInstanceType) Number() protoreflect.EnumNumber {
@@ -334,7 +383,7 @@ func (x ConfidentialInstanceConfig_ConfidentialInstanceType) Number() protorefle
 
 // Deprecated: Use ConfidentialInstanceConfig_ConfidentialInstanceType.Descriptor instead.
 func (ConfidentialInstanceConfig_ConfidentialInstanceType) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{10, 0}
+	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{11, 0}
 }
 
 // Controls the use of preemptible instances within the group.
@@ -394,11 +443,11 @@ func (x InstanceGroupConfig_Preemptibility) String() string {
 }
 
 func (InstanceGroupConfig_Preemptibility) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_dataproc_v1_clusters_proto_enumTypes[5].Descriptor()
+	return file_google_cloud_dataproc_v1_clusters_proto_enumTypes[6].Descriptor()
 }
 
 func (InstanceGroupConfig_Preemptibility) Type() protoreflect.EnumType {
-	return &file_google_cloud_dataproc_v1_clusters_proto_enumTypes[5]
+	return &file_google_cloud_dataproc_v1_clusters_proto_enumTypes[6]
 }
 
 func (x InstanceGroupConfig_Preemptibility) Number() protoreflect.EnumNumber {
@@ -407,7 +456,83 @@ func (x InstanceGroupConfig_Preemptibility) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use InstanceGroupConfig_Preemptibility.Descriptor instead.
 func (InstanceGroupConfig_Preemptibility) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{11, 0}
+	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{12, 0}
+}
+
+// Controls the hardware class for the flexible instance group.
+type FlexibleInstanceGroupConfig_HardwareClass int32
+
+const (
+	// Unspecified hardware class.
+	FlexibleInstanceGroupConfig_HARDWARE_CLASS_UNSPECIFIED FlexibleInstanceGroupConfig_HardwareClass = 0
+	// Standard hardware class.
+	// Provides a balanced compute configuration with approximately 4GB of
+	// memory per vCPU and standard disk storage tiers.
+	//
+	// Candidate machine types include `n4-standard`, `n4d-standard`,
+	// `n2-standard`, and `n2d-standard` (Rank 0), and `c4-standard` and
+	// `c4d-standard` (Rank 1) (for requested core counts 2, 4, 8, 16, 32).
+	//
+	// Warning: The specific machine families and types selected for this
+	// hardware class are subject to change. Users should not take a
+	// dependency on the underlying machine type selection.
+	FlexibleInstanceGroupConfig_STANDARD FlexibleInstanceGroupConfig_HardwareClass = 1
+	// Performance hardware class.
+	// Provides a high-performance configuration with approximately 8GB of
+	// memory per vCPU (e.g. high-memory machine types) and higher-tier disk
+	// configurations (e.g. higher IOPS and throughput).
+	//
+	// Candidate machine types include `n4-highmem`, `n4d-highmem`,
+	// `n2-highmem`, and `n2d-highmem` (Rank 0), and `c4-highmem` and
+	// `c4d-highmem` (Rank 1) (for requested core counts 2, 4, 8, 16, 32).
+	// `n4`, `n4d`, `c4`, and `c4d` use Hyperdisk Balanced with provisioned
+	// storage, whereas `n2` and `n2d` use SSD persistent disks.
+	//
+	// Warning: The specific machine families and types selected for this
+	// hardware class are subject to change. Users should not take a
+	// dependency on the underlying machine type selection.
+	FlexibleInstanceGroupConfig_PERFORMANCE FlexibleInstanceGroupConfig_HardwareClass = 2
+)
+
+// Enum value maps for FlexibleInstanceGroupConfig_HardwareClass.
+var (
+	FlexibleInstanceGroupConfig_HardwareClass_name = map[int32]string{
+		0: "HARDWARE_CLASS_UNSPECIFIED",
+		1: "STANDARD",
+		2: "PERFORMANCE",
+	}
+	FlexibleInstanceGroupConfig_HardwareClass_value = map[string]int32{
+		"HARDWARE_CLASS_UNSPECIFIED": 0,
+		"STANDARD":                   1,
+		"PERFORMANCE":                2,
+	}
+)
+
+func (x FlexibleInstanceGroupConfig_HardwareClass) Enum() *FlexibleInstanceGroupConfig_HardwareClass {
+	p := new(FlexibleInstanceGroupConfig_HardwareClass)
+	*p = x
+	return p
+}
+
+func (x FlexibleInstanceGroupConfig_HardwareClass) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (FlexibleInstanceGroupConfig_HardwareClass) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_dataproc_v1_clusters_proto_enumTypes[7].Descriptor()
+}
+
+func (FlexibleInstanceGroupConfig_HardwareClass) Type() protoreflect.EnumType {
+	return &file_google_cloud_dataproc_v1_clusters_proto_enumTypes[7]
+}
+
+func (x FlexibleInstanceGroupConfig_HardwareClass) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use FlexibleInstanceGroupConfig_HardwareClass.Descriptor instead.
+func (FlexibleInstanceGroupConfig_HardwareClass) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{17, 0}
 }
 
 type AttachedDiskConfig_DiskType int32
@@ -454,11 +579,11 @@ func (x AttachedDiskConfig_DiskType) String() string {
 }
 
 func (AttachedDiskConfig_DiskType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_dataproc_v1_clusters_proto_enumTypes[6].Descriptor()
+	return file_google_cloud_dataproc_v1_clusters_proto_enumTypes[8].Descriptor()
 }
 
 func (AttachedDiskConfig_DiskType) Type() protoreflect.EnumType {
-	return &file_google_cloud_dataproc_v1_clusters_proto_enumTypes[6]
+	return &file_google_cloud_dataproc_v1_clusters_proto_enumTypes[8]
 }
 
 func (x AttachedDiskConfig_DiskType) Number() protoreflect.EnumNumber {
@@ -467,7 +592,7 @@ func (x AttachedDiskConfig_DiskType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use AttachedDiskConfig_DiskType.Descriptor instead.
 func (AttachedDiskConfig_DiskType) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{18, 0}
+	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{20, 0}
 }
 
 // Node pool roles.
@@ -503,11 +628,11 @@ func (x NodeGroup_Role) String() string {
 }
 
 func (NodeGroup_Role) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_dataproc_v1_clusters_proto_enumTypes[7].Descriptor()
+	return file_google_cloud_dataproc_v1_clusters_proto_enumTypes[9].Descriptor()
 }
 
 func (NodeGroup_Role) Type() protoreflect.EnumType {
-	return &file_google_cloud_dataproc_v1_clusters_proto_enumTypes[7]
+	return &file_google_cloud_dataproc_v1_clusters_proto_enumTypes[9]
 }
 
 func (x NodeGroup_Role) Number() protoreflect.EnumNumber {
@@ -516,7 +641,7 @@ func (x NodeGroup_Role) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use NodeGroup_Role.Descriptor instead.
 func (NodeGroup_Role) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{20, 0}
+	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{22, 0}
 }
 
 // The cluster state.
@@ -593,11 +718,11 @@ func (x ClusterStatus_State) String() string {
 }
 
 func (ClusterStatus_State) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_dataproc_v1_clusters_proto_enumTypes[8].Descriptor()
+	return file_google_cloud_dataproc_v1_clusters_proto_enumTypes[10].Descriptor()
 }
 
 func (ClusterStatus_State) Type() protoreflect.EnumType {
-	return &file_google_cloud_dataproc_v1_clusters_proto_enumTypes[8]
+	return &file_google_cloud_dataproc_v1_clusters_proto_enumTypes[10]
 }
 
 func (x ClusterStatus_State) Number() protoreflect.EnumNumber {
@@ -606,7 +731,7 @@ func (x ClusterStatus_State) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ClusterStatus_State.Descriptor instead.
 func (ClusterStatus_State) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{22, 0}
+	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{24, 0}
 }
 
 // The cluster substate.
@@ -653,11 +778,11 @@ func (x ClusterStatus_Substate) String() string {
 }
 
 func (ClusterStatus_Substate) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_dataproc_v1_clusters_proto_enumTypes[9].Descriptor()
+	return file_google_cloud_dataproc_v1_clusters_proto_enumTypes[11].Descriptor()
 }
 
 func (ClusterStatus_Substate) Type() protoreflect.EnumType {
-	return &file_google_cloud_dataproc_v1_clusters_proto_enumTypes[9]
+	return &file_google_cloud_dataproc_v1_clusters_proto_enumTypes[11]
 }
 
 func (x ClusterStatus_Substate) Number() protoreflect.EnumNumber {
@@ -666,7 +791,7 @@ func (x ClusterStatus_Substate) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ClusterStatus_Substate.Descriptor instead.
 func (ClusterStatus_Substate) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{22, 1}
+	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{24, 1}
 }
 
 // A source for the collection of Dataproc custom metrics (see [Custom
@@ -735,11 +860,11 @@ func (x DataprocMetricConfig_MetricSource) String() string {
 }
 
 func (DataprocMetricConfig_MetricSource) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_dataproc_v1_clusters_proto_enumTypes[10].Descriptor()
+	return file_google_cloud_dataproc_v1_clusters_proto_enumTypes[12].Descriptor()
 }
 
 func (DataprocMetricConfig_MetricSource) Type() protoreflect.EnumType {
-	return &file_google_cloud_dataproc_v1_clusters_proto_enumTypes[10]
+	return &file_google_cloud_dataproc_v1_clusters_proto_enumTypes[12]
 }
 
 func (x DataprocMetricConfig_MetricSource) Number() protoreflect.EnumNumber {
@@ -748,7 +873,7 @@ func (x DataprocMetricConfig_MetricSource) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use DataprocMetricConfig_MetricSource.Descriptor instead.
 func (DataprocMetricConfig_MetricSource) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{30, 0}
+	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{32, 0}
 }
 
 // Defines who has access to the diagnostic tarball
@@ -790,11 +915,11 @@ func (x DiagnoseClusterRequest_TarballAccess) String() string {
 }
 
 func (DiagnoseClusterRequest_TarballAccess) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_dataproc_v1_clusters_proto_enumTypes[11].Descriptor()
+	return file_google_cloud_dataproc_v1_clusters_proto_enumTypes[13].Descriptor()
 }
 
 func (DiagnoseClusterRequest_TarballAccess) Type() protoreflect.EnumType {
-	return &file_google_cloud_dataproc_v1_clusters_proto_enumTypes[11]
+	return &file_google_cloud_dataproc_v1_clusters_proto_enumTypes[13]
 }
 
 func (x DiagnoseClusterRequest_TarballAccess) Number() protoreflect.EnumNumber {
@@ -803,7 +928,7 @@ func (x DiagnoseClusterRequest_TarballAccess) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use DiagnoseClusterRequest_TarballAccess.Descriptor instead.
 func (DiagnoseClusterRequest_TarballAccess) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{39, 0}
+	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{41, 0}
 }
 
 // Indicates whether to consume capacity from an reservation or not.
@@ -847,11 +972,11 @@ func (x ReservationAffinity_Type) String() string {
 }
 
 func (ReservationAffinity_Type) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_dataproc_v1_clusters_proto_enumTypes[12].Descriptor()
+	return file_google_cloud_dataproc_v1_clusters_proto_enumTypes[14].Descriptor()
 }
 
 func (ReservationAffinity_Type) Type() protoreflect.EnumType {
-	return &file_google_cloud_dataproc_v1_clusters_proto_enumTypes[12]
+	return &file_google_cloud_dataproc_v1_clusters_proto_enumTypes[14]
 }
 
 func (x ReservationAffinity_Type) Number() protoreflect.EnumNumber {
@@ -860,7 +985,7 @@ func (x ReservationAffinity_Type) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ReservationAffinity_Type.Descriptor instead.
 func (ReservationAffinity_Type) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{41, 0}
+	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{43, 0}
 }
 
 // Describes the identifying information, config, and status of
@@ -1085,8 +1210,58 @@ type ClusterConfig struct {
 	DataprocMetricConfig *DataprocMetricConfig `protobuf:"bytes,23,opt,name=dataproc_metric_config,json=dataprocMetricConfig,proto3" json:"dataproc_metric_config,omitempty"`
 	// Optional. The node group settings.
 	AuxiliaryNodeGroups []*AuxiliaryNodeGroup `protobuf:"bytes,25,rep,name=auxiliary_node_groups,json=auxiliaryNodeGroups,proto3" json:"auxiliary_node_groups,omitempty"`
-	unknownFields       protoimpl.UnknownFields
-	sizeCache           protoimpl.SizeCache
+	// Optional. The High Obtainability (HO) config settings for the cluster's
+	// master instances.
+	//
+	// In High Obtainability (HO) mode, flexible configs are the single source of
+	// truth for desired cluster configuration across node groups:
+	//   - For single-node clusters: `master_flexible_config` must be specified, and
+	//     no worker configs should be set.
+	//   - For multi-node (standard) clusters: both `master_flexible_config` and
+	//     [worker_flexible_config][google.cloud.dataproc.v1.ClusterConfig.worker_flexible_config]
+	//     must be specified. Mixing standard and flexible configs across node
+	//     groups is not allowed.
+	//
+	// Only one of
+	// [master_config][google.cloud.dataproc.v1.ClusterConfig.master_config] or
+	// `master_flexible_config` can be set.
+	MasterFlexibleConfig *FlexibleInstanceGroupConfig `protobuf:"bytes,31,opt,name=master_flexible_config,json=masterFlexibleConfig,proto3" json:"master_flexible_config,omitempty"`
+	// Optional. The High Obtainability (HO) config settings for the cluster's
+	// worker instances.
+	//
+	// In High Obtainability (HO) mode, flexible configs are the single source of
+	// truth for desired cluster configuration. `num_instances` represents the
+	// desired capacity of the worker group and is mutable via cluster updates and
+	// autoscaling.
+	//
+	// Only one of
+	// [worker_config][google.cloud.dataproc.v1.ClusterConfig.worker_config] or
+	// `worker_flexible_config` can be set.
+	//
+	// In High Obtainability (HO) mode, for multi-node (standard) clusters, both
+	// [master_flexible_config][google.cloud.dataproc.v1.ClusterConfig.master_flexible_config]
+	// and `worker_flexible_config` must be specified. Mixing standard and
+	// flexible configs across node groups is not allowed. Single-node clusters do
+	// not specify worker configs.
+	WorkerFlexibleConfig *FlexibleInstanceGroupConfig `protobuf:"bytes,32,opt,name=worker_flexible_config,json=workerFlexibleConfig,proto3" json:"worker_flexible_config,omitempty"`
+	// Optional. The High Obtainability (HO) config settings for a cluster's
+	// secondary worker instances.
+	//
+	// In High Obtainability (HO) mode, flexible configs are the single source of
+	// truth for desired cluster configuration. `num_instances` represents the
+	// desired capacity of the secondary worker group and is mutable via cluster
+	// updates and autoscaling.
+	//
+	// Only one of
+	// [secondary_worker_config][google.cloud.dataproc.v1.ClusterConfig.secondary_worker_config]
+	// or `secondary_worker_flexible_config` can be set.
+	//
+	// In High Obtainability (HO) mode, secondary workers are optional. If
+	// secondary workers are used in an HO cluster, they must be configured using
+	// `secondary_worker_flexible_config` (not `secondary_worker_config`).
+	SecondaryWorkerFlexibleConfig *FlexibleInstanceGroupConfig `protobuf:"bytes,33,opt,name=secondary_worker_flexible_config,json=secondaryWorkerFlexibleConfig,proto3" json:"secondary_worker_flexible_config,omitempty"`
+	unknownFields                 protoimpl.UnknownFields
+	sizeCache                     protoimpl.SizeCache
 }
 
 func (x *ClusterConfig) Reset() {
@@ -1248,6 +1423,27 @@ func (x *ClusterConfig) GetDataprocMetricConfig() *DataprocMetricConfig {
 func (x *ClusterConfig) GetAuxiliaryNodeGroups() []*AuxiliaryNodeGroup {
 	if x != nil {
 		return x.AuxiliaryNodeGroups
+	}
+	return nil
+}
+
+func (x *ClusterConfig) GetMasterFlexibleConfig() *FlexibleInstanceGroupConfig {
+	if x != nil {
+		return x.MasterFlexibleConfig
+	}
+	return nil
+}
+
+func (x *ClusterConfig) GetWorkerFlexibleConfig() *FlexibleInstanceGroupConfig {
+	if x != nil {
+		return x.WorkerFlexibleConfig
+	}
+	return nil
+}
+
+func (x *ClusterConfig) GetSecondaryWorkerFlexibleConfig() *FlexibleInstanceGroupConfig {
+	if x != nil {
+		return x.SecondaryWorkerFlexibleConfig
 	}
 	return nil
 }
@@ -1615,6 +1811,10 @@ type GceClusterConfig struct {
 	// * `projects/[project_id]/zones/[zone]`
 	// * `[zone]`
 	ZoneUri string `protobuf:"bytes,1,opt,name=zone_uri,json=zoneUri,proto3" json:"zone_uri,omitempty"`
+	// Optional. Controls how instances within this Cluster are allowed to exist
+	// in multiple Zones within the Region. Only one of `zone_uri` or
+	// `multi_zone_config` must be set.
+	MultiZoneConfig *MultiZoneConfig `protobuf:"bytes,19,opt,name=multi_zone_config,json=multiZoneConfig,proto3" json:"multi_zone_config,omitempty"`
 	// Optional. The Compute Engine network to be used for machine
 	// communications. Cannot be specified with subnetwork_uri. If neither
 	// `network_uri` nor `subnetwork_uri` is specified, the "default" network of
@@ -1747,6 +1947,13 @@ func (x *GceClusterConfig) GetZoneUri() string {
 	return ""
 }
 
+func (x *GceClusterConfig) GetMultiZoneConfig() *MultiZoneConfig {
+	if x != nil {
+		return x.MultiZoneConfig
+	}
+	return nil
+}
+
 func (x *GceClusterConfig) GetNetworkUri() string {
 	if x != nil {
 		return x.NetworkUri
@@ -1838,6 +2045,53 @@ func (x *GceClusterConfig) GetResourceManagerTags() map[string]string {
 	return nil
 }
 
+// Configuration for multi-zonal clusters that can create instances across
+// multiple Zones within the Region.
+type MultiZoneConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. The distribution shape of the nodes in the multi-zonal cluster.
+	TargetShape   MultiZoneConfig_TargetShape `protobuf:"varint,1,opt,name=target_shape,json=targetShape,proto3,enum=google.cloud.dataproc.v1.MultiZoneConfig_TargetShape" json:"target_shape,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *MultiZoneConfig) Reset() {
+	*x = MultiZoneConfig{}
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MultiZoneConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MultiZoneConfig) ProtoMessage() {}
+
+func (x *MultiZoneConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MultiZoneConfig.ProtoReflect.Descriptor instead.
+func (*MultiZoneConfig) Descriptor() ([]byte, []int) {
+	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *MultiZoneConfig) GetTargetShape() MultiZoneConfig_TargetShape {
+	if x != nil {
+		return x.TargetShape
+	}
+	return MultiZoneConfig_TARGET_SHAPE_UNSPECIFIED
+}
+
 // Node Group Affinity for clusters using sole-tenant node groups.
 // **The Dataproc `NodeGroupAffinity` resource is not related to the
 // Dataproc [NodeGroup][google.cloud.dataproc.v1.NodeGroup] resource.**
@@ -1860,7 +2114,7 @@ type NodeGroupAffinity struct {
 
 func (x *NodeGroupAffinity) Reset() {
 	*x = NodeGroupAffinity{}
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[8]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1872,7 +2126,7 @@ func (x *NodeGroupAffinity) String() string {
 func (*NodeGroupAffinity) ProtoMessage() {}
 
 func (x *NodeGroupAffinity) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[8]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1885,7 +2139,7 @@ func (x *NodeGroupAffinity) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NodeGroupAffinity.ProtoReflect.Descriptor instead.
 func (*NodeGroupAffinity) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{8}
+	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *NodeGroupAffinity) GetNodeGroupUri() string {
@@ -1911,7 +2165,7 @@ type ShieldedInstanceConfig struct {
 
 func (x *ShieldedInstanceConfig) Reset() {
 	*x = ShieldedInstanceConfig{}
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[9]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1923,7 +2177,7 @@ func (x *ShieldedInstanceConfig) String() string {
 func (*ShieldedInstanceConfig) ProtoMessage() {}
 
 func (x *ShieldedInstanceConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[9]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1936,7 +2190,7 @@ func (x *ShieldedInstanceConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ShieldedInstanceConfig.ProtoReflect.Descriptor instead.
 func (*ShieldedInstanceConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{9}
+	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *ShieldedInstanceConfig) GetEnableSecureBoot() bool {
@@ -1977,7 +2231,7 @@ type ConfidentialInstanceConfig struct {
 
 func (x *ConfidentialInstanceConfig) Reset() {
 	*x = ConfidentialInstanceConfig{}
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[10]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1989,7 +2243,7 @@ func (x *ConfidentialInstanceConfig) String() string {
 func (*ConfidentialInstanceConfig) ProtoMessage() {}
 
 func (x *ConfidentialInstanceConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[10]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2002,7 +2256,7 @@ func (x *ConfidentialInstanceConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConfidentialInstanceConfig.ProtoReflect.Descriptor instead.
 func (*ConfidentialInstanceConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{10}
+	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{11}
 }
 
 // Deprecated: Marked as deprecated in google/cloud/dataproc/v1/clusters.proto.
@@ -2120,7 +2374,7 @@ type InstanceGroupConfig struct {
 
 func (x *InstanceGroupConfig) Reset() {
 	*x = InstanceGroupConfig{}
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[11]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2132,7 +2386,7 @@ func (x *InstanceGroupConfig) String() string {
 func (*InstanceGroupConfig) ProtoMessage() {}
 
 func (x *InstanceGroupConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[11]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2145,7 +2399,7 @@ func (x *InstanceGroupConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InstanceGroupConfig.ProtoReflect.Descriptor instead.
 func (*InstanceGroupConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{11}
+	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *InstanceGroupConfig) GetNumInstances() int32 {
@@ -2263,7 +2517,7 @@ type StartupConfig struct {
 
 func (x *StartupConfig) Reset() {
 	*x = StartupConfig{}
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[12]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2275,7 +2529,7 @@ func (x *StartupConfig) String() string {
 func (*StartupConfig) ProtoMessage() {}
 
 func (x *StartupConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[12]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2288,7 +2542,7 @@ func (x *StartupConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StartupConfig.ProtoReflect.Descriptor instead.
 func (*StartupConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{12}
+	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *StartupConfig) GetRequiredRegistrationFraction() float64 {
@@ -2315,7 +2569,7 @@ type InstanceReference struct {
 
 func (x *InstanceReference) Reset() {
 	*x = InstanceReference{}
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[13]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2327,7 +2581,7 @@ func (x *InstanceReference) String() string {
 func (*InstanceReference) ProtoMessage() {}
 
 func (x *InstanceReference) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[13]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2340,7 +2594,7 @@ func (x *InstanceReference) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InstanceReference.ProtoReflect.Descriptor instead.
 func (*InstanceReference) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{13}
+	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *InstanceReference) GetInstanceName() string {
@@ -2388,7 +2642,7 @@ type ManagedGroupConfig struct {
 
 func (x *ManagedGroupConfig) Reset() {
 	*x = ManagedGroupConfig{}
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[14]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2400,7 +2654,7 @@ func (x *ManagedGroupConfig) String() string {
 func (*ManagedGroupConfig) ProtoMessage() {}
 
 func (x *ManagedGroupConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[14]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2413,7 +2667,7 @@ func (x *ManagedGroupConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ManagedGroupConfig.ProtoReflect.Descriptor instead.
 func (*ManagedGroupConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{14}
+	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *ManagedGroupConfig) GetInstanceTemplateName() string {
@@ -2455,7 +2709,7 @@ type InstanceFlexibilityPolicy struct {
 
 func (x *InstanceFlexibilityPolicy) Reset() {
 	*x = InstanceFlexibilityPolicy{}
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[15]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2467,7 +2721,7 @@ func (x *InstanceFlexibilityPolicy) String() string {
 func (*InstanceFlexibilityPolicy) ProtoMessage() {}
 
 func (x *InstanceFlexibilityPolicy) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[15]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2480,7 +2734,7 @@ func (x *InstanceFlexibilityPolicy) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InstanceFlexibilityPolicy.ProtoReflect.Descriptor instead.
 func (*InstanceFlexibilityPolicy) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{15}
+	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *InstanceFlexibilityPolicy) GetProvisioningModelMix() *InstanceFlexibilityPolicy_ProvisioningModelMix {
@@ -2502,6 +2756,89 @@ func (x *InstanceFlexibilityPolicy) GetInstanceSelectionResults() []*InstanceFle
 		return x.InstanceSelectionResults
 	}
 	return nil
+}
+
+// The configuration for High Obtainability (HO) flexible instance groups.
+// Flexible instance group configs serve as the single source of truth for
+// desired state.
+type FlexibleInstanceGroupConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. The number of VM instances requested.
+	//
+	// For master instances, this must be 1. For worker and secondary worker
+	// instances, this represents the desired capacity of the group and is mutable
+	// via cluster update operations and autoscaling.
+	NumInstances int32 `protobuf:"varint,1,opt,name=num_instances,json=numInstances,proto3" json:"num_instances,omitempty"`
+	// Optional. The number of vCPUs per instance. Must be a power of 2
+	// (2, 4, 8, 16, 32). This is a create-time specification and is not currently
+	// mutable via update masks.
+	CoreCount int32 `protobuf:"varint,2,opt,name=core_count,json=coreCount,proto3" json:"core_count,omitempty"`
+	// Optional. The boot disk size in GB. This is a create-time specification and
+	// is not currently mutable via update masks.
+	BootDiskSizeGb int32 `protobuf:"varint,3,opt,name=boot_disk_size_gb,json=bootDiskSizeGb,proto3" json:"boot_disk_size_gb,omitempty"`
+	// Optional. The hardware class of the instances. This is a create-time
+	// specification and is not currently mutable via update masks.
+	HardwareClass FlexibleInstanceGroupConfig_HardwareClass `protobuf:"varint,4,opt,name=hardware_class,json=hardwareClass,proto3,enum=google.cloud.dataproc.v1.FlexibleInstanceGroupConfig_HardwareClass" json:"hardware_class,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *FlexibleInstanceGroupConfig) Reset() {
+	*x = FlexibleInstanceGroupConfig{}
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FlexibleInstanceGroupConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FlexibleInstanceGroupConfig) ProtoMessage() {}
+
+func (x *FlexibleInstanceGroupConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FlexibleInstanceGroupConfig.ProtoReflect.Descriptor instead.
+func (*FlexibleInstanceGroupConfig) Descriptor() ([]byte, []int) {
+	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{17}
+}
+
+func (x *FlexibleInstanceGroupConfig) GetNumInstances() int32 {
+	if x != nil {
+		return x.NumInstances
+	}
+	return 0
+}
+
+func (x *FlexibleInstanceGroupConfig) GetCoreCount() int32 {
+	if x != nil {
+		return x.CoreCount
+	}
+	return 0
+}
+
+func (x *FlexibleInstanceGroupConfig) GetBootDiskSizeGb() int32 {
+	if x != nil {
+		return x.BootDiskSizeGb
+	}
+	return 0
+}
+
+func (x *FlexibleInstanceGroupConfig) GetHardwareClass() FlexibleInstanceGroupConfig_HardwareClass {
+	if x != nil {
+		return x.HardwareClass
+	}
+	return FlexibleInstanceGroupConfig_HARDWARE_CLASS_UNSPECIFIED
 }
 
 // Specifies the type and number of accelerator cards attached to the instances
@@ -2534,7 +2871,7 @@ type AcceleratorConfig struct {
 
 func (x *AcceleratorConfig) Reset() {
 	*x = AcceleratorConfig{}
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[16]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2546,7 +2883,7 @@ func (x *AcceleratorConfig) String() string {
 func (*AcceleratorConfig) ProtoMessage() {}
 
 func (x *AcceleratorConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[16]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2559,7 +2896,7 @@ func (x *AcceleratorConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AcceleratorConfig.ProtoReflect.Descriptor instead.
 func (*AcceleratorConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{16}
+	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *AcceleratorConfig) GetAcceleratorTypeUri() string {
@@ -2624,7 +2961,7 @@ type DiskConfig struct {
 
 func (x *DiskConfig) Reset() {
 	*x = DiskConfig{}
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[17]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2636,7 +2973,7 @@ func (x *DiskConfig) String() string {
 func (*DiskConfig) ProtoMessage() {}
 
 func (x *DiskConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[17]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2649,7 +2986,7 @@ func (x *DiskConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DiskConfig.ProtoReflect.Descriptor instead.
 func (*DiskConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{17}
+	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *DiskConfig) GetBootDiskType() string {
@@ -2723,7 +3060,7 @@ type AttachedDiskConfig struct {
 
 func (x *AttachedDiskConfig) Reset() {
 	*x = AttachedDiskConfig{}
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[18]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2735,7 +3072,7 @@ func (x *AttachedDiskConfig) String() string {
 func (*AttachedDiskConfig) ProtoMessage() {}
 
 func (x *AttachedDiskConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[18]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2748,7 +3085,7 @@ func (x *AttachedDiskConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AttachedDiskConfig.ProtoReflect.Descriptor instead.
 func (*AttachedDiskConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{18}
+	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *AttachedDiskConfig) GetDiskType() AttachedDiskConfig_DiskType {
@@ -2796,7 +3133,7 @@ type AuxiliaryNodeGroup struct {
 
 func (x *AuxiliaryNodeGroup) Reset() {
 	*x = AuxiliaryNodeGroup{}
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[19]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2808,7 +3145,7 @@ func (x *AuxiliaryNodeGroup) String() string {
 func (*AuxiliaryNodeGroup) ProtoMessage() {}
 
 func (x *AuxiliaryNodeGroup) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[19]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2821,7 +3158,7 @@ func (x *AuxiliaryNodeGroup) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AuxiliaryNodeGroup.ProtoReflect.Descriptor instead.
 func (*AuxiliaryNodeGroup) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{19}
+	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *AuxiliaryNodeGroup) GetNodeGroup() *NodeGroup {
@@ -2865,7 +3202,7 @@ type NodeGroup struct {
 
 func (x *NodeGroup) Reset() {
 	*x = NodeGroup{}
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[20]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2877,7 +3214,7 @@ func (x *NodeGroup) String() string {
 func (*NodeGroup) ProtoMessage() {}
 
 func (x *NodeGroup) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[20]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2890,7 +3227,7 @@ func (x *NodeGroup) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NodeGroup.ProtoReflect.Descriptor instead.
 func (*NodeGroup) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{20}
+	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *NodeGroup) GetName() string {
@@ -2941,7 +3278,7 @@ type NodeInitializationAction struct {
 
 func (x *NodeInitializationAction) Reset() {
 	*x = NodeInitializationAction{}
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[21]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2953,7 +3290,7 @@ func (x *NodeInitializationAction) String() string {
 func (*NodeInitializationAction) ProtoMessage() {}
 
 func (x *NodeInitializationAction) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[21]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2966,7 +3303,7 @@ func (x *NodeInitializationAction) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NodeInitializationAction.ProtoReflect.Descriptor instead.
 func (*NodeInitializationAction) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{21}
+	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *NodeInitializationAction) GetExecutableFile() string {
@@ -3002,7 +3339,7 @@ type ClusterStatus struct {
 
 func (x *ClusterStatus) Reset() {
 	*x = ClusterStatus{}
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[22]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3014,7 +3351,7 @@ func (x *ClusterStatus) String() string {
 func (*ClusterStatus) ProtoMessage() {}
 
 func (x *ClusterStatus) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[22]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3027,7 +3364,7 @@ func (x *ClusterStatus) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ClusterStatus.ProtoReflect.Descriptor instead.
 func (*ClusterStatus) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{22}
+	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *ClusterStatus) GetState() ClusterStatus_State {
@@ -3072,7 +3409,7 @@ type SecurityConfig struct {
 
 func (x *SecurityConfig) Reset() {
 	*x = SecurityConfig{}
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[23]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3084,7 +3421,7 @@ func (x *SecurityConfig) String() string {
 func (*SecurityConfig) ProtoMessage() {}
 
 func (x *SecurityConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[23]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3097,7 +3434,7 @@ func (x *SecurityConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SecurityConfig.ProtoReflect.Descriptor instead.
 func (*SecurityConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{23}
+	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *SecurityConfig) GetKerberosConfig() *KerberosConfig {
@@ -3175,7 +3512,7 @@ type KerberosConfig struct {
 
 func (x *KerberosConfig) Reset() {
 	*x = KerberosConfig{}
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[24]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3187,7 +3524,7 @@ func (x *KerberosConfig) String() string {
 func (*KerberosConfig) ProtoMessage() {}
 
 func (x *KerberosConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[24]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3200,7 +3537,7 @@ func (x *KerberosConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use KerberosConfig.ProtoReflect.Descriptor instead.
 func (*KerberosConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{24}
+	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *KerberosConfig) GetEnableKerberos() bool {
@@ -3320,7 +3657,7 @@ type IdentityConfig struct {
 
 func (x *IdentityConfig) Reset() {
 	*x = IdentityConfig{}
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[25]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3332,7 +3669,7 @@ func (x *IdentityConfig) String() string {
 func (*IdentityConfig) ProtoMessage() {}
 
 func (x *IdentityConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[25]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3345,7 +3682,7 @@ func (x *IdentityConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use IdentityConfig.ProtoReflect.Descriptor instead.
 func (*IdentityConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{25}
+	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *IdentityConfig) GetUserServiceAccountMapping() map[string]string {
@@ -3393,7 +3730,7 @@ type SoftwareConfig struct {
 
 func (x *SoftwareConfig) Reset() {
 	*x = SoftwareConfig{}
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[26]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3405,7 +3742,7 @@ func (x *SoftwareConfig) String() string {
 func (*SoftwareConfig) ProtoMessage() {}
 
 func (x *SoftwareConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[26]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3418,7 +3755,7 @@ func (x *SoftwareConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SoftwareConfig.ProtoReflect.Descriptor instead.
 func (*SoftwareConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{26}
+	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *SoftwareConfig) GetImageVersion() string {
@@ -3484,7 +3821,7 @@ type LifecycleConfig struct {
 
 func (x *LifecycleConfig) Reset() {
 	*x = LifecycleConfig{}
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[27]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3496,7 +3833,7 @@ func (x *LifecycleConfig) String() string {
 func (*LifecycleConfig) ProtoMessage() {}
 
 func (x *LifecycleConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[27]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3509,7 +3846,7 @@ func (x *LifecycleConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LifecycleConfig.ProtoReflect.Descriptor instead.
 func (*LifecycleConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{27}
+	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{29}
 }
 
 func (x *LifecycleConfig) GetIdleDeleteTtl() *durationpb.Duration {
@@ -3645,7 +3982,7 @@ type MetastoreConfig struct {
 
 func (x *MetastoreConfig) Reset() {
 	*x = MetastoreConfig{}
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[28]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3657,7 +3994,7 @@ func (x *MetastoreConfig) String() string {
 func (*MetastoreConfig) ProtoMessage() {}
 
 func (x *MetastoreConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[28]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3670,7 +4007,7 @@ func (x *MetastoreConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MetastoreConfig.ProtoReflect.Descriptor instead.
 func (*MetastoreConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{28}
+	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{30}
 }
 
 func (x *MetastoreConfig) GetDataprocMetastoreService() string {
@@ -3696,7 +4033,7 @@ type ClusterMetrics struct {
 
 func (x *ClusterMetrics) Reset() {
 	*x = ClusterMetrics{}
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[29]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3708,7 +4045,7 @@ func (x *ClusterMetrics) String() string {
 func (*ClusterMetrics) ProtoMessage() {}
 
 func (x *ClusterMetrics) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[29]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3721,7 +4058,7 @@ func (x *ClusterMetrics) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ClusterMetrics.ProtoReflect.Descriptor instead.
 func (*ClusterMetrics) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{29}
+	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{31}
 }
 
 func (x *ClusterMetrics) GetHdfsMetrics() map[string]int64 {
@@ -3749,7 +4086,7 @@ type DataprocMetricConfig struct {
 
 func (x *DataprocMetricConfig) Reset() {
 	*x = DataprocMetricConfig{}
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[30]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3761,7 +4098,7 @@ func (x *DataprocMetricConfig) String() string {
 func (*DataprocMetricConfig) ProtoMessage() {}
 
 func (x *DataprocMetricConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[30]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3774,7 +4111,7 @@ func (x *DataprocMetricConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DataprocMetricConfig.ProtoReflect.Descriptor instead.
 func (*DataprocMetricConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{30}
+	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{32}
 }
 
 func (x *DataprocMetricConfig) GetMetrics() []*DataprocMetricConfig_Metric {
@@ -3815,7 +4152,7 @@ type CreateClusterRequest struct {
 
 func (x *CreateClusterRequest) Reset() {
 	*x = CreateClusterRequest{}
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[31]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3827,7 +4164,7 @@ func (x *CreateClusterRequest) String() string {
 func (*CreateClusterRequest) ProtoMessage() {}
 
 func (x *CreateClusterRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[31]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3840,7 +4177,7 @@ func (x *CreateClusterRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateClusterRequest.ProtoReflect.Descriptor instead.
 func (*CreateClusterRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{31}
+	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{33}
 }
 
 func (x *CreateClusterRequest) GetProjectId() string {
@@ -3973,7 +4310,7 @@ type UpdateClusterRequest struct {
 
 func (x *UpdateClusterRequest) Reset() {
 	*x = UpdateClusterRequest{}
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[32]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3985,7 +4322,7 @@ func (x *UpdateClusterRequest) String() string {
 func (*UpdateClusterRequest) ProtoMessage() {}
 
 func (x *UpdateClusterRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[32]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3998,7 +4335,7 @@ func (x *UpdateClusterRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateClusterRequest.ProtoReflect.Descriptor instead.
 func (*UpdateClusterRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{32}
+	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{34}
 }
 
 func (x *UpdateClusterRequest) GetProjectId() string {
@@ -4082,7 +4419,7 @@ type StopClusterRequest struct {
 
 func (x *StopClusterRequest) Reset() {
 	*x = StopClusterRequest{}
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[33]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4094,7 +4431,7 @@ func (x *StopClusterRequest) String() string {
 func (*StopClusterRequest) ProtoMessage() {}
 
 func (x *StopClusterRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[33]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4107,7 +4444,7 @@ func (x *StopClusterRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StopClusterRequest.ProtoReflect.Descriptor instead.
 func (*StopClusterRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{33}
+	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{35}
 }
 
 func (x *StopClusterRequest) GetProjectId() string {
@@ -4177,7 +4514,7 @@ type StartClusterRequest struct {
 
 func (x *StartClusterRequest) Reset() {
 	*x = StartClusterRequest{}
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[34]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4189,7 +4526,7 @@ func (x *StartClusterRequest) String() string {
 func (*StartClusterRequest) ProtoMessage() {}
 
 func (x *StartClusterRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[34]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4202,7 +4539,7 @@ func (x *StartClusterRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StartClusterRequest.ProtoReflect.Descriptor instead.
 func (*StartClusterRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{34}
+	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{36}
 }
 
 func (x *StartClusterRequest) GetProjectId() string {
@@ -4272,7 +4609,7 @@ type DeleteClusterRequest struct {
 
 func (x *DeleteClusterRequest) Reset() {
 	*x = DeleteClusterRequest{}
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[35]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[37]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4284,7 +4621,7 @@ func (x *DeleteClusterRequest) String() string {
 func (*DeleteClusterRequest) ProtoMessage() {}
 
 func (x *DeleteClusterRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[35]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[37]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4297,7 +4634,7 @@ func (x *DeleteClusterRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteClusterRequest.ProtoReflect.Descriptor instead.
 func (*DeleteClusterRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{35}
+	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{37}
 }
 
 func (x *DeleteClusterRequest) GetProjectId() string {
@@ -4351,7 +4688,7 @@ type GetClusterRequest struct {
 
 func (x *GetClusterRequest) Reset() {
 	*x = GetClusterRequest{}
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[36]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[38]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4363,7 +4700,7 @@ func (x *GetClusterRequest) String() string {
 func (*GetClusterRequest) ProtoMessage() {}
 
 func (x *GetClusterRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[36]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[38]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4376,7 +4713,7 @@ func (x *GetClusterRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetClusterRequest.ProtoReflect.Descriptor instead.
 func (*GetClusterRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{36}
+	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{38}
 }
 
 func (x *GetClusterRequest) GetProjectId() string {
@@ -4438,7 +4775,7 @@ type ListClustersRequest struct {
 
 func (x *ListClustersRequest) Reset() {
 	*x = ListClustersRequest{}
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[37]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[39]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4450,7 +4787,7 @@ func (x *ListClustersRequest) String() string {
 func (*ListClustersRequest) ProtoMessage() {}
 
 func (x *ListClustersRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[37]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[39]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4463,7 +4800,7 @@ func (x *ListClustersRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListClustersRequest.ProtoReflect.Descriptor instead.
 func (*ListClustersRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{37}
+	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{39}
 }
 
 func (x *ListClustersRequest) GetProjectId() string {
@@ -4516,7 +4853,7 @@ type ListClustersResponse struct {
 
 func (x *ListClustersResponse) Reset() {
 	*x = ListClustersResponse{}
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[38]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[40]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4528,7 +4865,7 @@ func (x *ListClustersResponse) String() string {
 func (*ListClustersResponse) ProtoMessage() {}
 
 func (x *ListClustersResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[38]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[40]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4541,7 +4878,7 @@ func (x *ListClustersResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListClustersResponse.ProtoReflect.Descriptor instead.
 func (*ListClustersResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{38}
+	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{40}
 }
 
 func (x *ListClustersResponse) GetClusters() []*Cluster {
@@ -4590,7 +4927,7 @@ type DiagnoseClusterRequest struct {
 
 func (x *DiagnoseClusterRequest) Reset() {
 	*x = DiagnoseClusterRequest{}
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[39]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[41]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4602,7 +4939,7 @@ func (x *DiagnoseClusterRequest) String() string {
 func (*DiagnoseClusterRequest) ProtoMessage() {}
 
 func (x *DiagnoseClusterRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[39]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[41]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4615,7 +4952,7 @@ func (x *DiagnoseClusterRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DiagnoseClusterRequest.ProtoReflect.Descriptor instead.
 func (*DiagnoseClusterRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{39}
+	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{41}
 }
 
 func (x *DiagnoseClusterRequest) GetProjectId() string {
@@ -4687,7 +5024,7 @@ type DiagnoseClusterResults struct {
 
 func (x *DiagnoseClusterResults) Reset() {
 	*x = DiagnoseClusterResults{}
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[40]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[42]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4699,7 +5036,7 @@ func (x *DiagnoseClusterResults) String() string {
 func (*DiagnoseClusterResults) ProtoMessage() {}
 
 func (x *DiagnoseClusterResults) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[40]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[42]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4712,7 +5049,7 @@ func (x *DiagnoseClusterResults) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DiagnoseClusterResults.ProtoReflect.Descriptor instead.
 func (*DiagnoseClusterResults) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{40}
+	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{42}
 }
 
 func (x *DiagnoseClusterResults) GetOutputUri() string {
@@ -4737,7 +5074,7 @@ type ReservationAffinity struct {
 
 func (x *ReservationAffinity) Reset() {
 	*x = ReservationAffinity{}
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[41]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[43]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4749,7 +5086,7 @@ func (x *ReservationAffinity) String() string {
 func (*ReservationAffinity) ProtoMessage() {}
 
 func (x *ReservationAffinity) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[41]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[43]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4762,7 +5099,7 @@ func (x *ReservationAffinity) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReservationAffinity.ProtoReflect.Descriptor instead.
 func (*ReservationAffinity) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{41}
+	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{43}
 }
 
 func (x *ReservationAffinity) GetConsumeReservationType() ReservationAffinity_Type {
@@ -4812,7 +5149,7 @@ type InstanceFlexibilityPolicy_ProvisioningModelMix struct {
 
 func (x *InstanceFlexibilityPolicy_ProvisioningModelMix) Reset() {
 	*x = InstanceFlexibilityPolicy_ProvisioningModelMix{}
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[46]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[48]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4824,7 +5161,7 @@ func (x *InstanceFlexibilityPolicy_ProvisioningModelMix) String() string {
 func (*InstanceFlexibilityPolicy_ProvisioningModelMix) ProtoMessage() {}
 
 func (x *InstanceFlexibilityPolicy_ProvisioningModelMix) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[46]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[48]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4837,7 +5174,7 @@ func (x *InstanceFlexibilityPolicy_ProvisioningModelMix) ProtoReflect() protoref
 
 // Deprecated: Use InstanceFlexibilityPolicy_ProvisioningModelMix.ProtoReflect.Descriptor instead.
 func (*InstanceFlexibilityPolicy_ProvisioningModelMix) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{15, 0}
+	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{16, 0}
 }
 
 func (x *InstanceFlexibilityPolicy_ProvisioningModelMix) GetStandardCapacityBase() int32 {
@@ -4876,7 +5213,7 @@ type InstanceFlexibilityPolicy_InstanceSelection struct {
 
 func (x *InstanceFlexibilityPolicy_InstanceSelection) Reset() {
 	*x = InstanceFlexibilityPolicy_InstanceSelection{}
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[47]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[49]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4888,7 +5225,7 @@ func (x *InstanceFlexibilityPolicy_InstanceSelection) String() string {
 func (*InstanceFlexibilityPolicy_InstanceSelection) ProtoMessage() {}
 
 func (x *InstanceFlexibilityPolicy_InstanceSelection) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[47]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[49]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4901,7 +5238,7 @@ func (x *InstanceFlexibilityPolicy_InstanceSelection) ProtoReflect() protoreflec
 
 // Deprecated: Use InstanceFlexibilityPolicy_InstanceSelection.ProtoReflect.Descriptor instead.
 func (*InstanceFlexibilityPolicy_InstanceSelection) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{15, 1}
+	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{16, 1}
 }
 
 func (x *InstanceFlexibilityPolicy_InstanceSelection) GetMachineTypes() []string {
@@ -4939,7 +5276,7 @@ type InstanceFlexibilityPolicy_InstanceSelectionResult struct {
 
 func (x *InstanceFlexibilityPolicy_InstanceSelectionResult) Reset() {
 	*x = InstanceFlexibilityPolicy_InstanceSelectionResult{}
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[48]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[50]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4951,7 +5288,7 @@ func (x *InstanceFlexibilityPolicy_InstanceSelectionResult) String() string {
 func (*InstanceFlexibilityPolicy_InstanceSelectionResult) ProtoMessage() {}
 
 func (x *InstanceFlexibilityPolicy_InstanceSelectionResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[48]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[50]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4964,7 +5301,7 @@ func (x *InstanceFlexibilityPolicy_InstanceSelectionResult) ProtoReflect() proto
 
 // Deprecated: Use InstanceFlexibilityPolicy_InstanceSelectionResult.ProtoReflect.Descriptor instead.
 func (*InstanceFlexibilityPolicy_InstanceSelectionResult) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{15, 2}
+	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{16, 2}
 }
 
 func (x *InstanceFlexibilityPolicy_InstanceSelectionResult) GetMachineType() string {
@@ -5025,7 +5362,7 @@ type DataprocMetricConfig_Metric struct {
 
 func (x *DataprocMetricConfig_Metric) Reset() {
 	*x = DataprocMetricConfig_Metric{}
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[54]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[56]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5037,7 +5374,7 @@ func (x *DataprocMetricConfig_Metric) String() string {
 func (*DataprocMetricConfig_Metric) ProtoMessage() {}
 
 func (x *DataprocMetricConfig_Metric) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[54]
+	mi := &file_google_cloud_dataproc_v1_clusters_proto_msgTypes[56]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5050,7 +5387,7 @@ func (x *DataprocMetricConfig_Metric) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DataprocMetricConfig_Metric.ProtoReflect.Descriptor instead.
 func (*DataprocMetricConfig_Metric) Descriptor() ([]byte, []int) {
-	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{30, 0}
+	return file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP(), []int{32, 0}
 }
 
 func (x *DataprocMetricConfig_Metric) GetMetricSource() DataprocMetricConfig_MetricSource {
@@ -5086,7 +5423,7 @@ const file_google_cloud_dataproc_v1_clusters_proto_rawDesc = "" +
 	"\ametrics\x18\t \x01(\v2(.google.cloud.dataproc.v1.ClusterMetricsB\x03\xe0A\x03R\ametrics\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x9e\x0f\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x88\x12\n" +
 	"\rClusterConfig\x12[\n" +
 	"\fcluster_type\x18\x1b \x01(\x0e23.google.cloud.dataproc.v1.ClusterConfig.ClusterTypeB\x03\xe0A\x01R\vclusterType\x12[\n" +
 	"\fcluster_tier\x18\x1d \x01(\x0e23.google.cloud.dataproc.v1.ClusterConfig.ClusterTierB\x03\xe0A\x01R\vclusterTier\x12K\n" +
@@ -5108,7 +5445,10 @@ const file_google_cloud_dataproc_v1_clusters_proto_rawDesc = "" +
 	"\x0fendpoint_config\x18\x13 \x01(\v2(.google.cloud.dataproc.v1.EndpointConfigB\x03\xe0A\x01R\x0eendpointConfig\x12Y\n" +
 	"\x10metastore_config\x18\x14 \x01(\v2).google.cloud.dataproc.v1.MetastoreConfigB\x03\xe0A\x01R\x0fmetastoreConfig\x12i\n" +
 	"\x16dataproc_metric_config\x18\x17 \x01(\v2..google.cloud.dataproc.v1.DataprocMetricConfigB\x03\xe0A\x01R\x14dataprocMetricConfig\x12e\n" +
-	"\x15auxiliary_node_groups\x18\x19 \x03(\v2,.google.cloud.dataproc.v1.AuxiliaryNodeGroupB\x03\xe0A\x01R\x13auxiliaryNodeGroups\"Z\n" +
+	"\x15auxiliary_node_groups\x18\x19 \x03(\v2,.google.cloud.dataproc.v1.AuxiliaryNodeGroupB\x03\xe0A\x01R\x13auxiliaryNodeGroups\x12p\n" +
+	"\x16master_flexible_config\x18\x1f \x01(\v25.google.cloud.dataproc.v1.FlexibleInstanceGroupConfigB\x03\xe0A\x01R\x14masterFlexibleConfig\x12p\n" +
+	"\x16worker_flexible_config\x18  \x01(\v25.google.cloud.dataproc.v1.FlexibleInstanceGroupConfigB\x03\xe0A\x01R\x14workerFlexibleConfig\x12\x83\x01\n" +
+	" secondary_worker_flexible_config\x18! \x01(\v25.google.cloud.dataproc.v1.FlexibleInstanceGroupConfigB\x03\xe0A\x01R\x1dsecondaryWorkerFlexibleConfig\"Z\n" +
 	"\vClusterType\x12\x1c\n" +
 	"\x18CLUSTER_TYPE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bSTANDARD\x10\x01\x12\x0f\n" +
@@ -5144,10 +5484,10 @@ const file_google_cloud_dataproc_v1_clusters_proto_rawDesc = "" +
 	"\x10EncryptionConfig\x121\n" +
 	"\x13gce_pd_kms_key_name\x18\x01 \x01(\tB\x03\xe0A\x01R\x0fgcePdKmsKeyName\x12B\n" +
 	"\akms_key\x18\x02 \x01(\tB)\xe0A\x01\xfaA#\n" +
-	"!cloudkms.googleapis.com/CryptoKeyR\x06kmsKey\"\xec\n" +
-	"\n" +
+	"!cloudkms.googleapis.com/CryptoKeyR\x06kmsKey\"\xc8\v\n" +
 	"\x10GceClusterConfig\x12\x1e\n" +
-	"\bzone_uri\x18\x01 \x01(\tB\x03\xe0A\x01R\azoneUri\x12$\n" +
+	"\bzone_uri\x18\x01 \x01(\tB\x03\xe0A\x01R\azoneUri\x12Z\n" +
+	"\x11multi_zone_config\x18\x13 \x01(\v2).google.cloud.dataproc.v1.MultiZoneConfigB\x03\xe0A\x01R\x0fmultiZoneConfig\x12$\n" +
 	"\vnetwork_uri\x18\x02 \x01(\tB\x03\xe0A\x01R\n" +
 	"networkUri\x12*\n" +
 	"\x0esubnetwork_uri\x18\x06 \x01(\tB\x03\xe0A\x01R\rsubnetworkUri\x122\n" +
@@ -5173,7 +5513,12 @@ const file_google_cloud_dataproc_v1_clusters_proto_rawDesc = "" +
 	"\x17INHERIT_FROM_SUBNETWORK\x10\x01\x12\f\n" +
 	"\bOUTBOUND\x10\x02\x12\x11\n" +
 	"\rBIDIRECTIONAL\x10\x03B\x13\n" +
-	"\x11_internal_ip_only\">\n" +
+	"\x11_internal_ip_only\"\xa6\x01\n" +
+	"\x0fMultiZoneConfig\x12]\n" +
+	"\ftarget_shape\x18\x01 \x01(\x0e25.google.cloud.dataproc.v1.MultiZoneConfig.TargetShapeB\x03\xe0A\x01R\vtargetShape\"4\n" +
+	"\vTargetShape\x12\x1c\n" +
+	"\x18TARGET_SHAPE_UNSPECIFIED\x10\x00\x12\a\n" +
+	"\x03ANY\x10\x01\">\n" +
 	"\x11NodeGroupAffinity\x12)\n" +
 	"\x0enode_group_uri\x18\x01 \x01(\tB\x03\xe0A\x02R\fnodeGroupUri\"\x8c\x02\n" +
 	"\x16ShieldedInstanceConfig\x126\n" +
@@ -5246,7 +5591,17 @@ const file_google_cloud_dataproc_v1_clusters_proto_rawDesc = "" +
 	"\fmachine_type\x18\x01 \x01(\tB\x03\xe0A\x03H\x00R\vmachineType\x88\x01\x01\x12#\n" +
 	"\bvm_count\x18\x02 \x01(\x05B\x03\xe0A\x03H\x01R\avmCount\x88\x01\x01B\x0f\n" +
 	"\r_machine_typeB\v\n" +
-	"\t_vm_count\"r\n" +
+	"\t_vm_count\"\xdc\x02\n" +
+	"\x1bFlexibleInstanceGroupConfig\x12(\n" +
+	"\rnum_instances\x18\x01 \x01(\x05B\x03\xe0A\x01R\fnumInstances\x12\"\n" +
+	"\n" +
+	"core_count\x18\x02 \x01(\x05B\x03\xe0A\x01R\tcoreCount\x12.\n" +
+	"\x11boot_disk_size_gb\x18\x03 \x01(\x05B\x03\xe0A\x01R\x0ebootDiskSizeGb\x12o\n" +
+	"\x0ehardware_class\x18\x04 \x01(\x0e2C.google.cloud.dataproc.v1.FlexibleInstanceGroupConfig.HardwareClassB\x03\xe0A\x01R\rhardwareClass\"N\n" +
+	"\rHardwareClass\x12\x1e\n" +
+	"\x1aHARDWARE_CLASS_UNSPECIFIED\x10\x00\x12\f\n" +
+	"\bSTANDARD\x10\x01\x12\x0f\n" +
+	"\vPERFORMANCE\x10\x02\"r\n" +
 	"\x11AcceleratorConfig\x120\n" +
 	"\x14accelerator_type_uri\x18\x01 \x01(\tR\x12acceleratorTypeUri\x12+\n" +
 	"\x11accelerator_count\x18\x02 \x01(\x05R\x10acceleratorCount\"\x8c\x04\n" +
@@ -5505,191 +5860,201 @@ func file_google_cloud_dataproc_v1_clusters_proto_rawDescGZIP() []byte {
 	return file_google_cloud_dataproc_v1_clusters_proto_rawDescData
 }
 
-var file_google_cloud_dataproc_v1_clusters_proto_enumTypes = make([]protoimpl.EnumInfo, 13)
-var file_google_cloud_dataproc_v1_clusters_proto_msgTypes = make([]protoimpl.MessageInfo, 55)
+var file_google_cloud_dataproc_v1_clusters_proto_enumTypes = make([]protoimpl.EnumInfo, 15)
+var file_google_cloud_dataproc_v1_clusters_proto_msgTypes = make([]protoimpl.MessageInfo, 57)
 var file_google_cloud_dataproc_v1_clusters_proto_goTypes = []any{
 	(ClusterConfig_ClusterType)(0),                            // 0: google.cloud.dataproc.v1.ClusterConfig.ClusterType
 	(ClusterConfig_ClusterTier)(0),                            // 1: google.cloud.dataproc.v1.ClusterConfig.ClusterTier
 	(ClusterConfig_Engine)(0),                                 // 2: google.cloud.dataproc.v1.ClusterConfig.Engine
 	(GceClusterConfig_PrivateIpv6GoogleAccess)(0),             // 3: google.cloud.dataproc.v1.GceClusterConfig.PrivateIpv6GoogleAccess
-	(ConfidentialInstanceConfig_ConfidentialInstanceType)(0),  // 4: google.cloud.dataproc.v1.ConfidentialInstanceConfig.ConfidentialInstanceType
-	(InstanceGroupConfig_Preemptibility)(0),                   // 5: google.cloud.dataproc.v1.InstanceGroupConfig.Preemptibility
-	(AttachedDiskConfig_DiskType)(0),                          // 6: google.cloud.dataproc.v1.AttachedDiskConfig.DiskType
-	(NodeGroup_Role)(0),                                       // 7: google.cloud.dataproc.v1.NodeGroup.Role
-	(ClusterStatus_State)(0),                                  // 8: google.cloud.dataproc.v1.ClusterStatus.State
-	(ClusterStatus_Substate)(0),                               // 9: google.cloud.dataproc.v1.ClusterStatus.Substate
-	(DataprocMetricConfig_MetricSource)(0),                    // 10: google.cloud.dataproc.v1.DataprocMetricConfig.MetricSource
-	(DiagnoseClusterRequest_TarballAccess)(0),                 // 11: google.cloud.dataproc.v1.DiagnoseClusterRequest.TarballAccess
-	(ReservationAffinity_Type)(0),                             // 12: google.cloud.dataproc.v1.ReservationAffinity.Type
-	(*Cluster)(nil),                                           // 13: google.cloud.dataproc.v1.Cluster
-	(*ClusterConfig)(nil),                                     // 14: google.cloud.dataproc.v1.ClusterConfig
-	(*VirtualClusterConfig)(nil),                              // 15: google.cloud.dataproc.v1.VirtualClusterConfig
-	(*AuxiliaryServicesConfig)(nil),                           // 16: google.cloud.dataproc.v1.AuxiliaryServicesConfig
-	(*EndpointConfig)(nil),                                    // 17: google.cloud.dataproc.v1.EndpointConfig
-	(*AutoscalingConfig)(nil),                                 // 18: google.cloud.dataproc.v1.AutoscalingConfig
-	(*EncryptionConfig)(nil),                                  // 19: google.cloud.dataproc.v1.EncryptionConfig
-	(*GceClusterConfig)(nil),                                  // 20: google.cloud.dataproc.v1.GceClusterConfig
-	(*NodeGroupAffinity)(nil),                                 // 21: google.cloud.dataproc.v1.NodeGroupAffinity
-	(*ShieldedInstanceConfig)(nil),                            // 22: google.cloud.dataproc.v1.ShieldedInstanceConfig
-	(*ConfidentialInstanceConfig)(nil),                        // 23: google.cloud.dataproc.v1.ConfidentialInstanceConfig
-	(*InstanceGroupConfig)(nil),                               // 24: google.cloud.dataproc.v1.InstanceGroupConfig
-	(*StartupConfig)(nil),                                     // 25: google.cloud.dataproc.v1.StartupConfig
-	(*InstanceReference)(nil),                                 // 26: google.cloud.dataproc.v1.InstanceReference
-	(*ManagedGroupConfig)(nil),                                // 27: google.cloud.dataproc.v1.ManagedGroupConfig
-	(*InstanceFlexibilityPolicy)(nil),                         // 28: google.cloud.dataproc.v1.InstanceFlexibilityPolicy
-	(*AcceleratorConfig)(nil),                                 // 29: google.cloud.dataproc.v1.AcceleratorConfig
-	(*DiskConfig)(nil),                                        // 30: google.cloud.dataproc.v1.DiskConfig
-	(*AttachedDiskConfig)(nil),                                // 31: google.cloud.dataproc.v1.AttachedDiskConfig
-	(*AuxiliaryNodeGroup)(nil),                                // 32: google.cloud.dataproc.v1.AuxiliaryNodeGroup
-	(*NodeGroup)(nil),                                         // 33: google.cloud.dataproc.v1.NodeGroup
-	(*NodeInitializationAction)(nil),                          // 34: google.cloud.dataproc.v1.NodeInitializationAction
-	(*ClusterStatus)(nil),                                     // 35: google.cloud.dataproc.v1.ClusterStatus
-	(*SecurityConfig)(nil),                                    // 36: google.cloud.dataproc.v1.SecurityConfig
-	(*KerberosConfig)(nil),                                    // 37: google.cloud.dataproc.v1.KerberosConfig
-	(*IdentityConfig)(nil),                                    // 38: google.cloud.dataproc.v1.IdentityConfig
-	(*SoftwareConfig)(nil),                                    // 39: google.cloud.dataproc.v1.SoftwareConfig
-	(*LifecycleConfig)(nil),                                   // 40: google.cloud.dataproc.v1.LifecycleConfig
-	(*MetastoreConfig)(nil),                                   // 41: google.cloud.dataproc.v1.MetastoreConfig
-	(*ClusterMetrics)(nil),                                    // 42: google.cloud.dataproc.v1.ClusterMetrics
-	(*DataprocMetricConfig)(nil),                              // 43: google.cloud.dataproc.v1.DataprocMetricConfig
-	(*CreateClusterRequest)(nil),                              // 44: google.cloud.dataproc.v1.CreateClusterRequest
-	(*UpdateClusterRequest)(nil),                              // 45: google.cloud.dataproc.v1.UpdateClusterRequest
-	(*StopClusterRequest)(nil),                                // 46: google.cloud.dataproc.v1.StopClusterRequest
-	(*StartClusterRequest)(nil),                               // 47: google.cloud.dataproc.v1.StartClusterRequest
-	(*DeleteClusterRequest)(nil),                              // 48: google.cloud.dataproc.v1.DeleteClusterRequest
-	(*GetClusterRequest)(nil),                                 // 49: google.cloud.dataproc.v1.GetClusterRequest
-	(*ListClustersRequest)(nil),                               // 50: google.cloud.dataproc.v1.ListClustersRequest
-	(*ListClustersResponse)(nil),                              // 51: google.cloud.dataproc.v1.ListClustersResponse
-	(*DiagnoseClusterRequest)(nil),                            // 52: google.cloud.dataproc.v1.DiagnoseClusterRequest
-	(*DiagnoseClusterResults)(nil),                            // 53: google.cloud.dataproc.v1.DiagnoseClusterResults
-	(*ReservationAffinity)(nil),                               // 54: google.cloud.dataproc.v1.ReservationAffinity
-	nil,                                                       // 55: google.cloud.dataproc.v1.Cluster.LabelsEntry
-	nil,                                                       // 56: google.cloud.dataproc.v1.EndpointConfig.HttpPortsEntry
-	nil,                                                       // 57: google.cloud.dataproc.v1.GceClusterConfig.MetadataEntry
-	nil,                                                       // 58: google.cloud.dataproc.v1.GceClusterConfig.ResourceManagerTagsEntry
-	(*InstanceFlexibilityPolicy_ProvisioningModelMix)(nil),    // 59: google.cloud.dataproc.v1.InstanceFlexibilityPolicy.ProvisioningModelMix
-	(*InstanceFlexibilityPolicy_InstanceSelection)(nil),       // 60: google.cloud.dataproc.v1.InstanceFlexibilityPolicy.InstanceSelection
-	(*InstanceFlexibilityPolicy_InstanceSelectionResult)(nil), // 61: google.cloud.dataproc.v1.InstanceFlexibilityPolicy.InstanceSelectionResult
-	nil,                                 // 62: google.cloud.dataproc.v1.NodeGroup.LabelsEntry
-	nil,                                 // 63: google.cloud.dataproc.v1.IdentityConfig.UserServiceAccountMappingEntry
-	nil,                                 // 64: google.cloud.dataproc.v1.SoftwareConfig.PropertiesEntry
-	nil,                                 // 65: google.cloud.dataproc.v1.ClusterMetrics.HdfsMetricsEntry
-	nil,                                 // 66: google.cloud.dataproc.v1.ClusterMetrics.YarnMetricsEntry
-	(*DataprocMetricConfig_Metric)(nil), // 67: google.cloud.dataproc.v1.DataprocMetricConfig.Metric
-	(*KubernetesClusterConfig)(nil),     // 68: google.cloud.dataproc.v1.KubernetesClusterConfig
-	(*SparkHistoryServerConfig)(nil),    // 69: google.cloud.dataproc.v1.SparkHistoryServerConfig
-	(*durationpb.Duration)(nil),         // 70: google.protobuf.Duration
-	(*timestamppb.Timestamp)(nil),       // 71: google.protobuf.Timestamp
-	(Component)(0),                      // 72: google.cloud.dataproc.v1.Component
-	(FailureAction)(0),                  // 73: google.cloud.dataproc.v1.FailureAction
-	(*fieldmaskpb.FieldMask)(nil),       // 74: google.protobuf.FieldMask
-	(*interval.Interval)(nil),           // 75: google.type.Interval
-	(*longrunningpb.Operation)(nil),     // 76: google.longrunning.Operation
+	(MultiZoneConfig_TargetShape)(0),                          // 4: google.cloud.dataproc.v1.MultiZoneConfig.TargetShape
+	(ConfidentialInstanceConfig_ConfidentialInstanceType)(0),  // 5: google.cloud.dataproc.v1.ConfidentialInstanceConfig.ConfidentialInstanceType
+	(InstanceGroupConfig_Preemptibility)(0),                   // 6: google.cloud.dataproc.v1.InstanceGroupConfig.Preemptibility
+	(FlexibleInstanceGroupConfig_HardwareClass)(0),            // 7: google.cloud.dataproc.v1.FlexibleInstanceGroupConfig.HardwareClass
+	(AttachedDiskConfig_DiskType)(0),                          // 8: google.cloud.dataproc.v1.AttachedDiskConfig.DiskType
+	(NodeGroup_Role)(0),                                       // 9: google.cloud.dataproc.v1.NodeGroup.Role
+	(ClusterStatus_State)(0),                                  // 10: google.cloud.dataproc.v1.ClusterStatus.State
+	(ClusterStatus_Substate)(0),                               // 11: google.cloud.dataproc.v1.ClusterStatus.Substate
+	(DataprocMetricConfig_MetricSource)(0),                    // 12: google.cloud.dataproc.v1.DataprocMetricConfig.MetricSource
+	(DiagnoseClusterRequest_TarballAccess)(0),                 // 13: google.cloud.dataproc.v1.DiagnoseClusterRequest.TarballAccess
+	(ReservationAffinity_Type)(0),                             // 14: google.cloud.dataproc.v1.ReservationAffinity.Type
+	(*Cluster)(nil),                                           // 15: google.cloud.dataproc.v1.Cluster
+	(*ClusterConfig)(nil),                                     // 16: google.cloud.dataproc.v1.ClusterConfig
+	(*VirtualClusterConfig)(nil),                              // 17: google.cloud.dataproc.v1.VirtualClusterConfig
+	(*AuxiliaryServicesConfig)(nil),                           // 18: google.cloud.dataproc.v1.AuxiliaryServicesConfig
+	(*EndpointConfig)(nil),                                    // 19: google.cloud.dataproc.v1.EndpointConfig
+	(*AutoscalingConfig)(nil),                                 // 20: google.cloud.dataproc.v1.AutoscalingConfig
+	(*EncryptionConfig)(nil),                                  // 21: google.cloud.dataproc.v1.EncryptionConfig
+	(*GceClusterConfig)(nil),                                  // 22: google.cloud.dataproc.v1.GceClusterConfig
+	(*MultiZoneConfig)(nil),                                   // 23: google.cloud.dataproc.v1.MultiZoneConfig
+	(*NodeGroupAffinity)(nil),                                 // 24: google.cloud.dataproc.v1.NodeGroupAffinity
+	(*ShieldedInstanceConfig)(nil),                            // 25: google.cloud.dataproc.v1.ShieldedInstanceConfig
+	(*ConfidentialInstanceConfig)(nil),                        // 26: google.cloud.dataproc.v1.ConfidentialInstanceConfig
+	(*InstanceGroupConfig)(nil),                               // 27: google.cloud.dataproc.v1.InstanceGroupConfig
+	(*StartupConfig)(nil),                                     // 28: google.cloud.dataproc.v1.StartupConfig
+	(*InstanceReference)(nil),                                 // 29: google.cloud.dataproc.v1.InstanceReference
+	(*ManagedGroupConfig)(nil),                                // 30: google.cloud.dataproc.v1.ManagedGroupConfig
+	(*InstanceFlexibilityPolicy)(nil),                         // 31: google.cloud.dataproc.v1.InstanceFlexibilityPolicy
+	(*FlexibleInstanceGroupConfig)(nil),                       // 32: google.cloud.dataproc.v1.FlexibleInstanceGroupConfig
+	(*AcceleratorConfig)(nil),                                 // 33: google.cloud.dataproc.v1.AcceleratorConfig
+	(*DiskConfig)(nil),                                        // 34: google.cloud.dataproc.v1.DiskConfig
+	(*AttachedDiskConfig)(nil),                                // 35: google.cloud.dataproc.v1.AttachedDiskConfig
+	(*AuxiliaryNodeGroup)(nil),                                // 36: google.cloud.dataproc.v1.AuxiliaryNodeGroup
+	(*NodeGroup)(nil),                                         // 37: google.cloud.dataproc.v1.NodeGroup
+	(*NodeInitializationAction)(nil),                          // 38: google.cloud.dataproc.v1.NodeInitializationAction
+	(*ClusterStatus)(nil),                                     // 39: google.cloud.dataproc.v1.ClusterStatus
+	(*SecurityConfig)(nil),                                    // 40: google.cloud.dataproc.v1.SecurityConfig
+	(*KerberosConfig)(nil),                                    // 41: google.cloud.dataproc.v1.KerberosConfig
+	(*IdentityConfig)(nil),                                    // 42: google.cloud.dataproc.v1.IdentityConfig
+	(*SoftwareConfig)(nil),                                    // 43: google.cloud.dataproc.v1.SoftwareConfig
+	(*LifecycleConfig)(nil),                                   // 44: google.cloud.dataproc.v1.LifecycleConfig
+	(*MetastoreConfig)(nil),                                   // 45: google.cloud.dataproc.v1.MetastoreConfig
+	(*ClusterMetrics)(nil),                                    // 46: google.cloud.dataproc.v1.ClusterMetrics
+	(*DataprocMetricConfig)(nil),                              // 47: google.cloud.dataproc.v1.DataprocMetricConfig
+	(*CreateClusterRequest)(nil),                              // 48: google.cloud.dataproc.v1.CreateClusterRequest
+	(*UpdateClusterRequest)(nil),                              // 49: google.cloud.dataproc.v1.UpdateClusterRequest
+	(*StopClusterRequest)(nil),                                // 50: google.cloud.dataproc.v1.StopClusterRequest
+	(*StartClusterRequest)(nil),                               // 51: google.cloud.dataproc.v1.StartClusterRequest
+	(*DeleteClusterRequest)(nil),                              // 52: google.cloud.dataproc.v1.DeleteClusterRequest
+	(*GetClusterRequest)(nil),                                 // 53: google.cloud.dataproc.v1.GetClusterRequest
+	(*ListClustersRequest)(nil),                               // 54: google.cloud.dataproc.v1.ListClustersRequest
+	(*ListClustersResponse)(nil),                              // 55: google.cloud.dataproc.v1.ListClustersResponse
+	(*DiagnoseClusterRequest)(nil),                            // 56: google.cloud.dataproc.v1.DiagnoseClusterRequest
+	(*DiagnoseClusterResults)(nil),                            // 57: google.cloud.dataproc.v1.DiagnoseClusterResults
+	(*ReservationAffinity)(nil),                               // 58: google.cloud.dataproc.v1.ReservationAffinity
+	nil,                                                       // 59: google.cloud.dataproc.v1.Cluster.LabelsEntry
+	nil,                                                       // 60: google.cloud.dataproc.v1.EndpointConfig.HttpPortsEntry
+	nil,                                                       // 61: google.cloud.dataproc.v1.GceClusterConfig.MetadataEntry
+	nil,                                                       // 62: google.cloud.dataproc.v1.GceClusterConfig.ResourceManagerTagsEntry
+	(*InstanceFlexibilityPolicy_ProvisioningModelMix)(nil),    // 63: google.cloud.dataproc.v1.InstanceFlexibilityPolicy.ProvisioningModelMix
+	(*InstanceFlexibilityPolicy_InstanceSelection)(nil),       // 64: google.cloud.dataproc.v1.InstanceFlexibilityPolicy.InstanceSelection
+	(*InstanceFlexibilityPolicy_InstanceSelectionResult)(nil), // 65: google.cloud.dataproc.v1.InstanceFlexibilityPolicy.InstanceSelectionResult
+	nil,                                 // 66: google.cloud.dataproc.v1.NodeGroup.LabelsEntry
+	nil,                                 // 67: google.cloud.dataproc.v1.IdentityConfig.UserServiceAccountMappingEntry
+	nil,                                 // 68: google.cloud.dataproc.v1.SoftwareConfig.PropertiesEntry
+	nil,                                 // 69: google.cloud.dataproc.v1.ClusterMetrics.HdfsMetricsEntry
+	nil,                                 // 70: google.cloud.dataproc.v1.ClusterMetrics.YarnMetricsEntry
+	(*DataprocMetricConfig_Metric)(nil), // 71: google.cloud.dataproc.v1.DataprocMetricConfig.Metric
+	(*KubernetesClusterConfig)(nil),     // 72: google.cloud.dataproc.v1.KubernetesClusterConfig
+	(*SparkHistoryServerConfig)(nil),    // 73: google.cloud.dataproc.v1.SparkHistoryServerConfig
+	(*durationpb.Duration)(nil),         // 74: google.protobuf.Duration
+	(*timestamppb.Timestamp)(nil),       // 75: google.protobuf.Timestamp
+	(Component)(0),                      // 76: google.cloud.dataproc.v1.Component
+	(FailureAction)(0),                  // 77: google.cloud.dataproc.v1.FailureAction
+	(*fieldmaskpb.FieldMask)(nil),       // 78: google.protobuf.FieldMask
+	(*interval.Interval)(nil),           // 79: google.type.Interval
+	(*longrunningpb.Operation)(nil),     // 80: google.longrunning.Operation
 }
 var file_google_cloud_dataproc_v1_clusters_proto_depIdxs = []int32{
-	14, // 0: google.cloud.dataproc.v1.Cluster.config:type_name -> google.cloud.dataproc.v1.ClusterConfig
-	15, // 1: google.cloud.dataproc.v1.Cluster.virtual_cluster_config:type_name -> google.cloud.dataproc.v1.VirtualClusterConfig
-	55, // 2: google.cloud.dataproc.v1.Cluster.labels:type_name -> google.cloud.dataproc.v1.Cluster.LabelsEntry
-	35, // 3: google.cloud.dataproc.v1.Cluster.status:type_name -> google.cloud.dataproc.v1.ClusterStatus
-	35, // 4: google.cloud.dataproc.v1.Cluster.status_history:type_name -> google.cloud.dataproc.v1.ClusterStatus
-	42, // 5: google.cloud.dataproc.v1.Cluster.metrics:type_name -> google.cloud.dataproc.v1.ClusterMetrics
+	16, // 0: google.cloud.dataproc.v1.Cluster.config:type_name -> google.cloud.dataproc.v1.ClusterConfig
+	17, // 1: google.cloud.dataproc.v1.Cluster.virtual_cluster_config:type_name -> google.cloud.dataproc.v1.VirtualClusterConfig
+	59, // 2: google.cloud.dataproc.v1.Cluster.labels:type_name -> google.cloud.dataproc.v1.Cluster.LabelsEntry
+	39, // 3: google.cloud.dataproc.v1.Cluster.status:type_name -> google.cloud.dataproc.v1.ClusterStatus
+	39, // 4: google.cloud.dataproc.v1.Cluster.status_history:type_name -> google.cloud.dataproc.v1.ClusterStatus
+	46, // 5: google.cloud.dataproc.v1.Cluster.metrics:type_name -> google.cloud.dataproc.v1.ClusterMetrics
 	0,  // 6: google.cloud.dataproc.v1.ClusterConfig.cluster_type:type_name -> google.cloud.dataproc.v1.ClusterConfig.ClusterType
 	1,  // 7: google.cloud.dataproc.v1.ClusterConfig.cluster_tier:type_name -> google.cloud.dataproc.v1.ClusterConfig.ClusterTier
 	2,  // 8: google.cloud.dataproc.v1.ClusterConfig.engine:type_name -> google.cloud.dataproc.v1.ClusterConfig.Engine
-	20, // 9: google.cloud.dataproc.v1.ClusterConfig.gce_cluster_config:type_name -> google.cloud.dataproc.v1.GceClusterConfig
-	24, // 10: google.cloud.dataproc.v1.ClusterConfig.master_config:type_name -> google.cloud.dataproc.v1.InstanceGroupConfig
-	24, // 11: google.cloud.dataproc.v1.ClusterConfig.worker_config:type_name -> google.cloud.dataproc.v1.InstanceGroupConfig
-	24, // 12: google.cloud.dataproc.v1.ClusterConfig.secondary_worker_config:type_name -> google.cloud.dataproc.v1.InstanceGroupConfig
-	39, // 13: google.cloud.dataproc.v1.ClusterConfig.software_config:type_name -> google.cloud.dataproc.v1.SoftwareConfig
-	34, // 14: google.cloud.dataproc.v1.ClusterConfig.initialization_actions:type_name -> google.cloud.dataproc.v1.NodeInitializationAction
-	19, // 15: google.cloud.dataproc.v1.ClusterConfig.encryption_config:type_name -> google.cloud.dataproc.v1.EncryptionConfig
-	18, // 16: google.cloud.dataproc.v1.ClusterConfig.autoscaling_config:type_name -> google.cloud.dataproc.v1.AutoscalingConfig
-	36, // 17: google.cloud.dataproc.v1.ClusterConfig.security_config:type_name -> google.cloud.dataproc.v1.SecurityConfig
-	40, // 18: google.cloud.dataproc.v1.ClusterConfig.lifecycle_config:type_name -> google.cloud.dataproc.v1.LifecycleConfig
-	17, // 19: google.cloud.dataproc.v1.ClusterConfig.endpoint_config:type_name -> google.cloud.dataproc.v1.EndpointConfig
-	41, // 20: google.cloud.dataproc.v1.ClusterConfig.metastore_config:type_name -> google.cloud.dataproc.v1.MetastoreConfig
-	43, // 21: google.cloud.dataproc.v1.ClusterConfig.dataproc_metric_config:type_name -> google.cloud.dataproc.v1.DataprocMetricConfig
-	32, // 22: google.cloud.dataproc.v1.ClusterConfig.auxiliary_node_groups:type_name -> google.cloud.dataproc.v1.AuxiliaryNodeGroup
-	68, // 23: google.cloud.dataproc.v1.VirtualClusterConfig.kubernetes_cluster_config:type_name -> google.cloud.dataproc.v1.KubernetesClusterConfig
-	16, // 24: google.cloud.dataproc.v1.VirtualClusterConfig.auxiliary_services_config:type_name -> google.cloud.dataproc.v1.AuxiliaryServicesConfig
-	41, // 25: google.cloud.dataproc.v1.AuxiliaryServicesConfig.metastore_config:type_name -> google.cloud.dataproc.v1.MetastoreConfig
-	69, // 26: google.cloud.dataproc.v1.AuxiliaryServicesConfig.spark_history_server_config:type_name -> google.cloud.dataproc.v1.SparkHistoryServerConfig
-	56, // 27: google.cloud.dataproc.v1.EndpointConfig.http_ports:type_name -> google.cloud.dataproc.v1.EndpointConfig.HttpPortsEntry
-	3,  // 28: google.cloud.dataproc.v1.GceClusterConfig.private_ipv6_google_access:type_name -> google.cloud.dataproc.v1.GceClusterConfig.PrivateIpv6GoogleAccess
-	57, // 29: google.cloud.dataproc.v1.GceClusterConfig.metadata:type_name -> google.cloud.dataproc.v1.GceClusterConfig.MetadataEntry
-	54, // 30: google.cloud.dataproc.v1.GceClusterConfig.reservation_affinity:type_name -> google.cloud.dataproc.v1.ReservationAffinity
-	21, // 31: google.cloud.dataproc.v1.GceClusterConfig.node_group_affinity:type_name -> google.cloud.dataproc.v1.NodeGroupAffinity
-	22, // 32: google.cloud.dataproc.v1.GceClusterConfig.shielded_instance_config:type_name -> google.cloud.dataproc.v1.ShieldedInstanceConfig
-	23, // 33: google.cloud.dataproc.v1.GceClusterConfig.confidential_instance_config:type_name -> google.cloud.dataproc.v1.ConfidentialInstanceConfig
-	58, // 34: google.cloud.dataproc.v1.GceClusterConfig.resource_manager_tags:type_name -> google.cloud.dataproc.v1.GceClusterConfig.ResourceManagerTagsEntry
-	4,  // 35: google.cloud.dataproc.v1.ConfidentialInstanceConfig.confidential_instance_type:type_name -> google.cloud.dataproc.v1.ConfidentialInstanceConfig.ConfidentialInstanceType
-	26, // 36: google.cloud.dataproc.v1.InstanceGroupConfig.instance_references:type_name -> google.cloud.dataproc.v1.InstanceReference
-	30, // 37: google.cloud.dataproc.v1.InstanceGroupConfig.disk_config:type_name -> google.cloud.dataproc.v1.DiskConfig
-	5,  // 38: google.cloud.dataproc.v1.InstanceGroupConfig.preemptibility:type_name -> google.cloud.dataproc.v1.InstanceGroupConfig.Preemptibility
-	27, // 39: google.cloud.dataproc.v1.InstanceGroupConfig.managed_group_config:type_name -> google.cloud.dataproc.v1.ManagedGroupConfig
-	29, // 40: google.cloud.dataproc.v1.InstanceGroupConfig.accelerators:type_name -> google.cloud.dataproc.v1.AcceleratorConfig
-	28, // 41: google.cloud.dataproc.v1.InstanceGroupConfig.instance_flexibility_policy:type_name -> google.cloud.dataproc.v1.InstanceFlexibilityPolicy
-	25, // 42: google.cloud.dataproc.v1.InstanceGroupConfig.startup_config:type_name -> google.cloud.dataproc.v1.StartupConfig
-	59, // 43: google.cloud.dataproc.v1.InstanceFlexibilityPolicy.provisioning_model_mix:type_name -> google.cloud.dataproc.v1.InstanceFlexibilityPolicy.ProvisioningModelMix
-	60, // 44: google.cloud.dataproc.v1.InstanceFlexibilityPolicy.instance_selection_list:type_name -> google.cloud.dataproc.v1.InstanceFlexibilityPolicy.InstanceSelection
-	61, // 45: google.cloud.dataproc.v1.InstanceFlexibilityPolicy.instance_selection_results:type_name -> google.cloud.dataproc.v1.InstanceFlexibilityPolicy.InstanceSelectionResult
-	31, // 46: google.cloud.dataproc.v1.DiskConfig.attached_disk_configs:type_name -> google.cloud.dataproc.v1.AttachedDiskConfig
-	6,  // 47: google.cloud.dataproc.v1.AttachedDiskConfig.disk_type:type_name -> google.cloud.dataproc.v1.AttachedDiskConfig.DiskType
-	33, // 48: google.cloud.dataproc.v1.AuxiliaryNodeGroup.node_group:type_name -> google.cloud.dataproc.v1.NodeGroup
-	7,  // 49: google.cloud.dataproc.v1.NodeGroup.roles:type_name -> google.cloud.dataproc.v1.NodeGroup.Role
-	24, // 50: google.cloud.dataproc.v1.NodeGroup.node_group_config:type_name -> google.cloud.dataproc.v1.InstanceGroupConfig
-	62, // 51: google.cloud.dataproc.v1.NodeGroup.labels:type_name -> google.cloud.dataproc.v1.NodeGroup.LabelsEntry
-	70, // 52: google.cloud.dataproc.v1.NodeInitializationAction.execution_timeout:type_name -> google.protobuf.Duration
-	8,  // 53: google.cloud.dataproc.v1.ClusterStatus.state:type_name -> google.cloud.dataproc.v1.ClusterStatus.State
-	71, // 54: google.cloud.dataproc.v1.ClusterStatus.state_start_time:type_name -> google.protobuf.Timestamp
-	9,  // 55: google.cloud.dataproc.v1.ClusterStatus.substate:type_name -> google.cloud.dataproc.v1.ClusterStatus.Substate
-	37, // 56: google.cloud.dataproc.v1.SecurityConfig.kerberos_config:type_name -> google.cloud.dataproc.v1.KerberosConfig
-	38, // 57: google.cloud.dataproc.v1.SecurityConfig.identity_config:type_name -> google.cloud.dataproc.v1.IdentityConfig
-	63, // 58: google.cloud.dataproc.v1.IdentityConfig.user_service_account_mapping:type_name -> google.cloud.dataproc.v1.IdentityConfig.UserServiceAccountMappingEntry
-	64, // 59: google.cloud.dataproc.v1.SoftwareConfig.properties:type_name -> google.cloud.dataproc.v1.SoftwareConfig.PropertiesEntry
-	72, // 60: google.cloud.dataproc.v1.SoftwareConfig.optional_components:type_name -> google.cloud.dataproc.v1.Component
-	70, // 61: google.cloud.dataproc.v1.LifecycleConfig.idle_delete_ttl:type_name -> google.protobuf.Duration
-	71, // 62: google.cloud.dataproc.v1.LifecycleConfig.auto_delete_time:type_name -> google.protobuf.Timestamp
-	70, // 63: google.cloud.dataproc.v1.LifecycleConfig.auto_delete_ttl:type_name -> google.protobuf.Duration
-	70, // 64: google.cloud.dataproc.v1.LifecycleConfig.idle_stop_ttl:type_name -> google.protobuf.Duration
-	71, // 65: google.cloud.dataproc.v1.LifecycleConfig.auto_stop_time:type_name -> google.protobuf.Timestamp
-	70, // 66: google.cloud.dataproc.v1.LifecycleConfig.auto_stop_ttl:type_name -> google.protobuf.Duration
-	71, // 67: google.cloud.dataproc.v1.LifecycleConfig.idle_start_time:type_name -> google.protobuf.Timestamp
-	65, // 68: google.cloud.dataproc.v1.ClusterMetrics.hdfs_metrics:type_name -> google.cloud.dataproc.v1.ClusterMetrics.HdfsMetricsEntry
-	66, // 69: google.cloud.dataproc.v1.ClusterMetrics.yarn_metrics:type_name -> google.cloud.dataproc.v1.ClusterMetrics.YarnMetricsEntry
-	67, // 70: google.cloud.dataproc.v1.DataprocMetricConfig.metrics:type_name -> google.cloud.dataproc.v1.DataprocMetricConfig.Metric
-	13, // 71: google.cloud.dataproc.v1.CreateClusterRequest.cluster:type_name -> google.cloud.dataproc.v1.Cluster
-	73, // 72: google.cloud.dataproc.v1.CreateClusterRequest.action_on_failed_primary_workers:type_name -> google.cloud.dataproc.v1.FailureAction
-	13, // 73: google.cloud.dataproc.v1.UpdateClusterRequest.cluster:type_name -> google.cloud.dataproc.v1.Cluster
-	70, // 74: google.cloud.dataproc.v1.UpdateClusterRequest.graceful_decommission_timeout:type_name -> google.protobuf.Duration
-	74, // 75: google.cloud.dataproc.v1.UpdateClusterRequest.update_mask:type_name -> google.protobuf.FieldMask
-	13, // 76: google.cloud.dataproc.v1.ListClustersResponse.clusters:type_name -> google.cloud.dataproc.v1.Cluster
-	11, // 77: google.cloud.dataproc.v1.DiagnoseClusterRequest.tarball_access:type_name -> google.cloud.dataproc.v1.DiagnoseClusterRequest.TarballAccess
-	75, // 78: google.cloud.dataproc.v1.DiagnoseClusterRequest.diagnosis_interval:type_name -> google.type.Interval
-	12, // 79: google.cloud.dataproc.v1.ReservationAffinity.consume_reservation_type:type_name -> google.cloud.dataproc.v1.ReservationAffinity.Type
-	30, // 80: google.cloud.dataproc.v1.InstanceFlexibilityPolicy.InstanceSelection.disk_config:type_name -> google.cloud.dataproc.v1.DiskConfig
-	10, // 81: google.cloud.dataproc.v1.DataprocMetricConfig.Metric.metric_source:type_name -> google.cloud.dataproc.v1.DataprocMetricConfig.MetricSource
-	44, // 82: google.cloud.dataproc.v1.ClusterController.CreateCluster:input_type -> google.cloud.dataproc.v1.CreateClusterRequest
-	45, // 83: google.cloud.dataproc.v1.ClusterController.UpdateCluster:input_type -> google.cloud.dataproc.v1.UpdateClusterRequest
-	46, // 84: google.cloud.dataproc.v1.ClusterController.StopCluster:input_type -> google.cloud.dataproc.v1.StopClusterRequest
-	47, // 85: google.cloud.dataproc.v1.ClusterController.StartCluster:input_type -> google.cloud.dataproc.v1.StartClusterRequest
-	48, // 86: google.cloud.dataproc.v1.ClusterController.DeleteCluster:input_type -> google.cloud.dataproc.v1.DeleteClusterRequest
-	49, // 87: google.cloud.dataproc.v1.ClusterController.GetCluster:input_type -> google.cloud.dataproc.v1.GetClusterRequest
-	50, // 88: google.cloud.dataproc.v1.ClusterController.ListClusters:input_type -> google.cloud.dataproc.v1.ListClustersRequest
-	52, // 89: google.cloud.dataproc.v1.ClusterController.DiagnoseCluster:input_type -> google.cloud.dataproc.v1.DiagnoseClusterRequest
-	76, // 90: google.cloud.dataproc.v1.ClusterController.CreateCluster:output_type -> google.longrunning.Operation
-	76, // 91: google.cloud.dataproc.v1.ClusterController.UpdateCluster:output_type -> google.longrunning.Operation
-	76, // 92: google.cloud.dataproc.v1.ClusterController.StopCluster:output_type -> google.longrunning.Operation
-	76, // 93: google.cloud.dataproc.v1.ClusterController.StartCluster:output_type -> google.longrunning.Operation
-	76, // 94: google.cloud.dataproc.v1.ClusterController.DeleteCluster:output_type -> google.longrunning.Operation
-	13, // 95: google.cloud.dataproc.v1.ClusterController.GetCluster:output_type -> google.cloud.dataproc.v1.Cluster
-	51, // 96: google.cloud.dataproc.v1.ClusterController.ListClusters:output_type -> google.cloud.dataproc.v1.ListClustersResponse
-	76, // 97: google.cloud.dataproc.v1.ClusterController.DiagnoseCluster:output_type -> google.longrunning.Operation
-	90, // [90:98] is the sub-list for method output_type
-	82, // [82:90] is the sub-list for method input_type
-	82, // [82:82] is the sub-list for extension type_name
-	82, // [82:82] is the sub-list for extension extendee
-	0,  // [0:82] is the sub-list for field type_name
+	22, // 9: google.cloud.dataproc.v1.ClusterConfig.gce_cluster_config:type_name -> google.cloud.dataproc.v1.GceClusterConfig
+	27, // 10: google.cloud.dataproc.v1.ClusterConfig.master_config:type_name -> google.cloud.dataproc.v1.InstanceGroupConfig
+	27, // 11: google.cloud.dataproc.v1.ClusterConfig.worker_config:type_name -> google.cloud.dataproc.v1.InstanceGroupConfig
+	27, // 12: google.cloud.dataproc.v1.ClusterConfig.secondary_worker_config:type_name -> google.cloud.dataproc.v1.InstanceGroupConfig
+	43, // 13: google.cloud.dataproc.v1.ClusterConfig.software_config:type_name -> google.cloud.dataproc.v1.SoftwareConfig
+	38, // 14: google.cloud.dataproc.v1.ClusterConfig.initialization_actions:type_name -> google.cloud.dataproc.v1.NodeInitializationAction
+	21, // 15: google.cloud.dataproc.v1.ClusterConfig.encryption_config:type_name -> google.cloud.dataproc.v1.EncryptionConfig
+	20, // 16: google.cloud.dataproc.v1.ClusterConfig.autoscaling_config:type_name -> google.cloud.dataproc.v1.AutoscalingConfig
+	40, // 17: google.cloud.dataproc.v1.ClusterConfig.security_config:type_name -> google.cloud.dataproc.v1.SecurityConfig
+	44, // 18: google.cloud.dataproc.v1.ClusterConfig.lifecycle_config:type_name -> google.cloud.dataproc.v1.LifecycleConfig
+	19, // 19: google.cloud.dataproc.v1.ClusterConfig.endpoint_config:type_name -> google.cloud.dataproc.v1.EndpointConfig
+	45, // 20: google.cloud.dataproc.v1.ClusterConfig.metastore_config:type_name -> google.cloud.dataproc.v1.MetastoreConfig
+	47, // 21: google.cloud.dataproc.v1.ClusterConfig.dataproc_metric_config:type_name -> google.cloud.dataproc.v1.DataprocMetricConfig
+	36, // 22: google.cloud.dataproc.v1.ClusterConfig.auxiliary_node_groups:type_name -> google.cloud.dataproc.v1.AuxiliaryNodeGroup
+	32, // 23: google.cloud.dataproc.v1.ClusterConfig.master_flexible_config:type_name -> google.cloud.dataproc.v1.FlexibleInstanceGroupConfig
+	32, // 24: google.cloud.dataproc.v1.ClusterConfig.worker_flexible_config:type_name -> google.cloud.dataproc.v1.FlexibleInstanceGroupConfig
+	32, // 25: google.cloud.dataproc.v1.ClusterConfig.secondary_worker_flexible_config:type_name -> google.cloud.dataproc.v1.FlexibleInstanceGroupConfig
+	72, // 26: google.cloud.dataproc.v1.VirtualClusterConfig.kubernetes_cluster_config:type_name -> google.cloud.dataproc.v1.KubernetesClusterConfig
+	18, // 27: google.cloud.dataproc.v1.VirtualClusterConfig.auxiliary_services_config:type_name -> google.cloud.dataproc.v1.AuxiliaryServicesConfig
+	45, // 28: google.cloud.dataproc.v1.AuxiliaryServicesConfig.metastore_config:type_name -> google.cloud.dataproc.v1.MetastoreConfig
+	73, // 29: google.cloud.dataproc.v1.AuxiliaryServicesConfig.spark_history_server_config:type_name -> google.cloud.dataproc.v1.SparkHistoryServerConfig
+	60, // 30: google.cloud.dataproc.v1.EndpointConfig.http_ports:type_name -> google.cloud.dataproc.v1.EndpointConfig.HttpPortsEntry
+	23, // 31: google.cloud.dataproc.v1.GceClusterConfig.multi_zone_config:type_name -> google.cloud.dataproc.v1.MultiZoneConfig
+	3,  // 32: google.cloud.dataproc.v1.GceClusterConfig.private_ipv6_google_access:type_name -> google.cloud.dataproc.v1.GceClusterConfig.PrivateIpv6GoogleAccess
+	61, // 33: google.cloud.dataproc.v1.GceClusterConfig.metadata:type_name -> google.cloud.dataproc.v1.GceClusterConfig.MetadataEntry
+	58, // 34: google.cloud.dataproc.v1.GceClusterConfig.reservation_affinity:type_name -> google.cloud.dataproc.v1.ReservationAffinity
+	24, // 35: google.cloud.dataproc.v1.GceClusterConfig.node_group_affinity:type_name -> google.cloud.dataproc.v1.NodeGroupAffinity
+	25, // 36: google.cloud.dataproc.v1.GceClusterConfig.shielded_instance_config:type_name -> google.cloud.dataproc.v1.ShieldedInstanceConfig
+	26, // 37: google.cloud.dataproc.v1.GceClusterConfig.confidential_instance_config:type_name -> google.cloud.dataproc.v1.ConfidentialInstanceConfig
+	62, // 38: google.cloud.dataproc.v1.GceClusterConfig.resource_manager_tags:type_name -> google.cloud.dataproc.v1.GceClusterConfig.ResourceManagerTagsEntry
+	4,  // 39: google.cloud.dataproc.v1.MultiZoneConfig.target_shape:type_name -> google.cloud.dataproc.v1.MultiZoneConfig.TargetShape
+	5,  // 40: google.cloud.dataproc.v1.ConfidentialInstanceConfig.confidential_instance_type:type_name -> google.cloud.dataproc.v1.ConfidentialInstanceConfig.ConfidentialInstanceType
+	29, // 41: google.cloud.dataproc.v1.InstanceGroupConfig.instance_references:type_name -> google.cloud.dataproc.v1.InstanceReference
+	34, // 42: google.cloud.dataproc.v1.InstanceGroupConfig.disk_config:type_name -> google.cloud.dataproc.v1.DiskConfig
+	6,  // 43: google.cloud.dataproc.v1.InstanceGroupConfig.preemptibility:type_name -> google.cloud.dataproc.v1.InstanceGroupConfig.Preemptibility
+	30, // 44: google.cloud.dataproc.v1.InstanceGroupConfig.managed_group_config:type_name -> google.cloud.dataproc.v1.ManagedGroupConfig
+	33, // 45: google.cloud.dataproc.v1.InstanceGroupConfig.accelerators:type_name -> google.cloud.dataproc.v1.AcceleratorConfig
+	31, // 46: google.cloud.dataproc.v1.InstanceGroupConfig.instance_flexibility_policy:type_name -> google.cloud.dataproc.v1.InstanceFlexibilityPolicy
+	28, // 47: google.cloud.dataproc.v1.InstanceGroupConfig.startup_config:type_name -> google.cloud.dataproc.v1.StartupConfig
+	63, // 48: google.cloud.dataproc.v1.InstanceFlexibilityPolicy.provisioning_model_mix:type_name -> google.cloud.dataproc.v1.InstanceFlexibilityPolicy.ProvisioningModelMix
+	64, // 49: google.cloud.dataproc.v1.InstanceFlexibilityPolicy.instance_selection_list:type_name -> google.cloud.dataproc.v1.InstanceFlexibilityPolicy.InstanceSelection
+	65, // 50: google.cloud.dataproc.v1.InstanceFlexibilityPolicy.instance_selection_results:type_name -> google.cloud.dataproc.v1.InstanceFlexibilityPolicy.InstanceSelectionResult
+	7,  // 51: google.cloud.dataproc.v1.FlexibleInstanceGroupConfig.hardware_class:type_name -> google.cloud.dataproc.v1.FlexibleInstanceGroupConfig.HardwareClass
+	35, // 52: google.cloud.dataproc.v1.DiskConfig.attached_disk_configs:type_name -> google.cloud.dataproc.v1.AttachedDiskConfig
+	8,  // 53: google.cloud.dataproc.v1.AttachedDiskConfig.disk_type:type_name -> google.cloud.dataproc.v1.AttachedDiskConfig.DiskType
+	37, // 54: google.cloud.dataproc.v1.AuxiliaryNodeGroup.node_group:type_name -> google.cloud.dataproc.v1.NodeGroup
+	9,  // 55: google.cloud.dataproc.v1.NodeGroup.roles:type_name -> google.cloud.dataproc.v1.NodeGroup.Role
+	27, // 56: google.cloud.dataproc.v1.NodeGroup.node_group_config:type_name -> google.cloud.dataproc.v1.InstanceGroupConfig
+	66, // 57: google.cloud.dataproc.v1.NodeGroup.labels:type_name -> google.cloud.dataproc.v1.NodeGroup.LabelsEntry
+	74, // 58: google.cloud.dataproc.v1.NodeInitializationAction.execution_timeout:type_name -> google.protobuf.Duration
+	10, // 59: google.cloud.dataproc.v1.ClusterStatus.state:type_name -> google.cloud.dataproc.v1.ClusterStatus.State
+	75, // 60: google.cloud.dataproc.v1.ClusterStatus.state_start_time:type_name -> google.protobuf.Timestamp
+	11, // 61: google.cloud.dataproc.v1.ClusterStatus.substate:type_name -> google.cloud.dataproc.v1.ClusterStatus.Substate
+	41, // 62: google.cloud.dataproc.v1.SecurityConfig.kerberos_config:type_name -> google.cloud.dataproc.v1.KerberosConfig
+	42, // 63: google.cloud.dataproc.v1.SecurityConfig.identity_config:type_name -> google.cloud.dataproc.v1.IdentityConfig
+	67, // 64: google.cloud.dataproc.v1.IdentityConfig.user_service_account_mapping:type_name -> google.cloud.dataproc.v1.IdentityConfig.UserServiceAccountMappingEntry
+	68, // 65: google.cloud.dataproc.v1.SoftwareConfig.properties:type_name -> google.cloud.dataproc.v1.SoftwareConfig.PropertiesEntry
+	76, // 66: google.cloud.dataproc.v1.SoftwareConfig.optional_components:type_name -> google.cloud.dataproc.v1.Component
+	74, // 67: google.cloud.dataproc.v1.LifecycleConfig.idle_delete_ttl:type_name -> google.protobuf.Duration
+	75, // 68: google.cloud.dataproc.v1.LifecycleConfig.auto_delete_time:type_name -> google.protobuf.Timestamp
+	74, // 69: google.cloud.dataproc.v1.LifecycleConfig.auto_delete_ttl:type_name -> google.protobuf.Duration
+	74, // 70: google.cloud.dataproc.v1.LifecycleConfig.idle_stop_ttl:type_name -> google.protobuf.Duration
+	75, // 71: google.cloud.dataproc.v1.LifecycleConfig.auto_stop_time:type_name -> google.protobuf.Timestamp
+	74, // 72: google.cloud.dataproc.v1.LifecycleConfig.auto_stop_ttl:type_name -> google.protobuf.Duration
+	75, // 73: google.cloud.dataproc.v1.LifecycleConfig.idle_start_time:type_name -> google.protobuf.Timestamp
+	69, // 74: google.cloud.dataproc.v1.ClusterMetrics.hdfs_metrics:type_name -> google.cloud.dataproc.v1.ClusterMetrics.HdfsMetricsEntry
+	70, // 75: google.cloud.dataproc.v1.ClusterMetrics.yarn_metrics:type_name -> google.cloud.dataproc.v1.ClusterMetrics.YarnMetricsEntry
+	71, // 76: google.cloud.dataproc.v1.DataprocMetricConfig.metrics:type_name -> google.cloud.dataproc.v1.DataprocMetricConfig.Metric
+	15, // 77: google.cloud.dataproc.v1.CreateClusterRequest.cluster:type_name -> google.cloud.dataproc.v1.Cluster
+	77, // 78: google.cloud.dataproc.v1.CreateClusterRequest.action_on_failed_primary_workers:type_name -> google.cloud.dataproc.v1.FailureAction
+	15, // 79: google.cloud.dataproc.v1.UpdateClusterRequest.cluster:type_name -> google.cloud.dataproc.v1.Cluster
+	74, // 80: google.cloud.dataproc.v1.UpdateClusterRequest.graceful_decommission_timeout:type_name -> google.protobuf.Duration
+	78, // 81: google.cloud.dataproc.v1.UpdateClusterRequest.update_mask:type_name -> google.protobuf.FieldMask
+	15, // 82: google.cloud.dataproc.v1.ListClustersResponse.clusters:type_name -> google.cloud.dataproc.v1.Cluster
+	13, // 83: google.cloud.dataproc.v1.DiagnoseClusterRequest.tarball_access:type_name -> google.cloud.dataproc.v1.DiagnoseClusterRequest.TarballAccess
+	79, // 84: google.cloud.dataproc.v1.DiagnoseClusterRequest.diagnosis_interval:type_name -> google.type.Interval
+	14, // 85: google.cloud.dataproc.v1.ReservationAffinity.consume_reservation_type:type_name -> google.cloud.dataproc.v1.ReservationAffinity.Type
+	34, // 86: google.cloud.dataproc.v1.InstanceFlexibilityPolicy.InstanceSelection.disk_config:type_name -> google.cloud.dataproc.v1.DiskConfig
+	12, // 87: google.cloud.dataproc.v1.DataprocMetricConfig.Metric.metric_source:type_name -> google.cloud.dataproc.v1.DataprocMetricConfig.MetricSource
+	48, // 88: google.cloud.dataproc.v1.ClusterController.CreateCluster:input_type -> google.cloud.dataproc.v1.CreateClusterRequest
+	49, // 89: google.cloud.dataproc.v1.ClusterController.UpdateCluster:input_type -> google.cloud.dataproc.v1.UpdateClusterRequest
+	50, // 90: google.cloud.dataproc.v1.ClusterController.StopCluster:input_type -> google.cloud.dataproc.v1.StopClusterRequest
+	51, // 91: google.cloud.dataproc.v1.ClusterController.StartCluster:input_type -> google.cloud.dataproc.v1.StartClusterRequest
+	52, // 92: google.cloud.dataproc.v1.ClusterController.DeleteCluster:input_type -> google.cloud.dataproc.v1.DeleteClusterRequest
+	53, // 93: google.cloud.dataproc.v1.ClusterController.GetCluster:input_type -> google.cloud.dataproc.v1.GetClusterRequest
+	54, // 94: google.cloud.dataproc.v1.ClusterController.ListClusters:input_type -> google.cloud.dataproc.v1.ListClustersRequest
+	56, // 95: google.cloud.dataproc.v1.ClusterController.DiagnoseCluster:input_type -> google.cloud.dataproc.v1.DiagnoseClusterRequest
+	80, // 96: google.cloud.dataproc.v1.ClusterController.CreateCluster:output_type -> google.longrunning.Operation
+	80, // 97: google.cloud.dataproc.v1.ClusterController.UpdateCluster:output_type -> google.longrunning.Operation
+	80, // 98: google.cloud.dataproc.v1.ClusterController.StopCluster:output_type -> google.longrunning.Operation
+	80, // 99: google.cloud.dataproc.v1.ClusterController.StartCluster:output_type -> google.longrunning.Operation
+	80, // 100: google.cloud.dataproc.v1.ClusterController.DeleteCluster:output_type -> google.longrunning.Operation
+	15, // 101: google.cloud.dataproc.v1.ClusterController.GetCluster:output_type -> google.cloud.dataproc.v1.Cluster
+	55, // 102: google.cloud.dataproc.v1.ClusterController.ListClusters:output_type -> google.cloud.dataproc.v1.ListClustersResponse
+	80, // 103: google.cloud.dataproc.v1.ClusterController.DiagnoseCluster:output_type -> google.longrunning.Operation
+	96, // [96:104] is the sub-list for method output_type
+	88, // [88:96] is the sub-list for method input_type
+	88, // [88:88] is the sub-list for extension type_name
+	88, // [88:88] is the sub-list for extension extendee
+	0,  // [0:88] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_dataproc_v1_clusters_proto_init() }
@@ -5703,25 +6068,25 @@ func file_google_cloud_dataproc_v1_clusters_proto_init() {
 		(*VirtualClusterConfig_KubernetesClusterConfig)(nil),
 	}
 	file_google_cloud_dataproc_v1_clusters_proto_msgTypes[7].OneofWrappers = []any{}
-	file_google_cloud_dataproc_v1_clusters_proto_msgTypes[9].OneofWrappers = []any{}
-	file_google_cloud_dataproc_v1_clusters_proto_msgTypes[12].OneofWrappers = []any{}
-	file_google_cloud_dataproc_v1_clusters_proto_msgTypes[17].OneofWrappers = []any{}
-	file_google_cloud_dataproc_v1_clusters_proto_msgTypes[18].OneofWrappers = []any{}
-	file_google_cloud_dataproc_v1_clusters_proto_msgTypes[27].OneofWrappers = []any{
+	file_google_cloud_dataproc_v1_clusters_proto_msgTypes[10].OneofWrappers = []any{}
+	file_google_cloud_dataproc_v1_clusters_proto_msgTypes[13].OneofWrappers = []any{}
+	file_google_cloud_dataproc_v1_clusters_proto_msgTypes[19].OneofWrappers = []any{}
+	file_google_cloud_dataproc_v1_clusters_proto_msgTypes[20].OneofWrappers = []any{}
+	file_google_cloud_dataproc_v1_clusters_proto_msgTypes[29].OneofWrappers = []any{
 		(*LifecycleConfig_AutoDeleteTime)(nil),
 		(*LifecycleConfig_AutoDeleteTtl)(nil),
 		(*LifecycleConfig_AutoStopTime)(nil),
 		(*LifecycleConfig_AutoStopTtl)(nil),
 	}
-	file_google_cloud_dataproc_v1_clusters_proto_msgTypes[46].OneofWrappers = []any{}
 	file_google_cloud_dataproc_v1_clusters_proto_msgTypes[48].OneofWrappers = []any{}
+	file_google_cloud_dataproc_v1_clusters_proto_msgTypes[50].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_dataproc_v1_clusters_proto_rawDesc), len(file_google_cloud_dataproc_v1_clusters_proto_rawDesc)),
-			NumEnums:      13,
-			NumMessages:   55,
+			NumEnums:      15,
+			NumMessages:   57,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

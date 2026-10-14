@@ -108,6 +108,8 @@ const (
 	AuthorizationMode_AUTH_MODE_IAM_AUTH AuthorizationMode = 1
 	// Authorization disabled mode
 	AuthorizationMode_AUTH_MODE_DISABLED AuthorizationMode = 2
+	// Token based authorization mode
+	AuthorizationMode_AUTH_MODE_TOKEN_AUTH AuthorizationMode = 3
 )
 
 // Enum value maps for AuthorizationMode.
@@ -116,11 +118,13 @@ var (
 		0: "AUTH_MODE_UNSPECIFIED",
 		1: "AUTH_MODE_IAM_AUTH",
 		2: "AUTH_MODE_DISABLED",
+		3: "AUTH_MODE_TOKEN_AUTH",
 	}
 	AuthorizationMode_value = map[string]int32{
 		"AUTH_MODE_UNSPECIFIED": 0,
 		"AUTH_MODE_IAM_AUTH":    1,
 		"AUTH_MODE_DISABLED":    2,
+		"AUTH_MODE_TOKEN_AUTH":  3,
 	}
 )
 
@@ -449,7 +453,122 @@ func (x Cluster_State) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Cluster_State.Descriptor instead.
 func (Cluster_State) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{16, 0}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{35, 0}
+}
+
+// Represents the different states of an ACL policy.
+type AclPolicy_State int32
+
+const (
+	// Not set.
+	AclPolicy_STATE_UNSPECIFIED AclPolicy_State = 0
+	// ACL policy has been created and is fully usable. Since ACL policy
+	// creation is synchronous and not an LRO, there is no CREATING state.
+	AclPolicy_ACTIVE AclPolicy_State = 1
+	// ACL policy is being updated.
+	AclPolicy_UPDATING AclPolicy_State = 2
+	// ACL policy is being deleted.
+	AclPolicy_DELETING AclPolicy_State = 3
+)
+
+// Enum value maps for AclPolicy_State.
+var (
+	AclPolicy_State_name = map[int32]string{
+		0: "STATE_UNSPECIFIED",
+		1: "ACTIVE",
+		2: "UPDATING",
+		3: "DELETING",
+	}
+	AclPolicy_State_value = map[string]int32{
+		"STATE_UNSPECIFIED": 0,
+		"ACTIVE":            1,
+		"UPDATING":          2,
+		"DELETING":          3,
+	}
+)
+
+func (x AclPolicy_State) Enum() *AclPolicy_State {
+	p := new(AclPolicy_State)
+	*p = x
+	return p
+}
+
+func (x AclPolicy_State) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (AclPolicy_State) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[7].Descriptor()
+}
+
+func (AclPolicy_State) Type() protoreflect.EnumType {
+	return &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[7]
+}
+
+func (x AclPolicy_State) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use AclPolicy_State.Descriptor instead.
+func (AclPolicy_State) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{37, 0}
+}
+
+// Enum indicating the status of this ACL policy revision on the cluster.
+type AclPolicyRevisionStatus_State int32
+
+const (
+	// Not set.
+	AclPolicyRevisionStatus_STATE_UNSPECIFIED AclPolicyRevisionStatus_State = 0
+	// The cluster is attempting to apply this revision.
+	AclPolicyRevisionStatus_APPLYING AclPolicyRevisionStatus_State = 1
+	// The cluster has successfully applied this revision.
+	AclPolicyRevisionStatus_APPLIED AclPolicyRevisionStatus_State = 2
+	// The cluster failed to apply this revision.
+	AclPolicyRevisionStatus_FAILED AclPolicyRevisionStatus_State = 3
+)
+
+// Enum value maps for AclPolicyRevisionStatus_State.
+var (
+	AclPolicyRevisionStatus_State_name = map[int32]string{
+		0: "STATE_UNSPECIFIED",
+		1: "APPLYING",
+		2: "APPLIED",
+		3: "FAILED",
+	}
+	AclPolicyRevisionStatus_State_value = map[string]int32{
+		"STATE_UNSPECIFIED": 0,
+		"APPLYING":          1,
+		"APPLIED":           2,
+		"FAILED":            3,
+	}
+)
+
+func (x AclPolicyRevisionStatus_State) Enum() *AclPolicyRevisionStatus_State {
+	p := new(AclPolicyRevisionStatus_State)
+	*p = x
+	return p
+}
+
+func (x AclPolicyRevisionStatus_State) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (AclPolicyRevisionStatus_State) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[8].Descriptor()
+}
+
+func (AclPolicyRevisionStatus_State) Type() protoreflect.EnumType {
+	return &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[8]
+}
+
+func (x AclPolicyRevisionStatus_State) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use AclPolicyRevisionStatus_State.Descriptor instead.
+func (AclPolicyRevisionStatus_State) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{38, 0}
 }
 
 // The automated backup mode.
@@ -489,11 +608,11 @@ func (x AutomatedBackupConfig_AutomatedBackupMode) String() string {
 }
 
 func (AutomatedBackupConfig_AutomatedBackupMode) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[7].Descriptor()
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[9].Descriptor()
 }
 
 func (AutomatedBackupConfig_AutomatedBackupMode) Type() protoreflect.EnumType {
-	return &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[7]
+	return &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[9]
 }
 
 func (x AutomatedBackupConfig_AutomatedBackupMode) Number() protoreflect.EnumNumber {
@@ -502,7 +621,7 @@ func (x AutomatedBackupConfig_AutomatedBackupMode) Number() protoreflect.EnumNum
 
 // Deprecated: Use AutomatedBackupConfig_AutomatedBackupMode.Descriptor instead.
 func (AutomatedBackupConfig_AutomatedBackupMode) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{17, 0}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{42, 0}
 }
 
 // Type of the backup.
@@ -542,11 +661,11 @@ func (x Backup_BackupType) String() string {
 }
 
 func (Backup_BackupType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[8].Descriptor()
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[10].Descriptor()
 }
 
 func (Backup_BackupType) Type() protoreflect.EnumType {
-	return &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[8]
+	return &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[10]
 }
 
 func (x Backup_BackupType) Number() protoreflect.EnumNumber {
@@ -555,7 +674,7 @@ func (x Backup_BackupType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Backup_BackupType.Descriptor instead.
 func (Backup_BackupType) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{19, 0}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{44, 0}
 }
 
 // State of the backup.
@@ -604,11 +723,11 @@ func (x Backup_State) String() string {
 }
 
 func (Backup_State) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[9].Descriptor()
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[11].Descriptor()
 }
 
 func (Backup_State) Type() protoreflect.EnumType {
-	return &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[9]
+	return &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[11]
 }
 
 func (x Backup_State) Number() protoreflect.EnumNumber {
@@ -617,7 +736,7 @@ func (x Backup_State) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Backup_State.Descriptor instead.
 func (Backup_State) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{19, 1}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{44, 1}
 }
 
 // The role of the cluster in cross cluster replication.
@@ -665,11 +784,11 @@ func (x CrossClusterReplicationConfig_ClusterRole) String() string {
 }
 
 func (CrossClusterReplicationConfig_ClusterRole) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[10].Descriptor()
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[12].Descriptor()
 }
 
 func (CrossClusterReplicationConfig_ClusterRole) Type() protoreflect.EnumType {
-	return &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[10]
+	return &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[12]
 }
 
 func (x CrossClusterReplicationConfig_ClusterRole) Number() protoreflect.EnumNumber {
@@ -678,7 +797,127 @@ func (x CrossClusterReplicationConfig_ClusterRole) Number() protoreflect.EnumNum
 
 // Deprecated: Use CrossClusterReplicationConfig_ClusterRole.Descriptor instead.
 func (CrossClusterReplicationConfig_ClusterRole) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{22, 0}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{47, 0}
+}
+
+// Represents the different states of a token based auth user.
+// New values may be added in the future.
+type TokenAuthUser_State int32
+
+const (
+	// Not set.
+	TokenAuthUser_STATE_UNSPECIFIED TokenAuthUser_State = 0
+	// The auth user is active.
+	TokenAuthUser_ACTIVE TokenAuthUser_State = 1
+	// The auth user is being created.
+	TokenAuthUser_CREATING TokenAuthUser_State = 2
+	// The auth user is being updated.
+	TokenAuthUser_UPDATING TokenAuthUser_State = 3
+	// The auth user is being deleted.
+	TokenAuthUser_DELETING TokenAuthUser_State = 4
+)
+
+// Enum value maps for TokenAuthUser_State.
+var (
+	TokenAuthUser_State_name = map[int32]string{
+		0: "STATE_UNSPECIFIED",
+		1: "ACTIVE",
+		2: "CREATING",
+		3: "UPDATING",
+		4: "DELETING",
+	}
+	TokenAuthUser_State_value = map[string]int32{
+		"STATE_UNSPECIFIED": 0,
+		"ACTIVE":            1,
+		"CREATING":          2,
+		"UPDATING":          3,
+		"DELETING":          4,
+	}
+)
+
+func (x TokenAuthUser_State) Enum() *TokenAuthUser_State {
+	p := new(TokenAuthUser_State)
+	*p = x
+	return p
+}
+
+func (x TokenAuthUser_State) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (TokenAuthUser_State) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[13].Descriptor()
+}
+
+func (TokenAuthUser_State) Type() protoreflect.EnumType {
+	return &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[13]
+}
+
+func (x TokenAuthUser_State) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use TokenAuthUser_State.Descriptor instead.
+func (TokenAuthUser_State) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{60, 0}
+}
+
+// Represents the different states of an auth token.
+// New values may be added in the future.
+type AuthToken_State int32
+
+const (
+	// Not set.
+	AuthToken_STATE_UNSPECIFIED AuthToken_State = 0
+	// The auth token is active.
+	AuthToken_ACTIVE AuthToken_State = 1
+	// The auth token is being created.
+	AuthToken_CREATING AuthToken_State = 2
+	// The auth token is being deleted.
+	AuthToken_DELETING AuthToken_State = 3
+)
+
+// Enum value maps for AuthToken_State.
+var (
+	AuthToken_State_name = map[int32]string{
+		0: "STATE_UNSPECIFIED",
+		1: "ACTIVE",
+		2: "CREATING",
+		3: "DELETING",
+	}
+	AuthToken_State_value = map[string]int32{
+		"STATE_UNSPECIFIED": 0,
+		"ACTIVE":            1,
+		"CREATING":          2,
+		"DELETING":          3,
+	}
+)
+
+func (x AuthToken_State) Enum() *AuthToken_State {
+	p := new(AuthToken_State)
+	*p = x
+	return p
+}
+
+func (x AuthToken_State) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (AuthToken_State) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[14].Descriptor()
+}
+
+func (AuthToken_State) Type() protoreflect.EnumType {
+	return &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[14]
+}
+
+func (x AuthToken_State) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use AuthToken_State.Descriptor instead.
+func (AuthToken_State) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{61, 0}
 }
 
 // Available persistence modes.
@@ -722,11 +961,11 @@ func (x ClusterPersistenceConfig_PersistenceMode) String() string {
 }
 
 func (ClusterPersistenceConfig_PersistenceMode) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[11].Descriptor()
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[15].Descriptor()
 }
 
 func (ClusterPersistenceConfig_PersistenceMode) Type() protoreflect.EnumType {
-	return &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[11]
+	return &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[15]
 }
 
 func (x ClusterPersistenceConfig_PersistenceMode) Number() protoreflect.EnumNumber {
@@ -735,7 +974,7 @@ func (x ClusterPersistenceConfig_PersistenceMode) Number() protoreflect.EnumNumb
 
 // Deprecated: Use ClusterPersistenceConfig_PersistenceMode.Descriptor instead.
 func (ClusterPersistenceConfig_PersistenceMode) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{36, 0}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{63, 0}
 }
 
 // Available snapshot periods.
@@ -783,11 +1022,11 @@ func (x ClusterPersistenceConfig_RDBConfig_SnapshotPeriod) String() string {
 }
 
 func (ClusterPersistenceConfig_RDBConfig_SnapshotPeriod) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[12].Descriptor()
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[16].Descriptor()
 }
 
 func (ClusterPersistenceConfig_RDBConfig_SnapshotPeriod) Type() protoreflect.EnumType {
-	return &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[12]
+	return &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[16]
 }
 
 func (x ClusterPersistenceConfig_RDBConfig_SnapshotPeriod) Number() protoreflect.EnumNumber {
@@ -796,7 +1035,7 @@ func (x ClusterPersistenceConfig_RDBConfig_SnapshotPeriod) Number() protoreflect
 
 // Deprecated: Use ClusterPersistenceConfig_RDBConfig_SnapshotPeriod.Descriptor instead.
 func (ClusterPersistenceConfig_RDBConfig_SnapshotPeriod) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{36, 0, 0}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{63, 0, 0}
 }
 
 // Available fsync modes.
@@ -843,11 +1082,11 @@ func (x ClusterPersistenceConfig_AOFConfig_AppendFsync) String() string {
 }
 
 func (ClusterPersistenceConfig_AOFConfig_AppendFsync) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[13].Descriptor()
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[17].Descriptor()
 }
 
 func (ClusterPersistenceConfig_AOFConfig_AppendFsync) Type() protoreflect.EnumType {
-	return &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[13]
+	return &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[17]
 }
 
 func (x ClusterPersistenceConfig_AOFConfig_AppendFsync) Number() protoreflect.EnumNumber {
@@ -856,7 +1095,7 @@ func (x ClusterPersistenceConfig_AOFConfig_AppendFsync) Number() protoreflect.En
 
 // Deprecated: Use ClusterPersistenceConfig_AOFConfig_AppendFsync.Descriptor instead.
 func (ClusterPersistenceConfig_AOFConfig_AppendFsync) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{36, 1, 0}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{63, 1, 0}
 }
 
 // Defines various modes of zone distribution.
@@ -898,11 +1137,11 @@ func (x ZoneDistributionConfig_ZoneDistributionMode) String() string {
 }
 
 func (ZoneDistributionConfig_ZoneDistributionMode) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[14].Descriptor()
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[18].Descriptor()
 }
 
 func (ZoneDistributionConfig_ZoneDistributionMode) Type() protoreflect.EnumType {
-	return &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[14]
+	return &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[18]
 }
 
 func (x ZoneDistributionConfig_ZoneDistributionMode) Number() protoreflect.EnumNumber {
@@ -911,7 +1150,7 @@ func (x ZoneDistributionConfig_ZoneDistributionMode) Number() protoreflect.EnumN
 
 // Deprecated: Use ZoneDistributionConfig_ZoneDistributionMode.Descriptor instead.
 func (ZoneDistributionConfig_ZoneDistributionMode) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{37, 0}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{64, 0}
 }
 
 // Reschedule options.
@@ -951,11 +1190,11 @@ func (x RescheduleClusterMaintenanceRequest_RescheduleType) String() string {
 }
 
 func (RescheduleClusterMaintenanceRequest_RescheduleType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[15].Descriptor()
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[19].Descriptor()
 }
 
 func (RescheduleClusterMaintenanceRequest_RescheduleType) Type() protoreflect.EnumType {
-	return &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[15]
+	return &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[19]
 }
 
 func (x RescheduleClusterMaintenanceRequest_RescheduleType) Number() protoreflect.EnumNumber {
@@ -964,7 +1203,7 @@ func (x RescheduleClusterMaintenanceRequest_RescheduleType) Number() protoreflec
 
 // Deprecated: Use RescheduleClusterMaintenanceRequest_RescheduleType.Descriptor instead.
 func (RescheduleClusterMaintenanceRequest_RescheduleType) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{38, 0}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{65, 0}
 }
 
 // Possible encryption types.
@@ -1006,11 +1245,11 @@ func (x EncryptionInfo_Type) String() string {
 }
 
 func (EncryptionInfo_Type) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[16].Descriptor()
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[20].Descriptor()
 }
 
 func (EncryptionInfo_Type) Type() protoreflect.EnumType {
-	return &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[16]
+	return &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[20]
 }
 
 func (x EncryptionInfo_Type) Number() protoreflect.EnumNumber {
@@ -1019,7 +1258,7 @@ func (x EncryptionInfo_Type) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use EncryptionInfo_Type.Descriptor instead.
 func (EncryptionInfo_Type) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{39, 0}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{66, 0}
 }
 
 // The state of the KMS key perceived by the system. Refer to the public
@@ -1084,11 +1323,11 @@ func (x EncryptionInfo_KmsKeyState) String() string {
 }
 
 func (EncryptionInfo_KmsKeyState) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[17].Descriptor()
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[21].Descriptor()
 }
 
 func (EncryptionInfo_KmsKeyState) Type() protoreflect.EnumType {
-	return &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[17]
+	return &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes[21]
 }
 
 func (x EncryptionInfo_KmsKeyState) Number() protoreflect.EnumNumber {
@@ -1097,7 +1336,7 @@ func (x EncryptionInfo_KmsKeyState) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use EncryptionInfo_KmsKeyState.Descriptor instead.
 func (EncryptionInfo_KmsKeyState) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{39, 1}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{66, 1}
 }
 
 // Request for [CreateCluster][CloudRedis.CreateCluster].
@@ -1184,6 +1423,91 @@ func (x *CreateClusterRequest) GetRequestId() string {
 	return ""
 }
 
+// Request for `CreateAclPolicy`.
+type CreateAclPolicyRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The resource name of the cluster location using the form:
+	//
+	//	`projects/{project_id}/locations/{location_id}`
+	//
+	// where `location_id` refers to a Google Cloud region.
+	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
+	// Required. The logical name of the ACL policy in the customer project
+	// with the following restrictions:
+	//
+	// * Must contain only lowercase letters, numbers, and hyphens.
+	// * Must start with a letter.
+	// * Must be between 1-63 characters.
+	// * Must end with a number or a letter.
+	// * Must be unique within the customer project / location
+	AclPolicyId string `protobuf:"bytes,2,opt,name=acl_policy_id,json=aclPolicyId,proto3" json:"acl_policy_id,omitempty"`
+	// Required. The ACL policy that is to be created.
+	AclPolicy *AclPolicy `protobuf:"bytes,3,opt,name=acl_policy,json=aclPolicy,proto3" json:"acl_policy,omitempty"`
+	// Optional. Idempotent request UUID.
+	// .
+	RequestId     string `protobuf:"bytes,4,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateAclPolicyRequest) Reset() {
+	*x = CreateAclPolicyRequest{}
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateAclPolicyRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateAclPolicyRequest) ProtoMessage() {}
+
+func (x *CreateAclPolicyRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateAclPolicyRequest.ProtoReflect.Descriptor instead.
+func (*CreateAclPolicyRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *CreateAclPolicyRequest) GetParent() string {
+	if x != nil {
+		return x.Parent
+	}
+	return ""
+}
+
+func (x *CreateAclPolicyRequest) GetAclPolicyId() string {
+	if x != nil {
+		return x.AclPolicyId
+	}
+	return ""
+}
+
+func (x *CreateAclPolicyRequest) GetAclPolicy() *AclPolicy {
+	if x != nil {
+		return x.AclPolicy
+	}
+	return nil
+}
+
+func (x *CreateAclPolicyRequest) GetRequestId() string {
+	if x != nil {
+		return x.RequestId
+	}
+	return ""
+}
+
 // Request for [ListClusters][CloudRedis.ListClusters].
 type ListClustersRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -1210,7 +1534,7 @@ type ListClustersRequest struct {
 
 func (x *ListClustersRequest) Reset() {
 	*x = ListClustersRequest{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[1]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1222,7 +1546,7 @@ func (x *ListClustersRequest) String() string {
 func (*ListClustersRequest) ProtoMessage() {}
 
 func (x *ListClustersRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[1]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1235,7 +1559,7 @@ func (x *ListClustersRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListClustersRequest.ProtoReflect.Descriptor instead.
 func (*ListClustersRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{1}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *ListClustersRequest) GetParent() string {
@@ -1285,7 +1609,7 @@ type ListClustersResponse struct {
 
 func (x *ListClustersResponse) Reset() {
 	*x = ListClustersResponse{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[2]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1297,7 +1621,7 @@ func (x *ListClustersResponse) String() string {
 func (*ListClustersResponse) ProtoMessage() {}
 
 func (x *ListClustersResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[2]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1310,7 +1634,7 @@ func (x *ListClustersResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListClustersResponse.ProtoReflect.Descriptor instead.
 func (*ListClustersResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{2}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *ListClustersResponse) GetClusters() []*Cluster {
@@ -1328,6 +1652,284 @@ func (x *ListClustersResponse) GetNextPageToken() string {
 }
 
 func (x *ListClustersResponse) GetUnreachable() []string {
+	if x != nil {
+		return x.Unreachable
+	}
+	return nil
+}
+
+// Request for `ListAclPolicies`.
+type ListAclPoliciesRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The resource name of the ACL policy location using the form:
+	//
+	//	`projects/{project_id}/locations/{location_id}`
+	//
+	// where `location_id` refers to a Google Cloud region.
+	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
+	// Optional. The maximum number of items to return.
+	//
+	// If not specified, a default value of 1000 will be used by the service.
+	// Regardless of the page_size value, the response may include a partial list
+	// and a caller should only rely on response's
+	// [`next_page_token`][google.cloud.redis.cluster.v1.ListAclPoliciesResponse.next_page_token]
+	// to determine if there are more ACL policies left to be queried.
+	//
+	// The maximum value is 1000; values above 1000 will be coerced to 1000.
+	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	// Optional. The `next_page_token` value returned from a previous
+	// `ListAclPolicies` request, if any.
+	PageToken     string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListAclPoliciesRequest) Reset() {
+	*x = ListAclPoliciesRequest{}
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListAclPoliciesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListAclPoliciesRequest) ProtoMessage() {}
+
+func (x *ListAclPoliciesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListAclPoliciesRequest.ProtoReflect.Descriptor instead.
+func (*ListAclPoliciesRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *ListAclPoliciesRequest) GetParent() string {
+	if x != nil {
+		return x.Parent
+	}
+	return ""
+}
+
+func (x *ListAclPoliciesRequest) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+func (x *ListAclPoliciesRequest) GetPageToken() string {
+	if x != nil {
+		return x.PageToken
+	}
+	return ""
+}
+
+// Response for `ListAclPolicies`.
+type ListAclPoliciesResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// A list of ACL policies in the project in the specified location,
+	// or across all locations.
+	//
+	// If the `location_id` in the parent field of the request is "-", all regions
+	// available to the project are queried, and the results aggregated.
+	AclPolicies []*AclPolicy `protobuf:"bytes,1,rep,name=acl_policies,json=aclPolicies,proto3" json:"acl_policies,omitempty"`
+	// Token to retrieve the next page of results, or empty if there are no more
+	// results in the list.
+	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
+	// Unordered list. Locations that could not be reached.
+	Unreachable   []string `protobuf:"bytes,3,rep,name=unreachable,proto3" json:"unreachable,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListAclPoliciesResponse) Reset() {
+	*x = ListAclPoliciesResponse{}
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListAclPoliciesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListAclPoliciesResponse) ProtoMessage() {}
+
+func (x *ListAclPoliciesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListAclPoliciesResponse.ProtoReflect.Descriptor instead.
+func (*ListAclPoliciesResponse) Descriptor() ([]byte, []int) {
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *ListAclPoliciesResponse) GetAclPolicies() []*AclPolicy {
+	if x != nil {
+		return x.AclPolicies
+	}
+	return nil
+}
+
+func (x *ListAclPoliciesResponse) GetNextPageToken() string {
+	if x != nil {
+		return x.NextPageToken
+	}
+	return ""
+}
+
+func (x *ListAclPoliciesResponse) GetUnreachable() []string {
+	if x != nil {
+		return x.Unreachable
+	}
+	return nil
+}
+
+// Request for `ListAclPolicyRevisions`.
+type ListAclPolicyRevisionsRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The name of the ACL policy to list revisions for.
+	// Format:
+	// "projects/{project_id}/locations/{location_id}/aclPolicies/{acl_policy_id}"
+	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
+	// Optional. The maximum number of items to return.
+	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	// Optional. The `next_page_token` value returned from a previous
+	// `ListAclPolicyRevisions` request, if any.
+	PageToken     string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListAclPolicyRevisionsRequest) Reset() {
+	*x = ListAclPolicyRevisionsRequest{}
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListAclPolicyRevisionsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListAclPolicyRevisionsRequest) ProtoMessage() {}
+
+func (x *ListAclPolicyRevisionsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListAclPolicyRevisionsRequest.ProtoReflect.Descriptor instead.
+func (*ListAclPolicyRevisionsRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *ListAclPolicyRevisionsRequest) GetParent() string {
+	if x != nil {
+		return x.Parent
+	}
+	return ""
+}
+
+func (x *ListAclPolicyRevisionsRequest) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+func (x *ListAclPolicyRevisionsRequest) GetPageToken() string {
+	if x != nil {
+		return x.PageToken
+	}
+	return ""
+}
+
+// Response for `ListAclPolicyRevisions`.
+type ListAclPolicyRevisionsResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// A list of ACL policy revisions.
+	AclPolicyRevisions []*AclPolicyRevision `protobuf:"bytes,1,rep,name=acl_policy_revisions,json=aclPolicyRevisions,proto3" json:"acl_policy_revisions,omitempty"`
+	// Token to retrieve the next page of results, or empty if there are no more
+	// results in the list.
+	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
+	// Unordered list. Locations that could not be reached.
+	Unreachable   []string `protobuf:"bytes,3,rep,name=unreachable,proto3" json:"unreachable,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListAclPolicyRevisionsResponse) Reset() {
+	*x = ListAclPolicyRevisionsResponse{}
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListAclPolicyRevisionsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListAclPolicyRevisionsResponse) ProtoMessage() {}
+
+func (x *ListAclPolicyRevisionsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListAclPolicyRevisionsResponse.ProtoReflect.Descriptor instead.
+func (*ListAclPolicyRevisionsResponse) Descriptor() ([]byte, []int) {
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *ListAclPolicyRevisionsResponse) GetAclPolicyRevisions() []*AclPolicyRevision {
+	if x != nil {
+		return x.AclPolicyRevisions
+	}
+	return nil
+}
+
+func (x *ListAclPolicyRevisionsResponse) GetNextPageToken() string {
+	if x != nil {
+		return x.NextPageToken
+	}
+	return ""
+}
+
+func (x *ListAclPolicyRevisionsResponse) GetUnreachable() []string {
 	if x != nil {
 		return x.Unreachable
 	}
@@ -1355,7 +1957,7 @@ type UpdateClusterRequest struct {
 
 func (x *UpdateClusterRequest) Reset() {
 	*x = UpdateClusterRequest{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[3]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1367,7 +1969,7 @@ func (x *UpdateClusterRequest) String() string {
 func (*UpdateClusterRequest) ProtoMessage() {}
 
 func (x *UpdateClusterRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[3]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1380,7 +1982,7 @@ func (x *UpdateClusterRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateClusterRequest.ProtoReflect.Descriptor instead.
 func (*UpdateClusterRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{3}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *UpdateClusterRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
@@ -1404,6 +2006,74 @@ func (x *UpdateClusterRequest) GetRequestId() string {
 	return ""
 }
 
+// Request for `UpdateAclPolicy`.
+type UpdateAclPolicyRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The ACL policy to be updated.
+	AclPolicy *AclPolicy `protobuf:"bytes,1,opt,name=acl_policy,json=aclPolicy,proto3" json:"acl_policy,omitempty"`
+	// Optional. Mask of fields to be updated. At least one path must be supplied
+	// in this field. The elements of the repeated paths field may only include
+	// these fields from `AclPolicy`:
+	//
+	//   - `rules`
+	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
+	// Optional. Idempotent request UUID.
+	RequestId     string `protobuf:"bytes,3,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateAclPolicyRequest) Reset() {
+	*x = UpdateAclPolicyRequest{}
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateAclPolicyRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateAclPolicyRequest) ProtoMessage() {}
+
+func (x *UpdateAclPolicyRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateAclPolicyRequest.ProtoReflect.Descriptor instead.
+func (*UpdateAclPolicyRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *UpdateAclPolicyRequest) GetAclPolicy() *AclPolicy {
+	if x != nil {
+		return x.AclPolicy
+	}
+	return nil
+}
+
+func (x *UpdateAclPolicyRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
+	if x != nil {
+		return x.UpdateMask
+	}
+	return nil
+}
+
+func (x *UpdateAclPolicyRequest) GetRequestId() string {
+	if x != nil {
+		return x.RequestId
+	}
+	return ""
+}
+
 // Request for [GetCluster][CloudRedis.GetCluster].
 type GetClusterRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -1419,7 +2089,7 @@ type GetClusterRequest struct {
 
 func (x *GetClusterRequest) Reset() {
 	*x = GetClusterRequest{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[4]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1431,7 +2101,7 @@ func (x *GetClusterRequest) String() string {
 func (*GetClusterRequest) ProtoMessage() {}
 
 func (x *GetClusterRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[4]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1444,10 +2114,110 @@ func (x *GetClusterRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetClusterRequest.ProtoReflect.Descriptor instead.
 func (*GetClusterRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{4}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *GetClusterRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+// Request for `GetAclPolicy`.
+type GetAclPolicyRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Redis ACL policy resource name using the form:
+	//
+	//	`projects/{project_id}/locations/{location_id}/aclPolicies/{acl_policy_id}`
+	//
+	// where `location_id` refers to a Google Cloud region.
+	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetAclPolicyRequest) Reset() {
+	*x = GetAclPolicyRequest{}
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetAclPolicyRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetAclPolicyRequest) ProtoMessage() {}
+
+func (x *GetAclPolicyRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetAclPolicyRequest.ProtoReflect.Descriptor instead.
+func (*GetAclPolicyRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *GetAclPolicyRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+// Request for `GetAclPolicyRevision`.
+type GetAclPolicyRevisionRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Redis ACL policy revision resource name using the form:
+	//
+	//	`projects/{project_id}/locations/{location_id}/aclPolicies/{acl_policy_id}/revisions/{revision_id}`
+	//
+	// where `location_id` refers to a Google Cloud region.
+	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetAclPolicyRevisionRequest) Reset() {
+	*x = GetAclPolicyRevisionRequest{}
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetAclPolicyRevisionRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetAclPolicyRevisionRequest) ProtoMessage() {}
+
+func (x *GetAclPolicyRevisionRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetAclPolicyRevisionRequest.ProtoReflect.Descriptor instead.
+func (*GetAclPolicyRevisionRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *GetAclPolicyRevisionRequest) GetName() string {
 	if x != nil {
 		return x.Name
 	}
@@ -1471,7 +2241,7 @@ type DeleteClusterRequest struct {
 
 func (x *DeleteClusterRequest) Reset() {
 	*x = DeleteClusterRequest{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[5]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1483,7 +2253,7 @@ func (x *DeleteClusterRequest) String() string {
 func (*DeleteClusterRequest) ProtoMessage() {}
 
 func (x *DeleteClusterRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[5]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1496,7 +2266,7 @@ func (x *DeleteClusterRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteClusterRequest.ProtoReflect.Descriptor instead.
 func (*DeleteClusterRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{5}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *DeleteClusterRequest) GetName() string {
@@ -1509,6 +2279,75 @@ func (x *DeleteClusterRequest) GetName() string {
 func (x *DeleteClusterRequest) GetRequestId() string {
 	if x != nil {
 		return x.RequestId
+	}
+	return ""
+}
+
+// Request for `DeleteAclPolicy`.
+type DeleteAclPolicyRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Redis ACL policy resource name using the form:
+	//
+	//	`projects/{project_id}/locations/{location_id}/aclPolicies/{acl_policy_id}`
+	//
+	// where `location_id` refers to a Google Cloud region.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Optional. Idempotent request UUID.
+	RequestId string `protobuf:"bytes,2,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
+	// Optional. Etag of the ACL policy. If this is different from the server's
+	// etag, the request will fail with an ABORTED error.
+	Etag          string `protobuf:"bytes,3,opt,name=etag,proto3" json:"etag,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteAclPolicyRequest) Reset() {
+	*x = DeleteAclPolicyRequest{}
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteAclPolicyRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteAclPolicyRequest) ProtoMessage() {}
+
+func (x *DeleteAclPolicyRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteAclPolicyRequest.ProtoReflect.Descriptor instead.
+func (*DeleteAclPolicyRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *DeleteAclPolicyRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *DeleteAclPolicyRequest) GetRequestId() string {
+	if x != nil {
+		return x.RequestId
+	}
+	return ""
+}
+
+func (x *DeleteAclPolicyRequest) GetEtag() string {
+	if x != nil {
+		return x.Etag
 	}
 	return ""
 }
@@ -1529,7 +2368,7 @@ type GetClusterCertificateAuthorityRequest struct {
 
 func (x *GetClusterCertificateAuthorityRequest) Reset() {
 	*x = GetClusterCertificateAuthorityRequest{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[6]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1541,7 +2380,7 @@ func (x *GetClusterCertificateAuthorityRequest) String() string {
 func (*GetClusterCertificateAuthorityRequest) ProtoMessage() {}
 
 func (x *GetClusterCertificateAuthorityRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[6]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1554,7 +2393,7 @@ func (x *GetClusterCertificateAuthorityRequest) ProtoReflect() protoreflect.Mess
 
 // Deprecated: Use GetClusterCertificateAuthorityRequest.ProtoReflect.Descriptor instead.
 func (*GetClusterCertificateAuthorityRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{6}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *GetClusterCertificateAuthorityRequest) GetName() string {
@@ -1591,7 +2430,7 @@ type ListBackupCollectionsRequest struct {
 
 func (x *ListBackupCollectionsRequest) Reset() {
 	*x = ListBackupCollectionsRequest{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[7]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1603,7 +2442,7 @@ func (x *ListBackupCollectionsRequest) String() string {
 func (*ListBackupCollectionsRequest) ProtoMessage() {}
 
 func (x *ListBackupCollectionsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[7]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1616,7 +2455,7 @@ func (x *ListBackupCollectionsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListBackupCollectionsRequest.ProtoReflect.Descriptor instead.
 func (*ListBackupCollectionsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{7}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *ListBackupCollectionsRequest) GetParent() string {
@@ -1665,7 +2504,7 @@ type ListBackupCollectionsResponse struct {
 
 func (x *ListBackupCollectionsResponse) Reset() {
 	*x = ListBackupCollectionsResponse{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[8]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1677,7 +2516,7 @@ func (x *ListBackupCollectionsResponse) String() string {
 func (*ListBackupCollectionsResponse) ProtoMessage() {}
 
 func (x *ListBackupCollectionsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[8]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1690,7 +2529,7 @@ func (x *ListBackupCollectionsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListBackupCollectionsResponse.ProtoReflect.Descriptor instead.
 func (*ListBackupCollectionsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{8}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *ListBackupCollectionsResponse) GetBackupCollections() []*BackupCollection {
@@ -1729,7 +2568,7 @@ type GetBackupCollectionRequest struct {
 
 func (x *GetBackupCollectionRequest) Reset() {
 	*x = GetBackupCollectionRequest{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[9]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1741,7 +2580,7 @@ func (x *GetBackupCollectionRequest) String() string {
 func (*GetBackupCollectionRequest) ProtoMessage() {}
 
 func (x *GetBackupCollectionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[9]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1754,7 +2593,7 @@ func (x *GetBackupCollectionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetBackupCollectionRequest.ProtoReflect.Descriptor instead.
 func (*GetBackupCollectionRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{9}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *GetBackupCollectionRequest) GetName() string {
@@ -1787,7 +2626,7 @@ type ListBackupsRequest struct {
 
 func (x *ListBackupsRequest) Reset() {
 	*x = ListBackupsRequest{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[10]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1799,7 +2638,7 @@ func (x *ListBackupsRequest) String() string {
 func (*ListBackupsRequest) ProtoMessage() {}
 
 func (x *ListBackupsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[10]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1812,7 +2651,7 @@ func (x *ListBackupsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListBackupsRequest.ProtoReflect.Descriptor instead.
 func (*ListBackupsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{10}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *ListBackupsRequest) GetParent() string {
@@ -1852,7 +2691,7 @@ type ListBackupsResponse struct {
 
 func (x *ListBackupsResponse) Reset() {
 	*x = ListBackupsResponse{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[11]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1864,7 +2703,7 @@ func (x *ListBackupsResponse) String() string {
 func (*ListBackupsResponse) ProtoMessage() {}
 
 func (x *ListBackupsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[11]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1877,7 +2716,7 @@ func (x *ListBackupsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListBackupsResponse.ProtoReflect.Descriptor instead.
 func (*ListBackupsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{11}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *ListBackupsResponse) GetBackups() []*Backup {
@@ -1913,7 +2752,7 @@ type GetBackupRequest struct {
 
 func (x *GetBackupRequest) Reset() {
 	*x = GetBackupRequest{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[12]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1925,7 +2764,7 @@ func (x *GetBackupRequest) String() string {
 func (*GetBackupRequest) ProtoMessage() {}
 
 func (x *GetBackupRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[12]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1938,7 +2777,7 @@ func (x *GetBackupRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetBackupRequest.ProtoReflect.Descriptor instead.
 func (*GetBackupRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{12}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *GetBackupRequest) GetName() string {
@@ -1962,7 +2801,7 @@ type DeleteBackupRequest struct {
 
 func (x *DeleteBackupRequest) Reset() {
 	*x = DeleteBackupRequest{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[13]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1974,7 +2813,7 @@ func (x *DeleteBackupRequest) String() string {
 func (*DeleteBackupRequest) ProtoMessage() {}
 
 func (x *DeleteBackupRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[13]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1987,7 +2826,7 @@ func (x *DeleteBackupRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteBackupRequest.ProtoReflect.Descriptor instead.
 func (*DeleteBackupRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{13}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *DeleteBackupRequest) GetName() string {
@@ -2022,7 +2861,7 @@ type ExportBackupRequest struct {
 
 func (x *ExportBackupRequest) Reset() {
 	*x = ExportBackupRequest{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[14]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2034,7 +2873,7 @@ func (x *ExportBackupRequest) String() string {
 func (*ExportBackupRequest) ProtoMessage() {}
 
 func (x *ExportBackupRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[14]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2047,7 +2886,7 @@ func (x *ExportBackupRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExportBackupRequest.ProtoReflect.Descriptor instead.
 func (*ExportBackupRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{14}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *ExportBackupRequest) GetDestination() isExportBackupRequest_Destination {
@@ -2105,7 +2944,7 @@ type BackupClusterRequest struct {
 
 func (x *BackupClusterRequest) Reset() {
 	*x = BackupClusterRequest{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[15]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2117,7 +2956,7 @@ func (x *BackupClusterRequest) String() string {
 func (*BackupClusterRequest) ProtoMessage() {}
 
 func (x *BackupClusterRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[15]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2130,7 +2969,7 @@ func (x *BackupClusterRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BackupClusterRequest.ProtoReflect.Descriptor instead.
 func (*BackupClusterRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{15}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *BackupClusterRequest) GetName() string {
@@ -2150,6 +2989,656 @@ func (x *BackupClusterRequest) GetTtl() *durationpb.Duration {
 func (x *BackupClusterRequest) GetBackupId() string {
 	if x != nil && x.BackupId != nil {
 		return *x.BackupId
+	}
+	return ""
+}
+
+// Request message for [ListTokenAuthUsers][].
+type ListTokenAuthUsersRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The parent resource that this token based auth user will be
+	// listed for. Format:
+	// projects/{project}/locations/{location}/clusters/{cluster}
+	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
+	// Optional. The maximum number of items to return.
+	//
+	// If not specified, a default value of 1000 will be used by the service.
+	// Regardless of the page_size value, the response may include a partial list
+	// and a caller should only rely on response's
+	// The maximum value is 1000; values above 1000 will be coerced to 1000.
+	// [`next_page_token`][google.cloud.redis.cluster.v1.ListTokenAuthUsersResponse.next_page_token]
+	// to determine if there are more clusters left to be queried.
+	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	// Optional. The `next_page_token` value returned from a previous
+	// [ListTokenAuthUsers] request, if any.
+	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
+	// Optional. Expression for filtering results.
+	Filter string `protobuf:"bytes,4,opt,name=filter,proto3" json:"filter,omitempty"`
+	// Optional. Sort results by a defined order.
+	OrderBy       string `protobuf:"bytes,5,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListTokenAuthUsersRequest) Reset() {
+	*x = ListTokenAuthUsersRequest{}
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[25]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListTokenAuthUsersRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListTokenAuthUsersRequest) ProtoMessage() {}
+
+func (x *ListTokenAuthUsersRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[25]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListTokenAuthUsersRequest.ProtoReflect.Descriptor instead.
+func (*ListTokenAuthUsersRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{25}
+}
+
+func (x *ListTokenAuthUsersRequest) GetParent() string {
+	if x != nil {
+		return x.Parent
+	}
+	return ""
+}
+
+func (x *ListTokenAuthUsersRequest) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+func (x *ListTokenAuthUsersRequest) GetPageToken() string {
+	if x != nil {
+		return x.PageToken
+	}
+	return ""
+}
+
+func (x *ListTokenAuthUsersRequest) GetFilter() string {
+	if x != nil {
+		return x.Filter
+	}
+	return ""
+}
+
+func (x *ListTokenAuthUsersRequest) GetOrderBy() string {
+	if x != nil {
+		return x.OrderBy
+	}
+	return ""
+}
+
+// Response message for [ListTokenAuthUsers][].
+type ListTokenAuthUsersResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// A list of token auth users in the project.
+	TokenAuthUsers []*TokenAuthUser `protobuf:"bytes,1,rep,name=token_auth_users,json=tokenAuthUsers,proto3" json:"token_auth_users,omitempty"`
+	// Token to retrieve the next page of results, or empty if there are no more
+	// results in the list.
+	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
+	// Unordered list. Token auth users that could not be reached.
+	Unreachable   []string `protobuf:"bytes,3,rep,name=unreachable,proto3" json:"unreachable,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListTokenAuthUsersResponse) Reset() {
+	*x = ListTokenAuthUsersResponse{}
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[26]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListTokenAuthUsersResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListTokenAuthUsersResponse) ProtoMessage() {}
+
+func (x *ListTokenAuthUsersResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[26]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListTokenAuthUsersResponse.ProtoReflect.Descriptor instead.
+func (*ListTokenAuthUsersResponse) Descriptor() ([]byte, []int) {
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{26}
+}
+
+func (x *ListTokenAuthUsersResponse) GetTokenAuthUsers() []*TokenAuthUser {
+	if x != nil {
+		return x.TokenAuthUsers
+	}
+	return nil
+}
+
+func (x *ListTokenAuthUsersResponse) GetNextPageToken() string {
+	if x != nil {
+		return x.NextPageToken
+	}
+	return ""
+}
+
+func (x *ListTokenAuthUsersResponse) GetUnreachable() []string {
+	if x != nil {
+		return x.Unreachable
+	}
+	return nil
+}
+
+// Request message for [GetTokenAuthUser][].
+type GetTokenAuthUserRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The name of token auth user for a token based auth enabled
+	// cluster. Format:
+	// projects/{project}/locations/{location}/clusters/{cluster}/tokenAuthUsers/{token_auth_user}
+	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetTokenAuthUserRequest) Reset() {
+	*x = GetTokenAuthUserRequest{}
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[27]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetTokenAuthUserRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetTokenAuthUserRequest) ProtoMessage() {}
+
+func (x *GetTokenAuthUserRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[27]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetTokenAuthUserRequest.ProtoReflect.Descriptor instead.
+func (*GetTokenAuthUserRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{27}
+}
+
+func (x *GetTokenAuthUserRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+// Request message for [ListAuthTokens][].
+type ListAuthTokensRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The parent resource that this auth token will be listed for.
+	// Format:
+	// projects/{project}/locations/{location}/clusters/{cluster}/tokenAuthUsers/{token_auth_user}
+	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
+	// Optional. The maximum number of items to return. The maximum value is 1000;
+	// values above 1000 will be coerced to 1000. If not specified, a default
+	// value of 1000 will be used by the service. Regardless of the page_size
+	// value, the response may include a partial list and a caller should only
+	// rely on response's
+	// [`next_page_token`][google.cloud.redis.cluster.v1.ListTokenAuthUsersResponse.next_page_token]
+	// to determine if there are more clusters left to be queried.
+	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	// Optional. The `next_page_token` value returned from a previous
+	// [ListTokenAuthUsers] request, if any.
+	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
+	// Optional. Expression for filtering results.
+	Filter string `protobuf:"bytes,4,opt,name=filter,proto3" json:"filter,omitempty"`
+	// Optional. Sort results by a defined order.
+	OrderBy       string `protobuf:"bytes,5,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListAuthTokensRequest) Reset() {
+	*x = ListAuthTokensRequest{}
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[28]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListAuthTokensRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListAuthTokensRequest) ProtoMessage() {}
+
+func (x *ListAuthTokensRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[28]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListAuthTokensRequest.ProtoReflect.Descriptor instead.
+func (*ListAuthTokensRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{28}
+}
+
+func (x *ListAuthTokensRequest) GetParent() string {
+	if x != nil {
+		return x.Parent
+	}
+	return ""
+}
+
+func (x *ListAuthTokensRequest) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+func (x *ListAuthTokensRequest) GetPageToken() string {
+	if x != nil {
+		return x.PageToken
+	}
+	return ""
+}
+
+func (x *ListAuthTokensRequest) GetFilter() string {
+	if x != nil {
+		return x.Filter
+	}
+	return ""
+}
+
+func (x *ListAuthTokensRequest) GetOrderBy() string {
+	if x != nil {
+		return x.OrderBy
+	}
+	return ""
+}
+
+// Response message for [ListAuthTokens][].
+type ListAuthTokensResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// A list of auth tokens in the project.
+	AuthTokens []*AuthToken `protobuf:"bytes,1,rep,name=auth_tokens,json=authTokens,proto3" json:"auth_tokens,omitempty"`
+	// Token to retrieve the next page of results, or empty if there are no more
+	// results in the list.
+	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
+	// Unordered list. Auth tokens that could not be reached.
+	Unreachable   []string `protobuf:"bytes,3,rep,name=unreachable,proto3" json:"unreachable,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListAuthTokensResponse) Reset() {
+	*x = ListAuthTokensResponse{}
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[29]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListAuthTokensResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListAuthTokensResponse) ProtoMessage() {}
+
+func (x *ListAuthTokensResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[29]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListAuthTokensResponse.ProtoReflect.Descriptor instead.
+func (*ListAuthTokensResponse) Descriptor() ([]byte, []int) {
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{29}
+}
+
+func (x *ListAuthTokensResponse) GetAuthTokens() []*AuthToken {
+	if x != nil {
+		return x.AuthTokens
+	}
+	return nil
+}
+
+func (x *ListAuthTokensResponse) GetNextPageToken() string {
+	if x != nil {
+		return x.NextPageToken
+	}
+	return ""
+}
+
+func (x *ListAuthTokensResponse) GetUnreachable() []string {
+	if x != nil {
+		return x.Unreachable
+	}
+	return nil
+}
+
+// Request message for [GetAuthToken][].
+type GetAuthTokenRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The name of auth token for a token based auth enabled cluster.
+	// Format:
+	// projects/{project}/locations/{location}/clusters/{cluster}/tokenAuthUsers/{token_auth_user}/authTokens/{auth_token}
+	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetAuthTokenRequest) Reset() {
+	*x = GetAuthTokenRequest{}
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[30]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetAuthTokenRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetAuthTokenRequest) ProtoMessage() {}
+
+func (x *GetAuthTokenRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[30]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetAuthTokenRequest.ProtoReflect.Descriptor instead.
+func (*GetAuthTokenRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{30}
+}
+
+func (x *GetAuthTokenRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+// Request message for [AddTokenAuthUser][].
+type AddTokenAuthUserRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The cluster resource that this token auth user will be added for.
+	// Format: projects/{project}/locations/{location}/clusters/{cluster}
+	Cluster string `protobuf:"bytes,1,opt,name=cluster,proto3" json:"cluster,omitempty"`
+	// Required. The id of the token auth user to add.
+	TokenAuthUser string `protobuf:"bytes,2,opt,name=token_auth_user,json=tokenAuthUser,proto3" json:"token_auth_user,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AddTokenAuthUserRequest) Reset() {
+	*x = AddTokenAuthUserRequest{}
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[31]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AddTokenAuthUserRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AddTokenAuthUserRequest) ProtoMessage() {}
+
+func (x *AddTokenAuthUserRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[31]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AddTokenAuthUserRequest.ProtoReflect.Descriptor instead.
+func (*AddTokenAuthUserRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{31}
+}
+
+func (x *AddTokenAuthUserRequest) GetCluster() string {
+	if x != nil {
+		return x.Cluster
+	}
+	return ""
+}
+
+func (x *AddTokenAuthUserRequest) GetTokenAuthUser() string {
+	if x != nil {
+		return x.TokenAuthUser
+	}
+	return ""
+}
+
+// Request message for [DeleteTokenAuthUser][].
+type DeleteTokenAuthUserRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The name of the token auth user to delete.
+	// Format:
+	// projects/{project}/locations/{location}/clusters/{cluster}/tokenAuthUsers/{token_auth_user}
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Optional. An optional request ID to identify requests. Specify a unique
+	// request ID so that if you must retry your request, the server will know to
+	// ignore the request if it has already been completed. The server will
+	// guarantee that for at least 60 minutes after the first request.
+	//
+	// For example, consider a situation where you make an initial request and the
+	// request times out. If you make the request again with the same request
+	// ID, the server can check if original operation with the same request ID
+	// was received, and if so, will ignore the second request. This prevents
+	// clients from accidentally creating duplicate commitments.
+	//
+	// The request ID must be a valid UUID with the exception that zero UUID is
+	// not supported (00000000-0000-0000-0000-000000000000).
+	RequestId string `protobuf:"bytes,2,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
+	// Optional. If set to true, any child auth tokens of this user will also be
+	// deleted. Otherwise, the request will only work if the user has no auth
+	// tokens.
+	Force         bool `protobuf:"varint,3,opt,name=force,proto3" json:"force,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteTokenAuthUserRequest) Reset() {
+	*x = DeleteTokenAuthUserRequest{}
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[32]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteTokenAuthUserRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteTokenAuthUserRequest) ProtoMessage() {}
+
+func (x *DeleteTokenAuthUserRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[32]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteTokenAuthUserRequest.ProtoReflect.Descriptor instead.
+func (*DeleteTokenAuthUserRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{32}
+}
+
+func (x *DeleteTokenAuthUserRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *DeleteTokenAuthUserRequest) GetRequestId() string {
+	if x != nil {
+		return x.RequestId
+	}
+	return ""
+}
+
+func (x *DeleteTokenAuthUserRequest) GetForce() bool {
+	if x != nil {
+		return x.Force
+	}
+	return false
+}
+
+// Request message for [AddAuthToken][].
+type AddAuthTokenRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The name of the token auth user resource that this auth token
+	// will be added for. Format:
+	// projects/{project}/locations/{location}/clusters/{cluster}/tokenAuthUsers/{token_auth_user}
+	TokenAuthUser string `protobuf:"bytes,1,opt,name=token_auth_user,json=tokenAuthUser,proto3" json:"token_auth_user,omitempty"`
+	// Required. The auth token to add.
+	AuthToken     *AuthToken `protobuf:"bytes,2,opt,name=auth_token,json=authToken,proto3" json:"auth_token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AddAuthTokenRequest) Reset() {
+	*x = AddAuthTokenRequest{}
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[33]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AddAuthTokenRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AddAuthTokenRequest) ProtoMessage() {}
+
+func (x *AddAuthTokenRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[33]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AddAuthTokenRequest.ProtoReflect.Descriptor instead.
+func (*AddAuthTokenRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{33}
+}
+
+func (x *AddAuthTokenRequest) GetTokenAuthUser() string {
+	if x != nil {
+		return x.TokenAuthUser
+	}
+	return ""
+}
+
+func (x *AddAuthTokenRequest) GetAuthToken() *AuthToken {
+	if x != nil {
+		return x.AuthToken
+	}
+	return nil
+}
+
+// Request message for [DeleteAuthToken][].
+type DeleteAuthTokenRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The name of the token auth user resource that this auth token
+	// will be deleted from. Format:
+	// projects/{project}/locations/{location}/clusters/{cluster}/tokenAuthUsers/{token_auth_user}/authTokens/{auth_token}
+	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteAuthTokenRequest) Reset() {
+	*x = DeleteAuthTokenRequest{}
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[34]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteAuthTokenRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteAuthTokenRequest) ProtoMessage() {}
+
+func (x *DeleteAuthTokenRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[34]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteAuthTokenRequest.ProtoReflect.Descriptor instead.
+func (*DeleteAuthTokenRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{34}
+}
+
+func (x *DeleteAuthTokenRequest) GetName() string {
+	if x != nil {
+		return x.Name
 	}
 	return ""
 }
@@ -2250,13 +3739,17 @@ type Cluster struct {
 	ServerCaPool *string `protobuf:"bytes,54,opt,name=server_ca_pool,json=serverCaPool,proto3,oneof" json:"server_ca_pool,omitempty"`
 	// Optional. Input only. Rotate the server certificates.
 	RotateServerCertificate *bool `protobuf:"varint,55,opt,name=rotate_server_certificate,json=rotateServerCertificate,proto3,oneof" json:"rotate_server_certificate,omitempty"`
-	unknownFields           protoimpl.UnknownFields
-	sizeCache               protoimpl.SizeCache
+	// Optional. The ACL policy to be applied to the cluster.
+	AclPolicy string `protobuf:"bytes,56,opt,name=acl_policy,json=aclPolicy,proto3" json:"acl_policy,omitempty"`
+	// Output only. Details of the applied ACL policy.
+	AclPolicyInfo *AclPolicyInfo `protobuf:"bytes,58,opt,name=acl_policy_info,json=aclPolicyInfo,proto3" json:"acl_policy_info,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *Cluster) Reset() {
 	*x = Cluster{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[16]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2268,7 +3761,7 @@ func (x *Cluster) String() string {
 func (*Cluster) ProtoMessage() {}
 
 func (x *Cluster) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[16]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2281,7 +3774,7 @@ func (x *Cluster) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Cluster.ProtoReflect.Descriptor instead.
 func (*Cluster) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{16}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{35}
 }
 
 func (x *Cluster) GetImportSources() isCluster_ImportSources {
@@ -2533,6 +4026,20 @@ func (x *Cluster) GetRotateServerCertificate() bool {
 	return false
 }
 
+func (x *Cluster) GetAclPolicy() string {
+	if x != nil {
+		return x.AclPolicy
+	}
+	return ""
+}
+
+func (x *Cluster) GetAclPolicyInfo() *AclPolicyInfo {
+	if x != nil {
+		return x.AclPolicyInfo
+	}
+	return nil
+}
+
 type isCluster_ImportSources interface {
 	isCluster_ImportSources()
 }
@@ -2553,6 +4060,464 @@ type Cluster_ManagedBackupSource_ struct {
 func (*Cluster_GcsSource) isCluster_ImportSources() {}
 
 func (*Cluster_ManagedBackupSource_) isCluster_ImportSources() {}
+
+// Details of the applied ACL policy.
+type AclPolicyInfo struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. The resource name of the applied ACL policy.
+	// Format: "projects/{project}/locations/{location}/aclPolicies/{acl_policy}"
+	AppliedAclPolicy string `protobuf:"bytes,1,opt,name=applied_acl_policy,json=appliedAclPolicy,proto3" json:"applied_acl_policy,omitempty"`
+	// Output only. The resource name of the applied ACL policy revision.
+	// Format:
+	// "projects/{project}/locations/{location}/aclPolicies/{acl_policy}/revisions/{revision}"
+	AppliedAclPolicyRevision string `protobuf:"bytes,2,opt,name=applied_acl_policy_revision,json=appliedAclPolicyRevision,proto3" json:"applied_acl_policy_revision,omitempty"`
+	// Output only. The revision number of the applied ACL policy revision.
+	AppliedAclPolicyRevisionNumber int64 `protobuf:"varint,3,opt,name=applied_acl_policy_revision_number,json=appliedAclPolicyRevisionNumber,proto3" json:"applied_acl_policy_revision_number,omitempty"`
+	// Output only. A list of status for various revisions of this ACL policy on
+	// the cluster.
+	AclPolicyRevisionStatuses []*AclPolicyRevisionStatus `protobuf:"bytes,4,rep,name=acl_policy_revision_statuses,json=aclPolicyRevisionStatuses,proto3" json:"acl_policy_revision_statuses,omitempty"`
+	unknownFields             protoimpl.UnknownFields
+	sizeCache                 protoimpl.SizeCache
+}
+
+func (x *AclPolicyInfo) Reset() {
+	*x = AclPolicyInfo{}
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[36]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AclPolicyInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AclPolicyInfo) ProtoMessage() {}
+
+func (x *AclPolicyInfo) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[36]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AclPolicyInfo.ProtoReflect.Descriptor instead.
+func (*AclPolicyInfo) Descriptor() ([]byte, []int) {
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{36}
+}
+
+func (x *AclPolicyInfo) GetAppliedAclPolicy() string {
+	if x != nil {
+		return x.AppliedAclPolicy
+	}
+	return ""
+}
+
+func (x *AclPolicyInfo) GetAppliedAclPolicyRevision() string {
+	if x != nil {
+		return x.AppliedAclPolicyRevision
+	}
+	return ""
+}
+
+func (x *AclPolicyInfo) GetAppliedAclPolicyRevisionNumber() int64 {
+	if x != nil {
+		return x.AppliedAclPolicyRevisionNumber
+	}
+	return 0
+}
+
+func (x *AclPolicyInfo) GetAclPolicyRevisionStatuses() []*AclPolicyRevisionStatus {
+	if x != nil {
+		return x.AclPolicyRevisionStatuses
+	}
+	return nil
+}
+
+// The ACL policy resource.
+type AclPolicy struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Identifier. Full resource path of the ACL policy.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Required. The ACL rules within the ACL policy.
+	Rules []*AclRule `protobuf:"bytes,2,rep,name=rules,proto3" json:"rules,omitempty"`
+	// Output only. The state of the ACL policy.
+	State AclPolicy_State `protobuf:"varint,3,opt,name=state,proto3,enum=google.cloud.redis.cluster.v1.AclPolicy_State" json:"state,omitempty"`
+	// Output only. Etag for the ACL policy.
+	Etag *string `protobuf:"bytes,5,opt,name=etag,proto3,oneof" json:"etag,omitempty"`
+	// Output only. The ACL policy attachment status for each attached cluster.
+	ClusterAclPolicyAttachments []*ClusterAclPolicyAttachment `protobuf:"bytes,6,rep,name=cluster_acl_policy_attachments,json=clusterAclPolicyAttachments,proto3" json:"cluster_acl_policy_attachments,omitempty"`
+	// Output only. The timestamp that the ACL policy was created.
+	CreateTime *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
+	// Output only. The timestamp that the ACL policy was last updated.
+	UpdateTime    *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AclPolicy) Reset() {
+	*x = AclPolicy{}
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[37]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AclPolicy) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AclPolicy) ProtoMessage() {}
+
+func (x *AclPolicy) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[37]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AclPolicy.ProtoReflect.Descriptor instead.
+func (*AclPolicy) Descriptor() ([]byte, []int) {
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{37}
+}
+
+func (x *AclPolicy) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *AclPolicy) GetRules() []*AclRule {
+	if x != nil {
+		return x.Rules
+	}
+	return nil
+}
+
+func (x *AclPolicy) GetState() AclPolicy_State {
+	if x != nil {
+		return x.State
+	}
+	return AclPolicy_STATE_UNSPECIFIED
+}
+
+func (x *AclPolicy) GetEtag() string {
+	if x != nil && x.Etag != nil {
+		return *x.Etag
+	}
+	return ""
+}
+
+func (x *AclPolicy) GetClusterAclPolicyAttachments() []*ClusterAclPolicyAttachment {
+	if x != nil {
+		return x.ClusterAclPolicyAttachments
+	}
+	return nil
+}
+
+func (x *AclPolicy) GetCreateTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreateTime
+	}
+	return nil
+}
+
+func (x *AclPolicy) GetUpdateTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.UpdateTime
+	}
+	return nil
+}
+
+// AclPolicyRevisionStatus stores the per-revision status for an attached
+// cluster.
+type AclPolicyRevisionStatus struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. The resource name of the ACL policy revision this status
+	// refers to. Format:
+	// "projects/{project}/locations/{location}/aclPolicies/{acl_policy}/revisions/{revision}"
+	AclPolicyRevision string `protobuf:"bytes,1,opt,name=acl_policy_revision,json=aclPolicyRevision,proto3" json:"acl_policy_revision,omitempty"`
+	// Output only. The revision number of the ACL policy revision this status
+	// refers to.
+	AclPolicyRevisionNumber int64 `protobuf:"varint,2,opt,name=acl_policy_revision_number,json=aclPolicyRevisionNumber,proto3" json:"acl_policy_revision_number,omitempty"`
+	// Output only. AclPolicyRevision state.
+	State AclPolicyRevisionStatus_State `protobuf:"varint,3,opt,name=state,proto3,enum=google.cloud.redis.cluster.v1.AclPolicyRevisionStatus_State" json:"state,omitempty"`
+	// Output only. Human-readable error message providing more details for FAILED
+	// states.
+	ErrorMessage  string `protobuf:"bytes,4,opt,name=error_message,json=errorMessage,proto3" json:"error_message,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AclPolicyRevisionStatus) Reset() {
+	*x = AclPolicyRevisionStatus{}
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[38]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AclPolicyRevisionStatus) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AclPolicyRevisionStatus) ProtoMessage() {}
+
+func (x *AclPolicyRevisionStatus) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[38]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AclPolicyRevisionStatus.ProtoReflect.Descriptor instead.
+func (*AclPolicyRevisionStatus) Descriptor() ([]byte, []int) {
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{38}
+}
+
+func (x *AclPolicyRevisionStatus) GetAclPolicyRevision() string {
+	if x != nil {
+		return x.AclPolicyRevision
+	}
+	return ""
+}
+
+func (x *AclPolicyRevisionStatus) GetAclPolicyRevisionNumber() int64 {
+	if x != nil {
+		return x.AclPolicyRevisionNumber
+	}
+	return 0
+}
+
+func (x *AclPolicyRevisionStatus) GetState() AclPolicyRevisionStatus_State {
+	if x != nil {
+		return x.State
+	}
+	return AclPolicyRevisionStatus_STATE_UNSPECIFIED
+}
+
+func (x *AclPolicyRevisionStatus) GetErrorMessage() string {
+	if x != nil {
+		return x.ErrorMessage
+	}
+	return ""
+}
+
+// ClusterAclPolicyAttachment stores the ACL policy status for an attached
+// cluster for the revisions successfully applied, under application or failed.
+type ClusterAclPolicyAttachment struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. The resource name of the attached Cluster.
+	// Format:
+	// "projects/{project}/locations/{location}/clusters/{cluster}"
+	Cluster string `protobuf:"bytes,1,opt,name=cluster,proto3" json:"cluster,omitempty"`
+	// Output only. A list of status for various revisions of this ACL policy on
+	// the cluster.
+	AclPolicyRevisionStatuses []*AclPolicyRevisionStatus `protobuf:"bytes,2,rep,name=acl_policy_revision_statuses,json=aclPolicyRevisionStatuses,proto3" json:"acl_policy_revision_statuses,omitempty"`
+	unknownFields             protoimpl.UnknownFields
+	sizeCache                 protoimpl.SizeCache
+}
+
+func (x *ClusterAclPolicyAttachment) Reset() {
+	*x = ClusterAclPolicyAttachment{}
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[39]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ClusterAclPolicyAttachment) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ClusterAclPolicyAttachment) ProtoMessage() {}
+
+func (x *ClusterAclPolicyAttachment) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[39]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ClusterAclPolicyAttachment.ProtoReflect.Descriptor instead.
+func (*ClusterAclPolicyAttachment) Descriptor() ([]byte, []int) {
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{39}
+}
+
+func (x *ClusterAclPolicyAttachment) GetCluster() string {
+	if x != nil {
+		return x.Cluster
+	}
+	return ""
+}
+
+func (x *ClusterAclPolicyAttachment) GetAclPolicyRevisionStatuses() []*AclPolicyRevisionStatus {
+	if x != nil {
+		return x.AclPolicyRevisionStatuses
+	}
+	return nil
+}
+
+// The ACL policy revision resource.
+type AclPolicyRevision struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Identifier. The name of the ACL policy revision.
+	// Format:
+	// "projects/{project}/locations/{location}/aclPolicies/{acl_policy}/revisions/{revision}"
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Output only. The revision number of the ACL policy revision.
+	RevisionNumber int64 `protobuf:"varint,2,opt,name=revision_number,json=revisionNumber,proto3" json:"revision_number,omitempty"`
+	// Output only. The snapshot of the ACL policy at the time of revision
+	// creation.
+	Snapshot *AclPolicy `protobuf:"bytes,3,opt,name=snapshot,proto3" json:"snapshot,omitempty"`
+	// Output only. The timestamp that the revision was created.
+	CreateTime *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
+	// Output only. A list of clusters that are attached to this ACL policy
+	// revision.
+	AttachedClusters []string `protobuf:"bytes,5,rep,name=attached_clusters,json=attachedClusters,proto3" json:"attached_clusters,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *AclPolicyRevision) Reset() {
+	*x = AclPolicyRevision{}
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[40]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AclPolicyRevision) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AclPolicyRevision) ProtoMessage() {}
+
+func (x *AclPolicyRevision) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[40]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AclPolicyRevision.ProtoReflect.Descriptor instead.
+func (*AclPolicyRevision) Descriptor() ([]byte, []int) {
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{40}
+}
+
+func (x *AclPolicyRevision) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *AclPolicyRevision) GetRevisionNumber() int64 {
+	if x != nil {
+		return x.RevisionNumber
+	}
+	return 0
+}
+
+func (x *AclPolicyRevision) GetSnapshot() *AclPolicy {
+	if x != nil {
+		return x.Snapshot
+	}
+	return nil
+}
+
+func (x *AclPolicyRevision) GetCreateTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreateTime
+	}
+	return nil
+}
+
+func (x *AclPolicyRevision) GetAttachedClusters() []string {
+	if x != nil {
+		return x.AttachedClusters
+	}
+	return nil
+}
+
+// A single ACL rule which defines the policy for a user.
+type AclRule struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Specifies the IAM user or service account to be added to the ACL
+	// policy. This username will be directly set on the Redis OSS.
+	Username string `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
+	// Required. The rule to be applied to the username. Ex: "on >password123 ~*
+	// +@all" The format of the rule is defined by Redis OSS:
+	// https://redis.io/docs/latest/operate/oss_and_stack/management/security/acl/
+	Rule          string `protobuf:"bytes,2,opt,name=rule,proto3" json:"rule,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AclRule) Reset() {
+	*x = AclRule{}
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[41]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AclRule) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AclRule) ProtoMessage() {}
+
+func (x *AclRule) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[41]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AclRule.ProtoReflect.Descriptor instead.
+func (*AclRule) Descriptor() ([]byte, []int) {
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{41}
+}
+
+func (x *AclRule) GetUsername() string {
+	if x != nil {
+		return x.Username
+	}
+	return ""
+}
+
+func (x *AclRule) GetRule() string {
+	if x != nil {
+		return x.Rule
+	}
+	return ""
+}
 
 // The automated backup config for a cluster.
 type AutomatedBackupConfig struct {
@@ -2576,7 +4541,7 @@ type AutomatedBackupConfig struct {
 
 func (x *AutomatedBackupConfig) Reset() {
 	*x = AutomatedBackupConfig{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[17]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[42]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2588,7 +4553,7 @@ func (x *AutomatedBackupConfig) String() string {
 func (*AutomatedBackupConfig) ProtoMessage() {}
 
 func (x *AutomatedBackupConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[17]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[42]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2601,7 +4566,7 @@ func (x *AutomatedBackupConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AutomatedBackupConfig.ProtoReflect.Descriptor instead.
 func (*AutomatedBackupConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{17}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{42}
 }
 
 func (x *AutomatedBackupConfig) GetSchedule() isAutomatedBackupConfig_Schedule {
@@ -2667,7 +4632,7 @@ type BackupCollection struct {
 
 func (x *BackupCollection) Reset() {
 	*x = BackupCollection{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[18]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[43]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2679,7 +4644,7 @@ func (x *BackupCollection) String() string {
 func (*BackupCollection) ProtoMessage() {}
 
 func (x *BackupCollection) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[18]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[43]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2692,7 +4657,7 @@ func (x *BackupCollection) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BackupCollection.ProtoReflect.Descriptor instead.
 func (*BackupCollection) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{18}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{43}
 }
 
 func (x *BackupCollection) GetName() string {
@@ -2772,7 +4737,7 @@ type Backup struct {
 
 func (x *Backup) Reset() {
 	*x = Backup{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[19]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[44]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2784,7 +4749,7 @@ func (x *Backup) String() string {
 func (*Backup) ProtoMessage() {}
 
 func (x *Backup) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[19]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[44]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2797,7 +4762,7 @@ func (x *Backup) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Backup.ProtoReflect.Descriptor instead.
 func (*Backup) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{19}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{44}
 }
 
 func (x *Backup) GetName() string {
@@ -2920,7 +4885,7 @@ type BackupFile struct {
 
 func (x *BackupFile) Reset() {
 	*x = BackupFile{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[20]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[45]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2932,7 +4897,7 @@ func (x *BackupFile) String() string {
 func (*BackupFile) ProtoMessage() {}
 
 func (x *BackupFile) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[20]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[45]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2945,7 +4910,7 @@ func (x *BackupFile) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BackupFile.ProtoReflect.Descriptor instead.
 func (*BackupFile) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{20}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{45}
 }
 
 func (x *BackupFile) GetFileName() string {
@@ -2984,7 +4949,7 @@ type PscServiceAttachment struct {
 
 func (x *PscServiceAttachment) Reset() {
 	*x = PscServiceAttachment{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[21]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[46]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2996,7 +4961,7 @@ func (x *PscServiceAttachment) String() string {
 func (*PscServiceAttachment) ProtoMessage() {}
 
 func (x *PscServiceAttachment) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[21]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[46]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3009,7 +4974,7 @@ func (x *PscServiceAttachment) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PscServiceAttachment.ProtoReflect.Descriptor instead.
 func (*PscServiceAttachment) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{21}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{46}
 }
 
 func (x *PscServiceAttachment) GetServiceAttachment() string {
@@ -3059,7 +5024,7 @@ type CrossClusterReplicationConfig struct {
 
 func (x *CrossClusterReplicationConfig) Reset() {
 	*x = CrossClusterReplicationConfig{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[22]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[47]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3071,7 +5036,7 @@ func (x *CrossClusterReplicationConfig) String() string {
 func (*CrossClusterReplicationConfig) ProtoMessage() {}
 
 func (x *CrossClusterReplicationConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[22]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[47]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3084,7 +5049,7 @@ func (x *CrossClusterReplicationConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CrossClusterReplicationConfig.ProtoReflect.Descriptor instead.
 func (*CrossClusterReplicationConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{22}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{47}
 }
 
 func (x *CrossClusterReplicationConfig) GetClusterRole() CrossClusterReplicationConfig_ClusterRole {
@@ -3141,7 +5106,7 @@ type ClusterMaintenancePolicy struct {
 
 func (x *ClusterMaintenancePolicy) Reset() {
 	*x = ClusterMaintenancePolicy{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[23]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[48]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3153,7 +5118,7 @@ func (x *ClusterMaintenancePolicy) String() string {
 func (*ClusterMaintenancePolicy) ProtoMessage() {}
 
 func (x *ClusterMaintenancePolicy) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[23]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[48]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3166,7 +5131,7 @@ func (x *ClusterMaintenancePolicy) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ClusterMaintenancePolicy.ProtoReflect.Descriptor instead.
 func (*ClusterMaintenancePolicy) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{23}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{48}
 }
 
 func (x *ClusterMaintenancePolicy) GetCreateTime() *timestamppb.Timestamp {
@@ -3203,7 +5168,7 @@ type ClusterWeeklyMaintenanceWindow struct {
 
 func (x *ClusterWeeklyMaintenanceWindow) Reset() {
 	*x = ClusterWeeklyMaintenanceWindow{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[24]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[49]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3215,7 +5180,7 @@ func (x *ClusterWeeklyMaintenanceWindow) String() string {
 func (*ClusterWeeklyMaintenanceWindow) ProtoMessage() {}
 
 func (x *ClusterWeeklyMaintenanceWindow) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[24]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[49]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3228,7 +5193,7 @@ func (x *ClusterWeeklyMaintenanceWindow) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ClusterWeeklyMaintenanceWindow.ProtoReflect.Descriptor instead.
 func (*ClusterWeeklyMaintenanceWindow) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{24}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{49}
 }
 
 func (x *ClusterWeeklyMaintenanceWindow) GetDay() dayofweek.DayOfWeek {
@@ -3260,7 +5225,7 @@ type ClusterMaintenanceSchedule struct {
 
 func (x *ClusterMaintenanceSchedule) Reset() {
 	*x = ClusterMaintenanceSchedule{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[25]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[50]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3272,7 +5237,7 @@ func (x *ClusterMaintenanceSchedule) String() string {
 func (*ClusterMaintenanceSchedule) ProtoMessage() {}
 
 func (x *ClusterMaintenanceSchedule) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[25]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[50]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3285,7 +5250,7 @@ func (x *ClusterMaintenanceSchedule) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ClusterMaintenanceSchedule.ProtoReflect.Descriptor instead.
 func (*ClusterMaintenanceSchedule) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{25}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{50}
 }
 
 func (x *ClusterMaintenanceSchedule) GetStartTime() *timestamppb.Timestamp {
@@ -3314,7 +5279,7 @@ type PscConfig struct {
 
 func (x *PscConfig) Reset() {
 	*x = PscConfig{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[26]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[51]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3326,7 +5291,7 @@ func (x *PscConfig) String() string {
 func (*PscConfig) ProtoMessage() {}
 
 func (x *PscConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[26]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[51]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3339,7 +5304,7 @@ func (x *PscConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PscConfig.ProtoReflect.Descriptor instead.
 func (*PscConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{26}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{51}
 }
 
 func (x *PscConfig) GetNetwork() string {
@@ -3366,7 +5331,7 @@ type DiscoveryEndpoint struct {
 
 func (x *DiscoveryEndpoint) Reset() {
 	*x = DiscoveryEndpoint{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[27]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[52]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3378,7 +5343,7 @@ func (x *DiscoveryEndpoint) String() string {
 func (*DiscoveryEndpoint) ProtoMessage() {}
 
 func (x *DiscoveryEndpoint) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[27]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[52]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3391,7 +5356,7 @@ func (x *DiscoveryEndpoint) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DiscoveryEndpoint.ProtoReflect.Descriptor instead.
 func (*DiscoveryEndpoint) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{27}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{52}
 }
 
 func (x *DiscoveryEndpoint) GetAddress() string {
@@ -3451,7 +5416,7 @@ type PscConnection struct {
 
 func (x *PscConnection) Reset() {
 	*x = PscConnection{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[28]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[53]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3463,7 +5428,7 @@ func (x *PscConnection) String() string {
 func (*PscConnection) ProtoMessage() {}
 
 func (x *PscConnection) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[28]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[53]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3476,7 +5441,7 @@ func (x *PscConnection) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PscConnection.ProtoReflect.Descriptor instead.
 func (*PscConnection) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{28}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{53}
 }
 
 func (x *PscConnection) GetPscConnectionId() string {
@@ -3549,7 +5514,7 @@ type ClusterEndpoint struct {
 
 func (x *ClusterEndpoint) Reset() {
 	*x = ClusterEndpoint{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[29]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[54]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3561,7 +5526,7 @@ func (x *ClusterEndpoint) String() string {
 func (*ClusterEndpoint) ProtoMessage() {}
 
 func (x *ClusterEndpoint) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[29]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[54]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3574,7 +5539,7 @@ func (x *ClusterEndpoint) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ClusterEndpoint.ProtoReflect.Descriptor instead.
 func (*ClusterEndpoint) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{29}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{54}
 }
 
 func (x *ClusterEndpoint) GetConnections() []*ConnectionDetail {
@@ -3603,7 +5568,7 @@ type ConnectionDetail struct {
 
 func (x *ConnectionDetail) Reset() {
 	*x = ConnectionDetail{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[30]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[55]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3615,7 +5580,7 @@ func (x *ConnectionDetail) String() string {
 func (*ConnectionDetail) ProtoMessage() {}
 
 func (x *ConnectionDetail) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[30]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[55]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3628,7 +5593,7 @@ func (x *ConnectionDetail) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConnectionDetail.ProtoReflect.Descriptor instead.
 func (*ConnectionDetail) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{30}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{55}
 }
 
 func (x *ConnectionDetail) GetConnection() isConnectionDetail_Connection {
@@ -3712,7 +5677,7 @@ type PscAutoConnection struct {
 
 func (x *PscAutoConnection) Reset() {
 	*x = PscAutoConnection{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[31]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[56]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3724,7 +5689,7 @@ func (x *PscAutoConnection) String() string {
 func (*PscAutoConnection) ProtoMessage() {}
 
 func (x *PscAutoConnection) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[31]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[56]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3737,7 +5702,7 @@ func (x *PscAutoConnection) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PscAutoConnection.ProtoReflect.Descriptor instead.
 func (*PscAutoConnection) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{31}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{56}
 }
 
 func (x *PscAutoConnection) GetPscConnectionId() string {
@@ -3816,7 +5781,7 @@ type SharedRegionalCertificateAuthority struct {
 
 func (x *SharedRegionalCertificateAuthority) Reset() {
 	*x = SharedRegionalCertificateAuthority{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[32]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[57]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3828,7 +5793,7 @@ func (x *SharedRegionalCertificateAuthority) String() string {
 func (*SharedRegionalCertificateAuthority) ProtoMessage() {}
 
 func (x *SharedRegionalCertificateAuthority) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[32]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[57]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3841,7 +5806,7 @@ func (x *SharedRegionalCertificateAuthority) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use SharedRegionalCertificateAuthority.ProtoReflect.Descriptor instead.
 func (*SharedRegionalCertificateAuthority) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{32}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{57}
 }
 
 func (x *SharedRegionalCertificateAuthority) GetServerCa() isSharedRegionalCertificateAuthority_ServerCa {
@@ -3895,7 +5860,7 @@ type GetSharedRegionalCertificateAuthorityRequest struct {
 
 func (x *GetSharedRegionalCertificateAuthorityRequest) Reset() {
 	*x = GetSharedRegionalCertificateAuthorityRequest{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[33]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[58]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3907,7 +5872,7 @@ func (x *GetSharedRegionalCertificateAuthorityRequest) String() string {
 func (*GetSharedRegionalCertificateAuthorityRequest) ProtoMessage() {}
 
 func (x *GetSharedRegionalCertificateAuthorityRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[33]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[58]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3920,7 +5885,7 @@ func (x *GetSharedRegionalCertificateAuthorityRequest) ProtoReflect() protorefle
 
 // Deprecated: Use GetSharedRegionalCertificateAuthorityRequest.ProtoReflect.Descriptor instead.
 func (*GetSharedRegionalCertificateAuthorityRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{33}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{58}
 }
 
 func (x *GetSharedRegionalCertificateAuthorityRequest) GetName() string {
@@ -3957,7 +5922,7 @@ type OperationMetadata struct {
 
 func (x *OperationMetadata) Reset() {
 	*x = OperationMetadata{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[34]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[59]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3969,7 +5934,7 @@ func (x *OperationMetadata) String() string {
 func (*OperationMetadata) ProtoMessage() {}
 
 func (x *OperationMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[34]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[59]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3982,7 +5947,7 @@ func (x *OperationMetadata) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OperationMetadata.ProtoReflect.Descriptor instead.
 func (*OperationMetadata) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{34}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{59}
 }
 
 func (x *OperationMetadata) GetCreateTime() *timestamppb.Timestamp {
@@ -4034,6 +5999,139 @@ func (x *OperationMetadata) GetApiVersion() string {
 	return ""
 }
 
+// Represents a token based auth user for the cluster.
+type TokenAuthUser struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Identifier. The resource name of the token based auth user.
+	// Format:
+	// projects/{project}/locations/{location}/clusters/{cluster}/tokenAuthUsers/{token_auth_user}
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Output only. The state of the token based auth user.
+	State         TokenAuthUser_State `protobuf:"varint,2,opt,name=state,proto3,enum=google.cloud.redis.cluster.v1.TokenAuthUser_State" json:"state,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TokenAuthUser) Reset() {
+	*x = TokenAuthUser{}
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[60]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TokenAuthUser) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TokenAuthUser) ProtoMessage() {}
+
+func (x *TokenAuthUser) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[60]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TokenAuthUser.ProtoReflect.Descriptor instead.
+func (*TokenAuthUser) Descriptor() ([]byte, []int) {
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{60}
+}
+
+func (x *TokenAuthUser) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *TokenAuthUser) GetState() TokenAuthUser_State {
+	if x != nil {
+		return x.State
+	}
+	return TokenAuthUser_STATE_UNSPECIFIED
+}
+
+// Auth token for the cluster.
+type AuthToken struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Identifier. Name of the auth token.
+	// Format:
+	// projects/{project}/locations/{location}/clusters/{cluster}/tokenAuthUsers/{token_auth_user}/authTokens/{auth_token}
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Output only. The service generated authentication token used to connect to
+	// the Redis cluster.
+	Token string `protobuf:"bytes,2,opt,name=token,proto3" json:"token,omitempty"`
+	// Output only. Create time of the auth token.
+	CreateTime *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
+	// Output only. State of the auth token.
+	State         AuthToken_State `protobuf:"varint,4,opt,name=state,proto3,enum=google.cloud.redis.cluster.v1.AuthToken_State" json:"state,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AuthToken) Reset() {
+	*x = AuthToken{}
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[61]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AuthToken) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AuthToken) ProtoMessage() {}
+
+func (x *AuthToken) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[61]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AuthToken.ProtoReflect.Descriptor instead.
+func (*AuthToken) Descriptor() ([]byte, []int) {
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{61}
+}
+
+func (x *AuthToken) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *AuthToken) GetToken() string {
+	if x != nil {
+		return x.Token
+	}
+	return ""
+}
+
+func (x *AuthToken) GetCreateTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreateTime
+	}
+	return nil
+}
+
+func (x *AuthToken) GetState() AuthToken_State {
+	if x != nil {
+		return x.State
+	}
+	return AuthToken_STATE_UNSPECIFIED
+}
+
 // Redis cluster certificate authority
 type CertificateAuthority struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -4054,7 +6152,7 @@ type CertificateAuthority struct {
 
 func (x *CertificateAuthority) Reset() {
 	*x = CertificateAuthority{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[35]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[62]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4066,7 +6164,7 @@ func (x *CertificateAuthority) String() string {
 func (*CertificateAuthority) ProtoMessage() {}
 
 func (x *CertificateAuthority) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[35]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[62]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4079,7 +6177,7 @@ func (x *CertificateAuthority) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CertificateAuthority.ProtoReflect.Descriptor instead.
 func (*CertificateAuthority) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{35}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{62}
 }
 
 func (x *CertificateAuthority) GetServerCa() isCertificateAuthority_ServerCa {
@@ -4130,7 +6228,7 @@ type ClusterPersistenceConfig struct {
 
 func (x *ClusterPersistenceConfig) Reset() {
 	*x = ClusterPersistenceConfig{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[36]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[63]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4142,7 +6240,7 @@ func (x *ClusterPersistenceConfig) String() string {
 func (*ClusterPersistenceConfig) ProtoMessage() {}
 
 func (x *ClusterPersistenceConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[36]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[63]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4155,7 +6253,7 @@ func (x *ClusterPersistenceConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ClusterPersistenceConfig.ProtoReflect.Descriptor instead.
 func (*ClusterPersistenceConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{36}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{63}
 }
 
 func (x *ClusterPersistenceConfig) GetMode() ClusterPersistenceConfig_PersistenceMode {
@@ -4195,7 +6293,7 @@ type ZoneDistributionConfig struct {
 
 func (x *ZoneDistributionConfig) Reset() {
 	*x = ZoneDistributionConfig{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[37]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[64]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4207,7 +6305,7 @@ func (x *ZoneDistributionConfig) String() string {
 func (*ZoneDistributionConfig) ProtoMessage() {}
 
 func (x *ZoneDistributionConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[37]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[64]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4220,7 +6318,7 @@ func (x *ZoneDistributionConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ZoneDistributionConfig.ProtoReflect.Descriptor instead.
 func (*ZoneDistributionConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{37}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{64}
 }
 
 func (x *ZoneDistributionConfig) GetMode() ZoneDistributionConfig_ZoneDistributionMode {
@@ -4259,7 +6357,7 @@ type RescheduleClusterMaintenanceRequest struct {
 
 func (x *RescheduleClusterMaintenanceRequest) Reset() {
 	*x = RescheduleClusterMaintenanceRequest{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[38]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[65]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4271,7 +6369,7 @@ func (x *RescheduleClusterMaintenanceRequest) String() string {
 func (*RescheduleClusterMaintenanceRequest) ProtoMessage() {}
 
 func (x *RescheduleClusterMaintenanceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[38]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[65]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4284,7 +6382,7 @@ func (x *RescheduleClusterMaintenanceRequest) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use RescheduleClusterMaintenanceRequest.ProtoReflect.Descriptor instead.
 func (*RescheduleClusterMaintenanceRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{38}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{65}
 }
 
 func (x *RescheduleClusterMaintenanceRequest) GetName() string {
@@ -4327,7 +6425,7 @@ type EncryptionInfo struct {
 
 func (x *EncryptionInfo) Reset() {
 	*x = EncryptionInfo{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[39]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[66]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4339,7 +6437,7 @@ func (x *EncryptionInfo) String() string {
 func (*EncryptionInfo) ProtoMessage() {}
 
 func (x *EncryptionInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[39]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[66]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4352,7 +6450,7 @@ func (x *EncryptionInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EncryptionInfo.ProtoReflect.Descriptor instead.
 func (*EncryptionInfo) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{39}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{66}
 }
 
 func (x *EncryptionInfo) GetEncryptionType() EncryptionInfo_Type {
@@ -4396,7 +6494,7 @@ type Cluster_StateInfo struct {
 
 func (x *Cluster_StateInfo) Reset() {
 	*x = Cluster_StateInfo{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[40]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[67]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4408,7 +6506,7 @@ func (x *Cluster_StateInfo) String() string {
 func (*Cluster_StateInfo) ProtoMessage() {}
 
 func (x *Cluster_StateInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[40]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[67]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4421,7 +6519,7 @@ func (x *Cluster_StateInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Cluster_StateInfo.ProtoReflect.Descriptor instead.
 func (*Cluster_StateInfo) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{16, 0}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{35, 0}
 }
 
 func (x *Cluster_StateInfo) GetInfo() isCluster_StateInfo_Info {
@@ -4464,7 +6562,7 @@ type Cluster_GcsBackupSource struct {
 
 func (x *Cluster_GcsBackupSource) Reset() {
 	*x = Cluster_GcsBackupSource{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[41]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[68]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4476,7 +6574,7 @@ func (x *Cluster_GcsBackupSource) String() string {
 func (*Cluster_GcsBackupSource) ProtoMessage() {}
 
 func (x *Cluster_GcsBackupSource) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[41]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[68]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4489,7 +6587,7 @@ func (x *Cluster_GcsBackupSource) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Cluster_GcsBackupSource.ProtoReflect.Descriptor instead.
 func (*Cluster_GcsBackupSource) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{16, 1}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{35, 1}
 }
 
 func (x *Cluster_GcsBackupSource) GetUris() []string {
@@ -4515,7 +6613,7 @@ type Cluster_ManagedBackupSource struct {
 
 func (x *Cluster_ManagedBackupSource) Reset() {
 	*x = Cluster_ManagedBackupSource{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[42]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[69]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4527,7 +6625,7 @@ func (x *Cluster_ManagedBackupSource) String() string {
 func (*Cluster_ManagedBackupSource) ProtoMessage() {}
 
 func (x *Cluster_ManagedBackupSource) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[42]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[69]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4540,7 +6638,7 @@ func (x *Cluster_ManagedBackupSource) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Cluster_ManagedBackupSource.ProtoReflect.Descriptor instead.
 func (*Cluster_ManagedBackupSource) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{16, 2}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{35, 2}
 }
 
 func (x *Cluster_ManagedBackupSource) GetBackup() string {
@@ -4563,7 +6661,7 @@ type Cluster_StateInfo_UpdateInfo struct {
 
 func (x *Cluster_StateInfo_UpdateInfo) Reset() {
 	*x = Cluster_StateInfo_UpdateInfo{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[44]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[71]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4575,7 +6673,7 @@ func (x *Cluster_StateInfo_UpdateInfo) String() string {
 func (*Cluster_StateInfo_UpdateInfo) ProtoMessage() {}
 
 func (x *Cluster_StateInfo_UpdateInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[44]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[71]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4588,7 +6686,7 @@ func (x *Cluster_StateInfo_UpdateInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Cluster_StateInfo_UpdateInfo.ProtoReflect.Descriptor instead.
 func (*Cluster_StateInfo_UpdateInfo) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{16, 0, 0}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{35, 0, 0}
 }
 
 func (x *Cluster_StateInfo_UpdateInfo) GetTargetShardCount() int32 {
@@ -4618,7 +6716,7 @@ type AutomatedBackupConfig_FixedFrequencySchedule struct {
 
 func (x *AutomatedBackupConfig_FixedFrequencySchedule) Reset() {
 	*x = AutomatedBackupConfig_FixedFrequencySchedule{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[45]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[72]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4630,7 +6728,7 @@ func (x *AutomatedBackupConfig_FixedFrequencySchedule) String() string {
 func (*AutomatedBackupConfig_FixedFrequencySchedule) ProtoMessage() {}
 
 func (x *AutomatedBackupConfig_FixedFrequencySchedule) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[45]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[72]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4643,7 +6741,7 @@ func (x *AutomatedBackupConfig_FixedFrequencySchedule) ProtoReflect() protorefle
 
 // Deprecated: Use AutomatedBackupConfig_FixedFrequencySchedule.ProtoReflect.Descriptor instead.
 func (*AutomatedBackupConfig_FixedFrequencySchedule) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{17, 0}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{42, 0}
 }
 
 func (x *AutomatedBackupConfig_FixedFrequencySchedule) GetStartTime() *timeofday.TimeOfDay {
@@ -4668,7 +6766,7 @@ type CrossClusterReplicationConfig_RemoteCluster struct {
 
 func (x *CrossClusterReplicationConfig_RemoteCluster) Reset() {
 	*x = CrossClusterReplicationConfig_RemoteCluster{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[46]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[73]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4680,7 +6778,7 @@ func (x *CrossClusterReplicationConfig_RemoteCluster) String() string {
 func (*CrossClusterReplicationConfig_RemoteCluster) ProtoMessage() {}
 
 func (x *CrossClusterReplicationConfig_RemoteCluster) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[46]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[73]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4693,7 +6791,7 @@ func (x *CrossClusterReplicationConfig_RemoteCluster) ProtoReflect() protoreflec
 
 // Deprecated: Use CrossClusterReplicationConfig_RemoteCluster.ProtoReflect.Descriptor instead.
 func (*CrossClusterReplicationConfig_RemoteCluster) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{22, 0}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{47, 0}
 }
 
 func (x *CrossClusterReplicationConfig_RemoteCluster) GetCluster() string {
@@ -4726,7 +6824,7 @@ type CrossClusterReplicationConfig_Membership struct {
 
 func (x *CrossClusterReplicationConfig_Membership) Reset() {
 	*x = CrossClusterReplicationConfig_Membership{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[47]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[74]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4738,7 +6836,7 @@ func (x *CrossClusterReplicationConfig_Membership) String() string {
 func (*CrossClusterReplicationConfig_Membership) ProtoMessage() {}
 
 func (x *CrossClusterReplicationConfig_Membership) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[47]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[74]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4751,7 +6849,7 @@ func (x *CrossClusterReplicationConfig_Membership) ProtoReflect() protoreflect.M
 
 // Deprecated: Use CrossClusterReplicationConfig_Membership.ProtoReflect.Descriptor instead.
 func (*CrossClusterReplicationConfig_Membership) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{22, 1}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{47, 1}
 }
 
 func (x *CrossClusterReplicationConfig_Membership) GetPrimaryCluster() *CrossClusterReplicationConfig_RemoteCluster {
@@ -4780,7 +6878,7 @@ type SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority stru
 
 func (x *SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority) Reset() {
 	*x = SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[48]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[75]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4792,7 +6890,7 @@ func (x *SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority)
 func (*SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority) ProtoMessage() {}
 
 func (x *SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[48]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[75]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4805,7 +6903,7 @@ func (x *SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority)
 
 // Deprecated: Use SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority.ProtoReflect.Descriptor instead.
 func (*SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{32, 0}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{57, 0}
 }
 
 func (x *SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority) GetCaCerts() []*SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority_RegionalCertChain {
@@ -4826,7 +6924,7 @@ type SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority_Regi
 
 func (x *SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority_RegionalCertChain) Reset() {
 	*x = SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority_RegionalCertChain{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[49]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[76]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4839,7 +6937,7 @@ func (*SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority_Re
 }
 
 func (x *SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority_RegionalCertChain) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[49]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[76]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4852,7 +6950,7 @@ func (x *SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority_
 
 // Deprecated: Use SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority_RegionalCertChain.ProtoReflect.Descriptor instead.
 func (*SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority_RegionalCertChain) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{32, 0, 0}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{57, 0, 0}
 }
 
 func (x *SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority_RegionalCertChain) GetCertificates() []string {
@@ -4873,7 +6971,7 @@ type CertificateAuthority_ManagedCertificateAuthority struct {
 
 func (x *CertificateAuthority_ManagedCertificateAuthority) Reset() {
 	*x = CertificateAuthority_ManagedCertificateAuthority{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[50]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[77]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4885,7 +6983,7 @@ func (x *CertificateAuthority_ManagedCertificateAuthority) String() string {
 func (*CertificateAuthority_ManagedCertificateAuthority) ProtoMessage() {}
 
 func (x *CertificateAuthority_ManagedCertificateAuthority) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[50]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[77]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4898,7 +6996,7 @@ func (x *CertificateAuthority_ManagedCertificateAuthority) ProtoReflect() protor
 
 // Deprecated: Use CertificateAuthority_ManagedCertificateAuthority.ProtoReflect.Descriptor instead.
 func (*CertificateAuthority_ManagedCertificateAuthority) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{35, 0}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{62, 0}
 }
 
 func (x *CertificateAuthority_ManagedCertificateAuthority) GetCaCerts() []*CertificateAuthority_ManagedCertificateAuthority_CertChain {
@@ -4918,7 +7016,7 @@ type CertificateAuthority_ManagedCertificateAuthority_CertChain struct {
 
 func (x *CertificateAuthority_ManagedCertificateAuthority_CertChain) Reset() {
 	*x = CertificateAuthority_ManagedCertificateAuthority_CertChain{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[51]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[78]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4930,7 +7028,7 @@ func (x *CertificateAuthority_ManagedCertificateAuthority_CertChain) String() st
 func (*CertificateAuthority_ManagedCertificateAuthority_CertChain) ProtoMessage() {}
 
 func (x *CertificateAuthority_ManagedCertificateAuthority_CertChain) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[51]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[78]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4943,7 +7041,7 @@ func (x *CertificateAuthority_ManagedCertificateAuthority_CertChain) ProtoReflec
 
 // Deprecated: Use CertificateAuthority_ManagedCertificateAuthority_CertChain.ProtoReflect.Descriptor instead.
 func (*CertificateAuthority_ManagedCertificateAuthority_CertChain) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{35, 0, 0}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{62, 0, 0}
 }
 
 func (x *CertificateAuthority_ManagedCertificateAuthority_CertChain) GetCertificates() []string {
@@ -4968,7 +7066,7 @@ type ClusterPersistenceConfig_RDBConfig struct {
 
 func (x *ClusterPersistenceConfig_RDBConfig) Reset() {
 	*x = ClusterPersistenceConfig_RDBConfig{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[52]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[79]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4980,7 +7078,7 @@ func (x *ClusterPersistenceConfig_RDBConfig) String() string {
 func (*ClusterPersistenceConfig_RDBConfig) ProtoMessage() {}
 
 func (x *ClusterPersistenceConfig_RDBConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[52]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[79]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4993,7 +7091,7 @@ func (x *ClusterPersistenceConfig_RDBConfig) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use ClusterPersistenceConfig_RDBConfig.ProtoReflect.Descriptor instead.
 func (*ClusterPersistenceConfig_RDBConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{36, 0}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{63, 0}
 }
 
 func (x *ClusterPersistenceConfig_RDBConfig) GetRdbSnapshotPeriod() ClusterPersistenceConfig_RDBConfig_SnapshotPeriod {
@@ -5021,7 +7119,7 @@ type ClusterPersistenceConfig_AOFConfig struct {
 
 func (x *ClusterPersistenceConfig_AOFConfig) Reset() {
 	*x = ClusterPersistenceConfig_AOFConfig{}
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[53]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[80]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5033,7 +7131,7 @@ func (x *ClusterPersistenceConfig_AOFConfig) String() string {
 func (*ClusterPersistenceConfig_AOFConfig) ProtoMessage() {}
 
 func (x *ClusterPersistenceConfig_AOFConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[53]
+	mi := &file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[80]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5046,7 +7144,7 @@ func (x *ClusterPersistenceConfig_AOFConfig) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use ClusterPersistenceConfig_AOFConfig.ProtoReflect.Descriptor instead.
 func (*ClusterPersistenceConfig_AOFConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{36, 1}
+	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP(), []int{63, 1}
 }
 
 func (x *ClusterPersistenceConfig_AOFConfig) GetAppendFsync() ClusterPersistenceConfig_AOFConfig_AppendFsync {
@@ -5068,7 +7166,14 @@ const file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDesc = "" 
 	"cluster_id\x18\x02 \x01(\tB\x03\xe0A\x02R\tclusterId\x12E\n" +
 	"\acluster\x18\x03 \x01(\v2&.google.cloud.redis.cluster.v1.ClusterB\x03\xe0A\x02R\acluster\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tR\trequestId\"\x94\x01\n" +
+	"request_id\x18\x04 \x01(\tR\trequestId\"\xfb\x01\n" +
+	"\x16CreateAclPolicyRequest\x12>\n" +
+	"\x06parent\x18\x01 \x01(\tB&\xe0A\x02\xfaA \x12\x1eredis.googleapis.com/AclPolicyR\x06parent\x12'\n" +
+	"\racl_policy_id\x18\x02 \x01(\tB\x03\xe0A\x02R\vaclPolicyId\x12L\n" +
+	"\n" +
+	"acl_policy\x18\x03 \x01(\v2(.google.cloud.redis.cluster.v1.AclPolicyB\x03\xe0A\x02R\taclPolicy\x12*\n" +
+	"\n" +
+	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x94\x01\n" +
 	"\x13ListClustersRequest\x12A\n" +
 	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\x06parent\x12\x1b\n" +
@@ -5078,21 +7183,58 @@ const file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDesc = "" 
 	"\x14ListClustersResponse\x12B\n" +
 	"\bclusters\x18\x01 \x03(\v2&.google.cloud.redis.cluster.v1.ClusterR\bclusters\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12 \n" +
-	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\xbe\x01\n" +
+	"\vunreachable\x18\x03 \x03(\tR\vunreachable\"\x9e\x01\n" +
+	"\x16ListAclPoliciesRequest\x12>\n" +
+	"\x06parent\x18\x01 \x01(\tB&\xe0A\x02\xfaA \x12\x1eredis.googleapis.com/AclPolicyR\x06parent\x12 \n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\n" +
+	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xb5\x01\n" +
+	"\x17ListAclPoliciesResponse\x12K\n" +
+	"\facl_policies\x18\x01 \x03(\v2(.google.cloud.redis.cluster.v1.AclPolicyR\vaclPolicies\x12&\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12%\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x06R\vunreachable\"\xad\x01\n" +
+	"\x1dListAclPolicyRevisionsRequest\x12F\n" +
+	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\x12&redis.googleapis.com/AclPolicyRevisionR\x06parent\x12 \n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\n" +
+	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xd3\x01\n" +
+	"\x1eListAclPolicyRevisionsResponse\x12b\n" +
+	"\x14acl_policy_revisions\x18\x01 \x03(\v20.google.cloud.redis.cluster.v1.AclPolicyRevisionR\x12aclPolicyRevisions\x12&\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12%\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x06R\vunreachable\"\xbe\x01\n" +
 	"\x14UpdateClusterRequest\x12@\n" +
 	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
 	"updateMask\x12E\n" +
 	"\acluster\x18\x02 \x01(\v2&.google.cloud.redis.cluster.v1.ClusterB\x03\xe0A\x02R\acluster\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tR\trequestId\"M\n" +
+	"request_id\x18\x03 \x01(\tR\trequestId\"\xd4\x01\n" +
+	"\x16UpdateAclPolicyRequest\x12L\n" +
+	"\n" +
+	"acl_policy\x18\x01 \x01(\v2(.google.cloud.redis.cluster.v1.AclPolicyB\x03\xe0A\x02R\taclPolicy\x12@\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
+	"updateMask\x12*\n" +
+	"\n" +
+	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"M\n" +
 	"\x11GetClusterRequest\x128\n" +
 	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
-	"\x1credis.googleapis.com/ClusterR\x04name\"o\n" +
+	"\x1credis.googleapis.com/ClusterR\x04name\"Q\n" +
+	"\x13GetAclPolicyRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
+	"\x1eredis.googleapis.com/AclPolicyR\x04name\"a\n" +
+	"\x1bGetAclPolicyRevisionRequest\x12B\n" +
+	"\x04name\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
+	"&redis.googleapis.com/AclPolicyRevisionR\x04name\"o\n" +
 	"\x14DeleteClusterRequest\x128\n" +
 	"\x04name\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
 	"\x1credis.googleapis.com/ClusterR\x04name\x12\x1d\n" +
 	"\n" +
-	"request_id\x18\x02 \x01(\tR\trequestId\"n\n" +
+	"request_id\x18\x02 \x01(\tR\trequestId\"\x99\x01\n" +
+	"\x16DeleteAclPolicyRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
+	"\x1eredis.googleapis.com/AclPolicyR\x04name\x12*\n" +
+	"\n" +
+	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12\x17\n" +
+	"\x04etag\x18\x03 \x01(\tB\x03\xe0A\x01R\x04etag\"n\n" +
 	"%GetClusterCertificateAuthorityRequest\x12E\n" +
 	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
 	")redis.googleapis.com/CertificateAuthorityR\x04name\"\xab\x01\n" +
@@ -5137,7 +7279,55 @@ const file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDesc = "" 
 	"\x03ttl\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x03ttl\x12%\n" +
 	"\tbackup_id\x18\x03 \x01(\tB\x03\xe0A\x01H\x00R\bbackupId\x88\x01\x01B\f\n" +
 	"\n" +
-	"_backup_id\"\xcd\x1e\n" +
+	"_backup_id\"\xe2\x01\n" +
+	"\x19ListTokenAuthUsersRequest\x12B\n" +
+	"\x06parent\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\x12\"redis.googleapis.com/TokenAuthUserR\x06parent\x12 \n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\n" +
+	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
+	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
+	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xc3\x01\n" +
+	"\x1aListTokenAuthUsersResponse\x12V\n" +
+	"\x10token_auth_users\x18\x01 \x03(\v2,.google.cloud.redis.cluster.v1.TokenAuthUserR\x0etokenAuthUsers\x12&\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12%\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x06R\vunreachable\"Y\n" +
+	"\x17GetTokenAuthUserRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
+	"\"redis.googleapis.com/TokenAuthUserR\x04name\"\xda\x01\n" +
+	"\x15ListAuthTokensRequest\x12>\n" +
+	"\x06parent\x18\x01 \x01(\tB&\xe0A\x02\xfaA \x12\x1eredis.googleapis.com/AuthTokenR\x06parent\x12 \n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\n" +
+	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
+	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
+	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xb2\x01\n" +
+	"\x16ListAuthTokensResponse\x12I\n" +
+	"\vauth_tokens\x18\x01 \x03(\v2(.google.cloud.redis.cluster.v1.AuthTokenR\n" +
+	"authTokens\x12&\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12%\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x06R\vunreachable\"Q\n" +
+	"\x13GetAuthTokenRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
+	"\x1eredis.googleapis.com/AuthTokenR\x04name\"\xad\x01\n" +
+	"\x17AddTokenAuthUserRequest\x12>\n" +
+	"\acluster\x18\x01 \x01(\tB$\xe0A\x02\xfaA\x1e\n" +
+	"\x1credis.googleapis.com/ClusterR\acluster\x12R\n" +
+	"\x0ftoken_auth_user\x18\x02 \x01(\tB*\xe0A\x02\xfaA$\n" +
+	"\"redis.googleapis.com/TokenAuthUserR\rtokenAuthUser\"\xa3\x01\n" +
+	"\x1aDeleteTokenAuthUserRequest\x12>\n" +
+	"\x04name\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
+	"\"redis.googleapis.com/TokenAuthUserR\x04name\x12*\n" +
+	"\n" +
+	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12\x19\n" +
+	"\x05force\x18\x03 \x01(\bB\x03\xe0A\x01R\x05force\"\xb7\x01\n" +
+	"\x13AddAuthTokenRequest\x12R\n" +
+	"\x0ftoken_auth_user\x18\x01 \x01(\tB*\xe0A\x02\xfaA$\n" +
+	"\"redis.googleapis.com/TokenAuthUserR\rtokenAuthUser\x12L\n" +
+	"\n" +
+	"auth_token\x18\x02 \x01(\v2(.google.cloud.redis.cluster.v1.AuthTokenB\x03\xe0A\x02R\tauthToken\"T\n" +
+	"\x16DeleteAuthTokenRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
+	"\x1eredis.googleapis.com/AuthTokenR\x04name\"\xef\x1f\n" +
 	"\aCluster\x12\\\n" +
 	"\n" +
 	"gcs_source\x18\" \x01(\v26.google.cloud.redis.cluster.v1.Cluster.GcsBackupSourceB\x03\xe0A\x01H\x00R\tgcsSource\x12u\n" +
@@ -5181,7 +7371,11 @@ const file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDesc = "" 
 	"\x0eserver_ca_mode\x185 \x01(\x0e2+.google.cloud.redis.cluster.v1.ServerCaModeB\x03\xe0A\x01H\vR\fserverCaMode\x88\x01\x01\x12R\n" +
 	"\x0eserver_ca_pool\x186 \x01(\tB'\xe0A\x01\xfaA!\n" +
 	"\x1fprivateca.googleapis.com/CaPoolH\fR\fserverCaPool\x88\x01\x01\x12G\n" +
-	"\x19rotate_server_certificate\x187 \x01(\bB\x06\xe0A\x01\xe0A\x04H\rR\x17rotateServerCertificate\x88\x01\x01\x1a\x9c\x02\n" +
+	"\x19rotate_server_certificate\x187 \x01(\bB\x06\xe0A\x01\xe0A\x04H\rR\x17rotateServerCertificate\x88\x01\x01\x12E\n" +
+	"\n" +
+	"acl_policy\x188 \x01(\tB&\xe0A\x01\xfaA \n" +
+	"\x1eredis.googleapis.com/AclPolicyR\taclPolicy\x12Y\n" +
+	"\x0facl_policy_info\x18: \x01(\v2,.google.cloud.redis.cluster.v1.AclPolicyInfoB\x03\xe0A\x03R\raclPolicyInfo\x1a\x9c\x02\n" +
 	"\tStateInfo\x12^\n" +
 	"\vupdate_info\x18\x01 \x01(\v2;.google.cloud.redis.cluster.v1.Cluster.StateInfo.UpdateInfoH\x00R\n" +
 	"updateInfo\x1a\xa6\x01\n" +
@@ -5222,7 +7416,60 @@ const file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDesc = "" 
 	")_async_cluster_endpoints_deletion_enabledB\x11\n" +
 	"\x0f_server_ca_modeB\x11\n" +
 	"\x0f_server_ca_poolB\x1c\n" +
-	"\x1a_rotate_server_certificate\"\xca\x04\n" +
+	"\x1a_rotate_server_certificate\"\xa3\x03\n" +
+	"\rAclPolicyInfo\x12T\n" +
+	"\x12applied_acl_policy\x18\x01 \x01(\tB&\xe0A\x03\xfaA \n" +
+	"\x1eredis.googleapis.com/AclPolicyR\x10appliedAclPolicy\x12m\n" +
+	"\x1bapplied_acl_policy_revision\x18\x02 \x01(\tB.\xe0A\x03\xfaA(\n" +
+	"&redis.googleapis.com/AclPolicyRevisionR\x18appliedAclPolicyRevision\x12O\n" +
+	"\"applied_acl_policy_revision_number\x18\x03 \x01(\x03B\x03\xe0A\x03R\x1eappliedAclPolicyRevisionNumber\x12|\n" +
+	"\x1cacl_policy_revision_statuses\x18\x04 \x03(\v26.google.cloud.redis.cluster.v1.AclPolicyRevisionStatusB\x03\xe0A\x03R\x19aclPolicyRevisionStatuses\"\xaa\x05\n" +
+	"\tAclPolicy\x12\x17\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12A\n" +
+	"\x05rules\x18\x02 \x03(\v2&.google.cloud.redis.cluster.v1.AclRuleB\x03\xe0A\x02R\x05rules\x12I\n" +
+	"\x05state\x18\x03 \x01(\x0e2..google.cloud.redis.cluster.v1.AclPolicy.StateB\x03\xe0A\x03R\x05state\x12\x1c\n" +
+	"\x04etag\x18\x05 \x01(\tB\x03\xe0A\x03H\x00R\x04etag\x88\x01\x01\x12\x83\x01\n" +
+	"\x1ecluster_acl_policy_attachments\x18\x06 \x03(\v29.google.cloud.redis.cluster.v1.ClusterAclPolicyAttachmentB\x03\xe0A\x03R\x1bclusterAclPolicyAttachments\x12@\n" +
+	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"createTime\x12@\n" +
+	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"updateTime\"F\n" +
+	"\x05State\x12\x15\n" +
+	"\x11STATE_UNSPECIFIED\x10\x00\x12\n" +
+	"\n" +
+	"\x06ACTIVE\x10\x01\x12\f\n" +
+	"\bUPDATING\x10\x02\x12\f\n" +
+	"\bDELETING\x10\x03:}\xeaAz\n" +
+	"\x1eredis.googleapis.com/AclPolicy\x12@projects/{project}/locations/{location}/aclPolicies/{acl_policy}*\vaclPolicies2\taclPolicyB\a\n" +
+	"\x05_etag\"\x85\x03\n" +
+	"\x17AclPolicyRevisionStatus\x12^\n" +
+	"\x13acl_policy_revision\x18\x01 \x01(\tB.\xe0A\x03\xfaA(\n" +
+	"&redis.googleapis.com/AclPolicyRevisionR\x11aclPolicyRevision\x12@\n" +
+	"\x1aacl_policy_revision_number\x18\x02 \x01(\x03B\x03\xe0A\x03R\x17aclPolicyRevisionNumber\x12W\n" +
+	"\x05state\x18\x03 \x01(\x0e2<.google.cloud.redis.cluster.v1.AclPolicyRevisionStatus.StateB\x03\xe0A\x03R\x05state\x12(\n" +
+	"\rerror_message\x18\x04 \x01(\tB\x03\xe0A\x03R\ferrorMessage\"E\n" +
+	"\x05State\x12\x15\n" +
+	"\x11STATE_UNSPECIFIED\x10\x00\x12\f\n" +
+	"\bAPPLYING\x10\x01\x12\v\n" +
+	"\aAPPLIED\x10\x02\x12\n" +
+	"\n" +
+	"\x06FAILED\x10\x03\"\xda\x01\n" +
+	"\x1aClusterAclPolicyAttachment\x12>\n" +
+	"\acluster\x18\x01 \x01(\tB$\xe0A\x03\xfaA\x1e\n" +
+	"\x1credis.googleapis.com/ClusterR\acluster\x12|\n" +
+	"\x1cacl_policy_revision_statuses\x18\x02 \x03(\v26.google.cloud.redis.cluster.v1.AclPolicyRevisionStatusB\x03\xe0A\x03R\x19aclPolicyRevisionStatuses\"\xe7\x03\n" +
+	"\x11AclPolicyRevision\x12\x17\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12,\n" +
+	"\x0frevision_number\x18\x02 \x01(\x03B\x03\xe0A\x03R\x0erevisionNumber\x12I\n" +
+	"\bsnapshot\x18\x03 \x01(\v2(.google.cloud.redis.cluster.v1.AclPolicyB\x03\xe0A\x03R\bsnapshot\x12@\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"createTime\x12Q\n" +
+	"\x11attached_clusters\x18\x05 \x03(\tB$\xe0A\x03\xfaA\x1e\n" +
+	"\x1credis.googleapis.com/ClusterR\x10attachedClusters:\xaa\x01\xeaA\xa6\x01\n" +
+	"&redis.googleapis.com/AclPolicyRevision\x12Uprojects/{project}/locations/{location}/aclPolicies/{acl_policy}/revisions/{revision}*\x12aclPolicyRevisions2\x11aclPolicyRevision\"C\n" +
+	"\aAclRule\x12\x1f\n" +
+	"\busername\x18\x01 \x01(\tB\x03\xe0A\x02R\busername\x12\x17\n" +
+	"\x04rule\x18\x02 \x01(\tB\x03\xe0A\x02R\x04rule\"\xca\x04\n" +
 	"\x15AutomatedBackupConfig\x12\x8c\x01\n" +
 	"\x18fixed_frequency_schedule\x18\x02 \x01(\v2K.google.cloud.redis.cluster.v1.AutomatedBackupConfig.FixedFrequencyScheduleB\x03\xe0A\x01H\x00R\x16fixedFrequencySchedule\x12\x81\x01\n" +
 	"\x15automated_backup_mode\x18\x01 \x01(\x0e2H.google.cloud.redis.cluster.v1.AutomatedBackupConfig.AutomatedBackupModeB\x03\xe0A\x01R\x13automatedBackupMode\x12A\n" +
@@ -5393,7 +7640,32 @@ const file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDesc = "" 
 	"\x0estatus_message\x18\x05 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12:\n" +
 	"\x16requested_cancellation\x18\x06 \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
 	"\vapi_version\x18\a \x01(\tB\x03\xe0A\x03R\n" +
-	"apiVersion\"\xb3\x04\n" +
+	"apiVersion\"\xf4\x02\n" +
+	"\rTokenAuthUser\x12\x17\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12M\n" +
+	"\x05state\x18\x02 \x01(\x0e22.google.cloud.redis.cluster.v1.TokenAuthUser.StateB\x03\xe0A\x03R\x05state\"T\n" +
+	"\x05State\x12\x15\n" +
+	"\x11STATE_UNSPECIFIED\x10\x00\x12\n" +
+	"\n" +
+	"\x06ACTIVE\x10\x01\x12\f\n" +
+	"\bCREATING\x10\x02\x12\f\n" +
+	"\bUPDATING\x10\x03\x12\f\n" +
+	"\bDELETING\x10\x04:\xa4\x01\xeaA\xa0\x01\n" +
+	"\"redis.googleapis.com/TokenAuthUser\x12[projects/{project}/locations/{location}/clusters/{cluster}/tokenAuthUsers/{token_auth_user}*\x0etokenAuthUsers2\rtokenAuthUser\"\xc7\x03\n" +
+	"\tAuthToken\x12\x17\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x19\n" +
+	"\x05token\x18\x02 \x01(\tB\x03\xe0A\x03R\x05token\x12@\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"createTime\x12I\n" +
+	"\x05state\x18\x04 \x01(\x0e2..google.cloud.redis.cluster.v1.AuthToken.StateB\x03\xe0A\x03R\x05state\"F\n" +
+	"\x05State\x12\x15\n" +
+	"\x11STATE_UNSPECIFIED\x10\x00\x12\n" +
+	"\n" +
+	"\x06ACTIVE\x10\x01\x12\f\n" +
+	"\bCREATING\x10\x02\x12\f\n" +
+	"\bDELETING\x10\x03:\xb0\x01\xeaA\xac\x01\n" +
+	"\x1eredis.googleapis.com/AuthToken\x12sprojects/{project}/locations/{location}/clusters/{cluster}/tokenAuthUsers/{token_auth_user}/authTokens/{auth_token}*\n" +
+	"authTokens2\tauthToken\"\xb3\x04\n" +
 	"\x14CertificateAuthority\x12}\n" +
 	"\x11managed_server_ca\x18\x01 \x01(\v2O.google.cloud.redis.cluster.v1.CertificateAuthority.ManagedCertificateAuthorityH\x00R\x0fmanagedServerCa\x12\x17\n" +
 	"\x04name\x18\x02 \x01(\tB\x03\xe0A\bR\x04name\x1a\xc4\x01\n" +
@@ -5471,11 +7743,12 @@ const file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDesc = "" 
 	"\x13PscConnectionStatus\x12%\n" +
 	"!PSC_CONNECTION_STATUS_UNSPECIFIED\x10\x00\x12 \n" +
 	"\x1cPSC_CONNECTION_STATUS_ACTIVE\x10\x01\x12#\n" +
-	"\x1fPSC_CONNECTION_STATUS_NOT_FOUND\x10\x02*^\n" +
+	"\x1fPSC_CONNECTION_STATUS_NOT_FOUND\x10\x02*x\n" +
 	"\x11AuthorizationMode\x12\x19\n" +
 	"\x15AUTH_MODE_UNSPECIFIED\x10\x00\x12\x16\n" +
 	"\x12AUTH_MODE_IAM_AUTH\x10\x01\x12\x16\n" +
-	"\x12AUTH_MODE_DISABLED\x10\x02*\xde\x01\n" +
+	"\x12AUTH_MODE_DISABLED\x10\x02\x12\x18\n" +
+	"\x14AUTH_MODE_TOKEN_AUTH\x10\x03*\xde\x01\n" +
 	"\bNodeType\x12\x19\n" +
 	"\x15NODE_TYPE_UNSPECIFIED\x10\x00\x12\x1a\n" +
 	"\x16REDIS_SHARED_CORE_NANO\x10\x01\x12\x18\n" +
@@ -5498,17 +7771,28 @@ const file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDesc = "" 
 	"\x1bCONNECTION_TYPE_UNSPECIFIED\x10\x00\x12\x1d\n" +
 	"\x19CONNECTION_TYPE_DISCOVERY\x10\x01\x12\x1b\n" +
 	"\x17CONNECTION_TYPE_PRIMARY\x10\x02\x12\x1a\n" +
-	"\x16CONNECTION_TYPE_READER\x10\x032\xa2\x1a\n" +
+	"\x16CONNECTION_TYPE_READER\x10\x032\x9f4\n" +
 	"\x11CloudRedisCluster\x12\xb6\x01\n" +
-	"\fListClusters\x122.google.cloud.redis.cluster.v1.ListClustersRequest\x1a3.google.cloud.redis.cluster.v1.ListClustersResponse\"=\xdaA\x06parent\x82\xd3\xe4\x93\x02.\x12,/v1/{parent=projects/*/locations/*}/clusters\x12\xa3\x01\n" +
+	"\fListClusters\x122.google.cloud.redis.cluster.v1.ListClustersRequest\x1a3.google.cloud.redis.cluster.v1.ListClustersResponse\"=\xdaA\x06parent\x82\xd3\xe4\x93\x02.\x12,/v1/{parent=projects/*/locations/*}/clusters\x12\xc2\x01\n" +
+	"\x0fListAclPolicies\x125.google.cloud.redis.cluster.v1.ListAclPoliciesRequest\x1a6.google.cloud.redis.cluster.v1.ListAclPoliciesResponse\"@\xdaA\x06parent\x82\xd3\xe4\x93\x021\x12//v1/{parent=projects/*/locations/*}/aclPolicies\x12\xa3\x01\n" +
 	"\n" +
-	"GetCluster\x120.google.cloud.redis.cluster.v1.GetClusterRequest\x1a&.google.cloud.redis.cluster.v1.Cluster\";\xdaA\x04name\x82\xd3\xe4\x93\x02.\x12,/v1/{name=projects/*/locations/*/clusters/*}\x12\xe1\x01\n" +
+	"GetCluster\x120.google.cloud.redis.cluster.v1.GetClusterRequest\x1a&.google.cloud.redis.cluster.v1.Cluster\";\xdaA\x04name\x82\xd3\xe4\x93\x02.\x12,/v1/{name=projects/*/locations/*/clusters/*}\x12\xac\x01\n" +
+	"\fGetAclPolicy\x122.google.cloud.redis.cluster.v1.GetAclPolicyRequest\x1a(.google.cloud.redis.cluster.v1.AclPolicy\">\xdaA\x04name\x82\xd3\xe4\x93\x021\x12//v1/{name=projects/*/locations/*/aclPolicies/*}\x12\xe1\x01\n" +
 	"\rUpdateCluster\x123.google.cloud.redis.cluster.v1.UpdateClusterRequest\x1a\x1d.google.longrunning.Operation\"|\xcaA\x1e\n" +
-	"\aCluster\x12\x13google.protobuf.Any\xdaA\x13cluster,update_mask\x82\xd3\xe4\x93\x02?:\acluster24/v1/{cluster.name=projects/*/locations/*/clusters/*}\x12\xcf\x01\n" +
+	"\aCluster\x12\x13google.protobuf.Any\xdaA\x13cluster,update_mask\x82\xd3\xe4\x93\x02?:\acluster24/v1/{cluster.name=projects/*/locations/*/clusters/*}\x12\xf2\x01\n" +
+	"\x0fUpdateAclPolicy\x125.google.cloud.redis.cluster.v1.UpdateAclPolicyRequest\x1a\x1d.google.longrunning.Operation\"\x88\x01\xcaA\x1e\n" +
+	"\tAclPolicy\x12\x11OperationMetadata\xdaA\x16acl_policy,update_mask\x82\xd3\xe4\x93\x02H:\n" +
+	"acl_policy2:/v1/{acl_policy.name=projects/*/locations/*/aclPolicies/*}\x12\xcf\x01\n" +
 	"\rDeleteCluster\x123.google.cloud.redis.cluster.v1.DeleteClusterRequest\x1a\x1d.google.longrunning.Operation\"j\xcaA,\n" +
-	"\x15google.protobuf.Empty\x12\x13google.protobuf.Any\xdaA\x04name\x82\xd3\xe4\x93\x02.*,/v1/{name=projects/*/locations/*/clusters/*}\x12\xdf\x01\n" +
+	"\x15google.protobuf.Empty\x12\x13google.protobuf.Any\xdaA\x04name\x82\xd3\xe4\x93\x02.*,/v1/{name=projects/*/locations/*/clusters/*}\x12\xd4\x01\n" +
+	"\x0fDeleteAclPolicy\x125.google.cloud.redis.cluster.v1.DeleteAclPolicyRequest\x1a\x1d.google.longrunning.Operation\"k\xcaA*\n" +
+	"\x15google.protobuf.Empty\x12\x11OperationMetadata\xdaA\x04name\x82\xd3\xe4\x93\x021*//v1/{name=projects/*/locations/*/aclPolicies/*}\x12\xd0\x01\n" +
+	"\x14GetAclPolicyRevision\x12:.google.cloud.redis.cluster.v1.GetAclPolicyRevisionRequest\x1a0.google.cloud.redis.cluster.v1.AclPolicyRevision\"J\xdaA\x04name\x82\xd3\xe4\x93\x02=\x12;/v1/{name=projects/*/locations/*/aclPolicies/*/revisions/*}\x12\xe3\x01\n" +
+	"\x16ListAclPolicyRevisions\x12<.google.cloud.redis.cluster.v1.ListAclPolicyRevisionsRequest\x1a=.google.cloud.redis.cluster.v1.ListAclPolicyRevisionsResponse\"L\xdaA\x06parent\x82\xd3\xe4\x93\x02=\x12;/v1/{parent=projects/*/locations/*/aclPolicies/*}/revisions\x12\xdf\x01\n" +
 	"\rCreateCluster\x123.google.cloud.redis.cluster.v1.CreateClusterRequest\x1a\x1d.google.longrunning.Operation\"z\xcaA\x1e\n" +
-	"\aCluster\x12\x13google.protobuf.Any\xdaA\x19parent,cluster,cluster_id\x82\xd3\xe4\x93\x027:\acluster\",/v1/{parent=projects/*/locations/*}/clusters\x12\xed\x01\n" +
+	"\aCluster\x12\x13google.protobuf.Any\xdaA\x19parent,cluster,cluster_id\x82\xd3\xe4\x93\x027:\acluster\",/v1/{parent=projects/*/locations/*}/clusters\x12\xd9\x01\n" +
+	"\x0fCreateAclPolicy\x125.google.cloud.redis.cluster.v1.CreateAclPolicyRequest\x1a(.google.cloud.redis.cluster.v1.AclPolicy\"e\xdaA\x1fparent,acl_policy,acl_policy_id\x82\xd3\xe4\x93\x02=:\n" +
+	"acl_policy\"//v1/{parent=projects/*/locations/*}/aclPolicies\x12\xed\x01\n" +
 	"\x1eGetClusterCertificateAuthority\x12D.google.cloud.redis.cluster.v1.GetClusterCertificateAuthorityRequest\x1a3.google.cloud.redis.cluster.v1.CertificateAuthority\"P\xdaA\x04name\x82\xd3\xe4\x93\x02C\x12A/v1/{name=projects/*/locations/*/clusters/*/certificateAuthority}\x12\x8c\x02\n" +
 	"%GetSharedRegionalCertificateAuthority\x12K.google.cloud.redis.cluster.v1.GetSharedRegionalCertificateAuthorityRequest\x1aA.google.cloud.redis.cluster.v1.SharedRegionalCertificateAuthority\"S\xdaA\x04name\x82\xd3\xe4\x93\x02F\x12D/v1/{name=projects/*/locations/*/sharedRegionalCertificateAuthority}\x12\x9e\x02\n" +
 	"\x1cRescheduleClusterMaintenance\x12B.google.cloud.redis.cluster.v1.RescheduleClusterMaintenanceRequest\x1a\x1d.google.longrunning.Operation\"\x9a\x01\xcaA\x1e\n" +
@@ -5522,7 +7806,19 @@ const file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDesc = "" 
 	"\fExportBackup\x122.google.cloud.redis.cluster.v1.ExportBackupRequest\x1a\x1d.google.longrunning.Operation\"q\xcaA\x1d\n" +
 	"\x06Backup\x12\x13google.protobuf.Any\x82\xd3\xe4\x93\x02K:\x01*\"F/v1/{name=projects/*/locations/*/backupCollections/*/backups/*}:export\x12\xcb\x01\n" +
 	"\rBackupCluster\x123.google.cloud.redis.cluster.v1.BackupClusterRequest\x1a\x1d.google.longrunning.Operation\"f\xcaA\x1e\n" +
-	"\aCluster\x12\x13google.protobuf.Any\xdaA\x04name\x82\xd3\xe4\x93\x028:\x01*\"3/v1/{name=projects/*/locations/*/clusters/*}:backup\x1aH\xcaA\x14redis.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\xde\x06\xeaAn\n" +
+	"\aCluster\x12\x13google.protobuf.Any\xdaA\x04name\x82\xd3\xe4\x93\x028:\x01*\"3/v1/{name=projects/*/locations/*/clusters/*}:backup\x12\xd9\x01\n" +
+	"\x12ListTokenAuthUsers\x128.google.cloud.redis.cluster.v1.ListTokenAuthUsersRequest\x1a9.google.cloud.redis.cluster.v1.ListTokenAuthUsersResponse\"N\xdaA\x06parent\x82\xd3\xe4\x93\x02?\x12=/v1/{parent=projects/*/locations/*/clusters/*}/tokenAuthUsers\x12\xc6\x01\n" +
+	"\x10GetTokenAuthUser\x126.google.cloud.redis.cluster.v1.GetTokenAuthUserRequest\x1a,.google.cloud.redis.cluster.v1.TokenAuthUser\"L\xdaA\x04name\x82\xd3\xe4\x93\x02?\x12=/v1/{name=projects/*/locations/*/clusters/*/tokenAuthUsers/*}\x12\xda\x01\n" +
+	"\x0eListAuthTokens\x124.google.cloud.redis.cluster.v1.ListAuthTokensRequest\x1a5.google.cloud.redis.cluster.v1.ListAuthTokensResponse\"[\xdaA\x06parent\x82\xd3\xe4\x93\x02L\x12J/v1/{parent=projects/*/locations/*/clusters/*/tokenAuthUsers/*}/authTokens\x12\xc7\x01\n" +
+	"\fGetAuthToken\x122.google.cloud.redis.cluster.v1.GetAuthTokenRequest\x1a(.google.cloud.redis.cluster.v1.AuthToken\"Y\xdaA\x04name\x82\xd3\xe4\x93\x02L\x12J/v1/{name=projects/*/locations/*/clusters/*/tokenAuthUsers/*/authTokens/*}\x12\xf0\x01\n" +
+	"\x10AddTokenAuthUser\x126.google.cloud.redis.cluster.v1.AddTokenAuthUserRequest\x1a\x1d.google.longrunning.Operation\"\x84\x01\xcaA\x1c\n" +
+	"\aCluster\x12\x11OperationMetadata\xdaA\x17cluster,token_auth_user\x82\xd3\xe4\x93\x02E:\x01*\"@/v1/{cluster=projects/*/locations/*/clusters/*}:addTokenAuthUser\x12\xea\x01\n" +
+	"\x13DeleteTokenAuthUser\x129.google.cloud.redis.cluster.v1.DeleteTokenAuthUserRequest\x1a\x1d.google.longrunning.Operation\"y\xcaA*\n" +
+	"\x15google.protobuf.Empty\x12\x11OperationMetadata\xdaA\x04name\x82\xd3\xe4\x93\x02?*=/v1/{name=projects/*/locations/*/clusters/*/tokenAuthUsers/*}\x12\x86\x02\n" +
+	"\fAddAuthToken\x122.google.cloud.redis.cluster.v1.AddAuthTokenRequest\x1a\x1d.google.longrunning.Operation\"\xa2\x01\xcaA\"\n" +
+	"\rTokenAuthUser\x12\x11OperationMetadata\xdaA\x1atoken_auth_user,auth_token\x82\xd3\xe4\x93\x02Z:\x01*\"U/v1/{token_auth_user=projects/*/locations/*/clusters/*/tokenAuthUsers/*}:addAuthToken\x12\xf0\x01\n" +
+	"\x0fDeleteAuthToken\x125.google.cloud.redis.cluster.v1.DeleteAuthTokenRequest\x1a\x1d.google.longrunning.Operation\"\x86\x01\xcaA*\n" +
+	"\x15google.protobuf.Empty\x12\x11OperationMetadata\xdaA\x04name\x82\xd3\xe4\x93\x02L*J/v1/{name=projects/*/locations/*/clusters/*/tokenAuthUsers/*/authTokens/*}\x1aH\xcaA\x14redis.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\xde\x06\xeaAn\n" +
 	"%compute.googleapis.com/ForwardingRule\x12Eprojects/{project}/regions/{region}/forwardingRules/{forwarding_rule}\xeaAN\n" +
 	"\x1ecompute.googleapis.com/Network\x12,projects/{project}/global/networks/{network}\xeaAw\n" +
 	"(compute.googleapis.com/ServiceAttachment\x12Kprojects/{project}/regions/{region}/serviceAttachments/{service_attachment}\xeaAx\n" +
@@ -5543,8 +7839,8 @@ func file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescGZIP() 
 	return file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDescData
 }
 
-var file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes = make([]protoimpl.EnumInfo, 18)
-var file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes = make([]protoimpl.MessageInfo, 54)
+var file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_enumTypes = make([]protoimpl.EnumInfo, 22)
+var file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes = make([]protoimpl.MessageInfo, 81)
 var file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_goTypes = []any{
 	(PscConnectionStatus)(0),                                // 0: google.cloud.redis.cluster.v1.PscConnectionStatus
 	(AuthorizationMode)(0),                                  // 1: google.cloud.redis.cluster.v1.AuthorizationMode
@@ -5553,197 +7849,280 @@ var file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_goTypes = []any
 	(ServerCaMode)(0),                                       // 4: google.cloud.redis.cluster.v1.ServerCaMode
 	(ConnectionType)(0),                                     // 5: google.cloud.redis.cluster.v1.ConnectionType
 	(Cluster_State)(0),                                      // 6: google.cloud.redis.cluster.v1.Cluster.State
-	(AutomatedBackupConfig_AutomatedBackupMode)(0),          // 7: google.cloud.redis.cluster.v1.AutomatedBackupConfig.AutomatedBackupMode
-	(Backup_BackupType)(0),                                  // 8: google.cloud.redis.cluster.v1.Backup.BackupType
-	(Backup_State)(0),                                       // 9: google.cloud.redis.cluster.v1.Backup.State
-	(CrossClusterReplicationConfig_ClusterRole)(0),          // 10: google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.ClusterRole
-	(ClusterPersistenceConfig_PersistenceMode)(0),           // 11: google.cloud.redis.cluster.v1.ClusterPersistenceConfig.PersistenceMode
-	(ClusterPersistenceConfig_RDBConfig_SnapshotPeriod)(0),  // 12: google.cloud.redis.cluster.v1.ClusterPersistenceConfig.RDBConfig.SnapshotPeriod
-	(ClusterPersistenceConfig_AOFConfig_AppendFsync)(0),     // 13: google.cloud.redis.cluster.v1.ClusterPersistenceConfig.AOFConfig.AppendFsync
-	(ZoneDistributionConfig_ZoneDistributionMode)(0),        // 14: google.cloud.redis.cluster.v1.ZoneDistributionConfig.ZoneDistributionMode
-	(RescheduleClusterMaintenanceRequest_RescheduleType)(0), // 15: google.cloud.redis.cluster.v1.RescheduleClusterMaintenanceRequest.RescheduleType
-	(EncryptionInfo_Type)(0),                                // 16: google.cloud.redis.cluster.v1.EncryptionInfo.Type
-	(EncryptionInfo_KmsKeyState)(0),                         // 17: google.cloud.redis.cluster.v1.EncryptionInfo.KmsKeyState
-	(*CreateClusterRequest)(nil),                            // 18: google.cloud.redis.cluster.v1.CreateClusterRequest
-	(*ListClustersRequest)(nil),                             // 19: google.cloud.redis.cluster.v1.ListClustersRequest
-	(*ListClustersResponse)(nil),                            // 20: google.cloud.redis.cluster.v1.ListClustersResponse
-	(*UpdateClusterRequest)(nil),                            // 21: google.cloud.redis.cluster.v1.UpdateClusterRequest
-	(*GetClusterRequest)(nil),                               // 22: google.cloud.redis.cluster.v1.GetClusterRequest
-	(*DeleteClusterRequest)(nil),                            // 23: google.cloud.redis.cluster.v1.DeleteClusterRequest
-	(*GetClusterCertificateAuthorityRequest)(nil),           // 24: google.cloud.redis.cluster.v1.GetClusterCertificateAuthorityRequest
-	(*ListBackupCollectionsRequest)(nil),                    // 25: google.cloud.redis.cluster.v1.ListBackupCollectionsRequest
-	(*ListBackupCollectionsResponse)(nil),                   // 26: google.cloud.redis.cluster.v1.ListBackupCollectionsResponse
-	(*GetBackupCollectionRequest)(nil),                      // 27: google.cloud.redis.cluster.v1.GetBackupCollectionRequest
-	(*ListBackupsRequest)(nil),                              // 28: google.cloud.redis.cluster.v1.ListBackupsRequest
-	(*ListBackupsResponse)(nil),                             // 29: google.cloud.redis.cluster.v1.ListBackupsResponse
-	(*GetBackupRequest)(nil),                                // 30: google.cloud.redis.cluster.v1.GetBackupRequest
-	(*DeleteBackupRequest)(nil),                             // 31: google.cloud.redis.cluster.v1.DeleteBackupRequest
-	(*ExportBackupRequest)(nil),                             // 32: google.cloud.redis.cluster.v1.ExportBackupRequest
-	(*BackupClusterRequest)(nil),                            // 33: google.cloud.redis.cluster.v1.BackupClusterRequest
-	(*Cluster)(nil),                                         // 34: google.cloud.redis.cluster.v1.Cluster
-	(*AutomatedBackupConfig)(nil),                           // 35: google.cloud.redis.cluster.v1.AutomatedBackupConfig
-	(*BackupCollection)(nil),                                // 36: google.cloud.redis.cluster.v1.BackupCollection
-	(*Backup)(nil),                                          // 37: google.cloud.redis.cluster.v1.Backup
-	(*BackupFile)(nil),                                      // 38: google.cloud.redis.cluster.v1.BackupFile
-	(*PscServiceAttachment)(nil),                            // 39: google.cloud.redis.cluster.v1.PscServiceAttachment
-	(*CrossClusterReplicationConfig)(nil),                   // 40: google.cloud.redis.cluster.v1.CrossClusterReplicationConfig
-	(*ClusterMaintenancePolicy)(nil),                        // 41: google.cloud.redis.cluster.v1.ClusterMaintenancePolicy
-	(*ClusterWeeklyMaintenanceWindow)(nil),                  // 42: google.cloud.redis.cluster.v1.ClusterWeeklyMaintenanceWindow
-	(*ClusterMaintenanceSchedule)(nil),                      // 43: google.cloud.redis.cluster.v1.ClusterMaintenanceSchedule
-	(*PscConfig)(nil),                                       // 44: google.cloud.redis.cluster.v1.PscConfig
-	(*DiscoveryEndpoint)(nil),                               // 45: google.cloud.redis.cluster.v1.DiscoveryEndpoint
-	(*PscConnection)(nil),                                   // 46: google.cloud.redis.cluster.v1.PscConnection
-	(*ClusterEndpoint)(nil),                                 // 47: google.cloud.redis.cluster.v1.ClusterEndpoint
-	(*ConnectionDetail)(nil),                                // 48: google.cloud.redis.cluster.v1.ConnectionDetail
-	(*PscAutoConnection)(nil),                               // 49: google.cloud.redis.cluster.v1.PscAutoConnection
-	(*SharedRegionalCertificateAuthority)(nil),              // 50: google.cloud.redis.cluster.v1.SharedRegionalCertificateAuthority
-	(*GetSharedRegionalCertificateAuthorityRequest)(nil),    // 51: google.cloud.redis.cluster.v1.GetSharedRegionalCertificateAuthorityRequest
-	(*OperationMetadata)(nil),                               // 52: google.cloud.redis.cluster.v1.OperationMetadata
-	(*CertificateAuthority)(nil),                            // 53: google.cloud.redis.cluster.v1.CertificateAuthority
-	(*ClusterPersistenceConfig)(nil),                        // 54: google.cloud.redis.cluster.v1.ClusterPersistenceConfig
-	(*ZoneDistributionConfig)(nil),                          // 55: google.cloud.redis.cluster.v1.ZoneDistributionConfig
-	(*RescheduleClusterMaintenanceRequest)(nil),             // 56: google.cloud.redis.cluster.v1.RescheduleClusterMaintenanceRequest
-	(*EncryptionInfo)(nil),                                  // 57: google.cloud.redis.cluster.v1.EncryptionInfo
-	(*Cluster_StateInfo)(nil),                               // 58: google.cloud.redis.cluster.v1.Cluster.StateInfo
-	(*Cluster_GcsBackupSource)(nil),                         // 59: google.cloud.redis.cluster.v1.Cluster.GcsBackupSource
-	(*Cluster_ManagedBackupSource)(nil),                     // 60: google.cloud.redis.cluster.v1.Cluster.ManagedBackupSource
-	nil,                                                     // 61: google.cloud.redis.cluster.v1.Cluster.RedisConfigsEntry
-	(*Cluster_StateInfo_UpdateInfo)(nil),                    // 62: google.cloud.redis.cluster.v1.Cluster.StateInfo.UpdateInfo
-	(*AutomatedBackupConfig_FixedFrequencySchedule)(nil),    // 63: google.cloud.redis.cluster.v1.AutomatedBackupConfig.FixedFrequencySchedule
-	(*CrossClusterReplicationConfig_RemoteCluster)(nil),     // 64: google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.RemoteCluster
-	(*CrossClusterReplicationConfig_Membership)(nil),        // 65: google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.Membership
-	(*SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority)(nil),                   // 66: google.cloud.redis.cluster.v1.SharedRegionalCertificateAuthority.RegionalManagedCertificateAuthority
-	(*SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority_RegionalCertChain)(nil), // 67: google.cloud.redis.cluster.v1.SharedRegionalCertificateAuthority.RegionalManagedCertificateAuthority.RegionalCertChain
-	(*CertificateAuthority_ManagedCertificateAuthority)(nil),                                         // 68: google.cloud.redis.cluster.v1.CertificateAuthority.ManagedCertificateAuthority
-	(*CertificateAuthority_ManagedCertificateAuthority_CertChain)(nil),                               // 69: google.cloud.redis.cluster.v1.CertificateAuthority.ManagedCertificateAuthority.CertChain
-	(*ClusterPersistenceConfig_RDBConfig)(nil),                                                       // 70: google.cloud.redis.cluster.v1.ClusterPersistenceConfig.RDBConfig
-	(*ClusterPersistenceConfig_AOFConfig)(nil),                                                       // 71: google.cloud.redis.cluster.v1.ClusterPersistenceConfig.AOFConfig
-	(*fieldmaskpb.FieldMask)(nil),                                                                    // 72: google.protobuf.FieldMask
-	(*durationpb.Duration)(nil),                                                                      // 73: google.protobuf.Duration
-	(*timestamppb.Timestamp)(nil),                                                                    // 74: google.protobuf.Timestamp
-	(dayofweek.DayOfWeek)(0),                                                                         // 75: google.type.DayOfWeek
-	(*timeofday.TimeOfDay)(nil),                                                                      // 76: google.type.TimeOfDay
-	(*longrunningpb.Operation)(nil),                                                                  // 77: google.longrunning.Operation
+	(AclPolicy_State)(0),                                    // 7: google.cloud.redis.cluster.v1.AclPolicy.State
+	(AclPolicyRevisionStatus_State)(0),                      // 8: google.cloud.redis.cluster.v1.AclPolicyRevisionStatus.State
+	(AutomatedBackupConfig_AutomatedBackupMode)(0),          // 9: google.cloud.redis.cluster.v1.AutomatedBackupConfig.AutomatedBackupMode
+	(Backup_BackupType)(0),                                  // 10: google.cloud.redis.cluster.v1.Backup.BackupType
+	(Backup_State)(0),                                       // 11: google.cloud.redis.cluster.v1.Backup.State
+	(CrossClusterReplicationConfig_ClusterRole)(0),          // 12: google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.ClusterRole
+	(TokenAuthUser_State)(0),                                // 13: google.cloud.redis.cluster.v1.TokenAuthUser.State
+	(AuthToken_State)(0),                                    // 14: google.cloud.redis.cluster.v1.AuthToken.State
+	(ClusterPersistenceConfig_PersistenceMode)(0),           // 15: google.cloud.redis.cluster.v1.ClusterPersistenceConfig.PersistenceMode
+	(ClusterPersistenceConfig_RDBConfig_SnapshotPeriod)(0),  // 16: google.cloud.redis.cluster.v1.ClusterPersistenceConfig.RDBConfig.SnapshotPeriod
+	(ClusterPersistenceConfig_AOFConfig_AppendFsync)(0),     // 17: google.cloud.redis.cluster.v1.ClusterPersistenceConfig.AOFConfig.AppendFsync
+	(ZoneDistributionConfig_ZoneDistributionMode)(0),        // 18: google.cloud.redis.cluster.v1.ZoneDistributionConfig.ZoneDistributionMode
+	(RescheduleClusterMaintenanceRequest_RescheduleType)(0), // 19: google.cloud.redis.cluster.v1.RescheduleClusterMaintenanceRequest.RescheduleType
+	(EncryptionInfo_Type)(0),                                // 20: google.cloud.redis.cluster.v1.EncryptionInfo.Type
+	(EncryptionInfo_KmsKeyState)(0),                         // 21: google.cloud.redis.cluster.v1.EncryptionInfo.KmsKeyState
+	(*CreateClusterRequest)(nil),                            // 22: google.cloud.redis.cluster.v1.CreateClusterRequest
+	(*CreateAclPolicyRequest)(nil),                          // 23: google.cloud.redis.cluster.v1.CreateAclPolicyRequest
+	(*ListClustersRequest)(nil),                             // 24: google.cloud.redis.cluster.v1.ListClustersRequest
+	(*ListClustersResponse)(nil),                            // 25: google.cloud.redis.cluster.v1.ListClustersResponse
+	(*ListAclPoliciesRequest)(nil),                          // 26: google.cloud.redis.cluster.v1.ListAclPoliciesRequest
+	(*ListAclPoliciesResponse)(nil),                         // 27: google.cloud.redis.cluster.v1.ListAclPoliciesResponse
+	(*ListAclPolicyRevisionsRequest)(nil),                   // 28: google.cloud.redis.cluster.v1.ListAclPolicyRevisionsRequest
+	(*ListAclPolicyRevisionsResponse)(nil),                  // 29: google.cloud.redis.cluster.v1.ListAclPolicyRevisionsResponse
+	(*UpdateClusterRequest)(nil),                            // 30: google.cloud.redis.cluster.v1.UpdateClusterRequest
+	(*UpdateAclPolicyRequest)(nil),                          // 31: google.cloud.redis.cluster.v1.UpdateAclPolicyRequest
+	(*GetClusterRequest)(nil),                               // 32: google.cloud.redis.cluster.v1.GetClusterRequest
+	(*GetAclPolicyRequest)(nil),                             // 33: google.cloud.redis.cluster.v1.GetAclPolicyRequest
+	(*GetAclPolicyRevisionRequest)(nil),                     // 34: google.cloud.redis.cluster.v1.GetAclPolicyRevisionRequest
+	(*DeleteClusterRequest)(nil),                            // 35: google.cloud.redis.cluster.v1.DeleteClusterRequest
+	(*DeleteAclPolicyRequest)(nil),                          // 36: google.cloud.redis.cluster.v1.DeleteAclPolicyRequest
+	(*GetClusterCertificateAuthorityRequest)(nil),           // 37: google.cloud.redis.cluster.v1.GetClusterCertificateAuthorityRequest
+	(*ListBackupCollectionsRequest)(nil),                    // 38: google.cloud.redis.cluster.v1.ListBackupCollectionsRequest
+	(*ListBackupCollectionsResponse)(nil),                   // 39: google.cloud.redis.cluster.v1.ListBackupCollectionsResponse
+	(*GetBackupCollectionRequest)(nil),                      // 40: google.cloud.redis.cluster.v1.GetBackupCollectionRequest
+	(*ListBackupsRequest)(nil),                              // 41: google.cloud.redis.cluster.v1.ListBackupsRequest
+	(*ListBackupsResponse)(nil),                             // 42: google.cloud.redis.cluster.v1.ListBackupsResponse
+	(*GetBackupRequest)(nil),                                // 43: google.cloud.redis.cluster.v1.GetBackupRequest
+	(*DeleteBackupRequest)(nil),                             // 44: google.cloud.redis.cluster.v1.DeleteBackupRequest
+	(*ExportBackupRequest)(nil),                             // 45: google.cloud.redis.cluster.v1.ExportBackupRequest
+	(*BackupClusterRequest)(nil),                            // 46: google.cloud.redis.cluster.v1.BackupClusterRequest
+	(*ListTokenAuthUsersRequest)(nil),                       // 47: google.cloud.redis.cluster.v1.ListTokenAuthUsersRequest
+	(*ListTokenAuthUsersResponse)(nil),                      // 48: google.cloud.redis.cluster.v1.ListTokenAuthUsersResponse
+	(*GetTokenAuthUserRequest)(nil),                         // 49: google.cloud.redis.cluster.v1.GetTokenAuthUserRequest
+	(*ListAuthTokensRequest)(nil),                           // 50: google.cloud.redis.cluster.v1.ListAuthTokensRequest
+	(*ListAuthTokensResponse)(nil),                          // 51: google.cloud.redis.cluster.v1.ListAuthTokensResponse
+	(*GetAuthTokenRequest)(nil),                             // 52: google.cloud.redis.cluster.v1.GetAuthTokenRequest
+	(*AddTokenAuthUserRequest)(nil),                         // 53: google.cloud.redis.cluster.v1.AddTokenAuthUserRequest
+	(*DeleteTokenAuthUserRequest)(nil),                      // 54: google.cloud.redis.cluster.v1.DeleteTokenAuthUserRequest
+	(*AddAuthTokenRequest)(nil),                             // 55: google.cloud.redis.cluster.v1.AddAuthTokenRequest
+	(*DeleteAuthTokenRequest)(nil),                          // 56: google.cloud.redis.cluster.v1.DeleteAuthTokenRequest
+	(*Cluster)(nil),                                         // 57: google.cloud.redis.cluster.v1.Cluster
+	(*AclPolicyInfo)(nil),                                   // 58: google.cloud.redis.cluster.v1.AclPolicyInfo
+	(*AclPolicy)(nil),                                       // 59: google.cloud.redis.cluster.v1.AclPolicy
+	(*AclPolicyRevisionStatus)(nil),                         // 60: google.cloud.redis.cluster.v1.AclPolicyRevisionStatus
+	(*ClusterAclPolicyAttachment)(nil),                      // 61: google.cloud.redis.cluster.v1.ClusterAclPolicyAttachment
+	(*AclPolicyRevision)(nil),                               // 62: google.cloud.redis.cluster.v1.AclPolicyRevision
+	(*AclRule)(nil),                                         // 63: google.cloud.redis.cluster.v1.AclRule
+	(*AutomatedBackupConfig)(nil),                           // 64: google.cloud.redis.cluster.v1.AutomatedBackupConfig
+	(*BackupCollection)(nil),                                // 65: google.cloud.redis.cluster.v1.BackupCollection
+	(*Backup)(nil),                                          // 66: google.cloud.redis.cluster.v1.Backup
+	(*BackupFile)(nil),                                      // 67: google.cloud.redis.cluster.v1.BackupFile
+	(*PscServiceAttachment)(nil),                            // 68: google.cloud.redis.cluster.v1.PscServiceAttachment
+	(*CrossClusterReplicationConfig)(nil),                   // 69: google.cloud.redis.cluster.v1.CrossClusterReplicationConfig
+	(*ClusterMaintenancePolicy)(nil),                        // 70: google.cloud.redis.cluster.v1.ClusterMaintenancePolicy
+	(*ClusterWeeklyMaintenanceWindow)(nil),                  // 71: google.cloud.redis.cluster.v1.ClusterWeeklyMaintenanceWindow
+	(*ClusterMaintenanceSchedule)(nil),                      // 72: google.cloud.redis.cluster.v1.ClusterMaintenanceSchedule
+	(*PscConfig)(nil),                                       // 73: google.cloud.redis.cluster.v1.PscConfig
+	(*DiscoveryEndpoint)(nil),                               // 74: google.cloud.redis.cluster.v1.DiscoveryEndpoint
+	(*PscConnection)(nil),                                   // 75: google.cloud.redis.cluster.v1.PscConnection
+	(*ClusterEndpoint)(nil),                                 // 76: google.cloud.redis.cluster.v1.ClusterEndpoint
+	(*ConnectionDetail)(nil),                                // 77: google.cloud.redis.cluster.v1.ConnectionDetail
+	(*PscAutoConnection)(nil),                               // 78: google.cloud.redis.cluster.v1.PscAutoConnection
+	(*SharedRegionalCertificateAuthority)(nil),              // 79: google.cloud.redis.cluster.v1.SharedRegionalCertificateAuthority
+	(*GetSharedRegionalCertificateAuthorityRequest)(nil),    // 80: google.cloud.redis.cluster.v1.GetSharedRegionalCertificateAuthorityRequest
+	(*OperationMetadata)(nil),                               // 81: google.cloud.redis.cluster.v1.OperationMetadata
+	(*TokenAuthUser)(nil),                                   // 82: google.cloud.redis.cluster.v1.TokenAuthUser
+	(*AuthToken)(nil),                                       // 83: google.cloud.redis.cluster.v1.AuthToken
+	(*CertificateAuthority)(nil),                            // 84: google.cloud.redis.cluster.v1.CertificateAuthority
+	(*ClusterPersistenceConfig)(nil),                        // 85: google.cloud.redis.cluster.v1.ClusterPersistenceConfig
+	(*ZoneDistributionConfig)(nil),                          // 86: google.cloud.redis.cluster.v1.ZoneDistributionConfig
+	(*RescheduleClusterMaintenanceRequest)(nil),             // 87: google.cloud.redis.cluster.v1.RescheduleClusterMaintenanceRequest
+	(*EncryptionInfo)(nil),                                  // 88: google.cloud.redis.cluster.v1.EncryptionInfo
+	(*Cluster_StateInfo)(nil),                               // 89: google.cloud.redis.cluster.v1.Cluster.StateInfo
+	(*Cluster_GcsBackupSource)(nil),                         // 90: google.cloud.redis.cluster.v1.Cluster.GcsBackupSource
+	(*Cluster_ManagedBackupSource)(nil),                     // 91: google.cloud.redis.cluster.v1.Cluster.ManagedBackupSource
+	nil,                                                     // 92: google.cloud.redis.cluster.v1.Cluster.RedisConfigsEntry
+	(*Cluster_StateInfo_UpdateInfo)(nil),                    // 93: google.cloud.redis.cluster.v1.Cluster.StateInfo.UpdateInfo
+	(*AutomatedBackupConfig_FixedFrequencySchedule)(nil),    // 94: google.cloud.redis.cluster.v1.AutomatedBackupConfig.FixedFrequencySchedule
+	(*CrossClusterReplicationConfig_RemoteCluster)(nil),     // 95: google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.RemoteCluster
+	(*CrossClusterReplicationConfig_Membership)(nil),        // 96: google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.Membership
+	(*SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority)(nil),                   // 97: google.cloud.redis.cluster.v1.SharedRegionalCertificateAuthority.RegionalManagedCertificateAuthority
+	(*SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority_RegionalCertChain)(nil), // 98: google.cloud.redis.cluster.v1.SharedRegionalCertificateAuthority.RegionalManagedCertificateAuthority.RegionalCertChain
+	(*CertificateAuthority_ManagedCertificateAuthority)(nil),                                         // 99: google.cloud.redis.cluster.v1.CertificateAuthority.ManagedCertificateAuthority
+	(*CertificateAuthority_ManagedCertificateAuthority_CertChain)(nil),                               // 100: google.cloud.redis.cluster.v1.CertificateAuthority.ManagedCertificateAuthority.CertChain
+	(*ClusterPersistenceConfig_RDBConfig)(nil),                                                       // 101: google.cloud.redis.cluster.v1.ClusterPersistenceConfig.RDBConfig
+	(*ClusterPersistenceConfig_AOFConfig)(nil),                                                       // 102: google.cloud.redis.cluster.v1.ClusterPersistenceConfig.AOFConfig
+	(*fieldmaskpb.FieldMask)(nil),                                                                    // 103: google.protobuf.FieldMask
+	(*durationpb.Duration)(nil),                                                                      // 104: google.protobuf.Duration
+	(*timestamppb.Timestamp)(nil),                                                                    // 105: google.protobuf.Timestamp
+	(dayofweek.DayOfWeek)(0),                                                                         // 106: google.type.DayOfWeek
+	(*timeofday.TimeOfDay)(nil),                                                                      // 107: google.type.TimeOfDay
+	(*longrunningpb.Operation)(nil),                                                                  // 108: google.longrunning.Operation
 }
 var file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_depIdxs = []int32{
-	34, // 0: google.cloud.redis.cluster.v1.CreateClusterRequest.cluster:type_name -> google.cloud.redis.cluster.v1.Cluster
-	34, // 1: google.cloud.redis.cluster.v1.ListClustersResponse.clusters:type_name -> google.cloud.redis.cluster.v1.Cluster
-	72, // 2: google.cloud.redis.cluster.v1.UpdateClusterRequest.update_mask:type_name -> google.protobuf.FieldMask
-	34, // 3: google.cloud.redis.cluster.v1.UpdateClusterRequest.cluster:type_name -> google.cloud.redis.cluster.v1.Cluster
-	36, // 4: google.cloud.redis.cluster.v1.ListBackupCollectionsResponse.backup_collections:type_name -> google.cloud.redis.cluster.v1.BackupCollection
-	37, // 5: google.cloud.redis.cluster.v1.ListBackupsResponse.backups:type_name -> google.cloud.redis.cluster.v1.Backup
-	73, // 6: google.cloud.redis.cluster.v1.BackupClusterRequest.ttl:type_name -> google.protobuf.Duration
-	59, // 7: google.cloud.redis.cluster.v1.Cluster.gcs_source:type_name -> google.cloud.redis.cluster.v1.Cluster.GcsBackupSource
-	60, // 8: google.cloud.redis.cluster.v1.Cluster.managed_backup_source:type_name -> google.cloud.redis.cluster.v1.Cluster.ManagedBackupSource
-	74, // 9: google.cloud.redis.cluster.v1.Cluster.create_time:type_name -> google.protobuf.Timestamp
-	6,  // 10: google.cloud.redis.cluster.v1.Cluster.state:type_name -> google.cloud.redis.cluster.v1.Cluster.State
-	1,  // 11: google.cloud.redis.cluster.v1.Cluster.authorization_mode:type_name -> google.cloud.redis.cluster.v1.AuthorizationMode
-	3,  // 12: google.cloud.redis.cluster.v1.Cluster.transit_encryption_mode:type_name -> google.cloud.redis.cluster.v1.TransitEncryptionMode
-	44, // 13: google.cloud.redis.cluster.v1.Cluster.psc_configs:type_name -> google.cloud.redis.cluster.v1.PscConfig
-	45, // 14: google.cloud.redis.cluster.v1.Cluster.discovery_endpoints:type_name -> google.cloud.redis.cluster.v1.DiscoveryEndpoint
-	46, // 15: google.cloud.redis.cluster.v1.Cluster.psc_connections:type_name -> google.cloud.redis.cluster.v1.PscConnection
-	58, // 16: google.cloud.redis.cluster.v1.Cluster.state_info:type_name -> google.cloud.redis.cluster.v1.Cluster.StateInfo
-	2,  // 17: google.cloud.redis.cluster.v1.Cluster.node_type:type_name -> google.cloud.redis.cluster.v1.NodeType
-	54, // 18: google.cloud.redis.cluster.v1.Cluster.persistence_config:type_name -> google.cloud.redis.cluster.v1.ClusterPersistenceConfig
-	61, // 19: google.cloud.redis.cluster.v1.Cluster.redis_configs:type_name -> google.cloud.redis.cluster.v1.Cluster.RedisConfigsEntry
-	55, // 20: google.cloud.redis.cluster.v1.Cluster.zone_distribution_config:type_name -> google.cloud.redis.cluster.v1.ZoneDistributionConfig
-	40, // 21: google.cloud.redis.cluster.v1.Cluster.cross_cluster_replication_config:type_name -> google.cloud.redis.cluster.v1.CrossClusterReplicationConfig
-	41, // 22: google.cloud.redis.cluster.v1.Cluster.maintenance_policy:type_name -> google.cloud.redis.cluster.v1.ClusterMaintenancePolicy
-	43, // 23: google.cloud.redis.cluster.v1.Cluster.maintenance_schedule:type_name -> google.cloud.redis.cluster.v1.ClusterMaintenanceSchedule
-	39, // 24: google.cloud.redis.cluster.v1.Cluster.psc_service_attachments:type_name -> google.cloud.redis.cluster.v1.PscServiceAttachment
-	47, // 25: google.cloud.redis.cluster.v1.Cluster.cluster_endpoints:type_name -> google.cloud.redis.cluster.v1.ClusterEndpoint
-	35, // 26: google.cloud.redis.cluster.v1.Cluster.automated_backup_config:type_name -> google.cloud.redis.cluster.v1.AutomatedBackupConfig
-	57, // 27: google.cloud.redis.cluster.v1.Cluster.encryption_info:type_name -> google.cloud.redis.cluster.v1.EncryptionInfo
-	4,  // 28: google.cloud.redis.cluster.v1.Cluster.server_ca_mode:type_name -> google.cloud.redis.cluster.v1.ServerCaMode
-	63, // 29: google.cloud.redis.cluster.v1.AutomatedBackupConfig.fixed_frequency_schedule:type_name -> google.cloud.redis.cluster.v1.AutomatedBackupConfig.FixedFrequencySchedule
-	7,  // 30: google.cloud.redis.cluster.v1.AutomatedBackupConfig.automated_backup_mode:type_name -> google.cloud.redis.cluster.v1.AutomatedBackupConfig.AutomatedBackupMode
-	73, // 31: google.cloud.redis.cluster.v1.AutomatedBackupConfig.retention:type_name -> google.protobuf.Duration
-	74, // 32: google.cloud.redis.cluster.v1.Backup.create_time:type_name -> google.protobuf.Timestamp
-	74, // 33: google.cloud.redis.cluster.v1.Backup.expire_time:type_name -> google.protobuf.Timestamp
-	38, // 34: google.cloud.redis.cluster.v1.Backup.backup_files:type_name -> google.cloud.redis.cluster.v1.BackupFile
-	2,  // 35: google.cloud.redis.cluster.v1.Backup.node_type:type_name -> google.cloud.redis.cluster.v1.NodeType
-	8,  // 36: google.cloud.redis.cluster.v1.Backup.backup_type:type_name -> google.cloud.redis.cluster.v1.Backup.BackupType
-	9,  // 37: google.cloud.redis.cluster.v1.Backup.state:type_name -> google.cloud.redis.cluster.v1.Backup.State
-	57, // 38: google.cloud.redis.cluster.v1.Backup.encryption_info:type_name -> google.cloud.redis.cluster.v1.EncryptionInfo
-	74, // 39: google.cloud.redis.cluster.v1.BackupFile.create_time:type_name -> google.protobuf.Timestamp
-	5,  // 40: google.cloud.redis.cluster.v1.PscServiceAttachment.connection_type:type_name -> google.cloud.redis.cluster.v1.ConnectionType
-	10, // 41: google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.cluster_role:type_name -> google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.ClusterRole
-	64, // 42: google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.primary_cluster:type_name -> google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.RemoteCluster
-	64, // 43: google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.secondary_clusters:type_name -> google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.RemoteCluster
-	74, // 44: google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.update_time:type_name -> google.protobuf.Timestamp
-	65, // 45: google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.membership:type_name -> google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.Membership
-	74, // 46: google.cloud.redis.cluster.v1.ClusterMaintenancePolicy.create_time:type_name -> google.protobuf.Timestamp
-	74, // 47: google.cloud.redis.cluster.v1.ClusterMaintenancePolicy.update_time:type_name -> google.protobuf.Timestamp
-	42, // 48: google.cloud.redis.cluster.v1.ClusterMaintenancePolicy.weekly_maintenance_window:type_name -> google.cloud.redis.cluster.v1.ClusterWeeklyMaintenanceWindow
-	75, // 49: google.cloud.redis.cluster.v1.ClusterWeeklyMaintenanceWindow.day:type_name -> google.type.DayOfWeek
-	76, // 50: google.cloud.redis.cluster.v1.ClusterWeeklyMaintenanceWindow.start_time:type_name -> google.type.TimeOfDay
-	74, // 51: google.cloud.redis.cluster.v1.ClusterMaintenanceSchedule.start_time:type_name -> google.protobuf.Timestamp
-	74, // 52: google.cloud.redis.cluster.v1.ClusterMaintenanceSchedule.end_time:type_name -> google.protobuf.Timestamp
-	44, // 53: google.cloud.redis.cluster.v1.DiscoveryEndpoint.psc_config:type_name -> google.cloud.redis.cluster.v1.PscConfig
-	0,  // 54: google.cloud.redis.cluster.v1.PscConnection.psc_connection_status:type_name -> google.cloud.redis.cluster.v1.PscConnectionStatus
-	5,  // 55: google.cloud.redis.cluster.v1.PscConnection.connection_type:type_name -> google.cloud.redis.cluster.v1.ConnectionType
-	48, // 56: google.cloud.redis.cluster.v1.ClusterEndpoint.connections:type_name -> google.cloud.redis.cluster.v1.ConnectionDetail
-	49, // 57: google.cloud.redis.cluster.v1.ConnectionDetail.psc_auto_connection:type_name -> google.cloud.redis.cluster.v1.PscAutoConnection
-	46, // 58: google.cloud.redis.cluster.v1.ConnectionDetail.psc_connection:type_name -> google.cloud.redis.cluster.v1.PscConnection
-	0,  // 59: google.cloud.redis.cluster.v1.PscAutoConnection.psc_connection_status:type_name -> google.cloud.redis.cluster.v1.PscConnectionStatus
-	5,  // 60: google.cloud.redis.cluster.v1.PscAutoConnection.connection_type:type_name -> google.cloud.redis.cluster.v1.ConnectionType
-	66, // 61: google.cloud.redis.cluster.v1.SharedRegionalCertificateAuthority.managed_server_ca:type_name -> google.cloud.redis.cluster.v1.SharedRegionalCertificateAuthority.RegionalManagedCertificateAuthority
-	74, // 62: google.cloud.redis.cluster.v1.OperationMetadata.create_time:type_name -> google.protobuf.Timestamp
-	74, // 63: google.cloud.redis.cluster.v1.OperationMetadata.end_time:type_name -> google.protobuf.Timestamp
-	68, // 64: google.cloud.redis.cluster.v1.CertificateAuthority.managed_server_ca:type_name -> google.cloud.redis.cluster.v1.CertificateAuthority.ManagedCertificateAuthority
-	11, // 65: google.cloud.redis.cluster.v1.ClusterPersistenceConfig.mode:type_name -> google.cloud.redis.cluster.v1.ClusterPersistenceConfig.PersistenceMode
-	70, // 66: google.cloud.redis.cluster.v1.ClusterPersistenceConfig.rdb_config:type_name -> google.cloud.redis.cluster.v1.ClusterPersistenceConfig.RDBConfig
-	71, // 67: google.cloud.redis.cluster.v1.ClusterPersistenceConfig.aof_config:type_name -> google.cloud.redis.cluster.v1.ClusterPersistenceConfig.AOFConfig
-	14, // 68: google.cloud.redis.cluster.v1.ZoneDistributionConfig.mode:type_name -> google.cloud.redis.cluster.v1.ZoneDistributionConfig.ZoneDistributionMode
-	15, // 69: google.cloud.redis.cluster.v1.RescheduleClusterMaintenanceRequest.reschedule_type:type_name -> google.cloud.redis.cluster.v1.RescheduleClusterMaintenanceRequest.RescheduleType
-	74, // 70: google.cloud.redis.cluster.v1.RescheduleClusterMaintenanceRequest.schedule_time:type_name -> google.protobuf.Timestamp
-	16, // 71: google.cloud.redis.cluster.v1.EncryptionInfo.encryption_type:type_name -> google.cloud.redis.cluster.v1.EncryptionInfo.Type
-	17, // 72: google.cloud.redis.cluster.v1.EncryptionInfo.kms_key_primary_state:type_name -> google.cloud.redis.cluster.v1.EncryptionInfo.KmsKeyState
-	74, // 73: google.cloud.redis.cluster.v1.EncryptionInfo.last_update_time:type_name -> google.protobuf.Timestamp
-	62, // 74: google.cloud.redis.cluster.v1.Cluster.StateInfo.update_info:type_name -> google.cloud.redis.cluster.v1.Cluster.StateInfo.UpdateInfo
-	76, // 75: google.cloud.redis.cluster.v1.AutomatedBackupConfig.FixedFrequencySchedule.start_time:type_name -> google.type.TimeOfDay
-	64, // 76: google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.Membership.primary_cluster:type_name -> google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.RemoteCluster
-	64, // 77: google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.Membership.secondary_clusters:type_name -> google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.RemoteCluster
-	67, // 78: google.cloud.redis.cluster.v1.SharedRegionalCertificateAuthority.RegionalManagedCertificateAuthority.ca_certs:type_name -> google.cloud.redis.cluster.v1.SharedRegionalCertificateAuthority.RegionalManagedCertificateAuthority.RegionalCertChain
-	69, // 79: google.cloud.redis.cluster.v1.CertificateAuthority.ManagedCertificateAuthority.ca_certs:type_name -> google.cloud.redis.cluster.v1.CertificateAuthority.ManagedCertificateAuthority.CertChain
-	12, // 80: google.cloud.redis.cluster.v1.ClusterPersistenceConfig.RDBConfig.rdb_snapshot_period:type_name -> google.cloud.redis.cluster.v1.ClusterPersistenceConfig.RDBConfig.SnapshotPeriod
-	74, // 81: google.cloud.redis.cluster.v1.ClusterPersistenceConfig.RDBConfig.rdb_snapshot_start_time:type_name -> google.protobuf.Timestamp
-	13, // 82: google.cloud.redis.cluster.v1.ClusterPersistenceConfig.AOFConfig.append_fsync:type_name -> google.cloud.redis.cluster.v1.ClusterPersistenceConfig.AOFConfig.AppendFsync
-	19, // 83: google.cloud.redis.cluster.v1.CloudRedisCluster.ListClusters:input_type -> google.cloud.redis.cluster.v1.ListClustersRequest
-	22, // 84: google.cloud.redis.cluster.v1.CloudRedisCluster.GetCluster:input_type -> google.cloud.redis.cluster.v1.GetClusterRequest
-	21, // 85: google.cloud.redis.cluster.v1.CloudRedisCluster.UpdateCluster:input_type -> google.cloud.redis.cluster.v1.UpdateClusterRequest
-	23, // 86: google.cloud.redis.cluster.v1.CloudRedisCluster.DeleteCluster:input_type -> google.cloud.redis.cluster.v1.DeleteClusterRequest
-	18, // 87: google.cloud.redis.cluster.v1.CloudRedisCluster.CreateCluster:input_type -> google.cloud.redis.cluster.v1.CreateClusterRequest
-	24, // 88: google.cloud.redis.cluster.v1.CloudRedisCluster.GetClusterCertificateAuthority:input_type -> google.cloud.redis.cluster.v1.GetClusterCertificateAuthorityRequest
-	51, // 89: google.cloud.redis.cluster.v1.CloudRedisCluster.GetSharedRegionalCertificateAuthority:input_type -> google.cloud.redis.cluster.v1.GetSharedRegionalCertificateAuthorityRequest
-	56, // 90: google.cloud.redis.cluster.v1.CloudRedisCluster.RescheduleClusterMaintenance:input_type -> google.cloud.redis.cluster.v1.RescheduleClusterMaintenanceRequest
-	25, // 91: google.cloud.redis.cluster.v1.CloudRedisCluster.ListBackupCollections:input_type -> google.cloud.redis.cluster.v1.ListBackupCollectionsRequest
-	27, // 92: google.cloud.redis.cluster.v1.CloudRedisCluster.GetBackupCollection:input_type -> google.cloud.redis.cluster.v1.GetBackupCollectionRequest
-	28, // 93: google.cloud.redis.cluster.v1.CloudRedisCluster.ListBackups:input_type -> google.cloud.redis.cluster.v1.ListBackupsRequest
-	30, // 94: google.cloud.redis.cluster.v1.CloudRedisCluster.GetBackup:input_type -> google.cloud.redis.cluster.v1.GetBackupRequest
-	31, // 95: google.cloud.redis.cluster.v1.CloudRedisCluster.DeleteBackup:input_type -> google.cloud.redis.cluster.v1.DeleteBackupRequest
-	32, // 96: google.cloud.redis.cluster.v1.CloudRedisCluster.ExportBackup:input_type -> google.cloud.redis.cluster.v1.ExportBackupRequest
-	33, // 97: google.cloud.redis.cluster.v1.CloudRedisCluster.BackupCluster:input_type -> google.cloud.redis.cluster.v1.BackupClusterRequest
-	20, // 98: google.cloud.redis.cluster.v1.CloudRedisCluster.ListClusters:output_type -> google.cloud.redis.cluster.v1.ListClustersResponse
-	34, // 99: google.cloud.redis.cluster.v1.CloudRedisCluster.GetCluster:output_type -> google.cloud.redis.cluster.v1.Cluster
-	77, // 100: google.cloud.redis.cluster.v1.CloudRedisCluster.UpdateCluster:output_type -> google.longrunning.Operation
-	77, // 101: google.cloud.redis.cluster.v1.CloudRedisCluster.DeleteCluster:output_type -> google.longrunning.Operation
-	77, // 102: google.cloud.redis.cluster.v1.CloudRedisCluster.CreateCluster:output_type -> google.longrunning.Operation
-	53, // 103: google.cloud.redis.cluster.v1.CloudRedisCluster.GetClusterCertificateAuthority:output_type -> google.cloud.redis.cluster.v1.CertificateAuthority
-	50, // 104: google.cloud.redis.cluster.v1.CloudRedisCluster.GetSharedRegionalCertificateAuthority:output_type -> google.cloud.redis.cluster.v1.SharedRegionalCertificateAuthority
-	77, // 105: google.cloud.redis.cluster.v1.CloudRedisCluster.RescheduleClusterMaintenance:output_type -> google.longrunning.Operation
-	26, // 106: google.cloud.redis.cluster.v1.CloudRedisCluster.ListBackupCollections:output_type -> google.cloud.redis.cluster.v1.ListBackupCollectionsResponse
-	36, // 107: google.cloud.redis.cluster.v1.CloudRedisCluster.GetBackupCollection:output_type -> google.cloud.redis.cluster.v1.BackupCollection
-	29, // 108: google.cloud.redis.cluster.v1.CloudRedisCluster.ListBackups:output_type -> google.cloud.redis.cluster.v1.ListBackupsResponse
-	37, // 109: google.cloud.redis.cluster.v1.CloudRedisCluster.GetBackup:output_type -> google.cloud.redis.cluster.v1.Backup
-	77, // 110: google.cloud.redis.cluster.v1.CloudRedisCluster.DeleteBackup:output_type -> google.longrunning.Operation
-	77, // 111: google.cloud.redis.cluster.v1.CloudRedisCluster.ExportBackup:output_type -> google.longrunning.Operation
-	77, // 112: google.cloud.redis.cluster.v1.CloudRedisCluster.BackupCluster:output_type -> google.longrunning.Operation
-	98, // [98:113] is the sub-list for method output_type
-	83, // [83:98] is the sub-list for method input_type
-	83, // [83:83] is the sub-list for extension type_name
-	83, // [83:83] is the sub-list for extension extendee
-	0,  // [0:83] is the sub-list for field type_name
+	57,  // 0: google.cloud.redis.cluster.v1.CreateClusterRequest.cluster:type_name -> google.cloud.redis.cluster.v1.Cluster
+	59,  // 1: google.cloud.redis.cluster.v1.CreateAclPolicyRequest.acl_policy:type_name -> google.cloud.redis.cluster.v1.AclPolicy
+	57,  // 2: google.cloud.redis.cluster.v1.ListClustersResponse.clusters:type_name -> google.cloud.redis.cluster.v1.Cluster
+	59,  // 3: google.cloud.redis.cluster.v1.ListAclPoliciesResponse.acl_policies:type_name -> google.cloud.redis.cluster.v1.AclPolicy
+	62,  // 4: google.cloud.redis.cluster.v1.ListAclPolicyRevisionsResponse.acl_policy_revisions:type_name -> google.cloud.redis.cluster.v1.AclPolicyRevision
+	103, // 5: google.cloud.redis.cluster.v1.UpdateClusterRequest.update_mask:type_name -> google.protobuf.FieldMask
+	57,  // 6: google.cloud.redis.cluster.v1.UpdateClusterRequest.cluster:type_name -> google.cloud.redis.cluster.v1.Cluster
+	59,  // 7: google.cloud.redis.cluster.v1.UpdateAclPolicyRequest.acl_policy:type_name -> google.cloud.redis.cluster.v1.AclPolicy
+	103, // 8: google.cloud.redis.cluster.v1.UpdateAclPolicyRequest.update_mask:type_name -> google.protobuf.FieldMask
+	65,  // 9: google.cloud.redis.cluster.v1.ListBackupCollectionsResponse.backup_collections:type_name -> google.cloud.redis.cluster.v1.BackupCollection
+	66,  // 10: google.cloud.redis.cluster.v1.ListBackupsResponse.backups:type_name -> google.cloud.redis.cluster.v1.Backup
+	104, // 11: google.cloud.redis.cluster.v1.BackupClusterRequest.ttl:type_name -> google.protobuf.Duration
+	82,  // 12: google.cloud.redis.cluster.v1.ListTokenAuthUsersResponse.token_auth_users:type_name -> google.cloud.redis.cluster.v1.TokenAuthUser
+	83,  // 13: google.cloud.redis.cluster.v1.ListAuthTokensResponse.auth_tokens:type_name -> google.cloud.redis.cluster.v1.AuthToken
+	83,  // 14: google.cloud.redis.cluster.v1.AddAuthTokenRequest.auth_token:type_name -> google.cloud.redis.cluster.v1.AuthToken
+	90,  // 15: google.cloud.redis.cluster.v1.Cluster.gcs_source:type_name -> google.cloud.redis.cluster.v1.Cluster.GcsBackupSource
+	91,  // 16: google.cloud.redis.cluster.v1.Cluster.managed_backup_source:type_name -> google.cloud.redis.cluster.v1.Cluster.ManagedBackupSource
+	105, // 17: google.cloud.redis.cluster.v1.Cluster.create_time:type_name -> google.protobuf.Timestamp
+	6,   // 18: google.cloud.redis.cluster.v1.Cluster.state:type_name -> google.cloud.redis.cluster.v1.Cluster.State
+	1,   // 19: google.cloud.redis.cluster.v1.Cluster.authorization_mode:type_name -> google.cloud.redis.cluster.v1.AuthorizationMode
+	3,   // 20: google.cloud.redis.cluster.v1.Cluster.transit_encryption_mode:type_name -> google.cloud.redis.cluster.v1.TransitEncryptionMode
+	73,  // 21: google.cloud.redis.cluster.v1.Cluster.psc_configs:type_name -> google.cloud.redis.cluster.v1.PscConfig
+	74,  // 22: google.cloud.redis.cluster.v1.Cluster.discovery_endpoints:type_name -> google.cloud.redis.cluster.v1.DiscoveryEndpoint
+	75,  // 23: google.cloud.redis.cluster.v1.Cluster.psc_connections:type_name -> google.cloud.redis.cluster.v1.PscConnection
+	89,  // 24: google.cloud.redis.cluster.v1.Cluster.state_info:type_name -> google.cloud.redis.cluster.v1.Cluster.StateInfo
+	2,   // 25: google.cloud.redis.cluster.v1.Cluster.node_type:type_name -> google.cloud.redis.cluster.v1.NodeType
+	85,  // 26: google.cloud.redis.cluster.v1.Cluster.persistence_config:type_name -> google.cloud.redis.cluster.v1.ClusterPersistenceConfig
+	92,  // 27: google.cloud.redis.cluster.v1.Cluster.redis_configs:type_name -> google.cloud.redis.cluster.v1.Cluster.RedisConfigsEntry
+	86,  // 28: google.cloud.redis.cluster.v1.Cluster.zone_distribution_config:type_name -> google.cloud.redis.cluster.v1.ZoneDistributionConfig
+	69,  // 29: google.cloud.redis.cluster.v1.Cluster.cross_cluster_replication_config:type_name -> google.cloud.redis.cluster.v1.CrossClusterReplicationConfig
+	70,  // 30: google.cloud.redis.cluster.v1.Cluster.maintenance_policy:type_name -> google.cloud.redis.cluster.v1.ClusterMaintenancePolicy
+	72,  // 31: google.cloud.redis.cluster.v1.Cluster.maintenance_schedule:type_name -> google.cloud.redis.cluster.v1.ClusterMaintenanceSchedule
+	68,  // 32: google.cloud.redis.cluster.v1.Cluster.psc_service_attachments:type_name -> google.cloud.redis.cluster.v1.PscServiceAttachment
+	76,  // 33: google.cloud.redis.cluster.v1.Cluster.cluster_endpoints:type_name -> google.cloud.redis.cluster.v1.ClusterEndpoint
+	64,  // 34: google.cloud.redis.cluster.v1.Cluster.automated_backup_config:type_name -> google.cloud.redis.cluster.v1.AutomatedBackupConfig
+	88,  // 35: google.cloud.redis.cluster.v1.Cluster.encryption_info:type_name -> google.cloud.redis.cluster.v1.EncryptionInfo
+	4,   // 36: google.cloud.redis.cluster.v1.Cluster.server_ca_mode:type_name -> google.cloud.redis.cluster.v1.ServerCaMode
+	58,  // 37: google.cloud.redis.cluster.v1.Cluster.acl_policy_info:type_name -> google.cloud.redis.cluster.v1.AclPolicyInfo
+	60,  // 38: google.cloud.redis.cluster.v1.AclPolicyInfo.acl_policy_revision_statuses:type_name -> google.cloud.redis.cluster.v1.AclPolicyRevisionStatus
+	63,  // 39: google.cloud.redis.cluster.v1.AclPolicy.rules:type_name -> google.cloud.redis.cluster.v1.AclRule
+	7,   // 40: google.cloud.redis.cluster.v1.AclPolicy.state:type_name -> google.cloud.redis.cluster.v1.AclPolicy.State
+	61,  // 41: google.cloud.redis.cluster.v1.AclPolicy.cluster_acl_policy_attachments:type_name -> google.cloud.redis.cluster.v1.ClusterAclPolicyAttachment
+	105, // 42: google.cloud.redis.cluster.v1.AclPolicy.create_time:type_name -> google.protobuf.Timestamp
+	105, // 43: google.cloud.redis.cluster.v1.AclPolicy.update_time:type_name -> google.protobuf.Timestamp
+	8,   // 44: google.cloud.redis.cluster.v1.AclPolicyRevisionStatus.state:type_name -> google.cloud.redis.cluster.v1.AclPolicyRevisionStatus.State
+	60,  // 45: google.cloud.redis.cluster.v1.ClusterAclPolicyAttachment.acl_policy_revision_statuses:type_name -> google.cloud.redis.cluster.v1.AclPolicyRevisionStatus
+	59,  // 46: google.cloud.redis.cluster.v1.AclPolicyRevision.snapshot:type_name -> google.cloud.redis.cluster.v1.AclPolicy
+	105, // 47: google.cloud.redis.cluster.v1.AclPolicyRevision.create_time:type_name -> google.protobuf.Timestamp
+	94,  // 48: google.cloud.redis.cluster.v1.AutomatedBackupConfig.fixed_frequency_schedule:type_name -> google.cloud.redis.cluster.v1.AutomatedBackupConfig.FixedFrequencySchedule
+	9,   // 49: google.cloud.redis.cluster.v1.AutomatedBackupConfig.automated_backup_mode:type_name -> google.cloud.redis.cluster.v1.AutomatedBackupConfig.AutomatedBackupMode
+	104, // 50: google.cloud.redis.cluster.v1.AutomatedBackupConfig.retention:type_name -> google.protobuf.Duration
+	105, // 51: google.cloud.redis.cluster.v1.Backup.create_time:type_name -> google.protobuf.Timestamp
+	105, // 52: google.cloud.redis.cluster.v1.Backup.expire_time:type_name -> google.protobuf.Timestamp
+	67,  // 53: google.cloud.redis.cluster.v1.Backup.backup_files:type_name -> google.cloud.redis.cluster.v1.BackupFile
+	2,   // 54: google.cloud.redis.cluster.v1.Backup.node_type:type_name -> google.cloud.redis.cluster.v1.NodeType
+	10,  // 55: google.cloud.redis.cluster.v1.Backup.backup_type:type_name -> google.cloud.redis.cluster.v1.Backup.BackupType
+	11,  // 56: google.cloud.redis.cluster.v1.Backup.state:type_name -> google.cloud.redis.cluster.v1.Backup.State
+	88,  // 57: google.cloud.redis.cluster.v1.Backup.encryption_info:type_name -> google.cloud.redis.cluster.v1.EncryptionInfo
+	105, // 58: google.cloud.redis.cluster.v1.BackupFile.create_time:type_name -> google.protobuf.Timestamp
+	5,   // 59: google.cloud.redis.cluster.v1.PscServiceAttachment.connection_type:type_name -> google.cloud.redis.cluster.v1.ConnectionType
+	12,  // 60: google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.cluster_role:type_name -> google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.ClusterRole
+	95,  // 61: google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.primary_cluster:type_name -> google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.RemoteCluster
+	95,  // 62: google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.secondary_clusters:type_name -> google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.RemoteCluster
+	105, // 63: google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.update_time:type_name -> google.protobuf.Timestamp
+	96,  // 64: google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.membership:type_name -> google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.Membership
+	105, // 65: google.cloud.redis.cluster.v1.ClusterMaintenancePolicy.create_time:type_name -> google.protobuf.Timestamp
+	105, // 66: google.cloud.redis.cluster.v1.ClusterMaintenancePolicy.update_time:type_name -> google.protobuf.Timestamp
+	71,  // 67: google.cloud.redis.cluster.v1.ClusterMaintenancePolicy.weekly_maintenance_window:type_name -> google.cloud.redis.cluster.v1.ClusterWeeklyMaintenanceWindow
+	106, // 68: google.cloud.redis.cluster.v1.ClusterWeeklyMaintenanceWindow.day:type_name -> google.type.DayOfWeek
+	107, // 69: google.cloud.redis.cluster.v1.ClusterWeeklyMaintenanceWindow.start_time:type_name -> google.type.TimeOfDay
+	105, // 70: google.cloud.redis.cluster.v1.ClusterMaintenanceSchedule.start_time:type_name -> google.protobuf.Timestamp
+	105, // 71: google.cloud.redis.cluster.v1.ClusterMaintenanceSchedule.end_time:type_name -> google.protobuf.Timestamp
+	73,  // 72: google.cloud.redis.cluster.v1.DiscoveryEndpoint.psc_config:type_name -> google.cloud.redis.cluster.v1.PscConfig
+	0,   // 73: google.cloud.redis.cluster.v1.PscConnection.psc_connection_status:type_name -> google.cloud.redis.cluster.v1.PscConnectionStatus
+	5,   // 74: google.cloud.redis.cluster.v1.PscConnection.connection_type:type_name -> google.cloud.redis.cluster.v1.ConnectionType
+	77,  // 75: google.cloud.redis.cluster.v1.ClusterEndpoint.connections:type_name -> google.cloud.redis.cluster.v1.ConnectionDetail
+	78,  // 76: google.cloud.redis.cluster.v1.ConnectionDetail.psc_auto_connection:type_name -> google.cloud.redis.cluster.v1.PscAutoConnection
+	75,  // 77: google.cloud.redis.cluster.v1.ConnectionDetail.psc_connection:type_name -> google.cloud.redis.cluster.v1.PscConnection
+	0,   // 78: google.cloud.redis.cluster.v1.PscAutoConnection.psc_connection_status:type_name -> google.cloud.redis.cluster.v1.PscConnectionStatus
+	5,   // 79: google.cloud.redis.cluster.v1.PscAutoConnection.connection_type:type_name -> google.cloud.redis.cluster.v1.ConnectionType
+	97,  // 80: google.cloud.redis.cluster.v1.SharedRegionalCertificateAuthority.managed_server_ca:type_name -> google.cloud.redis.cluster.v1.SharedRegionalCertificateAuthority.RegionalManagedCertificateAuthority
+	105, // 81: google.cloud.redis.cluster.v1.OperationMetadata.create_time:type_name -> google.protobuf.Timestamp
+	105, // 82: google.cloud.redis.cluster.v1.OperationMetadata.end_time:type_name -> google.protobuf.Timestamp
+	13,  // 83: google.cloud.redis.cluster.v1.TokenAuthUser.state:type_name -> google.cloud.redis.cluster.v1.TokenAuthUser.State
+	105, // 84: google.cloud.redis.cluster.v1.AuthToken.create_time:type_name -> google.protobuf.Timestamp
+	14,  // 85: google.cloud.redis.cluster.v1.AuthToken.state:type_name -> google.cloud.redis.cluster.v1.AuthToken.State
+	99,  // 86: google.cloud.redis.cluster.v1.CertificateAuthority.managed_server_ca:type_name -> google.cloud.redis.cluster.v1.CertificateAuthority.ManagedCertificateAuthority
+	15,  // 87: google.cloud.redis.cluster.v1.ClusterPersistenceConfig.mode:type_name -> google.cloud.redis.cluster.v1.ClusterPersistenceConfig.PersistenceMode
+	101, // 88: google.cloud.redis.cluster.v1.ClusterPersistenceConfig.rdb_config:type_name -> google.cloud.redis.cluster.v1.ClusterPersistenceConfig.RDBConfig
+	102, // 89: google.cloud.redis.cluster.v1.ClusterPersistenceConfig.aof_config:type_name -> google.cloud.redis.cluster.v1.ClusterPersistenceConfig.AOFConfig
+	18,  // 90: google.cloud.redis.cluster.v1.ZoneDistributionConfig.mode:type_name -> google.cloud.redis.cluster.v1.ZoneDistributionConfig.ZoneDistributionMode
+	19,  // 91: google.cloud.redis.cluster.v1.RescheduleClusterMaintenanceRequest.reschedule_type:type_name -> google.cloud.redis.cluster.v1.RescheduleClusterMaintenanceRequest.RescheduleType
+	105, // 92: google.cloud.redis.cluster.v1.RescheduleClusterMaintenanceRequest.schedule_time:type_name -> google.protobuf.Timestamp
+	20,  // 93: google.cloud.redis.cluster.v1.EncryptionInfo.encryption_type:type_name -> google.cloud.redis.cluster.v1.EncryptionInfo.Type
+	21,  // 94: google.cloud.redis.cluster.v1.EncryptionInfo.kms_key_primary_state:type_name -> google.cloud.redis.cluster.v1.EncryptionInfo.KmsKeyState
+	105, // 95: google.cloud.redis.cluster.v1.EncryptionInfo.last_update_time:type_name -> google.protobuf.Timestamp
+	93,  // 96: google.cloud.redis.cluster.v1.Cluster.StateInfo.update_info:type_name -> google.cloud.redis.cluster.v1.Cluster.StateInfo.UpdateInfo
+	107, // 97: google.cloud.redis.cluster.v1.AutomatedBackupConfig.FixedFrequencySchedule.start_time:type_name -> google.type.TimeOfDay
+	95,  // 98: google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.Membership.primary_cluster:type_name -> google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.RemoteCluster
+	95,  // 99: google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.Membership.secondary_clusters:type_name -> google.cloud.redis.cluster.v1.CrossClusterReplicationConfig.RemoteCluster
+	98,  // 100: google.cloud.redis.cluster.v1.SharedRegionalCertificateAuthority.RegionalManagedCertificateAuthority.ca_certs:type_name -> google.cloud.redis.cluster.v1.SharedRegionalCertificateAuthority.RegionalManagedCertificateAuthority.RegionalCertChain
+	100, // 101: google.cloud.redis.cluster.v1.CertificateAuthority.ManagedCertificateAuthority.ca_certs:type_name -> google.cloud.redis.cluster.v1.CertificateAuthority.ManagedCertificateAuthority.CertChain
+	16,  // 102: google.cloud.redis.cluster.v1.ClusterPersistenceConfig.RDBConfig.rdb_snapshot_period:type_name -> google.cloud.redis.cluster.v1.ClusterPersistenceConfig.RDBConfig.SnapshotPeriod
+	105, // 103: google.cloud.redis.cluster.v1.ClusterPersistenceConfig.RDBConfig.rdb_snapshot_start_time:type_name -> google.protobuf.Timestamp
+	17,  // 104: google.cloud.redis.cluster.v1.ClusterPersistenceConfig.AOFConfig.append_fsync:type_name -> google.cloud.redis.cluster.v1.ClusterPersistenceConfig.AOFConfig.AppendFsync
+	24,  // 105: google.cloud.redis.cluster.v1.CloudRedisCluster.ListClusters:input_type -> google.cloud.redis.cluster.v1.ListClustersRequest
+	26,  // 106: google.cloud.redis.cluster.v1.CloudRedisCluster.ListAclPolicies:input_type -> google.cloud.redis.cluster.v1.ListAclPoliciesRequest
+	32,  // 107: google.cloud.redis.cluster.v1.CloudRedisCluster.GetCluster:input_type -> google.cloud.redis.cluster.v1.GetClusterRequest
+	33,  // 108: google.cloud.redis.cluster.v1.CloudRedisCluster.GetAclPolicy:input_type -> google.cloud.redis.cluster.v1.GetAclPolicyRequest
+	30,  // 109: google.cloud.redis.cluster.v1.CloudRedisCluster.UpdateCluster:input_type -> google.cloud.redis.cluster.v1.UpdateClusterRequest
+	31,  // 110: google.cloud.redis.cluster.v1.CloudRedisCluster.UpdateAclPolicy:input_type -> google.cloud.redis.cluster.v1.UpdateAclPolicyRequest
+	35,  // 111: google.cloud.redis.cluster.v1.CloudRedisCluster.DeleteCluster:input_type -> google.cloud.redis.cluster.v1.DeleteClusterRequest
+	36,  // 112: google.cloud.redis.cluster.v1.CloudRedisCluster.DeleteAclPolicy:input_type -> google.cloud.redis.cluster.v1.DeleteAclPolicyRequest
+	34,  // 113: google.cloud.redis.cluster.v1.CloudRedisCluster.GetAclPolicyRevision:input_type -> google.cloud.redis.cluster.v1.GetAclPolicyRevisionRequest
+	28,  // 114: google.cloud.redis.cluster.v1.CloudRedisCluster.ListAclPolicyRevisions:input_type -> google.cloud.redis.cluster.v1.ListAclPolicyRevisionsRequest
+	22,  // 115: google.cloud.redis.cluster.v1.CloudRedisCluster.CreateCluster:input_type -> google.cloud.redis.cluster.v1.CreateClusterRequest
+	23,  // 116: google.cloud.redis.cluster.v1.CloudRedisCluster.CreateAclPolicy:input_type -> google.cloud.redis.cluster.v1.CreateAclPolicyRequest
+	37,  // 117: google.cloud.redis.cluster.v1.CloudRedisCluster.GetClusterCertificateAuthority:input_type -> google.cloud.redis.cluster.v1.GetClusterCertificateAuthorityRequest
+	80,  // 118: google.cloud.redis.cluster.v1.CloudRedisCluster.GetSharedRegionalCertificateAuthority:input_type -> google.cloud.redis.cluster.v1.GetSharedRegionalCertificateAuthorityRequest
+	87,  // 119: google.cloud.redis.cluster.v1.CloudRedisCluster.RescheduleClusterMaintenance:input_type -> google.cloud.redis.cluster.v1.RescheduleClusterMaintenanceRequest
+	38,  // 120: google.cloud.redis.cluster.v1.CloudRedisCluster.ListBackupCollections:input_type -> google.cloud.redis.cluster.v1.ListBackupCollectionsRequest
+	40,  // 121: google.cloud.redis.cluster.v1.CloudRedisCluster.GetBackupCollection:input_type -> google.cloud.redis.cluster.v1.GetBackupCollectionRequest
+	41,  // 122: google.cloud.redis.cluster.v1.CloudRedisCluster.ListBackups:input_type -> google.cloud.redis.cluster.v1.ListBackupsRequest
+	43,  // 123: google.cloud.redis.cluster.v1.CloudRedisCluster.GetBackup:input_type -> google.cloud.redis.cluster.v1.GetBackupRequest
+	44,  // 124: google.cloud.redis.cluster.v1.CloudRedisCluster.DeleteBackup:input_type -> google.cloud.redis.cluster.v1.DeleteBackupRequest
+	45,  // 125: google.cloud.redis.cluster.v1.CloudRedisCluster.ExportBackup:input_type -> google.cloud.redis.cluster.v1.ExportBackupRequest
+	46,  // 126: google.cloud.redis.cluster.v1.CloudRedisCluster.BackupCluster:input_type -> google.cloud.redis.cluster.v1.BackupClusterRequest
+	47,  // 127: google.cloud.redis.cluster.v1.CloudRedisCluster.ListTokenAuthUsers:input_type -> google.cloud.redis.cluster.v1.ListTokenAuthUsersRequest
+	49,  // 128: google.cloud.redis.cluster.v1.CloudRedisCluster.GetTokenAuthUser:input_type -> google.cloud.redis.cluster.v1.GetTokenAuthUserRequest
+	50,  // 129: google.cloud.redis.cluster.v1.CloudRedisCluster.ListAuthTokens:input_type -> google.cloud.redis.cluster.v1.ListAuthTokensRequest
+	52,  // 130: google.cloud.redis.cluster.v1.CloudRedisCluster.GetAuthToken:input_type -> google.cloud.redis.cluster.v1.GetAuthTokenRequest
+	53,  // 131: google.cloud.redis.cluster.v1.CloudRedisCluster.AddTokenAuthUser:input_type -> google.cloud.redis.cluster.v1.AddTokenAuthUserRequest
+	54,  // 132: google.cloud.redis.cluster.v1.CloudRedisCluster.DeleteTokenAuthUser:input_type -> google.cloud.redis.cluster.v1.DeleteTokenAuthUserRequest
+	55,  // 133: google.cloud.redis.cluster.v1.CloudRedisCluster.AddAuthToken:input_type -> google.cloud.redis.cluster.v1.AddAuthTokenRequest
+	56,  // 134: google.cloud.redis.cluster.v1.CloudRedisCluster.DeleteAuthToken:input_type -> google.cloud.redis.cluster.v1.DeleteAuthTokenRequest
+	25,  // 135: google.cloud.redis.cluster.v1.CloudRedisCluster.ListClusters:output_type -> google.cloud.redis.cluster.v1.ListClustersResponse
+	27,  // 136: google.cloud.redis.cluster.v1.CloudRedisCluster.ListAclPolicies:output_type -> google.cloud.redis.cluster.v1.ListAclPoliciesResponse
+	57,  // 137: google.cloud.redis.cluster.v1.CloudRedisCluster.GetCluster:output_type -> google.cloud.redis.cluster.v1.Cluster
+	59,  // 138: google.cloud.redis.cluster.v1.CloudRedisCluster.GetAclPolicy:output_type -> google.cloud.redis.cluster.v1.AclPolicy
+	108, // 139: google.cloud.redis.cluster.v1.CloudRedisCluster.UpdateCluster:output_type -> google.longrunning.Operation
+	108, // 140: google.cloud.redis.cluster.v1.CloudRedisCluster.UpdateAclPolicy:output_type -> google.longrunning.Operation
+	108, // 141: google.cloud.redis.cluster.v1.CloudRedisCluster.DeleteCluster:output_type -> google.longrunning.Operation
+	108, // 142: google.cloud.redis.cluster.v1.CloudRedisCluster.DeleteAclPolicy:output_type -> google.longrunning.Operation
+	62,  // 143: google.cloud.redis.cluster.v1.CloudRedisCluster.GetAclPolicyRevision:output_type -> google.cloud.redis.cluster.v1.AclPolicyRevision
+	29,  // 144: google.cloud.redis.cluster.v1.CloudRedisCluster.ListAclPolicyRevisions:output_type -> google.cloud.redis.cluster.v1.ListAclPolicyRevisionsResponse
+	108, // 145: google.cloud.redis.cluster.v1.CloudRedisCluster.CreateCluster:output_type -> google.longrunning.Operation
+	59,  // 146: google.cloud.redis.cluster.v1.CloudRedisCluster.CreateAclPolicy:output_type -> google.cloud.redis.cluster.v1.AclPolicy
+	84,  // 147: google.cloud.redis.cluster.v1.CloudRedisCluster.GetClusterCertificateAuthority:output_type -> google.cloud.redis.cluster.v1.CertificateAuthority
+	79,  // 148: google.cloud.redis.cluster.v1.CloudRedisCluster.GetSharedRegionalCertificateAuthority:output_type -> google.cloud.redis.cluster.v1.SharedRegionalCertificateAuthority
+	108, // 149: google.cloud.redis.cluster.v1.CloudRedisCluster.RescheduleClusterMaintenance:output_type -> google.longrunning.Operation
+	39,  // 150: google.cloud.redis.cluster.v1.CloudRedisCluster.ListBackupCollections:output_type -> google.cloud.redis.cluster.v1.ListBackupCollectionsResponse
+	65,  // 151: google.cloud.redis.cluster.v1.CloudRedisCluster.GetBackupCollection:output_type -> google.cloud.redis.cluster.v1.BackupCollection
+	42,  // 152: google.cloud.redis.cluster.v1.CloudRedisCluster.ListBackups:output_type -> google.cloud.redis.cluster.v1.ListBackupsResponse
+	66,  // 153: google.cloud.redis.cluster.v1.CloudRedisCluster.GetBackup:output_type -> google.cloud.redis.cluster.v1.Backup
+	108, // 154: google.cloud.redis.cluster.v1.CloudRedisCluster.DeleteBackup:output_type -> google.longrunning.Operation
+	108, // 155: google.cloud.redis.cluster.v1.CloudRedisCluster.ExportBackup:output_type -> google.longrunning.Operation
+	108, // 156: google.cloud.redis.cluster.v1.CloudRedisCluster.BackupCluster:output_type -> google.longrunning.Operation
+	48,  // 157: google.cloud.redis.cluster.v1.CloudRedisCluster.ListTokenAuthUsers:output_type -> google.cloud.redis.cluster.v1.ListTokenAuthUsersResponse
+	82,  // 158: google.cloud.redis.cluster.v1.CloudRedisCluster.GetTokenAuthUser:output_type -> google.cloud.redis.cluster.v1.TokenAuthUser
+	51,  // 159: google.cloud.redis.cluster.v1.CloudRedisCluster.ListAuthTokens:output_type -> google.cloud.redis.cluster.v1.ListAuthTokensResponse
+	83,  // 160: google.cloud.redis.cluster.v1.CloudRedisCluster.GetAuthToken:output_type -> google.cloud.redis.cluster.v1.AuthToken
+	108, // 161: google.cloud.redis.cluster.v1.CloudRedisCluster.AddTokenAuthUser:output_type -> google.longrunning.Operation
+	108, // 162: google.cloud.redis.cluster.v1.CloudRedisCluster.DeleteTokenAuthUser:output_type -> google.longrunning.Operation
+	108, // 163: google.cloud.redis.cluster.v1.CloudRedisCluster.AddAuthToken:output_type -> google.longrunning.Operation
+	108, // 164: google.cloud.redis.cluster.v1.CloudRedisCluster.DeleteAuthToken:output_type -> google.longrunning.Operation
+	135, // [135:165] is the sub-list for method output_type
+	105, // [105:135] is the sub-list for method input_type
+	105, // [105:105] is the sub-list for extension type_name
+	105, // [105:105] is the sub-list for extension extendee
+	0,   // [0:105] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_init() }
@@ -5751,39 +8130,40 @@ func file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_init() {
 	if File_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto != nil {
 		return
 	}
-	file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[14].OneofWrappers = []any{
+	file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[23].OneofWrappers = []any{
 		(*ExportBackupRequest_GcsBucket)(nil),
 	}
-	file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[15].OneofWrappers = []any{}
-	file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[16].OneofWrappers = []any{
+	file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[24].OneofWrappers = []any{}
+	file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[35].OneofWrappers = []any{
 		(*Cluster_GcsSource)(nil),
 		(*Cluster_ManagedBackupSource_)(nil),
 	}
-	file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[17].OneofWrappers = []any{
+	file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[37].OneofWrappers = []any{}
+	file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[42].OneofWrappers = []any{
 		(*AutomatedBackupConfig_FixedFrequencySchedule_)(nil),
 	}
-	file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[30].OneofWrappers = []any{
+	file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[55].OneofWrappers = []any{
 		(*ConnectionDetail_PscAutoConnection)(nil),
 		(*ConnectionDetail_PscConnection)(nil),
 	}
-	file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[32].OneofWrappers = []any{
+	file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[57].OneofWrappers = []any{
 		(*SharedRegionalCertificateAuthority_ManagedServerCa)(nil),
 	}
-	file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[35].OneofWrappers = []any{
+	file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[62].OneofWrappers = []any{
 		(*CertificateAuthority_ManagedServerCa)(nil),
 	}
-	file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[40].OneofWrappers = []any{
+	file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[67].OneofWrappers = []any{
 		(*Cluster_StateInfo_UpdateInfo_)(nil),
 	}
-	file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[44].OneofWrappers = []any{}
-	file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[45].OneofWrappers = []any{}
+	file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[71].OneofWrappers = []any{}
+	file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_msgTypes[72].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDesc), len(file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDesc)),
-			NumEnums:      18,
-			NumMessages:   54,
+			NumEnums:      22,
+			NumMessages:   81,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
