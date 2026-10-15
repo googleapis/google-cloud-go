@@ -237,6 +237,10 @@ func (b *bucketDelayManager) getValue(bucketName string) time.Duration {
 	return b.getDelay(bucketName).getValue()
 }
 
+// errReadStallTimeout is the cancellation cause of an attempt that was aborted
+// because no response arrived within the dynamic read stall timeout.
+var errReadStallTimeout = fmt.Errorf("storage: read stall timeout exceeded: %w", context.DeadlineExceeded)
+
 // executeWithReadStallTimeout executes openStream with dynamic delay stall retry tracking.
 func executeWithReadStallTimeout(
 	ctx context.Context,
@@ -249,10 +253,10 @@ func executeWithReadStallTimeout(
 		return openStream(ctx)
 	}
 
-	cancelCtx, cancel := context.WithCancel(ctx)
+	cancelCtx, cancel := context.WithCancelCause(ctx)
 	defer func() {
 		if cancel != nil {
-			cancel()
+			cancel(nil)
 		}
 	}()
 	var (
@@ -283,7 +287,7 @@ func executeWithReadStallTimeout(
 		select {
 		case <-done:
 		default:
-			cancel()
+			cancel(errReadStallTimeout)
 			<-done
 			if onStall != nil {
 				onStall(stallTimeout)
