@@ -192,6 +192,17 @@ type SessionPoolImpl struct {
 	// Pure atomic-counter bumps (msgsSent, retries, etc.) are NOT
 	// gated — a branch check costs more than the atomic.
 	debugEnabled bool
+
+	// channelRecycler, when set, is called to replace the underlying
+	// gRPC connection for the given channel index. Wired from
+	// session/client.go when the pool is backed by a BigtableChannelPool.
+	// Nil otherwise (e.g. test pools with a custom streamFactory).
+	channelRecycler func(channelIndex int32)
+
+	// channelConsecutiveFailures tracks per-channel session-start failures
+	// since the last successful open on that channel. Key is int32 channel
+	// index; value is *atomic.Int32. Mirrors Java ChannelWrapper.consecutiveFailures.
+	channelConsecutiveFailures sync.Map
 }
 
 // noteVRpcOutcome forwards the outcome to the AFE's PeakEwma trackers
@@ -512,6 +523,14 @@ func pickerFromLoadBalancing(lbo *spb.LoadBalancingOptions, recordCandidates boo
 	default:
 		return NewLeastInFlightAfePicker(defaultAfeRandomSubsetSize, recordCandidates)
 	}
+}
+
+// SetChannelRecycler registers a callback invoked by maybeRecycleChannel
+// when a session's close warrants replacing its underlying gRPC connection
+// (GOAWAY, UNIMPLEMENTED, consecutive channel failures). Must be called
+// before pool.Start().
+func (p *SessionPoolImpl) SetChannelRecycler(f func(channelIndex int32)) {
+	p.channelRecycler = f
 }
 
 // Invoke runs one vRPC on a checked-out session. Server RetryInfo
