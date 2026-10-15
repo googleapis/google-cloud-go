@@ -49,14 +49,9 @@ const gracePeriod = 5 * time.Second
 // This is aligned with Java's value: https://github.com/googleapis/google-cloud-java/blob/7604971c3ed8a419fd01e4800f4a3199a6fc15f1/java-pubsub/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/StreamingSubscriberConnection.java#L88
 const ackIDBatchSize int = 1000
 
-// The following configures how frequently
-// the client library will check for pending
-// acks/nacks/receipt modacks to batch them.
-const (
-	ackInterval     = 100 * time.Millisecond
-	nackInterval    = 100 * time.Millisecond
-	receiptInterval = 100 * time.Millisecond
-)
+// flushInterval is the longest a queued ack, nack or receipt modack waits
+// before it is sent, so that those queued together are batched into one RPC.
+const flushInterval = 100 * time.Millisecond
 
 // These are vars so tests can change them.
 var (
@@ -80,17 +75,17 @@ type messageIterator struct {
 	po     *pullOptions
 	ps     *pullStream
 	// this is called an admin client, but also contains the data plane operations we wrap.
-	subc          *vkit.SubscriptionAdminClient
-	projectID     string
-	subID         string
-	subName       string
-	kaTick        <-chan time.Time // keep-alive (deadline extensions)
-	ackTicker     *time.Ticker     // message acks
-	nackTicker    *time.Ticker     // message nacks
-	receiptTicker *time.Ticker     // sends receipt modacks
-	failed        chan struct{}    // closed on stream error
-	drained       chan struct{}    // closed when stopped && no more pending messages
-	wg            sync.WaitGroup
+	subc      *vkit.SubscriptionAdminClient
+	projectID string
+	subID     string
+	subName   string
+	kaTick    <-chan time.Time // keep-alive (deadline extensions)
+	// flushReady is signalled when an ack, nack or receipt modack is queued.
+	// The sender then flushes within flushInterval; an idle iterator never wakes for it.
+	flushReady chan struct{}
+	failed     chan struct{} // closed on stream error
+	drained    chan struct{} // closed when stopped && no more pending messages
+	wg         sync.WaitGroup
 
 	pingTicker          *time.Ticker // ping stream to keep it open
 	serverMonitorTicker *time.Ticker // handler for checking stream is active from server
@@ -154,11 +149,6 @@ func newMessageIterator(subc *vkit.SubscriptionAdminClient, subName string, po *
 	// the first keepAlive halfway towards the minimum ack deadline.
 	keepAlivePeriod := minDurationPerLeaseExtension / 2
 
-	// Ack promptly so users don't lose work if client crashes.
-	ackTicker := time.NewTicker(ackInterval)
-	nackTicker := time.NewTicker(nackInterval)
-	receiptTicker := time.NewTicker(receiptInterval)
-
 	pingTicker := time.NewTicker(clientPingInterval)
 	serverMonitorTicker := time.NewTicker(serverMonitorInterval)
 
@@ -177,11 +167,9 @@ func newMessageIterator(subc *vkit.SubscriptionAdminClient, subName string, po *
 		subID:               subID,
 		subName:             subName,
 		kaTick:              time.After(keepAlivePeriod),
-		ackTicker:           ackTicker,
-		nackTicker:          nackTicker,
+		flushReady:          make(chan struct{}, 1),
 		pingTicker:          pingTicker,
 		serverMonitorTicker: serverMonitorTicker,
-		receiptTicker:       receiptTicker,
 		failed:              make(chan struct{}),
 		drained:             make(chan struct{}),
 		ackTimeDist:         distribution.New(int(maxDurationPerLeaseExtension/time.Second) + 1),
@@ -255,7 +243,16 @@ func (it *messageIterator) done(ackID string, ack bool, r *AckResult, receiveTim
 	} else {
 		it.pendingNacks[ackID] = r
 	}
+	it.signalFlush()
 	it.checkDrained()
+}
+
+// signalFlush tells the sender that an ack, nack or receipt modack is queued.
+func (it *messageIterator) signalFlush() {
+	select {
+	case it.flushReady <- struct{}{}:
+	default:
+	}
 }
 
 // fail is called when a stream method returns a permanent error.
@@ -389,6 +386,7 @@ func (it *messageIterator) receive() ([]*Message, error) {
 				// Use a SuccessAckResult (dummy) since we don't propagate modacks back to the user.
 				it.pendingReceipts[id] = newSuccessAckResult()
 			}
+			it.signalFlush()
 			it.mu.Unlock()
 			return msgs, nil
 		}
@@ -462,16 +460,18 @@ func (it *messageIterator) recvMessages() ([]*pb.ReceivedMessage, error) {
 // sender runs in a goroutine and handles all sends to the stream.
 func (it *messageIterator) sender() {
 	defer it.wg.Done()
-	defer it.ackTicker.Stop()
-	defer it.nackTicker.Stop()
 	defer it.pingTicker.Stop()
-	defer it.receiptTicker.Stop()
 	defer func() {
 		if it.ps != nil {
 			it.ps.CloseSend()
 		}
 	}()
 
+	// flush is nil until something is queued, so an idle iterator only wakes for keep-alives.
+	// It fires on the flushInterval grid from epoch, so a queued item waits no longer than it
+	// would for a free-running ticker.
+	var flush <-chan time.Time
+	epoch := time.Now()
 	done := false
 	for !done {
 		sendAcks := false
@@ -479,7 +479,7 @@ func (it *messageIterator) sender() {
 		sendModAcks := false
 		sendReceipt := false
 
-		dl := it.ackDeadline()
+		var dl time.Duration
 
 		select {
 		case <-it.failed:
@@ -496,6 +496,7 @@ func (it *messageIterator) sender() {
 			done = true
 
 		case <-it.kaTick:
+			dl = it.ackDeadline()
 			it.mu.Lock()
 			it.handleKeepAlives()
 			sendModAcks = (len(it.pendingModAcks) > 0)
@@ -508,17 +509,21 @@ func (it *messageIterator) sender() {
 			}
 			it.kaTick = time.After(nextTick)
 
-		case <-it.nackTicker.C:
-			it.mu.Lock()
-			sendNacks = (len(it.pendingNacks) > 0)
+		case <-it.flushReady:
+			if flush == nil {
+				flush = time.After(flushInterval - time.Since(epoch)%flushInterval)
+			}
+			continue
 
-		case <-it.ackTicker.C:
+		case <-flush:
+			flush = nil
 			it.mu.Lock()
 			sendAcks = (len(it.pendingAcks) > 0)
-
-		case <-it.receiptTicker.C:
-			it.mu.Lock()
+			sendNacks = (len(it.pendingNacks) > 0)
 			sendReceipt = (len(it.pendingReceipts) > 0)
+			if sendReceipt {
+				dl = it.ackDeadline()
+			}
 		}
 		// Lock is held here.
 		var acks, nacks, modAcks, receipts map[string]*AckResult
@@ -539,7 +544,11 @@ func (it *messageIterator) sender() {
 			it.pendingReceipts = map[string]*AckResult{}
 		}
 		it.mu.Unlock()
-		// Make Ack and ModAck RPCs.
+		// Make Ack and ModAck RPCs. Receipts go first so that a receipt modack
+		// flushed together with a nack for the same message cannot extend it.
+		if sendReceipt {
+			it.sendModAck(context.Background(), receipts, dl, true, true)
+		}
 		if sendAcks {
 			it.sendAck(acks)
 		}
@@ -549,9 +558,6 @@ func (it *messageIterator) sender() {
 		}
 		if sendModAcks {
 			it.sendModAck(context.Background(), modAcks, dl, true, false)
-		}
-		if sendReceipt {
-			it.sendModAck(context.Background(), receipts, dl, true, true)
 		}
 	}
 }
