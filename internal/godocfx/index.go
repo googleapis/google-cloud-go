@@ -117,7 +117,9 @@ func (ic indexClient) getPage(prefixes []string, since time.Time) ([]indexEntry,
 	last := time.Time{}
 	for s.Scan() {
 		e := indexEntry{}
-		if err := json.Unmarshal(s.Bytes(), &e); err != nil {
+		b := s.Bytes()
+		if err := json.Unmarshal(b, &e); err != nil {
+			log.Printf("invalid JSON in index: %q", string(b))
 			return nil, time.Time{}, err
 		}
 		last = e.Timestamp // Always update the last timestamp.
