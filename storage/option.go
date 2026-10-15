@@ -323,8 +323,7 @@ type withGRPCKeepaliveConfig struct {
 }
 
 func (w *withGRPCKeepaliveConfig) ApplyStorageOpt(config *storageConfig) {
-	c := w.cfg
-	config.grpcKeepalive = &c
+	config.grpcKeepalive = &w.cfg
 }
 
 func withOtelMetrics() option.ClientOption {

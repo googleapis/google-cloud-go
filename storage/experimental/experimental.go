@@ -113,33 +113,61 @@ func WithBufferPool(pool BufferPool) option.ClientOption {
 }
 
 // WithGRPCKeepalive provides an [option.ClientOption] that may be passed to
-// [storage.NewGRPCClient].
+// [storage.NewGRPCClient] to configure HTTP/2 keepalive pings on the client's
+// gRPC connections.
 //
-// It enables HTTP/2 keepalive pings on the client's gRPC connections. A peer
-// that stops responding (for example after an ungraceful server or network
-// failure) is detected within about Time+Timeout rather than after the OS TCP
-// retransmission limit, which can take many minutes; the connection is closed
-// and in-flight calls fail fast so that retries can use a healthy connection.
+// Use this option when long-running or streaming RPCs (such as object reads and
+// writes) may encounter silent network blackholes, dead NAT/firewall mappings,
+// or ungraceful peer failures where no TCP FIN or RST is delivered. Without
+// keepalive, a stalled connection can hang until the OS TCP retransmission
+// timeout expires (typically 15+ minutes on Linux).
+//
+// When enabled, if an active connection with at least one in-flight RPC receives
+// no data or control frames from the peer for [GRPCKeepaliveConfig.Time], the
+// client sends an HTTP/2 PING frame and waits up to
+// [GRPCKeepaliveConfig.Timeout] for a PING acknowledgement. If no acknowledgement
+// arrives in time, the client closes the connection and fails all in-flight RPCs
+// on that connection with [google.golang.org/grpc/codes.Unavailable], allowing
+// retryable operations to reconnect on a healthy connection within roughly
+// Time + Timeout.
 //
 // Keepalive is disabled by default. Pings are only sent while at least one RPC
-// is in flight. gRPC enforces a minimum Time of 10s, and servers may close
-// connections that ping too frequently. A reasonable starting point is
-// Time: 30s, Timeout: 20s.
+// is in flight (PermitWithoutStream is always false) so idle connections do not
+// consume the server's ping budget. Because gRPC enforces a minimum Time of 10
+// seconds and servers may close connections that ping too frequently, a
+// reasonable starting point is Time: 30 * time.Second, Timeout: 20 * time.Second.
 //
-// This option is exclusively supported for gRPC clients. It takes precedence
-// over any keepalive parameters passed via [option.WithGRPCDialOption].
+// Example usage:
+//
+//	client, err := storage.NewGRPCClient(ctx, experimental.WithGRPCKeepalive(
+//		experimental.GRPCKeepaliveConfig{
+//			Time:    30 * time.Second,
+//			Timeout: 20 * time.Second,
+//		},
+//	))
+//
+// This option is only supported for gRPC clients ([storage.NewGRPCClient]) and
+// is ignored by HTTP clients ([storage.NewClient]). It takes precedence over
+// keepalive parameters passed via [option.WithGRPCDialOption].
 func WithGRPCKeepalive(cfg GRPCKeepaliveConfig) option.ClientOption {
 	return internal.WithGRPCKeepalive.(func(GRPCKeepaliveConfig) option.ClientOption)(cfg)
 }
 
-// GRPCKeepaliveConfig configures HTTP/2 keepalive pings for gRPC connections.
-// See [WithGRPCKeepalive].
+// GRPCKeepaliveConfig configures client-side HTTP/2 keepalive pings for gRPC
+// connections, mirroring the Time and Timeout fields of
+// [google.golang.org/grpc/keepalive.ClientParameters]. See [WithGRPCKeepalive].
 type GRPCKeepaliveConfig struct {
-	// Time is how long the connection may be without received data before the
-	// client sends a keepalive ping. gRPC enforces a minimum of 10 seconds.
+	// Time is the duration of inactivity (with no frames received on a
+	// connection that has an in-flight RPC) after which the client sends an
+	// HTTP/2 keepalive ping to check whether the peer transport is still alive.
+	//
+	// A duration smaller than 10 seconds cannot be set: gRPC enforces a hard
+	// minimum ping interval of 10 seconds, and any value less than 10 seconds
+	// (including 0) is automatically clamped to 10 seconds by gRPC.
 	Time time.Duration
 
-	// Timeout is how long the client waits for a ping acknowledgement before
-	// closing the connection. If zero, the gRPC default (20 seconds) is used.
+	// Timeout is the duration the client waits for a keepalive ping
+	// acknowledgement after sending a ping before closing the connection and
+	// failing in-flight RPCs. If 0, gRPC's default of 20 seconds is used.
 	Timeout time.Duration
 }

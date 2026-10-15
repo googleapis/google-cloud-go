@@ -161,7 +161,7 @@ func TestApplyStorageOpt(t *testing.T) {
 		},
 		{
 			desc: "set gRPC keepalive",
-			opts: []option.ClientOption{withGRPCKeepalive(experimental.GRPCKeepaliveConfig{
+			opts: []option.ClientOption{experimental.WithGRPCKeepalive(experimental.GRPCKeepaliveConfig{
 				Time:    30 * time.Second,
 				Timeout: 20 * time.Second,
 			})},
