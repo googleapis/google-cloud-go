@@ -228,11 +228,12 @@ func toServiceFieldPathComponent(key string) string {
 	var buf strings.Builder
 	buf.Grow(len(key) + 2)
 	buf.WriteByte('`')
-	for _, r := range key {
-		if r == '`' || r == '\\' {
+	for i := range len(key) {
+		b := key[i]
+		if b == '`' || b == '\\' {
 			buf.WriteByte('\\')
 		}
-		buf.WriteRune(r)
+		buf.WriteByte(b)
 	}
 	buf.WriteByte('`')
 	return buf.String()
