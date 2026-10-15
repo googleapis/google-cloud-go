@@ -16,6 +16,7 @@ package firestore
 
 import (
 	"fmt"
+	"maps"
 	"reflect"
 	"strings"
 
@@ -408,9 +409,7 @@ func (s *findNearestStage) toProto() (*pb.Pipeline_Stage, error) {
 	measurePb := &pb.Value{ValueType: &pb.Value_StringValue{StringValue: string(s.measure)}}
 
 	optsCopy := make(map[string]any)
-	for k, v := range s.options {
-		optsCopy[k] = v
-	}
+	maps.Copy(optsCopy, s.options)
 
 	optionsPb, err := stageOptionsToProto(optsCopy)
 	if err != nil {
@@ -859,9 +858,7 @@ func (s *unnestStage) toProto() (*pb.Pipeline_Stage, error) {
 	}
 
 	optsCopy := make(map[string]any)
-	for k, v := range s.options {
-		optsCopy[k] = v
-	}
+	maps.Copy(optsCopy, s.options)
 
 	var indexPb *pb.Value
 	if idx, ok := optsCopy["index_field"]; ok {
@@ -975,9 +972,7 @@ func (s *updateStage) toProto() (*pb.Pipeline_Stage, error) {
 	var fields []Selectable
 
 	optsCopy := make(map[string]any)
-	for k, v := range s.options {
-		optsCopy[k] = v
-	}
+	maps.Copy(optsCopy, s.options)
 
 	if t, ok := optsCopy["transformations"].([]Selectable); ok {
 		fields = t
