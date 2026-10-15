@@ -110,7 +110,10 @@ func TestRunTransaction(t *testing.T) {
 	if commitTime != aTimestamp3.AsTime() {
 		t.Fatalf("commit time %v should equal %v", commitTime, aTimestamp3)
 	}
-	writeResults := commitResponse.WriteResults()
+	writeResults, err := commitResponse.WriteResults()
+	if err != nil {
+		t.Fatal(err)
+	}
 	if len(writeResults) != 1 || !writeResults[0].UpdateTime.Equal(aTimestamp3.AsTime()) {
 		t.Fatalf("got write results %+v, want 1 result with UpdateTime %v", writeResults, aTimestamp3.AsTime())
 	}

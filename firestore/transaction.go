@@ -95,16 +95,19 @@ func (r *CommitResponse) CommitTime() time.Time {
 }
 
 // WriteResults returns the write results from the commit response.
-func (r *CommitResponse) WriteResults() []*WriteResult {
+func (r *CommitResponse) WriteResults() ([]*WriteResult, error) {
 	if r == nil || r.response == nil {
-		return nil
+		return nil, nil
 	}
 	wrs := make([]*WriteResult, 0, len(r.response.WriteResults))
 	for _, pwr := range r.response.WriteResults {
-		wr, _ := writeResultFromProto(pwr)
+		wr, err := writeResultFromProto(pwr)
+		if err != nil {
+			return nil, err
+		}
 		wrs = append(wrs, wr)
 	}
-	return wrs
+	return wrs, nil
 }
 
 // commitResponse is the TransactionOption to record a commit response.
