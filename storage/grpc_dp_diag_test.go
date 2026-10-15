@@ -253,7 +253,15 @@ func TestDirectPathDiagnostic_Interconnect(t *testing.T) {
 			if tc.envVal != nil {
 				t.Setenv(enableDirectPathXdsOverInterconnectEnvVar, *tc.envVal)
 			} else {
-				t.Setenv(enableDirectPathXdsOverInterconnectEnvVar, "")
+				origVal, had := os.LookupEnv(enableDirectPathXdsOverInterconnectEnvVar)
+				os.Unsetenv(enableDirectPathXdsOverInterconnectEnvVar)
+				t.Cleanup(func() {
+					if had {
+						os.Setenv(enableDirectPathXdsOverInterconnectEnvVar, origVal)
+					} else {
+						os.Unsetenv(enableDirectPathXdsOverInterconnectEnvVar)
+					}
+				})
 			}
 			if got := directPathDiagnostic(context.Background(), tc.opts...); got != tc.want {
 				t.Errorf("directPathDiagnostic() = %q, want %q", got, tc.want)
