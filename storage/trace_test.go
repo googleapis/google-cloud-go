@@ -353,43 +353,99 @@ func TestEndSpanEviction(t *testing.T) {
 
 func TestStorageTraceRPCSystemNameAttribute(t *testing.T) {
 	ctx := context.Background()
-	te := testutil.NewOpenTelemetryTestExporter()
-	t.Cleanup(func() {
-		te.Unregister(ctx)
-	})
+	t.Setenv(storageOtelTracingDevVar, "true")
 
-	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
-
-	httpClient := &Client{hc: &http.Client{}}
-	grpcClient := &Client{}
-
-	ctx1, _ := startSpanWithBucket(ctx, httpClient, "my-bucket", "Bucket.Attrs")
-	endSpan(ctx1, nil)
-
-	ctx2, _ := startSpanWithBucket(ctx, grpcClient, "my-bucket", "Bucket.Attrs")
-	endSpan(ctx2, nil)
-
-	spans := te.Spans()
-	if len(spans) != 2 {
-		t.Fatalf("expected 2 spans, got %d", len(spans))
+	canceledCtx, cancel := context.WithCancel(ctx)
+	cancel()
+	rangeParams := &newRangeReaderParams{
+		bucket: "my-bucket",
+		object: "my-object",
 	}
 
-	var httpSysName, grpcSysName string
-	for _, attr := range spans[0].Attributes {
-		if attr.Key == "rpc.system.name" {
-			httpSysName = attr.Value.AsString()
+	tests := []struct {
+		name string
+		emit func()
+		want string
+	}{
+		{
+			name: "HTTP operation span",
+			emit: func() {
+				c := &Client{rpcSystem: "http"}
+				sCtx, _ := startSpanWithBucket(ctx, c, "my-bucket", "Bucket.Attrs")
+				endSpan(sCtx, nil)
+			},
+			want: "http",
+		},
+		{
+			name: "gRPC operation span",
+			emit: func() {
+				c := &Client{rpcSystem: "grpc"}
+				sCtx, _ := startSpanWithBucket(ctx, c, "my-bucket", "Bucket.Attrs")
+				endSpan(sCtx, nil)
+			},
+			want: "grpc",
+		},
+		{
+			name: "httpStorageClient.NewRangeReader",
+			emit: func() {
+				hc := &httpStorageClient{
+					settings: &settings{},
+					config:   &storageConfig{},
+				}
+				_, _ = hc.NewRangeReader(canceledCtx, rangeParams)
+			},
+			want: "http",
+		},
+		{
+			name: "grpcStorageClient.NewRangeReader",
+			emit: func() {
+				gc := &grpcStorageClient{
+					settings: &settings{},
+					config:   &storageConfig{grpcBidiReads: true},
+				}
+				_, _ = gc.NewRangeReader(canceledCtx, rangeParams)
+			},
+			want: "grpc",
+		},
+		{
+			name: "grpcStorageClient.NewRangeReaderReadObject",
+			emit: func() {
+				gc := &grpcStorageClient{
+					settings: &settings{},
+					config:   &storageConfig{grpcBidiReads: false},
+				}
+				_, _ = gc.NewRangeReader(canceledCtx, rangeParams)
+			},
+			want: "grpc",
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			te := testutil.NewOpenTelemetryTestExporter()
+			t.Cleanup(func() {
+				te.Unregister(ctx)
+			})
+
+			tc.emit()
+
+			spans := te.Spans()
+			if len(spans) != 1 {
+				t.Fatalf("expected 1 span, got %d", len(spans))
+			}
+
+			if got := spanStringAttribute(spans[0], "rpc.system.name"); got != tc.want {
+				t.Errorf("rpc.system.name = %q, want %q", got, tc.want)
+			}
+		})
+	}
+}
+
+func spanStringAttribute(span tracetest.SpanStub, key attribute.Key) string {
+	for _, attr := range span.Attributes {
+		if attr.Key == key {
+			return attr.Value.AsString()
 		}
 	}
-	for _, attr := range spans[1].Attributes {
-		if attr.Key == "rpc.system.name" {
-			grpcSysName = attr.Value.AsString()
-		}
-	}
-
-	if httpSysName != "http" {
-		t.Errorf("expected HTTP span rpc.system.name = %q, got %q", "http", httpSysName)
-	}
-	if grpcSysName != "grpc" {
-		t.Errorf("expected gRPC span rpc.system.name = %q, got %q", "grpc", grpcSysName)
-	}
+	return ""
 }

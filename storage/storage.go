@@ -129,14 +129,9 @@ type Client struct {
 	grpcAppendableUploads bool
 
 	bucketMetadataCache *bucketMetadataCache
-}
 
-// rpcSystem returns "http" if the client uses HTTP, or "grpc" if it uses gRPC.
-func (c *Client) rpcSystem() string {
-	if c != nil && c.hc != nil {
-		return "http"
-	}
-	return "grpc"
+	// rpcSystem is the OTel rpc.system.name attribute value ("http" or "grpc").
+	rpcSystem string
 }
 
 // credsJSON returns the raw JSON of the Client's creds and true, or an empty slice
@@ -244,12 +239,13 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	}
 
 	c := &Client{
-		hc:      hc,
-		raw:     rawService,
-		scheme:  u.Scheme,
-		xmlHost: u.Host,
-		creds:   creds,
-		tc:      tcWrapped,
+		hc:        hc,
+		raw:       rawService,
+		scheme:    u.Scheme,
+		xmlHost:   u.Host,
+		creds:     creds,
+		tc:        tcWrapped,
+		rpcSystem: "http",
 	}
 	if isACOEnabled() {
 		c.bucketMetadataCache = newBucketMetadataCache(defaultBucketMetadataCacheLimit, c.tc)
@@ -285,6 +281,7 @@ func NewGRPCClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 	c := &Client{
 		tc:                    tcWrapped,
 		grpcAppendableUploads: tc.config.grpcAppendableUploads,
+		rpcSystem:             "grpc",
 	}
 	if isACOEnabled() {
 		c.bucketMetadataCache = newBucketMetadataCache(defaultBucketMetadataCacheLimit, c.tc)

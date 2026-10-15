@@ -56,6 +56,11 @@ const (
 	gcpClientArtifact = "cloud.google.com/go/storage"
 )
 
+var (
+	rpcSystemHTTP = attribute.String("rpc.system.name", "http")
+	rpcSystemGRPC = attribute.String("rpc.system.name", "grpc")
+)
+
 // isOTelTracingDevEnabled checks the development flag until experimental feature is launched.
 // TODO: Remove development flag upon experimental launch.
 func isOTelTracingDevEnabled() bool {
@@ -74,8 +79,8 @@ func startSpanWithBucket(ctx context.Context, client *Client, bucket string, nam
 	if !isOTelTracingDevEnabled() {
 		return startSpan(ctx, name, opts...)
 	}
-	if client != nil {
-		opts = append(opts, trace.WithAttributes(attribute.String("rpc.system.name", client.rpcSystem())))
+	if client != nil && client.rpcSystem != "" {
+		opts = append(opts, trace.WithAttributes(attribute.String("rpc.system.name", client.rpcSystem)))
 	}
 	if client != nil && client.bucketMetadataCache != nil && bucket != "" {
 		ctx = context.WithValue(ctx, cacheContextKey, client.bucketMetadataCache)
