@@ -24,6 +24,7 @@ import (
 
 	internalTrace "cloud.google.com/go/internal/trace"
 	"cloud.google.com/go/storage/internal"
+	"github.com/googleapis/gax-go/v2/apierror"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	otelcodes "go.opentelemetry.io/otel/codes"
@@ -149,6 +150,30 @@ func isNotFoundError(err error) bool {
 	return false
 }
 
+// extractErrorMessage returns a human-readable error message from err.
+// It prefers the structured message from an APIError, googleapi.Error, or
+// gRPC status, and falls back to err.Error().
+func extractErrorMessage(err error) string {
+	if err == nil {
+		return ""
+	}
+	var apiErr *apierror.APIError
+	if errors.As(err, &apiErr) && apiErr.Message() != "" {
+		return apiErr.Message()
+	}
+	var gErr *googleapi.Error
+	if errors.As(err, &gErr) && gErr.Message != "" {
+		return gErr.Message
+	}
+	var gs interface{ GRPCStatus() *status.Status }
+	if errors.As(err, &gs) {
+		if st := gs.GRPCStatus(); st != nil && st.Message() != "" {
+			return st.Message()
+		}
+	}
+	return err.Error()
+}
+
 // endSpan retrieves the current span from ctx and completes the span.
 // If an error occurs, the error is recorded as an exception span event for this span,
 // and the span status is set in the form of a code and a description.
@@ -169,6 +194,9 @@ func endSpan(ctx context.Context, err error) {
 	} else {
 		span := trace.SpanFromContext(ctx)
 		if err != nil {
+			if msg := extractErrorMessage(err); msg != "" {
+				span.SetAttributes(attribute.String("error.message", msg))
+			}
 			span.SetStatus(otelcodes.Error, err.Error())
 			span.RecordError(err)
 		}

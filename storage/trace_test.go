@@ -16,6 +16,7 @@ package storage
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"testing"
@@ -24,12 +25,15 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/storage/internal"
 	"github.com/google/go-cmp/cmp"
+	"github.com/googleapis/gax-go/v2/apierror"
 	"go.opentelemetry.io/otel/attribute"
 	otcodes "go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/sdk/instrumentation"
 	"go.opentelemetry.io/otel/sdk/trace/tracetest"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/googleapi"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func TestStorageTraceStartEndSpan(t *testing.T) {
@@ -132,6 +136,124 @@ func TestStorageTraceEndSpanRecordError(t *testing.T) {
 	}
 	if want := otcodes.Error; gotSpan.Status.Code != want {
 		t.Errorf("got %v, want %v", gotSpan.Status.Code, want)
+	}
+	var gotErrMsg string
+	for _, attr := range gotSpan.Attributes {
+		if attr.Key == "error.message" {
+			gotErrMsg = attr.Value.AsString()
+		}
+	}
+	if want := "INVALID ARGUMENT"; gotErrMsg != want {
+		t.Errorf("got error.message %q, want %q", gotErrMsg, want)
+	}
+}
+
+func TestStorageTraceErrorMessage(t *testing.T) {
+	ctx := context.Background()
+	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
+
+	apiErrGRPC, _ := apierror.FromError(status.Error(codes.FailedPrecondition, "This bucket requires appendable objects."))
+	apiErrHTTP, _ := apierror.FromError(&googleapi.Error{Code: http.StatusPreconditionFailed, Message: "Precondition Failed"})
+
+	tests := []struct {
+		name           string
+		err            error
+		wantErrMsg     string
+		wantHasAttr    bool
+		wantStatusCode otcodes.Code
+	}{
+		{
+			name:           "nil error does not set error.message",
+			err:            nil,
+			wantErrMsg:     "",
+			wantHasAttr:    false,
+			wantStatusCode: otcodes.Unset,
+		},
+		{
+			name:           "googleapi.Error extracts Message",
+			err:            &googleapi.Error{Code: http.StatusBadRequest, Message: "This bucket requires appendable objects."},
+			wantErrMsg:     "This bucket requires appendable objects.",
+			wantHasAttr:    true,
+			wantStatusCode: otcodes.Error,
+		},
+		{
+			name:           "gRPC status.Error extracts Message",
+			err:            status.Error(codes.FailedPrecondition, "This bucket requires appendable objects."),
+			wantErrMsg:     "This bucket requires appendable objects.",
+			wantHasAttr:    true,
+			wantStatusCode: otcodes.Error,
+		},
+		{
+			name:           "apierror.APIError wrapping gRPC status",
+			err:            apiErrGRPC,
+			wantErrMsg:     "This bucket requires appendable objects.",
+			wantHasAttr:    true,
+			wantStatusCode: otcodes.Error,
+		},
+		{
+			name:           "apierror.APIError wrapping googleapi.Error",
+			err:            apiErrHTTP,
+			wantErrMsg:     "Precondition Failed",
+			wantHasAttr:    true,
+			wantStatusCode: otcodes.Error,
+		},
+		{
+			name:           "wrapped gRPC status.Error preserves inner message",
+			err:            fmt.Errorf("%w: %w", ErrObjectNotExist, status.Error(codes.NotFound, "No such object: bucket/obj")),
+			wantErrMsg:     "No such object: bucket/obj",
+			wantHasAttr:    true,
+			wantStatusCode: otcodes.Error,
+		},
+		{
+			name:           "sentinel error falls back to Error()",
+			err:            ErrBucketNotExist,
+			wantErrMsg:     ErrBucketNotExist.Error(),
+			wantHasAttr:    true,
+			wantStatusCode: otcodes.Error,
+		},
+		{
+			name:           "plain error falls back to Error()",
+			err:            errors.New("storage: bucket name is empty"),
+			wantErrMsg:     "storage: bucket name is empty",
+			wantHasAttr:    true,
+			wantStatusCode: otcodes.Error,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			te := testutil.NewOpenTelemetryTestExporter()
+			t.Cleanup(func() {
+				te.Unregister(ctx)
+			})
+
+			spanCtx, _ := startSpan(ctx, "Object.Attrs")
+			endSpan(spanCtx, tc.err)
+
+			spans := te.Spans()
+			if len(spans) != 1 {
+				t.Fatalf("expected 1 span, got %d", len(spans))
+			}
+			gotSpan := spans[0]
+			if gotSpan.Status.Code != tc.wantStatusCode {
+				t.Errorf("got status code %v, want %v", gotSpan.Status.Code, tc.wantStatusCode)
+			}
+
+			var gotErrMsg string
+			var hasAttr bool
+			for _, attr := range gotSpan.Attributes {
+				if attr.Key == "error.message" {
+					hasAttr = true
+					gotErrMsg = attr.Value.AsString()
+				}
+			}
+			if hasAttr != tc.wantHasAttr {
+				t.Fatalf("got hasAttr=%v, want %v (attrs=%v)", hasAttr, tc.wantHasAttr, gotSpan.Attributes)
+			}
+			if tc.wantHasAttr && gotErrMsg != tc.wantErrMsg {
+				t.Errorf("got error.message %q, want %q", gotErrMsg, tc.wantErrMsg)
+			}
+		})
 	}
 }
 
