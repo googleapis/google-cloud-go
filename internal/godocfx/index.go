@@ -18,11 +18,14 @@ import (
 	"bufio"
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"net/url"
 	"strings"
 	"time"
+
+	"github.com/googleapis/gax-go/v2"
 )
 
 func mustParse(s string) *url.URL {
@@ -83,7 +86,29 @@ func (ic indexClient) getPage(prefixes []string, since time.Time) ([]indexEntry,
 	q.Set("since", since.Format(time.RFC3339))
 	u.RawQuery = q.Encode()
 	log.Printf("Fetching %s", u.String())
-	resp, err := http.Get(u.String())
+	bo := gax.Backoff{
+		Initial:    time.Second,
+		Max:        30 * time.Second,
+		Multiplier: 2,
+	}
+	var resp *http.Response
+	// Wrap the get in a basic retry loop, retry on everything that's not HTTP.StatusOK.
+	err := func() error {
+		var err error
+		for {
+			resp, err = http.Get(u.String())
+			if err == nil && resp.StatusCode != http.StatusOK {
+				err = fmt.Errorf("received HTTP %d status", resp.StatusCode)
+			}
+			if err != nil {
+				if err := gax.Sleep(context.Background(), bo.Pause()); err != nil {
+					return err
+				}
+				continue
+			}
+			return nil
+		}
+	}()
 	if err != nil {
 		return nil, time.Time{}, err
 	}
@@ -92,9 +117,7 @@ func (ic indexClient) getPage(prefixes []string, since time.Time) ([]indexEntry,
 	last := time.Time{}
 	for s.Scan() {
 		e := indexEntry{}
-		b := s.Bytes()
-		if err := json.Unmarshal(b, &e); err != nil {
-			log.Printf("invalid JSON in index: %q", string(b))
+		if err := json.Unmarshal(s.Bytes(), &e); err != nil {
 			return nil, time.Time{}, err
 		}
 		last = e.Timestamp // Always update the last timestamp.
