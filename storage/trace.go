@@ -16,6 +16,7 @@ package storage
 
 import (
 	"context"
+	"encoding/xml"
 	"errors"
 	"fmt"
 	"net/http"
@@ -162,8 +163,18 @@ func extractErrorMessage(err error) string {
 		return apiErr.Message()
 	}
 	var gErr *googleapi.Error
-	if errors.As(err, &gErr) && gErr.Message != "" {
-		return gErr.Message
+	if errors.As(err, &gErr) {
+		if gErr.Message != "" {
+			return gErr.Message
+		}
+		// Error responses from the XML API are not parsed by googleapi, so
+		// Message is empty and Error() would embed the raw response body.
+		if msg := xmlErrorMessage(gErr.Body); msg != "" {
+			return msg
+		}
+		if msg := http.StatusText(gErr.Code); msg != "" {
+			return msg
+		}
 	}
 	var gs interface{ GRPCStatus() *status.Status }
 	if errors.As(err, &gs) {
@@ -172,6 +183,39 @@ func extractErrorMessage(err error) string {
 		}
 	}
 	return err.Error()
+}
+
+// xmlErrorMessage returns the Message element of a Cloud Storage XML API
+// error body, or "" if body is not such an error.
+func xmlErrorMessage(body string) string {
+	if body == "" {
+		return ""
+	}
+	var xmlErr struct {
+		XMLName xml.Name `xml:"Error"`
+		Message string   `xml:"Message"`
+	}
+	if err := xml.Unmarshal([]byte(body), &xmlErr); err != nil {
+		return ""
+	}
+	return strings.TrimSpace(xmlErr.Message)
+}
+
+// extractErrorDomain returns the service domain that originated err, taken
+// from the google.rpc.ErrorInfo details of the error response. It returns ""
+// if the response carried no ErrorInfo or err did not come from the service.
+func extractErrorDomain(err error) string {
+	if err == nil {
+		return ""
+	}
+	var apiErr *apierror.APIError
+	if errors.As(err, &apiErr) {
+		return apiErr.Domain()
+	}
+	if apiErr, ok := apierror.ParseError(err, false); ok {
+		return apiErr.Domain()
+	}
+	return ""
 }
 
 // endSpan retrieves the current span from ctx and completes the span.
@@ -196,6 +240,9 @@ func endSpan(ctx context.Context, err error) {
 		if err != nil {
 			if msg := extractErrorMessage(err); msg != "" {
 				span.SetAttributes(attribute.String("error.message", msg))
+			}
+			if domain := extractErrorDomain(err); domain != "" {
+				span.SetAttributes(attribute.String("gcp.errors.domain", domain))
 			}
 			span.SetStatus(otelcodes.Error, err.Error())
 			span.RecordError(err)

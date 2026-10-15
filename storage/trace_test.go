@@ -32,6 +32,7 @@ import (
 	"go.opentelemetry.io/otel/sdk/trace/tracetest"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/googleapi"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -215,6 +216,40 @@ func TestStorageTraceErrorMessage(t *testing.T) {
 			name:           "plain error falls back to Error()",
 			err:            errors.New("storage: bucket name is empty"),
 			wantErrMsg:     "storage: bucket name is empty",
+			wantHasAttr:    true,
+			wantStatusCode: otcodes.Error,
+		},
+		{
+			name: "XML API error body extracts Message element",
+			err: &googleapi.Error{
+				Code: http.StatusRequestedRangeNotSatisfiable,
+				Body: "<?xml version='1.0' encoding='UTF-8'?><Error><Code>InvalidRange</Code><Message>The requested range cannot be satisfied.</Message><Details>bytes=104857600-104857727</Details></Error>",
+			},
+			wantErrMsg:     "The requested range cannot be satisfied.",
+			wantHasAttr:    true,
+			wantStatusCode: otcodes.Error,
+		},
+		{
+			name: "wrapped XML API error body extracts Message element",
+			err: fmt.Errorf("storage: read failed: %w", &googleapi.Error{
+				Code: http.StatusPreconditionFailed,
+				Body: "<?xml version='1.0' encoding='UTF-8'?><Error><Code>ConditionNotMet</Code><Message>At least one of the pre-conditions you specified did not hold.</Message></Error>",
+			}),
+			wantErrMsg:     "At least one of the pre-conditions you specified did not hold.",
+			wantHasAttr:    true,
+			wantStatusCode: otcodes.Error,
+		},
+		{
+			name:           "googleapi.Error with non-XML body falls back to status text",
+			err:            &googleapi.Error{Code: http.StatusServiceUnavailable, Body: "upstream connect error"},
+			wantErrMsg:     "Service Unavailable",
+			wantHasAttr:    true,
+			wantStatusCode: otcodes.Error,
+		},
+		{
+			name:           "googleapi.Error with empty body falls back to status text",
+			err:            &googleapi.Error{Code: http.StatusNotFound},
+			wantErrMsg:     "Not Found",
 			wantHasAttr:    true,
 			wantStatusCode: otcodes.Error,
 		},
@@ -468,6 +503,119 @@ func TestEndSpanEviction(t *testing.T) {
 			}
 			if !tc.wantEvict && !found {
 				t.Errorf("expected bucket to remain in cache")
+			}
+		})
+	}
+}
+
+func TestStorageTraceErrorDomain(t *testing.T) {
+	ctx := context.Background()
+	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
+
+	grpcWithErrorInfo, err := status.New(codes.PermissionDenied, "Permission denied.").WithDetails(&errdetails.ErrorInfo{
+		Reason: "SERVICE_DISABLED",
+		Domain: "storage.googleapis.com",
+	})
+	if err != nil {
+		t.Fatalf("WithDetails: %v", err)
+	}
+	apiErrGRPC, _ := apierror.FromError(grpcWithErrorInfo.Err())
+
+	tests := []struct {
+		name       string
+		err        error
+		wantDomain string // "" means the attribute must not be set.
+	}{
+		{
+			name:       "nil error",
+			err:        nil,
+			wantDomain: "",
+		},
+		{
+			name:       "gRPC status with ErrorInfo",
+			err:        grpcWithErrorInfo.Err(),
+			wantDomain: "storage.googleapis.com",
+		},
+		{
+			name:       "wrapped gRPC status with ErrorInfo",
+			err:        fmt.Errorf("storage: retry failed: %w", grpcWithErrorInfo.Err()),
+			wantDomain: "storage.googleapis.com",
+		},
+		{
+			name:       "apierror.APIError with ErrorInfo",
+			err:        apiErrGRPC,
+			wantDomain: "storage.googleapis.com",
+		},
+		{
+			name: "HTTP JSON error with ErrorInfo details",
+			err: &googleapi.Error{
+				Code:    http.StatusForbidden,
+				Message: "Permission denied.",
+				Body:    `{"error":{"code":403,"message":"Permission denied.","status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"storage.googleapis.com"}]}}`,
+			},
+			wantDomain: "storage.googleapis.com",
+		},
+		{
+			name: "HTTP JSON error with legacy errors[].domain is not used",
+			err: &googleapi.Error{
+				Code:    http.StatusNotFound,
+				Message: "The specified bucket does not exist.",
+				Body:    `{"error":{"code":404,"message":"The specified bucket does not exist.","errors":[{"message":"The specified bucket does not exist.","domain":"global","reason":"notFound"}]}}`,
+			},
+			wantDomain: "",
+		},
+		{
+			name:       "gRPC status without ErrorInfo",
+			err:        status.Error(codes.NotFound, "No such object: bucket/obj"),
+			wantDomain: "",
+		},
+		{
+			name: "HTTP XML error",
+			err: &googleapi.Error{
+				Code: http.StatusRequestedRangeNotSatisfiable,
+				Body: "<?xml version='1.0' encoding='UTF-8'?><Error><Code>InvalidRange</Code><Message>The requested range cannot be satisfied.</Message></Error>",
+			},
+			wantDomain: "",
+		},
+		{
+			name:       "client-side context error",
+			err:        context.Canceled,
+			wantDomain: "",
+		},
+		{
+			name:       "sentinel error",
+			err:        ErrObjectNotExist,
+			wantDomain: "",
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			te := testutil.NewOpenTelemetryTestExporter()
+			t.Cleanup(func() {
+				te.Unregister(ctx)
+			})
+
+			spanCtx, _ := startSpan(ctx, "Object.Attrs")
+			endSpan(spanCtx, tc.err)
+
+			spans := te.Spans()
+			if len(spans) != 1 {
+				t.Fatalf("expected 1 span, got %d", len(spans))
+			}
+			var gotDomain string
+			var hasAttr bool
+			for _, attr := range spans[0].Attributes {
+				if attr.Key == "gcp.errors.domain" {
+					hasAttr = true
+					gotDomain = attr.Value.AsString()
+				}
+			}
+			if wantHasAttr := tc.wantDomain != ""; hasAttr != wantHasAttr {
+				t.Fatalf("got hasAttr=%v, want %v (attrs=%v)", hasAttr, wantHasAttr, spans[0].Attributes)
+			}
+			if gotDomain != tc.wantDomain {
+				t.Errorf("got gcp.errors.domain %q, want %q", gotDomain, tc.wantDomain)
 			}
 		})
 	}
