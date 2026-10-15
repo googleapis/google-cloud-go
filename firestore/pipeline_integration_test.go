@@ -896,7 +896,7 @@ func testIntegrationPipelineStages(t *testing.T) {
 			"author": map[string]any{"name": "New Author", "country": "US"},
 		}
 		insertIter := client.Pipeline().Literals([]map[string]any{want}).Insert(
-			WithInsertCollection(coll),
+			WithInsertCollection(coll.ID),
 			WithInsertDocumentID(ConstantOf("inserted-book-1")),
 		).Execute(ctx).Results()
 		defer insertIter.Stop()
@@ -928,7 +928,7 @@ func testIntegrationPipelineStages(t *testing.T) {
 		upsertIter := client.Pipeline().Literals([]map[string]any{
 			{"title": "Upserted Book"},
 		}).Upsert(
-			WithUpsertCollection(coll),
+			WithUpsertCollection(coll.ID),
 			WithUpsertDocumentID(ConstantOf("upserted-book-1")),
 			WithUpsertTransformations(ConstantOf("Available").As("status")),
 		).Execute(ctx).Results()

@@ -1298,27 +1298,25 @@ func newFuncInsertOption(f func(map[string]any)) *funcInsertOption {
 	}
 }
 
-// WithInsertCollection specifies the target collection to insert documents into.
-// The collection can be specified as a string path or a [*CollectionRef].
+// WithInsertCollection specifies the target collection path to insert documents into.
 // If omitted, the target collection and document ID are inferred from the `__name__` field of each input document.
 //
 // Experimental: Insert, Upsert, Update, Delete and Search stages in pipeline queries are in public preview
 // and are subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
-func WithInsertCollection(collection any) InsertOption {
+func WithInsertCollection(collectionPath string) InsertOption {
 	return newFuncInsertOption(func(io map[string]any) {
-		io["collection"] = collection
+		io["collection"] = collectionPath
 	})
 }
 
-// WithInsertDocumentID specifies the field or expression used to determine the document ID for each inserted document.
-// It can be a string field path, a [FieldPath], or an [Expression].
+// WithInsertDocumentID specifies the expression used to determine the document ID for each inserted document.
 // If omitted when a target collection is specified, a new random document ID is generated for each document.
 //
 // Experimental: Insert, Upsert, Update, Delete and Search stages in pipeline queries are in public preview
 // and are subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
-func WithInsertDocumentID(documentID any) InsertOption {
+func WithInsertDocumentID(documentID Expression) InsertOption {
 	return newFuncInsertOption(func(io map[string]any) {
 		io["document_id"] = documentID
 	})
@@ -1360,14 +1358,6 @@ func (p *Pipeline) Insert(opts ...InsertOption) *Pipeline {
 		}
 	}
 
-	if colRef, ok := options["collection"].(*CollectionRef); ok && colRef != nil && colRef.c != nil && p.c != nil {
-		if colRef.c.projectID != p.c.projectID || colRef.c.databaseID != p.c.databaseID {
-			p.err = fmt.Errorf("firestore: invalid CollectionRef for Insert stage: collection belongs to database %q in project %q, which differs from pipeline database %q in project %q",
-				colRef.c.databaseID, colRef.c.projectID, p.c.databaseID, p.c.projectID)
-			return p
-		}
-	}
-
 	stage, err := newInsertStage(options)
 	if err != nil {
 		p.err = err
@@ -1402,27 +1392,25 @@ func newFuncUpsertOption(f func(map[string]any)) *funcUpsertOption {
 	}
 }
 
-// WithUpsertCollection specifies the target collection to upsert documents into.
-// The collection can be specified as a string path or a [*CollectionRef].
+// WithUpsertCollection specifies the target collection path to upsert documents into.
 // If omitted, the target collection and document ID are inferred from the `__name__` field of each input document.
 //
 // Experimental: Insert, Upsert, Update, Delete and Search stages in pipeline queries are in public preview
 // and are subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
-func WithUpsertCollection(collection any) UpsertOption {
+func WithUpsertCollection(collectionPath string) UpsertOption {
 	return newFuncUpsertOption(func(uo map[string]any) {
-		uo["collection"] = collection
+		uo["collection"] = collectionPath
 	})
 }
 
-// WithUpsertDocumentID specifies the field or expression used to determine the document ID for each upserted document.
-// It can be a string field path, a [FieldPath], or an [Expression].
+// WithUpsertDocumentID specifies the expression used to determine the document ID for each upserted document.
 // If omitted when a target collection is specified, a new random document ID is generated for each document.
 //
 // Experimental: Insert, Upsert, Update, Delete and Search stages in pipeline queries are in public preview
 // and are subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
-func WithUpsertDocumentID(documentID any) UpsertOption {
+func WithUpsertDocumentID(documentID Expression) UpsertOption {
 	return newFuncUpsertOption(func(uo map[string]any) {
 		uo["document_id"] = documentID
 	})
@@ -1476,14 +1464,6 @@ func (p *Pipeline) Upsert(opts ...UpsertOption) *Pipeline {
 	for _, opt := range opts {
 		if opt != nil {
 			opt.applyStage(options)
-		}
-	}
-
-	if colRef, ok := options["collection"].(*CollectionRef); ok && colRef != nil && colRef.c != nil && p.c != nil {
-		if colRef.c.projectID != p.c.projectID || colRef.c.databaseID != p.c.databaseID {
-			p.err = fmt.Errorf("firestore: invalid CollectionRef for Upsert stage: collection belongs to database %q in project %q, which differs from pipeline database %q in project %q",
-				colRef.c.databaseID, colRef.c.projectID, p.c.databaseID, p.c.projectID)
-			return p
 		}
 	}
 

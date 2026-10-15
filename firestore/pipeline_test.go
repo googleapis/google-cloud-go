@@ -689,7 +689,7 @@ func TestPipeline_Insert_WithOptions(t *testing.T) {
 	client := newTestClient()
 	ps := &PipelineSource{client: client}
 	p := ps.Collection("users").Insert(
-		WithInsertCollection(client.Collection("users/123/archive")),
+		WithInsertCollection("users/123/archive"),
 		WithInsertDocumentID(ConstantOf("doc-1")),
 	)
 
@@ -744,17 +744,6 @@ func TestPipeline_Insert_RawOptions(t *testing.T) {
 	}
 	if diff := cmp.Diff(wantInsertStage, stages[1], protocmp.Transform()); diff != "" {
 		t.Errorf("toExecutePipelineRequest() mismatch for insert stage with RawOptions (-want +got):\n%s", diff)
-	}
-}
-
-func TestPipeline_Insert_CrossDatabaseError(t *testing.T) {
-	client1 := newTestClient()
-	client2 := &Client{projectID: "test-project", databaseID: "other-db"}
-	ps := &PipelineSource{client: client1}
-	p := ps.Collection("users").Insert(WithInsertCollection(client2.Collection("archive")))
-
-	if p.err == nil {
-		t.Fatalf("Expected error when inserting into a collection from a different database, got nil")
 	}
 }
 
@@ -853,17 +842,6 @@ func TestPipeline_Upsert_RawOptions(t *testing.T) {
 	}
 }
 
-func TestPipeline_Upsert_CrossDatabaseError(t *testing.T) {
-	client1 := newTestClient()
-	client2 := &Client{projectID: "test-project", databaseID: "other-db"}
-	ps := &PipelineSource{client: client1}
-	p := ps.Collection("users").Upsert(WithUpsertCollection(client2.Collection("archive")))
-
-	if p.err == nil {
-		t.Fatalf("Expected error when upserting into a collection from a different database, got nil")
-	}
-}
-
 // TestPipelineOptions_UniqueKeys verifies that strongly-typed options within the
 // same stage scope write to strictly unique keys, preventing accidental overrides.
 func TestPipelineOptions_UniqueKeys(t *testing.T) {
@@ -955,7 +933,7 @@ func TestPipelineOptions_UniqueKeys(t *testing.T) {
 	t.Run("InsertOptions", func(t *testing.T) {
 		options := []InsertOption{
 			WithInsertCollection("col"),
-			WithInsertDocumentID("id"),
+			WithInsertDocumentID(ConstantOf("id")),
 		}
 
 		keys := make(map[string]bool)
@@ -976,7 +954,7 @@ func TestPipelineOptions_UniqueKeys(t *testing.T) {
 	t.Run("UpsertOptions", func(t *testing.T) {
 		options := []UpsertOption{
 			WithUpsertCollection("col"),
-			WithUpsertDocumentID("id"),
+			WithUpsertDocumentID(ConstantOf("id")),
 			WithUpsertTransformations(ConstantOf("v").As("k")),
 		}
 

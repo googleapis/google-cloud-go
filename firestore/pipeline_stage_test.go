@@ -428,9 +428,6 @@ func TestUnnestStage(t *testing.T) {
 }
 
 func TestInsertStage(t *testing.T) {
-	client := newTestClient()
-	collRef := client.Collection("users/123/books")
-
 	testcases := []struct {
 		desc    string
 		options map[string]any
@@ -457,7 +454,7 @@ func TestInsertStage(t *testing.T) {
 			},
 		},
 		{
-			desc:    "string collection with leading slash and expression document_id",
+			desc:    "string collection with leading slash and constant document_id",
 			options: map[string]any{"collection": "/books", "document_id": ConstantOf("doc-1")},
 			want: &pb.Pipeline_Stage{
 				Name: "insert",
@@ -469,8 +466,8 @@ func TestInsertStage(t *testing.T) {
 			},
 		},
 		{
-			desc:    "CollectionRef and string document_id",
-			options: map[string]any{"collection": collRef, "document_id": "custom_id"},
+			desc:    "nested collection path and FieldOf document_id",
+			options: map[string]any{"collection": "users/123/books", "document_id": FieldOf("custom_id")},
 			want: &pb.Pipeline_Stage{
 				Name: "insert",
 				Args: []*pb.Value{},
@@ -481,25 +478,8 @@ func TestInsertStage(t *testing.T) {
 			},
 		},
 		{
-			desc:    "FieldPath document_id",
-			options: map[string]any{"collection": "books", "document_id": FieldPath{"meta", "id"}},
-			want: &pb.Pipeline_Stage{
-				Name: "insert",
-				Args: []*pb.Value{},
-				Options: map[string]*pb.Value{
-					"collection":  {ValueType: &pb.Value_ReferenceValue{ReferenceValue: "/books"}},
-					"document_id": {ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "meta.id"}},
-				},
-			},
-		},
-		{
 			desc:    "empty collection string fails",
 			options: map[string]any{"collection": ""},
-			wantErr: true,
-		},
-		{
-			desc:    "nil CollectionRef fails",
-			options: map[string]any{"collection": (*CollectionRef)(nil)},
 			wantErr: true,
 		},
 		{
@@ -508,8 +488,8 @@ func TestInsertStage(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			desc:    "empty document_id string fails",
-			options: map[string]any{"document_id": ""},
+			desc:    "nil document_id fails",
+			options: map[string]any{"document_id": (*field)(nil)},
 			wantErr: true,
 		},
 		{
@@ -540,9 +520,6 @@ func TestInsertStage(t *testing.T) {
 }
 
 func TestUpsertStage(t *testing.T) {
-	client := newTestClient()
-	collRef := client.Collection("users/123/books")
-
 	testcases := []struct {
 		desc    string
 		options map[string]any
@@ -586,7 +563,7 @@ func TestUpsertStage(t *testing.T) {
 		{
 			desc: "collection, document_id, and transformations",
 			options: map[string]any{
-				"collection":      collRef,
+				"collection":      "users/123/books",
 				"document_id":     FieldOf("custom_id"),
 				"transformations": []Selectable{ConstantOf("Featured").As("tier")},
 			},

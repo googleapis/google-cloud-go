@@ -1043,17 +1043,9 @@ func insertAndUpsertOptionsToProto(stageName string, options map[string]any) (ma
 	var collectionPb *pb.Value
 	if col, ok := optsCopy["collection"]; ok {
 		delete(optsCopy, "collection")
-		var path string
-		switch v := col.(type) {
-		case string:
-			path = v
-		case *CollectionRef:
-			if v == nil {
-				return nil, fmt.Errorf("firestore: collection reference cannot be nil for %s stage", stageName)
-			}
-			path = v.selfPath
-		default:
-			return nil, errInvalidArg(stageName, col, "string", "*CollectionRef")
+		path, ok := col.(string)
+		if !ok {
+			return nil, fmt.Errorf("firestore: invalid type for %s collection: %T", stageName, col)
 		}
 		if path == "" {
 			return nil, fmt.Errorf("firestore: collection path cannot be empty for %s stage", stageName)
@@ -1067,18 +1059,14 @@ func insertAndUpsertOptionsToProto(stageName string, options map[string]any) (ma
 	var docIDPb *pb.Value
 	if docID, ok := optsCopy["document_id"]; ok {
 		delete(optsCopy, "document_id")
-		var docIDExpr Expression
-		switch v := docID.(type) {
-		case string:
-			docIDExpr = FieldOf(v)
-		case FieldPath:
-			docIDExpr = FieldOf(v)
-		case Expression:
-			docIDExpr = v
-		default:
-			return nil, errInvalidArg(stageName, docID, "string", "FieldPath", "Expression")
+		if docID == nil {
+			return nil, fmt.Errorf("firestore: internal error: %s stage document_id resolved to nil expression", stageName)
 		}
-		if docIDExpr == nil || (reflect.ValueOf(docIDExpr).Kind() == reflect.Ptr && reflect.ValueOf(docIDExpr).IsNil()) {
+		docIDExpr, ok := docID.(Expression)
+		if !ok {
+			return nil, fmt.Errorf("firestore: invalid type for %s document_id: %T", stageName, docID)
+		}
+		if reflect.ValueOf(docIDExpr).Kind() == reflect.Ptr && reflect.ValueOf(docIDExpr).IsNil() {
 			return nil, fmt.Errorf("firestore: internal error: %s stage document_id resolved to nil expression", stageName)
 		}
 		var err error
