@@ -32,6 +32,9 @@ import (
 	"go.opentelemetry.io/otel/sdk/trace/tracetest"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/googleapi"
+	"google.golang.org/api/option"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 func TestStorageTraceStartEndSpan(t *testing.T) {
@@ -246,7 +249,7 @@ func TestStartSpanWithBucket(t *testing.T) {
 			}
 			client := &Client{bucketMetadataCache: cache}
 
-			ctx1, _ := startSpanWithBucket(ctx, client, tc.bucket, "", "TestSpan")
+			ctx1, _ := startSpanWithBucket(ctx, client, tc.bucket, "TestSpan")
 			endSpan(ctx1, nil)
 
 			spans := te.Spans()
@@ -339,7 +342,7 @@ func TestEndSpanEviction(t *testing.T) {
 			// Populate cache.
 			cache.put(bucketName, bucketMetadata{resource: "res", location: "loc"})
 
-			ctx, _ := startSpanWithBucket(context.Background(), client, bucketName, "", tc.spanName)
+			ctx, _ := startSpanWithBucket(context.Background(), client, bucketName, tc.spanName)
 			endSpan(ctx, tc.err)
 
 			_, found := cache.get(bucketName)
@@ -425,6 +428,13 @@ func TestStorageURIAttribute(t *testing.T) {
 			spanName: "Object.MultiRangeDownloader",
 			op:       func(ctx context.Context, c *Client) { c.Bucket(bucket).Object(object).NewMultiRangeDownloader(ctx) },
 			wantURI:  wantObjURI,
+		},
+		{
+			spanName: "Object.WriterFromAppendableObject",
+			op: func(ctx context.Context, c *Client) {
+				c.Bucket(bucket).Object(object).Generation(1).NewWriterFromAppendableObject(ctx, nil)
+			},
+			wantURI: wantObjURI,
 		},
 		{
 			name:     "Copier.Run uses destination",
@@ -532,6 +542,28 @@ func TestStorageURIAttribute(t *testing.T) {
 			op:       func(ctx context.Context, c *Client) { c.Bucket(bucket).Objects(ctx, nil).Next() },
 			wantURI:  wantBucketURI,
 		},
+		{
+			spanName: "grpcStorageClient.ObjectsListCall",
+			op: func(ctx context.Context, _ *Client) {
+				gc, err := NewGRPCClient(ctx,
+					option.WithEndpoint("localhost:1"),
+					option.WithoutAuthentication(),
+					option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+				)
+				if err != nil {
+					t.Fatalf("NewGRPCClient: %v", err)
+				}
+				defer gc.Close()
+				gc.Bucket(bucket).Retryer(WithPolicy(RetryNever)).Objects(ctx, nil).Next()
+			},
+			wantURI: wantBucketURI,
+		},
+		{
+			name:     "empty bucket omits attribute",
+			spanName: "Bucket.Attrs",
+			op:       func(ctx context.Context, c *Client) { c.Bucket("").Attrs(ctx) },
+			wantURI:  "",
+		},
 	}
 
 	for _, tc := range tests {
@@ -550,6 +582,12 @@ func TestStorageURIAttribute(t *testing.T) {
 			tc.op(ctx, mockClient(t, &mockTransport{}))
 
 			got, ok := storageURIAttr(t, te.Spans(), tc.spanName)
+			if tc.wantURI == "" {
+				if ok {
+					t.Errorf("%s = %q, want it absent when bucket is empty", storageURIAttrKey, got)
+				}
+				return
+			}
 			if !ok {
 				t.Fatalf("%s not found on span %q", storageURIAttrKey, tc.spanName)
 			}

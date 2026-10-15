@@ -71,12 +71,23 @@ func tracer() trace.Tracer {
 	return otel.Tracer(defaultTracerName, trace.WithInstrumentationVersion(internal.Version))
 }
 
-func startSpanWithBucket(ctx context.Context, client *Client, bucket string, object string, name string, opts ...trace.SpanStartOption) (context.Context, trace.Span) {
+func withStorageURI(bucket, object string) trace.SpanStartOption {
+	if !isOTelTracingDevEnabled() || bucket == "" {
+		return trace.WithAttributes()
+	}
+	return trace.WithAttributes(attribute.String(storageURIAttrKey, "gs://"+bucket+"/"+object))
+}
+
+func startSpanWithBucket(ctx context.Context, client *Client, bucket string, name string, opts ...trace.SpanStartOption) (context.Context, trace.Span) {
+	return startSpanWithObject(ctx, client, bucket, "", name, opts...)
+}
+
+func startSpanWithObject(ctx context.Context, client *Client, bucket string, object string, name string, opts ...trace.SpanStartOption) (context.Context, trace.Span) {
 	if !isOTelTracingDevEnabled() {
 		return startSpan(ctx, name, opts...)
 	}
 	if bucket != "" {
-		opts = append(opts, trace.WithAttributes(attribute.String(storageURIAttrKey, "gs://"+bucket+"/"+object)))
+		opts = append(opts, withStorageURI(bucket, object))
 	}
 	if client != nil && client.bucketMetadataCache != nil && bucket != "" {
 		ctx = context.WithValue(ctx, cacheContextKey, client.bucketMetadataCache)
