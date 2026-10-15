@@ -55,4 +55,8 @@ var (
 	//
 	// This option is not supported at the moment.
 	WithBufferPool any // func(BufferPool) option.ClientOption
+
+	// WithGRPCKeepalive is a function which is implemented by the storage package.
+	// It enables HTTP/2 keepalive pings on the client's gRPC connections.
+	WithGRPCKeepalive any // func(GRPCKeepaliveConfig) option.ClientOption
 )

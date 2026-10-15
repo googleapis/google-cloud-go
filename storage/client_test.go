@@ -23,6 +23,7 @@ import (
 	"io"
 	"log"
 	"math/rand"
+	"net"
 	"net/http"
 	"net/url"
 	"os"
@@ -30,6 +31,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -3490,6 +3492,125 @@ func TestGRPCRetryReadStallEmulated(t *testing.T) {
 			checkRetryTestCompleted(t, testID)
 		})
 	}
+}
+
+// stallBlackholeConn wraps a net.Conn and, once armed, turns a testbench
+// server-side stall (>200ms with no bytes received) into a full transport
+// blackhole by blocking further Reads until the connection is closed. This
+// suppresses HTTP/2 PING ACKs from the local testbench transport thread so
+// that gRPC client keepalive can be tested end-to-end against testbench.
+type stallBlackholeConn struct {
+	net.Conn
+	armed     *atomic.Bool
+	triggered *atomic.Bool
+	closed    chan struct{}
+	closeOnce sync.Once
+}
+
+func (c *stallBlackholeConn) Read(b []byte) (int, error) {
+	for {
+		if c.armed.Load() && !c.triggered.Load() {
+			_ = c.Conn.SetReadDeadline(time.Now().Add(200 * time.Millisecond))
+		}
+		n, err := c.Conn.Read(b)
+		if c.armed.Load() {
+			_ = c.Conn.SetReadDeadline(time.Time{})
+			if ne, ok := err.(net.Error); ok && ne.Timeout() {
+				if c.triggered.CompareAndSwap(false, true) {
+					<-c.closed
+					return 0, net.ErrClosed
+				}
+				continue
+			}
+		}
+		return n, err
+	}
+}
+
+func (c *stallBlackholeConn) Close() error {
+	c.closeOnce.Do(func() { close(c.closed) })
+	return c.Conn.Close()
+}
+
+// TestGRPCKeepaliveEmulated verifies that experimental.WithGRPCKeepalive
+// detects a connection that stalls mid-stream against the testbench and
+// closes it so the read is retried on a new connection before the testbench
+// stall duration or context deadline expires.
+func TestGRPCKeepaliveEmulated(t *testing.T) {
+	checkEmulatorEnvironment(t)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 16*time.Second)
+	defer cancel()
+
+	var armed, triggered atomic.Bool
+	dialer := grpc.WithContextDialer(func(ctx context.Context, addr string) (net.Conn, error) {
+		var d net.Dialer
+		conn, err := d.DialContext(ctx, "tcp", addr)
+		if err != nil {
+			return nil, err
+		}
+		return &stallBlackholeConn{
+			Conn:      conn,
+			armed:     &armed,
+			triggered: &triggered,
+			closed:    make(chan struct{}),
+		}, nil
+	})
+
+	// Configure WithGRPCKeepalive with Time at the 10s gRPC minimum and a
+	// short 500ms Timeout so an unacknowledged keepalive ping closes the
+	// stalled connection in ~10.5s.
+	client, err := NewGRPCClient(ctx,
+		option.WithGRPCDialOption(dialer),
+		experimental.WithGRPCKeepalive(experimental.GRPCKeepaliveConfig{
+			Time:    10 * time.Second,
+			Timeout: 500 * time.Millisecond,
+		}),
+	)
+	if err != nil {
+		t.Fatalf("storage.NewGRPCClient: %v", err)
+	}
+	defer client.Close()
+	client.SetRetry(WithBackoff(gax.Backoff{Initial: 10 * time.Millisecond}))
+
+	project := "fake-project"
+	bucket := fmt.Sprintf("grpc-keepalive-bucket-%d", time.Now().UnixNano())
+	if err := client.Bucket(bucket).Create(ctx, project, nil); err != nil {
+		t.Fatalf("client.Bucket.Create: %v", err)
+	}
+
+	name, _, _, err := createObjectWithContent(ctx, bucket, randomBytes3MiB)
+	if err != nil {
+		t.Fatalf("createObject: %v", err)
+	}
+
+	// Inject a 25s stall mid-stream after 1024 KiB (past initial response
+	// headers, where WithReadStallTimeout does not apply). Keepalive (~10.5s)
+	// must abort the dead connection and retry the remaining range before the
+	// 16s context deadline.
+	instructions := map[string][]string{"storage.objects.get": {"stall-for-25s-after-1024K"}}
+	testID := createRetryTest(t, client.tc, instructions)
+	testCtx := callctx.SetHeaders(ctx, "x-retry-test-id", testID)
+
+	armed.Store(true)
+
+	r, err := client.Bucket(bucket).Object(name).NewReader(testCtx)
+	if err != nil {
+		t.Fatalf("NewReader: %v", err)
+	}
+	defer r.Close()
+
+	buf := &bytes.Buffer{}
+	if _, err := io.Copy(buf, r); err != nil {
+		t.Fatalf("io.Copy: %v", err)
+	}
+	if !triggered.Load() {
+		t.Fatal("expected mid-stream stall to trigger connection blackhole")
+	}
+	if !bytes.Equal(buf.Bytes(), randomBytes3MiB) {
+		t.Errorf("content does not match, got len %v, want len %v", buf.Len(), len(randomBytes3MiB))
+	}
+	checkRetryTestCompleted(t, testID)
 }
 
 // checkRetryTestCompleted verifies that the testbench consumed all instructions
