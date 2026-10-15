@@ -19,9 +19,10 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"maps"
 	"math"
 	"reflect"
-	"sort"
+	"slices"
 	"strings"
 	"time"
 
@@ -267,7 +268,7 @@ func (q Query) WhereEntity(ef EntityFilter) Query {
 		q.err = err
 		return q
 	}
-	q.filters = append(append([]*pb.StructuredQuery_Filter(nil), q.filters...), proto)
+	q.filters = append(slices.Clone(q.filters), proto)
 	return q
 }
 
@@ -309,7 +310,7 @@ func (q Query) OrderByPath(fp FieldPath, dir Direction) Query {
 }
 
 func (q *Query) copyOrders() []order {
-	return append([]order(nil), q.orders...)
+	return slices.Clone(q.orders)
 }
 
 // Offset returns a new Query that specifies the number of initial results to skip.
@@ -921,21 +922,7 @@ func (q *Query) getInequalityFilterFields() []FieldPath {
 	}
 	extract(q.filters)
 
-	var result []FieldPath
-	for _, fp := range fieldMap {
-		result = append(result, fp)
-	}
-
-	sort.Slice(result, func(i, j int) bool {
-		p1, p2 := result[i], result[j]
-		for k := 0; k < len(p1) && k < len(p2); k++ {
-			if p1[k] != p2[k] {
-				return p1[k] < p2[k]
-			}
-		}
-		return len(p1) < len(p2)
-	})
-	return result
+	return slices.SortedFunc(maps.Values(fieldMap), slices.Compare)
 }
 
 func (q *Query) toCursor(fieldValues []interface{}, ds *DocumentSnapshot, before bool, orders []order) (*pb.Cursor, error) {

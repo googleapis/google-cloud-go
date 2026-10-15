@@ -18,7 +18,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"sort"
+	"slices"
 
 	"cloud.google.com/go/firestore/apiv1/firestorepb"
 	"google.golang.org/api/iterator"
@@ -121,7 +121,7 @@ func (cgr CollectionGroupRef) getPartitions(ctx context.Context, partitionCount 
 	// cursor A, cursor B, cursor M, cursor Q, cursor U, cursor W
 	// Once we have exhausted the pages, the cursor values need to be sorted in
 	// lexicographical order by segment (areas between '/').
-	sort.Sort(byFirestoreValue(cursorReferences))
+	slices.SortFunc(cursorReferences, compareValues)
 
 	queryPartitions := make([]queryPartition, 0, len(cursorReferences))
 	previousCursor := ""

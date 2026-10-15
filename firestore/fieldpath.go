@@ -15,12 +15,11 @@
 package firestore
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
 	"reflect"
 	"regexp"
-	"sort"
+	"slices"
 	"strings"
 	"sync"
 
@@ -67,15 +66,7 @@ func parseDotSeparatedString(s string) (FieldPath, error) {
 }
 
 func (fp1 FieldPath) equal(fp2 FieldPath) bool {
-	if len(fp1) != len(fp2) {
-		return false
-	}
-	for i, c1 := range fp1 {
-		if c1 != fp2[i] {
-			return false
-		}
-	}
-	return true
+	return slices.Equal(fp1, fp2)
 }
 
 func (fp1 FieldPath) prefixOf(fp2 FieldPath) bool {
@@ -84,18 +75,7 @@ func (fp1 FieldPath) prefixOf(fp2 FieldPath) bool {
 
 // Lexicographic ordering.
 func (fp1 FieldPath) less(fp2 FieldPath) bool {
-	for i := range fp1 {
-		switch {
-		case i >= len(fp2):
-			return false
-		case fp1[i] < fp2[i]:
-			return true
-		case fp1[i] > fp2[i]:
-			return false
-		}
-	}
-	// fp1 and fp2 are equal up to len(fp1).
-	return len(fp1) < len(fp2)
+	return slices.Compare(fp1, fp2) < 0
 }
 
 // validate checks the validity of fp and returns an error if it is invalid.
@@ -103,10 +83,8 @@ func (fp FieldPath) validate() error {
 	if len(fp) == 0 {
 		return errors.New("firestore: empty field path")
 	}
-	for _, c := range fp {
-		if len(c) == 0 {
-			return errors.New("firestore: empty component in field path")
-		}
+	if slices.Contains(fp, "") {
+		return errors.New("firestore: empty component in field path")
 	}
 	return nil
 }
@@ -123,7 +101,7 @@ func (fp FieldPath) with(k string) FieldPath {
 // It modifies the order of FieldPaths in its argument (via sorting).
 func checkNoDupOrPrefix(fps []FieldPath) error {
 	// Sort fps lexicographically.
-	sort.Sort(byPath(fps))
+	slices.SortFunc(fps, slices.Compare)
 	// Check adjacent pairs for prefix.
 	for i := 1; i < len(fps); i++ {
 		if fps[i-1].prefixOf(fps[i]) {
@@ -132,12 +110,6 @@ func checkNoDupOrPrefix(fps []FieldPath) error {
 	}
 	return nil
 }
-
-type byPath []FieldPath
-
-func (b byPath) Len() int           { return len(b) }
-func (b byPath) Swap(i, j int)      { b[i], b[j] = b[j], b[i] }
-func (b byPath) Less(i, j int) bool { return b[i].less(b[j]) }
 
 // setAtPath sets val at the location in m specified by fp, creating sub-maps as
 // needed. m must not be nil. fp is assumed to be valid.
@@ -237,9 +209,9 @@ func (fp FieldPath) toServiceFieldPath() string {
 }
 
 func toServiceFieldPaths(fps []FieldPath) []string {
-	var sfps []string
-	for _, fp := range fps {
-		sfps = append(sfps, fp.toServiceFieldPath())
+	sfps := make([]string, len(fps))
+	for i, fp := range fps {
+		sfps[i] = fp.toServiceFieldPath()
 	}
 	return sfps
 }
@@ -253,14 +225,15 @@ func toServiceFieldPathComponent(key string) string {
 	if unquotedFieldRegexp.MatchString(key) {
 		return key
 	}
-	var buf bytes.Buffer
-	buf.WriteRune('`')
+	var buf strings.Builder
+	buf.Grow(len(key) + 2)
+	buf.WriteByte('`')
 	for _, r := range key {
 		if r == '`' || r == '\\' {
-			buf.WriteRune('\\')
+			buf.WriteByte('\\')
 		}
 		buf.WriteRune(r)
 	}
-	buf.WriteRune('`')
+	buf.WriteByte('`')
 	return buf.String()
 }
