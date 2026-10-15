@@ -109,6 +109,15 @@ func (c *fakeStreamingReadClient) Header() (metadata.MD, error) {
 	return c.stream.Header()
 }
 
+type fakeBatchWriteClient struct {
+	spannerpb.Spanner_BatchWriteClient
+	stream *headerCountingStream
+}
+
+func (c *fakeBatchWriteClient) Header() (metadata.MD, error) {
+	return c.stream.Header()
+}
+
 func TestCachedStreamClientsCallHeaderOnce(t *testing.T) {
 	md := metadata.Pairs("server-timing", "gfet4t7; dur=123")
 	for _, tc := range []struct {
@@ -125,6 +134,12 @@ func TestCachedStreamClientsCallHeaderOnce(t *testing.T) {
 			name: "StreamingRead",
 			wrap: func(s *headerCountingStream) grpc.ClientStream {
 				return &cachedStreamingReadClient{Spanner_StreamingReadClient: &fakeStreamingReadClient{stream: s}}
+			},
+		},
+		{
+			name: "BatchWrite",
+			wrap: func(s *headerCountingStream) grpc.ClientStream {
+				return &cachedBatchWriteClient{Spanner_BatchWriteClient: &fakeBatchWriteClient{stream: s}}
 			},
 		},
 	} {
@@ -684,9 +699,14 @@ func TestResponseHeadersOnlyRequestedWhenUsed(t *testing.T) {
 			if got := headerRequests.get(); !reflect.DeepEqual(got, tc.wantHeaderRequests) {
 				t.Errorf("header requests = %v, want %v", got, tc.wantHeaderRequests)
 			}
-			// BatchWrite does not record GFE latency, so it never reads headers.
-			if got := streamHeaders.get(batchWrite); got != 0 {
-				t.Errorf("BatchWrite Header() calls = %d, want 0", got)
+			// As for streaming queries and reads, BatchWrite reads the headers
+			// of its stream once if built-in metrics or tracing use them.
+			wantBatchWriteHeaders := 0
+			if tc.builtIn || tc.tracing {
+				wantBatchWriteHeaders = 1
+			}
+			if got := streamHeaders.get(batchWrite); got != wantBatchWriteHeaders {
+				t.Errorf("BatchWrite Header() calls = %d, want %d", got, wantBatchWriteHeaders)
 			}
 
 			wantOT := map[string]int64{}
@@ -706,8 +726,10 @@ func TestResponseHeadersOnlyRequestedWhenUsed(t *testing.T) {
 			builtInMetrics := collectTestMetrics(t, builtInReader)
 			// The built-in metrics interceptor records every unary call,
 			// including the BeginTransaction of the batch transaction and of
-			// the partitioned update.
+			// the partitioned update. BatchWrite records the GFE latency of its
+			// stream.
 			builtInLatency := map[string]int64{
+				"Spanner.BatchWrite":       77,
 				"Spanner.CreateSession":    2 * 123,
 				"Spanner.BeginTransaction": 3 * 11,
 				"Spanner.ExecuteSql":       2 * 22,
@@ -723,14 +745,11 @@ func TestResponseHeadersOnlyRequestedWhenUsed(t *testing.T) {
 			if got := latencySumsByAttr(t, builtInMetrics, clientMetricsPrefix+metricNameGFELatencies, metricLabelKeyMethod, slices.Collect(maps.Keys(builtInLatency))...); !reflect.DeepEqual(got, wantBuiltIn) {
 				t.Errorf("built-in GFE latency sums = %v, want %v", got, wantBuiltIn)
 			}
-			// The built-in metrics tracer is not in the BatchWrite context.
-			if got := builtInMetricsOfMethod(builtInMetrics, "Spanner.BatchWrite"); len(got) != 0 {
-				t.Errorf("built-in metrics of Spanner.BatchWrite = %v, want none", got)
-			}
 
 			// The built-in metrics interceptor sets the server timing span
-			// attributes of unary calls independently of the sinks. The
-			// partition calls do not start a span, and BatchWrite sets none.
+			// attributes of unary calls independently of the sinks, and
+			// BatchWrite sets them on the span of its iterator. The partition
+			// calls do not start a span.
 			gotSpanLatencies := map[float64]bool{}
 			for _, span := range spans.GetSpans() {
 				for _, attr := range span.Attributes {
@@ -741,7 +760,7 @@ func TestResponseHeadersOnlyRequestedWhenUsed(t *testing.T) {
 			}
 			wantSpanLatencies := map[float64]bool{}
 			if tc.tracing {
-				wantSpanLatencies = map[float64]bool{11: true, 22: true, 33: true, 44: true, 123: true}
+				wantSpanLatencies = map[float64]bool{11: true, 22: true, 33: true, 44: true, 77: true, 123: true}
 			}
 			if !reflect.DeepEqual(gotSpanLatencies, wantSpanLatencies) {
 				t.Errorf("span gfe.latency_ms values = %v, want %v", gotSpanLatencies, wantSpanLatencies)
@@ -769,9 +788,9 @@ func openCensusLatencySums(t *testing.T, methods []string) map[string]int64 {
 	return sums
 }
 
-// TestStreamCreationFailureRecordsBuiltInMetrics verifies that a query or
-// read whose stream fails to open records one failed attempt and operation
-// for the streaming method.
+// TestStreamCreationFailureRecordsBuiltInMetrics verifies that a query, read
+// or BatchWrite whose stream fails to open records one failed attempt and
+// operation for the streaming method.
 func TestStreamCreationFailureRecordsBuiltInMetrics(t *testing.T) {
 	reject := grpc.WithChainStreamInterceptor(func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
 		return nil, status.Error(codes.InvalidArgument, "rejected before sending")
@@ -793,6 +812,13 @@ func TestStreamCreationFailureRecordsBuiltInMetrics(t *testing.T) {
 			method: "Spanner.StreamingRead",
 			run: func(ctx context.Context, client *Client) error {
 				return client.Single().Read(ctx, "Albums", AllKeys(), []string{"SingerId"}).Do(func(*Row) error { return nil })
+			},
+		},
+		{
+			name:   "BatchWrite",
+			method: "Spanner.BatchWrite",
+			run: func(ctx context.Context, client *Client) error {
+				return client.BatchWrite(ctx, []*MutationGroup{{[]*Mutation{Insert("Albums", []string{"SingerId"}, []any{1})}}}).Do(func(*spannerpb.BatchWriteResponse) error { return nil })
 			},
 		},
 	} {
@@ -859,34 +885,68 @@ func builtInMetricValues(rm metricdata.ResourceMetrics, method, code string) map
 	return values
 }
 
-// builtInMetricsOfMethod returns the names of the metrics that have a data
-// point for the given built-in metrics method label.
-func builtInMetricsOfMethod(rm metricdata.ResourceMetrics, method string) []string {
-	var names []string
-	for _, sm := range rm.ScopeMetrics {
-		for _, m := range sm.Metrics {
-			var attrs []attribute.Set
-			switch data := m.Data.(type) {
-			case metricdata.Sum[int64]:
-				for _, dp := range data.DataPoints {
-					attrs = append(attrs, dp.Attributes)
-				}
-			case metricdata.Histogram[float64]:
-				for _, dp := range data.DataPoints {
-					attrs = append(attrs, dp.Attributes)
-				}
-			case metricdata.Histogram[int64]:
-				for _, dp := range data.DataPoints {
-					attrs = append(attrs, dp.Attributes)
-				}
+// TestBatchWriteRecordsServerTiming verifies that, as for streaming queries
+// and reads, the server-timing header of a BatchWrite stream is recorded in
+// the built-in GFE latency metric and on the BatchWriteResponseIterator span.
+func TestBatchWriteRecordsServerTiming(t *testing.T) {
+	const batchWrite = "/google.spanner.v1.Spanner/BatchWrite"
+	batchWriteTiming := grpc.StreamInterceptor(func(srv any, stream grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
+		if info.FullMethod == batchWrite {
+			if err := stream.SetHeader(metadata.Pairs("server-timing", "gfet4t7; dur=789")); err != nil {
+				return err
 			}
-			for _, a := range attrs {
-				if v, ok := a.Value(attribute.Key(metricLabelKeyMethod)); ok && v.AsString() == method {
-					names = append(names, m.Name)
-					break
-				}
+		}
+		return handler(srv, stream)
+	})
+	origTracerProvider := otel.GetTracerProvider()
+	t.Cleanup(func() { otel.SetTracerProvider(origTracerProvider) })
+	ctx := context.Background()
+	spans := tracetest.NewInMemoryExporter()
+	tp := sdktrace.NewTracerProvider(sdktrace.WithSyncer(spans))
+	defer tp.Shutdown(ctx)
+	otel.SetTracerProvider(tp)
+
+	reader, provider := newTestMeterProvider()
+	_, opts, serverTeardown := NewMockedSpannerInMemTestServer(t, batchWriteTiming)
+	defer serverTeardown()
+	client, err := NewClientWithConfig(ctx, "projects/p/instances/i/databases/d", ClientConfig{DisableNativeMetrics: true, ClientMetricsProvider: provider}, opts...)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer client.Close()
+
+	mgs := []*MutationGroup{{[]*Mutation{Insert("Albums", []string{"SingerId"}, []any{1})}}}
+	if err := client.BatchWrite(ctx, mgs).Do(func(*spannerpb.BatchWriteResponse) error { return nil }); err != nil {
+		t.Fatalf("BatchWrite failed: %v", err)
+	}
+
+	want := map[string]int64{"Spanner.BatchWrite": 789}
+	if got := latencySumsByAttr(t, collectTestMetrics(t, reader), clientMetricsPrefix+metricNameGFELatencies, metricLabelKeyMethod, "Spanner.BatchWrite"); !reflect.DeepEqual(got, want) {
+		t.Errorf("built-in GFE latency sums = %v, want %v", got, want)
+	}
+	// Both the BatchWrite span and the span of the iterator are ended.
+	var gotSpanNames []string
+	for _, span := range spans.GetSpans() {
+		if strings.HasPrefix(span.Name, "cloud.google.com/go/spanner.BatchWrite") {
+			gotSpanNames = append(gotSpanNames, span.Name)
+		}
+	}
+	sort.Strings(gotSpanNames)
+	if diff := cmp.Diff([]string{"cloud.google.com/go/spanner.BatchWrite", "cloud.google.com/go/spanner.BatchWriteResponseIterator"}, gotSpanNames); diff != "" {
+		t.Errorf("ended spans mismatch (-want +got):\n%s", diff)
+	}
+	var gotSpanLatencies []float64
+	for _, span := range spans.GetSpans() {
+		if span.Name != "cloud.google.com/go/spanner.BatchWriteResponseIterator" {
+			continue
+		}
+		for _, attr := range span.Attributes {
+			if attr.Key == "gfe.latency_ms" {
+				gotSpanLatencies = append(gotSpanLatencies, attr.Value.AsFloat64())
 			}
 		}
 	}
-	return names
+	if wantSpanLatencies := []float64{789}; !reflect.DeepEqual(gotSpanLatencies, wantSpanLatencies) {
+		t.Errorf("BatchWriteResponseIterator span gfe.latency_ms = %v, want %v", gotSpanLatencies, wantSpanLatencies)
+	}
 }

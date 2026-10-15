@@ -37,6 +37,138 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// The type of the product this service commercializes.
+//
+// Every service has a type, but only the types listed below are exposed. A
+// service whose type is not one of the listed values reports
+// `PRODUCT_TYPE_UNSPECIFIED`.
+//
+// Values may be added over time. Clients must handle unrecognized values.
+// When new values are added, the ProductType for an existing service may
+// change. Clients must also be able to handle a change in ProductType.
+type Service_ProductType int32
+
+const (
+	// The service has a type, but it is not one of the types exposed below.
+	Service_PRODUCT_TYPE_UNSPECIFIED Service_ProductType = 0
+	// Represents a software-as-a-service product. See
+	// https://docs.cloud.google.com/marketplace/docs/partners/integrated-saas
+	Service_SOFTWARE_AS_A_SERVICE Service_ProductType = 1
+	// Represents a data product on BigQuery sharing (formerly Analytics Hub).
+	// See https://docs.cloud.google.com/marketplace/docs/partners/data
+	Service_ANALYTICS_HUB_LISTING Service_ProductType = 2
+	// Represents a professional services product. See
+	// https://docs.cloud.google.com/marketplace/docs/partners/professional-services
+	Service_PROFESSIONAL_SERVICES Service_ProductType = 3
+)
+
+// Enum value maps for Service_ProductType.
+var (
+	Service_ProductType_name = map[int32]string{
+		0: "PRODUCT_TYPE_UNSPECIFIED",
+		1: "SOFTWARE_AS_A_SERVICE",
+		2: "ANALYTICS_HUB_LISTING",
+		3: "PROFESSIONAL_SERVICES",
+	}
+	Service_ProductType_value = map[string]int32{
+		"PRODUCT_TYPE_UNSPECIFIED": 0,
+		"SOFTWARE_AS_A_SERVICE":    1,
+		"ANALYTICS_HUB_LISTING":    2,
+		"PROFESSIONAL_SERVICES":    3,
+	}
+)
+
+func (x Service_ProductType) Enum() *Service_ProductType {
+	p := new(Service_ProductType)
+	*p = x
+	return p
+}
+
+func (x Service_ProductType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (Service_ProductType) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_commerceproducer_v1beta_service_proto_enumTypes[0].Descriptor()
+}
+
+func (Service_ProductType) Type() protoreflect.EnumType {
+	return &file_google_cloud_commerceproducer_v1beta_service_proto_enumTypes[0]
+}
+
+func (x Service_ProductType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use Service_ProductType.Descriptor instead.
+func (Service_ProductType) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_commerceproducer_v1beta_service_proto_rawDescGZIP(), []int{0, 0}
+}
+
+// Requirement level for the document type.
+type Service_DocumentRequirement_DocumentTypeRequirement_RequirementLevel int32
+
+const (
+	// Unspecified requirement level. Do not use.
+	Service_DocumentRequirement_DocumentTypeRequirement_REQUIREMENT_LEVEL_UNSPECIFIED Service_DocumentRequirement_DocumentTypeRequirement_RequirementLevel = 0
+	// The document type is mandatory for private offers on this service.
+	// Exactly one document of this type must be attached.
+	Service_DocumentRequirement_DocumentTypeRequirement_REQUIRED Service_DocumentRequirement_DocumentTypeRequirement_RequirementLevel = 1
+	// The document type is optional for private offers on this service.
+	// At most one document of this type may be attached.
+	Service_DocumentRequirement_DocumentTypeRequirement_OPTIONAL Service_DocumentRequirement_DocumentTypeRequirement_RequirementLevel = 2
+	// The document type is not permitted for private offers on this
+	// service. No document of this type may be attached.
+	//
+	// A document type omitted from `document_type_requirements` is also
+	// not permitted. This value is used to state the restriction
+	// explicitly.
+	Service_DocumentRequirement_DocumentTypeRequirement_NOT_ALLOWED Service_DocumentRequirement_DocumentTypeRequirement_RequirementLevel = 3
+)
+
+// Enum value maps for Service_DocumentRequirement_DocumentTypeRequirement_RequirementLevel.
+var (
+	Service_DocumentRequirement_DocumentTypeRequirement_RequirementLevel_name = map[int32]string{
+		0: "REQUIREMENT_LEVEL_UNSPECIFIED",
+		1: "REQUIRED",
+		2: "OPTIONAL",
+		3: "NOT_ALLOWED",
+	}
+	Service_DocumentRequirement_DocumentTypeRequirement_RequirementLevel_value = map[string]int32{
+		"REQUIREMENT_LEVEL_UNSPECIFIED": 0,
+		"REQUIRED":                      1,
+		"OPTIONAL":                      2,
+		"NOT_ALLOWED":                   3,
+	}
+)
+
+func (x Service_DocumentRequirement_DocumentTypeRequirement_RequirementLevel) Enum() *Service_DocumentRequirement_DocumentTypeRequirement_RequirementLevel {
+	p := new(Service_DocumentRequirement_DocumentTypeRequirement_RequirementLevel)
+	*p = x
+	return p
+}
+
+func (x Service_DocumentRequirement_DocumentTypeRequirement_RequirementLevel) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (Service_DocumentRequirement_DocumentTypeRequirement_RequirementLevel) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_commerceproducer_v1beta_service_proto_enumTypes[1].Descriptor()
+}
+
+func (Service_DocumentRequirement_DocumentTypeRequirement_RequirementLevel) Type() protoreflect.EnumType {
+	return &file_google_cloud_commerceproducer_v1beta_service_proto_enumTypes[1]
+}
+
+func (x Service_DocumentRequirement_DocumentTypeRequirement_RequirementLevel) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use Service_DocumentRequirement_DocumentTypeRequirement_RequirementLevel.Descriptor instead.
+func (Service_DocumentRequirement_DocumentTypeRequirement_RequirementLevel) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_commerceproducer_v1beta_service_proto_rawDescGZIP(), []int{0, 0, 0, 0}
+}
+
 // Message describing Service resource.
 type Service struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -45,7 +177,15 @@ type Service struct {
 	// Output only. Title of the service.
 	//
 	// Not included for `SERVICE_VIEW_BASIC`.
-	Title         string `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
+	Title string `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
+	// Output only. Document requirement for private offers on this service.
+	//
+	// Constraints that apply to every service, such as the restriction against
+	// attaching both a standard and a custom EULA, are documented on
+	// `PrivateOfferDocument` and are not represented here.
+	DocumentRequirement *Service_DocumentRequirement `protobuf:"bytes,3,opt,name=document_requirement,json=documentRequirement,proto3" json:"document_requirement,omitempty"`
+	// Output only. Type of the product this service commercializes.
+	ProductType   Service_ProductType `protobuf:"varint,4,opt,name=product_type,json=productType,proto3,enum=google.cloud.commerceproducer.v1beta.Service_ProductType" json:"product_type,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -94,14 +234,150 @@ func (x *Service) GetTitle() string {
 	return ""
 }
 
+func (x *Service) GetDocumentRequirement() *Service_DocumentRequirement {
+	if x != nil {
+		return x.DocumentRequirement
+	}
+	return nil
+}
+
+func (x *Service) GetProductType() Service_ProductType {
+	if x != nil {
+		return x.ProductType
+	}
+	return Service_PRODUCT_TYPE_UNSPECIFIED
+}
+
+// Requirements and constraints for documents attached to private offers.
+type Service_DocumentRequirement struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Document requirements for private offers on this service.
+	//
+	// Each document type appears at most once. The order of entries is not
+	// significant. A document type that is not present in this list is not
+	// permitted for private offers on this service.
+	DocumentTypeRequirements []*Service_DocumentRequirement_DocumentTypeRequirement `protobuf:"bytes,1,rep,name=document_type_requirements,json=documentTypeRequirements,proto3" json:"document_type_requirements,omitempty"`
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
+}
+
+func (x *Service_DocumentRequirement) Reset() {
+	*x = Service_DocumentRequirement{}
+	mi := &file_google_cloud_commerceproducer_v1beta_service_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Service_DocumentRequirement) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Service_DocumentRequirement) ProtoMessage() {}
+
+func (x *Service_DocumentRequirement) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_commerceproducer_v1beta_service_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Service_DocumentRequirement.ProtoReflect.Descriptor instead.
+func (*Service_DocumentRequirement) Descriptor() ([]byte, []int) {
+	return file_google_cloud_commerceproducer_v1beta_service_proto_rawDescGZIP(), []int{0, 0}
+}
+
+func (x *Service_DocumentRequirement) GetDocumentTypeRequirements() []*Service_DocumentRequirement_DocumentTypeRequirement {
+	if x != nil {
+		return x.DocumentTypeRequirements
+	}
+	return nil
+}
+
+// Requirement specification for a specific document type.
+type Service_DocumentRequirement_DocumentTypeRequirement struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The document type.
+	DocumentType PrivateOfferDocument_DocumentType `protobuf:"varint,1,opt,name=document_type,json=documentType,proto3,enum=google.cloud.commerceproducer.v1beta.PrivateOfferDocument_DocumentType" json:"document_type,omitempty"`
+	// The requirement level for this document type.
+	RequirementLevel Service_DocumentRequirement_DocumentTypeRequirement_RequirementLevel `protobuf:"varint,2,opt,name=requirement_level,json=requirementLevel,proto3,enum=google.cloud.commerceproducer.v1beta.Service_DocumentRequirement_DocumentTypeRequirement_RequirementLevel" json:"requirement_level,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *Service_DocumentRequirement_DocumentTypeRequirement) Reset() {
+	*x = Service_DocumentRequirement_DocumentTypeRequirement{}
+	mi := &file_google_cloud_commerceproducer_v1beta_service_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Service_DocumentRequirement_DocumentTypeRequirement) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Service_DocumentRequirement_DocumentTypeRequirement) ProtoMessage() {}
+
+func (x *Service_DocumentRequirement_DocumentTypeRequirement) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_commerceproducer_v1beta_service_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Service_DocumentRequirement_DocumentTypeRequirement.ProtoReflect.Descriptor instead.
+func (*Service_DocumentRequirement_DocumentTypeRequirement) Descriptor() ([]byte, []int) {
+	return file_google_cloud_commerceproducer_v1beta_service_proto_rawDescGZIP(), []int{0, 0, 0}
+}
+
+func (x *Service_DocumentRequirement_DocumentTypeRequirement) GetDocumentType() PrivateOfferDocument_DocumentType {
+	if x != nil {
+		return x.DocumentType
+	}
+	return PrivateOfferDocument_DOCUMENT_TYPE_UNSPECIFIED
+}
+
+func (x *Service_DocumentRequirement_DocumentTypeRequirement) GetRequirementLevel() Service_DocumentRequirement_DocumentTypeRequirement_RequirementLevel {
+	if x != nil {
+		return x.RequirementLevel
+	}
+	return Service_DocumentRequirement_DocumentTypeRequirement_REQUIREMENT_LEVEL_UNSPECIFIED
+}
+
 var File_google_cloud_commerceproducer_v1beta_service_proto protoreflect.FileDescriptor
 
 const file_google_cloud_commerceproducer_v1beta_service_proto_rawDesc = "" +
 	"\n" +
-	"2google/cloud/commerceproducer/v1beta/service.proto\x12$google.cloud.commerceproducer.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\"\xba\x01\n" +
+	"2google/cloud/commerceproducer/v1beta/service.proto\x12$google.cloud.commerceproducer.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a8google/cloud/commerceproducer/v1beta/private_offer.proto\"\xd0\b\n" +
 	"\aService\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x19\n" +
-	"\x05title\x18\x02 \x01(\tB\x03\xe0A\x03R\x05title:{\xeaAx\n" +
+	"\x05title\x18\x02 \x01(\tB\x03\xe0A\x03R\x05title\x12y\n" +
+	"\x14document_requirement\x18\x03 \x01(\v2A.google.cloud.commerceproducer.v1beta.Service.DocumentRequirementB\x03\xe0A\x03R\x13documentRequirement\x12a\n" +
+	"\fproduct_type\x18\x04 \x01(\x0e29.google.cloud.commerceproducer.v1beta.Service.ProductTypeB\x03\xe0A\x03R\vproductType\x1a\xb7\x04\n" +
+	"\x13DocumentRequirement\x12\x97\x01\n" +
+	"\x1adocument_type_requirements\x18\x01 \x03(\v2Y.google.cloud.commerceproducer.v1beta.Service.DocumentRequirement.DocumentTypeRequirementR\x18documentTypeRequirements\x1a\x85\x03\n" +
+	"\x17DocumentTypeRequirement\x12l\n" +
+	"\rdocument_type\x18\x01 \x01(\x0e2G.google.cloud.commerceproducer.v1beta.PrivateOfferDocument.DocumentTypeR\fdocumentType\x12\x97\x01\n" +
+	"\x11requirement_level\x18\x02 \x01(\x0e2j.google.cloud.commerceproducer.v1beta.Service.DocumentRequirement.DocumentTypeRequirement.RequirementLevelR\x10requirementLevel\"b\n" +
+	"\x10RequirementLevel\x12!\n" +
+	"\x1dREQUIREMENT_LEVEL_UNSPECIFIED\x10\x00\x12\f\n" +
+	"\bREQUIRED\x10\x01\x12\f\n" +
+	"\bOPTIONAL\x10\x02\x12\x0f\n" +
+	"\vNOT_ALLOWED\x10\x03\"|\n" +
+	"\vProductType\x12\x1c\n" +
+	"\x18PRODUCT_TYPE_UNSPECIFIED\x10\x00\x12\x19\n" +
+	"\x15SOFTWARE_AS_A_SERVICE\x10\x01\x12\x19\n" +
+	"\x15ANALYTICS_HUB_LISTING\x10\x02\x12\x19\n" +
+	"\x15PROFESSIONAL_SERVICES\x10\x03:{\xeaAx\n" +
 	"'commerceproducer.googleapis.com/Service\x12:projects/{project}/locations/{location}/services/{service}*\bservices2\aserviceB\x88\x02\n" +
 	"(com.google.cloud.commerceproducer.v1betaB\fServiceProtoP\x01ZTcloud.google.com/go/commerceproducer/apiv1beta/commerceproducerpb;commerceproducerpb\xaa\x02$Google.Cloud.CommerceProducer.V1Beta\xca\x02$Google\\Cloud\\CommerceProducer\\V1beta\xea\x02'Google::Cloud::CommerceProducer::V1betab\x06proto3"
 
@@ -117,16 +393,27 @@ func file_google_cloud_commerceproducer_v1beta_service_proto_rawDescGZIP() []byt
 	return file_google_cloud_commerceproducer_v1beta_service_proto_rawDescData
 }
 
-var file_google_cloud_commerceproducer_v1beta_service_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_google_cloud_commerceproducer_v1beta_service_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_google_cloud_commerceproducer_v1beta_service_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_google_cloud_commerceproducer_v1beta_service_proto_goTypes = []any{
-	(*Service)(nil), // 0: google.cloud.commerceproducer.v1beta.Service
+	(Service_ProductType)(0), // 0: google.cloud.commerceproducer.v1beta.Service.ProductType
+	(Service_DocumentRequirement_DocumentTypeRequirement_RequirementLevel)(0), // 1: google.cloud.commerceproducer.v1beta.Service.DocumentRequirement.DocumentTypeRequirement.RequirementLevel
+	(*Service)(nil),                     // 2: google.cloud.commerceproducer.v1beta.Service
+	(*Service_DocumentRequirement)(nil), // 3: google.cloud.commerceproducer.v1beta.Service.DocumentRequirement
+	(*Service_DocumentRequirement_DocumentTypeRequirement)(nil), // 4: google.cloud.commerceproducer.v1beta.Service.DocumentRequirement.DocumentTypeRequirement
+	(PrivateOfferDocument_DocumentType)(0),                      // 5: google.cloud.commerceproducer.v1beta.PrivateOfferDocument.DocumentType
 }
 var file_google_cloud_commerceproducer_v1beta_service_proto_depIdxs = []int32{
-	0, // [0:0] is the sub-list for method output_type
-	0, // [0:0] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	3, // 0: google.cloud.commerceproducer.v1beta.Service.document_requirement:type_name -> google.cloud.commerceproducer.v1beta.Service.DocumentRequirement
+	0, // 1: google.cloud.commerceproducer.v1beta.Service.product_type:type_name -> google.cloud.commerceproducer.v1beta.Service.ProductType
+	4, // 2: google.cloud.commerceproducer.v1beta.Service.DocumentRequirement.document_type_requirements:type_name -> google.cloud.commerceproducer.v1beta.Service.DocumentRequirement.DocumentTypeRequirement
+	5, // 3: google.cloud.commerceproducer.v1beta.Service.DocumentRequirement.DocumentTypeRequirement.document_type:type_name -> google.cloud.commerceproducer.v1beta.PrivateOfferDocument.DocumentType
+	1, // 4: google.cloud.commerceproducer.v1beta.Service.DocumentRequirement.DocumentTypeRequirement.requirement_level:type_name -> google.cloud.commerceproducer.v1beta.Service.DocumentRequirement.DocumentTypeRequirement.RequirementLevel
+	5, // [5:5] is the sub-list for method output_type
+	5, // [5:5] is the sub-list for method input_type
+	5, // [5:5] is the sub-list for extension type_name
+	5, // [5:5] is the sub-list for extension extendee
+	0, // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_commerceproducer_v1beta_service_proto_init() }
@@ -134,18 +421,20 @@ func file_google_cloud_commerceproducer_v1beta_service_proto_init() {
 	if File_google_cloud_commerceproducer_v1beta_service_proto != nil {
 		return
 	}
+	file_google_cloud_commerceproducer_v1beta_private_offer_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_commerceproducer_v1beta_service_proto_rawDesc), len(file_google_cloud_commerceproducer_v1beta_service_proto_rawDesc)),
-			NumEnums:      0,
-			NumMessages:   1,
+			NumEnums:      2,
+			NumMessages:   3,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
 		GoTypes:           file_google_cloud_commerceproducer_v1beta_service_proto_goTypes,
 		DependencyIndexes: file_google_cloud_commerceproducer_v1beta_service_proto_depIdxs,
+		EnumInfos:         file_google_cloud_commerceproducer_v1beta_service_proto_enumTypes,
 		MessageInfos:      file_google_cloud_commerceproducer_v1beta_service_proto_msgTypes,
 	}.Build()
 	File_google_cloud_commerceproducer_v1beta_service_proto = out.File

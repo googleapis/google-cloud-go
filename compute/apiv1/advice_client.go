@@ -72,6 +72,8 @@ type internalAdviceClient interface {
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The Advice API.
+//
+// This client uses Advice version 2026-09-01.
 type AdviceClient struct {
 	// The internal transport-dependent client.
 	internalClient internalAdviceClient
@@ -240,6 +242,7 @@ func (c *adviceRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
+		"x-goog-api-version", "2026-09-01",
 	}
 }
 

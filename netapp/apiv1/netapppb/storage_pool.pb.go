@@ -669,8 +669,8 @@ type StoragePool struct {
 	// `BLOCK`) volumes. If not specified during creation, it defaults to `FILE`.
 	Type *StoragePoolType `protobuf:"varint,35,opt,name=type,proto3,enum=google.cloud.netapp.v1.StoragePoolType,oneof" json:"type,omitempty"`
 	// Optional. Mode of the storage pool. This field is used to control whether
-	// the user can perform the ONTAP operations on the storage pool using the
-	// GCNV ONTAP Mode APIs. If not specified during creation, it defaults to
+	// the user can perform ONTAP operations on the storage pool using the GCNV
+	// ONTAP Mode APIs. If not specified during creation, it defaults to
 	// `DEFAULT`.
 	Mode *Mode `protobuf:"varint,36,opt,name=mode,proto3,enum=google.cloud.netapp.v1.Mode,oneof" json:"mode,omitempty"`
 	// Optional. The scale type of the storage pool. Defaults to

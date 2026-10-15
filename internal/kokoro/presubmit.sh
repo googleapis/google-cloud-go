@@ -58,7 +58,7 @@ exit_code=0
 # Run tests in the current directory, and retain log files which will
 # be pushed as build artifacts.
 runPresubmitTests() {
-  if [[ $PWD == *"/internal/"* ]] ||
+  if { [[ $PWD == *"/internal/"* ]] && [[ $PWD != *"/internal/testing/"* ]]; } ||
     [[ $PWD == *"/third_party/"* ]]; then
     # internal tools only expected to work with latest go version
     return
@@ -86,7 +86,7 @@ runPresubmitTests() {
     exit_code=$(($exit_code + $?))
   fi
 
-  if [[ $PWD != *"/internal/"* ]]; then
+  if [[ $PWD != *"/internal/"* ]] || [[ $PWD == *"/internal/testing/"* ]]; then
     go build ./...
     exit_code=$(($exit_code + $?))
   fi

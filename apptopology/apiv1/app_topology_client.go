@@ -48,6 +48,7 @@ var newClientHook clientHook
 type CallOptions struct {
 	GenerateDiscoveredResourcesTopology []gax.CallOption
 	GetSchema                           []gax.CallOption
+	ExploreSchema                       []gax.CallOption
 	GetDomain                           []gax.CallOption
 	ListDomains                         []gax.CallOption
 	GetLocation                         []gax.CallOption
@@ -79,6 +80,18 @@ func defaultCallOptions() *CallOptions {
 			gax.WithTimeout(300000 * time.Millisecond),
 		},
 		GetSchema: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ExploreSchema: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -139,6 +152,17 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		ExploreSchema: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		GetDomain: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -177,6 +201,7 @@ type internalClient interface {
 	Connection() *grpc.ClientConn
 	GenerateDiscoveredResourcesTopology(context.Context, *apptopologypb.GenerateDiscoveredResourcesTopologyRequest, ...gax.CallOption) (*apptopologypb.GenerateDiscoveredResourcesTopologyResponse, error)
 	GetSchema(context.Context, *apptopologypb.GetSchemaRequest, ...gax.CallOption) (*apptopologypb.Schema, error)
+	ExploreSchema(context.Context, *apptopologypb.ExploreSchemaRequest, ...gax.CallOption) *NodeTypeIterator
 	GetDomain(context.Context, *apptopologypb.GetDomainRequest, ...gax.CallOption) (*apptopologypb.Domain, error)
 	ListDomains(context.Context, *apptopologypb.ListDomainsRequest, ...gax.CallOption) *DomainIterator
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
@@ -237,6 +262,12 @@ func (c *Client) GenerateDiscoveredResourcesTopology(ctx context.Context, req *a
 // domain.
 func (c *Client) GetSchema(ctx context.Context, req *apptopologypb.GetSchemaRequest, opts ...gax.CallOption) (*apptopologypb.Schema, error) {
 	return c.internalClient.GetSchema(ctx, req, opts...)
+}
+
+// ExploreSchema explores the topology schema starting from given node types or label names
+// up to a specified hop depth.
+func (c *Client) ExploreSchema(ctx context.Context, req *apptopologypb.ExploreSchemaRequest, opts ...gax.CallOption) *NodeTypeIterator {
+	return c.internalClient.ExploreSchema(ctx, req, opts...)
 }
 
 // GetDomain retrieves the specified topology domain.
@@ -371,6 +402,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 		client.CallOptions.GenerateDiscoveredResourcesTopology = append(client.CallOptions.GenerateDiscoveredResourcesTopology, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetSchema = append(client.CallOptions.GetSchema, gax.WithClientMetrics(metrics))
+		client.CallOptions.ExploreSchema = append(client.CallOptions.ExploreSchema, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetDomain = append(client.CallOptions.GetDomain, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListDomains = append(client.CallOptions.ListDomains, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
@@ -393,6 +425,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 		client.CallOptions.GenerateDiscoveredResourcesTopology = append(client.CallOptions.GenerateDiscoveredResourcesTopology, gax.WithClientTracing(tracing))
 		client.CallOptions.GetSchema = append(client.CallOptions.GetSchema, gax.WithClientTracing(tracing))
+		client.CallOptions.ExploreSchema = append(client.CallOptions.ExploreSchema, gax.WithClientTracing(tracing))
 		client.CallOptions.GetDomain = append(client.CallOptions.GetDomain, gax.WithClientTracing(tracing))
 		client.CallOptions.ListDomains = append(client.CallOptions.ListDomains, gax.WithClientTracing(tracing))
 		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
@@ -416,6 +449,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 		client.CallOptions.GenerateDiscoveredResourcesTopology = append(client.CallOptions.GenerateDiscoveredResourcesTopology, gax.WithClientLogging(logging))
 		client.CallOptions.GetSchema = append(client.CallOptions.GetSchema, gax.WithClientLogging(logging))
+		client.CallOptions.ExploreSchema = append(client.CallOptions.ExploreSchema, gax.WithClientLogging(logging))
 		client.CallOptions.GetDomain = append(client.CallOptions.GetDomain, gax.WithClientLogging(logging))
 		client.CallOptions.ListDomains = append(client.CallOptions.ListDomains, gax.WithClientLogging(logging))
 		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
@@ -516,6 +550,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 
 		callOpts.GenerateDiscoveredResourcesTopology = append(callOpts.GenerateDiscoveredResourcesTopology, gax.WithClientMetrics(metrics))
 		callOpts.GetSchema = append(callOpts.GetSchema, gax.WithClientMetrics(metrics))
+		callOpts.ExploreSchema = append(callOpts.ExploreSchema, gax.WithClientMetrics(metrics))
 		callOpts.GetDomain = append(callOpts.GetDomain, gax.WithClientMetrics(metrics))
 		callOpts.ListDomains = append(callOpts.ListDomains, gax.WithClientMetrics(metrics))
 		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
@@ -538,6 +573,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 
 		callOpts.GenerateDiscoveredResourcesTopology = append(callOpts.GenerateDiscoveredResourcesTopology, gax.WithClientTracing(tracing))
 		callOpts.GetSchema = append(callOpts.GetSchema, gax.WithClientTracing(tracing))
+		callOpts.ExploreSchema = append(callOpts.ExploreSchema, gax.WithClientTracing(tracing))
 		callOpts.GetDomain = append(callOpts.GetDomain, gax.WithClientTracing(tracing))
 		callOpts.ListDomains = append(callOpts.ListDomains, gax.WithClientTracing(tracing))
 		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
@@ -561,6 +597,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 
 		callOpts.GenerateDiscoveredResourcesTopology = append(callOpts.GenerateDiscoveredResourcesTopology, gax.WithClientLogging(logging))
 		callOpts.GetSchema = append(callOpts.GetSchema, gax.WithClientLogging(logging))
+		callOpts.ExploreSchema = append(callOpts.ExploreSchema, gax.WithClientLogging(logging))
 		callOpts.GetDomain = append(callOpts.GetDomain, gax.WithClientLogging(logging))
 		callOpts.ListDomains = append(callOpts.ListDomains, gax.WithClientLogging(logging))
 		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
@@ -651,6 +688,55 @@ func (c *gRPCClient) GetSchema(ctx context.Context, req *apptopologypb.GetSchema
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *gRPCClient) ExploreSchema(ctx context.Context, req *apptopologypb.ExploreSchemaRequest, opts ...gax.CallOption) *NodeTypeIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apptopology.v1.AppTopology/ExploreSchema")
+	}
+	opts = append((*c.CallOptions).ExploreSchema[0:len((*c.CallOptions).ExploreSchema):len((*c.CallOptions).ExploreSchema)], opts...)
+	it := &NodeTypeIterator{}
+	req = proto.CloneOf(req)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*apptopologypb.NodeType, string, error) {
+		resp := &apptopologypb.ExploreSchemaResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ExploreSchema, req, settings.GRPC, c.logger, "ExploreSchema")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetNodeTypes(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 func (c *gRPCClient) GetDomain(ctx context.Context, req *apptopologypb.GetDomainRequest, opts ...gax.CallOption) (*apptopologypb.Domain, error) {
@@ -1016,6 +1102,85 @@ func (c *restClient) GetSchema(ctx context.Context, req *apptopologypb.GetSchema
 		return nil, e
 	}
 	return resp, nil
+}
+
+// ExploreSchema explores the topology schema starting from given node types or label names
+// up to a specified hop depth.
+func (c *restClient) ExploreSchema(ctx context.Context, req *apptopologypb.ExploreSchemaRequest, opts ...gax.CallOption) *NodeTypeIterator {
+	it := &NodeTypeIterator{}
+	req = proto.CloneOf(req)
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*apptopologypb.NodeType, string, error) {
+		resp := &apptopologypb.ExploreSchemaResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		jsonReq, err := m.Marshal(req)
+		if err != nil {
+			return nil, "", err
+		}
+
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v:explore", req.GetName())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ExploreSchema")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetNodeTypes(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // GetDomain retrieves the specified topology domain.

@@ -42,6 +42,7 @@ func init() {
 	storageinternal.WithMeterProvider = withMeterProvider
 	storageinternal.WithReadStallTimeout = withReadStallTimeout
 	storageinternal.WithDirectConnectivityEnforced = withDirectConnectivityEnforced
+	storageinternal.WithDirectPathXdsOverInterconnect = withDirectPathXdsOverInterconnect
 	storageinternal.WithOtelMetrics = withOtelMetrics
 	storageinternal.WithOtelDebugMetrics = withOtelDebugMetrics
 	storageinternal.WithBufferPool = withBufferPool
@@ -123,6 +124,10 @@ type withDirectPathEnforced struct {
 
 func (w *withDirectPathEnforced) ApplyStorageOpt(c *storageConfig) {
 	c.grpcDirectPathEnforced = true
+}
+
+func withDirectPathXdsOverInterconnect() option.ClientOption {
+	return internaloption.EnableDirectPathXdsOverInterconnect()
 }
 
 // WithJSONReads is an option that may be passed to [NewClient].

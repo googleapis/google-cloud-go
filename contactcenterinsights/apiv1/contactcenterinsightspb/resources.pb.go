@@ -5892,15 +5892,35 @@ type Conversation_QualityMetadata_AgentInfo struct {
 	AgentId string `protobuf:"bytes,1,opt,name=agent_id,json=agentId,proto3" json:"agent_id,omitempty"`
 	// The agent's name.
 	DisplayName string `protobuf:"bytes,2,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
-	// A user-specified string representing the agent's team.
+	// A user-specified string representing the agent's team. Deprecated in
+	// favor of the `teams` field.
+	//
+	// Deprecated: Marked as deprecated in google/cloud/contactcenterinsights/v1/resources.proto.
 	Team string `protobuf:"bytes,3,opt,name=team,proto3" json:"team,omitempty"`
+	// User-specified strings representing the agent's teams.
+	Teams []string `protobuf:"bytes,6,rep,name=teams,proto3" json:"teams,omitempty"`
 	// A user-provided string indicating the outcome of the agent's segment of
 	// the call.
 	DispositionCode string `protobuf:"bytes,4,opt,name=disposition_code,json=dispositionCode,proto3" json:"disposition_code,omitempty"`
 	// The agent type, e.g. HUMAN_AGENT.
-	AgentType     ConversationParticipant_Role `protobuf:"varint,5,opt,name=agent_type,json=agentType,proto3,enum=google.cloud.contactcenterinsights.v1.ConversationParticipant_Role" json:"agent_type,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	AgentType ConversationParticipant_Role `protobuf:"varint,5,opt,name=agent_type,json=agentType,proto3,enum=google.cloud.contactcenterinsights.v1.ConversationParticipant_Role" json:"agent_type,omitempty"`
+	// The agent's location.
+	Location string `protobuf:"bytes,7,opt,name=location,proto3" json:"location,omitempty"`
+	// The agent's deployment ID. Only applicable to automated agents.
+	DeploymentId string `protobuf:"bytes,8,opt,name=deployment_id,json=deploymentId,proto3" json:"deployment_id,omitempty"`
+	// The agent's deployment display name. Only applicable to automated
+	// agents.
+	DeploymentDisplayName string `protobuf:"bytes,9,opt,name=deployment_display_name,json=deploymentDisplayName,proto3" json:"deployment_display_name,omitempty"`
+	// The agent's version ID. Only applicable to automated agents.
+	VersionId string `protobuf:"bytes,10,opt,name=version_id,json=versionId,proto3" json:"version_id,omitempty"`
+	// The agent's version display name. Only applicable to automated agents.
+	VersionDisplayName string `protobuf:"bytes,11,opt,name=version_display_name,json=versionDisplayName,proto3" json:"version_display_name,omitempty"`
+	// The entry subagent's display name.
+	EntrySubagentDisplayName string `protobuf:"bytes,12,opt,name=entry_subagent_display_name,json=entrySubagentDisplayName,proto3" json:"entry_subagent_display_name,omitempty"`
+	// The entry subagent's ID.
+	EntrySubagentId string `protobuf:"bytes,13,opt,name=entry_subagent_id,json=entrySubagentId,proto3" json:"entry_subagent_id,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *Conversation_QualityMetadata_AgentInfo) Reset() {
@@ -5947,11 +5967,19 @@ func (x *Conversation_QualityMetadata_AgentInfo) GetDisplayName() string {
 	return ""
 }
 
+// Deprecated: Marked as deprecated in google/cloud/contactcenterinsights/v1/resources.proto.
 func (x *Conversation_QualityMetadata_AgentInfo) GetTeam() string {
 	if x != nil {
 		return x.Team
 	}
 	return ""
+}
+
+func (x *Conversation_QualityMetadata_AgentInfo) GetTeams() []string {
+	if x != nil {
+		return x.Teams
+	}
+	return nil
 }
 
 func (x *Conversation_QualityMetadata_AgentInfo) GetDispositionCode() string {
@@ -5966,6 +5994,55 @@ func (x *Conversation_QualityMetadata_AgentInfo) GetAgentType() ConversationPart
 		return x.AgentType
 	}
 	return ConversationParticipant_ROLE_UNSPECIFIED
+}
+
+func (x *Conversation_QualityMetadata_AgentInfo) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
+func (x *Conversation_QualityMetadata_AgentInfo) GetDeploymentId() string {
+	if x != nil {
+		return x.DeploymentId
+	}
+	return ""
+}
+
+func (x *Conversation_QualityMetadata_AgentInfo) GetDeploymentDisplayName() string {
+	if x != nil {
+		return x.DeploymentDisplayName
+	}
+	return ""
+}
+
+func (x *Conversation_QualityMetadata_AgentInfo) GetVersionId() string {
+	if x != nil {
+		return x.VersionId
+	}
+	return ""
+}
+
+func (x *Conversation_QualityMetadata_AgentInfo) GetVersionDisplayName() string {
+	if x != nil {
+		return x.VersionDisplayName
+	}
+	return ""
+}
+
+func (x *Conversation_QualityMetadata_AgentInfo) GetEntrySubagentDisplayName() string {
+	if x != nil {
+		return x.EntrySubagentDisplayName
+	}
+	return ""
+}
+
+func (x *Conversation_QualityMetadata_AgentInfo) GetEntrySubagentId() string {
+	if x != nil {
+		return x.EntrySubagentId
+	}
+	return ""
 }
 
 // A segment of a full transcript.
@@ -7440,7 +7517,7 @@ var File_google_cloud_contactcenterinsights_v1_resources_proto protoreflect.File
 
 const file_google_cloud_contactcenterinsights_v1_resources_proto_rawDesc = "" +
 	"\n" +
-	"5google/cloud/contactcenterinsights/v1/resources.proto\x12%google.cloud.contactcenterinsights.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf9\x1e\n" +
+	"5google/cloud/contactcenterinsights/v1/resources.proto\x12%google.cloud.contactcenterinsights.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc8!\n" +
 	"\fConversation\x12g\n" +
 	"\rcall_metadata\x18\a \x01(\v2@.google.cloud.contactcenterinsights.v1.Conversation.CallMetadataH\x00R\fcallMetadata\x12=\n" +
 	"\vexpire_time\x18\x0f \x01(\v2\x1a.google.protobuf.TimestampH\x01R\n" +
@@ -7475,20 +7552,30 @@ const file_google_cloud_contactcenterinsights_v1_resources_proto_rawDesc = "" +
 	"\x12obfuscated_user_id\x18\x15 \x01(\tR\x10obfuscatedUserId\x1a^\n" +
 	"\fCallMetadata\x12)\n" +
 	"\x10customer_channel\x18\x01 \x01(\x05R\x0fcustomerChannel\x12#\n" +
-	"\ragent_channel\x18\x02 \x01(\x05R\fagentChannel\x1a\x8d\x04\n" +
+	"\ragent_channel\x18\x02 \x01(\x05R\fagentChannel\x1a\xdc\x06\n" +
 	"\x0fQualityMetadata\x12@\n" +
 	"\x1ccustomer_satisfaction_rating\x18\x01 \x01(\x05R\x1acustomerSatisfactionRating\x12>\n" +
 	"\rwait_duration\x18\x02 \x01(\v2\x19.google.protobuf.DurationR\fwaitDuration\x12\x1b\n" +
 	"\tmenu_path\x18\x03 \x01(\tR\bmenuPath\x12l\n" +
 	"\n" +
-	"agent_info\x18\x04 \x03(\v2M.google.cloud.contactcenterinsights.v1.Conversation.QualityMetadata.AgentInfoR\tagentInfo\x1a\xec\x01\n" +
+	"agent_info\x18\x04 \x03(\v2M.google.cloud.contactcenterinsights.v1.Conversation.QualityMetadata.AgentInfoR\tagentInfo\x1a\xbb\x04\n" +
 	"\tAgentInfo\x12\x19\n" +
 	"\bagent_id\x18\x01 \x01(\tR\aagentId\x12!\n" +
-	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12\x12\n" +
-	"\x04team\x18\x03 \x01(\tR\x04team\x12)\n" +
+	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12\x16\n" +
+	"\x04team\x18\x03 \x01(\tB\x02\x18\x01R\x04team\x12\x14\n" +
+	"\x05teams\x18\x06 \x03(\tR\x05teams\x12)\n" +
 	"\x10disposition_code\x18\x04 \x01(\tR\x0fdispositionCode\x12b\n" +
 	"\n" +
-	"agent_type\x18\x05 \x01(\x0e2C.google.cloud.contactcenterinsights.v1.ConversationParticipant.RoleR\tagentType\x1a\xdb\b\n" +
+	"agent_type\x18\x05 \x01(\x0e2C.google.cloud.contactcenterinsights.v1.ConversationParticipant.RoleR\tagentType\x12\x1a\n" +
+	"\blocation\x18\a \x01(\tR\blocation\x12#\n" +
+	"\rdeployment_id\x18\b \x01(\tR\fdeploymentId\x126\n" +
+	"\x17deployment_display_name\x18\t \x01(\tR\x15deploymentDisplayName\x12\x1d\n" +
+	"\n" +
+	"version_id\x18\n" +
+	" \x01(\tR\tversionId\x120\n" +
+	"\x14version_display_name\x18\v \x01(\tR\x12versionDisplayName\x12=\n" +
+	"\x1bentry_subagent_display_name\x18\f \x01(\tR\x18entrySubagentDisplayName\x12*\n" +
+	"\x11entry_subagent_id\x18\r \x01(\tR\x0fentrySubagentId\x1a\xdb\b\n" +
 	"\n" +
 	"Transcript\x12\x81\x01\n" +
 	"\x13transcript_segments\x18\x01 \x03(\v2P.google.cloud.contactcenterinsights.v1.Conversation.Transcript.TranscriptSegmentR\x12transcriptSegments\x1a\xc8\a\n" +

@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -38,6 +38,120 @@ const (
 	// Verify that runtime/protoimpl is sufficiently up-to-date.
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
+
+// MongoDB JSON mode.
+type MongodbJsonMode int32
+
+const (
+	// Unspecified JSON mode.
+	MongodbJsonMode_MONGODB_JSON_MODE_UNSPECIFIED MongodbJsonMode = 0
+	// Strict JSON mode.
+	MongodbJsonMode_STRICT MongodbJsonMode = 1
+	// Canonical JSON mode.
+	MongodbJsonMode_CANONICAL MongodbJsonMode = 2
+)
+
+// Enum value maps for MongodbJsonMode.
+var (
+	MongodbJsonMode_name = map[int32]string{
+		0: "MONGODB_JSON_MODE_UNSPECIFIED",
+		1: "STRICT",
+		2: "CANONICAL",
+	}
+	MongodbJsonMode_value = map[string]int32{
+		"MONGODB_JSON_MODE_UNSPECIFIED": 0,
+		"STRICT":                        1,
+		"CANONICAL":                     2,
+	}
+)
+
+func (x MongodbJsonMode) Enum() *MongodbJsonMode {
+	p := new(MongodbJsonMode)
+	*p = x
+	return p
+}
+
+func (x MongodbJsonMode) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (MongodbJsonMode) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_datastream_v1_datastream_resources_proto_enumTypes[0].Descriptor()
+}
+
+func (MongodbJsonMode) Type() protoreflect.EnumType {
+	return &file_google_cloud_datastream_v1_datastream_resources_proto_enumTypes[0]
+}
+
+func (x MongodbJsonMode) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use MongodbJsonMode.Descriptor instead.
+func (MongodbJsonMode) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{0}
+}
+
+// Partitioning granularity for time partitions.
+type PartitioningTimeGranularity int32
+
+const (
+	// Unspecified partitioing interval.
+	PartitioningTimeGranularity_PARTITIONING_TIME_GRANULARITY_UNSPECIFIED PartitioningTimeGranularity = 0
+	// Hourly partitioning.
+	PartitioningTimeGranularity_PARTITIONING_TIME_GRANULARITY_HOUR PartitioningTimeGranularity = 1
+	// Daily partitioning.
+	PartitioningTimeGranularity_PARTITIONING_TIME_GRANULARITY_DAY PartitioningTimeGranularity = 2
+	// Monthly partitioning.
+	PartitioningTimeGranularity_PARTITIONING_TIME_GRANULARITY_MONTH PartitioningTimeGranularity = 3
+	// Yearly partitioning.
+	PartitioningTimeGranularity_PARTITIONING_TIME_GRANULARITY_YEAR PartitioningTimeGranularity = 4
+)
+
+// Enum value maps for PartitioningTimeGranularity.
+var (
+	PartitioningTimeGranularity_name = map[int32]string{
+		0: "PARTITIONING_TIME_GRANULARITY_UNSPECIFIED",
+		1: "PARTITIONING_TIME_GRANULARITY_HOUR",
+		2: "PARTITIONING_TIME_GRANULARITY_DAY",
+		3: "PARTITIONING_TIME_GRANULARITY_MONTH",
+		4: "PARTITIONING_TIME_GRANULARITY_YEAR",
+	}
+	PartitioningTimeGranularity_value = map[string]int32{
+		"PARTITIONING_TIME_GRANULARITY_UNSPECIFIED": 0,
+		"PARTITIONING_TIME_GRANULARITY_HOUR":        1,
+		"PARTITIONING_TIME_GRANULARITY_DAY":         2,
+		"PARTITIONING_TIME_GRANULARITY_MONTH":       3,
+		"PARTITIONING_TIME_GRANULARITY_YEAR":        4,
+	}
+)
+
+func (x PartitioningTimeGranularity) Enum() *PartitioningTimeGranularity {
+	p := new(PartitioningTimeGranularity)
+	*p = x
+	return p
+}
+
+func (x PartitioningTimeGranularity) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (PartitioningTimeGranularity) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_datastream_v1_datastream_resources_proto_enumTypes[1].Descriptor()
+}
+
+func (PartitioningTimeGranularity) Type() protoreflect.EnumType {
+	return &file_google_cloud_datastream_v1_datastream_resources_proto_enumTypes[1]
+}
+
+func (x PartitioningTimeGranularity) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use PartitioningTimeGranularity.Descriptor instead.
+func (PartitioningTimeGranularity) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{1}
+}
 
 // Private Connection state.
 type PrivateConnection_State int32
@@ -88,11 +202,11 @@ func (x PrivateConnection_State) String() string {
 }
 
 func (PrivateConnection_State) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_enumTypes[0].Descriptor()
+	return file_google_cloud_datastream_v1_datastream_resources_proto_enumTypes[2].Descriptor()
 }
 
 func (PrivateConnection_State) Type() protoreflect.EnumType {
-	return &file_google_cloud_datastream_v1_datastream_resources_proto_enumTypes[0]
+	return &file_google_cloud_datastream_v1_datastream_resources_proto_enumTypes[2]
 }
 
 func (x PrivateConnection_State) Number() protoreflect.EnumNumber {
@@ -101,7 +215,64 @@ func (x PrivateConnection_State) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use PrivateConnection_State.Descriptor instead.
 func (PrivateConnection_State) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{16, 0}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{24, 0}
+}
+
+// The RPC priority to use for the stream.
+type SpannerSourceConfig_SpannerRpcPriority int32
+
+const (
+	// Unspecified RPC priority.
+	SpannerSourceConfig_SPANNER_RPC_PRIORITY_UNSPECIFIED SpannerSourceConfig_SpannerRpcPriority = 0
+	// Low RPC priority.
+	SpannerSourceConfig_LOW SpannerSourceConfig_SpannerRpcPriority = 1
+	// Medium RPC priority.
+	SpannerSourceConfig_MEDIUM SpannerSourceConfig_SpannerRpcPriority = 2
+	// High RPC priority.
+	SpannerSourceConfig_HIGH SpannerSourceConfig_SpannerRpcPriority = 3
+)
+
+// Enum value maps for SpannerSourceConfig_SpannerRpcPriority.
+var (
+	SpannerSourceConfig_SpannerRpcPriority_name = map[int32]string{
+		0: "SPANNER_RPC_PRIORITY_UNSPECIFIED",
+		1: "LOW",
+		2: "MEDIUM",
+		3: "HIGH",
+	}
+	SpannerSourceConfig_SpannerRpcPriority_value = map[string]int32{
+		"SPANNER_RPC_PRIORITY_UNSPECIFIED": 0,
+		"LOW":                              1,
+		"MEDIUM":                           2,
+		"HIGH":                             3,
+	}
+)
+
+func (x SpannerSourceConfig_SpannerRpcPriority) Enum() *SpannerSourceConfig_SpannerRpcPriority {
+	p := new(SpannerSourceConfig_SpannerRpcPriority)
+	*p = x
+	return p
+}
+
+func (x SpannerSourceConfig_SpannerRpcPriority) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (SpannerSourceConfig_SpannerRpcPriority) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_datastream_v1_datastream_resources_proto_enumTypes[3].Descriptor()
+}
+
+func (SpannerSourceConfig_SpannerRpcPriority) Type() protoreflect.EnumType {
+	return &file_google_cloud_datastream_v1_datastream_resources_proto_enumTypes[3]
+}
+
+func (x SpannerSourceConfig_SpannerRpcPriority) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use SpannerSourceConfig_SpannerRpcPriority.Descriptor instead.
+func (SpannerSourceConfig_SpannerRpcPriority) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{65, 0}
 }
 
 // Schema file format.
@@ -141,11 +312,11 @@ func (x JsonFileFormat_SchemaFileFormat) String() string {
 }
 
 func (JsonFileFormat_SchemaFileFormat) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_enumTypes[1].Descriptor()
+	return file_google_cloud_datastream_v1_datastream_resources_proto_enumTypes[4].Descriptor()
 }
 
 func (JsonFileFormat_SchemaFileFormat) Type() protoreflect.EnumType {
-	return &file_google_cloud_datastream_v1_datastream_resources_proto_enumTypes[1]
+	return &file_google_cloud_datastream_v1_datastream_resources_proto_enumTypes[4]
 }
 
 func (x JsonFileFormat_SchemaFileFormat) Number() protoreflect.EnumNumber {
@@ -154,7 +325,7 @@ func (x JsonFileFormat_SchemaFileFormat) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use JsonFileFormat_SchemaFileFormat.Descriptor instead.
 func (JsonFileFormat_SchemaFileFormat) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{57, 0}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{79, 0}
 }
 
 // Json file compression.
@@ -194,11 +365,11 @@ func (x JsonFileFormat_JsonCompression) String() string {
 }
 
 func (JsonFileFormat_JsonCompression) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_enumTypes[2].Descriptor()
+	return file_google_cloud_datastream_v1_datastream_resources_proto_enumTypes[5].Descriptor()
 }
 
 func (JsonFileFormat_JsonCompression) Type() protoreflect.EnumType {
-	return &file_google_cloud_datastream_v1_datastream_resources_proto_enumTypes[2]
+	return &file_google_cloud_datastream_v1_datastream_resources_proto_enumTypes[5]
 }
 
 func (x JsonFileFormat_JsonCompression) Number() protoreflect.EnumNumber {
@@ -207,7 +378,7 @@ func (x JsonFileFormat_JsonCompression) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use JsonFileFormat_JsonCompression.Descriptor instead.
 func (JsonFileFormat_JsonCompression) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{57, 1}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{79, 1}
 }
 
 // Supported file formats for BigLake managed tables.
@@ -243,11 +414,11 @@ func (x BigQueryDestinationConfig_BlmtConfig_FileFormat) String() string {
 }
 
 func (BigQueryDestinationConfig_BlmtConfig_FileFormat) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_enumTypes[3].Descriptor()
+	return file_google_cloud_datastream_v1_datastream_resources_proto_enumTypes[6].Descriptor()
 }
 
 func (BigQueryDestinationConfig_BlmtConfig_FileFormat) Type() protoreflect.EnumType {
-	return &file_google_cloud_datastream_v1_datastream_resources_proto_enumTypes[3]
+	return &file_google_cloud_datastream_v1_datastream_resources_proto_enumTypes[6]
 }
 
 func (x BigQueryDestinationConfig_BlmtConfig_FileFormat) Number() protoreflect.EnumNumber {
@@ -256,7 +427,7 @@ func (x BigQueryDestinationConfig_BlmtConfig_FileFormat) Number() protoreflect.E
 
 // Deprecated: Use BigQueryDestinationConfig_BlmtConfig_FileFormat.Descriptor instead.
 func (BigQueryDestinationConfig_BlmtConfig_FileFormat) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{59, 2, 0}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{86, 2, 0}
 }
 
 // Supported table formats for BigLake managed tables.
@@ -292,11 +463,11 @@ func (x BigQueryDestinationConfig_BlmtConfig_TableFormat) String() string {
 }
 
 func (BigQueryDestinationConfig_BlmtConfig_TableFormat) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_enumTypes[4].Descriptor()
+	return file_google_cloud_datastream_v1_datastream_resources_proto_enumTypes[7].Descriptor()
 }
 
 func (BigQueryDestinationConfig_BlmtConfig_TableFormat) Type() protoreflect.EnumType {
-	return &file_google_cloud_datastream_v1_datastream_resources_proto_enumTypes[4]
+	return &file_google_cloud_datastream_v1_datastream_resources_proto_enumTypes[7]
 }
 
 func (x BigQueryDestinationConfig_BlmtConfig_TableFormat) Number() protoreflect.EnumNumber {
@@ -305,7 +476,7 @@ func (x BigQueryDestinationConfig_BlmtConfig_TableFormat) Number() protoreflect.
 
 // Deprecated: Use BigQueryDestinationConfig_BlmtConfig_TableFormat.Descriptor instead.
 func (BigQueryDestinationConfig_BlmtConfig_TableFormat) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{59, 2, 1}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{86, 2, 1}
 }
 
 // Stream state.
@@ -373,11 +544,11 @@ func (x Stream_State) String() string {
 }
 
 func (Stream_State) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_enumTypes[5].Descriptor()
+	return file_google_cloud_datastream_v1_datastream_resources_proto_enumTypes[8].Descriptor()
 }
 
 func (Stream_State) Type() protoreflect.EnumType {
-	return &file_google_cloud_datastream_v1_datastream_resources_proto_enumTypes[5]
+	return &file_google_cloud_datastream_v1_datastream_resources_proto_enumTypes[8]
 }
 
 func (x Stream_State) Number() protoreflect.EnumNumber {
@@ -386,7 +557,7 @@ func (x Stream_State) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Stream_State.Descriptor instead.
 func (Stream_State) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{61, 0}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{88, 0}
 }
 
 // State of the stream object's backfill job.
@@ -449,11 +620,11 @@ func (x BackfillJob_State) String() string {
 }
 
 func (BackfillJob_State) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_enumTypes[6].Descriptor()
+	return file_google_cloud_datastream_v1_datastream_resources_proto_enumTypes[9].Descriptor()
 }
 
 func (BackfillJob_State) Type() protoreflect.EnumType {
-	return &file_google_cloud_datastream_v1_datastream_resources_proto_enumTypes[6]
+	return &file_google_cloud_datastream_v1_datastream_resources_proto_enumTypes[9]
 }
 
 func (x BackfillJob_State) Number() protoreflect.EnumNumber {
@@ -462,7 +633,7 @@ func (x BackfillJob_State) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use BackfillJob_State.Descriptor instead.
 func (BackfillJob_State) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{64, 0}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{91, 0}
 }
 
 // Triggering reason for a backfill job.
@@ -503,11 +674,11 @@ func (x BackfillJob_Trigger) String() string {
 }
 
 func (BackfillJob_Trigger) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_enumTypes[7].Descriptor()
+	return file_google_cloud_datastream_v1_datastream_resources_proto_enumTypes[10].Descriptor()
 }
 
 func (BackfillJob_Trigger) Type() protoreflect.EnumType {
-	return &file_google_cloud_datastream_v1_datastream_resources_proto_enumTypes[7]
+	return &file_google_cloud_datastream_v1_datastream_resources_proto_enumTypes[10]
 }
 
 func (x BackfillJob_Trigger) Number() protoreflect.EnumNumber {
@@ -516,7 +687,7 @@ func (x BackfillJob_Trigger) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use BackfillJob_Trigger.Descriptor instead.
 func (BackfillJob_Trigger) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{64, 1}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{91, 1}
 }
 
 // Validation execution state.
@@ -564,11 +735,11 @@ func (x Validation_State) String() string {
 }
 
 func (Validation_State) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_enumTypes[8].Descriptor()
+	return file_google_cloud_datastream_v1_datastream_resources_proto_enumTypes[11].Descriptor()
 }
 
 func (Validation_State) Type() protoreflect.EnumType {
-	return &file_google_cloud_datastream_v1_datastream_resources_proto_enumTypes[8]
+	return &file_google_cloud_datastream_v1_datastream_resources_proto_enumTypes[11]
 }
 
 func (x Validation_State) Number() protoreflect.EnumNumber {
@@ -577,7 +748,7 @@ func (x Validation_State) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Validation_State.Descriptor instead.
 func (Validation_State) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{67, 0}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{95, 0}
 }
 
 // Validation message level.
@@ -617,11 +788,11 @@ func (x ValidationMessage_Level) String() string {
 }
 
 func (ValidationMessage_Level) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_enumTypes[9].Descriptor()
+	return file_google_cloud_datastream_v1_datastream_resources_proto_enumTypes[12].Descriptor()
 }
 
 func (ValidationMessage_Level) Type() protoreflect.EnumType {
-	return &file_google_cloud_datastream_v1_datastream_resources_proto_enumTypes[9]
+	return &file_google_cloud_datastream_v1_datastream_resources_proto_enumTypes[12]
 }
 
 func (x ValidationMessage_Level) Number() protoreflect.EnumNumber {
@@ -630,10 +801,10 @@ func (x ValidationMessage_Level) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ValidationMessage_Level.Descriptor instead.
 func (ValidationMessage_Level) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{68, 0}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{96, 0}
 }
 
-// Oracle database profile.
+// Profile for connecting to an Oracle source.
 type OracleProfile struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. Hostname for the Oracle connection.
@@ -864,7 +1035,7 @@ func (x *OracleAsmConfig) GetSecretManagerStoredPassword() string {
 	return ""
 }
 
-// MySQL database profile.
+// Profile for connecting to a MySQL source.
 type MysqlProfile struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. Hostname for the MySQL connection.
@@ -957,7 +1128,7 @@ func (x *MysqlProfile) GetSecretManagerStoredPassword() string {
 	return ""
 }
 
-// PostgreSQL database profile.
+// Profile for connecting to a PostgreSQL source.
 type PostgresqlProfile struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. Hostname for the PostgreSQL connection.
@@ -1063,7 +1234,7 @@ func (x *PostgresqlProfile) GetSslConfig() *PostgresqlSslConfig {
 	return nil
 }
 
-// SQLServer database profile.
+// Profile for connecting to a SQLServer source.
 type SqlServerProfile struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. Hostname for the SQLServer connection.
@@ -1077,6 +1248,8 @@ type SqlServerProfile struct {
 	Password string `protobuf:"bytes,4,opt,name=password,proto3" json:"password,omitempty"`
 	// Required. Database for the SQLServer connection.
 	Database string `protobuf:"bytes,5,opt,name=database,proto3" json:"database,omitempty"`
+	// Optional. SSL configuration for the SQLServer connection.
+	SslConfig *SqlServerSslConfig `protobuf:"bytes,6,opt,name=ssl_config,json=sslConfig,proto3" json:"ssl_config,omitempty"`
 	// Optional. A reference to a Secret Manager resource name storing the
 	// SQLServer connection password. Mutually exclusive with the `password`
 	// field.
@@ -1150,6 +1323,13 @@ func (x *SqlServerProfile) GetDatabase() string {
 	return ""
 }
 
+func (x *SqlServerProfile) GetSslConfig() *SqlServerSslConfig {
+	if x != nil {
+		return x.SslConfig
+	}
+	return nil
+}
+
 func (x *SqlServerProfile) GetSecretManagerStoredPassword() string {
 	if x != nil {
 		return x.SecretManagerStoredPassword
@@ -1157,7 +1337,7 @@ func (x *SqlServerProfile) GetSecretManagerStoredPassword() string {
 	return ""
 }
 
-// Salesforce profile
+// Profile for connecting to a Salesforce source.
 type SalesforceProfile struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. Domain endpoint for the Salesforce connection.
@@ -1217,6 +1397,7 @@ func (x *SalesforceProfile) GetCredentials() isSalesforceProfile_Credentials {
 	return nil
 }
 
+// Deprecated: Marked as deprecated in google/cloud/datastream/v1/datastream_resources.proto.
 func (x *SalesforceProfile) GetUserCredentials() *SalesforceProfile_UserCredentials {
 	if x != nil {
 		if x, ok := x.Credentials.(*SalesforceProfile_UserCredentials_); ok {
@@ -1240,7 +1421,10 @@ type isSalesforceProfile_Credentials interface {
 }
 
 type SalesforceProfile_UserCredentials_ struct {
-	// User-password authentication.
+	// Deprecated: Salesforce is retiring Username-Password authentication.
+	// Use `oauth2_client_credentials` instead.
+	//
+	// Deprecated: Marked as deprecated in google/cloud/datastream/v1/datastream_resources.proto.
 	UserCredentials *SalesforceProfile_UserCredentials `protobuf:"bytes,2,opt,name=user_credentials,json=userCredentials,proto3,oneof"`
 }
 
@@ -1253,7 +1437,7 @@ func (*SalesforceProfile_UserCredentials_) isSalesforceProfile_Credentials() {}
 
 func (*SalesforceProfile_Oauth2ClientCredentials_) isSalesforceProfile_Credentials() {}
 
-// MongoDB profile.
+// Profile for connecting to a MongoDB source.
 type MongodbProfile struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. List of host addresses for a MongoDB cluster.
@@ -1284,8 +1468,20 @@ type MongodbProfile struct {
 	//	*MongodbProfile_SrvConnectionFormat
 	//	*MongodbProfile_StandardConnectionFormat
 	MongodbConnectionFormat isMongodbProfile_MongodbConnectionFormat `protobuf_oneof:"mongodb_connection_format"`
-	unknownFields           protoimpl.UnknownFields
-	sizeCache               protoimpl.SizeCache
+	// Optional. Specifies additional options for the MongoDB connection.
+	//
+	// The options should be sent as key-value pairs, for example:
+	// `additional_options =
+	// {"serverSelectionTimeoutMS": "10000", "directConnection": "true"}`.
+	//
+	// Keys are case-sensitive and should match the official MongoDB connection
+	// string options:
+	// https://www.mongodb.com/docs/manual/reference/connection-string-options/
+	//
+	// The server will not modify the values provided by the user.
+	AdditionalOptions map[string]string `protobuf:"bytes,7,rep,name=additional_options,json=additionalOptions,proto3" json:"additional_options,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *MongodbProfile) Reset() {
@@ -1385,6 +1581,13 @@ func (x *MongodbProfile) GetStandardConnectionFormat() *StandardConnectionFormat
 	return nil
 }
 
+func (x *MongodbProfile) GetAdditionalOptions() map[string]string {
+	if x != nil {
+		return x.AdditionalOptions
+	}
+	return nil
+}
+
 type isMongodbProfile_MongodbConnectionFormat interface {
 	isMongodbProfile_MongodbConnectionFormat()
 }
@@ -1459,6 +1662,520 @@ func (x *HostAddress) GetPort() int32 {
 	return 0
 }
 
+// Profile for connecting to a Spanner source.
+type SpannerProfile struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Immutable. Cloud Spanner database resource.
+	// This field is immutable.
+	// Must be in the format:
+	// projects/{project}/instances/{instance}/databases/{database_id}.
+	Database string `protobuf:"bytes,1,opt,name=database,proto3" json:"database,omitempty"`
+	// Optional. The Spanner endpoint to connect to. Defaults to the global
+	// endpoint (https://spanner.googleapis.com). Must be in the format:
+	// https://spanner.{region}.rep.googleapis.com.
+	Host          string `protobuf:"bytes,2,opt,name=host,proto3" json:"host,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SpannerProfile) Reset() {
+	*x = SpannerProfile{}
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SpannerProfile) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SpannerProfile) ProtoMessage() {}
+
+func (x *SpannerProfile) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SpannerProfile.ProtoReflect.Descriptor instead.
+func (*SpannerProfile) Descriptor() ([]byte, []int) {
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *SpannerProfile) GetDatabase() string {
+	if x != nil {
+		return x.Database
+	}
+	return ""
+}
+
+func (x *SpannerProfile) GetHost() string {
+	if x != nil {
+		return x.Host
+	}
+	return ""
+}
+
+// OAuth Client Credentials.
+type OauthClientCredentials struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Client ID for OAuth Client Credentials.
+	ClientId string `protobuf:"bytes,1,opt,name=client_id,json=clientId,proto3" json:"client_id,omitempty"`
+	// Required. Client secret for OAuth Client Credentials.
+	ClientSecret  *Secret `protobuf:"bytes,2,opt,name=client_secret,json=clientSecret,proto3" json:"client_secret,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *OauthClientCredentials) Reset() {
+	*x = OauthClientCredentials{}
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *OauthClientCredentials) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*OauthClientCredentials) ProtoMessage() {}
+
+func (x *OauthClientCredentials) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use OauthClientCredentials.ProtoReflect.Descriptor instead.
+func (*OauthClientCredentials) Descriptor() ([]byte, []int) {
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *OauthClientCredentials) GetClientId() string {
+	if x != nil {
+		return x.ClientId
+	}
+	return ""
+}
+
+func (x *OauthClientCredentials) GetClientSecret() *Secret {
+	if x != nil {
+		return x.ClientSecret
+	}
+	return nil
+}
+
+// OAuth Refresh Token Credentials.
+type OauthRefreshTokenCredentials struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Specifies the OAuth Client Credentials.
+	OauthClientCredentials *OauthClientCredentials `protobuf:"bytes,1,opt,name=oauth_client_credentials,json=oauthClientCredentials,proto3" json:"oauth_client_credentials,omitempty"`
+	// Required. Specifies the OAuth Refresh Token.
+	RefreshToken  *Secret `protobuf:"bytes,2,opt,name=refresh_token,json=refreshToken,proto3" json:"refresh_token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *OauthRefreshTokenCredentials) Reset() {
+	*x = OauthRefreshTokenCredentials{}
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *OauthRefreshTokenCredentials) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*OauthRefreshTokenCredentials) ProtoMessage() {}
+
+func (x *OauthRefreshTokenCredentials) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use OauthRefreshTokenCredentials.ProtoReflect.Descriptor instead.
+func (*OauthRefreshTokenCredentials) Descriptor() ([]byte, []int) {
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *OauthRefreshTokenCredentials) GetOauthClientCredentials() *OauthClientCredentials {
+	if x != nil {
+		return x.OauthClientCredentials
+	}
+	return nil
+}
+
+func (x *OauthRefreshTokenCredentials) GetRefreshToken() *Secret {
+	if x != nil {
+		return x.RefreshToken
+	}
+	return nil
+}
+
+// User-password credentials.
+type UserPasswordCredentials struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Username for the connection.
+	Username string `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
+	// Required. Password for the connection.
+	Password      *Secret `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UserPasswordCredentials) Reset() {
+	*x = UserPasswordCredentials{}
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UserPasswordCredentials) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UserPasswordCredentials) ProtoMessage() {}
+
+func (x *UserPasswordCredentials) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UserPasswordCredentials.ProtoReflect.Descriptor instead.
+func (*UserPasswordCredentials) Descriptor() ([]byte, []int) {
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *UserPasswordCredentials) GetUsername() string {
+	if x != nil {
+		return x.Username
+	}
+	return ""
+}
+
+func (x *UserPasswordCredentials) GetPassword() *Secret {
+	if x != nil {
+		return x.Password
+	}
+	return nil
+}
+
+// Profile for connecting to a Salesforce Marketing Cloud source.
+type SalesforceMarketingCloudProfile struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Subdomain for the Salesforce Marketing Cloud connection.
+	// Example: if your specific endpoint is
+	// `https://{your-specific-subdomain}.rest.marketingcloudapis.com/`,
+	// the subdomain is `{your-specific-subdomain}`.
+	// Must be 1-63 characters, start and end with an alphanumeric character,
+	// and contain only lowercase letters, numbers, and hyphens (-).
+	Subdomain string `protobuf:"bytes,1,opt,name=subdomain,proto3" json:"subdomain,omitempty"`
+	// Required. Input only. Credentials for authenticating with the Salesforce
+	// Marketing Cloud API.
+	OauthClientCredentials *OauthClientCredentials `protobuf:"bytes,3,opt,name=oauth_client_credentials,json=oauthClientCredentials,proto3" json:"oauth_client_credentials,omitempty"`
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *SalesforceMarketingCloudProfile) Reset() {
+	*x = SalesforceMarketingCloudProfile{}
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SalesforceMarketingCloudProfile) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SalesforceMarketingCloudProfile) ProtoMessage() {}
+
+func (x *SalesforceMarketingCloudProfile) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SalesforceMarketingCloudProfile.ProtoReflect.Descriptor instead.
+func (*SalesforceMarketingCloudProfile) Descriptor() ([]byte, []int) {
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *SalesforceMarketingCloudProfile) GetSubdomain() string {
+	if x != nil {
+		return x.Subdomain
+	}
+	return ""
+}
+
+func (x *SalesforceMarketingCloudProfile) GetOauthClientCredentials() *OauthClientCredentials {
+	if x != nil {
+		return x.OauthClientCredentials
+	}
+	return nil
+}
+
+// Profile for connecting to a Dataverse source.
+type DataverseProfile struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Tenant id of the Microsoft Dataverse instance.
+	TenantId string `protobuf:"bytes,1,opt,name=tenant_id,json=tenantId,proto3" json:"tenant_id,omitempty"`
+	// Required. Environment URL of the Microsoft Dataverse instance.
+	// Example:  `<subdomain>.crm.dynamics.com`
+	EnvironmentUrl string `protobuf:"bytes,5,opt,name=environment_url,json=environmentUrl,proto3" json:"environment_url,omitempty"`
+	// Required. Credentials for authenticating with the Dataverse API.
+	OauthClientCredentials *OauthClientCredentials `protobuf:"bytes,3,opt,name=oauth_client_credentials,json=oauthClientCredentials,proto3" json:"oauth_client_credentials,omitempty"`
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *DataverseProfile) Reset() {
+	*x = DataverseProfile{}
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DataverseProfile) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DataverseProfile) ProtoMessage() {}
+
+func (x *DataverseProfile) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DataverseProfile.ProtoReflect.Descriptor instead.
+func (*DataverseProfile) Descriptor() ([]byte, []int) {
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *DataverseProfile) GetTenantId() string {
+	if x != nil {
+		return x.TenantId
+	}
+	return ""
+}
+
+func (x *DataverseProfile) GetEnvironmentUrl() string {
+	if x != nil {
+		return x.EnvironmentUrl
+	}
+	return ""
+}
+
+func (x *DataverseProfile) GetOauthClientCredentials() *OauthClientCredentials {
+	if x != nil {
+		return x.OauthClientCredentials
+	}
+	return nil
+}
+
+// Profile for connecting to a ServiceNow source.
+type ServiceNowProfile struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The instance of the ServiceNow account. This is the `<instance>`
+	// part of the URL `https://<instance>.service-now.com`.
+	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
+	// Authentication credentials.
+	//
+	// Types that are valid to be assigned to Credentials:
+	//
+	//	*ServiceNowProfile_UserPasswordCredentials
+	//	*ServiceNowProfile_OauthClientCredentials
+	Credentials   isServiceNowProfile_Credentials `protobuf_oneof:"credentials"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ServiceNowProfile) Reset() {
+	*x = ServiceNowProfile{}
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ServiceNowProfile) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ServiceNowProfile) ProtoMessage() {}
+
+func (x *ServiceNowProfile) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ServiceNowProfile.ProtoReflect.Descriptor instead.
+func (*ServiceNowProfile) Descriptor() ([]byte, []int) {
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *ServiceNowProfile) GetInstance() string {
+	if x != nil {
+		return x.Instance
+	}
+	return ""
+}
+
+func (x *ServiceNowProfile) GetCredentials() isServiceNowProfile_Credentials {
+	if x != nil {
+		return x.Credentials
+	}
+	return nil
+}
+
+func (x *ServiceNowProfile) GetUserPasswordCredentials() *UserPasswordCredentials {
+	if x != nil {
+		if x, ok := x.Credentials.(*ServiceNowProfile_UserPasswordCredentials); ok {
+			return x.UserPasswordCredentials
+		}
+	}
+	return nil
+}
+
+func (x *ServiceNowProfile) GetOauthClientCredentials() *OauthClientCredentials {
+	if x != nil {
+		if x, ok := x.Credentials.(*ServiceNowProfile_OauthClientCredentials); ok {
+			return x.OauthClientCredentials
+		}
+	}
+	return nil
+}
+
+type isServiceNowProfile_Credentials interface {
+	isServiceNowProfile_Credentials()
+}
+
+type ServiceNowProfile_UserPasswordCredentials struct {
+	// User-password authentication.
+	UserPasswordCredentials *UserPasswordCredentials `protobuf:"bytes,2,opt,name=user_password_credentials,json=userPasswordCredentials,proto3,oneof"`
+}
+
+type ServiceNowProfile_OauthClientCredentials struct {
+	// Credentials for authenticating with the ServiceNow API.
+	OauthClientCredentials *OauthClientCredentials `protobuf:"bytes,3,opt,name=oauth_client_credentials,json=oauthClientCredentials,proto3,oneof"`
+}
+
+func (*ServiceNowProfile_UserPasswordCredentials) isServiceNowProfile_Credentials() {}
+
+func (*ServiceNowProfile_OauthClientCredentials) isServiceNowProfile_Credentials() {}
+
+// Profile for connecting to a Workday source.
+type WorkdayProfile struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Host for the Workday connection. Must be a valid hostname (e.g.,
+	// `wd3-impl-services1.workday.com`).
+	Host string `protobuf:"bytes,1,opt,name=host,proto3" json:"host,omitempty"`
+	// Required. Tenant for the Workday connection (e.g., `google12`).
+	Tenant string `protobuf:"bytes,2,opt,name=tenant,proto3" json:"tenant,omitempty"`
+	// Required. Credentials for authenticating with the Workday API.
+	// OAuth Refresh Token credentials for authenticating with the Workday API.
+	OauthRefreshTokenCredentials *OauthRefreshTokenCredentials `protobuf:"bytes,3,opt,name=oauth_refresh_token_credentials,json=oauthRefreshTokenCredentials,proto3" json:"oauth_refresh_token_credentials,omitempty"`
+	unknownFields                protoimpl.UnknownFields
+	sizeCache                    protoimpl.SizeCache
+}
+
+func (x *WorkdayProfile) Reset() {
+	*x = WorkdayProfile{}
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *WorkdayProfile) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*WorkdayProfile) ProtoMessage() {}
+
+func (x *WorkdayProfile) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use WorkdayProfile.ProtoReflect.Descriptor instead.
+func (*WorkdayProfile) Descriptor() ([]byte, []int) {
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *WorkdayProfile) GetHost() string {
+	if x != nil {
+		return x.Host
+	}
+	return ""
+}
+
+func (x *WorkdayProfile) GetTenant() string {
+	if x != nil {
+		return x.Tenant
+	}
+	return ""
+}
+
+func (x *WorkdayProfile) GetOauthRefreshTokenCredentials() *OauthRefreshTokenCredentials {
+	if x != nil {
+		return x.OauthRefreshTokenCredentials
+	}
+	return nil
+}
+
 // Srv connection format.
 type SrvConnectionFormat struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -1468,7 +2185,7 @@ type SrvConnectionFormat struct {
 
 func (x *SrvConnectionFormat) Reset() {
 	*x = SrvConnectionFormat{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[8]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1480,7 +2197,7 @@ func (x *SrvConnectionFormat) String() string {
 func (*SrvConnectionFormat) ProtoMessage() {}
 
 func (x *SrvConnectionFormat) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[8]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1493,14 +2210,19 @@ func (x *SrvConnectionFormat) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SrvConnectionFormat.ProtoReflect.Descriptor instead.
 func (*SrvConnectionFormat) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{8}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{16}
 }
 
 // Standard connection format.
 type StandardConnectionFormat struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Optional. Specifies whether the client connects directly to the host[:port]
-	// in the connection URI.
+	// Optional. Deprecated: Use the `additional_options` map to specify the
+	// `directConnection` parameter instead.
+	// For example: `additional_options = {"directConnection": "true"}`.
+	// Specifies whether the client connects directly to the host[:port] in the
+	// connection URI.
+	//
+	// Deprecated: Marked as deprecated in google/cloud/datastream/v1/datastream_resources.proto.
 	DirectConnection bool `protobuf:"varint,1,opt,name=direct_connection,json=directConnection,proto3" json:"direct_connection,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
@@ -1508,7 +2230,7 @@ type StandardConnectionFormat struct {
 
 func (x *StandardConnectionFormat) Reset() {
 	*x = StandardConnectionFormat{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[9]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1520,7 +2242,7 @@ func (x *StandardConnectionFormat) String() string {
 func (*StandardConnectionFormat) ProtoMessage() {}
 
 func (x *StandardConnectionFormat) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[9]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1533,9 +2255,10 @@ func (x *StandardConnectionFormat) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StandardConnectionFormat.ProtoReflect.Descriptor instead.
 func (*StandardConnectionFormat) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{9}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{17}
 }
 
+// Deprecated: Marked as deprecated in google/cloud/datastream/v1/datastream_resources.proto.
 func (x *StandardConnectionFormat) GetDirectConnection() bool {
 	if x != nil {
 		return x.DirectConnection
@@ -1543,12 +2266,12 @@ func (x *StandardConnectionFormat) GetDirectConnection() bool {
 	return false
 }
 
-// Cloud Storage bucket profile.
+// Profile for connecting to a Cloud Storage destination.
 type GcsProfile struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The Cloud Storage bucket name.
 	Bucket string `protobuf:"bytes,1,opt,name=bucket,proto3" json:"bucket,omitempty"`
-	// The root path inside the Cloud Storage bucket.
+	// Optional. The root path inside the Cloud Storage bucket.
 	RootPath      string `protobuf:"bytes,2,opt,name=root_path,json=rootPath,proto3" json:"root_path,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1556,7 +2279,7 @@ type GcsProfile struct {
 
 func (x *GcsProfile) Reset() {
 	*x = GcsProfile{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[10]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1568,7 +2291,7 @@ func (x *GcsProfile) String() string {
 func (*GcsProfile) ProtoMessage() {}
 
 func (x *GcsProfile) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[10]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1581,7 +2304,7 @@ func (x *GcsProfile) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GcsProfile.ProtoReflect.Descriptor instead.
 func (*GcsProfile) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{10}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *GcsProfile) GetBucket() string {
@@ -1598,7 +2321,7 @@ func (x *GcsProfile) GetRootPath() string {
 	return ""
 }
 
-// BigQuery warehouse profile.
+// Profile for connecting to a BigQuery destination.
 type BigQueryProfile struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -1607,7 +2330,7 @@ type BigQueryProfile struct {
 
 func (x *BigQueryProfile) Reset() {
 	*x = BigQueryProfile{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[11]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1619,7 +2342,7 @@ func (x *BigQueryProfile) String() string {
 func (*BigQueryProfile) ProtoMessage() {}
 
 func (x *BigQueryProfile) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[11]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1632,7 +2355,7 @@ func (x *BigQueryProfile) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BigQueryProfile.ProtoReflect.Descriptor instead.
 func (*BigQueryProfile) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{11}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{19}
 }
 
 // Static IP address connectivity. Used when the source database is configured
@@ -1646,7 +2369,7 @@ type StaticServiceIpConnectivity struct {
 
 func (x *StaticServiceIpConnectivity) Reset() {
 	*x = StaticServiceIpConnectivity{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[12]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1658,7 +2381,7 @@ func (x *StaticServiceIpConnectivity) String() string {
 func (*StaticServiceIpConnectivity) ProtoMessage() {}
 
 func (x *StaticServiceIpConnectivity) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[12]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1671,7 +2394,7 @@ func (x *StaticServiceIpConnectivity) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StaticServiceIpConnectivity.ProtoReflect.Descriptor instead.
 func (*StaticServiceIpConnectivity) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{12}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{20}
 }
 
 // Forward SSH Tunnel connectivity.
@@ -1683,6 +2406,8 @@ type ForwardSshTunnelConnectivity struct {
 	Username string `protobuf:"bytes,2,opt,name=username,proto3" json:"username,omitempty"`
 	// Port for the SSH tunnel, default value is 22.
 	Port int32 `protobuf:"varint,3,opt,name=port,proto3" json:"port,omitempty"`
+	// SSH authentication method.
+	//
 	// Types that are valid to be assigned to AuthenticationMethod:
 	//
 	//	*ForwardSshTunnelConnectivity_Password
@@ -1694,7 +2419,7 @@ type ForwardSshTunnelConnectivity struct {
 
 func (x *ForwardSshTunnelConnectivity) Reset() {
 	*x = ForwardSshTunnelConnectivity{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[13]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1706,7 +2431,7 @@ func (x *ForwardSshTunnelConnectivity) String() string {
 func (*ForwardSshTunnelConnectivity) ProtoMessage() {}
 
 func (x *ForwardSshTunnelConnectivity) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[13]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1719,7 +2444,7 @@ func (x *ForwardSshTunnelConnectivity) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ForwardSshTunnelConnectivity.ProtoReflect.Descriptor instead.
 func (*ForwardSshTunnelConnectivity) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{13}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *ForwardSshTunnelConnectivity) GetHostname() string {
@@ -1802,7 +2527,7 @@ type VpcPeeringConfig struct {
 
 func (x *VpcPeeringConfig) Reset() {
 	*x = VpcPeeringConfig{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[14]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1814,7 +2539,7 @@ func (x *VpcPeeringConfig) String() string {
 func (*VpcPeeringConfig) ProtoMessage() {}
 
 func (x *VpcPeeringConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[14]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1827,7 +2552,7 @@ func (x *VpcPeeringConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use VpcPeeringConfig.ProtoReflect.Descriptor instead.
 func (*VpcPeeringConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{14}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *VpcPeeringConfig) GetVpc() string {
@@ -1858,7 +2583,7 @@ type PscInterfaceConfig struct {
 
 func (x *PscInterfaceConfig) Reset() {
 	*x = PscInterfaceConfig{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[15]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1870,7 +2595,7 @@ func (x *PscInterfaceConfig) String() string {
 func (*PscInterfaceConfig) ProtoMessage() {}
 
 func (x *PscInterfaceConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[15]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1883,7 +2608,7 @@ func (x *PscInterfaceConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PscInterfaceConfig.ProtoReflect.Descriptor instead.
 func (*PscInterfaceConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{15}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *PscInterfaceConfig) GetNetworkAttachment() string {
@@ -1926,7 +2651,7 @@ type PrivateConnection struct {
 
 func (x *PrivateConnection) Reset() {
 	*x = PrivateConnection{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[16]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1938,7 +2663,7 @@ func (x *PrivateConnection) String() string {
 func (*PrivateConnection) ProtoMessage() {}
 
 func (x *PrivateConnection) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[16]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1951,7 +2676,7 @@ func (x *PrivateConnection) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PrivateConnection.ProtoReflect.Descriptor instead.
 func (*PrivateConnection) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{16}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *PrivateConnection) GetName() string {
@@ -2043,7 +2768,7 @@ type PrivateConnectivity struct {
 
 func (x *PrivateConnectivity) Reset() {
 	*x = PrivateConnectivity{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[17]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2055,7 +2780,7 @@ func (x *PrivateConnectivity) String() string {
 func (*PrivateConnectivity) ProtoMessage() {}
 
 func (x *PrivateConnectivity) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[17]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2068,7 +2793,7 @@ func (x *PrivateConnectivity) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PrivateConnectivity.ProtoReflect.Descriptor instead.
 func (*PrivateConnectivity) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{17}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *PrivateConnectivity) GetPrivateConnection() string {
@@ -2102,7 +2827,7 @@ type Route struct {
 
 func (x *Route) Reset() {
 	*x = Route{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[18]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2114,7 +2839,7 @@ func (x *Route) String() string {
 func (*Route) ProtoMessage() {}
 
 func (x *Route) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[18]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2127,7 +2852,7 @@ func (x *Route) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Route.ProtoReflect.Descriptor instead.
 func (*Route) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{18}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *Route) GetName() string {
@@ -2179,6 +2904,97 @@ func (x *Route) GetDestinationPort() int32 {
 	return 0
 }
 
+// A confidential piece of information where the actual value is either directly
+// specified in the message as a raw string or stored in GCP secret manager.
+type Secret struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The actual value of the secret.
+	//
+	// Types that are valid to be assigned to Value:
+	//
+	//	*Secret_RawValue
+	//	*Secret_SecretVersion
+	Value         isSecret_Value `protobuf_oneof:"value"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Secret) Reset() {
+	*x = Secret{}
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[27]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Secret) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Secret) ProtoMessage() {}
+
+func (x *Secret) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[27]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Secret.ProtoReflect.Descriptor instead.
+func (*Secret) Descriptor() ([]byte, []int) {
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{27}
+}
+
+func (x *Secret) GetValue() isSecret_Value {
+	if x != nil {
+		return x.Value
+	}
+	return nil
+}
+
+func (x *Secret) GetRawValue() string {
+	if x != nil {
+		if x, ok := x.Value.(*Secret_RawValue); ok {
+			return x.RawValue
+		}
+	}
+	return ""
+}
+
+func (x *Secret) GetSecretVersion() string {
+	if x != nil {
+		if x, ok := x.Value.(*Secret_SecretVersion); ok {
+			return x.SecretVersion
+		}
+	}
+	return ""
+}
+
+type isSecret_Value interface {
+	isSecret_Value()
+}
+
+type Secret_RawValue struct {
+	// Optional. Input only. The actual raw value of the secret as plain text.
+	RawValue string `protobuf:"bytes,1,opt,name=raw_value,json=rawValue,proto3,oneof"`
+}
+
+type Secret_SecretVersion struct {
+	// Optional. A Secret Manager resource name storing the actual value of the
+	// secret. Supported formats:
+	//   - projects/{project}/locations/{location}/secrets/{secret}/versions/{version}
+	//   - projects/{project}/secrets/{secret}/versions/{version}
+	SecretVersion string `protobuf:"bytes,2,opt,name=secret_version,json=secretVersion,proto3,oneof"`
+}
+
+func (*Secret_RawValue) isSecret_Value() {}
+
+func (*Secret_SecretVersion) isSecret_Value() {}
+
 // MongoDB SSL configuration information.
 type MongodbSslConfig struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -2211,7 +3027,7 @@ type MongodbSslConfig struct {
 
 func (x *MongodbSslConfig) Reset() {
 	*x = MongodbSslConfig{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[19]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2223,7 +3039,7 @@ func (x *MongodbSslConfig) String() string {
 func (*MongodbSslConfig) ProtoMessage() {}
 
 func (x *MongodbSslConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[19]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2236,7 +3052,7 @@ func (x *MongodbSslConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MongodbSslConfig.ProtoReflect.Descriptor instead.
 func (*MongodbSslConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{19}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *MongodbSslConfig) GetClientKey() string {
@@ -2315,7 +3131,7 @@ type MysqlSslConfig struct {
 
 func (x *MysqlSslConfig) Reset() {
 	*x = MysqlSslConfig{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[20]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2327,7 +3143,7 @@ func (x *MysqlSslConfig) String() string {
 func (*MysqlSslConfig) ProtoMessage() {}
 
 func (x *MysqlSslConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[20]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2340,7 +3156,7 @@ func (x *MysqlSslConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MysqlSslConfig.ProtoReflect.Descriptor instead.
 func (*MysqlSslConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{20}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{29}
 }
 
 func (x *MysqlSslConfig) GetClientKey() string {
@@ -2406,7 +3222,7 @@ type OracleSslConfig struct {
 
 func (x *OracleSslConfig) Reset() {
 	*x = OracleSslConfig{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[21]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2418,7 +3234,7 @@ func (x *OracleSslConfig) String() string {
 func (*OracleSslConfig) ProtoMessage() {}
 
 func (x *OracleSslConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[21]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2431,7 +3247,7 @@ func (x *OracleSslConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OracleSslConfig.ProtoReflect.Descriptor instead.
 func (*OracleSslConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{21}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{30}
 }
 
 func (x *OracleSslConfig) GetCaCertificate() string {
@@ -2455,6 +3271,117 @@ func (x *OracleSslConfig) GetServerCertificateDistinguishedName() string {
 	return ""
 }
 
+// SQL Server SSL configuration information.
+type SqlServerSslConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The encryption settings available for SQL Server connection profiles.
+	// This captures various options like no TLS encryption from client if server
+	// doesn't ask for it, only encryption without validation and both encryption
+	// as well as validation of server certificate.
+	//
+	// Types that are valid to be assigned to EncryptionSetting:
+	//
+	//	*SqlServerSslConfig_EncryptionNotEnforced_
+	//	*SqlServerSslConfig_BasicEncryption_
+	//	*SqlServerSslConfig_EncryptionAndServerValidation_
+	EncryptionSetting isSqlServerSslConfig_EncryptionSetting `protobuf_oneof:"encryption_setting"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *SqlServerSslConfig) Reset() {
+	*x = SqlServerSslConfig{}
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[31]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SqlServerSslConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SqlServerSslConfig) ProtoMessage() {}
+
+func (x *SqlServerSslConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[31]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SqlServerSslConfig.ProtoReflect.Descriptor instead.
+func (*SqlServerSslConfig) Descriptor() ([]byte, []int) {
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{31}
+}
+
+func (x *SqlServerSslConfig) GetEncryptionSetting() isSqlServerSslConfig_EncryptionSetting {
+	if x != nil {
+		return x.EncryptionSetting
+	}
+	return nil
+}
+
+func (x *SqlServerSslConfig) GetEncryptionNotEnforced() *SqlServerSslConfig_EncryptionNotEnforced {
+	if x != nil {
+		if x, ok := x.EncryptionSetting.(*SqlServerSslConfig_EncryptionNotEnforced_); ok {
+			return x.EncryptionNotEnforced
+		}
+	}
+	return nil
+}
+
+func (x *SqlServerSslConfig) GetBasicEncryption() *SqlServerSslConfig_BasicEncryption {
+	if x != nil {
+		if x, ok := x.EncryptionSetting.(*SqlServerSslConfig_BasicEncryption_); ok {
+			return x.BasicEncryption
+		}
+	}
+	return nil
+}
+
+func (x *SqlServerSslConfig) GetEncryptionAndServerValidation() *SqlServerSslConfig_EncryptionAndServerValidation {
+	if x != nil {
+		if x, ok := x.EncryptionSetting.(*SqlServerSslConfig_EncryptionAndServerValidation_); ok {
+			return x.EncryptionAndServerValidation
+		}
+	}
+	return nil
+}
+
+type isSqlServerSslConfig_EncryptionSetting interface {
+	isSqlServerSslConfig_EncryptionSetting()
+}
+
+type SqlServerSslConfig_EncryptionNotEnforced_ struct {
+	// If set, Datastream will not enforce encryption. If the DB server mandates
+	// encryption, then connection will be encrypted but server identity will
+	// not be authenticated.
+	EncryptionNotEnforced *SqlServerSslConfig_EncryptionNotEnforced `protobuf:"bytes,1,opt,name=encryption_not_enforced,json=encryptionNotEnforced,proto3,oneof"`
+}
+
+type SqlServerSslConfig_BasicEncryption_ struct {
+	// If set, Datastream will enforce encryption without authenticating server
+	// identity. Server certificates will be trusted by default.
+	BasicEncryption *SqlServerSslConfig_BasicEncryption `protobuf:"bytes,2,opt,name=basic_encryption,json=basicEncryption,proto3,oneof"`
+}
+
+type SqlServerSslConfig_EncryptionAndServerValidation_ struct {
+	// If set, Datastream will enforce encryption and authenticate server
+	// identity.
+	EncryptionAndServerValidation *SqlServerSslConfig_EncryptionAndServerValidation `protobuf:"bytes,3,opt,name=encryption_and_server_validation,json=encryptionAndServerValidation,proto3,oneof"`
+}
+
+func (*SqlServerSslConfig_EncryptionNotEnforced_) isSqlServerSslConfig_EncryptionSetting() {}
+
+func (*SqlServerSslConfig_BasicEncryption_) isSqlServerSslConfig_EncryptionSetting() {}
+
+func (*SqlServerSslConfig_EncryptionAndServerValidation_) isSqlServerSslConfig_EncryptionSetting() {}
+
 // PostgreSQL SSL configuration information.
 type PostgresqlSslConfig struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -2474,7 +3401,7 @@ type PostgresqlSslConfig struct {
 
 func (x *PostgresqlSslConfig) Reset() {
 	*x = PostgresqlSslConfig{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[22]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2486,7 +3413,7 @@ func (x *PostgresqlSslConfig) String() string {
 func (*PostgresqlSslConfig) ProtoMessage() {}
 
 func (x *PostgresqlSslConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[22]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2499,7 +3426,7 @@ func (x *PostgresqlSslConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PostgresqlSslConfig.ProtoReflect.Descriptor instead.
 func (*PostgresqlSslConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{22}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{32}
 }
 
 func (x *PostgresqlSslConfig) GetEncryptionSetting() isPostgresqlSslConfig_EncryptionSetting {
@@ -2579,6 +3506,11 @@ type ConnectionProfile struct {
 	//	*ConnectionProfile_SqlServerProfile
 	//	*ConnectionProfile_SalesforceProfile
 	//	*ConnectionProfile_MongodbProfile
+	//	*ConnectionProfile_SpannerProfile
+	//	*ConnectionProfile_DataverseProfile
+	//	*ConnectionProfile_SalesforceMarketingCloudProfile
+	//	*ConnectionProfile_ServiceNowProfile
+	//	*ConnectionProfile_WorkdayProfile
 	Profile isConnectionProfile_Profile `protobuf_oneof:"profile"`
 	// Connectivity options used to establish a connection to the profile.
 	//
@@ -2594,7 +3526,7 @@ type ConnectionProfile struct {
 
 func (x *ConnectionProfile) Reset() {
 	*x = ConnectionProfile{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[23]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2606,7 +3538,7 @@ func (x *ConnectionProfile) String() string {
 func (*ConnectionProfile) ProtoMessage() {}
 
 func (x *ConnectionProfile) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[23]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2619,7 +3551,7 @@ func (x *ConnectionProfile) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConnectionProfile.ProtoReflect.Descriptor instead.
 func (*ConnectionProfile) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{23}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{33}
 }
 
 func (x *ConnectionProfile) GetName() string {
@@ -2750,6 +3682,51 @@ func (x *ConnectionProfile) GetMongodbProfile() *MongodbProfile {
 	return nil
 }
 
+func (x *ConnectionProfile) GetSpannerProfile() *SpannerProfile {
+	if x != nil {
+		if x, ok := x.Profile.(*ConnectionProfile_SpannerProfile); ok {
+			return x.SpannerProfile
+		}
+	}
+	return nil
+}
+
+func (x *ConnectionProfile) GetDataverseProfile() *DataverseProfile {
+	if x != nil {
+		if x, ok := x.Profile.(*ConnectionProfile_DataverseProfile); ok {
+			return x.DataverseProfile
+		}
+	}
+	return nil
+}
+
+func (x *ConnectionProfile) GetSalesforceMarketingCloudProfile() *SalesforceMarketingCloudProfile {
+	if x != nil {
+		if x, ok := x.Profile.(*ConnectionProfile_SalesforceMarketingCloudProfile); ok {
+			return x.SalesforceMarketingCloudProfile
+		}
+	}
+	return nil
+}
+
+func (x *ConnectionProfile) GetServiceNowProfile() *ServiceNowProfile {
+	if x != nil {
+		if x, ok := x.Profile.(*ConnectionProfile_ServiceNowProfile); ok {
+			return x.ServiceNowProfile
+		}
+	}
+	return nil
+}
+
+func (x *ConnectionProfile) GetWorkdayProfile() *WorkdayProfile {
+	if x != nil {
+		if x, ok := x.Profile.(*ConnectionProfile_WorkdayProfile); ok {
+			return x.WorkdayProfile
+		}
+	}
+	return nil
+}
+
 func (x *ConnectionProfile) GetConnectivity() isConnectionProfile_Connectivity {
 	if x != nil {
 		return x.Connectivity
@@ -2789,43 +3766,68 @@ type isConnectionProfile_Profile interface {
 }
 
 type ConnectionProfile_OracleProfile struct {
-	// Oracle ConnectionProfile configuration.
+	// Profile for connecting to an Oracle source.
 	OracleProfile *OracleProfile `protobuf:"bytes,100,opt,name=oracle_profile,json=oracleProfile,proto3,oneof"`
 }
 
 type ConnectionProfile_GcsProfile struct {
-	// Cloud Storage ConnectionProfile configuration.
+	// Profile for connecting to a Cloud Storage destination.
 	GcsProfile *GcsProfile `protobuf:"bytes,101,opt,name=gcs_profile,json=gcsProfile,proto3,oneof"`
 }
 
 type ConnectionProfile_MysqlProfile struct {
-	// MySQL ConnectionProfile configuration.
+	// Profile for connecting to a MySQL source.
 	MysqlProfile *MysqlProfile `protobuf:"bytes,102,opt,name=mysql_profile,json=mysqlProfile,proto3,oneof"`
 }
 
 type ConnectionProfile_BigqueryProfile struct {
-	// BigQuery Connection Profile configuration.
+	// Profile for connecting to a BigQuery destination.
 	BigqueryProfile *BigQueryProfile `protobuf:"bytes,103,opt,name=bigquery_profile,json=bigqueryProfile,proto3,oneof"`
 }
 
 type ConnectionProfile_PostgresqlProfile struct {
-	// PostgreSQL Connection Profile configuration.
+	// Profile for connecting to a PostgreSQL source.
 	PostgresqlProfile *PostgresqlProfile `protobuf:"bytes,104,opt,name=postgresql_profile,json=postgresqlProfile,proto3,oneof"`
 }
 
 type ConnectionProfile_SqlServerProfile struct {
-	// SQLServer Connection Profile configuration.
+	// Profile for connecting to a SQLServer source.
 	SqlServerProfile *SqlServerProfile `protobuf:"bytes,105,opt,name=sql_server_profile,json=sqlServerProfile,proto3,oneof"`
 }
 
 type ConnectionProfile_SalesforceProfile struct {
-	// Salesforce Connection Profile configuration.
+	// Profile for connecting to a Salesforce source.
 	SalesforceProfile *SalesforceProfile `protobuf:"bytes,107,opt,name=salesforce_profile,json=salesforceProfile,proto3,oneof"`
 }
 
 type ConnectionProfile_MongodbProfile struct {
-	// MongoDB Connection Profile configuration.
+	// Profile for connecting to a MongoDB source.
 	MongodbProfile *MongodbProfile `protobuf:"bytes,108,opt,name=mongodb_profile,json=mongodbProfile,proto3,oneof"`
+}
+
+type ConnectionProfile_SpannerProfile struct {
+	// Profile for connecting to a Spanner source.
+	SpannerProfile *SpannerProfile `protobuf:"bytes,109,opt,name=spanner_profile,json=spannerProfile,proto3,oneof"`
+}
+
+type ConnectionProfile_DataverseProfile struct {
+	// Profile for connecting to a Dataverse source.
+	DataverseProfile *DataverseProfile `protobuf:"bytes,114,opt,name=dataverse_profile,json=dataverseProfile,proto3,oneof"`
+}
+
+type ConnectionProfile_SalesforceMarketingCloudProfile struct {
+	// Profile for connecting to a Salesforce Marketing Cloud source.
+	SalesforceMarketingCloudProfile *SalesforceMarketingCloudProfile `protobuf:"bytes,119,opt,name=salesforce_marketing_cloud_profile,json=salesforceMarketingCloudProfile,proto3,oneof"`
+}
+
+type ConnectionProfile_ServiceNowProfile struct {
+	// Profile for connecting to a ServiceNow source.
+	ServiceNowProfile *ServiceNowProfile `protobuf:"bytes,120,opt,name=service_now_profile,json=serviceNowProfile,proto3,oneof"`
+}
+
+type ConnectionProfile_WorkdayProfile struct {
+	// Optional. Profile for connecting to a Workday source.
+	WorkdayProfile *WorkdayProfile `protobuf:"bytes,121,opt,name=workday_profile,json=workdayProfile,proto3,oneof"`
 }
 
 func (*ConnectionProfile_OracleProfile) isConnectionProfile_Profile() {}
@@ -2843,6 +3845,16 @@ func (*ConnectionProfile_SqlServerProfile) isConnectionProfile_Profile() {}
 func (*ConnectionProfile_SalesforceProfile) isConnectionProfile_Profile() {}
 
 func (*ConnectionProfile_MongodbProfile) isConnectionProfile_Profile() {}
+
+func (*ConnectionProfile_SpannerProfile) isConnectionProfile_Profile() {}
+
+func (*ConnectionProfile_DataverseProfile) isConnectionProfile_Profile() {}
+
+func (*ConnectionProfile_SalesforceMarketingCloudProfile) isConnectionProfile_Profile() {}
+
+func (*ConnectionProfile_ServiceNowProfile) isConnectionProfile_Profile() {}
+
+func (*ConnectionProfile_WorkdayProfile) isConnectionProfile_Profile() {}
 
 type isConnectionProfile_Connectivity interface {
 	isConnectionProfile_Connectivity()
@@ -2872,7 +3884,7 @@ func (*ConnectionProfile_PrivateConnectivity) isConnectionProfile_Connectivity()
 // Oracle Column.
 type OracleColumn struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Column name.
+	// The column name.
 	Column string `protobuf:"bytes,1,opt,name=column,proto3" json:"column,omitempty"`
 	// The Oracle data type.
 	DataType string `protobuf:"bytes,2,opt,name=data_type,json=dataType,proto3" json:"data_type,omitempty"`
@@ -2896,7 +3908,7 @@ type OracleColumn struct {
 
 func (x *OracleColumn) Reset() {
 	*x = OracleColumn{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[24]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2908,7 +3920,7 @@ func (x *OracleColumn) String() string {
 func (*OracleColumn) ProtoMessage() {}
 
 func (x *OracleColumn) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[24]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2921,7 +3933,7 @@ func (x *OracleColumn) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OracleColumn.ProtoReflect.Descriptor instead.
 func (*OracleColumn) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{24}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{34}
 }
 
 func (x *OracleColumn) GetColumn() string {
@@ -2990,7 +4002,7 @@ func (x *OracleColumn) GetOrdinalPosition() int32 {
 // Oracle table.
 type OracleTable struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Table name.
+	// The table name.
 	Table string `protobuf:"bytes,1,opt,name=table,proto3" json:"table,omitempty"`
 	// Oracle columns in the schema.
 	// When unspecified as part of include/exclude objects, includes/excludes
@@ -3002,7 +4014,7 @@ type OracleTable struct {
 
 func (x *OracleTable) Reset() {
 	*x = OracleTable{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[25]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3014,7 +4026,7 @@ func (x *OracleTable) String() string {
 func (*OracleTable) ProtoMessage() {}
 
 func (x *OracleTable) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[25]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3027,7 +4039,7 @@ func (x *OracleTable) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OracleTable.ProtoReflect.Descriptor instead.
 func (*OracleTable) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{25}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{35}
 }
 
 func (x *OracleTable) GetTable() string {
@@ -3047,7 +4059,7 @@ func (x *OracleTable) GetOracleColumns() []*OracleColumn {
 // Oracle schema.
 type OracleSchema struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Schema name.
+	// The schema name.
 	Schema string `protobuf:"bytes,1,opt,name=schema,proto3" json:"schema,omitempty"`
 	// Tables in the schema.
 	OracleTables  []*OracleTable `protobuf:"bytes,2,rep,name=oracle_tables,json=oracleTables,proto3" json:"oracle_tables,omitempty"`
@@ -3057,7 +4069,7 @@ type OracleSchema struct {
 
 func (x *OracleSchema) Reset() {
 	*x = OracleSchema{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[26]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3069,7 +4081,7 @@ func (x *OracleSchema) String() string {
 func (*OracleSchema) ProtoMessage() {}
 
 func (x *OracleSchema) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[26]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3082,7 +4094,7 @@ func (x *OracleSchema) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OracleSchema.ProtoReflect.Descriptor instead.
 func (*OracleSchema) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{26}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{36}
 }
 
 func (x *OracleSchema) GetSchema() string {
@@ -3110,7 +4122,7 @@ type OracleRdbms struct {
 
 func (x *OracleRdbms) Reset() {
 	*x = OracleRdbms{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[27]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[37]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3122,7 +4134,7 @@ func (x *OracleRdbms) String() string {
 func (*OracleRdbms) ProtoMessage() {}
 
 func (x *OracleRdbms) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[27]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[37]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3135,7 +4147,7 @@ func (x *OracleRdbms) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OracleRdbms.ProtoReflect.Descriptor instead.
 func (*OracleRdbms) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{27}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{37}
 }
 
 func (x *OracleRdbms) GetOracleSchemas() []*OracleSchema {
@@ -3145,12 +4157,12 @@ func (x *OracleRdbms) GetOracleSchemas() []*OracleSchema {
 	return nil
 }
 
-// Oracle data source configuration
+// Configuration for syncing data from an Oracle source.
 type OracleSourceConfig struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Oracle objects to include in the stream.
+	// The Oracle objects to include in the stream.
 	IncludeObjects *OracleRdbms `protobuf:"bytes,1,opt,name=include_objects,json=includeObjects,proto3" json:"include_objects,omitempty"`
-	// Oracle objects to exclude from the stream.
+	// The Oracle objects to exclude from the stream.
 	ExcludeObjects *OracleRdbms `protobuf:"bytes,2,opt,name=exclude_objects,json=excludeObjects,proto3" json:"exclude_objects,omitempty"`
 	// Maximum number of concurrent CDC tasks. The number should be non-negative.
 	// If not set (or set to 0), the system's default value is used.
@@ -3178,7 +4190,7 @@ type OracleSourceConfig struct {
 
 func (x *OracleSourceConfig) Reset() {
 	*x = OracleSourceConfig{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[28]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[38]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3190,7 +4202,7 @@ func (x *OracleSourceConfig) String() string {
 func (*OracleSourceConfig) ProtoMessage() {}
 
 func (x *OracleSourceConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[28]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[38]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3203,7 +4215,7 @@ func (x *OracleSourceConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OracleSourceConfig.ProtoReflect.Descriptor instead.
 func (*OracleSourceConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{28}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{38}
 }
 
 func (x *OracleSourceConfig) GetIncludeObjects() *OracleRdbms {
@@ -3323,7 +4335,7 @@ func (*OracleSourceConfig_BinaryLogParser_) isOracleSourceConfig_CdcMethod() {}
 // PostgreSQL Column.
 type PostgresqlColumn struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Column name.
+	// The column name.
 	Column string `protobuf:"bytes,1,opt,name=column,proto3" json:"column,omitempty"`
 	// The PostgreSQL data type.
 	DataType string `protobuf:"bytes,2,opt,name=data_type,json=dataType,proto3" json:"data_type,omitempty"`
@@ -3345,7 +4357,7 @@ type PostgresqlColumn struct {
 
 func (x *PostgresqlColumn) Reset() {
 	*x = PostgresqlColumn{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[29]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[39]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3357,7 +4369,7 @@ func (x *PostgresqlColumn) String() string {
 func (*PostgresqlColumn) ProtoMessage() {}
 
 func (x *PostgresqlColumn) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[29]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[39]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3370,7 +4382,7 @@ func (x *PostgresqlColumn) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PostgresqlColumn.ProtoReflect.Descriptor instead.
 func (*PostgresqlColumn) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{29}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{39}
 }
 
 func (x *PostgresqlColumn) GetColumn() string {
@@ -3432,7 +4444,7 @@ func (x *PostgresqlColumn) GetOrdinalPosition() int32 {
 // PostgreSQL table.
 type PostgresqlTable struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Table name.
+	// The table name.
 	Table string `protobuf:"bytes,1,opt,name=table,proto3" json:"table,omitempty"`
 	// PostgreSQL columns in the schema.
 	// When unspecified as part of include/exclude objects,
@@ -3444,7 +4456,7 @@ type PostgresqlTable struct {
 
 func (x *PostgresqlTable) Reset() {
 	*x = PostgresqlTable{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[30]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[40]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3456,7 +4468,7 @@ func (x *PostgresqlTable) String() string {
 func (*PostgresqlTable) ProtoMessage() {}
 
 func (x *PostgresqlTable) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[30]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[40]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3469,7 +4481,7 @@ func (x *PostgresqlTable) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PostgresqlTable.ProtoReflect.Descriptor instead.
 func (*PostgresqlTable) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{30}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{40}
 }
 
 func (x *PostgresqlTable) GetTable() string {
@@ -3489,7 +4501,7 @@ func (x *PostgresqlTable) GetPostgresqlColumns() []*PostgresqlColumn {
 // PostgreSQL schema.
 type PostgresqlSchema struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Schema name.
+	// The schema name.
 	Schema string `protobuf:"bytes,1,opt,name=schema,proto3" json:"schema,omitempty"`
 	// Tables in the schema.
 	PostgresqlTables []*PostgresqlTable `protobuf:"bytes,2,rep,name=postgresql_tables,json=postgresqlTables,proto3" json:"postgresql_tables,omitempty"`
@@ -3499,7 +4511,7 @@ type PostgresqlSchema struct {
 
 func (x *PostgresqlSchema) Reset() {
 	*x = PostgresqlSchema{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[31]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[41]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3511,7 +4523,7 @@ func (x *PostgresqlSchema) String() string {
 func (*PostgresqlSchema) ProtoMessage() {}
 
 func (x *PostgresqlSchema) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[31]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[41]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3524,7 +4536,7 @@ func (x *PostgresqlSchema) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PostgresqlSchema.ProtoReflect.Descriptor instead.
 func (*PostgresqlSchema) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{31}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{41}
 }
 
 func (x *PostgresqlSchema) GetSchema() string {
@@ -3552,7 +4564,7 @@ type PostgresqlRdbms struct {
 
 func (x *PostgresqlRdbms) Reset() {
 	*x = PostgresqlRdbms{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[32]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[42]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3564,7 +4576,7 @@ func (x *PostgresqlRdbms) String() string {
 func (*PostgresqlRdbms) ProtoMessage() {}
 
 func (x *PostgresqlRdbms) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[32]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[42]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3577,7 +4589,7 @@ func (x *PostgresqlRdbms) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PostgresqlRdbms.ProtoReflect.Descriptor instead.
 func (*PostgresqlRdbms) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{32}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{42}
 }
 
 func (x *PostgresqlRdbms) GetPostgresqlSchemas() []*PostgresqlSchema {
@@ -3587,12 +4599,12 @@ func (x *PostgresqlRdbms) GetPostgresqlSchemas() []*PostgresqlSchema {
 	return nil
 }
 
-// PostgreSQL data source configuration
+// Configuration for syncing data from a PostgreSQL source.
 type PostgresqlSourceConfig struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// PostgreSQL objects to include in the stream.
+	// The PostgreSQL objects to include in the stream.
 	IncludeObjects *PostgresqlRdbms `protobuf:"bytes,1,opt,name=include_objects,json=includeObjects,proto3" json:"include_objects,omitempty"`
-	// PostgreSQL objects to exclude from the stream.
+	// The PostgreSQL objects to exclude from the stream.
 	ExcludeObjects *PostgresqlRdbms `protobuf:"bytes,2,opt,name=exclude_objects,json=excludeObjects,proto3" json:"exclude_objects,omitempty"`
 	// Required. Immutable. The name of the logical replication slot that's
 	// configured with the pgoutput plugin.
@@ -3610,7 +4622,7 @@ type PostgresqlSourceConfig struct {
 
 func (x *PostgresqlSourceConfig) Reset() {
 	*x = PostgresqlSourceConfig{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[33]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[43]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3622,7 +4634,7 @@ func (x *PostgresqlSourceConfig) String() string {
 func (*PostgresqlSourceConfig) ProtoMessage() {}
 
 func (x *PostgresqlSourceConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[33]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[43]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3635,7 +4647,7 @@ func (x *PostgresqlSourceConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PostgresqlSourceConfig.ProtoReflect.Descriptor instead.
 func (*PostgresqlSourceConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{33}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{43}
 }
 
 func (x *PostgresqlSourceConfig) GetIncludeObjects() *PostgresqlRdbms {
@@ -3676,7 +4688,7 @@ func (x *PostgresqlSourceConfig) GetMaxConcurrentBackfillTasks() int32 {
 // SQLServer Column.
 type SqlServerColumn struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Column name.
+	// The column name.
 	Column string `protobuf:"bytes,1,opt,name=column,proto3" json:"column,omitempty"`
 	// The SQLServer data type.
 	DataType string `protobuf:"bytes,2,opt,name=data_type,json=dataType,proto3" json:"data_type,omitempty"`
@@ -3698,7 +4710,7 @@ type SqlServerColumn struct {
 
 func (x *SqlServerColumn) Reset() {
 	*x = SqlServerColumn{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[34]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[44]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3710,7 +4722,7 @@ func (x *SqlServerColumn) String() string {
 func (*SqlServerColumn) ProtoMessage() {}
 
 func (x *SqlServerColumn) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[34]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[44]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3723,7 +4735,7 @@ func (x *SqlServerColumn) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SqlServerColumn.ProtoReflect.Descriptor instead.
 func (*SqlServerColumn) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{34}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{44}
 }
 
 func (x *SqlServerColumn) GetColumn() string {
@@ -3785,7 +4797,7 @@ func (x *SqlServerColumn) GetOrdinalPosition() int32 {
 // SQLServer table.
 type SqlServerTable struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Table name.
+	// The table name.
 	Table string `protobuf:"bytes,1,opt,name=table,proto3" json:"table,omitempty"`
 	// SQLServer columns in the schema.
 	// When unspecified as part of include/exclude objects,
@@ -3797,7 +4809,7 @@ type SqlServerTable struct {
 
 func (x *SqlServerTable) Reset() {
 	*x = SqlServerTable{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[35]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[45]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3809,7 +4821,7 @@ func (x *SqlServerTable) String() string {
 func (*SqlServerTable) ProtoMessage() {}
 
 func (x *SqlServerTable) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[35]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[45]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3822,7 +4834,7 @@ func (x *SqlServerTable) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SqlServerTable.ProtoReflect.Descriptor instead.
 func (*SqlServerTable) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{35}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{45}
 }
 
 func (x *SqlServerTable) GetTable() string {
@@ -3842,7 +4854,7 @@ func (x *SqlServerTable) GetColumns() []*SqlServerColumn {
 // SQLServer schema.
 type SqlServerSchema struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Schema name.
+	// The schema name.
 	Schema string `protobuf:"bytes,1,opt,name=schema,proto3" json:"schema,omitempty"`
 	// Tables in the schema.
 	Tables        []*SqlServerTable `protobuf:"bytes,2,rep,name=tables,proto3" json:"tables,omitempty"`
@@ -3852,7 +4864,7 @@ type SqlServerSchema struct {
 
 func (x *SqlServerSchema) Reset() {
 	*x = SqlServerSchema{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[36]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[46]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3864,7 +4876,7 @@ func (x *SqlServerSchema) String() string {
 func (*SqlServerSchema) ProtoMessage() {}
 
 func (x *SqlServerSchema) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[36]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[46]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3877,7 +4889,7 @@ func (x *SqlServerSchema) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SqlServerSchema.ProtoReflect.Descriptor instead.
 func (*SqlServerSchema) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{36}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{46}
 }
 
 func (x *SqlServerSchema) GetSchema() string {
@@ -3905,7 +4917,7 @@ type SqlServerRdbms struct {
 
 func (x *SqlServerRdbms) Reset() {
 	*x = SqlServerRdbms{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[37]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[47]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3917,7 +4929,7 @@ func (x *SqlServerRdbms) String() string {
 func (*SqlServerRdbms) ProtoMessage() {}
 
 func (x *SqlServerRdbms) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[37]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[47]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3930,7 +4942,7 @@ func (x *SqlServerRdbms) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SqlServerRdbms.ProtoReflect.Descriptor instead.
 func (*SqlServerRdbms) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{37}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{47}
 }
 
 func (x *SqlServerRdbms) GetSchemas() []*SqlServerSchema {
@@ -3940,12 +4952,12 @@ func (x *SqlServerRdbms) GetSchemas() []*SqlServerSchema {
 	return nil
 }
 
-// SQLServer data source configuration
+// Configuration for syncing data from a SQLServer source.
 type SqlServerSourceConfig struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// SQLServer objects to include in the stream.
+	// The SQLServer objects to include in the stream.
 	IncludeObjects *SqlServerRdbms `protobuf:"bytes,1,opt,name=include_objects,json=includeObjects,proto3" json:"include_objects,omitempty"`
-	// SQLServer objects to exclude from the stream.
+	// The SQLServer objects to exclude from the stream.
 	ExcludeObjects *SqlServerRdbms `protobuf:"bytes,2,opt,name=exclude_objects,json=excludeObjects,proto3" json:"exclude_objects,omitempty"`
 	// Max concurrent CDC tasks.
 	MaxConcurrentCdcTasks int32 `protobuf:"varint,3,opt,name=max_concurrent_cdc_tasks,json=maxConcurrentCdcTasks,proto3" json:"max_concurrent_cdc_tasks,omitempty"`
@@ -3964,7 +4976,7 @@ type SqlServerSourceConfig struct {
 
 func (x *SqlServerSourceConfig) Reset() {
 	*x = SqlServerSourceConfig{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[38]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[48]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3976,7 +4988,7 @@ func (x *SqlServerSourceConfig) String() string {
 func (*SqlServerSourceConfig) ProtoMessage() {}
 
 func (x *SqlServerSourceConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[38]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[48]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3989,7 +5001,7 @@ func (x *SqlServerSourceConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SqlServerSourceConfig.ProtoReflect.Descriptor instead.
 func (*SqlServerSourceConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{38}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{48}
 }
 
 func (x *SqlServerSourceConfig) GetIncludeObjects() *SqlServerRdbms {
@@ -4072,7 +5084,7 @@ type SqlServerTransactionLogs struct {
 
 func (x *SqlServerTransactionLogs) Reset() {
 	*x = SqlServerTransactionLogs{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[39]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[49]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4084,7 +5096,7 @@ func (x *SqlServerTransactionLogs) String() string {
 func (*SqlServerTransactionLogs) ProtoMessage() {}
 
 func (x *SqlServerTransactionLogs) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[39]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[49]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4097,19 +5109,21 @@ func (x *SqlServerTransactionLogs) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SqlServerTransactionLogs.ProtoReflect.Descriptor instead.
 func (*SqlServerTransactionLogs) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{39}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{49}
 }
 
 // Configuration to use Change Tables CDC read method.
 type SqlServerChangeTables struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. DDL configuration for change tables.
+	DdlConfig     *SqlServerChangeTables_SqlServerDdlConfig `protobuf:"bytes,1,opt,name=ddl_config,json=ddlConfig,proto3" json:"ddl_config,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *SqlServerChangeTables) Reset() {
 	*x = SqlServerChangeTables{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[40]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[50]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4121,7 +5135,7 @@ func (x *SqlServerChangeTables) String() string {
 func (*SqlServerChangeTables) ProtoMessage() {}
 
 func (x *SqlServerChangeTables) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[40]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[50]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4134,13 +5148,20 @@ func (x *SqlServerChangeTables) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SqlServerChangeTables.ProtoReflect.Descriptor instead.
 func (*SqlServerChangeTables) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{40}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{50}
+}
+
+func (x *SqlServerChangeTables) GetDdlConfig() *SqlServerChangeTables_SqlServerDdlConfig {
+	if x != nil {
+		return x.DdlConfig
+	}
+	return nil
 }
 
 // MySQL Column.
 type MysqlColumn struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Column name.
+	// The column name.
 	Column string `protobuf:"bytes,1,opt,name=column,proto3" json:"column,omitempty"`
 	// The MySQL data type. Full data types list can be found here:
 	// https://dev.mysql.com/doc/refman/8.0/en/data-types.html
@@ -4165,7 +5186,7 @@ type MysqlColumn struct {
 
 func (x *MysqlColumn) Reset() {
 	*x = MysqlColumn{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[41]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[51]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4177,7 +5198,7 @@ func (x *MysqlColumn) String() string {
 func (*MysqlColumn) ProtoMessage() {}
 
 func (x *MysqlColumn) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[41]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[51]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4190,7 +5211,7 @@ func (x *MysqlColumn) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MysqlColumn.ProtoReflect.Descriptor instead.
 func (*MysqlColumn) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{41}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{51}
 }
 
 func (x *MysqlColumn) GetColumn() string {
@@ -4259,7 +5280,7 @@ func (x *MysqlColumn) GetScale() int32 {
 // MySQL table.
 type MysqlTable struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Table name.
+	// The table name.
 	Table string `protobuf:"bytes,1,opt,name=table,proto3" json:"table,omitempty"`
 	// MySQL columns in the database.
 	// When unspecified as part of include/exclude objects, includes/excludes
@@ -4271,7 +5292,7 @@ type MysqlTable struct {
 
 func (x *MysqlTable) Reset() {
 	*x = MysqlTable{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[42]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[52]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4283,7 +5304,7 @@ func (x *MysqlTable) String() string {
 func (*MysqlTable) ProtoMessage() {}
 
 func (x *MysqlTable) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[42]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[52]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4296,7 +5317,7 @@ func (x *MysqlTable) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MysqlTable.ProtoReflect.Descriptor instead.
 func (*MysqlTable) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{42}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{52}
 }
 
 func (x *MysqlTable) GetTable() string {
@@ -4316,7 +5337,7 @@ func (x *MysqlTable) GetMysqlColumns() []*MysqlColumn {
 // MySQL database.
 type MysqlDatabase struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Database name.
+	// The database name.
 	Database string `protobuf:"bytes,1,opt,name=database,proto3" json:"database,omitempty"`
 	// Tables in the database.
 	MysqlTables   []*MysqlTable `protobuf:"bytes,2,rep,name=mysql_tables,json=mysqlTables,proto3" json:"mysql_tables,omitempty"`
@@ -4326,7 +5347,7 @@ type MysqlDatabase struct {
 
 func (x *MysqlDatabase) Reset() {
 	*x = MysqlDatabase{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[43]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[53]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4338,7 +5359,7 @@ func (x *MysqlDatabase) String() string {
 func (*MysqlDatabase) ProtoMessage() {}
 
 func (x *MysqlDatabase) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[43]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[53]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4351,7 +5372,7 @@ func (x *MysqlDatabase) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MysqlDatabase.ProtoReflect.Descriptor instead.
 func (*MysqlDatabase) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{43}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{53}
 }
 
 func (x *MysqlDatabase) GetDatabase() string {
@@ -4379,7 +5400,7 @@ type MysqlRdbms struct {
 
 func (x *MysqlRdbms) Reset() {
 	*x = MysqlRdbms{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[44]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[54]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4391,7 +5412,7 @@ func (x *MysqlRdbms) String() string {
 func (*MysqlRdbms) ProtoMessage() {}
 
 func (x *MysqlRdbms) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[44]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[54]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4404,7 +5425,7 @@ func (x *MysqlRdbms) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MysqlRdbms.ProtoReflect.Descriptor instead.
 func (*MysqlRdbms) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{44}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{54}
 }
 
 func (x *MysqlRdbms) GetMysqlDatabases() []*MysqlDatabase {
@@ -4414,12 +5435,12 @@ func (x *MysqlRdbms) GetMysqlDatabases() []*MysqlDatabase {
 	return nil
 }
 
-// MySQL source configuration
+// Configuration for syncing data from a MySQL source.
 type MysqlSourceConfig struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// MySQL objects to retrieve from the source.
+	// The MySQL objects to retrieve from the source.
 	IncludeObjects *MysqlRdbms `protobuf:"bytes,1,opt,name=include_objects,json=includeObjects,proto3" json:"include_objects,omitempty"`
-	// MySQL objects to exclude from the stream.
+	// The MySQL objects to exclude from the stream.
 	ExcludeObjects *MysqlRdbms `protobuf:"bytes,2,opt,name=exclude_objects,json=excludeObjects,proto3" json:"exclude_objects,omitempty"`
 	// Maximum number of concurrent CDC tasks. The number should be non negative.
 	// If not set (or set to 0), the system's default value will be used.
@@ -4441,7 +5462,7 @@ type MysqlSourceConfig struct {
 
 func (x *MysqlSourceConfig) Reset() {
 	*x = MysqlSourceConfig{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[45]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[55]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4453,7 +5474,7 @@ func (x *MysqlSourceConfig) String() string {
 func (*MysqlSourceConfig) ProtoMessage() {}
 
 func (x *MysqlSourceConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[45]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[55]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4466,7 +5487,7 @@ func (x *MysqlSourceConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MysqlSourceConfig.ProtoReflect.Descriptor instead.
 func (*MysqlSourceConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{45}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{55}
 }
 
 func (x *MysqlSourceConfig) GetIncludeObjects() *MysqlRdbms {
@@ -4540,16 +5561,16 @@ func (*MysqlSourceConfig_BinaryLogPosition_) isMysqlSourceConfig_CdcMethod() {}
 
 func (*MysqlSourceConfig_Gtid_) isMysqlSourceConfig_CdcMethod() {}
 
-// Salesforce source configuration
+// Configuration for syncing data from a Salesforce source.
 type SalesforceSourceConfig struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Salesforce objects to retrieve from the source.
+	// The Salesforce objects to retrieve from the source.
 	IncludeObjects *SalesforceOrg `protobuf:"bytes,1,opt,name=include_objects,json=includeObjects,proto3" json:"include_objects,omitempty"`
-	// Salesforce objects to exclude from the stream.
+	// The Salesforce objects to exclude from the stream.
 	ExcludeObjects *SalesforceOrg `protobuf:"bytes,2,opt,name=exclude_objects,json=excludeObjects,proto3" json:"exclude_objects,omitempty"`
 	// Required. Salesforce objects polling interval. The interval at which new
-	// changes will be polled for each object. The duration must be between 5
-	// minutes and 24 hours.
+	// changes will be polled for each object. The duration must be from `5
+	// minutes` to `24 hours`, inclusive.
 	PollingInterval *durationpb.Duration `protobuf:"bytes,3,opt,name=polling_interval,json=pollingInterval,proto3" json:"polling_interval,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
@@ -4557,7 +5578,7 @@ type SalesforceSourceConfig struct {
 
 func (x *SalesforceSourceConfig) Reset() {
 	*x = SalesforceSourceConfig{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[46]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[56]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4569,7 +5590,7 @@ func (x *SalesforceSourceConfig) String() string {
 func (*SalesforceSourceConfig) ProtoMessage() {}
 
 func (x *SalesforceSourceConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[46]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[56]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4582,7 +5603,7 @@ func (x *SalesforceSourceConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SalesforceSourceConfig.ProtoReflect.Descriptor instead.
 func (*SalesforceSourceConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{46}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{56}
 }
 
 func (x *SalesforceSourceConfig) GetIncludeObjects() *SalesforceOrg {
@@ -4617,7 +5638,7 @@ type SalesforceOrg struct {
 
 func (x *SalesforceOrg) Reset() {
 	*x = SalesforceOrg{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[47]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[57]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4629,7 +5650,7 @@ func (x *SalesforceOrg) String() string {
 func (*SalesforceOrg) ProtoMessage() {}
 
 func (x *SalesforceOrg) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[47]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[57]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4642,7 +5663,7 @@ func (x *SalesforceOrg) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SalesforceOrg.ProtoReflect.Descriptor instead.
 func (*SalesforceOrg) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{47}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{57}
 }
 
 func (x *SalesforceOrg) GetObjects() []*SalesforceObject {
@@ -4655,7 +5676,7 @@ func (x *SalesforceOrg) GetObjects() []*SalesforceObject {
 // Salesforce object.
 type SalesforceObject struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Object name.
+	// The object name.
 	ObjectName string `protobuf:"bytes,1,opt,name=object_name,json=objectName,proto3" json:"object_name,omitempty"`
 	// Salesforce fields.
 	// When unspecified as part of include objects,
@@ -4668,7 +5689,7 @@ type SalesforceObject struct {
 
 func (x *SalesforceObject) Reset() {
 	*x = SalesforceObject{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[48]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[58]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4680,7 +5701,7 @@ func (x *SalesforceObject) String() string {
 func (*SalesforceObject) ProtoMessage() {}
 
 func (x *SalesforceObject) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[48]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[58]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4693,7 +5714,7 @@ func (x *SalesforceObject) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SalesforceObject.ProtoReflect.Descriptor instead.
 func (*SalesforceObject) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{48}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{58}
 }
 
 func (x *SalesforceObject) GetObjectName() string {
@@ -4713,7 +5734,7 @@ func (x *SalesforceObject) GetFields() []*SalesforceField {
 // Salesforce field.
 type SalesforceField struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Field name.
+	// The field name.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// The data type.
 	DataType string `protobuf:"bytes,2,opt,name=data_type,json=dataType,proto3" json:"data_type,omitempty"`
@@ -4725,7 +5746,7 @@ type SalesforceField struct {
 
 func (x *SalesforceField) Reset() {
 	*x = SalesforceField{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[49]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[59]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4737,7 +5758,7 @@ func (x *SalesforceField) String() string {
 func (*SalesforceField) ProtoMessage() {}
 
 func (x *SalesforceField) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[49]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[59]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4750,7 +5771,7 @@ func (x *SalesforceField) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SalesforceField.ProtoReflect.Descriptor instead.
 func (*SalesforceField) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{49}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{59}
 }
 
 func (x *SalesforceField) GetName() string {
@@ -4774,24 +5795,26 @@ func (x *SalesforceField) GetNillable() bool {
 	return false
 }
 
-// MongoDB source configuration.
+// Configuration for syncing data from a MongoDB source.
 type MongodbSourceConfig struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// MongoDB collections to include in the stream.
+	// The MongoDB collections to include in the stream.
 	IncludeObjects *MongodbCluster `protobuf:"bytes,1,opt,name=include_objects,json=includeObjects,proto3" json:"include_objects,omitempty"`
-	// MongoDB collections to exclude from the stream.
+	// The MongoDB collections to exclude from the stream.
 	ExcludeObjects *MongodbCluster `protobuf:"bytes,2,opt,name=exclude_objects,json=excludeObjects,proto3" json:"exclude_objects,omitempty"`
 	// Optional. Maximum number of concurrent backfill tasks. The number should be
 	// non-negative and less than or equal to 50. If not set (or set to 0), the
 	// system's default value is used
 	MaxConcurrentBackfillTasks int32 `protobuf:"varint,3,opt,name=max_concurrent_backfill_tasks,json=maxConcurrentBackfillTasks,proto3" json:"max_concurrent_backfill_tasks,omitempty"`
-	unknownFields              protoimpl.UnknownFields
-	sizeCache                  protoimpl.SizeCache
+	// Optional. MongoDB JSON mode to use for the stream.
+	JsonMode      MongodbJsonMode `protobuf:"varint,4,opt,name=json_mode,json=jsonMode,proto3,enum=google.cloud.datastream.v1.MongodbJsonMode" json:"json_mode,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *MongodbSourceConfig) Reset() {
 	*x = MongodbSourceConfig{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[50]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[60]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4803,7 +5826,7 @@ func (x *MongodbSourceConfig) String() string {
 func (*MongodbSourceConfig) ProtoMessage() {}
 
 func (x *MongodbSourceConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[50]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[60]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4816,7 +5839,7 @@ func (x *MongodbSourceConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MongodbSourceConfig.ProtoReflect.Descriptor instead.
 func (*MongodbSourceConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{50}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{60}
 }
 
 func (x *MongodbSourceConfig) GetIncludeObjects() *MongodbCluster {
@@ -4840,6 +5863,13 @@ func (x *MongodbSourceConfig) GetMaxConcurrentBackfillTasks() int32 {
 	return 0
 }
 
+func (x *MongodbSourceConfig) GetJsonMode() MongodbJsonMode {
+	if x != nil {
+		return x.JsonMode
+	}
+	return MongodbJsonMode_MONGODB_JSON_MODE_UNSPECIFIED
+}
+
 // MongoDB Cluster structure.
 type MongodbCluster struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -4851,7 +5881,7 @@ type MongodbCluster struct {
 
 func (x *MongodbCluster) Reset() {
 	*x = MongodbCluster{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[51]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[61]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4863,7 +5893,7 @@ func (x *MongodbCluster) String() string {
 func (*MongodbCluster) ProtoMessage() {}
 
 func (x *MongodbCluster) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[51]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[61]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4876,7 +5906,7 @@ func (x *MongodbCluster) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MongodbCluster.ProtoReflect.Descriptor instead.
 func (*MongodbCluster) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{51}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{61}
 }
 
 func (x *MongodbCluster) GetDatabases() []*MongodbDatabase {
@@ -4889,7 +5919,7 @@ func (x *MongodbCluster) GetDatabases() []*MongodbDatabase {
 // MongoDB Database.
 type MongodbDatabase struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Database name.
+	// The database name.
 	Database string `protobuf:"bytes,1,opt,name=database,proto3" json:"database,omitempty"`
 	// Collections in the database.
 	Collections   []*MongodbCollection `protobuf:"bytes,2,rep,name=collections,proto3" json:"collections,omitempty"`
@@ -4899,7 +5929,7 @@ type MongodbDatabase struct {
 
 func (x *MongodbDatabase) Reset() {
 	*x = MongodbDatabase{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[52]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[62]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4911,7 +5941,7 @@ func (x *MongodbDatabase) String() string {
 func (*MongodbDatabase) ProtoMessage() {}
 
 func (x *MongodbDatabase) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[52]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[62]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4924,7 +5954,7 @@ func (x *MongodbDatabase) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MongodbDatabase.ProtoReflect.Descriptor instead.
 func (*MongodbDatabase) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{52}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{62}
 }
 
 func (x *MongodbDatabase) GetDatabase() string {
@@ -4944,7 +5974,7 @@ func (x *MongodbDatabase) GetCollections() []*MongodbCollection {
 // MongoDB Collection.
 type MongodbCollection struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Collection name.
+	// The collection name.
 	Collection string `protobuf:"bytes,1,opt,name=collection,proto3" json:"collection,omitempty"`
 	// Fields in the collection.
 	Fields        []*MongodbField `protobuf:"bytes,2,rep,name=fields,proto3" json:"fields,omitempty"`
@@ -4954,7 +5984,7 @@ type MongodbCollection struct {
 
 func (x *MongodbCollection) Reset() {
 	*x = MongodbCollection{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[53]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[63]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4966,7 +5996,7 @@ func (x *MongodbCollection) String() string {
 func (*MongodbCollection) ProtoMessage() {}
 
 func (x *MongodbCollection) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[53]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[63]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4979,7 +6009,7 @@ func (x *MongodbCollection) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MongodbCollection.ProtoReflect.Descriptor instead.
 func (*MongodbCollection) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{53}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{63}
 }
 
 func (x *MongodbCollection) GetCollection() string {
@@ -4999,7 +6029,7 @@ func (x *MongodbCollection) GetFields() []*MongodbField {
 // MongoDB Field.
 type MongodbField struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Field name.
+	// The field name.
 	Field         string `protobuf:"bytes,1,opt,name=field,proto3" json:"field,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -5007,7 +6037,7 @@ type MongodbField struct {
 
 func (x *MongodbField) Reset() {
 	*x = MongodbField{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[54]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[64]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5019,7 +6049,7 @@ func (x *MongodbField) String() string {
 func (*MongodbField) ProtoMessage() {}
 
 func (x *MongodbField) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[54]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[64]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5032,7 +6062,7 @@ func (x *MongodbField) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MongodbField.ProtoReflect.Descriptor instead.
 func (*MongodbField) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{54}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{64}
 }
 
 func (x *MongodbField) GetField() string {
@@ -5040,6 +6070,792 @@ func (x *MongodbField) GetField() string {
 		return x.Field
 	}
 	return ""
+}
+
+// Configuration for syncing data from a Spanner source.
+type SpannerSourceConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Immutable. The change stream name to use for the stream.
+	ChangeStreamName string `protobuf:"bytes,1,opt,name=change_stream_name,json=changeStreamName,proto3" json:"change_stream_name,omitempty"`
+	// Optional. The RPC priority to use for the stream.
+	SpannerRpcPriority SpannerSourceConfig_SpannerRpcPriority `protobuf:"varint,2,opt,name=spanner_rpc_priority,json=spannerRpcPriority,proto3,enum=google.cloud.datastream.v1.SpannerSourceConfig_SpannerRpcPriority" json:"spanner_rpc_priority,omitempty"`
+	// Optional. The FGAC role to use for the stream.
+	FgacRole string `protobuf:"bytes,3,opt,name=fgac_role,json=fgacRole,proto3" json:"fgac_role,omitempty"`
+	// Optional. Maximum number of concurrent CDC tasks.
+	MaxConcurrentCdcTasks int32 `protobuf:"varint,8,opt,name=max_concurrent_cdc_tasks,json=maxConcurrentCdcTasks,proto3" json:"max_concurrent_cdc_tasks,omitempty"`
+	// Optional. Maximum number of concurrent backfill tasks.
+	MaxConcurrentBackfillTasks int32 `protobuf:"varint,4,opt,name=max_concurrent_backfill_tasks,json=maxConcurrentBackfillTasks,proto3" json:"max_concurrent_backfill_tasks,omitempty"`
+	// Optional. The Spanner objects to retrieve from the data source. If some
+	// objects are both included and excluded, an error will be thrown.
+	IncludeObjects *SpannerDatabase `protobuf:"bytes,6,opt,name=include_objects,json=includeObjects,proto3" json:"include_objects,omitempty"`
+	// Optional. The Spanner objects to avoid retrieving. If some objects are both
+	// included and excluded, an error will be thrown.
+	ExcludeObjects *SpannerDatabase `protobuf:"bytes,7,opt,name=exclude_objects,json=excludeObjects,proto3" json:"exclude_objects,omitempty"`
+	// Optional. Whether to use Data Boost for Spanner backfills. Defaults to
+	// false if not set.
+	BackfillDataBoostEnabled bool `protobuf:"varint,9,opt,name=backfill_data_boost_enabled,json=backfillDataBoostEnabled,proto3" json:"backfill_data_boost_enabled,omitempty"`
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
+}
+
+func (x *SpannerSourceConfig) Reset() {
+	*x = SpannerSourceConfig{}
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[65]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SpannerSourceConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SpannerSourceConfig) ProtoMessage() {}
+
+func (x *SpannerSourceConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[65]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SpannerSourceConfig.ProtoReflect.Descriptor instead.
+func (*SpannerSourceConfig) Descriptor() ([]byte, []int) {
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{65}
+}
+
+func (x *SpannerSourceConfig) GetChangeStreamName() string {
+	if x != nil {
+		return x.ChangeStreamName
+	}
+	return ""
+}
+
+func (x *SpannerSourceConfig) GetSpannerRpcPriority() SpannerSourceConfig_SpannerRpcPriority {
+	if x != nil {
+		return x.SpannerRpcPriority
+	}
+	return SpannerSourceConfig_SPANNER_RPC_PRIORITY_UNSPECIFIED
+}
+
+func (x *SpannerSourceConfig) GetFgacRole() string {
+	if x != nil {
+		return x.FgacRole
+	}
+	return ""
+}
+
+func (x *SpannerSourceConfig) GetMaxConcurrentCdcTasks() int32 {
+	if x != nil {
+		return x.MaxConcurrentCdcTasks
+	}
+	return 0
+}
+
+func (x *SpannerSourceConfig) GetMaxConcurrentBackfillTasks() int32 {
+	if x != nil {
+		return x.MaxConcurrentBackfillTasks
+	}
+	return 0
+}
+
+func (x *SpannerSourceConfig) GetIncludeObjects() *SpannerDatabase {
+	if x != nil {
+		return x.IncludeObjects
+	}
+	return nil
+}
+
+func (x *SpannerSourceConfig) GetExcludeObjects() *SpannerDatabase {
+	if x != nil {
+		return x.ExcludeObjects
+	}
+	return nil
+}
+
+func (x *SpannerSourceConfig) GetBackfillDataBoostEnabled() bool {
+	if x != nil {
+		return x.BackfillDataBoostEnabled
+	}
+	return false
+}
+
+// Spanner database structure.
+type SpannerDatabase struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. Spanner schemas in the database.
+	Schemas       []*SpannerSchema `protobuf:"bytes,1,rep,name=schemas,proto3" json:"schemas,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SpannerDatabase) Reset() {
+	*x = SpannerDatabase{}
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[66]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SpannerDatabase) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SpannerDatabase) ProtoMessage() {}
+
+func (x *SpannerDatabase) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[66]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SpannerDatabase.ProtoReflect.Descriptor instead.
+func (*SpannerDatabase) Descriptor() ([]byte, []int) {
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{66}
+}
+
+func (x *SpannerDatabase) GetSchemas() []*SpannerSchema {
+	if x != nil {
+		return x.Schemas
+	}
+	return nil
+}
+
+// Spanner schema.
+type SpannerSchema struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The schema name.
+	Schema string `protobuf:"bytes,1,opt,name=schema,proto3" json:"schema,omitempty"`
+	// Optional. Spanner tables in the schema.
+	Tables        []*SpannerTable `protobuf:"bytes,2,rep,name=tables,proto3" json:"tables,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SpannerSchema) Reset() {
+	*x = SpannerSchema{}
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[67]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SpannerSchema) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SpannerSchema) ProtoMessage() {}
+
+func (x *SpannerSchema) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[67]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SpannerSchema.ProtoReflect.Descriptor instead.
+func (*SpannerSchema) Descriptor() ([]byte, []int) {
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{67}
+}
+
+func (x *SpannerSchema) GetSchema() string {
+	if x != nil {
+		return x.Schema
+	}
+	return ""
+}
+
+func (x *SpannerSchema) GetTables() []*SpannerTable {
+	if x != nil {
+		return x.Tables
+	}
+	return nil
+}
+
+// Spanner table.
+type SpannerTable struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The table name.
+	Table string `protobuf:"bytes,1,opt,name=table,proto3" json:"table,omitempty"`
+	// Optional. Spanner columns in the table.
+	Columns       []*SpannerColumn `protobuf:"bytes,2,rep,name=columns,proto3" json:"columns,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SpannerTable) Reset() {
+	*x = SpannerTable{}
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[68]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SpannerTable) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SpannerTable) ProtoMessage() {}
+
+func (x *SpannerTable) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[68]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SpannerTable.ProtoReflect.Descriptor instead.
+func (*SpannerTable) Descriptor() ([]byte, []int) {
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{68}
+}
+
+func (x *SpannerTable) GetTable() string {
+	if x != nil {
+		return x.Table
+	}
+	return ""
+}
+
+func (x *SpannerTable) GetColumns() []*SpannerColumn {
+	if x != nil {
+		return x.Columns
+	}
+	return nil
+}
+
+// Spanner column.
+type SpannerColumn struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The column name.
+	Column string `protobuf:"bytes,1,opt,name=column,proto3" json:"column,omitempty"`
+	// Optional. Spanner data type.
+	DataType string `protobuf:"bytes,2,opt,name=data_type,json=dataType,proto3" json:"data_type,omitempty"`
+	// Optional. Whether or not the column is a primary key.
+	IsPrimaryKey bool `protobuf:"varint,3,opt,name=is_primary_key,json=isPrimaryKey,proto3" json:"is_primary_key,omitempty"`
+	// Optional. The ordinal position of the column in the table.
+	OrdinalPosition int64 `protobuf:"varint,4,opt,name=ordinal_position,json=ordinalPosition,proto3" json:"ordinal_position,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *SpannerColumn) Reset() {
+	*x = SpannerColumn{}
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[69]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SpannerColumn) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SpannerColumn) ProtoMessage() {}
+
+func (x *SpannerColumn) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[69]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SpannerColumn.ProtoReflect.Descriptor instead.
+func (*SpannerColumn) Descriptor() ([]byte, []int) {
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{69}
+}
+
+func (x *SpannerColumn) GetColumn() string {
+	if x != nil {
+		return x.Column
+	}
+	return ""
+}
+
+func (x *SpannerColumn) GetDataType() string {
+	if x != nil {
+		return x.DataType
+	}
+	return ""
+}
+
+func (x *SpannerColumn) GetIsPrimaryKey() bool {
+	if x != nil {
+		return x.IsPrimaryKey
+	}
+	return false
+}
+
+func (x *SpannerColumn) GetOrdinalPosition() int64 {
+	if x != nil {
+		return x.OrdinalPosition
+	}
+	return 0
+}
+
+// Configuration for syncing data from a Dataverse source.
+type DataverseSourceConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. The objects to retrieve from the source.
+	IncludeObjects *SourceCatalog `protobuf:"bytes,1,opt,name=include_objects,json=includeObjects,proto3" json:"include_objects,omitempty"`
+	// Optional. The objects to exclude from the stream.
+	ExcludeObjects *SourceCatalog `protobuf:"bytes,2,opt,name=exclude_objects,json=excludeObjects,proto3" json:"exclude_objects,omitempty"`
+	// Required. Incremental sync polling interval for all objects. If not set, a
+	// default value of `5 minutes` is used. The duration must be from `5 minutes`
+	// to `24 hours`, inclusive.
+	PollingInterval *durationpb.Duration `protobuf:"bytes,3,opt,name=polling_interval,json=pollingInterval,proto3" json:"polling_interval,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *DataverseSourceConfig) Reset() {
+	*x = DataverseSourceConfig{}
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[70]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DataverseSourceConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DataverseSourceConfig) ProtoMessage() {}
+
+func (x *DataverseSourceConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[70]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DataverseSourceConfig.ProtoReflect.Descriptor instead.
+func (*DataverseSourceConfig) Descriptor() ([]byte, []int) {
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{70}
+}
+
+func (x *DataverseSourceConfig) GetIncludeObjects() *SourceCatalog {
+	if x != nil {
+		return x.IncludeObjects
+	}
+	return nil
+}
+
+func (x *DataverseSourceConfig) GetExcludeObjects() *SourceCatalog {
+	if x != nil {
+		return x.ExcludeObjects
+	}
+	return nil
+}
+
+func (x *DataverseSourceConfig) GetPollingInterval() *durationpb.Duration {
+	if x != nil {
+		return x.PollingInterval
+	}
+	return nil
+}
+
+// Configuration for syncing data from a Salesforce Marketing Cloud source.
+type SalesforceMarketingCloudSourceConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. The objects to retrieve from the source.
+	IncludeObjects *SourceCatalog `protobuf:"bytes,1,opt,name=include_objects,json=includeObjects,proto3" json:"include_objects,omitempty"`
+	// Optional. The objects to exclude from the stream.
+	ExcludeObjects *SourceCatalog `protobuf:"bytes,2,opt,name=exclude_objects,json=excludeObjects,proto3" json:"exclude_objects,omitempty"`
+	// Required. Incremental sync polling interval for all objects. If not set, a
+	// default value of `5 minutes` is used. The duration must be from `5 minutes`
+	// to `24 hours`, inclusive.
+	PollingInterval *durationpb.Duration `protobuf:"bytes,3,opt,name=polling_interval,json=pollingInterval,proto3" json:"polling_interval,omitempty"`
+	// Required. Specifies the polling interval for a full refresh of objects that
+	// do not support incremental sync. If not set, a default value of 24 hours is
+	// used. The duration must be between 1 and 24 hours, inclusive.
+	FullRefreshPollingInterval *durationpb.Duration `protobuf:"bytes,4,opt,name=full_refresh_polling_interval,json=fullRefreshPollingInterval,proto3" json:"full_refresh_polling_interval,omitempty"`
+	unknownFields              protoimpl.UnknownFields
+	sizeCache                  protoimpl.SizeCache
+}
+
+func (x *SalesforceMarketingCloudSourceConfig) Reset() {
+	*x = SalesforceMarketingCloudSourceConfig{}
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[71]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SalesforceMarketingCloudSourceConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SalesforceMarketingCloudSourceConfig) ProtoMessage() {}
+
+func (x *SalesforceMarketingCloudSourceConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[71]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SalesforceMarketingCloudSourceConfig.ProtoReflect.Descriptor instead.
+func (*SalesforceMarketingCloudSourceConfig) Descriptor() ([]byte, []int) {
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{71}
+}
+
+func (x *SalesforceMarketingCloudSourceConfig) GetIncludeObjects() *SourceCatalog {
+	if x != nil {
+		return x.IncludeObjects
+	}
+	return nil
+}
+
+func (x *SalesforceMarketingCloudSourceConfig) GetExcludeObjects() *SourceCatalog {
+	if x != nil {
+		return x.ExcludeObjects
+	}
+	return nil
+}
+
+func (x *SalesforceMarketingCloudSourceConfig) GetPollingInterval() *durationpb.Duration {
+	if x != nil {
+		return x.PollingInterval
+	}
+	return nil
+}
+
+func (x *SalesforceMarketingCloudSourceConfig) GetFullRefreshPollingInterval() *durationpb.Duration {
+	if x != nil {
+		return x.FullRefreshPollingInterval
+	}
+	return nil
+}
+
+// Configuration for syncing data from a ServiceNow source.
+type ServiceNowSourceConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. The objects to retrieve from the source.
+	IncludeObjects *SourceCatalog `protobuf:"bytes,1,opt,name=include_objects,json=includeObjects,proto3" json:"include_objects,omitempty"`
+	// Optional. The objects to exclude from the stream.
+	ExcludeObjects *SourceCatalog `protobuf:"bytes,2,opt,name=exclude_objects,json=excludeObjects,proto3" json:"exclude_objects,omitempty"`
+	// Required. Incremental sync polling interval for all objects. If not set, a
+	// default value of `5 minutes` is used. The duration must be from `5 minutes`
+	// to `24 hours`, inclusive.
+	PollingInterval *durationpb.Duration `protobuf:"bytes,3,opt,name=polling_interval,json=pollingInterval,proto3" json:"polling_interval,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *ServiceNowSourceConfig) Reset() {
+	*x = ServiceNowSourceConfig{}
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[72]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ServiceNowSourceConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ServiceNowSourceConfig) ProtoMessage() {}
+
+func (x *ServiceNowSourceConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[72]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ServiceNowSourceConfig.ProtoReflect.Descriptor instead.
+func (*ServiceNowSourceConfig) Descriptor() ([]byte, []int) {
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{72}
+}
+
+func (x *ServiceNowSourceConfig) GetIncludeObjects() *SourceCatalog {
+	if x != nil {
+		return x.IncludeObjects
+	}
+	return nil
+}
+
+func (x *ServiceNowSourceConfig) GetExcludeObjects() *SourceCatalog {
+	if x != nil {
+		return x.ExcludeObjects
+	}
+	return nil
+}
+
+func (x *ServiceNowSourceConfig) GetPollingInterval() *durationpb.Duration {
+	if x != nil {
+		return x.PollingInterval
+	}
+	return nil
+}
+
+// Configuration for syncing data from a Workday source.
+type WorkdaySourceConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. The objects to retrieve from the source.
+	IncludeObjects *SourceCatalog `protobuf:"bytes,1,opt,name=include_objects,json=includeObjects,proto3" json:"include_objects,omitempty"`
+	// Optional. The objects to exclude from the stream.
+	ExcludeObjects *SourceCatalog `protobuf:"bytes,2,opt,name=exclude_objects,json=excludeObjects,proto3" json:"exclude_objects,omitempty"`
+	// Required. Incremental sync polling interval for all objects. If not set, a
+	// default value of `5 minutes` is used. The duration must be from `5 minutes`
+	// to `24 hours`, inclusive.
+	PollingInterval *durationpb.Duration `protobuf:"bytes,3,opt,name=polling_interval,json=pollingInterval,proto3" json:"polling_interval,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *WorkdaySourceConfig) Reset() {
+	*x = WorkdaySourceConfig{}
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[73]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *WorkdaySourceConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*WorkdaySourceConfig) ProtoMessage() {}
+
+func (x *WorkdaySourceConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[73]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use WorkdaySourceConfig.ProtoReflect.Descriptor instead.
+func (*WorkdaySourceConfig) Descriptor() ([]byte, []int) {
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{73}
+}
+
+func (x *WorkdaySourceConfig) GetIncludeObjects() *SourceCatalog {
+	if x != nil {
+		return x.IncludeObjects
+	}
+	return nil
+}
+
+func (x *WorkdaySourceConfig) GetExcludeObjects() *SourceCatalog {
+	if x != nil {
+		return x.ExcludeObjects
+	}
+	return nil
+}
+
+func (x *WorkdaySourceConfig) GetPollingInterval() *durationpb.Duration {
+	if x != nil {
+		return x.PollingInterval
+	}
+	return nil
+}
+
+// Source catalog.
+type SourceCatalog struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. Source objects in the catalog.
+	Objects       []*SourceObject `protobuf:"bytes,1,rep,name=objects,proto3" json:"objects,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SourceCatalog) Reset() {
+	*x = SourceCatalog{}
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[74]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SourceCatalog) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SourceCatalog) ProtoMessage() {}
+
+func (x *SourceCatalog) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[74]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SourceCatalog.ProtoReflect.Descriptor instead.
+func (*SourceCatalog) Descriptor() ([]byte, []int) {
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{74}
+}
+
+func (x *SourceCatalog) GetObjects() []*SourceObject {
+	if x != nil {
+		return x.Objects
+	}
+	return nil
+}
+
+// Source object.
+type SourceObject struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The object name.
+	ObjectName string `protobuf:"bytes,1,opt,name=object_name,json=objectName,proto3" json:"object_name,omitempty"`
+	// Optional. Source properties. When unspecified as part of include objects,
+	// includes everything, when unspecified as part of exclude objects, excludes
+	// nothing.
+	Properties    []*SourceProperty `protobuf:"bytes,2,rep,name=properties,proto3" json:"properties,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SourceObject) Reset() {
+	*x = SourceObject{}
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[75]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SourceObject) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SourceObject) ProtoMessage() {}
+
+func (x *SourceObject) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[75]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SourceObject.ProtoReflect.Descriptor instead.
+func (*SourceObject) Descriptor() ([]byte, []int) {
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{75}
+}
+
+func (x *SourceObject) GetObjectName() string {
+	if x != nil {
+		return x.ObjectName
+	}
+	return ""
+}
+
+func (x *SourceObject) GetProperties() []*SourceProperty {
+	if x != nil {
+		return x.Properties
+	}
+	return nil
+}
+
+// Source property.
+type SourceProperty struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The property name.
+	PropertyName string `protobuf:"bytes,1,opt,name=property_name,json=propertyName,proto3" json:"property_name,omitempty"`
+	// Optional. Source properties. When specified, it means that the current
+	// property contains nested properties of its own. When unspecified as part of
+	// include objects, includes everything, when unspecified as part of exclude
+	// objects, excludes nothing.
+	Properties []*SourceProperty `protobuf:"bytes,2,rep,name=properties,proto3" json:"properties,omitempty"`
+	// Optional. Whether or not the property is a primary key.
+	PrimaryKey    bool `protobuf:"varint,4,opt,name=primary_key,json=primaryKey,proto3" json:"primary_key,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SourceProperty) Reset() {
+	*x = SourceProperty{}
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[76]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SourceProperty) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SourceProperty) ProtoMessage() {}
+
+func (x *SourceProperty) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[76]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SourceProperty.ProtoReflect.Descriptor instead.
+func (*SourceProperty) Descriptor() ([]byte, []int) {
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{76}
+}
+
+func (x *SourceProperty) GetPropertyName() string {
+	if x != nil {
+		return x.PropertyName
+	}
+	return ""
+}
+
+func (x *SourceProperty) GetProperties() []*SourceProperty {
+	if x != nil {
+		return x.Properties
+	}
+	return nil
+}
+
+func (x *SourceProperty) GetPrimaryKey() bool {
+	if x != nil {
+		return x.PrimaryKey
+	}
+	return false
 }
 
 // The configuration of the stream source.
@@ -5058,6 +6874,11 @@ type SourceConfig struct {
 	//	*SourceConfig_SqlServerSourceConfig
 	//	*SourceConfig_SalesforceSourceConfig
 	//	*SourceConfig_MongodbSourceConfig
+	//	*SourceConfig_SpannerSourceConfig
+	//	*SourceConfig_DataverseSourceConfig
+	//	*SourceConfig_SalesforceMarketingCloudSourceConfig
+	//	*SourceConfig_ServiceNowSourceConfig
+	//	*SourceConfig_WorkdaySourceConfig
 	SourceStreamConfig isSourceConfig_SourceStreamConfig `protobuf_oneof:"source_stream_config"`
 	unknownFields      protoimpl.UnknownFields
 	sizeCache          protoimpl.SizeCache
@@ -5065,7 +6886,7 @@ type SourceConfig struct {
 
 func (x *SourceConfig) Reset() {
 	*x = SourceConfig{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[55]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[77]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5077,7 +6898,7 @@ func (x *SourceConfig) String() string {
 func (*SourceConfig) ProtoMessage() {}
 
 func (x *SourceConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[55]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[77]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5090,7 +6911,7 @@ func (x *SourceConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SourceConfig.ProtoReflect.Descriptor instead.
 func (*SourceConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{55}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{77}
 }
 
 func (x *SourceConfig) GetSourceConnectionProfile() string {
@@ -5161,6 +6982,51 @@ func (x *SourceConfig) GetMongodbSourceConfig() *MongodbSourceConfig {
 	return nil
 }
 
+func (x *SourceConfig) GetSpannerSourceConfig() *SpannerSourceConfig {
+	if x != nil {
+		if x, ok := x.SourceStreamConfig.(*SourceConfig_SpannerSourceConfig); ok {
+			return x.SpannerSourceConfig
+		}
+	}
+	return nil
+}
+
+func (x *SourceConfig) GetDataverseSourceConfig() *DataverseSourceConfig {
+	if x != nil {
+		if x, ok := x.SourceStreamConfig.(*SourceConfig_DataverseSourceConfig); ok {
+			return x.DataverseSourceConfig
+		}
+	}
+	return nil
+}
+
+func (x *SourceConfig) GetSalesforceMarketingCloudSourceConfig() *SalesforceMarketingCloudSourceConfig {
+	if x != nil {
+		if x, ok := x.SourceStreamConfig.(*SourceConfig_SalesforceMarketingCloudSourceConfig); ok {
+			return x.SalesforceMarketingCloudSourceConfig
+		}
+	}
+	return nil
+}
+
+func (x *SourceConfig) GetServiceNowSourceConfig() *ServiceNowSourceConfig {
+	if x != nil {
+		if x, ok := x.SourceStreamConfig.(*SourceConfig_ServiceNowSourceConfig); ok {
+			return x.ServiceNowSourceConfig
+		}
+	}
+	return nil
+}
+
+func (x *SourceConfig) GetWorkdaySourceConfig() *WorkdaySourceConfig {
+	if x != nil {
+		if x, ok := x.SourceStreamConfig.(*SourceConfig_WorkdaySourceConfig); ok {
+			return x.WorkdaySourceConfig
+		}
+	}
+	return nil
+}
+
 type isSourceConfig_SourceStreamConfig interface {
 	isSourceConfig_SourceStreamConfig()
 }
@@ -5195,6 +7061,31 @@ type SourceConfig_MongodbSourceConfig struct {
 	MongodbSourceConfig *MongodbSourceConfig `protobuf:"bytes,105,opt,name=mongodb_source_config,json=mongodbSourceConfig,proto3,oneof"`
 }
 
+type SourceConfig_SpannerSourceConfig struct {
+	// Spanner data source configuration.
+	SpannerSourceConfig *SpannerSourceConfig `protobuf:"bytes,106,opt,name=spanner_source_config,json=spannerSourceConfig,proto3,oneof"`
+}
+
+type SourceConfig_DataverseSourceConfig struct {
+	// Dataverse data source configuration.
+	DataverseSourceConfig *DataverseSourceConfig `protobuf:"bytes,111,opt,name=dataverse_source_config,json=dataverseSourceConfig,proto3,oneof"`
+}
+
+type SourceConfig_SalesforceMarketingCloudSourceConfig struct {
+	// Salesforce Marketing Cloud data source configuration.
+	SalesforceMarketingCloudSourceConfig *SalesforceMarketingCloudSourceConfig `protobuf:"bytes,116,opt,name=salesforce_marketing_cloud_source_config,json=salesforceMarketingCloudSourceConfig,proto3,oneof"`
+}
+
+type SourceConfig_ServiceNowSourceConfig struct {
+	// ServiceNow data source configuration.
+	ServiceNowSourceConfig *ServiceNowSourceConfig `protobuf:"bytes,117,opt,name=service_now_source_config,json=serviceNowSourceConfig,proto3,oneof"`
+}
+
+type SourceConfig_WorkdaySourceConfig struct {
+	// Optional. Workday data source configuration.
+	WorkdaySourceConfig *WorkdaySourceConfig `protobuf:"bytes,118,opt,name=workday_source_config,json=workdaySourceConfig,proto3,oneof"`
+}
+
 func (*SourceConfig_OracleSourceConfig) isSourceConfig_SourceStreamConfig() {}
 
 func (*SourceConfig_MysqlSourceConfig) isSourceConfig_SourceStreamConfig() {}
@@ -5207,6 +7098,16 @@ func (*SourceConfig_SalesforceSourceConfig) isSourceConfig_SourceStreamConfig() 
 
 func (*SourceConfig_MongodbSourceConfig) isSourceConfig_SourceStreamConfig() {}
 
+func (*SourceConfig_SpannerSourceConfig) isSourceConfig_SourceStreamConfig() {}
+
+func (*SourceConfig_DataverseSourceConfig) isSourceConfig_SourceStreamConfig() {}
+
+func (*SourceConfig_SalesforceMarketingCloudSourceConfig) isSourceConfig_SourceStreamConfig() {}
+
+func (*SourceConfig_ServiceNowSourceConfig) isSourceConfig_SourceStreamConfig() {}
+
+func (*SourceConfig_WorkdaySourceConfig) isSourceConfig_SourceStreamConfig() {}
+
 // AVRO file format configuration.
 type AvroFileFormat struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -5216,7 +7117,7 @@ type AvroFileFormat struct {
 
 func (x *AvroFileFormat) Reset() {
 	*x = AvroFileFormat{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[56]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[78]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5228,7 +7129,7 @@ func (x *AvroFileFormat) String() string {
 func (*AvroFileFormat) ProtoMessage() {}
 
 func (x *AvroFileFormat) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[56]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[78]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5241,7 +7142,7 @@ func (x *AvroFileFormat) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AvroFileFormat.ProtoReflect.Descriptor instead.
 func (*AvroFileFormat) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{56}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{78}
 }
 
 // JSON file format configuration.
@@ -5257,7 +7158,7 @@ type JsonFileFormat struct {
 
 func (x *JsonFileFormat) Reset() {
 	*x = JsonFileFormat{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[57]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[79]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5269,7 +7170,7 @@ func (x *JsonFileFormat) String() string {
 func (*JsonFileFormat) ProtoMessage() {}
 
 func (x *JsonFileFormat) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[57]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[79]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5282,7 +7183,7 @@ func (x *JsonFileFormat) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use JsonFileFormat.ProtoReflect.Descriptor instead.
 func (*JsonFileFormat) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{57}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{79}
 }
 
 func (x *JsonFileFormat) GetSchemaFileFormat() JsonFileFormat_SchemaFileFormat {
@@ -5298,6 +7199,342 @@ func (x *JsonFileFormat) GetCompression() JsonFileFormat_JsonCompression {
 	}
 	return JsonFileFormat_JSON_COMPRESSION_UNSPECIFIED
 }
+
+// BigQuery clustering configuration.
+type BigQueryClustering struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Column names to set as clustering columns.
+	Columns       []string `protobuf:"bytes,1,rep,name=columns,proto3" json:"columns,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BigQueryClustering) Reset() {
+	*x = BigQueryClustering{}
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[80]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BigQueryClustering) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BigQueryClustering) ProtoMessage() {}
+
+func (x *BigQueryClustering) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[80]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BigQueryClustering.ProtoReflect.Descriptor instead.
+func (*BigQueryClustering) Descriptor() ([]byte, []int) {
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{80}
+}
+
+func (x *BigQueryClustering) GetColumns() []string {
+	if x != nil {
+		return x.Columns
+	}
+	return nil
+}
+
+// Ingestion time partitioning. see
+// https://cloud.google.com/bigquery/docs/partitioned-tables#ingestion_time
+type IngestionTimePartition struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. Partition granularity
+	PartitioningTimeGranularity PartitioningTimeGranularity `protobuf:"varint,1,opt,name=partitioning_time_granularity,json=partitioningTimeGranularity,proto3,enum=google.cloud.datastream.v1.PartitioningTimeGranularity" json:"partitioning_time_granularity,omitempty"`
+	unknownFields               protoimpl.UnknownFields
+	sizeCache                   protoimpl.SizeCache
+}
+
+func (x *IngestionTimePartition) Reset() {
+	*x = IngestionTimePartition{}
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[81]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *IngestionTimePartition) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*IngestionTimePartition) ProtoMessage() {}
+
+func (x *IngestionTimePartition) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[81]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use IngestionTimePartition.ProtoReflect.Descriptor instead.
+func (*IngestionTimePartition) Descriptor() ([]byte, []int) {
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{81}
+}
+
+func (x *IngestionTimePartition) GetPartitioningTimeGranularity() PartitioningTimeGranularity {
+	if x != nil {
+		return x.PartitioningTimeGranularity
+	}
+	return PartitioningTimeGranularity_PARTITIONING_TIME_GRANULARITY_UNSPECIFIED
+}
+
+// Time unit column partitioning. see
+// https://cloud.google.com/bigquery/docs/partitioned-tables#date_timestamp_partitioned_tables
+type TimeUnitPartition struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The partitioning column.
+	Column string `protobuf:"bytes,1,opt,name=column,proto3" json:"column,omitempty"`
+	// Optional. Partition granularity.
+	PartitioningTimeGranularity PartitioningTimeGranularity `protobuf:"varint,2,opt,name=partitioning_time_granularity,json=partitioningTimeGranularity,proto3,enum=google.cloud.datastream.v1.PartitioningTimeGranularity" json:"partitioning_time_granularity,omitempty"`
+	unknownFields               protoimpl.UnknownFields
+	sizeCache                   protoimpl.SizeCache
+}
+
+func (x *TimeUnitPartition) Reset() {
+	*x = TimeUnitPartition{}
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[82]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TimeUnitPartition) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TimeUnitPartition) ProtoMessage() {}
+
+func (x *TimeUnitPartition) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[82]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TimeUnitPartition.ProtoReflect.Descriptor instead.
+func (*TimeUnitPartition) Descriptor() ([]byte, []int) {
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{82}
+}
+
+func (x *TimeUnitPartition) GetColumn() string {
+	if x != nil {
+		return x.Column
+	}
+	return ""
+}
+
+func (x *TimeUnitPartition) GetPartitioningTimeGranularity() PartitioningTimeGranularity {
+	if x != nil {
+		return x.PartitioningTimeGranularity
+	}
+	return PartitioningTimeGranularity_PARTITIONING_TIME_GRANULARITY_UNSPECIFIED
+}
+
+// Integer range partitioning. see
+// https://cloud.google.com/bigquery/docs/partitioned-tables#integer_range
+type IntegerRangePartition struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The partitioning column.
+	Column string `protobuf:"bytes,1,opt,name=column,proto3" json:"column,omitempty"`
+	// Required. The starting value for range partitioning (inclusive).
+	Start int64 `protobuf:"varint,2,opt,name=start,proto3" json:"start,omitempty"`
+	// Required. The ending value for range partitioning (exclusive).
+	End int64 `protobuf:"varint,3,opt,name=end,proto3" json:"end,omitempty"`
+	// Required. The interval of each range within the partition.
+	Interval      int64 `protobuf:"varint,4,opt,name=interval,proto3" json:"interval,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *IntegerRangePartition) Reset() {
+	*x = IntegerRangePartition{}
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[83]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *IntegerRangePartition) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*IntegerRangePartition) ProtoMessage() {}
+
+func (x *IntegerRangePartition) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[83]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use IntegerRangePartition.ProtoReflect.Descriptor instead.
+func (*IntegerRangePartition) Descriptor() ([]byte, []int) {
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{83}
+}
+
+func (x *IntegerRangePartition) GetColumn() string {
+	if x != nil {
+		return x.Column
+	}
+	return ""
+}
+
+func (x *IntegerRangePartition) GetStart() int64 {
+	if x != nil {
+		return x.Start
+	}
+	return 0
+}
+
+func (x *IntegerRangePartition) GetEnd() int64 {
+	if x != nil {
+		return x.End
+	}
+	return 0
+}
+
+func (x *IntegerRangePartition) GetInterval() int64 {
+	if x != nil {
+		return x.Interval
+	}
+	return 0
+}
+
+// BigQuery partitioning configuration.
+type BigQueryPartitioning struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Partitioning to apply on the table.
+	//
+	// Types that are valid to be assigned to Partitioning:
+	//
+	//	*BigQueryPartitioning_IntegerRangePartition
+	//	*BigQueryPartitioning_TimeUnitPartition
+	//	*BigQueryPartitioning_IngestionTimePartition
+	Partitioning isBigQueryPartitioning_Partitioning `protobuf_oneof:"partitioning"`
+	// Optional. If true, queries over the table require a partition filter.
+	RequirePartitionFilter bool `protobuf:"varint,103,opt,name=require_partition_filter,json=requirePartitionFilter,proto3" json:"require_partition_filter,omitempty"`
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *BigQueryPartitioning) Reset() {
+	*x = BigQueryPartitioning{}
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[84]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BigQueryPartitioning) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BigQueryPartitioning) ProtoMessage() {}
+
+func (x *BigQueryPartitioning) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[84]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BigQueryPartitioning.ProtoReflect.Descriptor instead.
+func (*BigQueryPartitioning) Descriptor() ([]byte, []int) {
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{84}
+}
+
+func (x *BigQueryPartitioning) GetPartitioning() isBigQueryPartitioning_Partitioning {
+	if x != nil {
+		return x.Partitioning
+	}
+	return nil
+}
+
+func (x *BigQueryPartitioning) GetIntegerRangePartition() *IntegerRangePartition {
+	if x != nil {
+		if x, ok := x.Partitioning.(*BigQueryPartitioning_IntegerRangePartition); ok {
+			return x.IntegerRangePartition
+		}
+	}
+	return nil
+}
+
+func (x *BigQueryPartitioning) GetTimeUnitPartition() *TimeUnitPartition {
+	if x != nil {
+		if x, ok := x.Partitioning.(*BigQueryPartitioning_TimeUnitPartition); ok {
+			return x.TimeUnitPartition
+		}
+	}
+	return nil
+}
+
+func (x *BigQueryPartitioning) GetIngestionTimePartition() *IngestionTimePartition {
+	if x != nil {
+		if x, ok := x.Partitioning.(*BigQueryPartitioning_IngestionTimePartition); ok {
+			return x.IngestionTimePartition
+		}
+	}
+	return nil
+}
+
+func (x *BigQueryPartitioning) GetRequirePartitionFilter() bool {
+	if x != nil {
+		return x.RequirePartitionFilter
+	}
+	return false
+}
+
+type isBigQueryPartitioning_Partitioning interface {
+	isBigQueryPartitioning_Partitioning()
+}
+
+type BigQueryPartitioning_IntegerRangePartition struct {
+	// Integer range partitioning.
+	IntegerRangePartition *IntegerRangePartition `protobuf:"bytes,100,opt,name=integer_range_partition,json=integerRangePartition,proto3,oneof"`
+}
+
+type BigQueryPartitioning_TimeUnitPartition struct {
+	// Time unit column partitioning.
+	TimeUnitPartition *TimeUnitPartition `protobuf:"bytes,101,opt,name=time_unit_partition,json=timeUnitPartition,proto3,oneof"`
+}
+
+type BigQueryPartitioning_IngestionTimePartition struct {
+	// Ingestion time partitioning.
+	IngestionTimePartition *IngestionTimePartition `protobuf:"bytes,102,opt,name=ingestion_time_partition,json=ingestionTimePartition,proto3,oneof"`
+}
+
+func (*BigQueryPartitioning_IntegerRangePartition) isBigQueryPartitioning_Partitioning() {}
+
+func (*BigQueryPartitioning_TimeUnitPartition) isBigQueryPartitioning_Partitioning() {}
+
+func (*BigQueryPartitioning_IngestionTimePartition) isBigQueryPartitioning_Partitioning() {}
 
 // Google Cloud Storage destination configuration
 type GcsDestinationConfig struct {
@@ -5323,7 +7560,7 @@ type GcsDestinationConfig struct {
 
 func (x *GcsDestinationConfig) Reset() {
 	*x = GcsDestinationConfig{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[58]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[85]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5335,7 +7572,7 @@ func (x *GcsDestinationConfig) String() string {
 func (*GcsDestinationConfig) ProtoMessage() {}
 
 func (x *GcsDestinationConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[58]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[85]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5348,7 +7585,7 @@ func (x *GcsDestinationConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GcsDestinationConfig.ProtoReflect.Descriptor instead.
 func (*GcsDestinationConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{58}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{85}
 }
 
 func (x *GcsDestinationConfig) GetPath() string {
@@ -5432,6 +7669,8 @@ type BigQueryDestinationConfig struct {
 	DataFreshness *durationpb.Duration `protobuf:"bytes,300,opt,name=data_freshness,json=dataFreshness,proto3" json:"data_freshness,omitempty"`
 	// Optional. Big Lake Managed Tables (BLMT) configuration.
 	BlmtConfig *BigQueryDestinationConfig_BlmtConfig `protobuf:"bytes,1,opt,name=blmt_config,json=blmtConfig,proto3" json:"blmt_config,omitempty"`
+	// Destination write mode.
+	//
 	// Types that are valid to be assigned to WriteMode:
 	//
 	//	*BigQueryDestinationConfig_Merge_
@@ -5443,7 +7682,7 @@ type BigQueryDestinationConfig struct {
 
 func (x *BigQueryDestinationConfig) Reset() {
 	*x = BigQueryDestinationConfig{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[59]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[86]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5455,7 +7694,7 @@ func (x *BigQueryDestinationConfig) String() string {
 func (*BigQueryDestinationConfig) ProtoMessage() {}
 
 func (x *BigQueryDestinationConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[59]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[86]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5468,7 +7707,7 @@ func (x *BigQueryDestinationConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BigQueryDestinationConfig.ProtoReflect.Descriptor instead.
 func (*BigQueryDestinationConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{59}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{86}
 }
 
 func (x *BigQueryDestinationConfig) GetDatasetConfig() isBigQueryDestinationConfig_DatasetConfig {
@@ -5591,7 +7830,7 @@ type DestinationConfig struct {
 
 func (x *DestinationConfig) Reset() {
 	*x = DestinationConfig{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[60]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[87]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5603,7 +7842,7 @@ func (x *DestinationConfig) String() string {
 func (*DestinationConfig) ProtoMessage() {}
 
 func (x *DestinationConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[60]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[87]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5616,7 +7855,7 @@ func (x *DestinationConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DestinationConfig.ProtoReflect.Descriptor instead.
 func (*DestinationConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{60}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{87}
 }
 
 func (x *DestinationConfig) GetDestinationConnectionProfile() string {
@@ -5708,14 +7947,16 @@ type Stream struct {
 	// Output only. Reserved for future use.
 	SatisfiesPzs *bool `protobuf:"varint,15,opt,name=satisfies_pzs,json=satisfiesPzs,proto3,oneof" json:"satisfies_pzs,omitempty"`
 	// Output only. Reserved for future use.
-	SatisfiesPzi  *bool `protobuf:"varint,16,opt,name=satisfies_pzi,json=satisfiesPzi,proto3,oneof" json:"satisfies_pzi,omitempty"`
+	SatisfiesPzi *bool `protobuf:"varint,16,opt,name=satisfies_pzi,json=satisfiesPzi,proto3,oneof" json:"satisfies_pzi,omitempty"`
+	// Optional. Rule sets to apply to the stream.
+	RuleSets      []*Stream_RuleSet `protobuf:"bytes,19,rep,name=rule_sets,json=ruleSets,proto3" json:"rule_sets,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *Stream) Reset() {
 	*x = Stream{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[61]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[88]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5727,7 +7968,7 @@ func (x *Stream) String() string {
 func (*Stream) ProtoMessage() {}
 
 func (x *Stream) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[61]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[88]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5740,7 +7981,7 @@ func (x *Stream) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Stream.ProtoReflect.Descriptor instead.
 func (*Stream) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{61}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{88}
 }
 
 func (x *Stream) GetName() string {
@@ -5859,6 +8100,13 @@ func (x *Stream) GetSatisfiesPzi() bool {
 	return false
 }
 
+func (x *Stream) GetRuleSets() []*Stream_RuleSet {
+	if x != nil {
+		return x.RuleSets
+	}
+	return nil
+}
+
 type isStream_BackfillStrategy interface {
 	isStream_BackfillStrategy()
 }
@@ -5894,14 +8142,18 @@ type StreamObject struct {
 	// The latest backfill job that was initiated for the stream object.
 	BackfillJob *BackfillJob `protobuf:"bytes,7,opt,name=backfill_job,json=backfillJob,proto3" json:"backfill_job,omitempty"`
 	// The object identifier in the data source.
-	SourceObject  *SourceObjectIdentifier `protobuf:"bytes,8,opt,name=source_object,json=sourceObject,proto3" json:"source_object,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	SourceObject *SourceObjectIdentifier `protobuf:"bytes,8,opt,name=source_object,json=sourceObject,proto3" json:"source_object,omitempty"`
+	// Output only. The customization rules for the object. These rules are
+	// derived from the parent Stream's `rule_sets` and represent the intended
+	// configuration for the object.
+	CustomizationRules []*Stream_RuleSet_CustomizationRule `protobuf:"bytes,9,rep,name=customization_rules,json=customizationRules,proto3" json:"customization_rules,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *StreamObject) Reset() {
 	*x = StreamObject{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[62]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[89]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5913,7 +8165,7 @@ func (x *StreamObject) String() string {
 func (*StreamObject) ProtoMessage() {}
 
 func (x *StreamObject) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[62]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[89]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5926,7 +8178,7 @@ func (x *StreamObject) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StreamObject.ProtoReflect.Descriptor instead.
 func (*StreamObject) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{62}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{89}
 }
 
 func (x *StreamObject) GetName() string {
@@ -5978,6 +8230,13 @@ func (x *StreamObject) GetSourceObject() *SourceObjectIdentifier {
 	return nil
 }
 
+func (x *StreamObject) GetCustomizationRules() []*Stream_RuleSet_CustomizationRule {
+	if x != nil {
+		return x.CustomizationRules
+	}
+	return nil
+}
+
 // Represents an identifier of an object in the data source.
 type SourceObjectIdentifier struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -5991,6 +8250,7 @@ type SourceObjectIdentifier struct {
 	//	*SourceObjectIdentifier_SqlServerIdentifier
 	//	*SourceObjectIdentifier_SalesforceIdentifier
 	//	*SourceObjectIdentifier_MongodbIdentifier
+	//	*SourceObjectIdentifier_SpannerIdentifier
 	SourceIdentifier isSourceObjectIdentifier_SourceIdentifier `protobuf_oneof:"source_identifier"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
@@ -5998,7 +8258,7 @@ type SourceObjectIdentifier struct {
 
 func (x *SourceObjectIdentifier) Reset() {
 	*x = SourceObjectIdentifier{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[63]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[90]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6010,7 +8270,7 @@ func (x *SourceObjectIdentifier) String() string {
 func (*SourceObjectIdentifier) ProtoMessage() {}
 
 func (x *SourceObjectIdentifier) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[63]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[90]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6023,7 +8283,7 @@ func (x *SourceObjectIdentifier) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SourceObjectIdentifier.ProtoReflect.Descriptor instead.
 func (*SourceObjectIdentifier) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{63}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{90}
 }
 
 func (x *SourceObjectIdentifier) GetSourceIdentifier() isSourceObjectIdentifier_SourceIdentifier {
@@ -6087,6 +8347,15 @@ func (x *SourceObjectIdentifier) GetMongodbIdentifier() *SourceObjectIdentifier_
 	return nil
 }
 
+func (x *SourceObjectIdentifier) GetSpannerIdentifier() *SourceObjectIdentifier_SpannerObjectIdentifier {
+	if x != nil {
+		if x, ok := x.SourceIdentifier.(*SourceObjectIdentifier_SpannerIdentifier); ok {
+			return x.SpannerIdentifier
+		}
+	}
+	return nil
+}
+
 type isSourceObjectIdentifier_SourceIdentifier interface {
 	isSourceObjectIdentifier_SourceIdentifier()
 }
@@ -6121,6 +8390,11 @@ type SourceObjectIdentifier_MongodbIdentifier struct {
 	MongodbIdentifier *SourceObjectIdentifier_MongodbObjectIdentifier `protobuf:"bytes,6,opt,name=mongodb_identifier,json=mongodbIdentifier,proto3,oneof"`
 }
 
+type SourceObjectIdentifier_SpannerIdentifier struct {
+	// Spanner data source object identifier.
+	SpannerIdentifier *SourceObjectIdentifier_SpannerObjectIdentifier `protobuf:"bytes,7,opt,name=spanner_identifier,json=spannerIdentifier,proto3,oneof"`
+}
+
 func (*SourceObjectIdentifier_OracleIdentifier) isSourceObjectIdentifier_SourceIdentifier() {}
 
 func (*SourceObjectIdentifier_MysqlIdentifier) isSourceObjectIdentifier_SourceIdentifier() {}
@@ -6132,6 +8406,8 @@ func (*SourceObjectIdentifier_SqlServerIdentifier) isSourceObjectIdentifier_Sour
 func (*SourceObjectIdentifier_SalesforceIdentifier) isSourceObjectIdentifier_SourceIdentifier() {}
 
 func (*SourceObjectIdentifier_MongodbIdentifier) isSourceObjectIdentifier_SourceIdentifier() {}
+
+func (*SourceObjectIdentifier_SpannerIdentifier) isSourceObjectIdentifier_SourceIdentifier() {}
 
 // Represents a backfill job on a specific stream object.
 type BackfillJob struct {
@@ -6145,14 +8421,16 @@ type BackfillJob struct {
 	// Output only. Backfill job's end time.
 	LastEndTime *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=last_end_time,json=lastEndTime,proto3" json:"last_end_time,omitempty"`
 	// Output only. Errors which caused the backfill job to fail.
-	Errors        []*Error `protobuf:"bytes,5,rep,name=errors,proto3" json:"errors,omitempty"`
+	Errors []*Error `protobuf:"bytes,5,rep,name=errors,proto3" json:"errors,omitempty"`
+	// Output only. The filter for performing a partial backfill.
+	EventFilter   *EventFilter `protobuf:"bytes,7,opt,name=event_filter,json=eventFilter,proto3" json:"event_filter,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *BackfillJob) Reset() {
 	*x = BackfillJob{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[64]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[91]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6164,7 +8442,7 @@ func (x *BackfillJob) String() string {
 func (*BackfillJob) ProtoMessage() {}
 
 func (x *BackfillJob) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[64]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[91]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6177,7 +8455,7 @@ func (x *BackfillJob) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BackfillJob.ProtoReflect.Descriptor instead.
 func (*BackfillJob) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{64}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{91}
 }
 
 func (x *BackfillJob) GetState() BackfillJob_State {
@@ -6215,6 +8493,85 @@ func (x *BackfillJob) GetErrors() []*Error {
 	return nil
 }
 
+func (x *BackfillJob) GetEventFilter() *EventFilter {
+	if x != nil {
+		return x.EventFilter
+	}
+	return nil
+}
+
+// Represents a filter for included data on a stream object.
+type EventFilter struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// A filter type.
+	//
+	// Types that are valid to be assigned to Filter:
+	//
+	//	*EventFilter_SqlWhereClause
+	Filter        isEventFilter_Filter `protobuf_oneof:"filter"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *EventFilter) Reset() {
+	*x = EventFilter{}
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[92]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *EventFilter) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EventFilter) ProtoMessage() {}
+
+func (x *EventFilter) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[92]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use EventFilter.ProtoReflect.Descriptor instead.
+func (*EventFilter) Descriptor() ([]byte, []int) {
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{92}
+}
+
+func (x *EventFilter) GetFilter() isEventFilter_Filter {
+	if x != nil {
+		return x.Filter
+	}
+	return nil
+}
+
+func (x *EventFilter) GetSqlWhereClause() string {
+	if x != nil {
+		if x, ok := x.Filter.(*EventFilter_SqlWhereClause); ok {
+			return x.SqlWhereClause
+		}
+	}
+	return ""
+}
+
+type isEventFilter_Filter interface {
+	isEventFilter_Filter()
+}
+
+type EventFilter_SqlWhereClause struct {
+	// An SQL-query Where clause selecting which data should be included, not
+	// including the "WHERE" keyword. e.g., `t.key1 = 'value1' AND t.key2 =
+	// 'value2'`
+	SqlWhereClause string `protobuf:"bytes,1,opt,name=sql_where_clause,json=sqlWhereClause,proto3,oneof"`
+}
+
+func (*EventFilter_SqlWhereClause) isEventFilter_Filter() {}
+
 // Represent a user-facing Error.
 type Error struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -6235,7 +8592,7 @@ type Error struct {
 
 func (x *Error) Reset() {
 	*x = Error{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[65]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[93]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6247,7 +8604,7 @@ func (x *Error) String() string {
 func (*Error) ProtoMessage() {}
 
 func (x *Error) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[65]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[93]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6260,7 +8617,7 @@ func (x *Error) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Error.ProtoReflect.Descriptor instead.
 func (*Error) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{65}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{93}
 }
 
 func (x *Error) GetReason() string {
@@ -6310,7 +8667,7 @@ type ValidationResult struct {
 
 func (x *ValidationResult) Reset() {
 	*x = ValidationResult{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[66]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[94]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6322,7 +8679,7 @@ func (x *ValidationResult) String() string {
 func (*ValidationResult) ProtoMessage() {}
 
 func (x *ValidationResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[66]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[94]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6335,7 +8692,7 @@ func (x *ValidationResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ValidationResult.ProtoReflect.Descriptor instead.
 func (*ValidationResult) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{66}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{94}
 }
 
 func (x *ValidationResult) GetValidations() []*Validation {
@@ -6362,7 +8719,7 @@ type Validation struct {
 
 func (x *Validation) Reset() {
 	*x = Validation{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[67]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[95]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6374,7 +8731,7 @@ func (x *Validation) String() string {
 func (*Validation) ProtoMessage() {}
 
 func (x *Validation) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[67]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[95]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6387,7 +8744,7 @@ func (x *Validation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Validation.ProtoReflect.Descriptor instead.
 func (*Validation) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{67}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{95}
 }
 
 func (x *Validation) GetDescription() string {
@@ -6435,7 +8792,7 @@ type ValidationMessage struct {
 
 func (x *ValidationMessage) Reset() {
 	*x = ValidationMessage{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[68]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[96]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6447,7 +8804,7 @@ func (x *ValidationMessage) String() string {
 func (*ValidationMessage) ProtoMessage() {}
 
 func (x *ValidationMessage) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[68]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[96]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6460,7 +8817,7 @@ func (x *ValidationMessage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ValidationMessage.ProtoReflect.Descriptor instead.
 func (*ValidationMessage) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{68}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{96}
 }
 
 func (x *ValidationMessage) GetMessage() string {
@@ -6510,7 +8867,7 @@ type CdcStrategy struct {
 
 func (x *CdcStrategy) Reset() {
 	*x = CdcStrategy{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[69]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[97]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6522,7 +8879,7 @@ func (x *CdcStrategy) String() string {
 func (*CdcStrategy) ProtoMessage() {}
 
 func (x *CdcStrategy) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[69]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[97]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6535,7 +8892,7 @@ func (x *CdcStrategy) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CdcStrategy.ProtoReflect.Descriptor instead.
 func (*CdcStrategy) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{69}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{97}
 }
 
 func (x *CdcStrategy) GetStartPosition() isCdcStrategy_StartPosition {
@@ -6609,7 +8966,7 @@ type SqlServerLsnPosition struct {
 
 func (x *SqlServerLsnPosition) Reset() {
 	*x = SqlServerLsnPosition{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[70]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[98]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6621,7 +8978,7 @@ func (x *SqlServerLsnPosition) String() string {
 func (*SqlServerLsnPosition) ProtoMessage() {}
 
 func (x *SqlServerLsnPosition) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[70]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[98]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6634,7 +8991,7 @@ func (x *SqlServerLsnPosition) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SqlServerLsnPosition.ProtoReflect.Descriptor instead.
 func (*SqlServerLsnPosition) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{70}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{98}
 }
 
 func (x *SqlServerLsnPosition) GetLsn() string {
@@ -6655,7 +9012,7 @@ type OracleScnPosition struct {
 
 func (x *OracleScnPosition) Reset() {
 	*x = OracleScnPosition{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[71]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[99]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6667,7 +9024,7 @@ func (x *OracleScnPosition) String() string {
 func (*OracleScnPosition) ProtoMessage() {}
 
 func (x *OracleScnPosition) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[71]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[99]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6680,7 +9037,7 @@ func (x *OracleScnPosition) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OracleScnPosition.ProtoReflect.Descriptor instead.
 func (*OracleScnPosition) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{71}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{99}
 }
 
 func (x *OracleScnPosition) GetScn() int64 {
@@ -6703,7 +9060,7 @@ type MysqlLogPosition struct {
 
 func (x *MysqlLogPosition) Reset() {
 	*x = MysqlLogPosition{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[72]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[100]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6715,7 +9072,7 @@ func (x *MysqlLogPosition) String() string {
 func (*MysqlLogPosition) ProtoMessage() {}
 
 func (x *MysqlLogPosition) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[72]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[100]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6728,7 +9085,7 @@ func (x *MysqlLogPosition) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MysqlLogPosition.ProtoReflect.Descriptor instead.
 func (*MysqlLogPosition) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{72}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{100}
 }
 
 func (x *MysqlLogPosition) GetLogFile() string {
@@ -6756,7 +9113,7 @@ type MysqlGtidPosition struct {
 
 func (x *MysqlGtidPosition) Reset() {
 	*x = MysqlGtidPosition{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[73]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[101]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6768,7 +9125,7 @@ func (x *MysqlGtidPosition) String() string {
 func (*MysqlGtidPosition) ProtoMessage() {}
 
 func (x *MysqlGtidPosition) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[73]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[101]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6781,7 +9138,7 @@ func (x *MysqlGtidPosition) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MysqlGtidPosition.ProtoReflect.Descriptor instead.
 func (*MysqlGtidPosition) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{73}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{101}
 }
 
 func (x *MysqlGtidPosition) GetGtidSet() string {
@@ -6791,7 +9148,104 @@ func (x *MysqlGtidPosition) GetGtidSet() string {
 	return ""
 }
 
-// Username-password credentials.
+// MongoDB change stream position
+type MongodbChangeStreamPosition struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The timestamp to start change stream from.
+	StartTime     *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=start_time,json=startTime,proto3" json:"start_time,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *MongodbChangeStreamPosition) Reset() {
+	*x = MongodbChangeStreamPosition{}
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[102]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MongodbChangeStreamPosition) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MongodbChangeStreamPosition) ProtoMessage() {}
+
+func (x *MongodbChangeStreamPosition) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[102]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MongodbChangeStreamPosition.ProtoReflect.Descriptor instead.
+func (*MongodbChangeStreamPosition) Descriptor() ([]byte, []int) {
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{102}
+}
+
+func (x *MongodbChangeStreamPosition) GetStartTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.StartTime
+	}
+	return nil
+}
+
+// Represents a position in a Spanner change stream from which to start
+// replicating.
+type SpannerChangeStreamPosition struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The timestamp to start change stream queries from.
+	// The timestamp must be a positive value.
+	StartTime     *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=start_time,json=startTime,proto3" json:"start_time,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SpannerChangeStreamPosition) Reset() {
+	*x = SpannerChangeStreamPosition{}
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[103]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SpannerChangeStreamPosition) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SpannerChangeStreamPosition) ProtoMessage() {}
+
+func (x *SpannerChangeStreamPosition) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[103]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SpannerChangeStreamPosition.ProtoReflect.Descriptor instead.
+func (*SpannerChangeStreamPosition) Descriptor() ([]byte, []int) {
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{103}
+}
+
+func (x *SpannerChangeStreamPosition) GetStartTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.StartTime
+	}
+	return nil
+}
+
+// Deprecated: Salesforce is retiring Username-Password authentication.
+// Use `Oauth2ClientCredentials` instead.
+//
+// Deprecated: Marked as deprecated in google/cloud/datastream/v1/datastream_resources.proto.
 type SalesforceProfile_UserCredentials struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. Username for the Salesforce connection.
@@ -6816,7 +9270,7 @@ type SalesforceProfile_UserCredentials struct {
 
 func (x *SalesforceProfile_UserCredentials) Reset() {
 	*x = SalesforceProfile_UserCredentials{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[76]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[106]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6828,7 +9282,7 @@ func (x *SalesforceProfile_UserCredentials) String() string {
 func (*SalesforceProfile_UserCredentials) ProtoMessage() {}
 
 func (x *SalesforceProfile_UserCredentials) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[76]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[106]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6897,7 +9351,7 @@ type SalesforceProfile_Oauth2ClientCredentials struct {
 
 func (x *SalesforceProfile_Oauth2ClientCredentials) Reset() {
 	*x = SalesforceProfile_Oauth2ClientCredentials{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[77]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[107]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6909,7 +9363,7 @@ func (x *SalesforceProfile_Oauth2ClientCredentials) String() string {
 func (*SalesforceProfile_Oauth2ClientCredentials) ProtoMessage() {}
 
 func (x *SalesforceProfile_Oauth2ClientCredentials) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[77]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[107]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6946,6 +9400,148 @@ func (x *SalesforceProfile_Oauth2ClientCredentials) GetSecretManagerStoredClient
 	return ""
 }
 
+// Message to represent the option where encryption is not enforced. An empty
+// message right now to allow future extensibility.
+type SqlServerSslConfig_EncryptionNotEnforced struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SqlServerSslConfig_EncryptionNotEnforced) Reset() {
+	*x = SqlServerSslConfig_EncryptionNotEnforced{}
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[111]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SqlServerSslConfig_EncryptionNotEnforced) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SqlServerSslConfig_EncryptionNotEnforced) ProtoMessage() {}
+
+func (x *SqlServerSslConfig_EncryptionNotEnforced) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[111]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SqlServerSslConfig_EncryptionNotEnforced.ProtoReflect.Descriptor instead.
+func (*SqlServerSslConfig_EncryptionNotEnforced) Descriptor() ([]byte, []int) {
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{31, 0}
+}
+
+// Message to represent the option where Datastream will enforce encryption
+// without authenticating server identity. Server certificates will be trusted
+// by default.
+type SqlServerSslConfig_BasicEncryption struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SqlServerSslConfig_BasicEncryption) Reset() {
+	*x = SqlServerSslConfig_BasicEncryption{}
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[112]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SqlServerSslConfig_BasicEncryption) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SqlServerSslConfig_BasicEncryption) ProtoMessage() {}
+
+func (x *SqlServerSslConfig_BasicEncryption) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[112]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SqlServerSslConfig_BasicEncryption.ProtoReflect.Descriptor instead.
+func (*SqlServerSslConfig_BasicEncryption) Descriptor() ([]byte, []int) {
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{31, 1}
+}
+
+// Message to represent the option where Datastream will enforce encryption
+// and authenticate server identity. ca_certificate must be set if user
+// selects this option.
+type SqlServerSslConfig_EncryptionAndServerValidation struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. Input only. PEM-encoded certificate of the CA that signed the
+	// source database server's certificate.
+	CaCertificate string `protobuf:"bytes,2,opt,name=ca_certificate,json=caCertificate,proto3" json:"ca_certificate,omitempty"`
+	// Optional. The hostname mentioned in the Subject or SAN extension of the
+	// server certificate. This field is used for bypassing the hostname
+	// validation while verifying server certificate. This is required for
+	// scenarios where the host name that datastream connects to is different
+	// from the certificate's subject. This specifically happens for private
+	// connectivity. It could also happen when the customer provides
+	// a public IP in connection profile but the same is not present in the
+	// server certificate.
+	ServerCertificateHostname *string `protobuf:"bytes,3,opt,name=server_certificate_hostname,json=serverCertificateHostname,proto3,oneof" json:"server_certificate_hostname,omitempty"`
+	unknownFields             protoimpl.UnknownFields
+	sizeCache                 protoimpl.SizeCache
+}
+
+func (x *SqlServerSslConfig_EncryptionAndServerValidation) Reset() {
+	*x = SqlServerSslConfig_EncryptionAndServerValidation{}
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[113]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SqlServerSslConfig_EncryptionAndServerValidation) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SqlServerSslConfig_EncryptionAndServerValidation) ProtoMessage() {}
+
+func (x *SqlServerSslConfig_EncryptionAndServerValidation) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[113]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SqlServerSslConfig_EncryptionAndServerValidation.ProtoReflect.Descriptor instead.
+func (*SqlServerSslConfig_EncryptionAndServerValidation) Descriptor() ([]byte, []int) {
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{31, 2}
+}
+
+func (x *SqlServerSslConfig_EncryptionAndServerValidation) GetCaCertificate() string {
+	if x != nil {
+		return x.CaCertificate
+	}
+	return ""
+}
+
+func (x *SqlServerSslConfig_EncryptionAndServerValidation) GetServerCertificateHostname() string {
+	if x != nil && x.ServerCertificateHostname != nil {
+		return *x.ServerCertificateHostname
+	}
+	return ""
+}
+
 // Message represents the option where Datastream will enforce the encryption
 // and authenticate the server identity. ca_certificate must be set if user
 // selects this option.
@@ -6963,7 +9559,7 @@ type PostgresqlSslConfig_ServerVerification struct {
 
 func (x *PostgresqlSslConfig_ServerVerification) Reset() {
 	*x = PostgresqlSslConfig_ServerVerification{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[80]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[114]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6975,7 +9571,7 @@ func (x *PostgresqlSslConfig_ServerVerification) String() string {
 func (*PostgresqlSslConfig_ServerVerification) ProtoMessage() {}
 
 func (x *PostgresqlSslConfig_ServerVerification) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[80]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[114]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6988,7 +9584,7 @@ func (x *PostgresqlSslConfig_ServerVerification) ProtoReflect() protoreflect.Mes
 
 // Deprecated: Use PostgresqlSslConfig_ServerVerification.ProtoReflect.Descriptor instead.
 func (*PostgresqlSslConfig_ServerVerification) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{22, 0}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{32, 0}
 }
 
 func (x *PostgresqlSslConfig_ServerVerification) GetCaCertificate() string {
@@ -7035,7 +9631,7 @@ type PostgresqlSslConfig_ServerAndClientVerification struct {
 
 func (x *PostgresqlSslConfig_ServerAndClientVerification) Reset() {
 	*x = PostgresqlSslConfig_ServerAndClientVerification{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[81]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[115]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7047,7 +9643,7 @@ func (x *PostgresqlSslConfig_ServerAndClientVerification) String() string {
 func (*PostgresqlSslConfig_ServerAndClientVerification) ProtoMessage() {}
 
 func (x *PostgresqlSslConfig_ServerAndClientVerification) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[81]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[115]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7060,7 +9656,7 @@ func (x *PostgresqlSslConfig_ServerAndClientVerification) ProtoReflect() protore
 
 // Deprecated: Use PostgresqlSslConfig_ServerAndClientVerification.ProtoReflect.Descriptor instead.
 func (*PostgresqlSslConfig_ServerAndClientVerification) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{22, 1}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{32, 1}
 }
 
 func (x *PostgresqlSslConfig_ServerAndClientVerification) GetClientCertificate() string {
@@ -7100,7 +9696,7 @@ type OracleSourceConfig_DropLargeObjects struct {
 
 func (x *OracleSourceConfig_DropLargeObjects) Reset() {
 	*x = OracleSourceConfig_DropLargeObjects{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[83]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[117]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7112,7 +9708,7 @@ func (x *OracleSourceConfig_DropLargeObjects) String() string {
 func (*OracleSourceConfig_DropLargeObjects) ProtoMessage() {}
 
 func (x *OracleSourceConfig_DropLargeObjects) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[83]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[117]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7125,7 +9721,7 @@ func (x *OracleSourceConfig_DropLargeObjects) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use OracleSourceConfig_DropLargeObjects.ProtoReflect.Descriptor instead.
 func (*OracleSourceConfig_DropLargeObjects) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{28, 0}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{38, 0}
 }
 
 // Configuration to stream large object values.
@@ -7137,7 +9733,7 @@ type OracleSourceConfig_StreamLargeObjects struct {
 
 func (x *OracleSourceConfig_StreamLargeObjects) Reset() {
 	*x = OracleSourceConfig_StreamLargeObjects{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[84]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[118]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7149,7 +9745,7 @@ func (x *OracleSourceConfig_StreamLargeObjects) String() string {
 func (*OracleSourceConfig_StreamLargeObjects) ProtoMessage() {}
 
 func (x *OracleSourceConfig_StreamLargeObjects) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[84]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[118]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7162,7 +9758,7 @@ func (x *OracleSourceConfig_StreamLargeObjects) ProtoReflect() protoreflect.Mess
 
 // Deprecated: Use OracleSourceConfig_StreamLargeObjects.ProtoReflect.Descriptor instead.
 func (*OracleSourceConfig_StreamLargeObjects) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{28, 1}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{38, 1}
 }
 
 // Configuration to use LogMiner CDC method.
@@ -7174,7 +9770,7 @@ type OracleSourceConfig_LogMiner struct {
 
 func (x *OracleSourceConfig_LogMiner) Reset() {
 	*x = OracleSourceConfig_LogMiner{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[85]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[119]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7186,7 +9782,7 @@ func (x *OracleSourceConfig_LogMiner) String() string {
 func (*OracleSourceConfig_LogMiner) ProtoMessage() {}
 
 func (x *OracleSourceConfig_LogMiner) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[85]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[119]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7199,7 +9795,7 @@ func (x *OracleSourceConfig_LogMiner) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OracleSourceConfig_LogMiner.ProtoReflect.Descriptor instead.
 func (*OracleSourceConfig_LogMiner) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{28, 2}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{38, 2}
 }
 
 // Configuration to use Binary Log Parser CDC technique.
@@ -7218,7 +9814,7 @@ type OracleSourceConfig_BinaryLogParser struct {
 
 func (x *OracleSourceConfig_BinaryLogParser) Reset() {
 	*x = OracleSourceConfig_BinaryLogParser{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[86]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[120]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7230,7 +9826,7 @@ func (x *OracleSourceConfig_BinaryLogParser) String() string {
 func (*OracleSourceConfig_BinaryLogParser) ProtoMessage() {}
 
 func (x *OracleSourceConfig_BinaryLogParser) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[86]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[120]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7243,7 +9839,7 @@ func (x *OracleSourceConfig_BinaryLogParser) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use OracleSourceConfig_BinaryLogParser.ProtoReflect.Descriptor instead.
 func (*OracleSourceConfig_BinaryLogParser) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{28, 3}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{38, 3}
 }
 
 func (x *OracleSourceConfig_BinaryLogParser) GetLogFileAccess() isOracleSourceConfig_BinaryLogParser_LogFileAccess {
@@ -7300,7 +9896,7 @@ type OracleSourceConfig_BinaryLogParser_OracleAsmLogFileAccess struct {
 
 func (x *OracleSourceConfig_BinaryLogParser_OracleAsmLogFileAccess) Reset() {
 	*x = OracleSourceConfig_BinaryLogParser_OracleAsmLogFileAccess{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[87]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[121]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7312,7 +9908,7 @@ func (x *OracleSourceConfig_BinaryLogParser_OracleAsmLogFileAccess) String() str
 func (*OracleSourceConfig_BinaryLogParser_OracleAsmLogFileAccess) ProtoMessage() {}
 
 func (x *OracleSourceConfig_BinaryLogParser_OracleAsmLogFileAccess) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[87]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[121]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7325,7 +9921,7 @@ func (x *OracleSourceConfig_BinaryLogParser_OracleAsmLogFileAccess) ProtoReflect
 
 // Deprecated: Use OracleSourceConfig_BinaryLogParser_OracleAsmLogFileAccess.ProtoReflect.Descriptor instead.
 func (*OracleSourceConfig_BinaryLogParser_OracleAsmLogFileAccess) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{28, 3, 0}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{38, 3, 0}
 }
 
 // Configuration to specify the Oracle directories to access the log files.
@@ -7341,7 +9937,7 @@ type OracleSourceConfig_BinaryLogParser_LogFileDirectories struct {
 
 func (x *OracleSourceConfig_BinaryLogParser_LogFileDirectories) Reset() {
 	*x = OracleSourceConfig_BinaryLogParser_LogFileDirectories{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[88]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[122]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7353,7 +9949,7 @@ func (x *OracleSourceConfig_BinaryLogParser_LogFileDirectories) String() string 
 func (*OracleSourceConfig_BinaryLogParser_LogFileDirectories) ProtoMessage() {}
 
 func (x *OracleSourceConfig_BinaryLogParser_LogFileDirectories) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[88]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[122]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7366,7 +9962,7 @@ func (x *OracleSourceConfig_BinaryLogParser_LogFileDirectories) ProtoReflect() p
 
 // Deprecated: Use OracleSourceConfig_BinaryLogParser_LogFileDirectories.ProtoReflect.Descriptor instead.
 func (*OracleSourceConfig_BinaryLogParser_LogFileDirectories) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{28, 3, 1}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{38, 3, 1}
 }
 
 func (x *OracleSourceConfig_BinaryLogParser_LogFileDirectories) GetOnlineLogDirectory() string {
@@ -7383,6 +9979,67 @@ func (x *OracleSourceConfig_BinaryLogParser_LogFileDirectories) GetArchivedLogDi
 	return ""
 }
 
+// DDL configuration for change tables.
+type SqlServerChangeTables_SqlServerDdlConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. If set to true, Datastream will automatically create a new
+	// capture instance when DDL is detected on a table.The customer will be
+	// responsible for deleting it so that the next set of DDLs can be handled.
+	// The default is false and it means that DDL's will not be handled .
+	AutoCreateNewCaptureInstanceOnDdl bool `protobuf:"varint,1,opt,name=auto_create_new_capture_instance_on_ddl,json=autoCreateNewCaptureInstanceOnDdl,proto3" json:"auto_create_new_capture_instance_on_ddl,omitempty"`
+	// Optional. If set to true, Datastream will automatically delete the old
+	// capture instance after creating a new one to support a DDL change. The
+	// default is false and means that the customer has to delete the old
+	// capture instance manually.
+	AutoDeleteOldCaptureInstance bool `protobuf:"varint,2,opt,name=auto_delete_old_capture_instance,json=autoDeleteOldCaptureInstance,proto3" json:"auto_delete_old_capture_instance,omitempty"`
+	unknownFields                protoimpl.UnknownFields
+	sizeCache                    protoimpl.SizeCache
+}
+
+func (x *SqlServerChangeTables_SqlServerDdlConfig) Reset() {
+	*x = SqlServerChangeTables_SqlServerDdlConfig{}
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[123]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SqlServerChangeTables_SqlServerDdlConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SqlServerChangeTables_SqlServerDdlConfig) ProtoMessage() {}
+
+func (x *SqlServerChangeTables_SqlServerDdlConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[123]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SqlServerChangeTables_SqlServerDdlConfig.ProtoReflect.Descriptor instead.
+func (*SqlServerChangeTables_SqlServerDdlConfig) Descriptor() ([]byte, []int) {
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{50, 0}
+}
+
+func (x *SqlServerChangeTables_SqlServerDdlConfig) GetAutoCreateNewCaptureInstanceOnDdl() bool {
+	if x != nil {
+		return x.AutoCreateNewCaptureInstanceOnDdl
+	}
+	return false
+}
+
+func (x *SqlServerChangeTables_SqlServerDdlConfig) GetAutoDeleteOldCaptureInstance() bool {
+	if x != nil {
+		return x.AutoDeleteOldCaptureInstance
+	}
+	return false
+}
+
 // Use Binary log position based replication.
 type MysqlSourceConfig_BinaryLogPosition struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -7392,7 +10049,7 @@ type MysqlSourceConfig_BinaryLogPosition struct {
 
 func (x *MysqlSourceConfig_BinaryLogPosition) Reset() {
 	*x = MysqlSourceConfig_BinaryLogPosition{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[89]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[124]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7404,7 +10061,7 @@ func (x *MysqlSourceConfig_BinaryLogPosition) String() string {
 func (*MysqlSourceConfig_BinaryLogPosition) ProtoMessage() {}
 
 func (x *MysqlSourceConfig_BinaryLogPosition) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[89]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[124]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7417,7 +10074,7 @@ func (x *MysqlSourceConfig_BinaryLogPosition) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use MysqlSourceConfig_BinaryLogPosition.ProtoReflect.Descriptor instead.
 func (*MysqlSourceConfig_BinaryLogPosition) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{45, 0}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{55, 0}
 }
 
 // Use GTID based replication.
@@ -7429,7 +10086,7 @@ type MysqlSourceConfig_Gtid struct {
 
 func (x *MysqlSourceConfig_Gtid) Reset() {
 	*x = MysqlSourceConfig_Gtid{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[90]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[125]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7441,7 +10098,7 @@ func (x *MysqlSourceConfig_Gtid) String() string {
 func (*MysqlSourceConfig_Gtid) ProtoMessage() {}
 
 func (x *MysqlSourceConfig_Gtid) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[90]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[125]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7454,7 +10111,7 @@ func (x *MysqlSourceConfig_Gtid) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MysqlSourceConfig_Gtid.ProtoReflect.Descriptor instead.
 func (*MysqlSourceConfig_Gtid) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{45, 1}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{55, 1}
 }
 
 // A single target dataset to which all data will be streamed.
@@ -7470,7 +10127,7 @@ type BigQueryDestinationConfig_SingleTargetDataset struct {
 
 func (x *BigQueryDestinationConfig_SingleTargetDataset) Reset() {
 	*x = BigQueryDestinationConfig_SingleTargetDataset{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[91]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[126]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7482,7 +10139,7 @@ func (x *BigQueryDestinationConfig_SingleTargetDataset) String() string {
 func (*BigQueryDestinationConfig_SingleTargetDataset) ProtoMessage() {}
 
 func (x *BigQueryDestinationConfig_SingleTargetDataset) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[91]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[126]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7495,7 +10152,7 @@ func (x *BigQueryDestinationConfig_SingleTargetDataset) ProtoReflect() protorefl
 
 // Deprecated: Use BigQueryDestinationConfig_SingleTargetDataset.ProtoReflect.Descriptor instead.
 func (*BigQueryDestinationConfig_SingleTargetDataset) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{59, 0}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{86, 0}
 }
 
 func (x *BigQueryDestinationConfig_SingleTargetDataset) GetDatasetId() string {
@@ -7520,7 +10177,7 @@ type BigQueryDestinationConfig_SourceHierarchyDatasets struct {
 
 func (x *BigQueryDestinationConfig_SourceHierarchyDatasets) Reset() {
 	*x = BigQueryDestinationConfig_SourceHierarchyDatasets{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[92]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[127]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7532,7 +10189,7 @@ func (x *BigQueryDestinationConfig_SourceHierarchyDatasets) String() string {
 func (*BigQueryDestinationConfig_SourceHierarchyDatasets) ProtoMessage() {}
 
 func (x *BigQueryDestinationConfig_SourceHierarchyDatasets) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[92]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[127]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7545,7 +10202,7 @@ func (x *BigQueryDestinationConfig_SourceHierarchyDatasets) ProtoReflect() proto
 
 // Deprecated: Use BigQueryDestinationConfig_SourceHierarchyDatasets.ProtoReflect.Descriptor instead.
 func (*BigQueryDestinationConfig_SourceHierarchyDatasets) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{59, 1}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{86, 1}
 }
 
 func (x *BigQueryDestinationConfig_SourceHierarchyDatasets) GetDatasetTemplate() *BigQueryDestinationConfig_SourceHierarchyDatasets_DatasetTemplate {
@@ -7582,7 +10239,7 @@ type BigQueryDestinationConfig_BlmtConfig struct {
 
 func (x *BigQueryDestinationConfig_BlmtConfig) Reset() {
 	*x = BigQueryDestinationConfig_BlmtConfig{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[93]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[128]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7594,7 +10251,7 @@ func (x *BigQueryDestinationConfig_BlmtConfig) String() string {
 func (*BigQueryDestinationConfig_BlmtConfig) ProtoMessage() {}
 
 func (x *BigQueryDestinationConfig_BlmtConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[93]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[128]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7607,7 +10264,7 @@ func (x *BigQueryDestinationConfig_BlmtConfig) ProtoReflect() protoreflect.Messa
 
 // Deprecated: Use BigQueryDestinationConfig_BlmtConfig.ProtoReflect.Descriptor instead.
 func (*BigQueryDestinationConfig_BlmtConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{59, 2}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{86, 2}
 }
 
 func (x *BigQueryDestinationConfig_BlmtConfig) GetBucket() string {
@@ -7655,7 +10312,7 @@ type BigQueryDestinationConfig_AppendOnly struct {
 
 func (x *BigQueryDestinationConfig_AppendOnly) Reset() {
 	*x = BigQueryDestinationConfig_AppendOnly{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[94]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[129]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7667,7 +10324,7 @@ func (x *BigQueryDestinationConfig_AppendOnly) String() string {
 func (*BigQueryDestinationConfig_AppendOnly) ProtoMessage() {}
 
 func (x *BigQueryDestinationConfig_AppendOnly) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[94]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[129]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7680,7 +10337,7 @@ func (x *BigQueryDestinationConfig_AppendOnly) ProtoReflect() protoreflect.Messa
 
 // Deprecated: Use BigQueryDestinationConfig_AppendOnly.ProtoReflect.Descriptor instead.
 func (*BigQueryDestinationConfig_AppendOnly) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{59, 3}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{86, 3}
 }
 
 // Merge mode defines that all changes to a table will be merged at the
@@ -7693,7 +10350,7 @@ type BigQueryDestinationConfig_Merge struct {
 
 func (x *BigQueryDestinationConfig_Merge) Reset() {
 	*x = BigQueryDestinationConfig_Merge{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[95]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[130]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7705,7 +10362,7 @@ func (x *BigQueryDestinationConfig_Merge) String() string {
 func (*BigQueryDestinationConfig_Merge) ProtoMessage() {}
 
 func (x *BigQueryDestinationConfig_Merge) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[95]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[130]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7718,7 +10375,7 @@ func (x *BigQueryDestinationConfig_Merge) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BigQueryDestinationConfig_Merge.ProtoReflect.Descriptor instead.
 func (*BigQueryDestinationConfig_Merge) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{59, 4}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{86, 4}
 }
 
 // Dataset template used for dynamic dataset creation.
@@ -7746,7 +10403,7 @@ type BigQueryDestinationConfig_SourceHierarchyDatasets_DatasetTemplate struct {
 
 func (x *BigQueryDestinationConfig_SourceHierarchyDatasets_DatasetTemplate) Reset() {
 	*x = BigQueryDestinationConfig_SourceHierarchyDatasets_DatasetTemplate{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[96]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[131]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7758,7 +10415,7 @@ func (x *BigQueryDestinationConfig_SourceHierarchyDatasets_DatasetTemplate) Stri
 func (*BigQueryDestinationConfig_SourceHierarchyDatasets_DatasetTemplate) ProtoMessage() {}
 
 func (x *BigQueryDestinationConfig_SourceHierarchyDatasets_DatasetTemplate) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[96]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[131]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7771,7 +10428,7 @@ func (x *BigQueryDestinationConfig_SourceHierarchyDatasets_DatasetTemplate) Prot
 
 // Deprecated: Use BigQueryDestinationConfig_SourceHierarchyDatasets_DatasetTemplate.ProtoReflect.Descriptor instead.
 func (*BigQueryDestinationConfig_SourceHierarchyDatasets_DatasetTemplate) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{59, 1, 0}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{86, 1, 0}
 }
 
 func (x *BigQueryDestinationConfig_SourceHierarchyDatasets_DatasetTemplate) GetLocation() string {
@@ -7809,6 +10466,8 @@ type Stream_BackfillAllStrategy struct {
 	//	*Stream_BackfillAllStrategy_SqlServerExcludedObjects
 	//	*Stream_BackfillAllStrategy_SalesforceExcludedObjects
 	//	*Stream_BackfillAllStrategy_MongodbExcludedObjects
+	//	*Stream_BackfillAllStrategy_SpannerExcludedObjects
+	//	*Stream_BackfillAllStrategy_SaasExcludedObjects
 	ExcludedObjects isStream_BackfillAllStrategy_ExcludedObjects `protobuf_oneof:"excluded_objects"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
@@ -7816,7 +10475,7 @@ type Stream_BackfillAllStrategy struct {
 
 func (x *Stream_BackfillAllStrategy) Reset() {
 	*x = Stream_BackfillAllStrategy{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[97]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[132]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7828,7 +10487,7 @@ func (x *Stream_BackfillAllStrategy) String() string {
 func (*Stream_BackfillAllStrategy) ProtoMessage() {}
 
 func (x *Stream_BackfillAllStrategy) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[97]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[132]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7841,7 +10500,7 @@ func (x *Stream_BackfillAllStrategy) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Stream_BackfillAllStrategy.ProtoReflect.Descriptor instead.
 func (*Stream_BackfillAllStrategy) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{61, 0}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{88, 0}
 }
 
 func (x *Stream_BackfillAllStrategy) GetExcludedObjects() isStream_BackfillAllStrategy_ExcludedObjects {
@@ -7905,6 +10564,24 @@ func (x *Stream_BackfillAllStrategy) GetMongodbExcludedObjects() *MongodbCluster
 	return nil
 }
 
+func (x *Stream_BackfillAllStrategy) GetSpannerExcludedObjects() *SpannerDatabase {
+	if x != nil {
+		if x, ok := x.ExcludedObjects.(*Stream_BackfillAllStrategy_SpannerExcludedObjects); ok {
+			return x.SpannerExcludedObjects
+		}
+	}
+	return nil
+}
+
+func (x *Stream_BackfillAllStrategy) GetSaasExcludedObjects() *SourceCatalog {
+	if x != nil {
+		if x, ok := x.ExcludedObjects.(*Stream_BackfillAllStrategy_SaasExcludedObjects); ok {
+			return x.SaasExcludedObjects
+		}
+	}
+	return nil
+}
+
 type isStream_BackfillAllStrategy_ExcludedObjects interface {
 	isStream_BackfillAllStrategy_ExcludedObjects()
 }
@@ -7939,6 +10616,17 @@ type Stream_BackfillAllStrategy_MongodbExcludedObjects struct {
 	MongodbExcludedObjects *MongodbCluster `protobuf:"bytes,6,opt,name=mongodb_excluded_objects,json=mongodbExcludedObjects,proto3,oneof"`
 }
 
+type Stream_BackfillAllStrategy_SpannerExcludedObjects struct {
+	// Spanner data source objects to avoid backfilling.
+	SpannerExcludedObjects *SpannerDatabase `protobuf:"bytes,7,opt,name=spanner_excluded_objects,json=spannerExcludedObjects,proto3,oneof"`
+}
+
+type Stream_BackfillAllStrategy_SaasExcludedObjects struct {
+	// Source catalog data source objects to avoid backfilling. This is mainly
+	// used to represent SaaS applications objects.
+	SaasExcludedObjects *SourceCatalog `protobuf:"bytes,9,opt,name=saas_excluded_objects,json=saasExcludedObjects,proto3,oneof"`
+}
+
 func (*Stream_BackfillAllStrategy_OracleExcludedObjects) isStream_BackfillAllStrategy_ExcludedObjects() {
 }
 
@@ -7957,6 +10645,12 @@ func (*Stream_BackfillAllStrategy_SalesforceExcludedObjects) isStream_BackfillAl
 func (*Stream_BackfillAllStrategy_MongodbExcludedObjects) isStream_BackfillAllStrategy_ExcludedObjects() {
 }
 
+func (*Stream_BackfillAllStrategy_SpannerExcludedObjects) isStream_BackfillAllStrategy_ExcludedObjects() {
+}
+
+func (*Stream_BackfillAllStrategy_SaasExcludedObjects) isStream_BackfillAllStrategy_ExcludedObjects() {
+}
+
 // Backfill strategy to disable automatic backfill for the Stream's objects.
 type Stream_BackfillNoneStrategy struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -7966,7 +10660,7 @@ type Stream_BackfillNoneStrategy struct {
 
 func (x *Stream_BackfillNoneStrategy) Reset() {
 	*x = Stream_BackfillNoneStrategy{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[98]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[133]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7978,7 +10672,7 @@ func (x *Stream_BackfillNoneStrategy) String() string {
 func (*Stream_BackfillNoneStrategy) ProtoMessage() {}
 
 func (x *Stream_BackfillNoneStrategy) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[98]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[133]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7991,7 +10685,222 @@ func (x *Stream_BackfillNoneStrategy) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Stream_BackfillNoneStrategy.ProtoReflect.Descriptor instead.
 func (*Stream_BackfillNoneStrategy) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{61, 1}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{88, 1}
+}
+
+// A set of rules to apply to a set of objects.
+type Stream_RuleSet struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. List of customization rules to apply.
+	CustomizationRules []*Stream_RuleSet_CustomizationRule `protobuf:"bytes,1,rep,name=customization_rules,json=customizationRules,proto3" json:"customization_rules,omitempty"`
+	// Required. Object filter to apply the customization rules to.
+	ObjectFilter  *Stream_RuleSet_ObjectFilter `protobuf:"bytes,2,opt,name=object_filter,json=objectFilter,proto3" json:"object_filter,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Stream_RuleSet) Reset() {
+	*x = Stream_RuleSet{}
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[134]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Stream_RuleSet) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Stream_RuleSet) ProtoMessage() {}
+
+func (x *Stream_RuleSet) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[134]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Stream_RuleSet.ProtoReflect.Descriptor instead.
+func (*Stream_RuleSet) Descriptor() ([]byte, []int) {
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{88, 2}
+}
+
+func (x *Stream_RuleSet) GetCustomizationRules() []*Stream_RuleSet_CustomizationRule {
+	if x != nil {
+		return x.CustomizationRules
+	}
+	return nil
+}
+
+func (x *Stream_RuleSet) GetObjectFilter() *Stream_RuleSet_ObjectFilter {
+	if x != nil {
+		return x.ObjectFilter
+	}
+	return nil
+}
+
+// Object filter to apply the rules to.
+type Stream_RuleSet_ObjectFilter struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The filter to apply.
+	//
+	// Types that are valid to be assigned to FilterType:
+	//
+	//	*Stream_RuleSet_ObjectFilter_SourceObjectIdentifier
+	FilterType    isStream_RuleSet_ObjectFilter_FilterType `protobuf_oneof:"filter_type"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Stream_RuleSet_ObjectFilter) Reset() {
+	*x = Stream_RuleSet_ObjectFilter{}
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[136]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Stream_RuleSet_ObjectFilter) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Stream_RuleSet_ObjectFilter) ProtoMessage() {}
+
+func (x *Stream_RuleSet_ObjectFilter) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[136]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Stream_RuleSet_ObjectFilter.ProtoReflect.Descriptor instead.
+func (*Stream_RuleSet_ObjectFilter) Descriptor() ([]byte, []int) {
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{88, 2, 0}
+}
+
+func (x *Stream_RuleSet_ObjectFilter) GetFilterType() isStream_RuleSet_ObjectFilter_FilterType {
+	if x != nil {
+		return x.FilterType
+	}
+	return nil
+}
+
+func (x *Stream_RuleSet_ObjectFilter) GetSourceObjectIdentifier() *SourceObjectIdentifier {
+	if x != nil {
+		if x, ok := x.FilterType.(*Stream_RuleSet_ObjectFilter_SourceObjectIdentifier); ok {
+			return x.SourceObjectIdentifier
+		}
+	}
+	return nil
+}
+
+type isStream_RuleSet_ObjectFilter_FilterType interface {
+	isStream_RuleSet_ObjectFilter_FilterType()
+}
+
+type Stream_RuleSet_ObjectFilter_SourceObjectIdentifier struct {
+	// Specific source object identifier.
+	SourceObjectIdentifier *SourceObjectIdentifier `protobuf:"bytes,1,opt,name=source_object_identifier,json=sourceObjectIdentifier,proto3,oneof"`
+}
+
+func (*Stream_RuleSet_ObjectFilter_SourceObjectIdentifier) isStream_RuleSet_ObjectFilter_FilterType() {
+}
+
+// A customization rule to apply to a set of objects.
+type Stream_RuleSet_CustomizationRule struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The rule to apply.
+	//
+	// Types that are valid to be assigned to Rule:
+	//
+	//	*Stream_RuleSet_CustomizationRule_BigqueryPartitioning
+	//	*Stream_RuleSet_CustomizationRule_BigqueryClustering
+	Rule          isStream_RuleSet_CustomizationRule_Rule `protobuf_oneof:"rule"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Stream_RuleSet_CustomizationRule) Reset() {
+	*x = Stream_RuleSet_CustomizationRule{}
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[137]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Stream_RuleSet_CustomizationRule) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Stream_RuleSet_CustomizationRule) ProtoMessage() {}
+
+func (x *Stream_RuleSet_CustomizationRule) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[137]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Stream_RuleSet_CustomizationRule.ProtoReflect.Descriptor instead.
+func (*Stream_RuleSet_CustomizationRule) Descriptor() ([]byte, []int) {
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{88, 2, 1}
+}
+
+func (x *Stream_RuleSet_CustomizationRule) GetRule() isStream_RuleSet_CustomizationRule_Rule {
+	if x != nil {
+		return x.Rule
+	}
+	return nil
+}
+
+func (x *Stream_RuleSet_CustomizationRule) GetBigqueryPartitioning() *BigQueryPartitioning {
+	if x != nil {
+		if x, ok := x.Rule.(*Stream_RuleSet_CustomizationRule_BigqueryPartitioning); ok {
+			return x.BigqueryPartitioning
+		}
+	}
+	return nil
+}
+
+func (x *Stream_RuleSet_CustomizationRule) GetBigqueryClustering() *BigQueryClustering {
+	if x != nil {
+		if x, ok := x.Rule.(*Stream_RuleSet_CustomizationRule_BigqueryClustering); ok {
+			return x.BigqueryClustering
+		}
+	}
+	return nil
+}
+
+type isStream_RuleSet_CustomizationRule_Rule interface {
+	isStream_RuleSet_CustomizationRule_Rule()
+}
+
+type Stream_RuleSet_CustomizationRule_BigqueryPartitioning struct {
+	// BigQuery partitioning rule.
+	BigqueryPartitioning *BigQueryPartitioning `protobuf:"bytes,1,opt,name=bigquery_partitioning,json=bigqueryPartitioning,proto3,oneof"`
+}
+
+type Stream_RuleSet_CustomizationRule_BigqueryClustering struct {
+	// BigQuery clustering rule.
+	BigqueryClustering *BigQueryClustering `protobuf:"bytes,2,opt,name=bigquery_clustering,json=bigqueryClustering,proto3,oneof"`
+}
+
+func (*Stream_RuleSet_CustomizationRule_BigqueryPartitioning) isStream_RuleSet_CustomizationRule_Rule() {
+}
+
+func (*Stream_RuleSet_CustomizationRule_BigqueryClustering) isStream_RuleSet_CustomizationRule_Rule() {
 }
 
 // Oracle data source object identifier.
@@ -8007,7 +10916,7 @@ type SourceObjectIdentifier_OracleObjectIdentifier struct {
 
 func (x *SourceObjectIdentifier_OracleObjectIdentifier) Reset() {
 	*x = SourceObjectIdentifier_OracleObjectIdentifier{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[100]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[138]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8019,7 +10928,7 @@ func (x *SourceObjectIdentifier_OracleObjectIdentifier) String() string {
 func (*SourceObjectIdentifier_OracleObjectIdentifier) ProtoMessage() {}
 
 func (x *SourceObjectIdentifier_OracleObjectIdentifier) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[100]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[138]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8032,7 +10941,7 @@ func (x *SourceObjectIdentifier_OracleObjectIdentifier) ProtoReflect() protorefl
 
 // Deprecated: Use SourceObjectIdentifier_OracleObjectIdentifier.ProtoReflect.Descriptor instead.
 func (*SourceObjectIdentifier_OracleObjectIdentifier) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{63, 0}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{90, 0}
 }
 
 func (x *SourceObjectIdentifier_OracleObjectIdentifier) GetSchema() string {
@@ -8062,7 +10971,7 @@ type SourceObjectIdentifier_PostgresqlObjectIdentifier struct {
 
 func (x *SourceObjectIdentifier_PostgresqlObjectIdentifier) Reset() {
 	*x = SourceObjectIdentifier_PostgresqlObjectIdentifier{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[101]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[139]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8074,7 +10983,7 @@ func (x *SourceObjectIdentifier_PostgresqlObjectIdentifier) String() string {
 func (*SourceObjectIdentifier_PostgresqlObjectIdentifier) ProtoMessage() {}
 
 func (x *SourceObjectIdentifier_PostgresqlObjectIdentifier) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[101]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[139]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8087,7 +10996,7 @@ func (x *SourceObjectIdentifier_PostgresqlObjectIdentifier) ProtoReflect() proto
 
 // Deprecated: Use SourceObjectIdentifier_PostgresqlObjectIdentifier.ProtoReflect.Descriptor instead.
 func (*SourceObjectIdentifier_PostgresqlObjectIdentifier) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{63, 1}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{90, 1}
 }
 
 func (x *SourceObjectIdentifier_PostgresqlObjectIdentifier) GetSchema() string {
@@ -8117,7 +11026,7 @@ type SourceObjectIdentifier_MysqlObjectIdentifier struct {
 
 func (x *SourceObjectIdentifier_MysqlObjectIdentifier) Reset() {
 	*x = SourceObjectIdentifier_MysqlObjectIdentifier{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[102]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[140]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8129,7 +11038,7 @@ func (x *SourceObjectIdentifier_MysqlObjectIdentifier) String() string {
 func (*SourceObjectIdentifier_MysqlObjectIdentifier) ProtoMessage() {}
 
 func (x *SourceObjectIdentifier_MysqlObjectIdentifier) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[102]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[140]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8142,7 +11051,7 @@ func (x *SourceObjectIdentifier_MysqlObjectIdentifier) ProtoReflect() protorefle
 
 // Deprecated: Use SourceObjectIdentifier_MysqlObjectIdentifier.ProtoReflect.Descriptor instead.
 func (*SourceObjectIdentifier_MysqlObjectIdentifier) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{63, 2}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{90, 2}
 }
 
 func (x *SourceObjectIdentifier_MysqlObjectIdentifier) GetDatabase() string {
@@ -8172,7 +11081,7 @@ type SourceObjectIdentifier_SqlServerObjectIdentifier struct {
 
 func (x *SourceObjectIdentifier_SqlServerObjectIdentifier) Reset() {
 	*x = SourceObjectIdentifier_SqlServerObjectIdentifier{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[103]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[141]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8184,7 +11093,7 @@ func (x *SourceObjectIdentifier_SqlServerObjectIdentifier) String() string {
 func (*SourceObjectIdentifier_SqlServerObjectIdentifier) ProtoMessage() {}
 
 func (x *SourceObjectIdentifier_SqlServerObjectIdentifier) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[103]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[141]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8197,7 +11106,7 @@ func (x *SourceObjectIdentifier_SqlServerObjectIdentifier) ProtoReflect() protor
 
 // Deprecated: Use SourceObjectIdentifier_SqlServerObjectIdentifier.ProtoReflect.Descriptor instead.
 func (*SourceObjectIdentifier_SqlServerObjectIdentifier) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{63, 3}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{90, 3}
 }
 
 func (x *SourceObjectIdentifier_SqlServerObjectIdentifier) GetSchema() string {
@@ -8225,7 +11134,7 @@ type SourceObjectIdentifier_SalesforceObjectIdentifier struct {
 
 func (x *SourceObjectIdentifier_SalesforceObjectIdentifier) Reset() {
 	*x = SourceObjectIdentifier_SalesforceObjectIdentifier{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[104]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[142]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8237,7 +11146,7 @@ func (x *SourceObjectIdentifier_SalesforceObjectIdentifier) String() string {
 func (*SourceObjectIdentifier_SalesforceObjectIdentifier) ProtoMessage() {}
 
 func (x *SourceObjectIdentifier_SalesforceObjectIdentifier) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[104]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[142]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8250,7 +11159,7 @@ func (x *SourceObjectIdentifier_SalesforceObjectIdentifier) ProtoReflect() proto
 
 // Deprecated: Use SourceObjectIdentifier_SalesforceObjectIdentifier.ProtoReflect.Descriptor instead.
 func (*SourceObjectIdentifier_SalesforceObjectIdentifier) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{63, 4}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{90, 4}
 }
 
 func (x *SourceObjectIdentifier_SalesforceObjectIdentifier) GetObjectName() string {
@@ -8273,7 +11182,7 @@ type SourceObjectIdentifier_MongodbObjectIdentifier struct {
 
 func (x *SourceObjectIdentifier_MongodbObjectIdentifier) Reset() {
 	*x = SourceObjectIdentifier_MongodbObjectIdentifier{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[105]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[143]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8285,7 +11194,7 @@ func (x *SourceObjectIdentifier_MongodbObjectIdentifier) String() string {
 func (*SourceObjectIdentifier_MongodbObjectIdentifier) ProtoMessage() {}
 
 func (x *SourceObjectIdentifier_MongodbObjectIdentifier) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[105]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[143]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8298,7 +11207,7 @@ func (x *SourceObjectIdentifier_MongodbObjectIdentifier) ProtoReflect() protoref
 
 // Deprecated: Use SourceObjectIdentifier_MongodbObjectIdentifier.ProtoReflect.Descriptor instead.
 func (*SourceObjectIdentifier_MongodbObjectIdentifier) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{63, 5}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{90, 5}
 }
 
 func (x *SourceObjectIdentifier_MongodbObjectIdentifier) GetDatabase() string {
@@ -8315,6 +11224,61 @@ func (x *SourceObjectIdentifier_MongodbObjectIdentifier) GetCollection() string 
 	return ""
 }
 
+// Spanner data source object identifier.
+type SourceObjectIdentifier_SpannerObjectIdentifier struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. The schema name.
+	Schema string `protobuf:"bytes,1,opt,name=schema,proto3" json:"schema,omitempty"`
+	// Required. The table name.
+	Table         string `protobuf:"bytes,2,opt,name=table,proto3" json:"table,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SourceObjectIdentifier_SpannerObjectIdentifier) Reset() {
+	*x = SourceObjectIdentifier_SpannerObjectIdentifier{}
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[144]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SourceObjectIdentifier_SpannerObjectIdentifier) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SourceObjectIdentifier_SpannerObjectIdentifier) ProtoMessage() {}
+
+func (x *SourceObjectIdentifier_SpannerObjectIdentifier) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[144]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SourceObjectIdentifier_SpannerObjectIdentifier.ProtoReflect.Descriptor instead.
+func (*SourceObjectIdentifier_SpannerObjectIdentifier) Descriptor() ([]byte, []int) {
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{90, 6}
+}
+
+func (x *SourceObjectIdentifier_SpannerObjectIdentifier) GetSchema() string {
+	if x != nil {
+		return x.Schema
+	}
+	return ""
+}
+
+func (x *SourceObjectIdentifier_SpannerObjectIdentifier) GetTable() string {
+	if x != nil {
+		return x.Table
+	}
+	return ""
+}
+
 // CDC strategy to start replicating from the most recent position in the
 // source.
 type CdcStrategy_MostRecentStartPosition struct {
@@ -8325,7 +11289,7 @@ type CdcStrategy_MostRecentStartPosition struct {
 
 func (x *CdcStrategy_MostRecentStartPosition) Reset() {
 	*x = CdcStrategy_MostRecentStartPosition{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[108]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[147]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8337,7 +11301,7 @@ func (x *CdcStrategy_MostRecentStartPosition) String() string {
 func (*CdcStrategy_MostRecentStartPosition) ProtoMessage() {}
 
 func (x *CdcStrategy_MostRecentStartPosition) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[108]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[147]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8350,7 +11314,7 @@ func (x *CdcStrategy_MostRecentStartPosition) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use CdcStrategy_MostRecentStartPosition.ProtoReflect.Descriptor instead.
 func (*CdcStrategy_MostRecentStartPosition) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{69, 0}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{97, 0}
 }
 
 // CDC strategy to resume replication from the next available position in the
@@ -8363,7 +11327,7 @@ type CdcStrategy_NextAvailableStartPosition struct {
 
 func (x *CdcStrategy_NextAvailableStartPosition) Reset() {
 	*x = CdcStrategy_NextAvailableStartPosition{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[109]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[148]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8375,7 +11339,7 @@ func (x *CdcStrategy_NextAvailableStartPosition) String() string {
 func (*CdcStrategy_NextAvailableStartPosition) ProtoMessage() {}
 
 func (x *CdcStrategy_NextAvailableStartPosition) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[109]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[148]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8388,18 +11352,22 @@ func (x *CdcStrategy_NextAvailableStartPosition) ProtoReflect() protoreflect.Mes
 
 // Deprecated: Use CdcStrategy_NextAvailableStartPosition.ProtoReflect.Descriptor instead.
 func (*CdcStrategy_NextAvailableStartPosition) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{69, 1}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{97, 1}
 }
 
 // CDC strategy to start replicating from a specific position in the source.
 type CdcStrategy_SpecificStartPosition struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
+	// Change Data Capture (CDC) read position.
+	//
 	// Types that are valid to be assigned to Position:
 	//
 	//	*CdcStrategy_SpecificStartPosition_MysqlLogPosition
 	//	*CdcStrategy_SpecificStartPosition_OracleScnPosition
 	//	*CdcStrategy_SpecificStartPosition_SqlServerLsnPosition
 	//	*CdcStrategy_SpecificStartPosition_MysqlGtidPosition
+	//	*CdcStrategy_SpecificStartPosition_MongodbChangeStreamPosition
+	//	*CdcStrategy_SpecificStartPosition_SpannerChangeStreamPosition
 	Position      isCdcStrategy_SpecificStartPosition_Position `protobuf_oneof:"position"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -8407,7 +11375,7 @@ type CdcStrategy_SpecificStartPosition struct {
 
 func (x *CdcStrategy_SpecificStartPosition) Reset() {
 	*x = CdcStrategy_SpecificStartPosition{}
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[110]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[149]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8419,7 +11387,7 @@ func (x *CdcStrategy_SpecificStartPosition) String() string {
 func (*CdcStrategy_SpecificStartPosition) ProtoMessage() {}
 
 func (x *CdcStrategy_SpecificStartPosition) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[110]
+	mi := &file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[149]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8432,7 +11400,7 @@ func (x *CdcStrategy_SpecificStartPosition) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use CdcStrategy_SpecificStartPosition.ProtoReflect.Descriptor instead.
 func (*CdcStrategy_SpecificStartPosition) Descriptor() ([]byte, []int) {
-	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{69, 2}
+	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP(), []int{97, 2}
 }
 
 func (x *CdcStrategy_SpecificStartPosition) GetPosition() isCdcStrategy_SpecificStartPosition_Position {
@@ -8478,6 +11446,24 @@ func (x *CdcStrategy_SpecificStartPosition) GetMysqlGtidPosition() *MysqlGtidPos
 	return nil
 }
 
+func (x *CdcStrategy_SpecificStartPosition) GetMongodbChangeStreamPosition() *MongodbChangeStreamPosition {
+	if x != nil {
+		if x, ok := x.Position.(*CdcStrategy_SpecificStartPosition_MongodbChangeStreamPosition); ok {
+			return x.MongodbChangeStreamPosition
+		}
+	}
+	return nil
+}
+
+func (x *CdcStrategy_SpecificStartPosition) GetSpannerChangeStreamPosition() *SpannerChangeStreamPosition {
+	if x != nil {
+		if x, ok := x.Position.(*CdcStrategy_SpecificStartPosition_SpannerChangeStreamPosition); ok {
+			return x.SpannerChangeStreamPosition
+		}
+	}
+	return nil
+}
+
 type isCdcStrategy_SpecificStartPosition_Position interface {
 	isCdcStrategy_SpecificStartPosition_Position()
 }
@@ -8502,6 +11488,16 @@ type CdcStrategy_SpecificStartPosition_MysqlGtidPosition struct {
 	MysqlGtidPosition *MysqlGtidPosition `protobuf:"bytes,104,opt,name=mysql_gtid_position,json=mysqlGtidPosition,proto3,oneof"`
 }
 
+type CdcStrategy_SpecificStartPosition_MongodbChangeStreamPosition struct {
+	// MongoDB change stream position to start replicating from.
+	MongodbChangeStreamPosition *MongodbChangeStreamPosition `protobuf:"bytes,105,opt,name=mongodb_change_stream_position,json=mongodbChangeStreamPosition,proto3,oneof"`
+}
+
+type CdcStrategy_SpecificStartPosition_SpannerChangeStreamPosition struct {
+	// Optional. Spanner change stream position to start replicating from.
+	SpannerChangeStreamPosition *SpannerChangeStreamPosition `protobuf:"bytes,106,opt,name=spanner_change_stream_position,json=spannerChangeStreamPosition,proto3,oneof"`
+}
+
 func (*CdcStrategy_SpecificStartPosition_MysqlLogPosition) isCdcStrategy_SpecificStartPosition_Position() {
 }
 
@@ -8514,11 +11510,17 @@ func (*CdcStrategy_SpecificStartPosition_SqlServerLsnPosition) isCdcStrategy_Spe
 func (*CdcStrategy_SpecificStartPosition_MysqlGtidPosition) isCdcStrategy_SpecificStartPosition_Position() {
 }
 
+func (*CdcStrategy_SpecificStartPosition_MongodbChangeStreamPosition) isCdcStrategy_SpecificStartPosition_Position() {
+}
+
+func (*CdcStrategy_SpecificStartPosition_SpannerChangeStreamPosition) isCdcStrategy_SpecificStartPosition_Position() {
+}
+
 var File_google_cloud_datastream_v1_datastream_resources_proto protoreflect.FileDescriptor
 
 const file_google_cloud_datastream_v1_datastream_resources_proto_rawDesc = "" +
 	"\n" +
-	"5google/cloud/datastream/v1/datastream_resources.proto\x12\x1agoogle.cloud.datastream.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xff\x04\n" +
+	"5google/cloud/datastream/v1/datastream_resources.proto\x12\x1agoogle.cloud.datastream.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xff\x04\n" +
 	"\rOracleProfile\x12\x1f\n" +
 	"\bhostname\x18\x01 \x01(\tB\x03\xe0A\x02R\bhostname\x12\x12\n" +
 	"\x04port\x18\x02 \x01(\x05R\x04port\x12\x1f\n" +
@@ -8561,29 +11563,31 @@ const file_google_cloud_datastream_v1_datastream_resources_proto_rawDesc = "" +
 	"\bdatabase\x18\x05 \x01(\tB\x03\xe0A\x02R\bdatabase\x12H\n" +
 	"\x1esecret_manager_stored_password\x18\x06 \x01(\tB\x03\xe0A\x01R\x1bsecretManagerStoredPassword\x12S\n" +
 	"\n" +
-	"ssl_config\x18\a \x01(\v2/.google.cloud.datastream.v1.PostgresqlSslConfigB\x03\xe0A\x01R\tsslConfig\"\xf4\x01\n" +
+	"ssl_config\x18\a \x01(\v2/.google.cloud.datastream.v1.PostgresqlSslConfigB\x03\xe0A\x01R\tsslConfig\"\xc8\x02\n" +
 	"\x10SqlServerProfile\x12\x1f\n" +
 	"\bhostname\x18\x01 \x01(\tB\x03\xe0A\x02R\bhostname\x12\x12\n" +
 	"\x04port\x18\x02 \x01(\x05R\x04port\x12\x1f\n" +
 	"\busername\x18\x03 \x01(\tB\x03\xe0A\x02R\busername\x12\x1f\n" +
 	"\bpassword\x18\x04 \x01(\tB\x03\xe0A\x01R\bpassword\x12\x1f\n" +
-	"\bdatabase\x18\x05 \x01(\tB\x03\xe0A\x02R\bdatabase\x12H\n" +
-	"\x1esecret_manager_stored_password\x18\a \x01(\tB\x03\xe0A\x01R\x1bsecretManagerStoredPassword\"\x8d\x06\n" +
+	"\bdatabase\x18\x05 \x01(\tB\x03\xe0A\x02R\bdatabase\x12R\n" +
+	"\n" +
+	"ssl_config\x18\x06 \x01(\v2..google.cloud.datastream.v1.SqlServerSslConfigB\x03\xe0A\x01R\tsslConfig\x12H\n" +
+	"\x1esecret_manager_stored_password\x18\a \x01(\tB\x03\xe0A\x01R\x1bsecretManagerStoredPassword\"\x95\x06\n" +
 	"\x11SalesforceProfile\x12\x1b\n" +
-	"\x06domain\x18\x01 \x01(\tB\x03\xe0A\x02R\x06domain\x12j\n" +
-	"\x10user_credentials\x18\x02 \x01(\v2=.google.cloud.datastream.v1.SalesforceProfile.UserCredentialsH\x00R\x0fuserCredentials\x12\x83\x01\n" +
-	"\x19oauth2_client_credentials\x18\x03 \x01(\v2E.google.cloud.datastream.v1.SalesforceProfile.Oauth2ClientCredentialsH\x00R\x17oauth2ClientCredentials\x1a\x9e\x02\n" +
+	"\x06domain\x18\x01 \x01(\tB\x03\xe0A\x02R\x06domain\x12n\n" +
+	"\x10user_credentials\x18\x02 \x01(\v2=.google.cloud.datastream.v1.SalesforceProfile.UserCredentialsB\x02\x18\x01H\x00R\x0fuserCredentials\x12\x83\x01\n" +
+	"\x19oauth2_client_credentials\x18\x03 \x01(\v2E.google.cloud.datastream.v1.SalesforceProfile.Oauth2ClientCredentialsH\x00R\x17oauth2ClientCredentials\x1a\xa2\x02\n" +
 	"\x0fUserCredentials\x12\x1f\n" +
 	"\busername\x18\x01 \x01(\tB\x03\xe0A\x02R\busername\x12\x1f\n" +
 	"\bpassword\x18\x02 \x01(\tB\x03\xe0A\x01R\bpassword\x12*\n" +
 	"\x0esecurity_token\x18\x03 \x01(\tB\x03\xe0A\x01R\rsecurityToken\x12H\n" +
 	"\x1esecret_manager_stored_password\x18\x04 \x01(\tB\x03\xe0A\x01R\x1bsecretManagerStoredPassword\x12S\n" +
-	"$secret_manager_stored_security_token\x18\x05 \x01(\tB\x03\xe0A\x01R secretManagerStoredSecurityToken\x1a\xb8\x01\n" +
+	"$secret_manager_stored_security_token\x18\x05 \x01(\tB\x03\xe0A\x01R secretManagerStoredSecurityToken:\x02\x18\x01\x1a\xb8\x01\n" +
 	"\x17Oauth2ClientCredentials\x12 \n" +
 	"\tclient_id\x18\x01 \x01(\tB\x03\xe0A\x02R\bclientId\x12(\n" +
 	"\rclient_secret\x18\x02 \x01(\tB\x03\xe0A\x01R\fclientSecret\x12Q\n" +
 	"#secret_manager_stored_client_secret\x18\x03 \x01(\tB\x03\xe0A\x01R\x1fsecretManagerStoredClientSecretB\r\n" +
-	"\vcredentials\"\xe3\x04\n" +
+	"\vcredentials\"\xa0\x06\n" +
 	"\x0eMongodbProfile\x12S\n" +
 	"\x0ehost_addresses\x18\x01 \x03(\v2'.google.cloud.datastream.v1.HostAddressB\x03\xe0A\x02R\rhostAddresses\x12$\n" +
 	"\vreplica_set\x18\x02 \x01(\tB\x03\xe0A\x01R\n" +
@@ -8594,18 +11598,51 @@ const file_google_cloud_datastream_v1_datastream_resources_proto_rawDesc = "" +
 	"\n" +
 	"ssl_config\x18\x06 \x01(\v2,.google.cloud.datastream.v1.MongodbSslConfigB\x03\xe0A\x01R\tsslConfig\x12e\n" +
 	"\x15srv_connection_format\x18e \x01(\v2/.google.cloud.datastream.v1.SrvConnectionFormatH\x00R\x13srvConnectionFormat\x12t\n" +
-	"\x1astandard_connection_format\x18f \x01(\v24.google.cloud.datastream.v1.StandardConnectionFormatH\x00R\x18standardConnectionFormatB\x1b\n" +
+	"\x1astandard_connection_format\x18f \x01(\v24.google.cloud.datastream.v1.StandardConnectionFormatH\x00R\x18standardConnectionFormat\x12u\n" +
+	"\x12additional_options\x18\a \x03(\v2A.google.cloud.datastream.v1.MongodbProfile.AdditionalOptionsEntryB\x03\xe0A\x01R\x11additionalOptions\x1aD\n" +
+	"\x16AdditionalOptionsEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\x1b\n" +
 	"\x19mongodb_connection_format\"G\n" +
 	"\vHostAddress\x12\x1f\n" +
 	"\bhostname\x18\x01 \x01(\tB\x03\xe0A\x02R\bhostname\x12\x17\n" +
-	"\x04port\x18\x02 \x01(\x05B\x03\xe0A\x01R\x04port\"\x15\n" +
-	"\x13SrvConnectionFormat\"L\n" +
-	"\x18StandardConnectionFormat\x120\n" +
-	"\x11direct_connection\x18\x01 \x01(\bB\x03\xe0A\x01R\x10directConnection\"F\n" +
+	"\x04port\x18\x02 \x01(\x05B\x03\xe0A\x01R\x04port\"q\n" +
+	"\x0eSpannerProfile\x12F\n" +
+	"\bdatabase\x18\x01 \x01(\tB*\xe0A\x02\xe0A\x05\xfaA!\n" +
+	"\x1fspanner.googleapis.com/DatabaseR\bdatabase\x12\x17\n" +
+	"\x04host\x18\x02 \x01(\tB\x03\xe0A\x01R\x04host\"\x88\x01\n" +
+	"\x16OauthClientCredentials\x12 \n" +
+	"\tclient_id\x18\x01 \x01(\tB\x03\xe0A\x02R\bclientId\x12L\n" +
+	"\rclient_secret\x18\x02 \x01(\v2\".google.cloud.datastream.v1.SecretB\x03\xe0A\x02R\fclientSecret\"\xdf\x01\n" +
+	"\x1cOauthRefreshTokenCredentials\x12q\n" +
+	"\x18oauth_client_credentials\x18\x01 \x01(\v22.google.cloud.datastream.v1.OauthClientCredentialsB\x03\xe0A\x02R\x16oauthClientCredentials\x12L\n" +
+	"\rrefresh_token\x18\x02 \x01(\v2\".google.cloud.datastream.v1.SecretB\x03\xe0A\x02R\frefreshToken\"\x7f\n" +
+	"\x17UserPasswordCredentials\x12\x1f\n" +
+	"\busername\x18\x01 \x01(\tB\x03\xe0A\x02R\busername\x12C\n" +
+	"\bpassword\x18\x02 \x01(\v2\".google.cloud.datastream.v1.SecretB\x03\xe0A\x02R\bpassword\"\xba\x01\n" +
+	"\x1fSalesforceMarketingCloudProfile\x12!\n" +
+	"\tsubdomain\x18\x01 \x01(\tB\x03\xe0A\x02R\tsubdomain\x12t\n" +
+	"\x18oauth_client_credentials\x18\x03 \x01(\v22.google.cloud.datastream.v1.OauthClientCredentialsB\x06\xe0A\x04\xe0A\x02R\x16oauthClientCredentials\"\xd5\x01\n" +
+	"\x10DataverseProfile\x12 \n" +
+	"\ttenant_id\x18\x01 \x01(\tB\x03\xe0A\x02R\btenantId\x12,\n" +
+	"\x0fenvironment_url\x18\x05 \x01(\tB\x03\xe0A\x02R\x0eenvironmentUrl\x12q\n" +
+	"\x18oauth_client_credentials\x18\x03 \x01(\v22.google.cloud.datastream.v1.OauthClientCredentialsB\x03\xe0A\x02R\x16oauthClientCredentials\"\xa6\x02\n" +
+	"\x11ServiceNowProfile\x12\x1f\n" +
+	"\binstance\x18\x01 \x01(\tB\x03\xe0A\x02R\binstance\x12q\n" +
+	"\x19user_password_credentials\x18\x02 \x01(\v23.google.cloud.datastream.v1.UserPasswordCredentialsH\x00R\x17userPasswordCredentials\x12n\n" +
+	"\x18oauth_client_credentials\x18\x03 \x01(\v22.google.cloud.datastream.v1.OauthClientCredentialsH\x00R\x16oauthClientCredentialsB\r\n" +
+	"\vcredentials\"\xcd\x01\n" +
+	"\x0eWorkdayProfile\x12\x17\n" +
+	"\x04host\x18\x01 \x01(\tB\x03\xe0A\x02R\x04host\x12\x1b\n" +
+	"\x06tenant\x18\x02 \x01(\tB\x03\xe0A\x02R\x06tenant\x12\x84\x01\n" +
+	"\x1foauth_refresh_token_credentials\x18\x03 \x01(\v28.google.cloud.datastream.v1.OauthRefreshTokenCredentialsB\x03\xe0A\x02R\x1coauthRefreshTokenCredentials\"\x15\n" +
+	"\x13SrvConnectionFormat\"N\n" +
+	"\x18StandardConnectionFormat\x122\n" +
+	"\x11direct_connection\x18\x01 \x01(\bB\x05\xe0A\x01\x18\x01R\x10directConnection\"K\n" +
 	"\n" +
 	"GcsProfile\x12\x1b\n" +
-	"\x06bucket\x18\x01 \x01(\tB\x03\xe0A\x02R\x06bucket\x12\x1b\n" +
-	"\troot_path\x18\x02 \x01(\tR\brootPath\"\x11\n" +
+	"\x06bucket\x18\x01 \x01(\tB\x03\xe0A\x02R\x06bucket\x12 \n" +
+	"\troot_path\x18\x02 \x01(\tB\x03\xe0A\x01R\brootPath\"\x11\n" +
 	"\x0fBigQueryProfile\"\x1d\n" +
 	"\x1bStaticServiceIpConnectivity\"\xd8\x01\n" +
 	"\x1cForwardSshTunnelConnectivity\x12\x1f\n" +
@@ -8667,7 +11704,11 @@ const file_google_cloud_datastream_v1_datastream_resources_proto_rawDesc = "" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x85\x01\xeaA\x81\x01\n" +
-	"\x1fdatastream.googleapis.com/Route\x12^projects/{project}/locations/{location}/privateConnections/{private_connection}/routes/{route}\"\x88\x03\n" +
+	"\x1fdatastream.googleapis.com/Route\x12^projects/{project}/locations/{location}/privateConnections/{private_connection}/routes/{route}\"f\n" +
+	"\x06Secret\x12%\n" +
+	"\traw_value\x18\x01 \x01(\tB\x06\xe0A\x04\xe0A\x01H\x00R\brawValue\x12,\n" +
+	"\x0esecret_version\x18\x02 \x01(\tB\x03\xe0A\x01H\x00R\rsecretVersionB\a\n" +
+	"\x05value\"\x88\x03\n" +
 	"\x10MongodbSslConfig\x12%\n" +
 	"\n" +
 	"client_key\x18\x01 \x01(\tB\x06\xe0A\x04\xe0A\x01R\tclientKey\x12)\n" +
@@ -8688,7 +11729,18 @@ const file_google_cloud_datastream_v1_datastream_resources_proto_rawDesc = "" +
 	"\x0fOracleSslConfig\x12*\n" +
 	"\x0eca_certificate\x18\x01 \x01(\tB\x03\xe0A\x04R\rcaCertificate\x121\n" +
 	"\x12ca_certificate_set\x18\x02 \x01(\bB\x03\xe0A\x03R\x10caCertificateSet\x12V\n" +
-	"%server_certificate_distinguished_name\x18\x03 \x01(\tB\x03\xe0A\x01R\"serverCertificateDistinguishedName\"\xb4\x05\n" +
+	"%server_certificate_distinguished_name\x18\x03 \x01(\tB\x03\xe0A\x01R\"serverCertificateDistinguishedName\"\x98\x05\n" +
+	"\x12SqlServerSslConfig\x12~\n" +
+	"\x17encryption_not_enforced\x18\x01 \x01(\v2D.google.cloud.datastream.v1.SqlServerSslConfig.EncryptionNotEnforcedH\x00R\x15encryptionNotEnforced\x12k\n" +
+	"\x10basic_encryption\x18\x02 \x01(\v2>.google.cloud.datastream.v1.SqlServerSslConfig.BasicEncryptionH\x00R\x0fbasicEncryption\x12\x97\x01\n" +
+	" encryption_and_server_validation\x18\x03 \x01(\v2L.google.cloud.datastream.v1.SqlServerSslConfig.EncryptionAndServerValidationH\x00R\x1dencryptionAndServerValidation\x1a\x17\n" +
+	"\x15EncryptionNotEnforced\x1a\x11\n" +
+	"\x0fBasicEncryption\x1a\xb8\x01\n" +
+	"\x1dEncryptionAndServerValidation\x12-\n" +
+	"\x0eca_certificate\x18\x02 \x01(\tB\x06\xe0A\x04\xe0A\x01R\rcaCertificate\x12H\n" +
+	"\x1bserver_certificate_hostname\x18\x03 \x01(\tB\x03\xe0A\x01H\x00R\x19serverCertificateHostname\x88\x01\x01B\x1e\n" +
+	"\x1c_server_certificate_hostnameB\x14\n" +
+	"\x12encryption_setting\"\xb4\x05\n" +
 	"\x13PostgresqlSslConfig\x12u\n" +
 	"\x13server_verification\x18\x01 \x01(\v2B.google.cloud.datastream.v1.PostgresqlSslConfig.ServerVerificationH\x00R\x12serverVerification\x12\x92\x01\n" +
 	"\x1eserver_and_client_verification\x18\x02 \x01(\v2K.google.cloud.datastream.v1.PostgresqlSslConfig.ServerAndClientVerificationH\x00R\x1bserverAndClientVerification\x1a\x88\x01\n" +
@@ -8701,7 +11753,7 @@ const file_google_cloud_datastream_v1_datastream_resources_proto_rawDesc = "" +
 	"client_key\x18\x02 \x01(\tB\x06\xe0A\x04\xe0A\x01R\tclientKey\x12-\n" +
 	"\x0eca_certificate\x18\x03 \x01(\tB\x06\xe0A\x04\xe0A\x02R\rcaCertificate\x12C\n" +
 	"\x1bserver_certificate_hostname\x18\x05 \x01(\tB\x03\xe0A\x01R\x19serverCertificateHostnameB\x14\n" +
-	"\x12encryption_setting\"\xa8\r\n" +
+	"\x12encryption_setting\"\xa6\x11\n" +
 	"\x11ConnectionProfile\x12\x1a\n" +
 	"\x04name\x18\x01 \x01(\tB\x06\xe0A\b\xe0A\x03R\x04name\x12@\n" +
 	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
@@ -8720,7 +11772,12 @@ const file_google_cloud_datastream_v1_datastream_resources_proto_rawDesc = "" +
 	"\x12postgresql_profile\x18h \x01(\v2-.google.cloud.datastream.v1.PostgresqlProfileH\x00R\x11postgresqlProfile\x12\\\n" +
 	"\x12sql_server_profile\x18i \x01(\v2,.google.cloud.datastream.v1.SqlServerProfileH\x00R\x10sqlServerProfile\x12^\n" +
 	"\x12salesforce_profile\x18k \x01(\v2-.google.cloud.datastream.v1.SalesforceProfileH\x00R\x11salesforceProfile\x12U\n" +
-	"\x0fmongodb_profile\x18l \x01(\v2*.google.cloud.datastream.v1.MongodbProfileH\x00R\x0emongodbProfile\x12\x7f\n" +
+	"\x0fmongodb_profile\x18l \x01(\v2*.google.cloud.datastream.v1.MongodbProfileH\x00R\x0emongodbProfile\x12U\n" +
+	"\x0fspanner_profile\x18m \x01(\v2*.google.cloud.datastream.v1.SpannerProfileH\x00R\x0espannerProfile\x12[\n" +
+	"\x11dataverse_profile\x18r \x01(\v2,.google.cloud.datastream.v1.DataverseProfileH\x00R\x10dataverseProfile\x12\x8a\x01\n" +
+	"\"salesforce_marketing_cloud_profile\x18w \x01(\v2;.google.cloud.datastream.v1.SalesforceMarketingCloudProfileH\x00R\x1fsalesforceMarketingCloudProfile\x12_\n" +
+	"\x13service_now_profile\x18x \x01(\v2-.google.cloud.datastream.v1.ServiceNowProfileH\x00R\x11serviceNowProfile\x12Z\n" +
+	"\x0fworkday_profile\x18y \x01(\v2*.google.cloud.datastream.v1.WorkdayProfileB\x03\xe0A\x01H\x00R\x0eworkdayProfile\x12\x7f\n" +
 	"\x1estatic_service_ip_connectivity\x18\xc8\x01 \x01(\v27.google.cloud.datastream.v1.StaticServiceIpConnectivityH\x01R\x1bstaticServiceIpConnectivity\x12u\n" +
 	"\x18forward_ssh_connectivity\x18\xc9\x01 \x01(\v28.google.cloud.datastream.v1.ForwardSshTunnelConnectivityH\x01R\x16forwardSshConnectivity\x12e\n" +
 	"\x14private_connectivity\x18\xca\x01 \x01(\v2/.google.cloud.datastream.v1.PrivateConnectivityH\x01R\x13privateConnectivity\x1a9\n" +
@@ -8827,8 +11884,13 @@ const file_google_cloud_datastream_v1_datastream_resources_proto_rawDesc = "" +
 	"\rchange_tables\x18f \x01(\v21.google.cloud.datastream.v1.SqlServerChangeTablesH\x00R\fchangeTablesB\f\n" +
 	"\n" +
 	"cdc_method\"\x1a\n" +
-	"\x18SqlServerTransactionLogs\"\x17\n" +
-	"\x15SqlServerChangeTables\"\x94\x02\n" +
+	"\x18SqlServerTransactionLogs\"\xbe\x02\n" +
+	"\x15SqlServerChangeTables\x12h\n" +
+	"\n" +
+	"ddl_config\x18\x01 \x01(\v2D.google.cloud.datastream.v1.SqlServerChangeTables.SqlServerDdlConfigB\x03\xe0A\x01R\tddlConfig\x1a\xba\x01\n" +
+	"\x12SqlServerDdlConfig\x12W\n" +
+	"'auto_create_new_capture_instance_on_ddl\x18\x01 \x01(\bB\x03\xe0A\x01R!autoCreateNewCaptureInstanceOnDdl\x12K\n" +
+	" auto_delete_old_capture_instance\x18\x02 \x01(\bB\x03\xe0A\x01R\x1cautoDeleteOldCaptureInstance\"\x94\x02\n" +
 	"\vMysqlColumn\x12\x16\n" +
 	"\x06column\x18\x01 \x01(\tR\x06column\x12\x1b\n" +
 	"\tdata_type\x18\x02 \x01(\tR\bdataType\x12\x16\n" +
@@ -8874,11 +11936,12 @@ const file_google_cloud_datastream_v1_datastream_resources_proto_rawDesc = "" +
 	"\x0fSalesforceField\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x1b\n" +
 	"\tdata_type\x18\x02 \x01(\tR\bdataType\x12\x1a\n" +
-	"\bnillable\x18\x03 \x01(\bR\bnillable\"\x87\x02\n" +
+	"\bnillable\x18\x03 \x01(\bR\bnillable\"\xd6\x02\n" +
 	"\x13MongodbSourceConfig\x12S\n" +
 	"\x0finclude_objects\x18\x01 \x01(\v2*.google.cloud.datastream.v1.MongodbClusterR\x0eincludeObjects\x12S\n" +
 	"\x0fexclude_objects\x18\x02 \x01(\v2*.google.cloud.datastream.v1.MongodbClusterR\x0eexcludeObjects\x12F\n" +
-	"\x1dmax_concurrent_backfill_tasks\x18\x03 \x01(\x05B\x03\xe0A\x01R\x1amaxConcurrentBackfillTasks\"[\n" +
+	"\x1dmax_concurrent_backfill_tasks\x18\x03 \x01(\x05B\x03\xe0A\x01R\x1amaxConcurrentBackfillTasks\x12M\n" +
+	"\tjson_mode\x18\x04 \x01(\x0e2+.google.cloud.datastream.v1.MongodbJsonModeB\x03\xe0A\x01R\bjsonMode\"[\n" +
 	"\x0eMongodbCluster\x12I\n" +
 	"\tdatabases\x18\x01 \x03(\v2+.google.cloud.datastream.v1.MongodbDatabaseR\tdatabases\"~\n" +
 	"\x0fMongodbDatabase\x12\x1a\n" +
@@ -8890,7 +11953,68 @@ const file_google_cloud_datastream_v1_datastream_resources_proto_rawDesc = "" +
 	"collection\x12@\n" +
 	"\x06fields\x18\x02 \x03(\v2(.google.cloud.datastream.v1.MongodbFieldR\x06fields\"$\n" +
 	"\fMongodbField\x12\x14\n" +
-	"\x05field\x18\x01 \x01(\tR\x05field\"\x91\x06\n" +
+	"\x05field\x18\x01 \x01(\tR\x05field\"\xc3\x05\n" +
+	"\x13SpannerSourceConfig\x124\n" +
+	"\x12change_stream_name\x18\x01 \x01(\tB\x06\xe0A\x02\xe0A\x05R\x10changeStreamName\x12y\n" +
+	"\x14spanner_rpc_priority\x18\x02 \x01(\x0e2B.google.cloud.datastream.v1.SpannerSourceConfig.SpannerRpcPriorityB\x03\xe0A\x01R\x12spannerRpcPriority\x12 \n" +
+	"\tfgac_role\x18\x03 \x01(\tB\x03\xe0A\x01R\bfgacRole\x12<\n" +
+	"\x18max_concurrent_cdc_tasks\x18\b \x01(\x05B\x03\xe0A\x01R\x15maxConcurrentCdcTasks\x12F\n" +
+	"\x1dmax_concurrent_backfill_tasks\x18\x04 \x01(\x05B\x03\xe0A\x01R\x1amaxConcurrentBackfillTasks\x12Y\n" +
+	"\x0finclude_objects\x18\x06 \x01(\v2+.google.cloud.datastream.v1.SpannerDatabaseB\x03\xe0A\x01R\x0eincludeObjects\x12Y\n" +
+	"\x0fexclude_objects\x18\a \x01(\v2+.google.cloud.datastream.v1.SpannerDatabaseB\x03\xe0A\x01R\x0eexcludeObjects\x12B\n" +
+	"\x1bbackfill_data_boost_enabled\x18\t \x01(\bB\x03\xe0A\x01R\x18backfillDataBoostEnabled\"Y\n" +
+	"\x12SpannerRpcPriority\x12$\n" +
+	" SPANNER_RPC_PRIORITY_UNSPECIFIED\x10\x00\x12\a\n" +
+	"\x03LOW\x10\x01\x12\n" +
+	"\n" +
+	"\x06MEDIUM\x10\x02\x12\b\n" +
+	"\x04HIGH\x10\x03\"[\n" +
+	"\x0fSpannerDatabase\x12H\n" +
+	"\aschemas\x18\x01 \x03(\v2).google.cloud.datastream.v1.SpannerSchemaB\x03\xe0A\x01R\aschemas\"s\n" +
+	"\rSpannerSchema\x12\x1b\n" +
+	"\x06schema\x18\x01 \x01(\tB\x03\xe0A\x02R\x06schema\x12E\n" +
+	"\x06tables\x18\x02 \x03(\v2(.google.cloud.datastream.v1.SpannerTableB\x03\xe0A\x01R\x06tables\"s\n" +
+	"\fSpannerTable\x12\x19\n" +
+	"\x05table\x18\x01 \x01(\tB\x03\xe0A\x02R\x05table\x12H\n" +
+	"\acolumns\x18\x02 \x03(\v2).google.cloud.datastream.v1.SpannerColumnB\x03\xe0A\x01R\acolumns\"\xa9\x01\n" +
+	"\rSpannerColumn\x12\x1b\n" +
+	"\x06column\x18\x01 \x01(\tB\x03\xe0A\x02R\x06column\x12 \n" +
+	"\tdata_type\x18\x02 \x01(\tB\x03\xe0A\x01R\bdataType\x12)\n" +
+	"\x0eis_primary_key\x18\x03 \x01(\bB\x03\xe0A\x01R\fisPrimaryKey\x12.\n" +
+	"\x10ordinal_position\x18\x04 \x01(\x03B\x03\xe0A\x01R\x0fordinalPosition\"\x94\x02\n" +
+	"\x15DataverseSourceConfig\x12W\n" +
+	"\x0finclude_objects\x18\x01 \x01(\v2).google.cloud.datastream.v1.SourceCatalogB\x03\xe0A\x01R\x0eincludeObjects\x12W\n" +
+	"\x0fexclude_objects\x18\x02 \x01(\v2).google.cloud.datastream.v1.SourceCatalogB\x03\xe0A\x01R\x0eexcludeObjects\x12I\n" +
+	"\x10polling_interval\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x02R\x0fpollingInterval\"\x86\x03\n" +
+	"$SalesforceMarketingCloudSourceConfig\x12W\n" +
+	"\x0finclude_objects\x18\x01 \x01(\v2).google.cloud.datastream.v1.SourceCatalogB\x03\xe0A\x01R\x0eincludeObjects\x12W\n" +
+	"\x0fexclude_objects\x18\x02 \x01(\v2).google.cloud.datastream.v1.SourceCatalogB\x03\xe0A\x01R\x0eexcludeObjects\x12I\n" +
+	"\x10polling_interval\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x02R\x0fpollingInterval\x12a\n" +
+	"\x1dfull_refresh_polling_interval\x18\x04 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x02R\x1afullRefreshPollingInterval\"\x95\x02\n" +
+	"\x16ServiceNowSourceConfig\x12W\n" +
+	"\x0finclude_objects\x18\x01 \x01(\v2).google.cloud.datastream.v1.SourceCatalogB\x03\xe0A\x01R\x0eincludeObjects\x12W\n" +
+	"\x0fexclude_objects\x18\x02 \x01(\v2).google.cloud.datastream.v1.SourceCatalogB\x03\xe0A\x01R\x0eexcludeObjects\x12I\n" +
+	"\x10polling_interval\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x02R\x0fpollingInterval\"\x92\x02\n" +
+	"\x13WorkdaySourceConfig\x12W\n" +
+	"\x0finclude_objects\x18\x01 \x01(\v2).google.cloud.datastream.v1.SourceCatalogB\x03\xe0A\x01R\x0eincludeObjects\x12W\n" +
+	"\x0fexclude_objects\x18\x02 \x01(\v2).google.cloud.datastream.v1.SourceCatalogB\x03\xe0A\x01R\x0eexcludeObjects\x12I\n" +
+	"\x10polling_interval\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x02R\x0fpollingInterval\"X\n" +
+	"\rSourceCatalog\x12G\n" +
+	"\aobjects\x18\x01 \x03(\v2(.google.cloud.datastream.v1.SourceObjectB\x03\xe0A\x01R\aobjects\"\x85\x01\n" +
+	"\fSourceObject\x12$\n" +
+	"\vobject_name\x18\x01 \x01(\tB\x03\xe0A\x02R\n" +
+	"objectName\x12O\n" +
+	"\n" +
+	"properties\x18\x02 \x03(\v2*.google.cloud.datastream.v1.SourcePropertyB\x03\xe0A\x01R\n" +
+	"properties\"\xb1\x01\n" +
+	"\x0eSourceProperty\x12(\n" +
+	"\rproperty_name\x18\x01 \x01(\tB\x03\xe0A\x02R\fpropertyName\x12O\n" +
+	"\n" +
+	"properties\x18\x02 \x03(\v2*.google.cloud.datastream.v1.SourcePropertyB\x03\xe0A\x01R\n" +
+	"properties\x12$\n" +
+	"\vprimary_key\x18\x04 \x01(\bB\x03\xe0A\x01R\n" +
+	"primaryKey\"\xdf\n" +
+	"\n" +
 	"\fSourceConfig\x12o\n" +
 	"\x19source_connection_profile\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\n" +
 	"+datastream.googleapis.com/ConnectionProfileR\x17sourceConnectionProfile\x12b\n" +
@@ -8899,7 +12023,12 @@ const file_google_cloud_datastream_v1_datastream_resources_proto_rawDesc = "" +
 	"\x18postgresql_source_config\x18f \x01(\v22.google.cloud.datastream.v1.PostgresqlSourceConfigH\x00R\x16postgresqlSourceConfig\x12l\n" +
 	"\x18sql_server_source_config\x18g \x01(\v21.google.cloud.datastream.v1.SqlServerSourceConfigH\x00R\x15sqlServerSourceConfig\x12n\n" +
 	"\x18salesforce_source_config\x18h \x01(\v22.google.cloud.datastream.v1.SalesforceSourceConfigH\x00R\x16salesforceSourceConfig\x12e\n" +
-	"\x15mongodb_source_config\x18i \x01(\v2/.google.cloud.datastream.v1.MongodbSourceConfigH\x00R\x13mongodbSourceConfigB\x16\n" +
+	"\x15mongodb_source_config\x18i \x01(\v2/.google.cloud.datastream.v1.MongodbSourceConfigH\x00R\x13mongodbSourceConfig\x12e\n" +
+	"\x15spanner_source_config\x18j \x01(\v2/.google.cloud.datastream.v1.SpannerSourceConfigH\x00R\x13spannerSourceConfig\x12k\n" +
+	"\x17dataverse_source_config\x18o \x01(\v21.google.cloud.datastream.v1.DataverseSourceConfigH\x00R\x15dataverseSourceConfig\x12\x9a\x01\n" +
+	"(salesforce_marketing_cloud_source_config\x18t \x01(\v2@.google.cloud.datastream.v1.SalesforceMarketingCloudSourceConfigH\x00R$salesforceMarketingCloudSourceConfig\x12o\n" +
+	"\x19service_now_source_config\x18u \x01(\v22.google.cloud.datastream.v1.ServiceNowSourceConfigH\x00R\x16serviceNowSourceConfig\x12j\n" +
+	"\x15workday_source_config\x18v \x01(\v2/.google.cloud.datastream.v1.WorkdaySourceConfigB\x03\xe0A\x01H\x00R\x13workdaySourceConfigB\x16\n" +
 	"\x14source_stream_config\"\x10\n" +
 	"\x0eAvroFileFormat\"\x8e\x03\n" +
 	"\x0eJsonFileFormat\x12i\n" +
@@ -8912,7 +12041,25 @@ const file_google_cloud_datastream_v1_datastream_resources_proto_rawDesc = "" +
 	"\x0fJsonCompression\x12 \n" +
 	"\x1cJSON_COMPRESSION_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eNO_COMPRESSION\x10\x01\x12\b\n" +
-	"\x04GZIP\x10\x02\"\xe4\x02\n" +
+	"\x04GZIP\x10\x02\"3\n" +
+	"\x12BigQueryClustering\x12\x1d\n" +
+	"\acolumns\x18\x01 \x03(\tB\x03\xe0A\x02R\acolumns\"\x9b\x01\n" +
+	"\x16IngestionTimePartition\x12\x80\x01\n" +
+	"\x1dpartitioning_time_granularity\x18\x01 \x01(\x0e27.google.cloud.datastream.v1.PartitioningTimeGranularityB\x03\xe0A\x01R\x1bpartitioningTimeGranularity\"\xb3\x01\n" +
+	"\x11TimeUnitPartition\x12\x1b\n" +
+	"\x06column\x18\x01 \x01(\tB\x03\xe0A\x02R\x06column\x12\x80\x01\n" +
+	"\x1dpartitioning_time_granularity\x18\x02 \x01(\x0e27.google.cloud.datastream.v1.PartitioningTimeGranularityB\x03\xe0A\x01R\x1bpartitioningTimeGranularity\"\x87\x01\n" +
+	"\x15IntegerRangePartition\x12\x1b\n" +
+	"\x06column\x18\x01 \x01(\tB\x03\xe0A\x02R\x06column\x12\x19\n" +
+	"\x05start\x18\x02 \x01(\x03B\x03\xe0A\x02R\x05start\x12\x15\n" +
+	"\x03end\x18\x03 \x01(\x03B\x03\xe0A\x02R\x03end\x12\x1f\n" +
+	"\binterval\x18\x04 \x01(\x03B\x03\xe0A\x02R\binterval\"\xa3\x03\n" +
+	"\x14BigQueryPartitioning\x12k\n" +
+	"\x17integer_range_partition\x18d \x01(\v21.google.cloud.datastream.v1.IntegerRangePartitionH\x00R\x15integerRangePartition\x12_\n" +
+	"\x13time_unit_partition\x18e \x01(\v2-.google.cloud.datastream.v1.TimeUnitPartitionH\x00R\x11timeUnitPartition\x12n\n" +
+	"\x18ingestion_time_partition\x18f \x01(\v22.google.cloud.datastream.v1.IngestionTimePartitionH\x00R\x16ingestionTimePartition\x12=\n" +
+	"\x18require_partition_filter\x18g \x01(\bB\x03\xe0A\x01R\x16requirePartitionFilterB\x0e\n" +
+	"\fpartitioning\"\xe4\x02\n" +
 	"\x14GcsDestinationConfig\x12\x12\n" +
 	"\x04path\x18\x01 \x01(\tR\x04path\x12(\n" +
 	"\x10file_rotation_mb\x18\x02 \x01(\x05R\x0efileRotationMb\x12O\n" +
@@ -8968,7 +12115,7 @@ const file_google_cloud_datastream_v1_datastream_resources_proto_rawDesc = "" +
 	"+datastream.googleapis.com/ConnectionProfileR\x1cdestinationConnectionProfile\x12h\n" +
 	"\x16gcs_destination_config\x18d \x01(\v20.google.cloud.datastream.v1.GcsDestinationConfigH\x00R\x14gcsDestinationConfig\x12w\n" +
 	"\x1bbigquery_destination_config\x18e \x01(\v25.google.cloud.datastream.v1.BigQueryDestinationConfigH\x00R\x19bigqueryDestinationConfigB\x1b\n" +
-	"\x19destination_stream_config\"\xd7\x10\n" +
+	"\x19destination_stream_config\"\xcc\x17\n" +
 	"\x06Stream\x12\x1a\n" +
 	"\x04name\x18\x01 \x01(\tB\x06\xe0A\b\xe0A\x03R\x04name\x12@\n" +
 	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
@@ -8987,16 +12134,29 @@ const file_google_cloud_datastream_v1_datastream_resources_proto_rawDesc = "" +
 	" \x01(\tB\x03\xe0A\x05H\x01R\x1ccustomerManagedEncryptionKey\x88\x01\x01\x12M\n" +
 	"\x12last_recovery_time\x18\r \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x10lastRecoveryTime\x12-\n" +
 	"\rsatisfies_pzs\x18\x0f \x01(\bB\x03\xe0A\x03H\x02R\fsatisfiesPzs\x88\x01\x01\x12-\n" +
-	"\rsatisfies_pzi\x18\x10 \x01(\bB\x03\xe0A\x03H\x03R\fsatisfiesPzi\x88\x01\x01\x1a\x9d\x05\n" +
+	"\rsatisfies_pzi\x18\x10 \x01(\bB\x03\xe0A\x03H\x03R\fsatisfiesPzi\x88\x01\x01\x12L\n" +
+	"\trule_sets\x18\x13 \x03(\v2*.google.cloud.datastream.v1.Stream.RuleSetB\x03\xe0A\x01R\bruleSets\x1a\xe7\x06\n" +
 	"\x13BackfillAllStrategy\x12a\n" +
 	"\x17oracle_excluded_objects\x18\x01 \x01(\v2'.google.cloud.datastream.v1.OracleRdbmsH\x00R\x15oracleExcludedObjects\x12^\n" +
 	"\x16mysql_excluded_objects\x18\x02 \x01(\v2&.google.cloud.datastream.v1.MysqlRdbmsH\x00R\x14mysqlExcludedObjects\x12m\n" +
 	"\x1bpostgresql_excluded_objects\x18\x03 \x01(\v2+.google.cloud.datastream.v1.PostgresqlRdbmsH\x00R\x19postgresqlExcludedObjects\x12k\n" +
 	"\x1bsql_server_excluded_objects\x18\x04 \x01(\v2*.google.cloud.datastream.v1.SqlServerRdbmsH\x00R\x18sqlServerExcludedObjects\x12k\n" +
 	"\x1bsalesforce_excluded_objects\x18\x05 \x01(\v2).google.cloud.datastream.v1.SalesforceOrgH\x00R\x19salesforceExcludedObjects\x12f\n" +
-	"\x18mongodb_excluded_objects\x18\x06 \x01(\v2*.google.cloud.datastream.v1.MongodbClusterH\x00R\x16mongodbExcludedObjectsB\x12\n" +
+	"\x18mongodb_excluded_objects\x18\x06 \x01(\v2*.google.cloud.datastream.v1.MongodbClusterH\x00R\x16mongodbExcludedObjects\x12g\n" +
+	"\x18spanner_excluded_objects\x18\a \x01(\v2+.google.cloud.datastream.v1.SpannerDatabaseH\x00R\x16spannerExcludedObjects\x12_\n" +
+	"\x15saas_excluded_objects\x18\t \x01(\v2).google.cloud.datastream.v1.SourceCatalogH\x00R\x13saasExcludedObjectsB\x12\n" +
 	"\x10excluded_objects\x1a\x16\n" +
-	"\x14BackfillNoneStrategy\x1a9\n" +
+	"\x14BackfillNoneStrategy\x1a\xda\x04\n" +
+	"\aRuleSet\x12r\n" +
+	"\x13customization_rules\x18\x01 \x03(\v2<.google.cloud.datastream.v1.Stream.RuleSet.CustomizationRuleB\x03\xe0A\x02R\x12customizationRules\x12a\n" +
+	"\robject_filter\x18\x02 \x01(\v27.google.cloud.datastream.v1.Stream.RuleSet.ObjectFilterB\x03\xe0A\x02R\fobjectFilter\x1a\x8d\x01\n" +
+	"\fObjectFilter\x12n\n" +
+	"\x18source_object_identifier\x18\x01 \x01(\v22.google.cloud.datastream.v1.SourceObjectIdentifierH\x00R\x16sourceObjectIdentifierB\r\n" +
+	"\vfilter_type\x1a\xe7\x01\n" +
+	"\x11CustomizationRule\x12g\n" +
+	"\x15bigquery_partitioning\x18\x01 \x01(\v20.google.cloud.datastream.v1.BigQueryPartitioningH\x00R\x14bigqueryPartitioning\x12a\n" +
+	"\x13bigquery_clustering\x18\x02 \x01(\v2..google.cloud.datastream.v1.BigQueryClusteringH\x00R\x12bigqueryClusteringB\x06\n" +
+	"\x04rule\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x99\x01\n" +
@@ -9016,7 +12176,7 @@ const file_google_cloud_datastream_v1_datastream_resources_proto_rawDesc = "" +
 	"\x11backfill_strategyB\"\n" +
 	" _customer_managed_encryption_keyB\x10\n" +
 	"\x0e_satisfies_pzsB\x10\n" +
-	"\x0e_satisfies_pzi\"\xb3\x04\n" +
+	"\x0e_satisfies_pzi\"\xa7\x05\n" +
 	"\fStreamObject\x12\x1a\n" +
 	"\x04name\x18\x01 \x01(\tB\x06\xe0A\b\xe0A\x03R\x04name\x12@\n" +
 	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
@@ -9026,16 +12186,17 @@ const file_google_cloud_datastream_v1_datastream_resources_proto_rawDesc = "" +
 	"\fdisplay_name\x18\x05 \x01(\tB\x03\xe0A\x02R\vdisplayName\x12>\n" +
 	"\x06errors\x18\x06 \x03(\v2!.google.cloud.datastream.v1.ErrorB\x03\xe0A\x03R\x06errors\x12J\n" +
 	"\fbackfill_job\x18\a \x01(\v2'.google.cloud.datastream.v1.BackfillJobR\vbackfillJob\x12W\n" +
-	"\rsource_object\x18\b \x01(\v22.google.cloud.datastream.v1.SourceObjectIdentifierR\fsourceObject:v\xeaAs\n" +
-	"&datastream.googleapis.com/StreamObject\x12Iprojects/{project}/locations/{location}/streams/{stream}/objects/{object}\"\xa5\n" +
-	"\n" +
+	"\rsource_object\x18\b \x01(\v22.google.cloud.datastream.v1.SourceObjectIdentifierR\fsourceObject\x12r\n" +
+	"\x13customization_rules\x18\t \x03(\v2<.google.cloud.datastream.v1.Stream.RuleSet.CustomizationRuleB\x03\xe0A\x03R\x12customizationRules:v\xeaAs\n" +
+	"&datastream.googleapis.com/StreamObject\x12Iprojects/{project}/locations/{location}/streams/{stream}/objects/{object}\"\xf5\v\n" +
 	"\x16SourceObjectIdentifier\x12x\n" +
 	"\x11oracle_identifier\x18\x01 \x01(\v2I.google.cloud.datastream.v1.SourceObjectIdentifier.OracleObjectIdentifierH\x00R\x10oracleIdentifier\x12u\n" +
 	"\x10mysql_identifier\x18\x02 \x01(\v2H.google.cloud.datastream.v1.SourceObjectIdentifier.MysqlObjectIdentifierH\x00R\x0fmysqlIdentifier\x12\x84\x01\n" +
 	"\x15postgresql_identifier\x18\x03 \x01(\v2M.google.cloud.datastream.v1.SourceObjectIdentifier.PostgresqlObjectIdentifierH\x00R\x14postgresqlIdentifier\x12\x82\x01\n" +
 	"\x15sql_server_identifier\x18\x04 \x01(\v2L.google.cloud.datastream.v1.SourceObjectIdentifier.SqlServerObjectIdentifierH\x00R\x13sqlServerIdentifier\x12\x84\x01\n" +
 	"\x15salesforce_identifier\x18\x05 \x01(\v2M.google.cloud.datastream.v1.SourceObjectIdentifier.SalesforceObjectIdentifierH\x00R\x14salesforceIdentifier\x12{\n" +
-	"\x12mongodb_identifier\x18\x06 \x01(\v2J.google.cloud.datastream.v1.SourceObjectIdentifier.MongodbObjectIdentifierH\x00R\x11mongodbIdentifier\x1aP\n" +
+	"\x12mongodb_identifier\x18\x06 \x01(\v2J.google.cloud.datastream.v1.SourceObjectIdentifier.MongodbObjectIdentifierH\x00R\x11mongodbIdentifier\x12{\n" +
+	"\x12spanner_identifier\x18\a \x01(\v2J.google.cloud.datastream.v1.SourceObjectIdentifier.SpannerObjectIdentifierH\x00R\x11spannerIdentifier\x1aP\n" +
 	"\x16OracleObjectIdentifier\x12\x1b\n" +
 	"\x06schema\x18\x01 \x01(\tB\x03\xe0A\x02R\x06schema\x12\x19\n" +
 	"\x05table\x18\x02 \x01(\tB\x03\xe0A\x02R\x05table\x1aT\n" +
@@ -9055,14 +12216,18 @@ const file_google_cloud_datastream_v1_datastream_resources_proto_rawDesc = "" +
 	"\bdatabase\x18\x01 \x01(\tB\x03\xe0A\x02R\bdatabase\x12#\n" +
 	"\n" +
 	"collection\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
-	"collectionB\x13\n" +
-	"\x11source_identifier\"\xb3\x04\n" +
+	"collection\x1aQ\n" +
+	"\x17SpannerObjectIdentifier\x12\x1b\n" +
+	"\x06schema\x18\x01 \x01(\tB\x03\xe0A\x01R\x06schema\x12\x19\n" +
+	"\x05table\x18\x02 \x01(\tB\x03\xe0A\x02R\x05tableB\x13\n" +
+	"\x11source_identifier\"\x84\x05\n" +
 	"\vBackfillJob\x12H\n" +
 	"\x05state\x18\x01 \x01(\x0e2-.google.cloud.datastream.v1.BackfillJob.StateB\x03\xe0A\x03R\x05state\x12I\n" +
 	"\atrigger\x18\x02 \x01(\x0e2/.google.cloud.datastream.v1.BackfillJob.TriggerR\atrigger\x12G\n" +
 	"\x0flast_start_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\rlastStartTime\x12C\n" +
 	"\rlast_end_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\vlastEndTime\x12>\n" +
-	"\x06errors\x18\x05 \x03(\v2!.google.cloud.datastream.v1.ErrorB\x03\xe0A\x03R\x06errors\"\x81\x01\n" +
+	"\x06errors\x18\x05 \x03(\v2!.google.cloud.datastream.v1.ErrorB\x03\xe0A\x03R\x06errors\x12O\n" +
+	"\fevent_filter\x18\a \x01(\v2'.google.cloud.datastream.v1.EventFilterB\x03\xe0A\x03R\veventFilter\"\x81\x01\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vNOT_STARTED\x10\x01\x12\v\n" +
@@ -9078,7 +12243,10 @@ const file_google_cloud_datastream_v1_datastream_resources_proto_rawDesc = "" +
 	"\x13TRIGGER_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tAUTOMATIC\x10\x01\x12\n" +
 	"\n" +
-	"\x06MANUAL\x10\x02\"\x99\x02\n" +
+	"\x06MANUAL\x10\x02\"C\n" +
+	"\vEventFilter\x12*\n" +
+	"\x10sql_where_clause\x18\x01 \x01(\tH\x00R\x0esqlWhereClauseB\b\n" +
+	"\x06filter\"\x99\x02\n" +
 	"\x05Error\x12\x16\n" +
 	"\x06reason\x18\x01 \x01(\tR\x06reason\x12\x1d\n" +
 	"\n" +
@@ -9117,18 +12285,20 @@ const file_google_cloud_datastream_v1_datastream_resources_proto_rawDesc = "" +
 	"\x05Level\x12\x15\n" +
 	"\x11LEVEL_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aWARNING\x10\x01\x12\t\n" +
-	"\x05ERROR\x10\x02\"\x9c\a\n" +
+	"\x05ERROR\x10\x02\"\xa2\t\n" +
 	"\vCdcStrategy\x12\x83\x01\n" +
 	"\x1amost_recent_start_position\x18e \x01(\v2?.google.cloud.datastream.v1.CdcStrategy.MostRecentStartPositionB\x03\xe0A\x01H\x00R\x17mostRecentStartPosition\x12\x8c\x01\n" +
 	"\x1dnext_available_start_position\x18f \x01(\v2B.google.cloud.datastream.v1.CdcStrategy.NextAvailableStartPositionB\x03\xe0A\x01H\x00R\x1anextAvailableStartPosition\x12|\n" +
 	"\x17specific_start_position\x18g \x01(\v2=.google.cloud.datastream.v1.CdcStrategy.SpecificStartPositionB\x03\xe0A\x01H\x00R\x15specificStartPosition\x1a\x19\n" +
 	"\x17MostRecentStartPosition\x1a\x1c\n" +
-	"\x1aNextAvailableStartPosition\x1a\xae\x03\n" +
+	"\x1aNextAvailableStartPosition\x1a\xb4\x05\n" +
 	"\x15SpecificStartPosition\x12\\\n" +
 	"\x12mysql_log_position\x18e \x01(\v2,.google.cloud.datastream.v1.MysqlLogPositionH\x00R\x10mysqlLogPosition\x12_\n" +
 	"\x13oracle_scn_position\x18f \x01(\v2-.google.cloud.datastream.v1.OracleScnPositionH\x00R\x11oracleScnPosition\x12i\n" +
 	"\x17sql_server_lsn_position\x18g \x01(\v20.google.cloud.datastream.v1.SqlServerLsnPositionH\x00R\x14sqlServerLsnPosition\x12_\n" +
-	"\x13mysql_gtid_position\x18h \x01(\v2-.google.cloud.datastream.v1.MysqlGtidPositionH\x00R\x11mysqlGtidPositionB\n" +
+	"\x13mysql_gtid_position\x18h \x01(\v2-.google.cloud.datastream.v1.MysqlGtidPositionH\x00R\x11mysqlGtidPosition\x12~\n" +
+	"\x1emongodb_change_stream_position\x18i \x01(\v27.google.cloud.datastream.v1.MongodbChangeStreamPositionH\x00R\x1bmongodbChangeStreamPosition\x12\x83\x01\n" +
+	"\x1espanner_change_stream_position\x18j \x01(\v27.google.cloud.datastream.v1.SpannerChangeStreamPositionB\x03\xe0A\x01H\x00R\x1bspannerChangeStreamPositionB\n" +
 	"\n" +
 	"\bpositionB\x10\n" +
 	"\x0estart_position\"-\n" +
@@ -9141,9 +12311,27 @@ const file_google_cloud_datastream_v1_datastream_resources_proto_rawDesc = "" +
 	"\flog_position\x18\x02 \x01(\x05B\x03\xe0A\x01H\x00R\vlogPosition\x88\x01\x01B\x0f\n" +
 	"\r_log_position\"3\n" +
 	"\x11MysqlGtidPosition\x12\x1e\n" +
-	"\bgtid_set\x18\x01 \x01(\tB\x03\xe0A\x02R\agtidSetB\xa2\x03\xeaAO\n" +
+	"\bgtid_set\x18\x01 \x01(\tB\x03\xe0A\x02R\agtidSet\"]\n" +
+	"\x1bMongodbChangeStreamPosition\x12>\n" +
+	"\n" +
+	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x02R\tstartTime\"]\n" +
+	"\x1bSpannerChangeStreamPosition\x12>\n" +
+	"\n" +
+	"start_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x02R\tstartTime*O\n" +
+	"\x0fMongodbJsonMode\x12!\n" +
+	"\x1dMONGODB_JSON_MODE_UNSPECIFIED\x10\x00\x12\n" +
+	"\n" +
+	"\x06STRICT\x10\x01\x12\r\n" +
+	"\tCANONICAL\x10\x02*\xec\x01\n" +
+	"\x1bPartitioningTimeGranularity\x12-\n" +
+	")PARTITIONING_TIME_GRANULARITY_UNSPECIFIED\x10\x00\x12&\n" +
+	"\"PARTITIONING_TIME_GRANULARITY_HOUR\x10\x01\x12%\n" +
+	"!PARTITIONING_TIME_GRANULARITY_DAY\x10\x02\x12'\n" +
+	"#PARTITIONING_TIME_GRANULARITY_MONTH\x10\x03\x12&\n" +
+	"\"PARTITIONING_TIME_GRANULARITY_YEAR\x10\x04B\x84\x04\xeaAO\n" +
 	"\x1fcompute.googleapis.com/Networks\x12,projects/{project}/global/networks/{network}\xeaAw\n" +
-	"(compute.googleapis.com/NetworkAttachment\x12Kprojects/{project}/regions/{region}/networkAttachments/{network_attachment}\n" +
+	"(compute.googleapis.com/NetworkAttachment\x12Kprojects/{project}/regions/{region}/networkAttachments/{network_attachment}\xeaA_\n" +
+	"\x1fspanner.googleapis.com/Database\x12<projects/{project}/instances/{instance}/databases/{database}\n" +
 	"\x1ecom.google.cloud.datastream.v1B\x18DatastreamResourcesProtoP\x01Z>cloud.google.com/go/datastream/apiv1/datastreampb;datastreampb\xaa\x02\x1aGoogle.Cloud.Datastream.V1\xca\x02\x1aGoogle\\Cloud\\Datastream\\V1\xea\x02\x1dGoogle::Cloud::Datastream::V1b\x06proto3"
 
 var (
@@ -9158,286 +12346,396 @@ func file_google_cloud_datastream_v1_datastream_resources_proto_rawDescGZIP() []
 	return file_google_cloud_datastream_v1_datastream_resources_proto_rawDescData
 }
 
-var file_google_cloud_datastream_v1_datastream_resources_proto_enumTypes = make([]protoimpl.EnumInfo, 10)
-var file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes = make([]protoimpl.MessageInfo, 111)
+var file_google_cloud_datastream_v1_datastream_resources_proto_enumTypes = make([]protoimpl.EnumInfo, 13)
+var file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes = make([]protoimpl.MessageInfo, 150)
 var file_google_cloud_datastream_v1_datastream_resources_proto_goTypes = []any{
-	(PrivateConnection_State)(0),                          // 0: google.cloud.datastream.v1.PrivateConnection.State
-	(JsonFileFormat_SchemaFileFormat)(0),                  // 1: google.cloud.datastream.v1.JsonFileFormat.SchemaFileFormat
-	(JsonFileFormat_JsonCompression)(0),                   // 2: google.cloud.datastream.v1.JsonFileFormat.JsonCompression
-	(BigQueryDestinationConfig_BlmtConfig_FileFormat)(0),  // 3: google.cloud.datastream.v1.BigQueryDestinationConfig.BlmtConfig.FileFormat
-	(BigQueryDestinationConfig_BlmtConfig_TableFormat)(0), // 4: google.cloud.datastream.v1.BigQueryDestinationConfig.BlmtConfig.TableFormat
-	(Stream_State)(0),                                     // 5: google.cloud.datastream.v1.Stream.State
-	(BackfillJob_State)(0),                                // 6: google.cloud.datastream.v1.BackfillJob.State
-	(BackfillJob_Trigger)(0),                              // 7: google.cloud.datastream.v1.BackfillJob.Trigger
-	(Validation_State)(0),                                 // 8: google.cloud.datastream.v1.Validation.State
-	(ValidationMessage_Level)(0),                          // 9: google.cloud.datastream.v1.ValidationMessage.Level
-	(*OracleProfile)(nil),                                 // 10: google.cloud.datastream.v1.OracleProfile
-	(*OracleAsmConfig)(nil),                               // 11: google.cloud.datastream.v1.OracleAsmConfig
-	(*MysqlProfile)(nil),                                  // 12: google.cloud.datastream.v1.MysqlProfile
-	(*PostgresqlProfile)(nil),                             // 13: google.cloud.datastream.v1.PostgresqlProfile
-	(*SqlServerProfile)(nil),                              // 14: google.cloud.datastream.v1.SqlServerProfile
-	(*SalesforceProfile)(nil),                             // 15: google.cloud.datastream.v1.SalesforceProfile
-	(*MongodbProfile)(nil),                                // 16: google.cloud.datastream.v1.MongodbProfile
-	(*HostAddress)(nil),                                   // 17: google.cloud.datastream.v1.HostAddress
-	(*SrvConnectionFormat)(nil),                           // 18: google.cloud.datastream.v1.SrvConnectionFormat
-	(*StandardConnectionFormat)(nil),                      // 19: google.cloud.datastream.v1.StandardConnectionFormat
-	(*GcsProfile)(nil),                                    // 20: google.cloud.datastream.v1.GcsProfile
-	(*BigQueryProfile)(nil),                               // 21: google.cloud.datastream.v1.BigQueryProfile
-	(*StaticServiceIpConnectivity)(nil),                   // 22: google.cloud.datastream.v1.StaticServiceIpConnectivity
-	(*ForwardSshTunnelConnectivity)(nil),                  // 23: google.cloud.datastream.v1.ForwardSshTunnelConnectivity
-	(*VpcPeeringConfig)(nil),                              // 24: google.cloud.datastream.v1.VpcPeeringConfig
-	(*PscInterfaceConfig)(nil),                            // 25: google.cloud.datastream.v1.PscInterfaceConfig
-	(*PrivateConnection)(nil),                             // 26: google.cloud.datastream.v1.PrivateConnection
-	(*PrivateConnectivity)(nil),                           // 27: google.cloud.datastream.v1.PrivateConnectivity
-	(*Route)(nil),                                         // 28: google.cloud.datastream.v1.Route
-	(*MongodbSslConfig)(nil),                              // 29: google.cloud.datastream.v1.MongodbSslConfig
-	(*MysqlSslConfig)(nil),                                // 30: google.cloud.datastream.v1.MysqlSslConfig
-	(*OracleSslConfig)(nil),                               // 31: google.cloud.datastream.v1.OracleSslConfig
-	(*PostgresqlSslConfig)(nil),                           // 32: google.cloud.datastream.v1.PostgresqlSslConfig
-	(*ConnectionProfile)(nil),                             // 33: google.cloud.datastream.v1.ConnectionProfile
-	(*OracleColumn)(nil),                                  // 34: google.cloud.datastream.v1.OracleColumn
-	(*OracleTable)(nil),                                   // 35: google.cloud.datastream.v1.OracleTable
-	(*OracleSchema)(nil),                                  // 36: google.cloud.datastream.v1.OracleSchema
-	(*OracleRdbms)(nil),                                   // 37: google.cloud.datastream.v1.OracleRdbms
-	(*OracleSourceConfig)(nil),                            // 38: google.cloud.datastream.v1.OracleSourceConfig
-	(*PostgresqlColumn)(nil),                              // 39: google.cloud.datastream.v1.PostgresqlColumn
-	(*PostgresqlTable)(nil),                               // 40: google.cloud.datastream.v1.PostgresqlTable
-	(*PostgresqlSchema)(nil),                              // 41: google.cloud.datastream.v1.PostgresqlSchema
-	(*PostgresqlRdbms)(nil),                               // 42: google.cloud.datastream.v1.PostgresqlRdbms
-	(*PostgresqlSourceConfig)(nil),                        // 43: google.cloud.datastream.v1.PostgresqlSourceConfig
-	(*SqlServerColumn)(nil),                               // 44: google.cloud.datastream.v1.SqlServerColumn
-	(*SqlServerTable)(nil),                                // 45: google.cloud.datastream.v1.SqlServerTable
-	(*SqlServerSchema)(nil),                               // 46: google.cloud.datastream.v1.SqlServerSchema
-	(*SqlServerRdbms)(nil),                                // 47: google.cloud.datastream.v1.SqlServerRdbms
-	(*SqlServerSourceConfig)(nil),                         // 48: google.cloud.datastream.v1.SqlServerSourceConfig
-	(*SqlServerTransactionLogs)(nil),                      // 49: google.cloud.datastream.v1.SqlServerTransactionLogs
-	(*SqlServerChangeTables)(nil),                         // 50: google.cloud.datastream.v1.SqlServerChangeTables
-	(*MysqlColumn)(nil),                                   // 51: google.cloud.datastream.v1.MysqlColumn
-	(*MysqlTable)(nil),                                    // 52: google.cloud.datastream.v1.MysqlTable
-	(*MysqlDatabase)(nil),                                 // 53: google.cloud.datastream.v1.MysqlDatabase
-	(*MysqlRdbms)(nil),                                    // 54: google.cloud.datastream.v1.MysqlRdbms
-	(*MysqlSourceConfig)(nil),                             // 55: google.cloud.datastream.v1.MysqlSourceConfig
-	(*SalesforceSourceConfig)(nil),                        // 56: google.cloud.datastream.v1.SalesforceSourceConfig
-	(*SalesforceOrg)(nil),                                 // 57: google.cloud.datastream.v1.SalesforceOrg
-	(*SalesforceObject)(nil),                              // 58: google.cloud.datastream.v1.SalesforceObject
-	(*SalesforceField)(nil),                               // 59: google.cloud.datastream.v1.SalesforceField
-	(*MongodbSourceConfig)(nil),                           // 60: google.cloud.datastream.v1.MongodbSourceConfig
-	(*MongodbCluster)(nil),                                // 61: google.cloud.datastream.v1.MongodbCluster
-	(*MongodbDatabase)(nil),                               // 62: google.cloud.datastream.v1.MongodbDatabase
-	(*MongodbCollection)(nil),                             // 63: google.cloud.datastream.v1.MongodbCollection
-	(*MongodbField)(nil),                                  // 64: google.cloud.datastream.v1.MongodbField
-	(*SourceConfig)(nil),                                  // 65: google.cloud.datastream.v1.SourceConfig
-	(*AvroFileFormat)(nil),                                // 66: google.cloud.datastream.v1.AvroFileFormat
-	(*JsonFileFormat)(nil),                                // 67: google.cloud.datastream.v1.JsonFileFormat
-	(*GcsDestinationConfig)(nil),                          // 68: google.cloud.datastream.v1.GcsDestinationConfig
-	(*BigQueryDestinationConfig)(nil),                     // 69: google.cloud.datastream.v1.BigQueryDestinationConfig
-	(*DestinationConfig)(nil),                             // 70: google.cloud.datastream.v1.DestinationConfig
-	(*Stream)(nil),                                        // 71: google.cloud.datastream.v1.Stream
-	(*StreamObject)(nil),                                  // 72: google.cloud.datastream.v1.StreamObject
-	(*SourceObjectIdentifier)(nil),                        // 73: google.cloud.datastream.v1.SourceObjectIdentifier
-	(*BackfillJob)(nil),                                   // 74: google.cloud.datastream.v1.BackfillJob
-	(*Error)(nil),                                         // 75: google.cloud.datastream.v1.Error
-	(*ValidationResult)(nil),                              // 76: google.cloud.datastream.v1.ValidationResult
-	(*Validation)(nil),                                    // 77: google.cloud.datastream.v1.Validation
-	(*ValidationMessage)(nil),                             // 78: google.cloud.datastream.v1.ValidationMessage
-	(*CdcStrategy)(nil),                                   // 79: google.cloud.datastream.v1.CdcStrategy
-	(*SqlServerLsnPosition)(nil),                          // 80: google.cloud.datastream.v1.SqlServerLsnPosition
-	(*OracleScnPosition)(nil),                             // 81: google.cloud.datastream.v1.OracleScnPosition
-	(*MysqlLogPosition)(nil),                              // 82: google.cloud.datastream.v1.MysqlLogPosition
-	(*MysqlGtidPosition)(nil),                             // 83: google.cloud.datastream.v1.MysqlGtidPosition
-	nil,                                                   // 84: google.cloud.datastream.v1.OracleProfile.ConnectionAttributesEntry
-	nil,                                                   // 85: google.cloud.datastream.v1.OracleAsmConfig.ConnectionAttributesEntry
-	(*SalesforceProfile_UserCredentials)(nil),             // 86: google.cloud.datastream.v1.SalesforceProfile.UserCredentials
-	(*SalesforceProfile_Oauth2ClientCredentials)(nil),     // 87: google.cloud.datastream.v1.SalesforceProfile.Oauth2ClientCredentials
-	nil, // 88: google.cloud.datastream.v1.PrivateConnection.LabelsEntry
-	nil, // 89: google.cloud.datastream.v1.Route.LabelsEntry
-	(*PostgresqlSslConfig_ServerVerification)(nil),          // 90: google.cloud.datastream.v1.PostgresqlSslConfig.ServerVerification
-	(*PostgresqlSslConfig_ServerAndClientVerification)(nil), // 91: google.cloud.datastream.v1.PostgresqlSslConfig.ServerAndClientVerification
-	nil, // 92: google.cloud.datastream.v1.ConnectionProfile.LabelsEntry
-	(*OracleSourceConfig_DropLargeObjects)(nil),                               // 93: google.cloud.datastream.v1.OracleSourceConfig.DropLargeObjects
-	(*OracleSourceConfig_StreamLargeObjects)(nil),                             // 94: google.cloud.datastream.v1.OracleSourceConfig.StreamLargeObjects
-	(*OracleSourceConfig_LogMiner)(nil),                                       // 95: google.cloud.datastream.v1.OracleSourceConfig.LogMiner
-	(*OracleSourceConfig_BinaryLogParser)(nil),                                // 96: google.cloud.datastream.v1.OracleSourceConfig.BinaryLogParser
-	(*OracleSourceConfig_BinaryLogParser_OracleAsmLogFileAccess)(nil),         // 97: google.cloud.datastream.v1.OracleSourceConfig.BinaryLogParser.OracleAsmLogFileAccess
-	(*OracleSourceConfig_BinaryLogParser_LogFileDirectories)(nil),             // 98: google.cloud.datastream.v1.OracleSourceConfig.BinaryLogParser.LogFileDirectories
-	(*MysqlSourceConfig_BinaryLogPosition)(nil),                               // 99: google.cloud.datastream.v1.MysqlSourceConfig.BinaryLogPosition
-	(*MysqlSourceConfig_Gtid)(nil),                                            // 100: google.cloud.datastream.v1.MysqlSourceConfig.Gtid
-	(*BigQueryDestinationConfig_SingleTargetDataset)(nil),                     // 101: google.cloud.datastream.v1.BigQueryDestinationConfig.SingleTargetDataset
-	(*BigQueryDestinationConfig_SourceHierarchyDatasets)(nil),                 // 102: google.cloud.datastream.v1.BigQueryDestinationConfig.SourceHierarchyDatasets
-	(*BigQueryDestinationConfig_BlmtConfig)(nil),                              // 103: google.cloud.datastream.v1.BigQueryDestinationConfig.BlmtConfig
-	(*BigQueryDestinationConfig_AppendOnly)(nil),                              // 104: google.cloud.datastream.v1.BigQueryDestinationConfig.AppendOnly
-	(*BigQueryDestinationConfig_Merge)(nil),                                   // 105: google.cloud.datastream.v1.BigQueryDestinationConfig.Merge
-	(*BigQueryDestinationConfig_SourceHierarchyDatasets_DatasetTemplate)(nil), // 106: google.cloud.datastream.v1.BigQueryDestinationConfig.SourceHierarchyDatasets.DatasetTemplate
-	(*Stream_BackfillAllStrategy)(nil),                                        // 107: google.cloud.datastream.v1.Stream.BackfillAllStrategy
-	(*Stream_BackfillNoneStrategy)(nil),                                       // 108: google.cloud.datastream.v1.Stream.BackfillNoneStrategy
-	nil,                                                                       // 109: google.cloud.datastream.v1.Stream.LabelsEntry
-	(*SourceObjectIdentifier_OracleObjectIdentifier)(nil),                     // 110: google.cloud.datastream.v1.SourceObjectIdentifier.OracleObjectIdentifier
-	(*SourceObjectIdentifier_PostgresqlObjectIdentifier)(nil),                 // 111: google.cloud.datastream.v1.SourceObjectIdentifier.PostgresqlObjectIdentifier
-	(*SourceObjectIdentifier_MysqlObjectIdentifier)(nil),                      // 112: google.cloud.datastream.v1.SourceObjectIdentifier.MysqlObjectIdentifier
-	(*SourceObjectIdentifier_SqlServerObjectIdentifier)(nil),                  // 113: google.cloud.datastream.v1.SourceObjectIdentifier.SqlServerObjectIdentifier
-	(*SourceObjectIdentifier_SalesforceObjectIdentifier)(nil),                 // 114: google.cloud.datastream.v1.SourceObjectIdentifier.SalesforceObjectIdentifier
-	(*SourceObjectIdentifier_MongodbObjectIdentifier)(nil),                    // 115: google.cloud.datastream.v1.SourceObjectIdentifier.MongodbObjectIdentifier
-	nil, // 116: google.cloud.datastream.v1.Error.DetailsEntry
-	nil, // 117: google.cloud.datastream.v1.ValidationMessage.MetadataEntry
-	(*CdcStrategy_MostRecentStartPosition)(nil),    // 118: google.cloud.datastream.v1.CdcStrategy.MostRecentStartPosition
-	(*CdcStrategy_NextAvailableStartPosition)(nil), // 119: google.cloud.datastream.v1.CdcStrategy.NextAvailableStartPosition
-	(*CdcStrategy_SpecificStartPosition)(nil),      // 120: google.cloud.datastream.v1.CdcStrategy.SpecificStartPosition
-	(*timestamppb.Timestamp)(nil),                  // 121: google.protobuf.Timestamp
-	(*durationpb.Duration)(nil),                    // 122: google.protobuf.Duration
+	(MongodbJsonMode)(0),                                  // 0: google.cloud.datastream.v1.MongodbJsonMode
+	(PartitioningTimeGranularity)(0),                      // 1: google.cloud.datastream.v1.PartitioningTimeGranularity
+	(PrivateConnection_State)(0),                          // 2: google.cloud.datastream.v1.PrivateConnection.State
+	(SpannerSourceConfig_SpannerRpcPriority)(0),           // 3: google.cloud.datastream.v1.SpannerSourceConfig.SpannerRpcPriority
+	(JsonFileFormat_SchemaFileFormat)(0),                  // 4: google.cloud.datastream.v1.JsonFileFormat.SchemaFileFormat
+	(JsonFileFormat_JsonCompression)(0),                   // 5: google.cloud.datastream.v1.JsonFileFormat.JsonCompression
+	(BigQueryDestinationConfig_BlmtConfig_FileFormat)(0),  // 6: google.cloud.datastream.v1.BigQueryDestinationConfig.BlmtConfig.FileFormat
+	(BigQueryDestinationConfig_BlmtConfig_TableFormat)(0), // 7: google.cloud.datastream.v1.BigQueryDestinationConfig.BlmtConfig.TableFormat
+	(Stream_State)(0),                                     // 8: google.cloud.datastream.v1.Stream.State
+	(BackfillJob_State)(0),                                // 9: google.cloud.datastream.v1.BackfillJob.State
+	(BackfillJob_Trigger)(0),                              // 10: google.cloud.datastream.v1.BackfillJob.Trigger
+	(Validation_State)(0),                                 // 11: google.cloud.datastream.v1.Validation.State
+	(ValidationMessage_Level)(0),                          // 12: google.cloud.datastream.v1.ValidationMessage.Level
+	(*OracleProfile)(nil),                                 // 13: google.cloud.datastream.v1.OracleProfile
+	(*OracleAsmConfig)(nil),                               // 14: google.cloud.datastream.v1.OracleAsmConfig
+	(*MysqlProfile)(nil),                                  // 15: google.cloud.datastream.v1.MysqlProfile
+	(*PostgresqlProfile)(nil),                             // 16: google.cloud.datastream.v1.PostgresqlProfile
+	(*SqlServerProfile)(nil),                              // 17: google.cloud.datastream.v1.SqlServerProfile
+	(*SalesforceProfile)(nil),                             // 18: google.cloud.datastream.v1.SalesforceProfile
+	(*MongodbProfile)(nil),                                // 19: google.cloud.datastream.v1.MongodbProfile
+	(*HostAddress)(nil),                                   // 20: google.cloud.datastream.v1.HostAddress
+	(*SpannerProfile)(nil),                                // 21: google.cloud.datastream.v1.SpannerProfile
+	(*OauthClientCredentials)(nil),                        // 22: google.cloud.datastream.v1.OauthClientCredentials
+	(*OauthRefreshTokenCredentials)(nil),                  // 23: google.cloud.datastream.v1.OauthRefreshTokenCredentials
+	(*UserPasswordCredentials)(nil),                       // 24: google.cloud.datastream.v1.UserPasswordCredentials
+	(*SalesforceMarketingCloudProfile)(nil),               // 25: google.cloud.datastream.v1.SalesforceMarketingCloudProfile
+	(*DataverseProfile)(nil),                              // 26: google.cloud.datastream.v1.DataverseProfile
+	(*ServiceNowProfile)(nil),                             // 27: google.cloud.datastream.v1.ServiceNowProfile
+	(*WorkdayProfile)(nil),                                // 28: google.cloud.datastream.v1.WorkdayProfile
+	(*SrvConnectionFormat)(nil),                           // 29: google.cloud.datastream.v1.SrvConnectionFormat
+	(*StandardConnectionFormat)(nil),                      // 30: google.cloud.datastream.v1.StandardConnectionFormat
+	(*GcsProfile)(nil),                                    // 31: google.cloud.datastream.v1.GcsProfile
+	(*BigQueryProfile)(nil),                               // 32: google.cloud.datastream.v1.BigQueryProfile
+	(*StaticServiceIpConnectivity)(nil),                   // 33: google.cloud.datastream.v1.StaticServiceIpConnectivity
+	(*ForwardSshTunnelConnectivity)(nil),                  // 34: google.cloud.datastream.v1.ForwardSshTunnelConnectivity
+	(*VpcPeeringConfig)(nil),                              // 35: google.cloud.datastream.v1.VpcPeeringConfig
+	(*PscInterfaceConfig)(nil),                            // 36: google.cloud.datastream.v1.PscInterfaceConfig
+	(*PrivateConnection)(nil),                             // 37: google.cloud.datastream.v1.PrivateConnection
+	(*PrivateConnectivity)(nil),                           // 38: google.cloud.datastream.v1.PrivateConnectivity
+	(*Route)(nil),                                         // 39: google.cloud.datastream.v1.Route
+	(*Secret)(nil),                                        // 40: google.cloud.datastream.v1.Secret
+	(*MongodbSslConfig)(nil),                              // 41: google.cloud.datastream.v1.MongodbSslConfig
+	(*MysqlSslConfig)(nil),                                // 42: google.cloud.datastream.v1.MysqlSslConfig
+	(*OracleSslConfig)(nil),                               // 43: google.cloud.datastream.v1.OracleSslConfig
+	(*SqlServerSslConfig)(nil),                            // 44: google.cloud.datastream.v1.SqlServerSslConfig
+	(*PostgresqlSslConfig)(nil),                           // 45: google.cloud.datastream.v1.PostgresqlSslConfig
+	(*ConnectionProfile)(nil),                             // 46: google.cloud.datastream.v1.ConnectionProfile
+	(*OracleColumn)(nil),                                  // 47: google.cloud.datastream.v1.OracleColumn
+	(*OracleTable)(nil),                                   // 48: google.cloud.datastream.v1.OracleTable
+	(*OracleSchema)(nil),                                  // 49: google.cloud.datastream.v1.OracleSchema
+	(*OracleRdbms)(nil),                                   // 50: google.cloud.datastream.v1.OracleRdbms
+	(*OracleSourceConfig)(nil),                            // 51: google.cloud.datastream.v1.OracleSourceConfig
+	(*PostgresqlColumn)(nil),                              // 52: google.cloud.datastream.v1.PostgresqlColumn
+	(*PostgresqlTable)(nil),                               // 53: google.cloud.datastream.v1.PostgresqlTable
+	(*PostgresqlSchema)(nil),                              // 54: google.cloud.datastream.v1.PostgresqlSchema
+	(*PostgresqlRdbms)(nil),                               // 55: google.cloud.datastream.v1.PostgresqlRdbms
+	(*PostgresqlSourceConfig)(nil),                        // 56: google.cloud.datastream.v1.PostgresqlSourceConfig
+	(*SqlServerColumn)(nil),                               // 57: google.cloud.datastream.v1.SqlServerColumn
+	(*SqlServerTable)(nil),                                // 58: google.cloud.datastream.v1.SqlServerTable
+	(*SqlServerSchema)(nil),                               // 59: google.cloud.datastream.v1.SqlServerSchema
+	(*SqlServerRdbms)(nil),                                // 60: google.cloud.datastream.v1.SqlServerRdbms
+	(*SqlServerSourceConfig)(nil),                         // 61: google.cloud.datastream.v1.SqlServerSourceConfig
+	(*SqlServerTransactionLogs)(nil),                      // 62: google.cloud.datastream.v1.SqlServerTransactionLogs
+	(*SqlServerChangeTables)(nil),                         // 63: google.cloud.datastream.v1.SqlServerChangeTables
+	(*MysqlColumn)(nil),                                   // 64: google.cloud.datastream.v1.MysqlColumn
+	(*MysqlTable)(nil),                                    // 65: google.cloud.datastream.v1.MysqlTable
+	(*MysqlDatabase)(nil),                                 // 66: google.cloud.datastream.v1.MysqlDatabase
+	(*MysqlRdbms)(nil),                                    // 67: google.cloud.datastream.v1.MysqlRdbms
+	(*MysqlSourceConfig)(nil),                             // 68: google.cloud.datastream.v1.MysqlSourceConfig
+	(*SalesforceSourceConfig)(nil),                        // 69: google.cloud.datastream.v1.SalesforceSourceConfig
+	(*SalesforceOrg)(nil),                                 // 70: google.cloud.datastream.v1.SalesforceOrg
+	(*SalesforceObject)(nil),                              // 71: google.cloud.datastream.v1.SalesforceObject
+	(*SalesforceField)(nil),                               // 72: google.cloud.datastream.v1.SalesforceField
+	(*MongodbSourceConfig)(nil),                           // 73: google.cloud.datastream.v1.MongodbSourceConfig
+	(*MongodbCluster)(nil),                                // 74: google.cloud.datastream.v1.MongodbCluster
+	(*MongodbDatabase)(nil),                               // 75: google.cloud.datastream.v1.MongodbDatabase
+	(*MongodbCollection)(nil),                             // 76: google.cloud.datastream.v1.MongodbCollection
+	(*MongodbField)(nil),                                  // 77: google.cloud.datastream.v1.MongodbField
+	(*SpannerSourceConfig)(nil),                           // 78: google.cloud.datastream.v1.SpannerSourceConfig
+	(*SpannerDatabase)(nil),                               // 79: google.cloud.datastream.v1.SpannerDatabase
+	(*SpannerSchema)(nil),                                 // 80: google.cloud.datastream.v1.SpannerSchema
+	(*SpannerTable)(nil),                                  // 81: google.cloud.datastream.v1.SpannerTable
+	(*SpannerColumn)(nil),                                 // 82: google.cloud.datastream.v1.SpannerColumn
+	(*DataverseSourceConfig)(nil),                         // 83: google.cloud.datastream.v1.DataverseSourceConfig
+	(*SalesforceMarketingCloudSourceConfig)(nil),          // 84: google.cloud.datastream.v1.SalesforceMarketingCloudSourceConfig
+	(*ServiceNowSourceConfig)(nil),                        // 85: google.cloud.datastream.v1.ServiceNowSourceConfig
+	(*WorkdaySourceConfig)(nil),                           // 86: google.cloud.datastream.v1.WorkdaySourceConfig
+	(*SourceCatalog)(nil),                                 // 87: google.cloud.datastream.v1.SourceCatalog
+	(*SourceObject)(nil),                                  // 88: google.cloud.datastream.v1.SourceObject
+	(*SourceProperty)(nil),                                // 89: google.cloud.datastream.v1.SourceProperty
+	(*SourceConfig)(nil),                                  // 90: google.cloud.datastream.v1.SourceConfig
+	(*AvroFileFormat)(nil),                                // 91: google.cloud.datastream.v1.AvroFileFormat
+	(*JsonFileFormat)(nil),                                // 92: google.cloud.datastream.v1.JsonFileFormat
+	(*BigQueryClustering)(nil),                            // 93: google.cloud.datastream.v1.BigQueryClustering
+	(*IngestionTimePartition)(nil),                        // 94: google.cloud.datastream.v1.IngestionTimePartition
+	(*TimeUnitPartition)(nil),                             // 95: google.cloud.datastream.v1.TimeUnitPartition
+	(*IntegerRangePartition)(nil),                         // 96: google.cloud.datastream.v1.IntegerRangePartition
+	(*BigQueryPartitioning)(nil),                          // 97: google.cloud.datastream.v1.BigQueryPartitioning
+	(*GcsDestinationConfig)(nil),                          // 98: google.cloud.datastream.v1.GcsDestinationConfig
+	(*BigQueryDestinationConfig)(nil),                     // 99: google.cloud.datastream.v1.BigQueryDestinationConfig
+	(*DestinationConfig)(nil),                             // 100: google.cloud.datastream.v1.DestinationConfig
+	(*Stream)(nil),                                        // 101: google.cloud.datastream.v1.Stream
+	(*StreamObject)(nil),                                  // 102: google.cloud.datastream.v1.StreamObject
+	(*SourceObjectIdentifier)(nil),                        // 103: google.cloud.datastream.v1.SourceObjectIdentifier
+	(*BackfillJob)(nil),                                   // 104: google.cloud.datastream.v1.BackfillJob
+	(*EventFilter)(nil),                                   // 105: google.cloud.datastream.v1.EventFilter
+	(*Error)(nil),                                         // 106: google.cloud.datastream.v1.Error
+	(*ValidationResult)(nil),                              // 107: google.cloud.datastream.v1.ValidationResult
+	(*Validation)(nil),                                    // 108: google.cloud.datastream.v1.Validation
+	(*ValidationMessage)(nil),                             // 109: google.cloud.datastream.v1.ValidationMessage
+	(*CdcStrategy)(nil),                                   // 110: google.cloud.datastream.v1.CdcStrategy
+	(*SqlServerLsnPosition)(nil),                          // 111: google.cloud.datastream.v1.SqlServerLsnPosition
+	(*OracleScnPosition)(nil),                             // 112: google.cloud.datastream.v1.OracleScnPosition
+	(*MysqlLogPosition)(nil),                              // 113: google.cloud.datastream.v1.MysqlLogPosition
+	(*MysqlGtidPosition)(nil),                             // 114: google.cloud.datastream.v1.MysqlGtidPosition
+	(*MongodbChangeStreamPosition)(nil),                   // 115: google.cloud.datastream.v1.MongodbChangeStreamPosition
+	(*SpannerChangeStreamPosition)(nil),                   // 116: google.cloud.datastream.v1.SpannerChangeStreamPosition
+	nil,                                                   // 117: google.cloud.datastream.v1.OracleProfile.ConnectionAttributesEntry
+	nil,                                                   // 118: google.cloud.datastream.v1.OracleAsmConfig.ConnectionAttributesEntry
+	(*SalesforceProfile_UserCredentials)(nil),             // 119: google.cloud.datastream.v1.SalesforceProfile.UserCredentials
+	(*SalesforceProfile_Oauth2ClientCredentials)(nil),     // 120: google.cloud.datastream.v1.SalesforceProfile.Oauth2ClientCredentials
+	nil, // 121: google.cloud.datastream.v1.MongodbProfile.AdditionalOptionsEntry
+	nil, // 122: google.cloud.datastream.v1.PrivateConnection.LabelsEntry
+	nil, // 123: google.cloud.datastream.v1.Route.LabelsEntry
+	(*SqlServerSslConfig_EncryptionNotEnforced)(nil),         // 124: google.cloud.datastream.v1.SqlServerSslConfig.EncryptionNotEnforced
+	(*SqlServerSslConfig_BasicEncryption)(nil),               // 125: google.cloud.datastream.v1.SqlServerSslConfig.BasicEncryption
+	(*SqlServerSslConfig_EncryptionAndServerValidation)(nil), // 126: google.cloud.datastream.v1.SqlServerSslConfig.EncryptionAndServerValidation
+	(*PostgresqlSslConfig_ServerVerification)(nil),           // 127: google.cloud.datastream.v1.PostgresqlSslConfig.ServerVerification
+	(*PostgresqlSslConfig_ServerAndClientVerification)(nil),  // 128: google.cloud.datastream.v1.PostgresqlSslConfig.ServerAndClientVerification
+	nil, // 129: google.cloud.datastream.v1.ConnectionProfile.LabelsEntry
+	(*OracleSourceConfig_DropLargeObjects)(nil),                               // 130: google.cloud.datastream.v1.OracleSourceConfig.DropLargeObjects
+	(*OracleSourceConfig_StreamLargeObjects)(nil),                             // 131: google.cloud.datastream.v1.OracleSourceConfig.StreamLargeObjects
+	(*OracleSourceConfig_LogMiner)(nil),                                       // 132: google.cloud.datastream.v1.OracleSourceConfig.LogMiner
+	(*OracleSourceConfig_BinaryLogParser)(nil),                                // 133: google.cloud.datastream.v1.OracleSourceConfig.BinaryLogParser
+	(*OracleSourceConfig_BinaryLogParser_OracleAsmLogFileAccess)(nil),         // 134: google.cloud.datastream.v1.OracleSourceConfig.BinaryLogParser.OracleAsmLogFileAccess
+	(*OracleSourceConfig_BinaryLogParser_LogFileDirectories)(nil),             // 135: google.cloud.datastream.v1.OracleSourceConfig.BinaryLogParser.LogFileDirectories
+	(*SqlServerChangeTables_SqlServerDdlConfig)(nil),                          // 136: google.cloud.datastream.v1.SqlServerChangeTables.SqlServerDdlConfig
+	(*MysqlSourceConfig_BinaryLogPosition)(nil),                               // 137: google.cloud.datastream.v1.MysqlSourceConfig.BinaryLogPosition
+	(*MysqlSourceConfig_Gtid)(nil),                                            // 138: google.cloud.datastream.v1.MysqlSourceConfig.Gtid
+	(*BigQueryDestinationConfig_SingleTargetDataset)(nil),                     // 139: google.cloud.datastream.v1.BigQueryDestinationConfig.SingleTargetDataset
+	(*BigQueryDestinationConfig_SourceHierarchyDatasets)(nil),                 // 140: google.cloud.datastream.v1.BigQueryDestinationConfig.SourceHierarchyDatasets
+	(*BigQueryDestinationConfig_BlmtConfig)(nil),                              // 141: google.cloud.datastream.v1.BigQueryDestinationConfig.BlmtConfig
+	(*BigQueryDestinationConfig_AppendOnly)(nil),                              // 142: google.cloud.datastream.v1.BigQueryDestinationConfig.AppendOnly
+	(*BigQueryDestinationConfig_Merge)(nil),                                   // 143: google.cloud.datastream.v1.BigQueryDestinationConfig.Merge
+	(*BigQueryDestinationConfig_SourceHierarchyDatasets_DatasetTemplate)(nil), // 144: google.cloud.datastream.v1.BigQueryDestinationConfig.SourceHierarchyDatasets.DatasetTemplate
+	(*Stream_BackfillAllStrategy)(nil),                                        // 145: google.cloud.datastream.v1.Stream.BackfillAllStrategy
+	(*Stream_BackfillNoneStrategy)(nil),                                       // 146: google.cloud.datastream.v1.Stream.BackfillNoneStrategy
+	(*Stream_RuleSet)(nil),                                                    // 147: google.cloud.datastream.v1.Stream.RuleSet
+	nil,                                                                       // 148: google.cloud.datastream.v1.Stream.LabelsEntry
+	(*Stream_RuleSet_ObjectFilter)(nil),                                       // 149: google.cloud.datastream.v1.Stream.RuleSet.ObjectFilter
+	(*Stream_RuleSet_CustomizationRule)(nil),                                  // 150: google.cloud.datastream.v1.Stream.RuleSet.CustomizationRule
+	(*SourceObjectIdentifier_OracleObjectIdentifier)(nil),                     // 151: google.cloud.datastream.v1.SourceObjectIdentifier.OracleObjectIdentifier
+	(*SourceObjectIdentifier_PostgresqlObjectIdentifier)(nil),                 // 152: google.cloud.datastream.v1.SourceObjectIdentifier.PostgresqlObjectIdentifier
+	(*SourceObjectIdentifier_MysqlObjectIdentifier)(nil),                      // 153: google.cloud.datastream.v1.SourceObjectIdentifier.MysqlObjectIdentifier
+	(*SourceObjectIdentifier_SqlServerObjectIdentifier)(nil),                  // 154: google.cloud.datastream.v1.SourceObjectIdentifier.SqlServerObjectIdentifier
+	(*SourceObjectIdentifier_SalesforceObjectIdentifier)(nil),                 // 155: google.cloud.datastream.v1.SourceObjectIdentifier.SalesforceObjectIdentifier
+	(*SourceObjectIdentifier_MongodbObjectIdentifier)(nil),                    // 156: google.cloud.datastream.v1.SourceObjectIdentifier.MongodbObjectIdentifier
+	(*SourceObjectIdentifier_SpannerObjectIdentifier)(nil),                    // 157: google.cloud.datastream.v1.SourceObjectIdentifier.SpannerObjectIdentifier
+	nil, // 158: google.cloud.datastream.v1.Error.DetailsEntry
+	nil, // 159: google.cloud.datastream.v1.ValidationMessage.MetadataEntry
+	(*CdcStrategy_MostRecentStartPosition)(nil),    // 160: google.cloud.datastream.v1.CdcStrategy.MostRecentStartPosition
+	(*CdcStrategy_NextAvailableStartPosition)(nil), // 161: google.cloud.datastream.v1.CdcStrategy.NextAvailableStartPosition
+	(*CdcStrategy_SpecificStartPosition)(nil),      // 162: google.cloud.datastream.v1.CdcStrategy.SpecificStartPosition
+	(*timestamppb.Timestamp)(nil),                  // 163: google.protobuf.Timestamp
+	(*durationpb.Duration)(nil),                    // 164: google.protobuf.Duration
 }
 var file_google_cloud_datastream_v1_datastream_resources_proto_depIdxs = []int32{
-	84,  // 0: google.cloud.datastream.v1.OracleProfile.connection_attributes:type_name -> google.cloud.datastream.v1.OracleProfile.ConnectionAttributesEntry
-	31,  // 1: google.cloud.datastream.v1.OracleProfile.oracle_ssl_config:type_name -> google.cloud.datastream.v1.OracleSslConfig
-	11,  // 2: google.cloud.datastream.v1.OracleProfile.oracle_asm_config:type_name -> google.cloud.datastream.v1.OracleAsmConfig
-	85,  // 3: google.cloud.datastream.v1.OracleAsmConfig.connection_attributes:type_name -> google.cloud.datastream.v1.OracleAsmConfig.ConnectionAttributesEntry
-	31,  // 4: google.cloud.datastream.v1.OracleAsmConfig.oracle_ssl_config:type_name -> google.cloud.datastream.v1.OracleSslConfig
-	30,  // 5: google.cloud.datastream.v1.MysqlProfile.ssl_config:type_name -> google.cloud.datastream.v1.MysqlSslConfig
-	32,  // 6: google.cloud.datastream.v1.PostgresqlProfile.ssl_config:type_name -> google.cloud.datastream.v1.PostgresqlSslConfig
-	86,  // 7: google.cloud.datastream.v1.SalesforceProfile.user_credentials:type_name -> google.cloud.datastream.v1.SalesforceProfile.UserCredentials
-	87,  // 8: google.cloud.datastream.v1.SalesforceProfile.oauth2_client_credentials:type_name -> google.cloud.datastream.v1.SalesforceProfile.Oauth2ClientCredentials
-	17,  // 9: google.cloud.datastream.v1.MongodbProfile.host_addresses:type_name -> google.cloud.datastream.v1.HostAddress
-	29,  // 10: google.cloud.datastream.v1.MongodbProfile.ssl_config:type_name -> google.cloud.datastream.v1.MongodbSslConfig
-	18,  // 11: google.cloud.datastream.v1.MongodbProfile.srv_connection_format:type_name -> google.cloud.datastream.v1.SrvConnectionFormat
-	19,  // 12: google.cloud.datastream.v1.MongodbProfile.standard_connection_format:type_name -> google.cloud.datastream.v1.StandardConnectionFormat
-	121, // 13: google.cloud.datastream.v1.PrivateConnection.create_time:type_name -> google.protobuf.Timestamp
-	121, // 14: google.cloud.datastream.v1.PrivateConnection.update_time:type_name -> google.protobuf.Timestamp
-	88,  // 15: google.cloud.datastream.v1.PrivateConnection.labels:type_name -> google.cloud.datastream.v1.PrivateConnection.LabelsEntry
-	0,   // 16: google.cloud.datastream.v1.PrivateConnection.state:type_name -> google.cloud.datastream.v1.PrivateConnection.State
-	75,  // 17: google.cloud.datastream.v1.PrivateConnection.error:type_name -> google.cloud.datastream.v1.Error
-	24,  // 18: google.cloud.datastream.v1.PrivateConnection.vpc_peering_config:type_name -> google.cloud.datastream.v1.VpcPeeringConfig
-	25,  // 19: google.cloud.datastream.v1.PrivateConnection.psc_interface_config:type_name -> google.cloud.datastream.v1.PscInterfaceConfig
-	121, // 20: google.cloud.datastream.v1.Route.create_time:type_name -> google.protobuf.Timestamp
-	121, // 21: google.cloud.datastream.v1.Route.update_time:type_name -> google.protobuf.Timestamp
-	89,  // 22: google.cloud.datastream.v1.Route.labels:type_name -> google.cloud.datastream.v1.Route.LabelsEntry
-	90,  // 23: google.cloud.datastream.v1.PostgresqlSslConfig.server_verification:type_name -> google.cloud.datastream.v1.PostgresqlSslConfig.ServerVerification
-	91,  // 24: google.cloud.datastream.v1.PostgresqlSslConfig.server_and_client_verification:type_name -> google.cloud.datastream.v1.PostgresqlSslConfig.ServerAndClientVerification
-	121, // 25: google.cloud.datastream.v1.ConnectionProfile.create_time:type_name -> google.protobuf.Timestamp
-	121, // 26: google.cloud.datastream.v1.ConnectionProfile.update_time:type_name -> google.protobuf.Timestamp
-	92,  // 27: google.cloud.datastream.v1.ConnectionProfile.labels:type_name -> google.cloud.datastream.v1.ConnectionProfile.LabelsEntry
-	10,  // 28: google.cloud.datastream.v1.ConnectionProfile.oracle_profile:type_name -> google.cloud.datastream.v1.OracleProfile
-	20,  // 29: google.cloud.datastream.v1.ConnectionProfile.gcs_profile:type_name -> google.cloud.datastream.v1.GcsProfile
-	12,  // 30: google.cloud.datastream.v1.ConnectionProfile.mysql_profile:type_name -> google.cloud.datastream.v1.MysqlProfile
-	21,  // 31: google.cloud.datastream.v1.ConnectionProfile.bigquery_profile:type_name -> google.cloud.datastream.v1.BigQueryProfile
-	13,  // 32: google.cloud.datastream.v1.ConnectionProfile.postgresql_profile:type_name -> google.cloud.datastream.v1.PostgresqlProfile
-	14,  // 33: google.cloud.datastream.v1.ConnectionProfile.sql_server_profile:type_name -> google.cloud.datastream.v1.SqlServerProfile
-	15,  // 34: google.cloud.datastream.v1.ConnectionProfile.salesforce_profile:type_name -> google.cloud.datastream.v1.SalesforceProfile
-	16,  // 35: google.cloud.datastream.v1.ConnectionProfile.mongodb_profile:type_name -> google.cloud.datastream.v1.MongodbProfile
-	22,  // 36: google.cloud.datastream.v1.ConnectionProfile.static_service_ip_connectivity:type_name -> google.cloud.datastream.v1.StaticServiceIpConnectivity
-	23,  // 37: google.cloud.datastream.v1.ConnectionProfile.forward_ssh_connectivity:type_name -> google.cloud.datastream.v1.ForwardSshTunnelConnectivity
-	27,  // 38: google.cloud.datastream.v1.ConnectionProfile.private_connectivity:type_name -> google.cloud.datastream.v1.PrivateConnectivity
-	34,  // 39: google.cloud.datastream.v1.OracleTable.oracle_columns:type_name -> google.cloud.datastream.v1.OracleColumn
-	35,  // 40: google.cloud.datastream.v1.OracleSchema.oracle_tables:type_name -> google.cloud.datastream.v1.OracleTable
-	36,  // 41: google.cloud.datastream.v1.OracleRdbms.oracle_schemas:type_name -> google.cloud.datastream.v1.OracleSchema
-	37,  // 42: google.cloud.datastream.v1.OracleSourceConfig.include_objects:type_name -> google.cloud.datastream.v1.OracleRdbms
-	37,  // 43: google.cloud.datastream.v1.OracleSourceConfig.exclude_objects:type_name -> google.cloud.datastream.v1.OracleRdbms
-	93,  // 44: google.cloud.datastream.v1.OracleSourceConfig.drop_large_objects:type_name -> google.cloud.datastream.v1.OracleSourceConfig.DropLargeObjects
-	94,  // 45: google.cloud.datastream.v1.OracleSourceConfig.stream_large_objects:type_name -> google.cloud.datastream.v1.OracleSourceConfig.StreamLargeObjects
-	95,  // 46: google.cloud.datastream.v1.OracleSourceConfig.log_miner:type_name -> google.cloud.datastream.v1.OracleSourceConfig.LogMiner
-	96,  // 47: google.cloud.datastream.v1.OracleSourceConfig.binary_log_parser:type_name -> google.cloud.datastream.v1.OracleSourceConfig.BinaryLogParser
-	39,  // 48: google.cloud.datastream.v1.PostgresqlTable.postgresql_columns:type_name -> google.cloud.datastream.v1.PostgresqlColumn
-	40,  // 49: google.cloud.datastream.v1.PostgresqlSchema.postgresql_tables:type_name -> google.cloud.datastream.v1.PostgresqlTable
-	41,  // 50: google.cloud.datastream.v1.PostgresqlRdbms.postgresql_schemas:type_name -> google.cloud.datastream.v1.PostgresqlSchema
-	42,  // 51: google.cloud.datastream.v1.PostgresqlSourceConfig.include_objects:type_name -> google.cloud.datastream.v1.PostgresqlRdbms
-	42,  // 52: google.cloud.datastream.v1.PostgresqlSourceConfig.exclude_objects:type_name -> google.cloud.datastream.v1.PostgresqlRdbms
-	44,  // 53: google.cloud.datastream.v1.SqlServerTable.columns:type_name -> google.cloud.datastream.v1.SqlServerColumn
-	45,  // 54: google.cloud.datastream.v1.SqlServerSchema.tables:type_name -> google.cloud.datastream.v1.SqlServerTable
-	46,  // 55: google.cloud.datastream.v1.SqlServerRdbms.schemas:type_name -> google.cloud.datastream.v1.SqlServerSchema
-	47,  // 56: google.cloud.datastream.v1.SqlServerSourceConfig.include_objects:type_name -> google.cloud.datastream.v1.SqlServerRdbms
-	47,  // 57: google.cloud.datastream.v1.SqlServerSourceConfig.exclude_objects:type_name -> google.cloud.datastream.v1.SqlServerRdbms
-	49,  // 58: google.cloud.datastream.v1.SqlServerSourceConfig.transaction_logs:type_name -> google.cloud.datastream.v1.SqlServerTransactionLogs
-	50,  // 59: google.cloud.datastream.v1.SqlServerSourceConfig.change_tables:type_name -> google.cloud.datastream.v1.SqlServerChangeTables
-	51,  // 60: google.cloud.datastream.v1.MysqlTable.mysql_columns:type_name -> google.cloud.datastream.v1.MysqlColumn
-	52,  // 61: google.cloud.datastream.v1.MysqlDatabase.mysql_tables:type_name -> google.cloud.datastream.v1.MysqlTable
-	53,  // 62: google.cloud.datastream.v1.MysqlRdbms.mysql_databases:type_name -> google.cloud.datastream.v1.MysqlDatabase
-	54,  // 63: google.cloud.datastream.v1.MysqlSourceConfig.include_objects:type_name -> google.cloud.datastream.v1.MysqlRdbms
-	54,  // 64: google.cloud.datastream.v1.MysqlSourceConfig.exclude_objects:type_name -> google.cloud.datastream.v1.MysqlRdbms
-	99,  // 65: google.cloud.datastream.v1.MysqlSourceConfig.binary_log_position:type_name -> google.cloud.datastream.v1.MysqlSourceConfig.BinaryLogPosition
-	100, // 66: google.cloud.datastream.v1.MysqlSourceConfig.gtid:type_name -> google.cloud.datastream.v1.MysqlSourceConfig.Gtid
-	57,  // 67: google.cloud.datastream.v1.SalesforceSourceConfig.include_objects:type_name -> google.cloud.datastream.v1.SalesforceOrg
-	57,  // 68: google.cloud.datastream.v1.SalesforceSourceConfig.exclude_objects:type_name -> google.cloud.datastream.v1.SalesforceOrg
-	122, // 69: google.cloud.datastream.v1.SalesforceSourceConfig.polling_interval:type_name -> google.protobuf.Duration
-	58,  // 70: google.cloud.datastream.v1.SalesforceOrg.objects:type_name -> google.cloud.datastream.v1.SalesforceObject
-	59,  // 71: google.cloud.datastream.v1.SalesforceObject.fields:type_name -> google.cloud.datastream.v1.SalesforceField
-	61,  // 72: google.cloud.datastream.v1.MongodbSourceConfig.include_objects:type_name -> google.cloud.datastream.v1.MongodbCluster
-	61,  // 73: google.cloud.datastream.v1.MongodbSourceConfig.exclude_objects:type_name -> google.cloud.datastream.v1.MongodbCluster
-	62,  // 74: google.cloud.datastream.v1.MongodbCluster.databases:type_name -> google.cloud.datastream.v1.MongodbDatabase
-	63,  // 75: google.cloud.datastream.v1.MongodbDatabase.collections:type_name -> google.cloud.datastream.v1.MongodbCollection
-	64,  // 76: google.cloud.datastream.v1.MongodbCollection.fields:type_name -> google.cloud.datastream.v1.MongodbField
-	38,  // 77: google.cloud.datastream.v1.SourceConfig.oracle_source_config:type_name -> google.cloud.datastream.v1.OracleSourceConfig
-	55,  // 78: google.cloud.datastream.v1.SourceConfig.mysql_source_config:type_name -> google.cloud.datastream.v1.MysqlSourceConfig
-	43,  // 79: google.cloud.datastream.v1.SourceConfig.postgresql_source_config:type_name -> google.cloud.datastream.v1.PostgresqlSourceConfig
-	48,  // 80: google.cloud.datastream.v1.SourceConfig.sql_server_source_config:type_name -> google.cloud.datastream.v1.SqlServerSourceConfig
-	56,  // 81: google.cloud.datastream.v1.SourceConfig.salesforce_source_config:type_name -> google.cloud.datastream.v1.SalesforceSourceConfig
-	60,  // 82: google.cloud.datastream.v1.SourceConfig.mongodb_source_config:type_name -> google.cloud.datastream.v1.MongodbSourceConfig
-	1,   // 83: google.cloud.datastream.v1.JsonFileFormat.schema_file_format:type_name -> google.cloud.datastream.v1.JsonFileFormat.SchemaFileFormat
-	2,   // 84: google.cloud.datastream.v1.JsonFileFormat.compression:type_name -> google.cloud.datastream.v1.JsonFileFormat.JsonCompression
-	122, // 85: google.cloud.datastream.v1.GcsDestinationConfig.file_rotation_interval:type_name -> google.protobuf.Duration
-	66,  // 86: google.cloud.datastream.v1.GcsDestinationConfig.avro_file_format:type_name -> google.cloud.datastream.v1.AvroFileFormat
-	67,  // 87: google.cloud.datastream.v1.GcsDestinationConfig.json_file_format:type_name -> google.cloud.datastream.v1.JsonFileFormat
-	101, // 88: google.cloud.datastream.v1.BigQueryDestinationConfig.single_target_dataset:type_name -> google.cloud.datastream.v1.BigQueryDestinationConfig.SingleTargetDataset
-	102, // 89: google.cloud.datastream.v1.BigQueryDestinationConfig.source_hierarchy_datasets:type_name -> google.cloud.datastream.v1.BigQueryDestinationConfig.SourceHierarchyDatasets
-	122, // 90: google.cloud.datastream.v1.BigQueryDestinationConfig.data_freshness:type_name -> google.protobuf.Duration
-	103, // 91: google.cloud.datastream.v1.BigQueryDestinationConfig.blmt_config:type_name -> google.cloud.datastream.v1.BigQueryDestinationConfig.BlmtConfig
-	105, // 92: google.cloud.datastream.v1.BigQueryDestinationConfig.merge:type_name -> google.cloud.datastream.v1.BigQueryDestinationConfig.Merge
-	104, // 93: google.cloud.datastream.v1.BigQueryDestinationConfig.append_only:type_name -> google.cloud.datastream.v1.BigQueryDestinationConfig.AppendOnly
-	68,  // 94: google.cloud.datastream.v1.DestinationConfig.gcs_destination_config:type_name -> google.cloud.datastream.v1.GcsDestinationConfig
-	69,  // 95: google.cloud.datastream.v1.DestinationConfig.bigquery_destination_config:type_name -> google.cloud.datastream.v1.BigQueryDestinationConfig
-	121, // 96: google.cloud.datastream.v1.Stream.create_time:type_name -> google.protobuf.Timestamp
-	121, // 97: google.cloud.datastream.v1.Stream.update_time:type_name -> google.protobuf.Timestamp
-	109, // 98: google.cloud.datastream.v1.Stream.labels:type_name -> google.cloud.datastream.v1.Stream.LabelsEntry
-	65,  // 99: google.cloud.datastream.v1.Stream.source_config:type_name -> google.cloud.datastream.v1.SourceConfig
-	70,  // 100: google.cloud.datastream.v1.Stream.destination_config:type_name -> google.cloud.datastream.v1.DestinationConfig
-	5,   // 101: google.cloud.datastream.v1.Stream.state:type_name -> google.cloud.datastream.v1.Stream.State
-	107, // 102: google.cloud.datastream.v1.Stream.backfill_all:type_name -> google.cloud.datastream.v1.Stream.BackfillAllStrategy
-	108, // 103: google.cloud.datastream.v1.Stream.backfill_none:type_name -> google.cloud.datastream.v1.Stream.BackfillNoneStrategy
-	75,  // 104: google.cloud.datastream.v1.Stream.errors:type_name -> google.cloud.datastream.v1.Error
-	121, // 105: google.cloud.datastream.v1.Stream.last_recovery_time:type_name -> google.protobuf.Timestamp
-	121, // 106: google.cloud.datastream.v1.StreamObject.create_time:type_name -> google.protobuf.Timestamp
-	121, // 107: google.cloud.datastream.v1.StreamObject.update_time:type_name -> google.protobuf.Timestamp
-	75,  // 108: google.cloud.datastream.v1.StreamObject.errors:type_name -> google.cloud.datastream.v1.Error
-	74,  // 109: google.cloud.datastream.v1.StreamObject.backfill_job:type_name -> google.cloud.datastream.v1.BackfillJob
-	73,  // 110: google.cloud.datastream.v1.StreamObject.source_object:type_name -> google.cloud.datastream.v1.SourceObjectIdentifier
-	110, // 111: google.cloud.datastream.v1.SourceObjectIdentifier.oracle_identifier:type_name -> google.cloud.datastream.v1.SourceObjectIdentifier.OracleObjectIdentifier
-	112, // 112: google.cloud.datastream.v1.SourceObjectIdentifier.mysql_identifier:type_name -> google.cloud.datastream.v1.SourceObjectIdentifier.MysqlObjectIdentifier
-	111, // 113: google.cloud.datastream.v1.SourceObjectIdentifier.postgresql_identifier:type_name -> google.cloud.datastream.v1.SourceObjectIdentifier.PostgresqlObjectIdentifier
-	113, // 114: google.cloud.datastream.v1.SourceObjectIdentifier.sql_server_identifier:type_name -> google.cloud.datastream.v1.SourceObjectIdentifier.SqlServerObjectIdentifier
-	114, // 115: google.cloud.datastream.v1.SourceObjectIdentifier.salesforce_identifier:type_name -> google.cloud.datastream.v1.SourceObjectIdentifier.SalesforceObjectIdentifier
-	115, // 116: google.cloud.datastream.v1.SourceObjectIdentifier.mongodb_identifier:type_name -> google.cloud.datastream.v1.SourceObjectIdentifier.MongodbObjectIdentifier
-	6,   // 117: google.cloud.datastream.v1.BackfillJob.state:type_name -> google.cloud.datastream.v1.BackfillJob.State
-	7,   // 118: google.cloud.datastream.v1.BackfillJob.trigger:type_name -> google.cloud.datastream.v1.BackfillJob.Trigger
-	121, // 119: google.cloud.datastream.v1.BackfillJob.last_start_time:type_name -> google.protobuf.Timestamp
-	121, // 120: google.cloud.datastream.v1.BackfillJob.last_end_time:type_name -> google.protobuf.Timestamp
-	75,  // 121: google.cloud.datastream.v1.BackfillJob.errors:type_name -> google.cloud.datastream.v1.Error
-	121, // 122: google.cloud.datastream.v1.Error.error_time:type_name -> google.protobuf.Timestamp
-	116, // 123: google.cloud.datastream.v1.Error.details:type_name -> google.cloud.datastream.v1.Error.DetailsEntry
-	77,  // 124: google.cloud.datastream.v1.ValidationResult.validations:type_name -> google.cloud.datastream.v1.Validation
-	8,   // 125: google.cloud.datastream.v1.Validation.state:type_name -> google.cloud.datastream.v1.Validation.State
-	78,  // 126: google.cloud.datastream.v1.Validation.message:type_name -> google.cloud.datastream.v1.ValidationMessage
-	9,   // 127: google.cloud.datastream.v1.ValidationMessage.level:type_name -> google.cloud.datastream.v1.ValidationMessage.Level
-	117, // 128: google.cloud.datastream.v1.ValidationMessage.metadata:type_name -> google.cloud.datastream.v1.ValidationMessage.MetadataEntry
-	118, // 129: google.cloud.datastream.v1.CdcStrategy.most_recent_start_position:type_name -> google.cloud.datastream.v1.CdcStrategy.MostRecentStartPosition
-	119, // 130: google.cloud.datastream.v1.CdcStrategy.next_available_start_position:type_name -> google.cloud.datastream.v1.CdcStrategy.NextAvailableStartPosition
-	120, // 131: google.cloud.datastream.v1.CdcStrategy.specific_start_position:type_name -> google.cloud.datastream.v1.CdcStrategy.SpecificStartPosition
-	97,  // 132: google.cloud.datastream.v1.OracleSourceConfig.BinaryLogParser.oracle_asm_log_file_access:type_name -> google.cloud.datastream.v1.OracleSourceConfig.BinaryLogParser.OracleAsmLogFileAccess
-	98,  // 133: google.cloud.datastream.v1.OracleSourceConfig.BinaryLogParser.log_file_directories:type_name -> google.cloud.datastream.v1.OracleSourceConfig.BinaryLogParser.LogFileDirectories
-	106, // 134: google.cloud.datastream.v1.BigQueryDestinationConfig.SourceHierarchyDatasets.dataset_template:type_name -> google.cloud.datastream.v1.BigQueryDestinationConfig.SourceHierarchyDatasets.DatasetTemplate
-	3,   // 135: google.cloud.datastream.v1.BigQueryDestinationConfig.BlmtConfig.file_format:type_name -> google.cloud.datastream.v1.BigQueryDestinationConfig.BlmtConfig.FileFormat
-	4,   // 136: google.cloud.datastream.v1.BigQueryDestinationConfig.BlmtConfig.table_format:type_name -> google.cloud.datastream.v1.BigQueryDestinationConfig.BlmtConfig.TableFormat
-	37,  // 137: google.cloud.datastream.v1.Stream.BackfillAllStrategy.oracle_excluded_objects:type_name -> google.cloud.datastream.v1.OracleRdbms
-	54,  // 138: google.cloud.datastream.v1.Stream.BackfillAllStrategy.mysql_excluded_objects:type_name -> google.cloud.datastream.v1.MysqlRdbms
-	42,  // 139: google.cloud.datastream.v1.Stream.BackfillAllStrategy.postgresql_excluded_objects:type_name -> google.cloud.datastream.v1.PostgresqlRdbms
-	47,  // 140: google.cloud.datastream.v1.Stream.BackfillAllStrategy.sql_server_excluded_objects:type_name -> google.cloud.datastream.v1.SqlServerRdbms
-	57,  // 141: google.cloud.datastream.v1.Stream.BackfillAllStrategy.salesforce_excluded_objects:type_name -> google.cloud.datastream.v1.SalesforceOrg
-	61,  // 142: google.cloud.datastream.v1.Stream.BackfillAllStrategy.mongodb_excluded_objects:type_name -> google.cloud.datastream.v1.MongodbCluster
-	82,  // 143: google.cloud.datastream.v1.CdcStrategy.SpecificStartPosition.mysql_log_position:type_name -> google.cloud.datastream.v1.MysqlLogPosition
-	81,  // 144: google.cloud.datastream.v1.CdcStrategy.SpecificStartPosition.oracle_scn_position:type_name -> google.cloud.datastream.v1.OracleScnPosition
-	80,  // 145: google.cloud.datastream.v1.CdcStrategy.SpecificStartPosition.sql_server_lsn_position:type_name -> google.cloud.datastream.v1.SqlServerLsnPosition
-	83,  // 146: google.cloud.datastream.v1.CdcStrategy.SpecificStartPosition.mysql_gtid_position:type_name -> google.cloud.datastream.v1.MysqlGtidPosition
-	147, // [147:147] is the sub-list for method output_type
-	147, // [147:147] is the sub-list for method input_type
-	147, // [147:147] is the sub-list for extension type_name
-	147, // [147:147] is the sub-list for extension extendee
-	0,   // [0:147] is the sub-list for field type_name
+	117, // 0: google.cloud.datastream.v1.OracleProfile.connection_attributes:type_name -> google.cloud.datastream.v1.OracleProfile.ConnectionAttributesEntry
+	43,  // 1: google.cloud.datastream.v1.OracleProfile.oracle_ssl_config:type_name -> google.cloud.datastream.v1.OracleSslConfig
+	14,  // 2: google.cloud.datastream.v1.OracleProfile.oracle_asm_config:type_name -> google.cloud.datastream.v1.OracleAsmConfig
+	118, // 3: google.cloud.datastream.v1.OracleAsmConfig.connection_attributes:type_name -> google.cloud.datastream.v1.OracleAsmConfig.ConnectionAttributesEntry
+	43,  // 4: google.cloud.datastream.v1.OracleAsmConfig.oracle_ssl_config:type_name -> google.cloud.datastream.v1.OracleSslConfig
+	42,  // 5: google.cloud.datastream.v1.MysqlProfile.ssl_config:type_name -> google.cloud.datastream.v1.MysqlSslConfig
+	45,  // 6: google.cloud.datastream.v1.PostgresqlProfile.ssl_config:type_name -> google.cloud.datastream.v1.PostgresqlSslConfig
+	44,  // 7: google.cloud.datastream.v1.SqlServerProfile.ssl_config:type_name -> google.cloud.datastream.v1.SqlServerSslConfig
+	119, // 8: google.cloud.datastream.v1.SalesforceProfile.user_credentials:type_name -> google.cloud.datastream.v1.SalesforceProfile.UserCredentials
+	120, // 9: google.cloud.datastream.v1.SalesforceProfile.oauth2_client_credentials:type_name -> google.cloud.datastream.v1.SalesforceProfile.Oauth2ClientCredentials
+	20,  // 10: google.cloud.datastream.v1.MongodbProfile.host_addresses:type_name -> google.cloud.datastream.v1.HostAddress
+	41,  // 11: google.cloud.datastream.v1.MongodbProfile.ssl_config:type_name -> google.cloud.datastream.v1.MongodbSslConfig
+	29,  // 12: google.cloud.datastream.v1.MongodbProfile.srv_connection_format:type_name -> google.cloud.datastream.v1.SrvConnectionFormat
+	30,  // 13: google.cloud.datastream.v1.MongodbProfile.standard_connection_format:type_name -> google.cloud.datastream.v1.StandardConnectionFormat
+	121, // 14: google.cloud.datastream.v1.MongodbProfile.additional_options:type_name -> google.cloud.datastream.v1.MongodbProfile.AdditionalOptionsEntry
+	40,  // 15: google.cloud.datastream.v1.OauthClientCredentials.client_secret:type_name -> google.cloud.datastream.v1.Secret
+	22,  // 16: google.cloud.datastream.v1.OauthRefreshTokenCredentials.oauth_client_credentials:type_name -> google.cloud.datastream.v1.OauthClientCredentials
+	40,  // 17: google.cloud.datastream.v1.OauthRefreshTokenCredentials.refresh_token:type_name -> google.cloud.datastream.v1.Secret
+	40,  // 18: google.cloud.datastream.v1.UserPasswordCredentials.password:type_name -> google.cloud.datastream.v1.Secret
+	22,  // 19: google.cloud.datastream.v1.SalesforceMarketingCloudProfile.oauth_client_credentials:type_name -> google.cloud.datastream.v1.OauthClientCredentials
+	22,  // 20: google.cloud.datastream.v1.DataverseProfile.oauth_client_credentials:type_name -> google.cloud.datastream.v1.OauthClientCredentials
+	24,  // 21: google.cloud.datastream.v1.ServiceNowProfile.user_password_credentials:type_name -> google.cloud.datastream.v1.UserPasswordCredentials
+	22,  // 22: google.cloud.datastream.v1.ServiceNowProfile.oauth_client_credentials:type_name -> google.cloud.datastream.v1.OauthClientCredentials
+	23,  // 23: google.cloud.datastream.v1.WorkdayProfile.oauth_refresh_token_credentials:type_name -> google.cloud.datastream.v1.OauthRefreshTokenCredentials
+	163, // 24: google.cloud.datastream.v1.PrivateConnection.create_time:type_name -> google.protobuf.Timestamp
+	163, // 25: google.cloud.datastream.v1.PrivateConnection.update_time:type_name -> google.protobuf.Timestamp
+	122, // 26: google.cloud.datastream.v1.PrivateConnection.labels:type_name -> google.cloud.datastream.v1.PrivateConnection.LabelsEntry
+	2,   // 27: google.cloud.datastream.v1.PrivateConnection.state:type_name -> google.cloud.datastream.v1.PrivateConnection.State
+	106, // 28: google.cloud.datastream.v1.PrivateConnection.error:type_name -> google.cloud.datastream.v1.Error
+	35,  // 29: google.cloud.datastream.v1.PrivateConnection.vpc_peering_config:type_name -> google.cloud.datastream.v1.VpcPeeringConfig
+	36,  // 30: google.cloud.datastream.v1.PrivateConnection.psc_interface_config:type_name -> google.cloud.datastream.v1.PscInterfaceConfig
+	163, // 31: google.cloud.datastream.v1.Route.create_time:type_name -> google.protobuf.Timestamp
+	163, // 32: google.cloud.datastream.v1.Route.update_time:type_name -> google.protobuf.Timestamp
+	123, // 33: google.cloud.datastream.v1.Route.labels:type_name -> google.cloud.datastream.v1.Route.LabelsEntry
+	124, // 34: google.cloud.datastream.v1.SqlServerSslConfig.encryption_not_enforced:type_name -> google.cloud.datastream.v1.SqlServerSslConfig.EncryptionNotEnforced
+	125, // 35: google.cloud.datastream.v1.SqlServerSslConfig.basic_encryption:type_name -> google.cloud.datastream.v1.SqlServerSslConfig.BasicEncryption
+	126, // 36: google.cloud.datastream.v1.SqlServerSslConfig.encryption_and_server_validation:type_name -> google.cloud.datastream.v1.SqlServerSslConfig.EncryptionAndServerValidation
+	127, // 37: google.cloud.datastream.v1.PostgresqlSslConfig.server_verification:type_name -> google.cloud.datastream.v1.PostgresqlSslConfig.ServerVerification
+	128, // 38: google.cloud.datastream.v1.PostgresqlSslConfig.server_and_client_verification:type_name -> google.cloud.datastream.v1.PostgresqlSslConfig.ServerAndClientVerification
+	163, // 39: google.cloud.datastream.v1.ConnectionProfile.create_time:type_name -> google.protobuf.Timestamp
+	163, // 40: google.cloud.datastream.v1.ConnectionProfile.update_time:type_name -> google.protobuf.Timestamp
+	129, // 41: google.cloud.datastream.v1.ConnectionProfile.labels:type_name -> google.cloud.datastream.v1.ConnectionProfile.LabelsEntry
+	13,  // 42: google.cloud.datastream.v1.ConnectionProfile.oracle_profile:type_name -> google.cloud.datastream.v1.OracleProfile
+	31,  // 43: google.cloud.datastream.v1.ConnectionProfile.gcs_profile:type_name -> google.cloud.datastream.v1.GcsProfile
+	15,  // 44: google.cloud.datastream.v1.ConnectionProfile.mysql_profile:type_name -> google.cloud.datastream.v1.MysqlProfile
+	32,  // 45: google.cloud.datastream.v1.ConnectionProfile.bigquery_profile:type_name -> google.cloud.datastream.v1.BigQueryProfile
+	16,  // 46: google.cloud.datastream.v1.ConnectionProfile.postgresql_profile:type_name -> google.cloud.datastream.v1.PostgresqlProfile
+	17,  // 47: google.cloud.datastream.v1.ConnectionProfile.sql_server_profile:type_name -> google.cloud.datastream.v1.SqlServerProfile
+	18,  // 48: google.cloud.datastream.v1.ConnectionProfile.salesforce_profile:type_name -> google.cloud.datastream.v1.SalesforceProfile
+	19,  // 49: google.cloud.datastream.v1.ConnectionProfile.mongodb_profile:type_name -> google.cloud.datastream.v1.MongodbProfile
+	21,  // 50: google.cloud.datastream.v1.ConnectionProfile.spanner_profile:type_name -> google.cloud.datastream.v1.SpannerProfile
+	26,  // 51: google.cloud.datastream.v1.ConnectionProfile.dataverse_profile:type_name -> google.cloud.datastream.v1.DataverseProfile
+	25,  // 52: google.cloud.datastream.v1.ConnectionProfile.salesforce_marketing_cloud_profile:type_name -> google.cloud.datastream.v1.SalesforceMarketingCloudProfile
+	27,  // 53: google.cloud.datastream.v1.ConnectionProfile.service_now_profile:type_name -> google.cloud.datastream.v1.ServiceNowProfile
+	28,  // 54: google.cloud.datastream.v1.ConnectionProfile.workday_profile:type_name -> google.cloud.datastream.v1.WorkdayProfile
+	33,  // 55: google.cloud.datastream.v1.ConnectionProfile.static_service_ip_connectivity:type_name -> google.cloud.datastream.v1.StaticServiceIpConnectivity
+	34,  // 56: google.cloud.datastream.v1.ConnectionProfile.forward_ssh_connectivity:type_name -> google.cloud.datastream.v1.ForwardSshTunnelConnectivity
+	38,  // 57: google.cloud.datastream.v1.ConnectionProfile.private_connectivity:type_name -> google.cloud.datastream.v1.PrivateConnectivity
+	47,  // 58: google.cloud.datastream.v1.OracleTable.oracle_columns:type_name -> google.cloud.datastream.v1.OracleColumn
+	48,  // 59: google.cloud.datastream.v1.OracleSchema.oracle_tables:type_name -> google.cloud.datastream.v1.OracleTable
+	49,  // 60: google.cloud.datastream.v1.OracleRdbms.oracle_schemas:type_name -> google.cloud.datastream.v1.OracleSchema
+	50,  // 61: google.cloud.datastream.v1.OracleSourceConfig.include_objects:type_name -> google.cloud.datastream.v1.OracleRdbms
+	50,  // 62: google.cloud.datastream.v1.OracleSourceConfig.exclude_objects:type_name -> google.cloud.datastream.v1.OracleRdbms
+	130, // 63: google.cloud.datastream.v1.OracleSourceConfig.drop_large_objects:type_name -> google.cloud.datastream.v1.OracleSourceConfig.DropLargeObjects
+	131, // 64: google.cloud.datastream.v1.OracleSourceConfig.stream_large_objects:type_name -> google.cloud.datastream.v1.OracleSourceConfig.StreamLargeObjects
+	132, // 65: google.cloud.datastream.v1.OracleSourceConfig.log_miner:type_name -> google.cloud.datastream.v1.OracleSourceConfig.LogMiner
+	133, // 66: google.cloud.datastream.v1.OracleSourceConfig.binary_log_parser:type_name -> google.cloud.datastream.v1.OracleSourceConfig.BinaryLogParser
+	52,  // 67: google.cloud.datastream.v1.PostgresqlTable.postgresql_columns:type_name -> google.cloud.datastream.v1.PostgresqlColumn
+	53,  // 68: google.cloud.datastream.v1.PostgresqlSchema.postgresql_tables:type_name -> google.cloud.datastream.v1.PostgresqlTable
+	54,  // 69: google.cloud.datastream.v1.PostgresqlRdbms.postgresql_schemas:type_name -> google.cloud.datastream.v1.PostgresqlSchema
+	55,  // 70: google.cloud.datastream.v1.PostgresqlSourceConfig.include_objects:type_name -> google.cloud.datastream.v1.PostgresqlRdbms
+	55,  // 71: google.cloud.datastream.v1.PostgresqlSourceConfig.exclude_objects:type_name -> google.cloud.datastream.v1.PostgresqlRdbms
+	57,  // 72: google.cloud.datastream.v1.SqlServerTable.columns:type_name -> google.cloud.datastream.v1.SqlServerColumn
+	58,  // 73: google.cloud.datastream.v1.SqlServerSchema.tables:type_name -> google.cloud.datastream.v1.SqlServerTable
+	59,  // 74: google.cloud.datastream.v1.SqlServerRdbms.schemas:type_name -> google.cloud.datastream.v1.SqlServerSchema
+	60,  // 75: google.cloud.datastream.v1.SqlServerSourceConfig.include_objects:type_name -> google.cloud.datastream.v1.SqlServerRdbms
+	60,  // 76: google.cloud.datastream.v1.SqlServerSourceConfig.exclude_objects:type_name -> google.cloud.datastream.v1.SqlServerRdbms
+	62,  // 77: google.cloud.datastream.v1.SqlServerSourceConfig.transaction_logs:type_name -> google.cloud.datastream.v1.SqlServerTransactionLogs
+	63,  // 78: google.cloud.datastream.v1.SqlServerSourceConfig.change_tables:type_name -> google.cloud.datastream.v1.SqlServerChangeTables
+	136, // 79: google.cloud.datastream.v1.SqlServerChangeTables.ddl_config:type_name -> google.cloud.datastream.v1.SqlServerChangeTables.SqlServerDdlConfig
+	64,  // 80: google.cloud.datastream.v1.MysqlTable.mysql_columns:type_name -> google.cloud.datastream.v1.MysqlColumn
+	65,  // 81: google.cloud.datastream.v1.MysqlDatabase.mysql_tables:type_name -> google.cloud.datastream.v1.MysqlTable
+	66,  // 82: google.cloud.datastream.v1.MysqlRdbms.mysql_databases:type_name -> google.cloud.datastream.v1.MysqlDatabase
+	67,  // 83: google.cloud.datastream.v1.MysqlSourceConfig.include_objects:type_name -> google.cloud.datastream.v1.MysqlRdbms
+	67,  // 84: google.cloud.datastream.v1.MysqlSourceConfig.exclude_objects:type_name -> google.cloud.datastream.v1.MysqlRdbms
+	137, // 85: google.cloud.datastream.v1.MysqlSourceConfig.binary_log_position:type_name -> google.cloud.datastream.v1.MysqlSourceConfig.BinaryLogPosition
+	138, // 86: google.cloud.datastream.v1.MysqlSourceConfig.gtid:type_name -> google.cloud.datastream.v1.MysqlSourceConfig.Gtid
+	70,  // 87: google.cloud.datastream.v1.SalesforceSourceConfig.include_objects:type_name -> google.cloud.datastream.v1.SalesforceOrg
+	70,  // 88: google.cloud.datastream.v1.SalesforceSourceConfig.exclude_objects:type_name -> google.cloud.datastream.v1.SalesforceOrg
+	164, // 89: google.cloud.datastream.v1.SalesforceSourceConfig.polling_interval:type_name -> google.protobuf.Duration
+	71,  // 90: google.cloud.datastream.v1.SalesforceOrg.objects:type_name -> google.cloud.datastream.v1.SalesforceObject
+	72,  // 91: google.cloud.datastream.v1.SalesforceObject.fields:type_name -> google.cloud.datastream.v1.SalesforceField
+	74,  // 92: google.cloud.datastream.v1.MongodbSourceConfig.include_objects:type_name -> google.cloud.datastream.v1.MongodbCluster
+	74,  // 93: google.cloud.datastream.v1.MongodbSourceConfig.exclude_objects:type_name -> google.cloud.datastream.v1.MongodbCluster
+	0,   // 94: google.cloud.datastream.v1.MongodbSourceConfig.json_mode:type_name -> google.cloud.datastream.v1.MongodbJsonMode
+	75,  // 95: google.cloud.datastream.v1.MongodbCluster.databases:type_name -> google.cloud.datastream.v1.MongodbDatabase
+	76,  // 96: google.cloud.datastream.v1.MongodbDatabase.collections:type_name -> google.cloud.datastream.v1.MongodbCollection
+	77,  // 97: google.cloud.datastream.v1.MongodbCollection.fields:type_name -> google.cloud.datastream.v1.MongodbField
+	3,   // 98: google.cloud.datastream.v1.SpannerSourceConfig.spanner_rpc_priority:type_name -> google.cloud.datastream.v1.SpannerSourceConfig.SpannerRpcPriority
+	79,  // 99: google.cloud.datastream.v1.SpannerSourceConfig.include_objects:type_name -> google.cloud.datastream.v1.SpannerDatabase
+	79,  // 100: google.cloud.datastream.v1.SpannerSourceConfig.exclude_objects:type_name -> google.cloud.datastream.v1.SpannerDatabase
+	80,  // 101: google.cloud.datastream.v1.SpannerDatabase.schemas:type_name -> google.cloud.datastream.v1.SpannerSchema
+	81,  // 102: google.cloud.datastream.v1.SpannerSchema.tables:type_name -> google.cloud.datastream.v1.SpannerTable
+	82,  // 103: google.cloud.datastream.v1.SpannerTable.columns:type_name -> google.cloud.datastream.v1.SpannerColumn
+	87,  // 104: google.cloud.datastream.v1.DataverseSourceConfig.include_objects:type_name -> google.cloud.datastream.v1.SourceCatalog
+	87,  // 105: google.cloud.datastream.v1.DataverseSourceConfig.exclude_objects:type_name -> google.cloud.datastream.v1.SourceCatalog
+	164, // 106: google.cloud.datastream.v1.DataverseSourceConfig.polling_interval:type_name -> google.protobuf.Duration
+	87,  // 107: google.cloud.datastream.v1.SalesforceMarketingCloudSourceConfig.include_objects:type_name -> google.cloud.datastream.v1.SourceCatalog
+	87,  // 108: google.cloud.datastream.v1.SalesforceMarketingCloudSourceConfig.exclude_objects:type_name -> google.cloud.datastream.v1.SourceCatalog
+	164, // 109: google.cloud.datastream.v1.SalesforceMarketingCloudSourceConfig.polling_interval:type_name -> google.protobuf.Duration
+	164, // 110: google.cloud.datastream.v1.SalesforceMarketingCloudSourceConfig.full_refresh_polling_interval:type_name -> google.protobuf.Duration
+	87,  // 111: google.cloud.datastream.v1.ServiceNowSourceConfig.include_objects:type_name -> google.cloud.datastream.v1.SourceCatalog
+	87,  // 112: google.cloud.datastream.v1.ServiceNowSourceConfig.exclude_objects:type_name -> google.cloud.datastream.v1.SourceCatalog
+	164, // 113: google.cloud.datastream.v1.ServiceNowSourceConfig.polling_interval:type_name -> google.protobuf.Duration
+	87,  // 114: google.cloud.datastream.v1.WorkdaySourceConfig.include_objects:type_name -> google.cloud.datastream.v1.SourceCatalog
+	87,  // 115: google.cloud.datastream.v1.WorkdaySourceConfig.exclude_objects:type_name -> google.cloud.datastream.v1.SourceCatalog
+	164, // 116: google.cloud.datastream.v1.WorkdaySourceConfig.polling_interval:type_name -> google.protobuf.Duration
+	88,  // 117: google.cloud.datastream.v1.SourceCatalog.objects:type_name -> google.cloud.datastream.v1.SourceObject
+	89,  // 118: google.cloud.datastream.v1.SourceObject.properties:type_name -> google.cloud.datastream.v1.SourceProperty
+	89,  // 119: google.cloud.datastream.v1.SourceProperty.properties:type_name -> google.cloud.datastream.v1.SourceProperty
+	51,  // 120: google.cloud.datastream.v1.SourceConfig.oracle_source_config:type_name -> google.cloud.datastream.v1.OracleSourceConfig
+	68,  // 121: google.cloud.datastream.v1.SourceConfig.mysql_source_config:type_name -> google.cloud.datastream.v1.MysqlSourceConfig
+	56,  // 122: google.cloud.datastream.v1.SourceConfig.postgresql_source_config:type_name -> google.cloud.datastream.v1.PostgresqlSourceConfig
+	61,  // 123: google.cloud.datastream.v1.SourceConfig.sql_server_source_config:type_name -> google.cloud.datastream.v1.SqlServerSourceConfig
+	69,  // 124: google.cloud.datastream.v1.SourceConfig.salesforce_source_config:type_name -> google.cloud.datastream.v1.SalesforceSourceConfig
+	73,  // 125: google.cloud.datastream.v1.SourceConfig.mongodb_source_config:type_name -> google.cloud.datastream.v1.MongodbSourceConfig
+	78,  // 126: google.cloud.datastream.v1.SourceConfig.spanner_source_config:type_name -> google.cloud.datastream.v1.SpannerSourceConfig
+	83,  // 127: google.cloud.datastream.v1.SourceConfig.dataverse_source_config:type_name -> google.cloud.datastream.v1.DataverseSourceConfig
+	84,  // 128: google.cloud.datastream.v1.SourceConfig.salesforce_marketing_cloud_source_config:type_name -> google.cloud.datastream.v1.SalesforceMarketingCloudSourceConfig
+	85,  // 129: google.cloud.datastream.v1.SourceConfig.service_now_source_config:type_name -> google.cloud.datastream.v1.ServiceNowSourceConfig
+	86,  // 130: google.cloud.datastream.v1.SourceConfig.workday_source_config:type_name -> google.cloud.datastream.v1.WorkdaySourceConfig
+	4,   // 131: google.cloud.datastream.v1.JsonFileFormat.schema_file_format:type_name -> google.cloud.datastream.v1.JsonFileFormat.SchemaFileFormat
+	5,   // 132: google.cloud.datastream.v1.JsonFileFormat.compression:type_name -> google.cloud.datastream.v1.JsonFileFormat.JsonCompression
+	1,   // 133: google.cloud.datastream.v1.IngestionTimePartition.partitioning_time_granularity:type_name -> google.cloud.datastream.v1.PartitioningTimeGranularity
+	1,   // 134: google.cloud.datastream.v1.TimeUnitPartition.partitioning_time_granularity:type_name -> google.cloud.datastream.v1.PartitioningTimeGranularity
+	96,  // 135: google.cloud.datastream.v1.BigQueryPartitioning.integer_range_partition:type_name -> google.cloud.datastream.v1.IntegerRangePartition
+	95,  // 136: google.cloud.datastream.v1.BigQueryPartitioning.time_unit_partition:type_name -> google.cloud.datastream.v1.TimeUnitPartition
+	94,  // 137: google.cloud.datastream.v1.BigQueryPartitioning.ingestion_time_partition:type_name -> google.cloud.datastream.v1.IngestionTimePartition
+	164, // 138: google.cloud.datastream.v1.GcsDestinationConfig.file_rotation_interval:type_name -> google.protobuf.Duration
+	91,  // 139: google.cloud.datastream.v1.GcsDestinationConfig.avro_file_format:type_name -> google.cloud.datastream.v1.AvroFileFormat
+	92,  // 140: google.cloud.datastream.v1.GcsDestinationConfig.json_file_format:type_name -> google.cloud.datastream.v1.JsonFileFormat
+	139, // 141: google.cloud.datastream.v1.BigQueryDestinationConfig.single_target_dataset:type_name -> google.cloud.datastream.v1.BigQueryDestinationConfig.SingleTargetDataset
+	140, // 142: google.cloud.datastream.v1.BigQueryDestinationConfig.source_hierarchy_datasets:type_name -> google.cloud.datastream.v1.BigQueryDestinationConfig.SourceHierarchyDatasets
+	164, // 143: google.cloud.datastream.v1.BigQueryDestinationConfig.data_freshness:type_name -> google.protobuf.Duration
+	141, // 144: google.cloud.datastream.v1.BigQueryDestinationConfig.blmt_config:type_name -> google.cloud.datastream.v1.BigQueryDestinationConfig.BlmtConfig
+	143, // 145: google.cloud.datastream.v1.BigQueryDestinationConfig.merge:type_name -> google.cloud.datastream.v1.BigQueryDestinationConfig.Merge
+	142, // 146: google.cloud.datastream.v1.BigQueryDestinationConfig.append_only:type_name -> google.cloud.datastream.v1.BigQueryDestinationConfig.AppendOnly
+	98,  // 147: google.cloud.datastream.v1.DestinationConfig.gcs_destination_config:type_name -> google.cloud.datastream.v1.GcsDestinationConfig
+	99,  // 148: google.cloud.datastream.v1.DestinationConfig.bigquery_destination_config:type_name -> google.cloud.datastream.v1.BigQueryDestinationConfig
+	163, // 149: google.cloud.datastream.v1.Stream.create_time:type_name -> google.protobuf.Timestamp
+	163, // 150: google.cloud.datastream.v1.Stream.update_time:type_name -> google.protobuf.Timestamp
+	148, // 151: google.cloud.datastream.v1.Stream.labels:type_name -> google.cloud.datastream.v1.Stream.LabelsEntry
+	90,  // 152: google.cloud.datastream.v1.Stream.source_config:type_name -> google.cloud.datastream.v1.SourceConfig
+	100, // 153: google.cloud.datastream.v1.Stream.destination_config:type_name -> google.cloud.datastream.v1.DestinationConfig
+	8,   // 154: google.cloud.datastream.v1.Stream.state:type_name -> google.cloud.datastream.v1.Stream.State
+	145, // 155: google.cloud.datastream.v1.Stream.backfill_all:type_name -> google.cloud.datastream.v1.Stream.BackfillAllStrategy
+	146, // 156: google.cloud.datastream.v1.Stream.backfill_none:type_name -> google.cloud.datastream.v1.Stream.BackfillNoneStrategy
+	106, // 157: google.cloud.datastream.v1.Stream.errors:type_name -> google.cloud.datastream.v1.Error
+	163, // 158: google.cloud.datastream.v1.Stream.last_recovery_time:type_name -> google.protobuf.Timestamp
+	147, // 159: google.cloud.datastream.v1.Stream.rule_sets:type_name -> google.cloud.datastream.v1.Stream.RuleSet
+	163, // 160: google.cloud.datastream.v1.StreamObject.create_time:type_name -> google.protobuf.Timestamp
+	163, // 161: google.cloud.datastream.v1.StreamObject.update_time:type_name -> google.protobuf.Timestamp
+	106, // 162: google.cloud.datastream.v1.StreamObject.errors:type_name -> google.cloud.datastream.v1.Error
+	104, // 163: google.cloud.datastream.v1.StreamObject.backfill_job:type_name -> google.cloud.datastream.v1.BackfillJob
+	103, // 164: google.cloud.datastream.v1.StreamObject.source_object:type_name -> google.cloud.datastream.v1.SourceObjectIdentifier
+	150, // 165: google.cloud.datastream.v1.StreamObject.customization_rules:type_name -> google.cloud.datastream.v1.Stream.RuleSet.CustomizationRule
+	151, // 166: google.cloud.datastream.v1.SourceObjectIdentifier.oracle_identifier:type_name -> google.cloud.datastream.v1.SourceObjectIdentifier.OracleObjectIdentifier
+	153, // 167: google.cloud.datastream.v1.SourceObjectIdentifier.mysql_identifier:type_name -> google.cloud.datastream.v1.SourceObjectIdentifier.MysqlObjectIdentifier
+	152, // 168: google.cloud.datastream.v1.SourceObjectIdentifier.postgresql_identifier:type_name -> google.cloud.datastream.v1.SourceObjectIdentifier.PostgresqlObjectIdentifier
+	154, // 169: google.cloud.datastream.v1.SourceObjectIdentifier.sql_server_identifier:type_name -> google.cloud.datastream.v1.SourceObjectIdentifier.SqlServerObjectIdentifier
+	155, // 170: google.cloud.datastream.v1.SourceObjectIdentifier.salesforce_identifier:type_name -> google.cloud.datastream.v1.SourceObjectIdentifier.SalesforceObjectIdentifier
+	156, // 171: google.cloud.datastream.v1.SourceObjectIdentifier.mongodb_identifier:type_name -> google.cloud.datastream.v1.SourceObjectIdentifier.MongodbObjectIdentifier
+	157, // 172: google.cloud.datastream.v1.SourceObjectIdentifier.spanner_identifier:type_name -> google.cloud.datastream.v1.SourceObjectIdentifier.SpannerObjectIdentifier
+	9,   // 173: google.cloud.datastream.v1.BackfillJob.state:type_name -> google.cloud.datastream.v1.BackfillJob.State
+	10,  // 174: google.cloud.datastream.v1.BackfillJob.trigger:type_name -> google.cloud.datastream.v1.BackfillJob.Trigger
+	163, // 175: google.cloud.datastream.v1.BackfillJob.last_start_time:type_name -> google.protobuf.Timestamp
+	163, // 176: google.cloud.datastream.v1.BackfillJob.last_end_time:type_name -> google.protobuf.Timestamp
+	106, // 177: google.cloud.datastream.v1.BackfillJob.errors:type_name -> google.cloud.datastream.v1.Error
+	105, // 178: google.cloud.datastream.v1.BackfillJob.event_filter:type_name -> google.cloud.datastream.v1.EventFilter
+	163, // 179: google.cloud.datastream.v1.Error.error_time:type_name -> google.protobuf.Timestamp
+	158, // 180: google.cloud.datastream.v1.Error.details:type_name -> google.cloud.datastream.v1.Error.DetailsEntry
+	108, // 181: google.cloud.datastream.v1.ValidationResult.validations:type_name -> google.cloud.datastream.v1.Validation
+	11,  // 182: google.cloud.datastream.v1.Validation.state:type_name -> google.cloud.datastream.v1.Validation.State
+	109, // 183: google.cloud.datastream.v1.Validation.message:type_name -> google.cloud.datastream.v1.ValidationMessage
+	12,  // 184: google.cloud.datastream.v1.ValidationMessage.level:type_name -> google.cloud.datastream.v1.ValidationMessage.Level
+	159, // 185: google.cloud.datastream.v1.ValidationMessage.metadata:type_name -> google.cloud.datastream.v1.ValidationMessage.MetadataEntry
+	160, // 186: google.cloud.datastream.v1.CdcStrategy.most_recent_start_position:type_name -> google.cloud.datastream.v1.CdcStrategy.MostRecentStartPosition
+	161, // 187: google.cloud.datastream.v1.CdcStrategy.next_available_start_position:type_name -> google.cloud.datastream.v1.CdcStrategy.NextAvailableStartPosition
+	162, // 188: google.cloud.datastream.v1.CdcStrategy.specific_start_position:type_name -> google.cloud.datastream.v1.CdcStrategy.SpecificStartPosition
+	163, // 189: google.cloud.datastream.v1.MongodbChangeStreamPosition.start_time:type_name -> google.protobuf.Timestamp
+	163, // 190: google.cloud.datastream.v1.SpannerChangeStreamPosition.start_time:type_name -> google.protobuf.Timestamp
+	134, // 191: google.cloud.datastream.v1.OracleSourceConfig.BinaryLogParser.oracle_asm_log_file_access:type_name -> google.cloud.datastream.v1.OracleSourceConfig.BinaryLogParser.OracleAsmLogFileAccess
+	135, // 192: google.cloud.datastream.v1.OracleSourceConfig.BinaryLogParser.log_file_directories:type_name -> google.cloud.datastream.v1.OracleSourceConfig.BinaryLogParser.LogFileDirectories
+	144, // 193: google.cloud.datastream.v1.BigQueryDestinationConfig.SourceHierarchyDatasets.dataset_template:type_name -> google.cloud.datastream.v1.BigQueryDestinationConfig.SourceHierarchyDatasets.DatasetTemplate
+	6,   // 194: google.cloud.datastream.v1.BigQueryDestinationConfig.BlmtConfig.file_format:type_name -> google.cloud.datastream.v1.BigQueryDestinationConfig.BlmtConfig.FileFormat
+	7,   // 195: google.cloud.datastream.v1.BigQueryDestinationConfig.BlmtConfig.table_format:type_name -> google.cloud.datastream.v1.BigQueryDestinationConfig.BlmtConfig.TableFormat
+	50,  // 196: google.cloud.datastream.v1.Stream.BackfillAllStrategy.oracle_excluded_objects:type_name -> google.cloud.datastream.v1.OracleRdbms
+	67,  // 197: google.cloud.datastream.v1.Stream.BackfillAllStrategy.mysql_excluded_objects:type_name -> google.cloud.datastream.v1.MysqlRdbms
+	55,  // 198: google.cloud.datastream.v1.Stream.BackfillAllStrategy.postgresql_excluded_objects:type_name -> google.cloud.datastream.v1.PostgresqlRdbms
+	60,  // 199: google.cloud.datastream.v1.Stream.BackfillAllStrategy.sql_server_excluded_objects:type_name -> google.cloud.datastream.v1.SqlServerRdbms
+	70,  // 200: google.cloud.datastream.v1.Stream.BackfillAllStrategy.salesforce_excluded_objects:type_name -> google.cloud.datastream.v1.SalesforceOrg
+	74,  // 201: google.cloud.datastream.v1.Stream.BackfillAllStrategy.mongodb_excluded_objects:type_name -> google.cloud.datastream.v1.MongodbCluster
+	79,  // 202: google.cloud.datastream.v1.Stream.BackfillAllStrategy.spanner_excluded_objects:type_name -> google.cloud.datastream.v1.SpannerDatabase
+	87,  // 203: google.cloud.datastream.v1.Stream.BackfillAllStrategy.saas_excluded_objects:type_name -> google.cloud.datastream.v1.SourceCatalog
+	150, // 204: google.cloud.datastream.v1.Stream.RuleSet.customization_rules:type_name -> google.cloud.datastream.v1.Stream.RuleSet.CustomizationRule
+	149, // 205: google.cloud.datastream.v1.Stream.RuleSet.object_filter:type_name -> google.cloud.datastream.v1.Stream.RuleSet.ObjectFilter
+	103, // 206: google.cloud.datastream.v1.Stream.RuleSet.ObjectFilter.source_object_identifier:type_name -> google.cloud.datastream.v1.SourceObjectIdentifier
+	97,  // 207: google.cloud.datastream.v1.Stream.RuleSet.CustomizationRule.bigquery_partitioning:type_name -> google.cloud.datastream.v1.BigQueryPartitioning
+	93,  // 208: google.cloud.datastream.v1.Stream.RuleSet.CustomizationRule.bigquery_clustering:type_name -> google.cloud.datastream.v1.BigQueryClustering
+	113, // 209: google.cloud.datastream.v1.CdcStrategy.SpecificStartPosition.mysql_log_position:type_name -> google.cloud.datastream.v1.MysqlLogPosition
+	112, // 210: google.cloud.datastream.v1.CdcStrategy.SpecificStartPosition.oracle_scn_position:type_name -> google.cloud.datastream.v1.OracleScnPosition
+	111, // 211: google.cloud.datastream.v1.CdcStrategy.SpecificStartPosition.sql_server_lsn_position:type_name -> google.cloud.datastream.v1.SqlServerLsnPosition
+	114, // 212: google.cloud.datastream.v1.CdcStrategy.SpecificStartPosition.mysql_gtid_position:type_name -> google.cloud.datastream.v1.MysqlGtidPosition
+	115, // 213: google.cloud.datastream.v1.CdcStrategy.SpecificStartPosition.mongodb_change_stream_position:type_name -> google.cloud.datastream.v1.MongodbChangeStreamPosition
+	116, // 214: google.cloud.datastream.v1.CdcStrategy.SpecificStartPosition.spanner_change_stream_position:type_name -> google.cloud.datastream.v1.SpannerChangeStreamPosition
+	215, // [215:215] is the sub-list for method output_type
+	215, // [215:215] is the sub-list for method input_type
+	215, // [215:215] is the sub-list for extension type_name
+	215, // [215:215] is the sub-list for extension extendee
+	0,   // [0:215] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_datastream_v1_datastream_resources_proto_init() }
@@ -9453,16 +12751,29 @@ func file_google_cloud_datastream_v1_datastream_resources_proto_init() {
 		(*MongodbProfile_SrvConnectionFormat)(nil),
 		(*MongodbProfile_StandardConnectionFormat)(nil),
 	}
-	file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[13].OneofWrappers = []any{
+	file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[14].OneofWrappers = []any{
+		(*ServiceNowProfile_UserPasswordCredentials)(nil),
+		(*ServiceNowProfile_OauthClientCredentials)(nil),
+	}
+	file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[21].OneofWrappers = []any{
 		(*ForwardSshTunnelConnectivity_Password)(nil),
 		(*ForwardSshTunnelConnectivity_PrivateKey)(nil),
 	}
-	file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[16].OneofWrappers = []any{}
-	file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[22].OneofWrappers = []any{
+	file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[24].OneofWrappers = []any{}
+	file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[27].OneofWrappers = []any{
+		(*Secret_RawValue)(nil),
+		(*Secret_SecretVersion)(nil),
+	}
+	file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[31].OneofWrappers = []any{
+		(*SqlServerSslConfig_EncryptionNotEnforced_)(nil),
+		(*SqlServerSslConfig_BasicEncryption_)(nil),
+		(*SqlServerSslConfig_EncryptionAndServerValidation_)(nil),
+	}
+	file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[32].OneofWrappers = []any{
 		(*PostgresqlSslConfig_ServerVerification_)(nil),
 		(*PostgresqlSslConfig_ServerAndClientVerification_)(nil),
 	}
-	file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[23].OneofWrappers = []any{
+	file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[33].OneofWrappers = []any{
 		(*ConnectionProfile_OracleProfile)(nil),
 		(*ConnectionProfile_GcsProfile)(nil),
 		(*ConnectionProfile_MysqlProfile)(nil),
@@ -9471,90 +12782,121 @@ func file_google_cloud_datastream_v1_datastream_resources_proto_init() {
 		(*ConnectionProfile_SqlServerProfile)(nil),
 		(*ConnectionProfile_SalesforceProfile)(nil),
 		(*ConnectionProfile_MongodbProfile)(nil),
+		(*ConnectionProfile_SpannerProfile)(nil),
+		(*ConnectionProfile_DataverseProfile)(nil),
+		(*ConnectionProfile_SalesforceMarketingCloudProfile)(nil),
+		(*ConnectionProfile_ServiceNowProfile)(nil),
+		(*ConnectionProfile_WorkdayProfile)(nil),
 		(*ConnectionProfile_StaticServiceIpConnectivity)(nil),
 		(*ConnectionProfile_ForwardSshConnectivity)(nil),
 		(*ConnectionProfile_PrivateConnectivity)(nil),
 	}
-	file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[28].OneofWrappers = []any{
+	file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[38].OneofWrappers = []any{
 		(*OracleSourceConfig_DropLargeObjects_)(nil),
 		(*OracleSourceConfig_StreamLargeObjects_)(nil),
 		(*OracleSourceConfig_LogMiner_)(nil),
 		(*OracleSourceConfig_BinaryLogParser_)(nil),
 	}
-	file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[38].OneofWrappers = []any{
+	file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[48].OneofWrappers = []any{
 		(*SqlServerSourceConfig_TransactionLogs)(nil),
 		(*SqlServerSourceConfig_ChangeTables)(nil),
 	}
-	file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[45].OneofWrappers = []any{
+	file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[55].OneofWrappers = []any{
 		(*MysqlSourceConfig_BinaryLogPosition_)(nil),
 		(*MysqlSourceConfig_Gtid_)(nil),
 	}
-	file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[55].OneofWrappers = []any{
+	file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[77].OneofWrappers = []any{
 		(*SourceConfig_OracleSourceConfig)(nil),
 		(*SourceConfig_MysqlSourceConfig)(nil),
 		(*SourceConfig_PostgresqlSourceConfig)(nil),
 		(*SourceConfig_SqlServerSourceConfig)(nil),
 		(*SourceConfig_SalesforceSourceConfig)(nil),
 		(*SourceConfig_MongodbSourceConfig)(nil),
+		(*SourceConfig_SpannerSourceConfig)(nil),
+		(*SourceConfig_DataverseSourceConfig)(nil),
+		(*SourceConfig_SalesforceMarketingCloudSourceConfig)(nil),
+		(*SourceConfig_ServiceNowSourceConfig)(nil),
+		(*SourceConfig_WorkdaySourceConfig)(nil),
 	}
-	file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[58].OneofWrappers = []any{
+	file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[84].OneofWrappers = []any{
+		(*BigQueryPartitioning_IntegerRangePartition)(nil),
+		(*BigQueryPartitioning_TimeUnitPartition)(nil),
+		(*BigQueryPartitioning_IngestionTimePartition)(nil),
+	}
+	file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[85].OneofWrappers = []any{
 		(*GcsDestinationConfig_AvroFileFormat)(nil),
 		(*GcsDestinationConfig_JsonFileFormat)(nil),
 	}
-	file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[59].OneofWrappers = []any{
+	file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[86].OneofWrappers = []any{
 		(*BigQueryDestinationConfig_SingleTargetDataset_)(nil),
 		(*BigQueryDestinationConfig_SourceHierarchyDatasets_)(nil),
 		(*BigQueryDestinationConfig_Merge_)(nil),
 		(*BigQueryDestinationConfig_AppendOnly_)(nil),
 	}
-	file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[60].OneofWrappers = []any{
+	file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[87].OneofWrappers = []any{
 		(*DestinationConfig_GcsDestinationConfig)(nil),
 		(*DestinationConfig_BigqueryDestinationConfig)(nil),
 	}
-	file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[61].OneofWrappers = []any{
+	file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[88].OneofWrappers = []any{
 		(*Stream_BackfillAll)(nil),
 		(*Stream_BackfillNone)(nil),
 	}
-	file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[63].OneofWrappers = []any{
+	file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[90].OneofWrappers = []any{
 		(*SourceObjectIdentifier_OracleIdentifier)(nil),
 		(*SourceObjectIdentifier_MysqlIdentifier)(nil),
 		(*SourceObjectIdentifier_PostgresqlIdentifier)(nil),
 		(*SourceObjectIdentifier_SqlServerIdentifier)(nil),
 		(*SourceObjectIdentifier_SalesforceIdentifier)(nil),
 		(*SourceObjectIdentifier_MongodbIdentifier)(nil),
+		(*SourceObjectIdentifier_SpannerIdentifier)(nil),
 	}
-	file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[69].OneofWrappers = []any{
+	file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[92].OneofWrappers = []any{
+		(*EventFilter_SqlWhereClause)(nil),
+	}
+	file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[97].OneofWrappers = []any{
 		(*CdcStrategy_MostRecentStartPosition_)(nil),
 		(*CdcStrategy_NextAvailableStartPosition_)(nil),
 		(*CdcStrategy_SpecificStartPosition_)(nil),
 	}
-	file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[72].OneofWrappers = []any{}
-	file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[86].OneofWrappers = []any{
+	file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[100].OneofWrappers = []any{}
+	file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[113].OneofWrappers = []any{}
+	file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[120].OneofWrappers = []any{
 		(*OracleSourceConfig_BinaryLogParser_OracleAsmLogFileAccess_)(nil),
 		(*OracleSourceConfig_BinaryLogParser_LogFileDirectories_)(nil),
 	}
-	file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[92].OneofWrappers = []any{}
-	file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[97].OneofWrappers = []any{
+	file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[127].OneofWrappers = []any{}
+	file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[132].OneofWrappers = []any{
 		(*Stream_BackfillAllStrategy_OracleExcludedObjects)(nil),
 		(*Stream_BackfillAllStrategy_MysqlExcludedObjects)(nil),
 		(*Stream_BackfillAllStrategy_PostgresqlExcludedObjects)(nil),
 		(*Stream_BackfillAllStrategy_SqlServerExcludedObjects)(nil),
 		(*Stream_BackfillAllStrategy_SalesforceExcludedObjects)(nil),
 		(*Stream_BackfillAllStrategy_MongodbExcludedObjects)(nil),
+		(*Stream_BackfillAllStrategy_SpannerExcludedObjects)(nil),
+		(*Stream_BackfillAllStrategy_SaasExcludedObjects)(nil),
 	}
-	file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[110].OneofWrappers = []any{
+	file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[136].OneofWrappers = []any{
+		(*Stream_RuleSet_ObjectFilter_SourceObjectIdentifier)(nil),
+	}
+	file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[137].OneofWrappers = []any{
+		(*Stream_RuleSet_CustomizationRule_BigqueryPartitioning)(nil),
+		(*Stream_RuleSet_CustomizationRule_BigqueryClustering)(nil),
+	}
+	file_google_cloud_datastream_v1_datastream_resources_proto_msgTypes[149].OneofWrappers = []any{
 		(*CdcStrategy_SpecificStartPosition_MysqlLogPosition)(nil),
 		(*CdcStrategy_SpecificStartPosition_OracleScnPosition)(nil),
 		(*CdcStrategy_SpecificStartPosition_SqlServerLsnPosition)(nil),
 		(*CdcStrategy_SpecificStartPosition_MysqlGtidPosition)(nil),
+		(*CdcStrategy_SpecificStartPosition_MongodbChangeStreamPosition)(nil),
+		(*CdcStrategy_SpecificStartPosition_SpannerChangeStreamPosition)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_datastream_v1_datastream_resources_proto_rawDesc), len(file_google_cloud_datastream_v1_datastream_resources_proto_rawDesc)),
-			NumEnums:      10,
-			NumMessages:   111,
+			NumEnums:      13,
+			NumMessages:   150,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

@@ -26,10 +26,12 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/storage/experimental"
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/google/go-cmp/cmp"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
@@ -460,6 +462,18 @@ func TestPrepareDirectPathMetadata(t *testing.T) {
 			want:     "direct_connectivity_diagnostic=reason",
 		},
 		{
+			desc:     "DirectPath over Interconnect target with ENFORCED",
+			enforced: true,
+			target:   "google-c2p:///storage-direct.googleapis.com?force-xds",
+			want:     "force_direct_connectivity=ENFORCED",
+		},
+		{
+			desc:     "DirectPath over Interconnect target with NOT ENFORCED",
+			enforced: false,
+			target:   "google-c2p:///storage-direct.googleapis.com?force-xds",
+			want:     "",
+		},
+		{
 			desc:     "Empty target with ENFORCED",
 			enforced: true,
 			target:   "",
@@ -498,6 +512,29 @@ func TestPrepareDirectPathMetadata(t *testing.T) {
 				t.Errorf("got metadata %q, want %q", headerValue, tc.want)
 			}
 		})
+	}
+}
+
+func TestNewGRPCStorageClient_InterconnectOption(t *testing.T) {
+	ctx := context.Background()
+	client, err := newGRPCStorageClient(ctx,
+		withClientOptions(
+			option.WithoutAuthentication(),
+			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+			experimental.WithDirectPathXdsOverInterconnect(),
+		),
+	)
+	if err != nil {
+		t.Fatalf("newGRPCStorageClient: %v", err)
+	}
+	defer client.Close()
+
+	res, err := internaloption.NewUnsafeResolver(client.settings.clientOption...)
+	if err != nil {
+		t.Fatalf("NewUnsafeResolver: %v", err)
+	}
+	if got := res.ResolvedEnableDirectPathXdsOverInterconnect(); !got {
+		t.Errorf("res.ResolvedEnableDirectPathXdsOverInterconnect() = %v, want true", got)
 	}
 }
 
@@ -942,5 +979,50 @@ func TestVerifyChecksums(t *testing.T) {
 				}
 			}
 		})
+	}
+}
+
+func TestRangeReaderRemain(t *testing.T) {
+	const size = 100
+	for _, tc := range []struct {
+		desc        string
+		startOffset int64
+		length      int64
+		want        int64
+	}{
+		{desc: "entire object", startOffset: 0, length: -1, want: size},
+		{desc: "entire object with exact length", startOffset: 0, length: size, want: size},
+		{desc: "prefix", startOffset: 0, length: 10, want: 10},
+		{desc: "range in the middle", startOffset: 40, length: 20, want: 20},
+		{desc: "range in the middle with length larger than offset", startOffset: 10, length: 30, want: 30},
+		{desc: "range in the middle with offset larger than length", startOffset: 60, length: 10, want: 10},
+		{desc: "range ending exactly at end of object", startOffset: 60, length: 40, want: 40},
+		{desc: "length past end of object", startOffset: 60, length: 80, want: 40},
+		{desc: "length larger than object", startOffset: 60, length: 2 * size, want: 40},
+		{desc: "rest of object from offset", startOffset: 60, length: -1, want: 40},
+		{desc: "zero length", startOffset: 60, length: 0, want: 0},
+		{desc: "offset at end of object", startOffset: size, length: 10, want: 0},
+		{desc: "offset past end of object", startOffset: size + 10, length: 10, want: 0},
+		{desc: "offset past end of object, rest of object", startOffset: size + 10, length: -1, want: 0},
+	} {
+		t.Run(tc.desc, func(t *testing.T) {
+			if got := rangeReaderRemain(size, tc.startOffset, tc.length); got != tc.want {
+				t.Errorf("rangeReaderRemain(%d, %d, %d) = %d, want %d", size, tc.startOffset, tc.length, got, tc.want)
+			}
+		})
+	}
+}
+
+// TestRangeReaderRemainLargeObject covers fixed-size range reads deep into a
+// multi-GiB object.
+func TestRangeReaderRemainLargeObject(t *testing.T) {
+	const (
+		size   = 4 * 1024 * MiB
+		length = 16 * MiB
+	)
+	for _, offset := range []int64{0, length, 2214592512, 3338665984, size - length} {
+		if got := rangeReaderRemain(size, offset, length); got != length {
+			t.Errorf("rangeReaderRemain(%d, %d, %d) = %d, want %d", int64(size), offset, int64(length), got, int64(length))
+		}
 	}
 }

@@ -17,7 +17,8 @@
 // Package procurement is an auto-generated package for the
 // Cloud Commerce Consumer Procurement API.
 //
-// # Enables consumers to procure products served by Cloud Marketplace platform
+// Enables consumers to procure products served by Cloud Marketplace
+// platform.
 //
 // # General documentation
 //
