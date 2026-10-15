@@ -162,6 +162,10 @@ func (RawOptions) isUpdateOption() {}
 
 func (RawOptions) isDeleteOption() {}
 
+func (RawOptions) isInsertOption() {}
+
+func (RawOptions) isUpsertOption() {}
+
 func (RawOptions) isCollectionOption() {}
 
 func (RawOptions) isCollectionGroupOption() {}
@@ -1265,6 +1269,229 @@ func (p *Pipeline) Delete(opts ...DeleteOption) *Pipeline {
 		}
 	}
 	stage := newDeleteStage(options)
+	return p.append(stage)
+}
+
+// InsertOption is an option for an Insert pipeline stage.
+//
+// Experimental: Insert, Upsert, Update, Delete and Search stages in pipeline queries are in public preview
+// and are subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+type InsertOption interface {
+	StageOption
+	isInsertOption()
+}
+
+type funcInsertOption struct {
+	f func(map[string]any)
+}
+
+func (fio *funcInsertOption) applyStage(io map[string]any) {
+	fio.f(io)
+}
+
+func (*funcInsertOption) isInsertOption() {}
+
+func newFuncInsertOption(f func(map[string]any)) *funcInsertOption {
+	return &funcInsertOption{
+		f: f,
+	}
+}
+
+// WithInsertCollection specifies the target collection to insert documents into.
+// The collection can be specified as a string path or a [*CollectionRef].
+// If omitted, the target collection and document ID are inferred from the `__name__` field of each input document.
+//
+// Experimental: Insert, Upsert, Update, Delete and Search stages in pipeline queries are in public preview
+// and are subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func WithInsertCollection(collection any) InsertOption {
+	return newFuncInsertOption(func(io map[string]any) {
+		io["collection"] = collection
+	})
+}
+
+// WithInsertDocumentID specifies the field or expression used to determine the document ID for each inserted document.
+// It can be a string field path, a [FieldPath], or an [Expression].
+// If omitted when a target collection is specified, a new random document ID is generated for each document.
+//
+// Experimental: Insert, Upsert, Update, Delete and Search stages in pipeline queries are in public preview
+// and are subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func WithInsertDocumentID(documentID any) InsertOption {
+	return newFuncInsertOption(func(io map[string]any) {
+		io["document_id"] = documentID
+	})
+}
+
+// Insert performs an insert operation using documents from previous stages.
+//
+// If a document already exists at the target path, the pipeline fails with `codes.AlreadyExists`.
+//
+// Example:
+//
+//	// Insert literal documents using their __name__ field
+//	client.Pipeline().Literals(insertData).Insert()
+//
+//	// Copy documents into an archive collection with auto-generated IDs
+//	client.Pipeline().Collection("books").
+//		RemoveFields(Fields(DocumentID)).
+//		Insert(WithInsertCollection("archived_books"))
+//
+//	// Insert documents into a target collection with a custom document ID expression
+//	client.Pipeline().Collection("books").
+//		Insert(
+//			WithInsertCollection("archived_books"),
+//			WithInsertDocumentID(StringConcat(FieldOf("isbn"), "-archive")),
+//		)
+//
+// Experimental: Insert, Upsert, Update, Delete and Search stages in pipeline queries are in public preview
+// and are subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func (p *Pipeline) Insert(opts ...InsertOption) *Pipeline {
+	if p.err != nil {
+		return p
+	}
+
+	options := make(map[string]any)
+	for _, opt := range opts {
+		if opt != nil {
+			opt.applyStage(options)
+		}
+	}
+
+	if colRef, ok := options["collection"].(*CollectionRef); ok && colRef != nil && colRef.c != nil && p.c != nil {
+		if colRef.c.projectID != p.c.projectID || colRef.c.databaseID != p.c.databaseID {
+			p.err = fmt.Errorf("firestore: invalid CollectionRef for Insert stage: collection belongs to database %q in project %q, which differs from pipeline database %q in project %q",
+				colRef.c.databaseID, colRef.c.projectID, p.c.databaseID, p.c.projectID)
+			return p
+		}
+	}
+
+	stage, err := newInsertStage(options)
+	if err != nil {
+		p.err = err
+		return p
+	}
+	return p.append(stage)
+}
+
+// UpsertOption is an option for an Upsert pipeline stage.
+//
+// Experimental: Insert, Upsert, Update, Delete and Search stages in pipeline queries are in public preview
+// and are subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+type UpsertOption interface {
+	StageOption
+	isUpsertOption()
+}
+
+type funcUpsertOption struct {
+	f func(map[string]any)
+}
+
+func (fuo *funcUpsertOption) applyStage(uo map[string]any) {
+	fuo.f(uo)
+}
+
+func (*funcUpsertOption) isUpsertOption() {}
+
+func newFuncUpsertOption(f func(map[string]any)) *funcUpsertOption {
+	return &funcUpsertOption{
+		f: f,
+	}
+}
+
+// WithUpsertCollection specifies the target collection to upsert documents into.
+// The collection can be specified as a string path or a [*CollectionRef].
+// If omitted, the target collection and document ID are inferred from the `__name__` field of each input document.
+//
+// Experimental: Insert, Upsert, Update, Delete and Search stages in pipeline queries are in public preview
+// and are subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func WithUpsertCollection(collection any) UpsertOption {
+	return newFuncUpsertOption(func(uo map[string]any) {
+		uo["collection"] = collection
+	})
+}
+
+// WithUpsertDocumentID specifies the field or expression used to determine the document ID for each upserted document.
+// It can be a string field path, a [FieldPath], or an [Expression].
+// If omitted when a target collection is specified, a new random document ID is generated for each document.
+//
+// Experimental: Insert, Upsert, Update, Delete and Search stages in pipeline queries are in public preview
+// and are subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func WithUpsertDocumentID(documentID any) UpsertOption {
+	return newFuncUpsertOption(func(uo map[string]any) {
+		uo["document_id"] = documentID
+	})
+}
+
+// WithUpsertTransformations specifies the list of field transformations to apply in an upsert operation.
+//
+// Experimental: Insert, Upsert, Update, Delete and Search stages in pipeline queries are in public preview
+// and are subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func WithUpsertTransformations(field Selectable, additionalFields ...Selectable) UpsertOption {
+	return newFuncUpsertOption(func(uo map[string]any) {
+		t, ok := uo["transformations"].([]Selectable)
+		if !ok {
+			t = []Selectable{}
+		}
+		uo["transformations"] = append(t, append([]Selectable{field}, additionalFields...)...)
+	})
+}
+
+// Upsert performs an upsert (insert or update) operation using documents from previous stages.
+//
+// This method inserts new documents or updates existing documents based on the data flowing through the pipeline.
+// You can optionally specify a target collection using [WithUpsertCollection], a document ID expression using
+// [WithUpsertDocumentID], and a list of [Selectable] field transformations using [WithUpsertTransformations].
+// If no transformations are provided, the entire document flowing from the previous stage is used as the upsert payload.
+//
+// Example:
+//
+//	// In-place upsert using __name__ from input documents
+//	client.Pipeline().Literals(upsertData).Upsert()
+//
+//	// Upsert into a target collection with a document ID and transformations
+//	client.Pipeline().Collection("books").
+//		Where(GreaterThan("price", 50)).
+//		Upsert(
+//			WithUpsertCollection("featured_books"),
+//			WithUpsertDocumentID(FieldOf("isbn")),
+//			WithUpsertTransformations(ConstantOf("Featured").As("status")),
+//		)
+//
+// Experimental: Insert, Upsert, Update, Delete and Search stages in pipeline queries are in public preview
+// and are subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func (p *Pipeline) Upsert(opts ...UpsertOption) *Pipeline {
+	if p.err != nil {
+		return p
+	}
+
+	options := make(map[string]any)
+	for _, opt := range opts {
+		if opt != nil {
+			opt.applyStage(options)
+		}
+	}
+
+	if colRef, ok := options["collection"].(*CollectionRef); ok && colRef != nil && colRef.c != nil && p.c != nil {
+		if colRef.c.projectID != p.c.projectID || colRef.c.databaseID != p.c.databaseID {
+			p.err = fmt.Errorf("firestore: invalid CollectionRef for Upsert stage: collection belongs to database %q in project %q, which differs from pipeline database %q in project %q",
+				colRef.c.databaseID, colRef.c.projectID, p.c.databaseID, p.c.projectID)
+			return p
+		}
+	}
+
+	stage, err := newUpsertStage(options)
+	if err != nil {
+		p.err = err
+		return p
+	}
 	return p.append(stage)
 }
 

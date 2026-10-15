@@ -887,6 +887,77 @@ func testIntegrationPipelineStages(t *testing.T) {
 			t.Errorf("got %d documents, want 0 after delete", len(results))
 		}
 	})
+	t.Run("Insert", func(t *testing.T) {
+		insertedRef := coll.Doc("inserted-book-1")
+		t.Cleanup(func() { deleteDocuments([]*DocumentRef{insertedRef}) })
+
+		want := map[string]any{
+			"title":  "New Book",
+			"author": map[string]any{"name": "New Author", "country": "US"},
+		}
+		insertIter := client.Pipeline().Literals([]map[string]any{want}).Insert(
+			WithInsertCollection(coll),
+			WithInsertDocumentID(ConstantOf("inserted-book-1")),
+		).Execute(ctx).Results()
+		defer insertIter.Stop()
+		_, err := insertIter.GetAll()
+		if err != nil {
+			t.Fatalf("Failed to execute insert: %v", err)
+		}
+
+		verifyIter := client.Pipeline().Collection(coll.ID).Where(Equal(FieldOf("title"), "New Book")).Execute(ctx).Results()
+		defer verifyIter.Stop()
+		results, err := verifyIter.GetAll()
+		if err != nil {
+			t.Fatalf("Failed to execute verify: %v", err)
+		}
+		if len(results) != 1 {
+			t.Fatalf("got %d inserted documents, want 1", len(results))
+		}
+		if gotID := results[0].Ref().ID; gotID != "inserted-book-1" {
+			t.Errorf("got document ID %q, want %q", gotID, "inserted-book-1")
+		}
+		if diff := testutil.Diff(results[0].Data(), want); diff != "" {
+			t.Errorf("inserted document data mismatch (-got +want):\n%s", diff)
+		}
+	})
+	t.Run("Upsert", func(t *testing.T) {
+		upsertedRef := coll.Doc("upserted-book-1")
+		t.Cleanup(func() { deleteDocuments([]*DocumentRef{upsertedRef}) })
+
+		upsertIter := client.Pipeline().Literals([]map[string]any{
+			{"title": "Upserted Book"},
+		}).Upsert(
+			WithUpsertCollection(coll),
+			WithUpsertDocumentID(ConstantOf("upserted-book-1")),
+			WithUpsertTransformations(ConstantOf("Available").As("status")),
+		).Execute(ctx).Results()
+		defer upsertIter.Stop()
+		_, err := upsertIter.GetAll()
+		if err != nil {
+			t.Fatalf("Failed to execute upsert: %v", err)
+		}
+
+		verifyIter := client.Pipeline().Collection(coll.ID).Where(Equal(FieldOf("title"), "Upserted Book")).Execute(ctx).Results()
+		defer verifyIter.Stop()
+		results, err := verifyIter.GetAll()
+		if err != nil {
+			t.Fatalf("Failed to execute verify: %v", err)
+		}
+		if len(results) != 1 {
+			t.Fatalf("got %d upserted documents, want 1", len(results))
+		}
+		if gotID := results[0].Ref().ID; gotID != "upserted-book-1" {
+			t.Errorf("got document ID %q, want %q", gotID, "upserted-book-1")
+		}
+		want := map[string]any{
+			"title":  "Upserted Book",
+			"status": "Available",
+		}
+		if diff := testutil.Diff(results[0].Data(), want); diff != "" {
+			t.Errorf("upserted document data mismatch (-got +want):\n%s", diff)
+		}
+	})
 }
 
 func testIntegrationPipelineFunctions(t *testing.T) {
