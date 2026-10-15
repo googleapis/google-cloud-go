@@ -54,6 +54,7 @@ func traceAttributesFromContext(ctx context.Context) ([]attribute.KeyValue, bool
 const (
 	defaultTracerName = "cloud.google.com/go/storage"
 	gcpClientArtifact = "cloud.google.com/go/storage"
+	gcpClientService  = "storage"
 )
 
 // isOTelTracingDevEnabled checks the development flag until experimental feature is launched.
@@ -187,6 +188,7 @@ func getCommonTraceOptions() []trace.SpanStartOption {
 // getCommonAttributes includes the common attributes used for Cloud Trace adoption tracking.
 func getCommonAttributes() []attribute.KeyValue {
 	return []attribute.KeyValue{
+		attribute.String("gcp.client.service", gcpClientService),
 		attribute.String("gcp.client.version", internal.Version),
 		attribute.String("gcp.client.artifact", gcpClientArtifact),
 	}
