@@ -522,6 +522,7 @@ func TestHTTPClientAuthTracingWithMetrics(t *testing.T) {
 		te.Unregister(ctx)
 	})
 	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
+	t.Setenv("STORAGE_EMULATOR_HOST", "")
 
 	mr := sdkmetric.NewManualReader()
 	meterProvider := sdkmetric.NewMeterProvider(sdkmetric.WithReader(mr))
@@ -532,20 +533,28 @@ func TestHTTPClientAuthTracingWithMetrics(t *testing.T) {
 	baseCreds := &auth.Credentials{
 		TokenProvider: &staticAuthTokenProvider{token: &auth.Token{Value: "fake-token"}},
 	}
-	sc, err := newHTTPStorageClient(ctx, withClientOptions(
+	client, err := NewClient(ctx,
 		option.WithAuthCredentials(baseCreds),
 		withOtelMetrics(),
 		withOtelDebugMetrics(),
 		withMeterProvider(meterProvider),
-	))
+	)
 	if err != nil {
-		t.Fatalf("newHTTPStorageClient: %v", err)
+		t.Fatalf("NewClient: %v", err)
 	}
 	t.Cleanup(func() {
-		_ = sc.Close()
+		_ = client.Close()
 	})
 
-	hc := sc.(*httpStorageClient)
+	var hc *httpStorageClient
+	switch tc := client.tc.(type) {
+	case *metricsStorageClient:
+		hc = tc.storageClient.(*httpStorageClient)
+	case *httpStorageClient:
+		hc = tc
+	default:
+		t.Fatalf("unexpected storageClient type: %T", client.tc)
+	}
 	if _, err := hc.creds.Token(ctx); err != nil {
 		t.Fatalf("hc.creds.Token: %v", err)
 	}
