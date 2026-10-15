@@ -23,7 +23,6 @@ import (
 	"go.opentelemetry.io/otel/exporters/stdout/stdoutmetric"
 	"go.opentelemetry.io/otel/sdk/metric"
 	"google.golang.org/api/option"
-	"google.golang.org/grpc/keepalive"
 )
 
 func TestApplyStorageOpt(t *testing.T) {
@@ -161,17 +160,15 @@ func TestApplyStorageOpt(t *testing.T) {
 			},
 		},
 		{
-			desc: "set gRPC keepalive; PermitWithoutStream is always forced to false",
-			opts: []option.ClientOption{WithGRPCKeepalive(keepalive.ClientParameters{
-				Time:                30 * time.Second,
-				Timeout:             20 * time.Second,
-				PermitWithoutStream: true,
+			desc: "set gRPC keepalive",
+			opts: []option.ClientOption{withGRPCKeepalive(experimental.GRPCKeepaliveConfig{
+				Time:    30 * time.Second,
+				Timeout: 20 * time.Second,
 			})},
 			want: storageConfig{
-				grpcKeepalive: &keepalive.ClientParameters{
-					Time:                30 * time.Second,
-					Timeout:             20 * time.Second,
-					PermitWithoutStream: false,
+				grpcKeepalive: &experimental.GRPCKeepaliveConfig{
+					Time:    30 * time.Second,
+					Timeout: 20 * time.Second,
 				},
 			},
 		},

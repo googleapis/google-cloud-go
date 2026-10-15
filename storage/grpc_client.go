@@ -40,6 +40,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/encoding"
+	"google.golang.org/grpc/keepalive"
 	"google.golang.org/grpc/mem"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
@@ -170,8 +171,15 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (client *g
 	}
 
 	if config.grpcKeepalive != nil {
+		// Pings are only sent while at least one RPC is in flight
+		// (PermitWithoutStream is intentionally left false): idle connections
+		// have no work to protect and pinging them would only consume the
+		// server's ping budget.
 		s.clientOption = append(s.clientOption,
-			option.WithGRPCDialOption(grpc.WithKeepaliveParams(*config.grpcKeepalive)))
+			option.WithGRPCDialOption(grpc.WithKeepaliveParams(keepalive.ClientParameters{
+				Time:    config.grpcKeepalive.Time,
+				Timeout: config.grpcKeepalive.Timeout,
+			})))
 	}
 
 	if !config.disableClientMetrics {

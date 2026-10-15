@@ -111,3 +111,35 @@ func WithOtelDebugMetrics() option.ClientOption {
 func WithBufferPool(pool BufferPool) option.ClientOption {
 	return internal.WithBufferPool.(func(BufferPool) option.ClientOption)(pool)
 }
+
+// WithGRPCKeepalive provides an [option.ClientOption] that may be passed to
+// [storage.NewGRPCClient].
+//
+// It enables HTTP/2 keepalive pings on the client's gRPC connections. A peer
+// that stops responding (for example after an ungraceful server or network
+// failure) is detected within about Time+Timeout rather than after the OS TCP
+// retransmission limit, which can take many minutes; the connection is closed
+// and in-flight calls fail fast so that retries can use a healthy connection.
+//
+// Keepalive is disabled by default. Pings are only sent while at least one RPC
+// is in flight. gRPC enforces a minimum Time of 10s, and servers may close
+// connections that ping too frequently. A reasonable starting point is
+// Time: 30s, Timeout: 20s.
+//
+// This option is exclusively supported for gRPC clients. It takes precedence
+// over any keepalive parameters passed via [option.WithGRPCDialOption].
+func WithGRPCKeepalive(cfg GRPCKeepaliveConfig) option.ClientOption {
+	return internal.WithGRPCKeepalive.(func(GRPCKeepaliveConfig) option.ClientOption)(cfg)
+}
+
+// GRPCKeepaliveConfig configures HTTP/2 keepalive pings for gRPC connections.
+// See [WithGRPCKeepalive].
+type GRPCKeepaliveConfig struct {
+	// Time is how long the connection may be without received data before the
+	// client sends a keepalive ping. gRPC enforces a minimum of 10 seconds.
+	Time time.Duration
+
+	// Timeout is how long the client waits for a ping acknowledgement before
+	// closing the connection. If zero, the gRPC default (20 seconds) is used.
+	Timeout time.Duration
+}

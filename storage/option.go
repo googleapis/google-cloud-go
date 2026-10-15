@@ -24,7 +24,6 @@ import (
 	"go.opentelemetry.io/otel/sdk/metric"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
-	"google.golang.org/grpc/keepalive"
 )
 
 const (
@@ -46,6 +45,7 @@ func init() {
 	storageinternal.WithOtelMetrics = withOtelMetrics
 	storageinternal.WithOtelDebugMetrics = withOtelDebugMetrics
 	storageinternal.WithBufferPool = withBufferPool
+	storageinternal.WithGRPCKeepalive = withGRPCKeepalive
 }
 
 // getDynamicReadReqIncreaseRateFromEnv returns the value set in the env variable.
@@ -94,7 +94,7 @@ type storageConfig struct {
 	grpcAppendableUploads  bool
 	grpcDirectPathEnforced bool
 	bufferPool             experimental.BufferPool
-	grpcKeepalive          *keepalive.ClientParameters
+	grpcKeepalive          *experimental.GRPCKeepaliveConfig
 }
 
 // newStorageConfig generates a new storageConfig with all the given
@@ -312,39 +312,19 @@ func (w *withGRPCAppendableUploadsConfig) ApplyStorageOpt(config *storageConfig)
 	config.grpcAppendableUploads = true
 }
 
-// WithGRPCKeepalive provides an [option.ClientOption] that may be passed to
-// [NewGRPCClient].
-//
-// It enables HTTP/2 keepalive pings on the client's gRPC connections, as
-// described by [keepalive.ClientParameters]. A peer that stops responding
-// (for example after an ungraceful server or network failure) is detected
-// within about Time+Timeout rather than after the OS TCP retransmission
-// limit, which can take many minutes; the connection is closed and in-flight
-// calls fail fast so that retries can use a healthy connection.
-//
-// Keepalive is disabled by default. gRPC enforces a minimum Time of 10s, and
-// servers may close connections that ping too frequently. A reasonable
-// starting point is Time: 30s, Timeout: 20s.
-//
-// Pings are only sent while at least one RPC is in flight: PermitWithoutStream
-// is always false, regardless of the value passed in. Idle connections have no
-// work to protect and are checked by the first RPC that uses them, so pinging
-// them would only consume the server's ping budget.
-//
-// Note: This option is exclusively supported for gRPC clients.
-func WithGRPCKeepalive(params keepalive.ClientParameters) option.ClientOption {
-	return &withGRPCKeepaliveConfig{params: params}
+// withGRPCKeepalive is the implementation of experimental.WithGRPCKeepalive.
+func withGRPCKeepalive(cfg experimental.GRPCKeepaliveConfig) option.ClientOption {
+	return &withGRPCKeepaliveConfig{cfg: cfg}
 }
 
 type withGRPCKeepaliveConfig struct {
 	internaloption.EmbeddableAdapter
-	params keepalive.ClientParameters
+	cfg experimental.GRPCKeepaliveConfig
 }
 
 func (w *withGRPCKeepaliveConfig) ApplyStorageOpt(config *storageConfig) {
-	p := w.params
-	p.PermitWithoutStream = false
-	config.grpcKeepalive = &p
+	c := w.cfg
+	config.grpcKeepalive = &c
 }
 
 func withOtelMetrics() option.ClientOption {
