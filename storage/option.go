@@ -315,30 +315,18 @@ func (w *withGRPCAppendableUploadsConfig) ApplyStorageOpt(config *storageConfig)
 // WithGRPCKeepalive provides an [option.ClientOption] that may be passed to
 // [NewGRPCClient].
 //
-// It configures HTTP/2 keepalive pings on the gRPC connections used by the
-// client, as described by [keepalive.ClientParameters]. Keepalive pings let
-// the client detect a connection whose peer has silently stopped responding
-// (for example after an ungraceful server or network failure) within
-// approximately Time+Timeout, instead of waiting for the operating system's
-// TCP retransmission limits, which can take many minutes. On detection the
-// connection is closed and in-flight operations fail fast so that the
-// client's retry logic can re-establish a healthy connection.
+// It enables HTTP/2 keepalive pings on the client's gRPC connections, as
+// described by [keepalive.ClientParameters]. A peer that stops responding
+// (for example after an ungraceful server or network failure) is detected
+// within about Time+Timeout rather than after the OS TCP retransmission
+// limit, which can take many minutes; the connection is closed and in-flight
+// calls fail fast so that retries can use a healthy connection.
 //
-// By default keepalive pings are disabled. A reasonable starting point for
-// latency sensitive workloads is:
+// Keepalive is disabled by default. gRPC enforces a minimum Time of 10s, and
+// servers may close connections that ping too frequently. A reasonable
+// starting point is Time: 30s, Timeout: 20s.
 //
-//	storage.WithGRPCKeepalive(keepalive.ClientParameters{
-//		Time:                30 * time.Second,
-//		Timeout:             20 * time.Second,
-//		PermitWithoutStream: false,
-//	})
-//
-// Note that gRPC enforces a minimum Time of 10 seconds. Servers may also
-// limit how frequently a client is allowed to ping; overly aggressive
-// settings can cause the server to close the connection.
-//
-// Note: This option is exclusively supported for gRPC clients and is ignored
-// by HTTP clients.
+// Note: This option is exclusively supported for gRPC clients.
 func WithGRPCKeepalive(params keepalive.ClientParameters) option.ClientOption {
 	return &withGRPCKeepaliveConfig{params: params}
 }
