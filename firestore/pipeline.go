@@ -18,6 +18,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"maps"
 	"reflect"
 
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
@@ -119,15 +120,11 @@ type StageOption interface {
 type RawOptions map[string]any
 
 func (r RawOptions) applyStage(options map[string]any) {
-	for k, v := range r {
-		options[k] = v
-	}
+	maps.Copy(options, r)
 }
 
 func (r RawOptions) applyAggregate(options map[string]any) {
-	for k, v := range r {
-		options[k] = v
-	}
+	maps.Copy(options, r)
 }
 
 func (RawOptions) isLimitOption() {}
@@ -180,9 +177,7 @@ func (r RawOptions) apply(eo *executeSettings) {
 	if eo.RawOptions == nil {
 		eo.RawOptions = make(map[string]any)
 	}
-	for k, v := range r {
-		eo.RawOptions[k] = v
-	}
+	maps.Copy(eo.RawOptions, r)
 }
 
 // Fields is a helper function that returns its arguments as a slice of any.
@@ -322,9 +317,7 @@ func (p *Pipeline) copy() *Pipeline {
 	*newP.executeSettings = *p.executeSettings
 	if p.executeSettings.RawOptions != nil {
 		newRawOptions := make(map[string]any, len(p.executeSettings.RawOptions))
-		for k, v := range p.executeSettings.RawOptions {
-			newRawOptions[k] = v
-		}
+		maps.Copy(newRawOptions, p.executeSettings.RawOptions)
 		newP.executeSettings.RawOptions = newRawOptions
 	}
 	if p.executeSettings.ExplainOptions != nil {

@@ -530,7 +530,9 @@ const (
 // It can be used to initialize pointer fields:
 //
 //	findNearestOptions.DistanceThreshold = firestore.Ptr[float64](0.1)
-func Ptr[T any](t T) *T { return &t }
+//
+//go:fix inline
+func Ptr[T any](t T) *T { return new(t) }
 
 // FindNearestOptions are options for a FindNearest vector query.
 type FindNearestOptions struct {

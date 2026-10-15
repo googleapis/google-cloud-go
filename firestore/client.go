@@ -23,6 +23,7 @@ import (
 	"net"
 	"net/url"
 	"os"
+	"slices"
 	"strings"
 	"syscall"
 	"time"
@@ -301,10 +302,8 @@ func (c *Client) idsToRef(IDs []string, dbPath string) (*CollectionRef, *Documen
 	if len(IDs) == 0 {
 		return nil, nil
 	}
-	for _, id := range IDs {
-		if id == "" {
-			return nil, nil
-		}
+	if slices.Contains(IDs, "") {
+		return nil, nil
 	}
 	coll := newTopLevelCollRef(c, dbPath, IDs[0])
 	i := 1
@@ -365,7 +364,7 @@ func (c *Client) getAll(ctx context.Context, docRefs []*DocumentRef, tid []byte,
 		Multiplier: 2.0,
 	}
 
-	for attempt := 0; attempt < maxAttempts; attempt++ {
+	for attempt := range maxAttempts {
 		if len(outstanding) == 0 {
 			break
 		}

@@ -427,10 +427,10 @@ func TestBulkWriterConcurrent(t *testing.T) {
 	// 1. Setup the mock server to accept 5 batches (100 / 20 = 5).
 	// We use `nil` for the request to avoid flaky order-dependent checks.
 	// We are testing for a client-side race, not server-side request generation.
-	for i := 0; i < numBatches; i++ {
+	for range numBatches {
 		resp := &pb.BatchWriteResponse{}
 		// Create a full batch of 20 successful responses
-		for j := 0; j < batchSize; j++ {
+		for range batchSize {
 			resp.WriteResults = append(resp.WriteResults, &pb.WriteResult{UpdateTime: aTimestamp})
 			resp.Status = append(resp.Status, &status.Status{Code: int32(codes.OK)})
 		}
@@ -446,7 +446,7 @@ func TestBulkWriterConcurrent(t *testing.T) {
 	errChan := make(chan error, numWrites)
 
 	// 2. Launch 100 goroutines to add writes concurrently.
-	for i := 0; i < numWrites; i++ {
+	for i := range numWrites {
 		wg.Add(1)
 		go func(docNum int) {
 			defer wg.Done()
@@ -555,7 +555,7 @@ func TestBulkWriterBackpressureThrottling(t *testing.T) {
 
 	// Use wildcard RPC matching so that Flush works correctly
 	srv.reset()
-	for i := 0; i < 2; i++ {
+	for range 2 {
 		srv.addRPC(nil, &pb.BatchWriteResponse{
 			WriteResults: []*pb.WriteResult{{UpdateTime: aTimestamp}},
 			Status:       []*status.Status{{Code: int32(codes.OK)}},
