@@ -537,9 +537,9 @@ func TestUpsertStage(t *testing.T) {
 			},
 		},
 		{
-			desc: "transformations only",
+			desc: "additional_fields only",
 			options: map[string]any{
-				"transformations": []Selectable{
+				"additional_fields": []Selectable{
 					ConstantOf("Active").As("status"),
 					Add(FieldOf("age"), 1).As("age"),
 				},
@@ -561,11 +561,11 @@ func TestUpsertStage(t *testing.T) {
 			},
 		},
 		{
-			desc: "collection, document_id, and transformations",
+			desc: "collection, document_id, and additional_fields",
 			options: map[string]any{
-				"collection":      "users/123/books",
-				"document_id":     FieldOf("custom_id"),
-				"transformations": []Selectable{ConstantOf("Featured").As("tier")},
+				"collection":        "users/123/books",
+				"document_id":       FieldOf("custom_id"),
+				"additional_fields": []Selectable{ConstantOf("Featured").As("tier")},
 			},
 			want: &pb.Pipeline_Stage{
 				Name: "upsert",

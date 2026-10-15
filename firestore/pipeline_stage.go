@@ -1132,7 +1132,7 @@ func (s *upsertStage) toProto() (*pb.Pipeline_Stage, error) {
 	var fields []Selectable
 	optsCopy := make(map[string]any)
 	for k, v := range s.options {
-		if k == "transformations" {
+		if k == "additional_fields" {
 			if f, ok := v.([]Selectable); ok {
 				fields = f
 			}

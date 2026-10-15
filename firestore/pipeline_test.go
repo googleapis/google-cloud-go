@@ -690,7 +690,7 @@ func TestPipeline_Insert_WithOptions(t *testing.T) {
 	ps := &PipelineSource{client: client}
 	p := ps.Collection("users").Insert(
 		WithInsertCollection("users/123/archive"),
-		WithInsertDocumentID(ConstantOf("doc-1")),
+		WithInsertDocumentIDExpression(ConstantOf("doc-1")),
 	)
 
 	req, err := p.toExecutePipelineRequest()
@@ -778,8 +778,8 @@ func TestPipeline_Upsert_WithOptions(t *testing.T) {
 	ps := &PipelineSource{client: client}
 	p := ps.Collection("users").Upsert(
 		WithUpsertCollection("archive"),
-		WithUpsertDocumentID(FieldOf("custom_id")),
-		WithUpsertTransformations(ConstantOf("Active").As("status")),
+		WithUpsertDocumentIDExpression(FieldOf("custom_id")),
+		WithUpsertAdditionalFields(ConstantOf("Active").As("status")),
 	)
 
 	req, err := p.toExecutePipelineRequest()
@@ -933,7 +933,7 @@ func TestPipelineOptions_UniqueKeys(t *testing.T) {
 	t.Run("InsertOptions", func(t *testing.T) {
 		options := []InsertOption{
 			WithInsertCollection("col"),
-			WithInsertDocumentID(ConstantOf("id")),
+			WithInsertDocumentIDExpression(ConstantOf("id")),
 		}
 
 		keys := make(map[string]bool)
@@ -954,8 +954,8 @@ func TestPipelineOptions_UniqueKeys(t *testing.T) {
 	t.Run("UpsertOptions", func(t *testing.T) {
 		options := []UpsertOption{
 			WithUpsertCollection("col"),
-			WithUpsertDocumentID(ConstantOf("id")),
-			WithUpsertTransformations(ConstantOf("v").As("k")),
+			WithUpsertDocumentIDExpression(ConstantOf("id")),
+			WithUpsertAdditionalFields(ConstantOf("v").As("k")),
 		}
 
 		keys := make(map[string]bool)

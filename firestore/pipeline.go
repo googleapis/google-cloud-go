@@ -1310,15 +1310,15 @@ func WithInsertCollection(collectionPath string) InsertOption {
 	})
 }
 
-// WithInsertDocumentID specifies the expression used to determine the document ID for each inserted document.
+// WithInsertDocumentIDExpression specifies the expression used to determine the document ID for each inserted document.
 // If omitted when a target collection is specified, a new random document ID is generated for each document.
 //
 // Experimental: Insert, Upsert, Update, Delete and Search stages in pipeline queries are in public preview
 // and are subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
-func WithInsertDocumentID(documentID Expression) InsertOption {
+func WithInsertDocumentIDExpression(documentIDExpr Expression) InsertOption {
 	return newFuncInsertOption(func(io map[string]any) {
-		io["document_id"] = documentID
+		io["document_id"] = documentIDExpr
 	})
 }
 
@@ -1340,7 +1340,7 @@ func WithInsertDocumentID(documentID Expression) InsertOption {
 //	client.Pipeline().Collection("books").
 //		Insert(
 //			WithInsertCollection("archived_books"),
-//			WithInsertDocumentID(StringConcat(FieldOf("isbn"), "-archive")),
+//			WithInsertDocumentIDExpression(StringConcat(FieldOf("isbn"), "-archive")),
 //		)
 //
 // Experimental: Insert, Upsert, Update, Delete and Search stages in pipeline queries are in public preview
@@ -1404,52 +1404,52 @@ func WithUpsertCollection(collectionPath string) UpsertOption {
 	})
 }
 
-// WithUpsertDocumentID specifies the expression used to determine the document ID for each upserted document.
+// WithUpsertDocumentIDExpression specifies the expression used to determine the document ID for each upserted document.
 // If omitted when a target collection is specified, a new random document ID is generated for each document.
 //
 // Experimental: Insert, Upsert, Update, Delete and Search stages in pipeline queries are in public preview
 // and are subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
-func WithUpsertDocumentID(documentID Expression) UpsertOption {
+func WithUpsertDocumentIDExpression(documentIDExpr Expression) UpsertOption {
 	return newFuncUpsertOption(func(uo map[string]any) {
-		uo["document_id"] = documentID
+		uo["document_id"] = documentIDExpr
 	})
 }
 
-// WithUpsertTransformations specifies the list of field transformations to apply in an upsert operation.
+// WithUpsertAdditionalFields specifies additional fields to add to or overwrite on each input document before it is written.
 //
 // Experimental: Insert, Upsert, Update, Delete and Search stages in pipeline queries are in public preview
 // and are subject to potential breaking changes in future versions,
 // regardless of any other documented package stability guarantees.
-func WithUpsertTransformations(field Selectable, additionalFields ...Selectable) UpsertOption {
+func WithUpsertAdditionalFields(field Selectable, additionalFields ...Selectable) UpsertOption {
 	return newFuncUpsertOption(func(uo map[string]any) {
-		t, ok := uo["transformations"].([]Selectable)
+		t, ok := uo["additional_fields"].([]Selectable)
 		if !ok {
 			t = []Selectable{}
 		}
-		uo["transformations"] = append(t, append([]Selectable{field}, additionalFields...)...)
+		uo["additional_fields"] = append(t, append([]Selectable{field}, additionalFields...)...)
 	})
 }
 
 // Upsert performs an upsert (insert or update) operation using documents from previous stages.
 //
-// This method inserts new documents or updates existing documents based on the data flowing through the pipeline.
+// This method inserts new documents or overwrites existing documents based on the data flowing through the pipeline.
 // You can optionally specify a target collection using [WithUpsertCollection], a document ID expression using
-// [WithUpsertDocumentID], and a list of [Selectable] field transformations using [WithUpsertTransformations].
-// If no transformations are provided, the entire document flowing from the previous stage is used as the upsert payload.
+// [WithUpsertDocumentIDExpression], and a list of [Selectable] additional fields using [WithUpsertAdditionalFields].
+// If no additional fields are provided, the entire document flowing from the previous stage is written as-is.
 //
 // Example:
 //
 //	// In-place upsert using __name__ from input documents
 //	client.Pipeline().Literals(upsertData).Upsert()
 //
-//	// Upsert into a target collection with a document ID and transformations
+//	// Upsert into a target collection with a document ID expression and additional fields
 //	client.Pipeline().Collection("books").
 //		Where(GreaterThan("price", 50)).
 //		Upsert(
 //			WithUpsertCollection("featured_books"),
-//			WithUpsertDocumentID(FieldOf("isbn")),
-//			WithUpsertTransformations(ConstantOf("Featured").As("status")),
+//			WithUpsertDocumentIDExpression(FieldOf("isbn")),
+//			WithUpsertAdditionalFields(ConstantOf("Featured").As("status")),
 //		)
 //
 // Experimental: Insert, Upsert, Update, Delete and Search stages in pipeline queries are in public preview
