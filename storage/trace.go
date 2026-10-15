@@ -195,3 +195,10 @@ func getCommonAttributes() []attribute.KeyValue {
 func appendPackageName(spanName string) string {
 	return fmt.Sprintf("%s.%s", gcpClientArtifact, spanName)
 }
+
+func setUploadIDAttribute(ctx context.Context, uploadID string) {
+	if !isOTelTracingDevEnabled() || uploadID == "" {
+		return
+	}
+	trace.SpanFromContext(ctx).SetAttributes(attribute.String("gcp.storage.upload.id", uploadID))
+}
