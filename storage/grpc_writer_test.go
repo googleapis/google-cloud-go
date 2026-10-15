@@ -3061,6 +3061,7 @@ func (s *adaptiveRotationStorageServer) BidiWriteObject(stream storagepb.Storage
 
 	firstMsg := true
 	var unpersistedBytes int64
+	var flushesOnStream int
 	for {
 		req, err := stream.Recv()
 		if err == io.EOF {
@@ -3097,11 +3098,19 @@ func (s *adaptiveRotationStorageServer) BidiWriteObject(stream storagepb.Storage
 			return stream.Context().Err()
 		}
 
-		if delay > 0 && req.GetFlush() {
-			select {
-			case <-time.After(delay):
-			case <-stream.Context().Done():
-				return stream.Context().Err()
+		if req.GetFlush() {
+			flushesOnStream++
+			// On stream 1, chunk 1 warms up the latency tracker unless every
+			// stream has a uniform delay configured (streamDelay[2] > 0).
+			s.mu.Lock()
+			uniformSlow := s.streamDelay[2] > 0
+			s.mu.Unlock()
+			if delay > 0 && (uniformSlow || flushesOnStream > 1) {
+				select {
+				case <-time.After(delay):
+				case <-stream.Context().Done():
+					return stream.Context().Err()
+				}
 			}
 		}
 
@@ -3139,6 +3148,7 @@ func (s *adaptiveRotationStorageServer) BidiWriteObject(stream storagepb.Storage
 
 type uploadTestOptions struct {
 	chunkTransferTimeout time.Duration
+	minDelay             time.Duration
 	chunkSize            int
 	writeQuantum         int
 	chunks               int
@@ -3205,7 +3215,12 @@ func TestGRPCResumableBidiWriteBufferSender_AdaptiveStreamRotation(t *testing.T)
 			progress:         progress.report,
 			setObj:           func(*ObjectAttrs) {},
 		}
-		w.streamSender = w.newGRPCResumableBidiWriteBufferSender()
+		sender := w.newGRPCResumableBidiWriteBufferSender()
+		if opts.minDelay > 0 && sender.chunkDelay != nil {
+			sender.chunkDelay.minDelay = opts.minDelay
+			sender.chunkDelay.value = opts.minDelay
+		}
+		w.streamSender = sender
 
 		runDone := make(chan struct{})
 		producerErrCh := make(chan error, 1)
@@ -3291,7 +3306,13 @@ func TestGRPCResumableBidiWriteBufferSender_AdaptiveStreamRotation(t *testing.T)
 
 	t.Run("FastChunks_SingleStream", func(t *testing.T) {
 		srv := &adaptiveRotationStorageServer{}
-		runUpload(t, srv, 500*time.Millisecond, 3, false)
+		if err := runUploadWithOpts(t, srv, uploadTestOptions{
+			chunkTransferTimeout: time.Second,
+			minDelay:             250 * time.Millisecond,
+			chunks:               3,
+		}); err != nil {
+			t.Fatalf("upload failed: %v", err)
+		}
 
 		srv.mu.Lock()
 		defer srv.mu.Unlock()
@@ -3335,7 +3356,7 @@ func TestGRPCResumableBidiWriteBufferSender_AdaptiveStreamRotation(t *testing.T)
 				1: 150 * time.Millisecond, // > 50ms minDelay threshold, < 500ms stall timeout
 			},
 		}
-		runUpload(t, srv, 500*time.Millisecond, 3, false)
+		runUpload(t, srv, 500*time.Millisecond, 4, false)
 
 		srv.mu.Lock()
 		defer srv.mu.Unlock()
@@ -3348,7 +3369,7 @@ func TestGRPCResumableBidiWriteBufferSender_AdaptiveStreamRotation(t *testing.T)
 		if srv.bidiStreams != 2 {
 			t.Errorf("BidiWriteObject streams = %d, want 2", srv.bidiStreams)
 		}
-		assertOffsets(t, srv.receivedOffsets, []int64{0, 100, 200, 300})
+		assertOffsets(t, srv.receivedOffsets, []int64{0, 100, 200, 300, 400})
 	})
 
 	t.Run("MultiQuantumChunk_RotatesOnlyAtChunkBoundary", func(t *testing.T) {
@@ -3357,13 +3378,14 @@ func TestGRPCResumableBidiWriteBufferSender_AdaptiveStreamRotation(t *testing.T)
 				1: 150 * time.Millisecond,
 			},
 		}
-		// chunkSize = 400 = 4 * writeQuantum (100). Stream 1 must not rotate
+		// chunkSize = 400 = 4 * writeQuantum (100). Stream 1 warms up on chunk 1,
+		// slows down on chunk 2, and rotates before chunk 3 without rotating
 		// mid-chunk while unflushedDataSent is true.
 		if err := runUploadWithOpts(t, srv, uploadTestOptions{
 			chunkTransferTimeout: 500 * time.Millisecond,
 			chunkSize:            400,
 			writeQuantum:         100,
-			chunks:               2,
+			chunks:               3,
 			waitPerChunk:         true,
 		}); err != nil {
 			t.Fatalf("upload failed: %v", err)
@@ -3374,7 +3396,7 @@ func TestGRPCResumableBidiWriteBufferSender_AdaptiveStreamRotation(t *testing.T)
 		if srv.bidiStreams != 2 {
 			t.Errorf("BidiWriteObject streams = %d, want 2", srv.bidiStreams)
 		}
-		assertOffsets(t, srv.receivedOffsets, []int64{0, 100, 200, 300, 400, 500, 600, 700, 800})
+		assertOffsets(t, srv.receivedOffsets, []int64{0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200})
 	})
 
 	t.Run("FlushMidUpload_WithStreamRotation", func(t *testing.T) {
@@ -3385,7 +3407,7 @@ func TestGRPCResumableBidiWriteBufferSender_AdaptiveStreamRotation(t *testing.T)
 		}
 		if err := runUploadWithOpts(t, srv, uploadTestOptions{
 			chunkTransferTimeout: 500 * time.Millisecond,
-			chunks:               3,
+			chunks:               4,
 			flushAfterChunk:      2,
 		}); err != nil {
 			t.Fatalf("upload failed: %v", err)
@@ -3397,7 +3419,7 @@ func TestGRPCResumableBidiWriteBufferSender_AdaptiveStreamRotation(t *testing.T)
 			t.Errorf("BidiWriteObject streams = %d, want 2", srv.bidiStreams)
 		}
 		// Includes the 0-byte explicit Flush request at offset 200 before chunk 3.
-		assertOffsets(t, srv.receivedOffsets, []int64{0, 100, 200, 200, 300})
+		assertOffsets(t, srv.receivedOffsets, []int64{0, 100, 200, 200, 300, 400})
 	})
 
 	t.Run("OpenFailureDuringRotation_DoesNotHang", func(t *testing.T) {
@@ -3453,24 +3475,20 @@ func TestGRPCResumableBidiWriteBufferSender_AdaptiveStreamRotation(t *testing.T)
 
 	t.Run("UniformlySlowServer_AdaptsAndStabilizes", func(t *testing.T) {
 		// Every stream has the same 200ms per-chunk delay (> 50ms minDelay).
-		// After rotating on chunk 1, the threshold anchors to the observed
-		// latency and applies increaseFactor (~214ms) so subsequent 200ms
-		// chunks do not keep rotating on every chunk.
+		// Chunk 1 warms up the EWMA baseline to 200ms (threshold = 400ms)
+		// without rotating, so all 5 chunks stay on the initial stream.
 		srv := &adaptiveRotationStorageServer{
 			streamDelay: map[int]time.Duration{
 				1: 200 * time.Millisecond,
 				2: 200 * time.Millisecond,
-				3: 200 * time.Millisecond,
-				4: 200 * time.Millisecond,
-				5: 200 * time.Millisecond,
 			},
 		}
 		runUpload(t, srv, 600*time.Millisecond, 5, true)
 
 		srv.mu.Lock()
 		defer srv.mu.Unlock()
-		if srv.bidiStreams != 2 {
-			t.Errorf("BidiWriteObject streams = %d, want 2 (1 initial + 1 rotation before stabilizing)", srv.bidiStreams)
+		if srv.bidiStreams != 1 {
+			t.Errorf("BidiWriteObject streams = %d, want 1 (warm-up adapts on chunk 1 without rotating)", srv.bidiStreams)
 		}
 		assertOffsets(t, srv.receivedOffsets, []int64{0, 100, 200, 300, 400, 500})
 	})

@@ -32,6 +32,8 @@ type dynamicDelay struct {
 	minDelay       time.Duration
 	maxDelay       time.Duration
 	value          time.Duration
+	baseline       time.Duration
+	warmedUp       bool
 
 	// Guards the value
 	mu *sync.RWMutex
@@ -303,6 +305,8 @@ func executeWithReadStallTimeout(
 const (
 	defaultWriteChunkDelayTargetPercentile = 0.99
 	defaultWriteChunkDelayIncreaseRate     = 10.0
+	writeChunkEWMAAlpha                    = 0.2
+	writeChunkTriggerMultiple              = 2.0
 	baseWriteChunkMinDelay                 = 50 * time.Millisecond
 	perMiBWriteChunkMinDelay               = 10 * time.Millisecond
 )
@@ -332,32 +336,35 @@ func newWriteChunkDelay(chunkSize int, chunkTransferTimeout time.Duration) *dyna
 	)
 }
 
-// recordLatency updates d with latency and reports whether latency exceeded the
-// threshold before the update. Safe to call on a nil receiver.
+// recordLatency updates d with latency using an EWMA baseline and reports
+// whether latency exceeded the threshold before the update. The first sample
+// warms up the baseline without triggering rotation. Safe to call on a nil
+// receiver.
 func (d *dynamicDelay) recordLatency(latency time.Duration) bool {
 	if d == nil {
 		return false
 	}
 	d.mu.Lock()
 	defer d.mu.Unlock()
-	exceeded := latency > d.value
-	if exceeded {
-		// Anchor to the observed latency before applying increaseFactor so a
-		// slower link adapts immediately instead of climbing from minDelay one
-		// step at a time.
-		d.value = min(latency, d.maxDelay)
-		d.unsafeIncrease()
-	} else {
-		d.unsafeDecrease()
+	if !d.warmedUp {
+		d.baseline = latency
+		d.value = min(max(time.Duration(writeChunkTriggerMultiple*float64(d.baseline)), d.minDelay), d.maxDelay)
+		d.warmedUp = true
+		return false
 	}
+	exceeded := latency > d.value
+	d.baseline = time.Duration(writeChunkEWMAAlpha*float64(latency) + (1-writeChunkEWMAAlpha)*float64(d.baseline))
+	d.value = min(max(time.Duration(writeChunkTriggerMultiple*float64(d.baseline)), d.minDelay), d.maxDelay)
 	return exceeded
 }
 
 // exceeds reports whether latency is strictly greater than d's current
-// threshold. Safe to call on a nil receiver.
+// threshold after warm-up. Safe to call on a nil receiver.
 func (d *dynamicDelay) exceeds(latency time.Duration) bool {
 	if d == nil {
 		return false
 	}
-	return latency > d.getValue()
+	d.mu.RLock()
+	defer d.mu.RUnlock()
+	return d.warmedUp && latency > d.value
 }

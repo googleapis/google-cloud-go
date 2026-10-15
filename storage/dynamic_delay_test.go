@@ -501,6 +501,18 @@ func TestWriteChunkDelay(t *testing.T) {
 	if got, want := d.getValue(), 210*time.Millisecond; got != want {
 		t.Fatalf("initial value = %v, want %v", got, want)
 	}
+	// Before the first sample warms up d, exceeds() must return false even above minDelay.
+	if d.exceeds(500 * time.Millisecond) {
+		t.Fatal("expected exceeds(500ms) to be false before warm-up")
+	}
+	// First sample warms up the baseline without reporting exceeded.
+	if d.recordLatency(80 * time.Millisecond) {
+		t.Fatal("expected first recordLatency(80ms) warm-up to return false")
+	}
+	// 2 * 80ms = 160ms < minDelay (210ms), so threshold stays at 210ms.
+	if got, want := d.getValue(), 210*time.Millisecond; got != want {
+		t.Fatalf("value after fast warm-up = %v, want %v", got, want)
+	}
 	if d.exceeds(210 * time.Millisecond) {
 		t.Fatal("expected exceeds(210ms) to be false at threshold 210ms")
 	}
@@ -510,11 +522,25 @@ func TestWriteChunkDelay(t *testing.T) {
 	if !d.recordLatency(300 * time.Millisecond) {
 		t.Fatal("expected recordLatency(300ms) to report exceeded=true")
 	}
-	afterIncrease := d.getValue()
-	if afterIncrease <= 300*time.Millisecond {
-		t.Fatalf("expected threshold to anchor to 300ms and apply increaseFactor, got %v", afterIncrease)
+
+	// Cold first chunk (~2s) followed by steady 400ms chunks should decay the
+	// threshold via EWMA so a later 1.5s slowdown is detected.
+	cold := newWriteChunkDelay(16*1024*1024, 10*time.Second)
+	if cold.recordLatency(2 * time.Second) {
+		t.Fatal("expected cold first chunk (2s) warm-up not to trigger rotation")
 	}
-	if d.recordLatency(300 * time.Millisecond) {
-		t.Fatal("expected recordLatency(300ms) to report exceeded=false after adapting above 300ms")
+	if got, want := cold.getValue(), 4*time.Second; got != want {
+		t.Fatalf("value after 2s warm-up = %v, want %v", got, want)
+	}
+	for i := 0; i < 10; i++ {
+		if cold.recordLatency(400 * time.Millisecond) {
+			t.Fatalf("unexpected rotation on healthy 400ms chunk %d", i+2)
+		}
+	}
+	if got := cold.getValue(); got >= 1500*time.Millisecond {
+		t.Fatalf("expected threshold to decay below 1.5s after ten 400ms chunks, got %v", got)
+	}
+	if !cold.recordLatency(1500 * time.Millisecond) {
+		t.Fatal("expected step slowdown to 1.5s after recovery to trigger rotation")
 	}
 }
