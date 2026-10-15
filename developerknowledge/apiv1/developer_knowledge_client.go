@@ -169,11 +169,14 @@ type internalDeveloperKnowledgeClient interface {
 //
 // A typical use case is to first use
 // DeveloperKnowledge.SearchDocumentChunks
-// to find relevant page URIs based on a query, and then use
+// to find relevant document chunks based on a query, and then use
 // DeveloperKnowledge.GetDocument
 // or
 // DeveloperKnowledge.BatchGetDocuments
-// to fetch the full content of the top results.
+// with document resource names (such as
+// DocumentChunk.parent
+// or documents/{uri_without_scheme}) to fetch the full content of the top
+// results.
 //
 // All document content is provided in Markdown format.
 type DeveloperKnowledgeClient struct {
@@ -269,11 +272,14 @@ type developerKnowledgeGRPCClient struct {
 //
 // A typical use case is to first use
 // DeveloperKnowledge.SearchDocumentChunks
-// to find relevant page URIs based on a query, and then use
+// to find relevant document chunks based on a query, and then use
 // DeveloperKnowledge.GetDocument
 // or
 // DeveloperKnowledge.BatchGetDocuments
-// to fetch the full content of the top results.
+// with document resource names (such as
+// DocumentChunk.parent
+// or documents/{uri_without_scheme}) to fetch the full content of the top
+// results.
 //
 // All document content is provided in Markdown format.
 func NewDeveloperKnowledgeClient(ctx context.Context, opts ...option.ClientOption) (*DeveloperKnowledgeClient, error) {
@@ -418,11 +424,14 @@ type developerKnowledgeRESTClient struct {
 //
 // A typical use case is to first use
 // DeveloperKnowledge.SearchDocumentChunks
-// to find relevant page URIs based on a query, and then use
+// to find relevant document chunks based on a query, and then use
 // DeveloperKnowledge.GetDocument
 // or
 // DeveloperKnowledge.BatchGetDocuments
-// to fetch the full content of the top results.
+// with document resource names (such as
+// DocumentChunk.parent
+// or documents/{uri_without_scheme}) to fetch the full content of the top
+// results.
 //
 // All document content is provided in Markdown format.
 func NewDeveloperKnowledgeRESTClient(ctx context.Context, opts ...option.ClientOption) (*DeveloperKnowledgeClient, error) {

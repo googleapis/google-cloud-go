@@ -125,7 +125,7 @@ type Document struct {
 	// Example: `documents/docs.cloud.google.com/storage/docs/creating-buckets`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Output only. Provides the URI of the content, such as
-	// `docs.cloud.google.com/storage/docs/creating-buckets`.
+	// `https://docs.cloud.google.com/storage/docs/creating-buckets`.
 	Uri string `protobuf:"bytes,2,opt,name=uri,proto3" json:"uri,omitempty"`
 	// Output only. Contains the full content of the document in Markdown format.
 	Content string `protobuf:"bytes,3,opt,name=content,proto3" json:"content,omitempty"`
