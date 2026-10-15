@@ -326,6 +326,11 @@ func (w *withGRPCAppendableUploadsConfig) ApplyStorageOpt(config *storageConfig)
 // servers may close connections that ping too frequently. A reasonable
 // starting point is Time: 30s, Timeout: 20s.
 //
+// Pings are only sent while at least one RPC is in flight: PermitWithoutStream
+// is always false, regardless of the value passed in. Idle connections have no
+// work to protect and are checked by the first RPC that uses them, so pinging
+// them would only consume the server's ping budget.
+//
 // Note: This option is exclusively supported for gRPC clients.
 func WithGRPCKeepalive(params keepalive.ClientParameters) option.ClientOption {
 	return &withGRPCKeepaliveConfig{params: params}
@@ -338,6 +343,7 @@ type withGRPCKeepaliveConfig struct {
 
 func (w *withGRPCKeepaliveConfig) ApplyStorageOpt(config *storageConfig) {
 	p := w.params
+	p.PermitWithoutStream = false
 	config.grpcKeepalive = &p
 }
 

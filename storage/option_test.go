@@ -161,7 +161,7 @@ func TestApplyStorageOpt(t *testing.T) {
 			},
 		},
 		{
-			desc: "set gRPC keepalive",
+			desc: "set gRPC keepalive; PermitWithoutStream is always forced to false",
 			opts: []option.ClientOption{WithGRPCKeepalive(keepalive.ClientParameters{
 				Time:                30 * time.Second,
 				Timeout:             20 * time.Second,
@@ -171,7 +171,7 @@ func TestApplyStorageOpt(t *testing.T) {
 				grpcKeepalive: &keepalive.ClientParameters{
 					Time:                30 * time.Second,
 					Timeout:             20 * time.Second,
-					PermitWithoutStream: true,
+					PermitWithoutStream: false,
 				},
 			},
 		},
