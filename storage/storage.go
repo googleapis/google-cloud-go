@@ -174,9 +174,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		c, err := internaloption.AuthCreds(ctx, opts)
 		if err == nil {
 			creds = c
-			if isOTelTracingDevEnabled() {
-				creds = wrapAuthCredentialsForTracing(creds)
-			}
 			opts = append(opts, option.WithAuthCredentials(creds))
 		}
 	} else {
