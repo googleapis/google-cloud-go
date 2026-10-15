@@ -166,7 +166,7 @@ func (c *Client) RunTransaction(ctx context.Context, f func(context.Context, *Tr
 	db := c.path()
 	t := &Transaction{
 		c:            c,
-		ctx:          withTransactionHeader(withResourceHeader(ctx, db)),
+		ctx:          withResourceHeader(withTransactionHeader(ctx), db),
 		maxAttempts:  DefaultTransactionMaxAttempts,
 		readSettings: &readSettings{},
 	}
