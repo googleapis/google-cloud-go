@@ -517,6 +517,11 @@ func (it *messageIterator) sender() {
 
 		case <-flush:
 			flush = nil
+			// A pending signal is for an item already queued under it.mu, so this flush sends it.
+			select {
+			case <-it.flushReady:
+			default:
+			}
 			it.mu.Lock()
 			sendAcks = (len(it.pendingAcks) > 0)
 			sendNacks = (len(it.pendingNacks) > 0)
