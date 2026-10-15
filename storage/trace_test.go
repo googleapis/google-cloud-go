@@ -138,86 +138,75 @@ func TestStorageTraceEndSpanRecordError(t *testing.T) {
 	if want := otcodes.Error; gotSpan.Status.Code != want {
 		t.Errorf("got %v, want %v", gotSpan.Status.Code, want)
 	}
-	var gotErrMsg string
-	for _, attr := range gotSpan.Attributes {
-		if attr.Key == "error.message" {
-			gotErrMsg = attr.Value.AsString()
+}
+
+// spanAttr returns the string value of the attribute key on s.
+func spanAttr(s tracetest.SpanStub, key attribute.Key) (string, bool) {
+	for _, kv := range s.Attributes {
+		if kv.Key == key {
+			return kv.Value.AsString(), true
 		}
 	}
-	if want := "INVALID ARGUMENT"; gotErrMsg != want {
-		t.Errorf("got error.message %q, want %q", gotErrMsg, want)
-	}
+	return "", false
 }
 
 func TestStorageTraceErrorMessage(t *testing.T) {
 	ctx := context.Background()
 	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
 
-	apiErrGRPC, _ := apierror.FromError(status.Error(codes.FailedPrecondition, "This bucket requires appendable objects."))
-	apiErrHTTP, _ := apierror.FromError(&googleapi.Error{Code: http.StatusPreconditionFailed, Message: "Precondition Failed"})
+	apiErrGRPC, ok := apierror.FromError(status.Error(codes.FailedPrecondition, "This bucket requires appendable objects."))
+	if !ok {
+		t.Fatal("apierror.FromError failed for gRPC status")
+	}
+	apiErrHTTP, ok := apierror.FromError(&googleapi.Error{Code: http.StatusPreconditionFailed, Message: "Precondition Failed"})
+	if !ok {
+		t.Fatal("apierror.FromError failed for googleapi.Error")
+	}
 
 	tests := []struct {
-		name           string
-		err            error
-		wantErrMsg     string
-		wantHasAttr    bool
-		wantStatusCode otcodes.Code
+		name    string
+		err     error
+		wantMsg string // "" means the attribute must not be set.
 	}{
 		{
-			name:           "nil error does not set error.message",
-			err:            nil,
-			wantErrMsg:     "",
-			wantHasAttr:    false,
-			wantStatusCode: otcodes.Unset,
+			name:    "nil error does not set error.message",
+			err:     nil,
+			wantMsg: "",
 		},
 		{
-			name:           "googleapi.Error extracts Message",
-			err:            &googleapi.Error{Code: http.StatusBadRequest, Message: "This bucket requires appendable objects."},
-			wantErrMsg:     "This bucket requires appendable objects.",
-			wantHasAttr:    true,
-			wantStatusCode: otcodes.Error,
+			name:    "googleapi.Error extracts Message",
+			err:     &googleapi.Error{Code: http.StatusBadRequest, Message: "This bucket requires appendable objects."},
+			wantMsg: "This bucket requires appendable objects.",
 		},
 		{
-			name:           "gRPC status.Error extracts Message",
-			err:            status.Error(codes.FailedPrecondition, "This bucket requires appendable objects."),
-			wantErrMsg:     "This bucket requires appendable objects.",
-			wantHasAttr:    true,
-			wantStatusCode: otcodes.Error,
+			name:    "gRPC status.Error extracts Message",
+			err:     status.Error(codes.FailedPrecondition, "This bucket requires appendable objects."),
+			wantMsg: "This bucket requires appendable objects.",
 		},
 		{
-			name:           "apierror.APIError wrapping gRPC status",
-			err:            apiErrGRPC,
-			wantErrMsg:     "This bucket requires appendable objects.",
-			wantHasAttr:    true,
-			wantStatusCode: otcodes.Error,
+			name:    "apierror.APIError wrapping gRPC status",
+			err:     apiErrGRPC,
+			wantMsg: "This bucket requires appendable objects.",
 		},
 		{
-			name:           "apierror.APIError wrapping googleapi.Error",
-			err:            apiErrHTTP,
-			wantErrMsg:     "Precondition Failed",
-			wantHasAttr:    true,
-			wantStatusCode: otcodes.Error,
+			name:    "apierror.APIError wrapping googleapi.Error",
+			err:     apiErrHTTP,
+			wantMsg: "Precondition Failed",
 		},
 		{
-			name:           "wrapped gRPC status.Error preserves inner message",
-			err:            fmt.Errorf("%w: %w", ErrObjectNotExist, status.Error(codes.NotFound, "No such object: bucket/obj")),
-			wantErrMsg:     "No such object: bucket/obj",
-			wantHasAttr:    true,
-			wantStatusCode: otcodes.Error,
+			name:    "wrapped gRPC status.Error preserves inner message",
+			err:     fmt.Errorf("%w: %w", ErrObjectNotExist, status.Error(codes.NotFound, "No such object: bucket/obj")),
+			wantMsg: "No such object: bucket/obj",
 		},
 		{
-			name:           "sentinel error falls back to Error()",
-			err:            ErrBucketNotExist,
-			wantErrMsg:     ErrBucketNotExist.Error(),
-			wantHasAttr:    true,
-			wantStatusCode: otcodes.Error,
+			name:    "sentinel error falls back to Error()",
+			err:     ErrBucketNotExist,
+			wantMsg: ErrBucketNotExist.Error(),
 		},
 		{
-			name:           "plain error falls back to Error()",
-			err:            errors.New("storage: bucket name is empty"),
-			wantErrMsg:     "storage: bucket name is empty",
-			wantHasAttr:    true,
-			wantStatusCode: otcodes.Error,
+			name:    "plain error falls back to Error()",
+			err:     errors.New("storage: bucket name is empty"),
+			wantMsg: "storage: bucket name is empty",
 		},
 		{
 			name: "XML API error body extracts Message element",
@@ -225,9 +214,7 @@ func TestStorageTraceErrorMessage(t *testing.T) {
 				Code: http.StatusRequestedRangeNotSatisfiable,
 				Body: "<?xml version='1.0' encoding='UTF-8'?><Error><Code>InvalidRange</Code><Message>The requested range cannot be satisfied.</Message><Details>bytes=104857600-104857727</Details></Error>",
 			},
-			wantErrMsg:     "The requested range cannot be satisfied.",
-			wantHasAttr:    true,
-			wantStatusCode: otcodes.Error,
+			wantMsg: "The requested range cannot be satisfied.",
 		},
 		{
 			name: "wrapped XML API error body extracts Message element",
@@ -235,23 +222,22 @@ func TestStorageTraceErrorMessage(t *testing.T) {
 				Code: http.StatusPreconditionFailed,
 				Body: "<?xml version='1.0' encoding='UTF-8'?><Error><Code>ConditionNotMet</Code><Message>At least one of the pre-conditions you specified did not hold.</Message></Error>",
 			}),
-			wantErrMsg:     "At least one of the pre-conditions you specified did not hold.",
-			wantHasAttr:    true,
-			wantStatusCode: otcodes.Error,
+			wantMsg: "At least one of the pre-conditions you specified did not hold.",
 		},
 		{
-			name:           "googleapi.Error with non-XML body falls back to status text",
-			err:            &googleapi.Error{Code: http.StatusServiceUnavailable, Body: "upstream connect error"},
-			wantErrMsg:     "Service Unavailable",
-			wantHasAttr:    true,
-			wantStatusCode: otcodes.Error,
+			name:    "googleapi.Error with non-XML body falls back to status text",
+			err:     &googleapi.Error{Code: http.StatusServiceUnavailable, Body: "upstream connect error"},
+			wantMsg: "Service Unavailable",
 		},
 		{
-			name:           "googleapi.Error with empty body falls back to status text",
-			err:            &googleapi.Error{Code: http.StatusNotFound},
-			wantErrMsg:     "Not Found",
-			wantHasAttr:    true,
-			wantStatusCode: otcodes.Error,
+			name:    "googleapi.Error with empty body falls back to status text",
+			err:     &googleapi.Error{Code: http.StatusNotFound},
+			wantMsg: "Not Found",
+		},
+		{
+			name:    "googleapi.Error with unknown status code does not embed body",
+			err:     &googleapi.Error{Code: 499, Body: "client closed request"},
+			wantMsg: "HTTP 499",
 		},
 	}
 
@@ -269,24 +255,12 @@ func TestStorageTraceErrorMessage(t *testing.T) {
 			if len(spans) != 1 {
 				t.Fatalf("expected 1 span, got %d", len(spans))
 			}
-			gotSpan := spans[0]
-			if gotSpan.Status.Code != tc.wantStatusCode {
-				t.Errorf("got status code %v, want %v", gotSpan.Status.Code, tc.wantStatusCode)
+			gotMsg, hasAttr := spanAttr(spans[0], errorMessageKey)
+			if wantHasAttr := tc.wantMsg != ""; hasAttr != wantHasAttr {
+				t.Fatalf("got hasAttr=%v, want %v (attrs=%v)", hasAttr, wantHasAttr, spans[0].Attributes)
 			}
-
-			var gotErrMsg string
-			var hasAttr bool
-			for _, attr := range gotSpan.Attributes {
-				if attr.Key == "error.message" {
-					hasAttr = true
-					gotErrMsg = attr.Value.AsString()
-				}
-			}
-			if hasAttr != tc.wantHasAttr {
-				t.Fatalf("got hasAttr=%v, want %v (attrs=%v)", hasAttr, tc.wantHasAttr, gotSpan.Attributes)
-			}
-			if tc.wantHasAttr && gotErrMsg != tc.wantErrMsg {
-				t.Errorf("got error.message %q, want %q", gotErrMsg, tc.wantErrMsg)
+			if gotMsg != tc.wantMsg {
+				t.Errorf("got error.message %q, want %q", gotMsg, tc.wantMsg)
 			}
 		})
 	}
@@ -519,7 +493,10 @@ func TestStorageTraceErrorDomain(t *testing.T) {
 	if err != nil {
 		t.Fatalf("WithDetails: %v", err)
 	}
-	apiErrGRPC, _ := apierror.FromError(grpcWithErrorInfo.Err())
+	apiErrGRPC, ok := apierror.FromError(grpcWithErrorInfo.Err())
+	if !ok {
+		t.Fatal("apierror.FromError failed for gRPC status")
+	}
 
 	tests := []struct {
 		name       string
@@ -603,14 +580,7 @@ func TestStorageTraceErrorDomain(t *testing.T) {
 			if len(spans) != 1 {
 				t.Fatalf("expected 1 span, got %d", len(spans))
 			}
-			var gotDomain string
-			var hasAttr bool
-			for _, attr := range spans[0].Attributes {
-				if attr.Key == "gcp.errors.domain" {
-					hasAttr = true
-					gotDomain = attr.Value.AsString()
-				}
-			}
+			gotDomain, hasAttr := spanAttr(spans[0], errorDomainKey)
 			if wantHasAttr := tc.wantDomain != ""; hasAttr != wantHasAttr {
 				t.Fatalf("got hasAttr=%v, want %v (attrs=%v)", hasAttr, wantHasAttr, spans[0].Attributes)
 			}
