@@ -364,7 +364,7 @@ var (
 	}
 )
 
-var typeOfByteSlice = reflect.TypeOf([]byte{})
+var typeOfByteSlice = reflect.TypeFor[[]byte]()
 
 // InferSchema tries to derive a BigQuery schema from the supplied struct value.
 // Each exported struct field is mapped to a field in the schema.
@@ -447,7 +447,7 @@ var typeOfByteSlice = reflect.TypeOf([]byte{})
 // fields. In this example, the Go name of the field is retained:
 //
 //	bigquery:",nullable"
-func InferSchema(st interface{}) (Schema, error) {
+func InferSchema(st any) (Schema, error) {
 	return inferSchemaReflectCached(reflect.TypeOf(st))
 }
 
@@ -499,7 +499,7 @@ func inferSchemaReflect(t reflect.Type) (Schema, error) {
 
 func inferStruct(t reflect.Type) (Schema, error) {
 	switch t.Kind() {
-	case reflect.Ptr:
+	case reflect.Pointer:
 		if t.Elem().Kind() != reflect.Struct {
 			return nil, noStructError{t}
 		}
@@ -516,11 +516,11 @@ func inferStruct(t reflect.Type) (Schema, error) {
 // inferFieldSchema infers the FieldSchema for a Go type
 func inferFieldSchema(fieldName string, rt reflect.Type, nullable, json bool) (*FieldSchema, error) {
 	// Only []byte and struct pointers can be tagged nullable.
-	if nullable && !(rt == typeOfByteSlice || rt.Kind() == reflect.Ptr && rt.Elem().Kind() == reflect.Struct) {
+	if nullable && !(rt == typeOfByteSlice || rt.Kind() == reflect.Pointer && rt.Elem().Kind() == reflect.Struct) {
 		return nil, badNullableError{fieldName, rt}
 	}
 	// Only structs and struct pointers can be tagged as json.
-	if json && !(rt.Kind() == reflect.Struct || rt.Kind() == reflect.Ptr && rt.Elem().Kind() == reflect.Struct) {
+	if json && !(rt.Kind() == reflect.Struct || rt.Kind() == reflect.Pointer && rt.Elem().Kind() == reflect.Struct) {
 		return nil, badJSONError{fieldName, rt}
 	}
 	switch rt {
@@ -571,7 +571,7 @@ func inferFieldSchema(fieldName string, rt reflect.Type, nullable, json bool) (*
 		f.Repeated = true
 		f.Required = false
 		return f, nil
-	case reflect.Ptr:
+	case reflect.Pointer:
 		if rt.Elem().Kind() != reflect.Struct {
 			return nil, unsupportedFieldTypeError{fieldName, rt}
 		}
@@ -670,7 +670,7 @@ func (l *typeList) has(t reflect.Type) bool {
 // hasRecursiveType reports whether t or any type inside t refers to itself, directly or indirectly,
 // via exported fields. (Schema inference ignores unexported fields.)
 func hasRecursiveType(t reflect.Type, seen *typeList) (bool, error) {
-	for t.Kind() == reflect.Ptr || t.Kind() == reflect.Slice || t.Kind() == reflect.Array {
+	for t.Kind() == reflect.Pointer || t.Kind() == reflect.Slice || t.Kind() == reflect.Array {
 		t = t.Elem()
 	}
 	if t.Kind() != reflect.Struct {

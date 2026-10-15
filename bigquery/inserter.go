@@ -92,7 +92,7 @@ func (t *Table) Uploader() *Inserter { return t.Inserter() }
 // in duplicate rows if you do not use insert IDs. Also, if the error persists,
 // the call will run indefinitely. Pass a context with a timeout to prevent
 // hanging calls.
-func (u *Inserter) Put(ctx context.Context, src interface{}) (err error) {
+func (u *Inserter) Put(ctx context.Context, src any) (err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.Inserter.Put")
 	defer func() { trace.EndSpan(ctx, err) }()
 
@@ -103,7 +103,7 @@ func (u *Inserter) Put(ctx context.Context, src interface{}) (err error) {
 	return u.putMulti(ctx, savers)
 }
 
-func valueSavers(src interface{}) ([]ValueSaver, error) {
+func valueSavers(src any) ([]ValueSaver, error) {
 	saver, ok, err := toValueSaver(src)
 	if err != nil {
 		return nil, err
@@ -133,7 +133,7 @@ func valueSavers(src interface{}) ([]ValueSaver, error) {
 
 // Make a ValueSaver from x, which must implement ValueSaver already
 // or be a struct or pointer to struct.
-func toValueSaver(x interface{}) (ValueSaver, bool, error) {
+func toValueSaver(x any) (ValueSaver, bool, error) {
 	if _, ok := x.(StructSaver); ok {
 		return nil, false, errors.New("bigquery: use &StructSaver, not StructSaver")
 	}
@@ -152,7 +152,7 @@ func toValueSaver(x interface{}) (ValueSaver, bool, error) {
 	if v.Kind() == reflect.Interface {
 		v = v.Elem()
 	}
-	if v.Kind() == reflect.Ptr {
+	if v.Kind() == reflect.Pointer {
 		v = v.Elem()
 	}
 	if v.Kind() != reflect.Struct {
