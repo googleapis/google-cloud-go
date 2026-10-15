@@ -98,6 +98,7 @@ func (ic indexClient) getPage(prefixes []string, since time.Time) ([]indexEntry,
 		for {
 			resp, err = http.Get(u.String())
 			if err == nil && resp.StatusCode != http.StatusOK {
+				resp.Body.Close()
 				err = fmt.Errorf("received HTTP %d status", resp.StatusCode)
 			}
 			if err != nil {
