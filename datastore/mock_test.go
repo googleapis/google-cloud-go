@@ -119,12 +119,16 @@ func (s *mockServer) addRPCAdjust(wantReq proto.Message, resp interface{}, adjus
 // was expected or there are no expected rpcs.
 func (s *mockServer) popRPC(gotReq proto.Message) (interface{}, error) {
 	s.mu.Lock()
-	defer s.mu.Unlock()
 	if len(s.reqItems) == 0 {
+		s.mu.Unlock()
 		return nil, fmt.Errorf("out of RPCs, saw %v", reflect.TypeOf(gotReq))
 	}
 	ri := s.reqItems[0]
 	s.reqItems = s.reqItems[1:]
+	resp := s.resps[0]
+	s.resps = s.resps[1:]
+	s.mu.Unlock()
+
 	if ri.wantReq != nil {
 		if ri.adjust != nil {
 			ri.adjust(gotReq)
@@ -136,8 +140,6 @@ func (s *mockServer) popRPC(gotReq proto.Message) (interface{}, error) {
 				ri.wantReq, ri.wantReq)
 		}
 	}
-	resp := s.resps[0]
-	s.resps = s.resps[1:]
 	if err, ok := resp.(error); ok {
 		return nil, err
 	}

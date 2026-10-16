@@ -17,7 +17,9 @@ package datastore
 import (
 	"context"
 	"errors"
+	"runtime"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -1011,9 +1013,12 @@ func TestTransaction_BeginLaterConcurrentReads(t *testing.T) {
 		},
 	}
 
+	firstLookupInFlight := make(chan struct{})
+	releaseFirstLookup := make(chan struct{})
+
 	// Only the first Lookup RPC should request NewTransaction; subsequent
 	// concurrent Lookups must wait for the transaction ID and use Transaction.
-	srv.addRPC(&pb.LookupRequest{
+	srv.addRPCAdjust(&pb.LookupRequest{
 		ProjectId: mockProjectID,
 		Keys:      []*pb.Key{keyToProto(key)},
 		ReadOptions: &pb.ReadOptions{
@@ -1022,6 +1027,9 @@ func TestTransaction_BeginLaterConcurrentReads(t *testing.T) {
 	}, &pb.LookupResponse{
 		Transaction: mockTxnID,
 		Found:       []*pb.EntityResult{{Entity: mockEntity, Version: 1}},
+	}, func(proto.Message) {
+		close(firstLookupInFlight)
+		<-releaseFirstLookup
 	})
 
 	const numReaders = 5
@@ -1043,17 +1051,35 @@ func TestTransaction_BeginLaterConcurrentReads(t *testing.T) {
 	}
 
 	errCh := make(chan error, numReaders)
-	for i := 0; i < numReaders; i++ {
+	go func() {
+		var dst struct{ N int }
+		errCh <- tx.Get(key, &dst)
+	}()
+
+	// Wait until the first Lookup RPC (with NewTransaction) is in flight on the
+	// server before launching the remaining concurrent readers.
+	<-firstLookupInFlight
+
+	var ready sync.WaitGroup
+	ready.Add(numReaders - 1)
+	for i := 1; i < numReaders; i++ {
 		go func() {
 			var dst struct{ N int }
+			ready.Done()
 			errCh <- tx.Get(key, &dst)
 		}()
 	}
+	ready.Wait()
+	runtime.Gosched()
+	close(releaseFirstLookup)
 
 	for i := 0; i < numReaders; i++ {
 		if err := <-errCh; err != nil {
 			t.Errorf("concurrent Get failed: %v", err)
 		}
+	}
+	if len(srv.reqItems) != 0 {
+		t.Errorf("remaining expected RPCs = %d, want 0", len(srv.reqItems))
 	}
 }
 
