@@ -105,7 +105,27 @@ func (t *Table) applyGroup(ctx context.Context, group []*entryErr, opts ...Apply
 		trace.TracePrintf(ctx, attrMap, "Row count in ApplyBulk")
 		err := t.doApplyBulk(ctx, group, headerMD, trailerMD, opts...)
 		if err != nil {
-			// We want to retry the entire request with the current group
+			// Preserve context errors (Canceled / DeadlineExceeded) as-is
+			// so callers that drive graceful shutdown or timeout logic off
+			// the status code still see the right signal; wrapping them in
+			// FailedPrecondition below would mask that intent.
+			if ctx.Err() != nil {
+				return err
+			}
+			// If any entry in this group carries a non-idempotent mutation
+			// (SetCell at Timestamp=ServerTime), suppress the gax retry.
+			// For a mid-stream RPC failure some entries may have already
+			// committed with a server-assigned timestamp; retrying the
+			// full group would then write a second cell at a new server
+			// timestamp. All-idempotent groups keep the pre-existing
+			// full-group retry (the server dedupes by (row, column,
+			// timestamp)).
+			for _, e := range group {
+				if !mutationsAreRetryable(e.Entry.Mutations) {
+					return status.Errorf(codes.FailedPrecondition, "ApplyBulk: mid-stream RPC failure not retried because group contains a non-idempotent mutation (SetCell at ServerTime): %v", err)
+				}
+			}
+			// All entries are idempotent -- let gax retry the full group.
 			return err
 		}
 		// Get the entries that need to be retried
