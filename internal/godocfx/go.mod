@@ -7,6 +7,7 @@ require (
 	cloud.google.com/go/bigquery v1.77.0
 	cloud.google.com/go/datastore v1.24.0
 	github.com/google/go-cmp v0.7.0
+	github.com/googleapis/gax-go/v2 v2.23.0
 	golang.org/x/tools v0.48.0
 	gopkg.in/yaml.v3 v3.0.1
 )
@@ -26,7 +27,6 @@ require (
 	github.com/google/s2a-go v0.1.9 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.3.17 // indirect
-	github.com/googleapis/gax-go/v2 v2.23.0 // indirect
 	github.com/klauspost/compress v1.16.7 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.5 // indirect
 	github.com/pierrec/lz4/v4 v4.1.18 // indirect

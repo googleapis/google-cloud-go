@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"math"
 	"reflect"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -270,14 +271,8 @@ type Query struct {
 func (q *Query) clone() *Query {
 	x := *q
 	// Copy the contents of the slice-typed fields to a new backing store.
-	if len(q.filter) > 0 {
-		x.filter = make([]EntityFilter, len(q.filter))
-		copy(x.filter, q.filter)
-	}
-	if len(q.order) > 0 {
-		x.order = make([]order, len(q.order))
-		copy(x.order, q.order)
-	}
+	x.filter = slices.Clone(q.filter)
+	x.order = slices.Clone(q.order)
 	return &x
 }
 
@@ -428,7 +423,7 @@ func unquote(s string) (string, error) {
 // cannot be used with KeysOnly.
 func (q *Query) Project(fieldNames ...string) *Query {
 	q = q.clone()
-	q.projection = append([]string(nil), fieldNames...)
+	q.projection = slices.Clone(fieldNames)
 	return q
 }
 

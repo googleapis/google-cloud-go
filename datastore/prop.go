@@ -98,8 +98,8 @@ type KeyLoader interface {
 type PropertyList []Property
 
 var (
-	typeOfPropertyLoadSaver = reflect.TypeOf((*PropertyLoadSaver)(nil)).Elem()
-	typeOfPropertyList      = reflect.TypeOf(PropertyList(nil))
+	typeOfPropertyLoadSaver = reflect.TypeFor[PropertyLoadSaver]()
+	typeOfPropertyList      = reflect.TypeFor[PropertyList]()
 )
 
 // Load loads all of the provided properties into l.
@@ -120,7 +120,7 @@ func validPropertyName(name string) bool {
 	if name == "" {
 		return false
 	}
-	for _, s := range strings.Split(name, ".") {
+	for s := range strings.SplitSeq(name, ".") {
 		if s == "" {
 			return false
 		}
@@ -200,8 +200,7 @@ func validateChildType(t reflect.Type, fieldName string, flatten, prevSlice bool
 			return nil
 		}
 
-		for i := 0; i < t.NumField(); i++ {
-			f := t.Field(i)
+		for f := range t.Fields() {
 
 			// If a named field is unexported, ignore it. An anonymous
 			// unexported field is processed, because it may contain
@@ -219,11 +218,14 @@ func validateChildType(t reflect.Type, fieldName string, flatten, prevSlice bool
 			if !keep {
 				continue
 			}
+			// A flatten option belongs to this field. Writing it back onto
+			// the loop variable makes every later sibling look flattened.
+			fieldFlatten := flatten
 			if other != nil {
 				opts := other.(saveOpts)
-				flatten = flatten || opts.flatten
+				fieldFlatten = flatten || opts.flatten
 			}
-			if err := validateChildType(f.Type, f.Name, flatten, prevSlice, prevTypes); err != nil {
+			if err := validateChildType(f.Type, f.Name, fieldFlatten, prevSlice, prevTypes); err != nil {
 				return err
 			}
 		}

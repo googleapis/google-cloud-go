@@ -503,7 +503,7 @@ func ExampleQuery_FindNearest() {
 	//
 	q := client.Collection("descriptions").
 		FindNearest("Embedding", []float32{1, 2, 3}, 5, firestore.DistanceMeasureDotProduct, &firestore.FindNearestOptions{
-			DistanceThreshold:   firestore.Ptr(20.0),
+			DistanceThreshold:   new(20.0),
 			DistanceResultField: "vector_distance",
 		})
 	iter1 := q.Documents(ctx)

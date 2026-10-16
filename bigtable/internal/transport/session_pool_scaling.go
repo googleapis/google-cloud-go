@@ -186,15 +186,13 @@ func (p *SessionPoolImpl) createSession(ctx context.Context) error {
 		return fmt.Errorf("failed to acquire session creation budget: %w", err)
 	}
 
-	// budgetReleased is the sole gate: the success path calls
-	// budget.Release(true) explicitly and sets budgetReleased=true, so
-	// any deferred fallback only fires on failure. Passing false is
-	// correct because the only way we reach the defer with
-	// budgetReleased=false is when streamFactory / cap-gate /
-	// Session.Start returned an error.
-	budgetReleased := false
+	// ownsBudget tracks whether this goroutine still holds the budget slot.
+	// True until ownership transfers to the session lifecycle (onActive or
+	// onClose's starting branch); the deferred fallback releases with a
+	// penalty on any early exit before that transfer.
+	ownsBudget := true
 	defer func() {
-		if !budgetReleased {
+		if ownsBudget {
 			p.budget.Release(false)
 		}
 	}()
@@ -257,19 +255,35 @@ func (p *SessionPoolImpl) createSession(ctx context.Context) error {
 	p.mu.Unlock()
 	reserved = false
 
+	// Disarm the deferred fallback before calling Start so it cannot
+	// double-release with onClose's starting branch when Start() fails via
+	// Send → ForceClose → onClose (synchronous before Start returns).
+	// ownsBudget=false does NOT mean the slot is free — it is still held;
+	// the defensive Start-error branch below releases it explicitly when
+	// onClose did not fire (e.g. pre-Send state-machine failure).
+	ownsBudget = false
+
 	if err := s.Start(dialCtx, p.openSessionRequest); err != nil {
+		// Normal failure path: Send() failed → ForceClose → onClose's
+		// starting branch already deleted sh and called Release(false).
+		// In that case wasStarting is false and we do nothing extra.
+		//
+		// Defensive path: Start() failed before Send() (e.g. state-machine
+		// check), so onClose never fired, sh is still in startingSessions,
+		// and we must release the budget ourselves.
 		p.mu.Lock()
+		_, wasStarting := p.startingSessions[sh]
 		delete(p.startingSessions, sh)
 		p.mu.Unlock()
+		if wasStarting {
+			p.budget.Release(false)
+		}
 		btopt.Debugf(nil, "POOL %p createSession Start failed for %s: %v", p, sessionName, err)
 		return fmt.Errorf("failed to start session: %w", err)
 	}
-
-	// Release budget now so the next scale-up isn't blocked by this
-	// session's lifetime (the deferred fallback would otherwise fire
-	// only after WaitGoroutines returns, i.e. after the session dies).
-	p.budget.Release(true)
-	budgetReleased = true
+	// Budget is released by onActive (handshake confirmed) or the onClose
+	// starting branch (stream died before Ready), whichever deletes sh
+	// from startingSessions first under p.mu.
 
 	// Block on WaitGoroutines so this createSession goroutine stays on
 	// p.spawns for the session's entire lifetime — Close's Phase-5 then

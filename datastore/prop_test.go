@@ -649,3 +649,41 @@ func TestLoadSavePLS(t *testing.T) {
 		}
 	}
 }
+
+func TestFlattenDoesNotLeakToSibling(t *testing.T) {
+	type Reason struct {
+		Code string `datastore:"code"`
+	}
+	type TimeRange struct {
+		Reasons []*Reason `datastore:"reasons"`
+	}
+	type Retail struct {
+		ID string `datastore:"id"`
+	}
+	type Entity struct {
+		Retail     Retail       `datastore:"retail,flatten"`
+		TimeRanges []*TimeRange `datastore:"timeRanges"`
+	}
+
+	props, err := SaveStruct(&Entity{
+		Retail: Retail{ID: "example"},
+		TimeRanges: []*TimeRange{
+			{Reasons: []*Reason{{Code: "UNAVAILABLE"}}},
+		},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	var sawID, sawRanges bool
+	for _, p := range props {
+		if p.Name == "retail.id" && p.Value == "example" {
+			sawID = true
+		}
+		if p.Name == "timeRanges" {
+			sawRanges = true
+		}
+	}
+	if !sawID || !sawRanges {
+		t.Fatalf("saved properties = %#v, want retail.id and timeRanges", props)
+	}
+}

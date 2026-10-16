@@ -6509,8 +6509,13 @@ type BuildOptions struct {
 	//
 	// If true, JSON-formatted logs are parsed as structured logs.
 	EnableStructuredLogging bool `protobuf:"varint,23,opt,name=enable_structured_logging,json=enableStructuredLogging,proto3" json:"enable_structured_logging,omitempty"`
-	unknownFields           protoimpl.UnknownFields
-	sizeCache               protoimpl.SizeCache
+	// Optional. Option to specify which release or release channel
+	// (rapid|regular|stable) to use to run this build.
+	WorkerRelease string `protobuf:"bytes,25,opt,name=worker_release,json=workerRelease,proto3" json:"worker_release,omitempty"`
+	// Output only. Worker release resolved from the release channel.
+	ResolvedWorkerRelease string `protobuf:"bytes,26,opt,name=resolved_worker_release,json=resolvedWorkerRelease,proto3" json:"resolved_worker_release,omitempty"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
 }
 
 func (x *BuildOptions) Reset() {
@@ -6654,6 +6659,20 @@ func (x *BuildOptions) GetEnableStructuredLogging() bool {
 		return x.EnableStructuredLogging
 	}
 	return false
+}
+
+func (x *BuildOptions) GetWorkerRelease() string {
+	if x != nil {
+		return x.WorkerRelease
+	}
+	return ""
+}
+
+func (x *BuildOptions) GetResolvedWorkerRelease() string {
+	if x != nil {
+		return x.ResolvedWorkerRelease
+	}
+	return ""
 }
 
 // ReceiveTriggerWebhookRequest [Experimental] is the request object accepted by
@@ -8567,9 +8586,17 @@ type BuildOptions_PoolOption struct {
 	// WorkerPool.
 	//
 	// Format projects/{project}/locations/{location}/workerPools/{workerPoolId}
-	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Output only. OUTPUT_ONLY. The release or release channel used to run the
+	// Build. This is set to the same value as
+	// `PrivatePoolV1Config.WorkerConfig.worker_release` for the UI to easily
+	// access.
+	WorkerRelease string `protobuf:"bytes,4,opt,name=worker_release,json=workerRelease,proto3" json:"worker_release,omitempty"`
+	// Output only. OUTPUT_ONLY. Worker release resolved from the release
+	// channel.
+	ResolvedWorkerRelease string `protobuf:"bytes,5,opt,name=resolved_worker_release,json=resolvedWorkerRelease,proto3" json:"resolved_worker_release,omitempty"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
 }
 
 func (x *BuildOptions_PoolOption) Reset() {
@@ -8609,6 +8636,20 @@ func (x *BuildOptions_PoolOption) GetName() string {
 	return ""
 }
 
+func (x *BuildOptions_PoolOption) GetWorkerRelease() string {
+	if x != nil {
+		return x.WorkerRelease
+	}
+	return ""
+}
+
+func (x *BuildOptions_PoolOption) GetResolvedWorkerRelease() string {
+	if x != nil {
+		return x.ResolvedWorkerRelease
+	}
+	return ""
+}
+
 // Defines the configuration to be used for creating workers in
 // the pool.
 type PrivatePoolV1Config_WorkerConfig struct {
@@ -8627,8 +8668,11 @@ type PrivatePoolV1Config_WorkerConfig struct {
 	// Optional. Enable nested virtualization on the worker, if supported by the
 	// machine type. By default, nested virtualization is disabled.
 	EnableNestedVirtualization *bool `protobuf:"varint,3,opt,name=enable_nested_virtualization,json=enableNestedVirtualization,proto3,oneof" json:"enable_nested_virtualization,omitempty"`
-	unknownFields              protoimpl.UnknownFields
-	sizeCache                  protoimpl.SizeCache
+	// Optional. Option to specify which release or release channel
+	// (rapid|regular|stable) to use to run this build.
+	WorkerRelease string `protobuf:"bytes,4,opt,name=worker_release,json=workerRelease,proto3" json:"worker_release,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *PrivatePoolV1Config_WorkerConfig) Reset() {
@@ -8680,6 +8724,13 @@ func (x *PrivatePoolV1Config_WorkerConfig) GetEnableNestedVirtualization() bool 
 		return *x.EnableNestedVirtualization
 	}
 	return false
+}
+
+func (x *PrivatePoolV1Config_WorkerConfig) GetWorkerRelease() string {
+	if x != nil {
+		return x.WorkerRelease
+	}
+	return ""
 }
 
 // Defines the network configuration for the pool.
@@ -9422,7 +9473,7 @@ const file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDesc = "" +
 	"trigger_id\x18\x02 \x01(\tB\x03\xe0A\x02R\ttriggerId\x12J\n" +
 	"\atrigger\x18\x03 \x01(\v2+.google.devtools.cloudbuild.v1.BuildTriggerB\x03\xe0A\x02R\atrigger\x12;\n" +
 	"\vupdate_mask\x18\x05 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"\xc7\x0e\n" +
+	"updateMask\"\x9a\x10\n" +
 	"\fBuildOptions\x12b\n" +
 	"\x16source_provenance_hash\x18\x01 \x03(\x0e2,.google.devtools.cloudbuild.v1.Hash.HashTypeR\x14sourceProvenanceHash\x12p\n" +
 	"\x17requested_verify_option\x18\x02 \x01(\x0e28.google.devtools.cloudbuild.v1.BuildOptions.VerifyOptionR\x15requestedVerifyOption\x12Z\n" +
@@ -9442,11 +9493,15 @@ const file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDesc = "" +
 	"secret_env\x18\r \x03(\tR\tsecretEnv\x12?\n" +
 	"\avolumes\x18\x0e \x03(\v2%.google.devtools.cloudbuild.v1.VolumeR\avolumes\x12\x8b\x01\n" +
 	"\x1cdefault_logs_bucket_behavior\x18\x15 \x01(\x0e2E.google.devtools.cloudbuild.v1.BuildOptions.DefaultLogsBucketBehaviorB\x03\xe0A\x01R\x19defaultLogsBucketBehavior\x12?\n" +
-	"\x19enable_structured_logging\x18\x17 \x01(\bB\x03\xe0A\x01R\x17enableStructuredLogging\x1aK\n" +
+	"\x19enable_structured_logging\x18\x17 \x01(\bB\x03\xe0A\x01R\x17enableStructuredLogging\x12*\n" +
+	"\x0eworker_release\x18\x19 \x01(\tB\x03\xe0A\x01R\rworkerRelease\x12;\n" +
+	"\x17resolved_worker_release\x18\x1a \x01(\tB\x03\xe0A\x03R\x15resolvedWorkerRelease\x1a\xb4\x01\n" +
 	"\n" +
 	"PoolOption\x12=\n" +
 	"\x04name\x18\x01 \x01(\tB)\xfaA&\n" +
-	"$cloudbuild.googleapis.com/WorkerPoolR\x04name\".\n" +
+	"$cloudbuild.googleapis.com/WorkerPoolR\x04name\x12*\n" +
+	"\x0eworker_release\x18\x04 \x01(\tB\x03\xe0A\x03R\rworkerRelease\x12;\n" +
+	"\x17resolved_worker_release\x18\x05 \x01(\tB\x03\xe0A\x03R\x15resolvedWorkerRelease\".\n" +
 	"\fVerifyOption\x12\x10\n" +
 	"\fNOT_VERIFIED\x10\x00\x12\f\n" +
 	"\bVERIFIED\x10\x01\"\x92\x01\n" +
@@ -9538,16 +9593,17 @@ const file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDesc = "" +
 	"\bUPDATING\x10\x05:\x89\x01\xeaA\x85\x01\n" +
 	"$cloudbuild.googleapis.com/WorkerPool\x12Aprojects/{project}/locations/{location}/workerPools/{worker_pool}*\vworkerPools2\n" +
 	"workerPoolR\x01\x01B\b\n" +
-	"\x06config\"\x94\t\n" +
+	"\x06config\"\xc0\t\n" +
 	"\x13PrivatePoolV1Config\x12d\n" +
 	"\rworker_config\x18\x01 \x01(\v2?.google.devtools.cloudbuild.v1.PrivatePoolV1Config.WorkerConfigR\fworkerConfig\x12g\n" +
 	"\x0enetwork_config\x18\x02 \x01(\v2@.google.devtools.cloudbuild.v1.PrivatePoolV1Config.NetworkConfigR\rnetworkConfig\x12\x85\x01\n" +
-	"\x17private_service_connect\x18\x05 \x01(\v2H.google.devtools.cloudbuild.v1.PrivatePoolV1Config.PrivateServiceConnectB\x03\xe0A\x05R\x15privateServiceConnect\x1a\xc5\x01\n" +
+	"\x17private_service_connect\x18\x05 \x01(\v2H.google.devtools.cloudbuild.v1.PrivatePoolV1Config.PrivateServiceConnectB\x03\xe0A\x05R\x15privateServiceConnect\x1a\xf1\x01\n" +
 	"\fWorkerConfig\x12&\n" +
 	"\fmachine_type\x18\x01 \x01(\tB\x03\xe0A\x01R\vmachineType\x12 \n" +
 	"\fdisk_size_gb\x18\x02 \x01(\x03R\n" +
 	"diskSizeGb\x12J\n" +
-	"\x1cenable_nested_virtualization\x18\x03 \x01(\bB\x03\xe0A\x01H\x00R\x1aenableNestedVirtualization\x88\x01\x01B\x1f\n" +
+	"\x1cenable_nested_virtualization\x18\x03 \x01(\bB\x03\xe0A\x01H\x00R\x1aenableNestedVirtualization\x88\x01\x01\x12*\n" +
+	"\x0eworker_release\x18\x04 \x01(\tB\x03\xe0A\x01R\rworkerReleaseB\x1f\n" +
 	"\x1d_enable_nested_virtualization\x1a\xe9\x02\n" +
 	"\rNetworkConfig\x12P\n" +
 	"\x0epeered_network\x18\x01 \x01(\tB)\xe0A\x05\xe0A\x02\xfaA \n" +

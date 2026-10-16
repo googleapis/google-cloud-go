@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.23.0](https://github.com/googleapis/google-cloud-go/compare/datastream/v1.22.0...datastream/v1.23.0) (2026-10-15)
+
+
+### Features
+
+* Update API sources and regenerate ([#20683](https://github.com/googleapis/google-cloud-go/issues/20683)) ([005d7ce](https://github.com/googleapis/google-cloud-go/commit/005d7ce4872f1cf1ad269cd5d0ce8da7a844d3c8))
+
 ## [1.22.0](https://github.com/googleapis/google-cloud-go/compare/datastream/v1.21.0...datastream/v1.22.0) (2026-09-23)
 
 

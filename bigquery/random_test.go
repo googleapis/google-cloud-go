@@ -20,7 +20,7 @@ func TestRandomID(t *testing.T) {
 	// A very simplistic collision test.
 	testSize := 50000
 	colMap := make(map[string]struct{}, testSize)
-	for i := 0; i < testSize; i++ {
+	for range testSize {
 		id := randomID()
 		if len(id) != 32 {
 			t.Fatalf("anomalous ID len (%d): %q", len(id), id)
