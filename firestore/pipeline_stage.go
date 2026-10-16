@@ -37,6 +37,7 @@ const (
 	stageNameDistinct        = "distinct"
 	stageNameDocuments       = "documents"
 	stageNameFindNearest     = "find_nearest"
+	stageNameInsert          = "insert"
 	stageNameLimit           = "limit"
 	stageNameLiterals        = "literals"
 	stageNameOffset          = "offset"
@@ -49,6 +50,7 @@ const (
 	stageNameUnion           = "union"
 	stageNameUnnest          = "unnest"
 	stageNameUpdate          = "update"
+	stageNameUpsert          = "upsert"
 	stageNameWhere           = "where"
 	stageNameDefine          = "let"
 )
@@ -1019,6 +1021,144 @@ func (s *deleteStage) toProto() (*pb.Pipeline_Stage, error) {
 	return &pb.Pipeline_Stage{
 		Name:    s.name(),
 		Args:    []*pb.Value{},
+		Options: optionsPb,
+	}, nil
+}
+
+func insertAndUpsertOptionsToProto(stageName string, options map[string]any) (map[string]*pb.Value, error) {
+	if len(options) == 0 {
+		return nil, nil
+	}
+
+	optsCopy := make(map[string]any)
+	for k, v := range options {
+		optsCopy[k] = v
+	}
+
+	var collectionPb *pb.Value
+	if col, ok := optsCopy["collection"]; ok {
+		delete(optsCopy, "collection")
+		path, ok := col.(string)
+		if !ok {
+			return nil, fmt.Errorf("firestore: invalid type for %s collection: %T", stageName, col)
+		}
+		if path == "" {
+			return nil, fmt.Errorf("firestore: collection path cannot be empty for %s stage", stageName)
+		}
+		if !strings.HasPrefix(path, "/") {
+			path = "/" + path
+		}
+		collectionPb = &pb.Value{ValueType: &pb.Value_ReferenceValue{ReferenceValue: path}}
+	}
+
+	var docIDPb *pb.Value
+	if docID, ok := optsCopy["document_id"]; ok {
+		delete(optsCopy, "document_id")
+		if docID == nil {
+			return nil, fmt.Errorf("firestore: internal error: %s stage document_id resolved to nil expression", stageName)
+		}
+		docIDExpr, ok := docID.(Expression)
+		if !ok {
+			return nil, fmt.Errorf("firestore: invalid type for %s document_id: %T", stageName, docID)
+		}
+		if reflect.ValueOf(docIDExpr).Kind() == reflect.Ptr && reflect.ValueOf(docIDExpr).IsNil() {
+			return nil, fmt.Errorf("firestore: internal error: %s stage document_id resolved to nil expression", stageName)
+		}
+		var err error
+		docIDPb, err = docIDExpr.toProto()
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	optionsPb, err := stageOptionsToProto(optsCopy)
+	if err != nil {
+		return nil, err
+	}
+	if collectionPb != nil || docIDPb != nil {
+		if optionsPb == nil {
+			optionsPb = make(map[string]*pb.Value)
+		}
+		if collectionPb != nil {
+			optionsPb["collection"] = collectionPb
+		}
+		if docIDPb != nil {
+			optionsPb["document_id"] = docIDPb
+		}
+	}
+
+	return optionsPb, nil
+}
+
+type insertStage struct {
+	options map[string]any
+}
+
+func newInsertStage(options map[string]any) (*insertStage, error) {
+	return &insertStage{options: options}, nil
+}
+
+func (s *insertStage) name() string { return stageNameInsert }
+
+func (s *insertStage) toProto() (*pb.Pipeline_Stage, error) {
+	optionsPb, err := insertAndUpsertOptionsToProto("Insert", s.options)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.Pipeline_Stage{
+		Name:    s.name(),
+		Args:    []*pb.Value{},
+		Options: optionsPb,
+	}, nil
+}
+
+type upsertStage struct {
+	options map[string]any
+}
+
+func newUpsertStage(options map[string]any) (*upsertStage, error) {
+	return &upsertStage{options: options}, nil
+}
+
+func (s *upsertStage) name() string { return stageNameUpsert }
+
+func (s *upsertStage) toProto() (*pb.Pipeline_Stage, error) {
+	var fields []Selectable
+	optsCopy := make(map[string]any)
+	for k, v := range s.options {
+		if k == "additional_fields" {
+			if f, ok := v.([]Selectable); ok {
+				fields = f
+			}
+		} else {
+			optsCopy[k] = v
+		}
+	}
+
+	var mapVal *pb.Value
+	var err error
+	if len(fields) > 0 {
+		mapVal, err = projectionsToMapValue(fields)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		mapVal = &pb.Value{
+			ValueType: &pb.Value_MapValue{
+				MapValue: &pb.MapValue{},
+			},
+		}
+	}
+
+	optionsPb, err := insertAndUpsertOptionsToProto("Upsert", optsCopy)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.Pipeline_Stage{
+		Name:    s.name(),
+		Args:    []*pb.Value{mapVal},
 		Options: optionsPb,
 	}, nil
 }

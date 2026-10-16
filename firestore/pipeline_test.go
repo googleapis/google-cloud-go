@@ -661,6 +661,187 @@ func TestPipeline_Delete_RawOptions(t *testing.T) {
 	}
 }
 
+func TestPipeline_Insert_Empty(t *testing.T) {
+	client := newTestClient()
+	ps := &PipelineSource{client: client}
+	p := ps.Collection("users").Insert()
+
+	req, err := p.toExecutePipelineRequest()
+	if err != nil {
+		t.Fatalf("p.toExecutePipelineRequest() failed: %v", err)
+	}
+
+	stages := req.GetStructuredPipeline().GetPipeline().GetStages()
+	if len(stages) != 2 {
+		t.Fatalf("Expected 2 stages in proto, got %d", len(stages))
+	}
+
+	wantInsertStage := &pb.Pipeline_Stage{
+		Name: "insert",
+		Args: []*pb.Value{},
+	}
+	if diff := cmp.Diff(wantInsertStage, stages[1], protocmp.Transform()); diff != "" {
+		t.Errorf("toExecutePipelineRequest() mismatch for insert stage (-want +got):\n%s", diff)
+	}
+}
+
+func TestPipeline_Insert_WithOptions(t *testing.T) {
+	client := newTestClient()
+	ps := &PipelineSource{client: client}
+	p := ps.Collection("users").Insert(
+		WithInsertCollection("users/123/archive"),
+		WithInsertDocumentIDExpression(ConstantOf("doc-1")),
+	)
+
+	req, err := p.toExecutePipelineRequest()
+	if err != nil {
+		t.Fatalf("p.toExecutePipelineRequest() failed: %v", err)
+	}
+
+	stages := req.GetStructuredPipeline().GetPipeline().GetStages()
+	if len(stages) != 2 {
+		t.Fatalf("Expected 2 stages in proto, got %d", len(stages))
+	}
+
+	wantInsertStage := &pb.Pipeline_Stage{
+		Name: "insert",
+		Args: []*pb.Value{},
+		Options: map[string]*pb.Value{
+			"collection":  {ValueType: &pb.Value_ReferenceValue{ReferenceValue: "/users/123/archive"}},
+			"document_id": {ValueType: &pb.Value_StringValue{StringValue: "doc-1"}},
+		},
+	}
+	if diff := cmp.Diff(wantInsertStage, stages[1], protocmp.Transform()); diff != "" {
+		t.Errorf("toExecutePipelineRequest() mismatch for insert stage with options (-want +got):\n%s", diff)
+	}
+}
+
+func TestPipeline_Insert_RawOptions(t *testing.T) {
+	client := newTestClient()
+	ps := &PipelineSource{client: client}
+	p := ps.Collection("users").Insert(
+		WithInsertCollection("archive"),
+		RawOptions{"foo": "bar"},
+	)
+
+	req, err := p.toExecutePipelineRequest()
+	if err != nil {
+		t.Fatalf("p.toExecutePipelineRequest() failed: %v", err)
+	}
+
+	stages := req.GetStructuredPipeline().GetPipeline().GetStages()
+	if len(stages) != 2 {
+		t.Fatalf("Expected 2 stages in proto, got %d", len(stages))
+	}
+
+	wantInsertStage := &pb.Pipeline_Stage{
+		Name: "insert",
+		Args: []*pb.Value{},
+		Options: map[string]*pb.Value{
+			"collection": {ValueType: &pb.Value_ReferenceValue{ReferenceValue: "/archive"}},
+			"foo":        {ValueType: &pb.Value_StringValue{StringValue: "bar"}},
+		},
+	}
+	if diff := cmp.Diff(wantInsertStage, stages[1], protocmp.Transform()); diff != "" {
+		t.Errorf("toExecutePipelineRequest() mismatch for insert stage with RawOptions (-want +got):\n%s", diff)
+	}
+}
+
+func TestPipeline_Upsert_Empty(t *testing.T) {
+	client := newTestClient()
+	ps := &PipelineSource{client: client}
+	p := ps.Collection("users").Upsert()
+
+	req, err := p.toExecutePipelineRequest()
+	if err != nil {
+		t.Fatalf("p.toExecutePipelineRequest() failed: %v", err)
+	}
+
+	stages := req.GetStructuredPipeline().GetPipeline().GetStages()
+	if len(stages) != 2 {
+		t.Fatalf("Expected 2 stages in proto, got %d", len(stages))
+	}
+
+	wantUpsertStage := &pb.Pipeline_Stage{
+		Name: "upsert",
+		Args: []*pb.Value{
+			{ValueType: &pb.Value_MapValue{MapValue: &pb.MapValue{}}},
+		},
+	}
+	if diff := cmp.Diff(wantUpsertStage, stages[1], protocmp.Transform()); diff != "" {
+		t.Errorf("toExecutePipelineRequest() mismatch for upsert stage (empty args) (-want +got):\n%s", diff)
+	}
+}
+
+func TestPipeline_Upsert_WithOptions(t *testing.T) {
+	client := newTestClient()
+	ps := &PipelineSource{client: client}
+	p := ps.Collection("users").Upsert(
+		WithUpsertCollection("archive"),
+		WithUpsertDocumentIDExpression(FieldOf("custom_id")),
+		WithUpsertAdditionalFields(ConstantOf("Active").As("status")),
+	)
+
+	req, err := p.toExecutePipelineRequest()
+	if err != nil {
+		t.Fatalf("p.toExecutePipelineRequest() failed: %v", err)
+	}
+
+	stages := req.GetStructuredPipeline().GetPipeline().GetStages()
+	if len(stages) != 2 {
+		t.Fatalf("Expected 2 stages in proto, got %d", len(stages))
+	}
+
+	wantUpsertStage := &pb.Pipeline_Stage{
+		Name: "upsert",
+		Args: []*pb.Value{
+			{ValueType: &pb.Value_MapValue{
+				MapValue: &pb.MapValue{
+					Fields: map[string]*pb.Value{
+						"status": {ValueType: &pb.Value_StringValue{StringValue: "Active"}},
+					},
+				},
+			}},
+		},
+		Options: map[string]*pb.Value{
+			"collection":  {ValueType: &pb.Value_ReferenceValue{ReferenceValue: "/archive"}},
+			"document_id": {ValueType: &pb.Value_FieldReferenceValue{FieldReferenceValue: "custom_id"}},
+		},
+	}
+	if diff := cmp.Diff(wantUpsertStage, stages[1], protocmp.Transform()); diff != "" {
+		t.Errorf("toExecutePipelineRequest() mismatch for upsert stage with options (-want +got):\n%s", diff)
+	}
+}
+
+func TestPipeline_Upsert_RawOptions(t *testing.T) {
+	client := newTestClient()
+	ps := &PipelineSource{client: client}
+	p := ps.Collection("users").Upsert(RawOptions{"foo": "bar"})
+
+	req, err := p.toExecutePipelineRequest()
+	if err != nil {
+		t.Fatalf("p.toExecutePipelineRequest() failed: %v", err)
+	}
+
+	stages := req.GetStructuredPipeline().GetPipeline().GetStages()
+	if len(stages) != 2 {
+		t.Fatalf("Expected 2 stages in proto, got %d", len(stages))
+	}
+
+	wantUpsertStage := &pb.Pipeline_Stage{
+		Name: "upsert",
+		Args: []*pb.Value{
+			{ValueType: &pb.Value_MapValue{MapValue: &pb.MapValue{}}},
+		},
+		Options: map[string]*pb.Value{
+			"foo": {ValueType: &pb.Value_StringValue{StringValue: "bar"}},
+		},
+	}
+	if diff := cmp.Diff(wantUpsertStage, stages[1], protocmp.Transform()); diff != "" {
+		t.Errorf("toExecutePipelineRequest() mismatch for upsert stage with RawOptions (-want +got):\n%s", diff)
+	}
+}
+
 // TestPipelineOptions_UniqueKeys verifies that strongly-typed options within the
 // same stage scope write to strictly unique keys, preventing accidental overrides.
 func TestPipelineOptions_UniqueKeys(t *testing.T) {
@@ -742,6 +923,49 @@ func TestPipelineOptions_UniqueKeys(t *testing.T) {
 			for k := range m {
 				if keys[k] {
 					t.Errorf("Duplicate key found in AggregateOptions: %q", k)
+				}
+				keys[k] = true
+			}
+		}
+	})
+
+	// 5. Insert Options
+	t.Run("InsertOptions", func(t *testing.T) {
+		options := []InsertOption{
+			WithInsertCollection("col"),
+			WithInsertDocumentIDExpression(ConstantOf("id")),
+		}
+
+		keys := make(map[string]bool)
+		for _, opt := range options {
+			m := make(map[string]any)
+			opt.applyStage(m)
+
+			for k := range m {
+				if keys[k] {
+					t.Errorf("Duplicate key found in InsertOptions: %q", k)
+				}
+				keys[k] = true
+			}
+		}
+	})
+
+	// 6. Upsert Options
+	t.Run("UpsertOptions", func(t *testing.T) {
+		options := []UpsertOption{
+			WithUpsertCollection("col"),
+			WithUpsertDocumentIDExpression(ConstantOf("id")),
+			WithUpsertAdditionalFields(ConstantOf("v").As("k")),
+		}
+
+		keys := make(map[string]bool)
+		for _, opt := range options {
+			m := make(map[string]any)
+			opt.applyStage(m)
+
+			for k := range m {
+				if keys[k] {
+					t.Errorf("Duplicate key found in UpsertOptions: %q", k)
 				}
 				keys[k] = true
 			}
