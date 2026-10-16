@@ -67,6 +67,7 @@ func newPipeline(client *Client, initialStage pipelineStage) *Pipeline {
 type executeSettings struct {
 	ExplainOptions *executeExplainOptions
 	IndexMode      string
+	Atomic         bool
 	RawOptions     map[string]any
 }
 
@@ -106,6 +107,21 @@ type executeExplainOptions struct {
 func WithExplainMode(mode ExplainMode) ExecuteOption {
 	return newFuncExecuteOption(func(eo *executeSettings) {
 		eo.ExplainOptions = &executeExplainOptions{Mode: mode}
+	})
+}
+
+// WithIndexMode sets the index mode for pipeline execution.
+func WithIndexMode(mode string) ExecuteOption {
+	return newFuncExecuteOption(func(eo *executeSettings) {
+		eo.IndexMode = mode
+	})
+}
+
+// WithAtomic configures whether the pipeline execution should be performed atomically
+// in a single auto-committed read-write transaction.
+func WithAtomic(atomic bool) ExecuteOption {
+	return newFuncExecuteOption(func(eo *executeSettings) {
+		eo.Atomic = atomic
 	})
 }
 
@@ -282,10 +298,19 @@ func (p *Pipeline) toExecutePipelineRequest() (*pb.ExecutePipelineRequest, error
 	}
 
 	// Note that transaction ID and other consistency selectors are mutually exclusive.
-	// We respect the transaction first, any read options passed by the caller second,
-	// and any read options stored in the client third.
+	// We respect the transaction first, atomic execution second, any read options passed
+	// by the caller third, and any read options stored in the client fourth.
 	if p.tx != nil {
 		req.ConsistencySelector = &pb.ExecutePipelineRequest_Transaction{Transaction: p.tx.id}
+	} else if p.executeSettings.Atomic {
+		req.ConsistencySelector = &pb.ExecutePipelineRequest_NewTransaction{
+			NewTransaction: &pb.TransactionOptions{
+				Mode: &pb.TransactionOptions_ReadWrite_{
+					ReadWrite: &pb.TransactionOptions_ReadWrite{},
+				},
+			},
+		}
+		req.AutoCommitTransaction = true
 	} else if rt, hasOpts := parseReadTime(p.c, p.readSettings); hasOpts {
 		req.ConsistencySelector = &pb.ExecutePipelineRequest_ReadTime{ReadTime: rt}
 	}
