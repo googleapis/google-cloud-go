@@ -173,20 +173,27 @@ func parseTag(t reflect.StructTag) (name string, keep bool, other interface{}, e
 	return parts[0], true, other, nil
 }
 
+type validatedType struct {
+	t         reflect.Type
+	flatten   bool
+	prevSlice bool
+}
+
 func validateType(t reflect.Type) error {
 	if t.Kind() != reflect.Struct {
 		return fmt.Errorf("datastore: validate called with non-struct type %s", t)
 	}
 
-	return validateChildType(t, "", false, false, map[reflect.Type]bool{})
+	return validateChildType(t, "", false, false, map[validatedType]bool{})
 }
 
 // validateChildType is a recursion helper func for validateType
-func validateChildType(t reflect.Type, fieldName string, flatten, prevSlice bool, prevTypes map[reflect.Type]bool) error {
-	if prevTypes[t] {
+func validateChildType(t reflect.Type, fieldName string, flatten, prevSlice bool, prevTypes map[validatedType]bool) error {
+	vt := validatedType{t: t, flatten: flatten, prevSlice: prevSlice}
+	if prevTypes[vt] {
 		return nil
 	}
-	prevTypes[t] = true
+	prevTypes[vt] = true
 
 	switch t.Kind() {
 	case reflect.Slice:
@@ -194,7 +201,7 @@ func validateChildType(t reflect.Type, fieldName string, flatten, prevSlice bool
 		if flatten && prevSlice && t.Elem().Kind() != reflect.Uint8 {
 			return fmt.Errorf("datastore: flattening nested structs leads to a slice of slices: field %q", fieldName)
 		}
-		return validateChildType(t.Elem(), fieldName, flatten, true, prevTypes)
+		return validateChildType(t.Elem(), fieldName, flatten, flatten, prevTypes)
 	case reflect.Struct:
 		if t == typeOfTime || t == typeOfGeoPoint {
 			return nil
