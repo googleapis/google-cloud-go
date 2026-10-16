@@ -969,27 +969,8 @@ func (c *Client) RunAggregationQueryWithOptions(ctx context.Context, aq *Aggrega
 }
 
 func validateReadOptions(eventual bool, t *Transaction, clientReadSettings *readSettings) error {
-	if !clientReadSettings.readTimeExists() {
-		if t == nil {
-			return nil
-		}
-		if eventual {
-			return errEventualConsistencyTransaction
-		}
-		t.stateLock.Lock()
-		expired := t.state == transactionStateExpired
-		t.stateLock.Unlock()
-		if expired {
-			return errExpiredTransaction
-		}
-		return nil
-	}
-
-	if t != nil || eventual {
-		return errEventualConsistencyTxnClientReadTime
-	}
-
-	return nil
+	_, err := parseQueryReadOptions(eventual, t, clientReadSettings)
+	return err
 }
 
 // parseQueryReadOptions translates Query read options into protobuf format.

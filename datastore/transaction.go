@@ -544,18 +544,6 @@ func (t *Transaction) rollback(ctx context.Context) (err error) {
 		// no transaction to rollback
 		return nil
 	}
-	t.stateLock.Unlock()
-
-	err = t.beginLaterTransaction()
-	if err != nil {
-		return err
-	}
-
-	t.stateLock.Lock()
-	if t.state == transactionStateExpired {
-		t.stateLock.Unlock()
-		return errExpiredTransaction
-	}
 	txID := t.id
 	t.stateLock.Unlock()
 
@@ -569,6 +557,10 @@ func (t *Transaction) rollback(ctx context.Context) (err error) {
 	}
 
 	t.stateLock.Lock()
+	if t.state == transactionStateExpired {
+		t.stateLock.Unlock()
+		return errExpiredTransaction
+	}
 	t.state = transactionStateExpired
 	t.stateLock.Unlock()
 	return nil

@@ -1101,3 +1101,62 @@ func TestTransaction_BeginLaterRollbackExpiresTransaction(t *testing.T) {
 		t.Errorf("remaining expected RPCs = %d, want 0", len(srv.reqItems))
 	}
 }
+
+func TestTransaction_BeginLaterGetNoSuchEntity(t *testing.T) {
+	ctx := context.Background()
+	client, srv, cleanup := newMock(t)
+	defer cleanup()
+
+	key := NameKey("Task", "missing", nil)
+	mockTxnID := []byte("tid-missing")
+	mockEntity := &pb.Entity{
+		Key: keyToProto(key),
+		Properties: map[string]*pb.Value{
+			"N": {ValueType: &pb.Value_IntegerValue{IntegerValue: 1}},
+		},
+	}
+
+	// First Get returns Missing (ErrNoSuchEntity) along with the new transaction ID.
+	srv.addRPC(&pb.LookupRequest{
+		ProjectId: mockProjectID,
+		Keys:      []*pb.Key{keyToProto(key)},
+		ReadOptions: &pb.ReadOptions{
+			ConsistencyType: &pb.ReadOptions_NewTransaction{},
+		},
+	}, &pb.LookupResponse{
+		Transaction: mockTxnID,
+		Missing:     []*pb.EntityResult{{Entity: &pb.Entity{Key: keyToProto(key)}}},
+	})
+
+	// Subsequent Commit must use mockTxnID without issuing a separate BeginTransaction RPC.
+	srv.addRPC(&pb.CommitRequest{
+		ProjectId:           mockProjectID,
+		Mode:                pb.CommitRequest_TRANSACTIONAL,
+		TransactionSelector: &pb.CommitRequest_Transaction{Transaction: mockTxnID},
+		Mutations: []*pb.Mutation{
+			{Operation: &pb.Mutation_Upsert{Upsert: mockEntity}},
+		},
+	}, &pb.CommitResponse{})
+
+	tx, err := client.NewTransaction(ctx, BeginLater)
+	if err != nil {
+		t.Fatalf("NewTransaction: %v", err)
+	}
+
+	var dst struct{ N int }
+	if err := tx.Get(key, &dst); !errors.Is(err, ErrNoSuchEntity) {
+		t.Fatalf("Get = %v, want %v", err, ErrNoSuchEntity)
+	}
+
+	if _, err := tx.Put(key, &struct{ N int }{N: 1}); err != nil {
+		t.Fatalf("Put: %v", err)
+	}
+
+	if _, err := tx.Commit(); err != nil {
+		t.Fatalf("Commit: %v", err)
+	}
+
+	if len(srv.reqItems) != 0 {
+		t.Errorf("remaining expected RPCs = %d, want 0", len(srv.reqItems))
+	}
+}
