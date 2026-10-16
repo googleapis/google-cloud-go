@@ -28,6 +28,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/auth/internal/jwt"
+	"cloud.google.com/go/auth/internal/regionalaccessboundary"
 )
 
 var jwtJSONKey = []byte(`{
@@ -217,4 +218,31 @@ func setupFakeKey() (*rsa.PrivateKey, []byte, error) {
 		return nil, nil, err
 	}
 	return pk, bytes.Replace(jwtJSONKey, []byte(`"super secret key"`), enc, 1), nil
+}
+
+func TestHandleServiceAccount_SelfSignedRABWrapper(t *testing.T) {
+	_, jsonKey, err := setupFakeKey()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	tp, err := DetectDefault(&DetectOptions{
+		CredentialsJSON:  jsonKey,
+		Audience:         "audience",
+		UseSelfSignedJWT: true,
+	})
+	if err != nil {
+		t.Fatalf("DetectDefault(): %v", err)
+	}
+	tok, err := tp.Token(context.Background())
+	if err != nil {
+		t.Fatalf("Token(): %v", err)
+	}
+	rawWrapper, exists := tok.Metadata[regionalaccessboundary.ProviderKey]
+	if !exists {
+		t.Fatalf("tok.Metadata[%q] is missing, want RAB wrapper", regionalaccessboundary.ProviderKey)
+	}
+	if _, ok := rawWrapper.(*regionalaccessboundary.DataProvider); !ok {
+		t.Errorf("Metadata[%q] = %T, want *regionalaccessboundary.DataProvider", regionalaccessboundary.ProviderKey, rawWrapper)
+	}
 }
