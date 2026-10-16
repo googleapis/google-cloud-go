@@ -935,4 +935,3 @@ func TestRunInTransaction_PanicRollsBack(t *testing.T) {
 		t.Errorf("mock server has %d remaining expected RPCs (Rollback likely not called)", len(srv.reqItems))
 	}
 }
-
