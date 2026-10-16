@@ -151,12 +151,6 @@ func isNotFoundError(err error) bool {
 	return false
 }
 
-// Span attribute keys for errors recorded by endSpan.
-const (
-	errorMessageKey = attribute.Key("error.message")
-	errorDomainKey  = attribute.Key("gcp.errors.domain")
-)
-
 // extractErrorMessage returns a human-readable error message from err.
 // It prefers the service-provided message from an APIError, googleapi.Error,
 // or gRPC status. For a googleapi.Error without a message, such as an XML API
@@ -253,9 +247,9 @@ func endSpan(ctx context.Context, err error) {
 	} else {
 		span := trace.SpanFromContext(ctx)
 		if err != nil {
-			attrs := []attribute.KeyValue{errorMessageKey.String(extractErrorMessage(err))}
+			attrs := []attribute.KeyValue{attribute.String("error.message", extractErrorMessage(err))}
 			if domain := extractErrorDomain(err); domain != "" {
-				attrs = append(attrs, errorDomainKey.String(domain))
+				attrs = append(attrs, attribute.String("gcp.errors.domain", domain))
 			}
 			span.SetAttributes(attrs...)
 			span.SetStatus(otelcodes.Error, err.Error())

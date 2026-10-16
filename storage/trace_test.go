@@ -255,7 +255,7 @@ func TestStorageTraceErrorMessage(t *testing.T) {
 			if len(spans) != 1 {
 				t.Fatalf("expected 1 span, got %d", len(spans))
 			}
-			gotMsg, hasAttr := spanAttr(spans[0], errorMessageKey)
+			gotMsg, hasAttr := spanAttr(spans[0], "error.message")
 			if wantHasAttr := tc.wantMsg != ""; hasAttr != wantHasAttr {
 				t.Fatalf("got hasAttr=%v, want %v (attrs=%v)", hasAttr, wantHasAttr, spans[0].Attributes)
 			}
@@ -580,7 +580,7 @@ func TestStorageTraceErrorDomain(t *testing.T) {
 			if len(spans) != 1 {
 				t.Fatalf("expected 1 span, got %d", len(spans))
 			}
-			gotDomain, hasAttr := spanAttr(spans[0], errorDomainKey)
+			gotDomain, hasAttr := spanAttr(spans[0], "gcp.errors.domain")
 			if wantHasAttr := tc.wantDomain != ""; hasAttr != wantHasAttr {
 				t.Fatalf("got hasAttr=%v, want %v (attrs=%v)", hasAttr, wantHasAttr, spans[0].Attributes)
 			}
