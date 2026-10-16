@@ -970,3 +970,63 @@ func TestTransaction_ConcurrentMutations(t *testing.T) {
 		t.Errorf("len(tx.pending) = %d, want %d", gotPending, want)
 	}
 }
+
+func TestTransaction_BeginLaterConcurrentReads(t *testing.T) {
+	ctx := context.Background()
+	client, srv, cleanup := newMock(t)
+	defer cleanup()
+
+	key := NameKey("Task", "k1", nil)
+	mockTxnID := []byte("tid-begin-later")
+	mockEntity := &pb.Entity{
+		Key: keyToProto(key),
+		Properties: map[string]*pb.Value{
+			"N": {ValueType: &pb.Value_IntegerValue{IntegerValue: 42}},
+		},
+	}
+
+	// Only the first Lookup RPC should request NewTransaction; subsequent
+	// concurrent Lookups must wait for the transaction ID and use Transaction.
+	srv.addRPC(&pb.LookupRequest{
+		ProjectId: mockProjectID,
+		Keys:      []*pb.Key{keyToProto(key)},
+		ReadOptions: &pb.ReadOptions{
+			ConsistencyType: &pb.ReadOptions_NewTransaction{},
+		},
+	}, &pb.LookupResponse{
+		Transaction: mockTxnID,
+		Found:       []*pb.EntityResult{{Entity: mockEntity, Version: 1}},
+	})
+
+	const numReaders = 5
+	for i := 1; i < numReaders; i++ {
+		srv.addRPC(&pb.LookupRequest{
+			ProjectId: mockProjectID,
+			Keys:      []*pb.Key{keyToProto(key)},
+			ReadOptions: &pb.ReadOptions{
+				ConsistencyType: &pb.ReadOptions_Transaction{Transaction: mockTxnID},
+			},
+		}, &pb.LookupResponse{
+			Found: []*pb.EntityResult{{Entity: mockEntity, Version: 1}},
+		})
+	}
+
+	tx, err := client.NewTransaction(ctx, BeginLater)
+	if err != nil {
+		t.Fatalf("NewTransaction: %v", err)
+	}
+
+	errCh := make(chan error, numReaders)
+	for i := 0; i < numReaders; i++ {
+		go func() {
+			var dst struct{ N int }
+			errCh <- tx.Get(key, &dst)
+		}()
+	}
+
+	for i := 0; i < numReaders; i++ {
+		if err := <-errCh; err != nil {
+			t.Errorf("concurrent Get failed: %v", err)
+		}
+	}
+}

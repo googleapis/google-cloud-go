@@ -25,6 +25,7 @@ import (
 	"context"
 	"fmt"
 	"reflect"
+	"sync"
 	"testing"
 
 	pb "cloud.google.com/go/datastore/apiv1/datastorepb"
@@ -39,7 +40,9 @@ import (
 type mockServer struct {
 	pb.DatastoreServer
 
-	Addr     string
+	Addr string
+
+	mu       sync.Mutex
 	reqItems []reqItem
 	resps    []interface{}
 }
@@ -105,6 +108,8 @@ func (s *mockServer) addRPC(wantReq proto.Message, resp interface{}) {
 // to tweak the requests before comparison, for example to adjust for
 // randomness.
 func (s *mockServer) addRPCAdjust(wantReq proto.Message, resp interface{}, adjust func(proto.Message)) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	s.reqItems = append(s.reqItems, reqItem{wantReq, adjust})
 	s.resps = append(s.resps, resp)
 }
@@ -113,6 +118,8 @@ func (s *mockServer) addRPCAdjust(wantReq proto.Message, resp interface{}, adjus
 // It returns the response, or an error if the request doesn't match what
 // was expected or there are no expected rpcs.
 func (s *mockServer) popRPC(gotReq proto.Message) (interface{}, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	if len(s.reqItems) == 0 {
 		return nil, fmt.Errorf("out of RPCs, saw %v", reflect.TypeOf(gotReq))
 	}
@@ -138,6 +145,8 @@ func (s *mockServer) popRPC(gotReq proto.Message) (interface{}, error) {
 }
 
 func (s *mockServer) reset() {
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	s.reqItems = nil
 	s.resps = nil
 }

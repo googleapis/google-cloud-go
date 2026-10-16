@@ -403,7 +403,9 @@ func (c *Client) RunInTransaction(ctx context.Context, f func(tx *Transaction) e
 		// Pass this transaction's ID to the retry transaction to preserve
 		// transaction priority.
 		if !settings.readOnly {
+			tx.stateLock.Lock()
 			settings.prevID = tx.id
+			tx.stateLock.Unlock()
 		}
 	}
 	return nil, err
@@ -436,6 +438,10 @@ func (t *Transaction) Commit() (c *Commit, err error) {
 	}
 
 	t.stateLock.Lock()
+	if t.state == transactionStateExpired {
+		t.stateLock.Unlock()
+		return nil, errExpiredTransaction
+	}
 	mutations := append([]*pb.Mutation(nil), t.mutations...)
 	txID := t.id
 	t.stateLock.Unlock()
@@ -486,24 +492,15 @@ func (t *Transaction) rollbackWithRetry() error {
 	rollbackCtx, cancel := context.WithTimeout(context.WithoutCancel(t.ctx), 5*time.Second)
 	defer cancel()
 
-	// Temporarily override the transaction context for the rollback operation.
-	// Since Rollback and rollbackWithRetry are only called once at the end of a transaction,
-	// this is clean and safe.
-	origCtx := t.ctx
-	t.ctx = rollbackCtx
-	defer func() {
-		t.ctx = origCtx
-	}()
-
 	retryer := gax.OnCodes(rollbackRetryCodes, txnBackoff)
 	for rollbackAttempt := 0; rollbackAttempt < maxIndividualReqTxnRetry; rollbackAttempt++ {
-		rollbackErr = t.Rollback()
+		rollbackErr = t.rollback(rollbackCtx)
 		if rollbackErr == nil {
 			return nil
 		}
 
 		// Check if Rollback should be retried
-		if backoffErr := backoffBeforeRetry(t.ctx, retryer, rollbackErr); backoffErr != nil {
+		if backoffErr := backoffBeforeRetry(rollbackCtx, retryer, rollbackErr); backoffErr != nil {
 			return backoffErr
 		}
 	}
@@ -512,7 +509,11 @@ func (t *Transaction) rollbackWithRetry() error {
 
 // Rollback abandons a pending transaction.
 func (t *Transaction) Rollback() (err error) {
-	ctx := trace.StartSpan(t.ctx, "cloud.google.com/go/datastore.Transaction.Rollback")
+	return t.rollback(t.ctx)
+}
+
+func (t *Transaction) rollback(ctx context.Context) (err error) {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.Transaction.Rollback")
 	defer func() { trace.EndSpan(ctx, err) }()
 
 	t.stateLock.Lock()
@@ -534,6 +535,10 @@ func (t *Transaction) Rollback() (err error) {
 	}
 
 	t.stateLock.Lock()
+	if t.state == transactionStateExpired {
+		t.stateLock.Unlock()
+		return errExpiredTransaction
+	}
 	txID := t.id
 	t.stateLock.Unlock()
 
@@ -553,51 +558,72 @@ func (t *Transaction) Rollback() (err error) {
 }
 
 func (t *Transaction) parseReadOptions() (*pb.ReadOptions, error) {
+	opts, finish, err := t.acquireReadOptions()
+	if err == nil {
+		finish(nil)
+	}
+	return opts, err
+}
+
+// acquireReadOptions returns the ReadOptions for a read RPC and a finish
+// callback that must be called once the RPC completes with the transaction ID
+// returned by the server (or nil if none).
+// When the transaction has not started yet (BeginLater), stateLock remains
+// held until finish is invoked so that concurrent reads wait for the initial
+// read to establish the transaction ID rather than starting multiple
+// server-side transactions.
+func (t *Transaction) acquireReadOptions() (*pb.ReadOptions, func(txnID []byte), error) {
 	if t.client != nil && t.client.readSettings.readTimeExists() {
-		return nil, errTxnClientReadTime
+		return nil, nil, errTxnClientReadTime
 	}
 
 	t.stateLock.Lock()
-	defer t.stateLock.Unlock()
-
-	var opts *pb.ReadOptions
 	switch t.state {
 	case transactionStateExpired:
-		return nil, errExpiredTransaction
+		t.stateLock.Unlock()
+		return nil, nil, errExpiredTransaction
 	case transactionStateInProgress:
-		opts = &pb.ReadOptions{
+		opts := &pb.ReadOptions{
 			// Use existing transaction id for this request
 			ConsistencyType: &pb.ReadOptions_Transaction{Transaction: t.id},
 		}
+		t.stateLock.Unlock()
+		return opts, func([]byte) {}, nil
 	case transactionStateNotStarted:
 		tOptionsPb, _ := t.parseTransactionOptions()
-		opts = &pb.ReadOptions{
+		opts := &pb.ReadOptions{
 			// Begin a new transaction for this request
 			ConsistencyType: &pb.ReadOptions_NewTransaction{NewTransaction: tOptionsPb},
 		}
+		var once sync.Once
+		finish := func(txnID []byte) {
+			once.Do(func() {
+				if txnID != nil && t.state == transactionStateNotStarted {
+					t.id = txnID
+					t.state = transactionStateInProgress
+				}
+				t.stateLock.Unlock()
+			})
+		}
+		return opts, finish, nil
+	default:
+		t.stateLock.Unlock()
+		return nil, func([]byte) {}, nil
 	}
-	return opts, nil
 }
 
 func (t *Transaction) get(spanName string, keys []*Key, dst interface{}) (err error) {
 	ctx := trace.StartSpan(t.ctx, spanName)
 	defer func() { trace.EndSpan(ctx, err) }()
 
-	opts, err := t.parseReadOptions()
+	opts, finishRead, err := t.acquireReadOptions()
 	if err != nil {
 		return err
 	}
+	defer finishRead(nil)
 
 	txnID, err := t.client.get(ctx, keys, dst, opts)
-
-	if txnID != nil {
-		t.stateLock.Lock()
-		if t.state == transactionStateNotStarted {
-			t.id = txnID
-			t.state = transactionStateInProgress
-		}
-		t.stateLock.Unlock()
-	}
+	finishRead(txnID)
 	return t.client.processFieldMismatchError(err)
 }
 
