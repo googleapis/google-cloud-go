@@ -1628,4 +1628,3 @@ func TestLoadSliceFieldMismatch(t *testing.T) {
 		t.Errorf("Parent mismatch (-got +want):\n%s", diff)
 	}
 }
-
