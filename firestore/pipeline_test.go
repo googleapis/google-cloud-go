@@ -972,3 +972,64 @@ func TestPipelineOptions_UniqueKeys(t *testing.T) {
 		}
 	})
 }
+
+func TestPipeline_ExecuteOptions(t *testing.T) {
+	c := &Client{
+		projectID:  "test-project",
+		databaseID: "(default)",
+	}
+
+	t.Run("WithAtomic_True", func(t *testing.T) {
+		p := c.Pipeline().Collection("books")
+		WithAtomic(true).apply(p.executeSettings)
+
+		req, err := p.toExecutePipelineRequest()
+		if err != nil {
+			t.Fatalf("p.toExecutePipelineRequest() failed: %v", err)
+		}
+		if req.GetNewTransaction() == nil || req.GetNewTransaction().GetReadWrite() == nil {
+			t.Errorf("expected NewTransaction with ReadWrite mode, got %v", req.GetConsistencySelector())
+		}
+		if !req.GetAutoCommitTransaction() {
+			t.Errorf("expected AutoCommitTransaction = true, got false")
+		}
+		if _, exists := req.GetStructuredPipeline().GetOptions()["atomic"]; exists {
+			t.Errorf("expected StructuredPipeline.Options not to contain \"atomic\"")
+		}
+	})
+
+	t.Run("WithAtomic_False", func(t *testing.T) {
+		p := c.Pipeline().Collection("books")
+		WithAtomic(false).apply(p.executeSettings)
+
+		req, err := p.toExecutePipelineRequest()
+		if err != nil {
+			t.Fatalf("p.toExecutePipelineRequest() failed: %v", err)
+		}
+		if req.GetConsistencySelector() != nil {
+			t.Errorf("expected nil ConsistencySelector, got %v", req.GetConsistencySelector())
+		}
+		if req.GetAutoCommitTransaction() {
+			t.Errorf("expected AutoCommitTransaction = false, got true")
+		}
+	})
+
+	t.Run("WithIndexMode_And_WithExplainMode", func(t *testing.T) {
+		p := c.Pipeline().Collection("books")
+		WithIndexMode("recommended").apply(p.executeSettings)
+		WithExplainMode(ExplainModeAnalyze).apply(p.executeSettings)
+
+		req, err := p.toExecutePipelineRequest()
+		if err != nil {
+			t.Fatalf("p.toExecutePipelineRequest() failed: %v", err)
+		}
+		opts := req.GetStructuredPipeline().GetOptions()
+		if got := opts["index_mode"].GetStringValue(); got != "recommended" {
+			t.Errorf("got index_mode = %q, want %q", got, "recommended")
+		}
+		explainFields := opts["explain_options"].GetMapValue().GetFields()
+		if got := explainFields["mode"].GetStringValue(); got != string(ExplainModeAnalyze) {
+			t.Errorf("got explain_options.mode = %q, want %q", got, ExplainModeAnalyze)
+		}
+	})
+}
