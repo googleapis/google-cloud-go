@@ -1519,6 +1519,7 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 			Metageneration:  obj.GetMetageneration(),
 			Generation:      obj.GetGeneration(),
 			CRC32C:          wantCRC,
+			Unfinalized:     !finalized,
 		},
 		objectMetadata: &metadata,
 		reader: &gRPCReader{
@@ -1538,12 +1539,11 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 			finalized:       finalized,
 			negativeOffset:  negativeOffset,
 		},
-		checkCRC:    checkCRC,
-		handle:      &handle,
-		remain:      remain,
-		unfinalized: !finalized,
-		bucket:      params.bucket,
-		object:      params.object,
+		checkCRC: checkCRC,
+		handle:   &handle,
+		remain:   remain,
+		bucket:   params.bucket,
+		object:   params.object,
 	}
 
 	// For a zero-length request, explicitly close the stream and set remaining
