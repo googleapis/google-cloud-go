@@ -16,7 +16,9 @@ package storage
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"testing"
 	"time"
@@ -30,6 +32,9 @@ import (
 	"go.opentelemetry.io/otel/sdk/trace/tracetest"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/googleapi"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func TestStorageTraceStartEndSpan(t *testing.T) {
@@ -346,6 +351,196 @@ func TestEndSpanEviction(t *testing.T) {
 			}
 			if !tc.wantEvict && !found {
 				t.Errorf("expected bucket to remain in cache")
+			}
+		})
+	}
+}
+
+func TestErrorAttributes(t *testing.T) {
+	ctx := context.Background()
+
+	grpcWithErrorInfo, err := status.New(codes.Unimplemented, "Appendable objects are not supported for this request.").WithDetails(&errdetails.ErrorInfo{
+		Reason: "GRPC_APPENDABLE_OBJECT_NOT_SUPPORTED",
+		Domain: "storage.googleapis.com",
+	})
+	if err != nil {
+		t.Fatalf("WithDetails: %v", err)
+	}
+	httpWithErrorInfo := &googleapi.Error{
+		Code:    http.StatusForbidden,
+		Message: "Permission denied.",
+		Body:    `{"error":{"code":403,"message":"Permission denied.","status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com"}]}}`,
+	}
+
+	tests := []struct {
+		name       string
+		err        error
+		wantType   string // "" means the attribute must not be set.
+		wantDomain string // "" means the attribute must not be set.
+	}{
+		{
+			name:     "HTTP not found",
+			err:      fmt.Errorf("%w: %w", ErrBucketNotExist, &googleapi.Error{Code: http.StatusNotFound, Message: "The specified bucket does not exist."}),
+			wantType: "NOT_FOUND",
+		},
+		{
+			name:     "HTTP precondition failed",
+			err:      &googleapi.Error{Code: http.StatusPreconditionFailed, Message: "At least one of the pre-conditions you specified did not hold."},
+			wantType: "412",
+		},
+		{
+			name: "HTTP XML error",
+			err: &googleapi.Error{
+				Code: http.StatusRequestedRangeNotSatisfiable,
+				Body: "<?xml version='1.0' encoding='UTF-8'?><Error><Code>InvalidRange</Code><Message>The requested range cannot be satisfied.</Message></Error>",
+			},
+			wantType: "OUT_OF_RANGE",
+		},
+		{
+			name:       "HTTP error with ErrorInfo",
+			err:        httpWithErrorInfo,
+			wantType:   "PERMISSION_DENIED",
+			wantDomain: "googleapis.com",
+		},
+		{
+			name:     "gRPC not found",
+			err:      fmt.Errorf("%w: %w", ErrObjectNotExist, status.Error(codes.NotFound, "No such object: bucket/obj")),
+			wantType: "NOT_FOUND",
+		},
+		{
+			name:       "gRPC error with ErrorInfo",
+			err:        grpcWithErrorInfo.Err(),
+			wantType:   "UNIMPLEMENTED",
+			wantDomain: "storage.googleapis.com",
+		},
+		{
+			name:       "wrapped gRPC error with ErrorInfo",
+			err:        fmt.Errorf("storage: write failed: %w", grpcWithErrorInfo.Err()),
+			wantType:   "UNIMPLEMENTED",
+			wantDomain: "storage.googleapis.com",
+		},
+		{
+			name:     "context canceled",
+			err:      context.Canceled,
+			wantType: "CANCELLED",
+		},
+		{
+			name:     "deadline exceeded",
+			err:      context.DeadlineExceeded,
+			wantType: "TIMEOUT",
+		},
+		{
+			name:     "client-side error",
+			err:      errors.New("storage: bucket name is empty"),
+			wantType: "UNKNOWN",
+		},
+		{
+			name:     "nil error sets no attributes",
+			err:      nil,
+			wantType: "",
+		},
+		{
+			name:     "io.EOF does not set error.type",
+			err:      io.EOF,
+			wantType: "",
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			got := map[attribute.Key]string{}
+			for _, kv := range errorAttributes(ctx, tc.err) {
+				got[kv.Key] = kv.Value.AsString()
+			}
+			want := map[attribute.Key]string{}
+			if tc.wantType != "" {
+				want["error.type"] = tc.wantType
+			}
+			if tc.wantDomain != "" {
+				want["gcp.errors.domain"] = tc.wantDomain
+			}
+			if diff := cmp.Diff(want, got); diff != "" {
+				t.Errorf("errorAttributes(%v) mismatch (-want +got):\n%s", tc.err, diff)
+			}
+		})
+	}
+}
+
+func TestStorageTraceEndSpanErrorAttributes(t *testing.T) {
+	ctx := context.Background()
+	grpcWithErrorInfo, err := status.New(codes.PermissionDenied, "Permission denied.").WithDetails(&errdetails.ErrorInfo{
+		Reason: "SERVICE_DISABLED",
+		Domain: "storage.googleapis.com",
+	})
+	if err != nil {
+		t.Fatalf("WithDetails: %v", err)
+	}
+
+	tests := []struct {
+		name      string
+		otelOn    bool
+		err       error
+		wantAttrs map[attribute.Key]string
+	}{
+		{
+			name:      "error sets error.type and gcp.errors.domain",
+			otelOn:    true,
+			err:       grpcWithErrorInfo.Err(),
+			wantAttrs: map[attribute.Key]string{"error.type": "PERMISSION_DENIED", "gcp.errors.domain": "storage.googleapis.com"},
+		},
+		{
+			name:      "gRPC not found error sets error.type",
+			otelOn:    true,
+			err:       status.Error(codes.NotFound, "No such object: bucket/obj"),
+			wantAttrs: map[attribute.Key]string{"error.type": "NOT_FOUND"},
+		},
+		{
+			name:      "HTTP not found error sets error.type",
+			otelOn:    true,
+			err:       fmt.Errorf("%w: %w", ErrBucketNotExist, &googleapi.Error{Code: http.StatusNotFound, Message: "The specified bucket does not exist."}),
+			wantAttrs: map[attribute.Key]string{"error.type": "NOT_FOUND"},
+		},
+		{
+			name:      "nil error sets no error attributes",
+			otelOn:    true,
+			err:       nil,
+			wantAttrs: map[attribute.Key]string{},
+		},
+		{
+			// The legacy internalTrace path still ends a span through the
+			// global provider; it must not get the new attributes.
+			name:      "legacy internalTrace path unchanged",
+			otelOn:    false,
+			err:       grpcWithErrorInfo.Err(),
+			wantAttrs: map[attribute.Key]string{},
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if tc.otelOn {
+				t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
+			} else {
+				t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "false")
+			}
+			te := testutil.NewOpenTelemetryTestExporter()
+			t.Cleanup(func() {
+				te.Unregister(ctx)
+			})
+
+			spanCtx, _ := startSpan(ctx, "Object.Attrs")
+			endSpan(spanCtx, tc.err)
+
+			spans := te.Spans()
+			if len(spans) != 1 {
+				t.Fatalf("expected 1 span, got %d", len(spans))
+			}
+			got := map[attribute.Key]string{}
+			for _, kv := range spans[0].Attributes {
+				if kv.Key == "error.type" || kv.Key == "gcp.errors.domain" {
+					got[kv.Key] = kv.Value.AsString()
+				}
+			}
+			if diff := cmp.Diff(tc.wantAttrs, got); diff != "" {
+				t.Errorf("error attributes mismatch (-want +got):\n%s", diff)
 			}
 		})
 	}

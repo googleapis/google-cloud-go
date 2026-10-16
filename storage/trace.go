@@ -24,6 +24,7 @@ import (
 
 	internalTrace "cloud.google.com/go/internal/trace"
 	"cloud.google.com/go/storage/internal"
+	gax "github.com/googleapis/gax-go/v2"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	otelcodes "go.opentelemetry.io/otel/codes"
@@ -150,9 +151,35 @@ func isNotFoundError(err error) bool {
 	return false
 }
 
+// errorAttributes returns the error.type and, when known, gcp.errors.domain
+// span attributes for err. It returns no attributes for a nil error.
+//
+// error.type reuses computeErrorType, the classifier behind the error.type
+// metric attribute, so spans and metrics report the same value for a failure.
+// gcp.errors.domain is the google.rpc.ErrorInfo domain, extracted with
+// gax.ExtractTelemetryErrorInfo.
+func errorAttributes(ctx context.Context, err error) []attribute.KeyValue {
+	var attrs []attribute.KeyValue
+	// Infer the transport from the error, since endSpan does not know it:
+	// HTTP errors always carry a *googleapi.Error.
+	var httpErr *googleapi.Error
+	isHTTP := errors.As(err, &httpErr)
+	// computeErrorType reports nil and io.EOF as "OK"; error.type must not be
+	// set then.
+	if errType := computeErrorType(err, isHTTP, 0); errType != "OK" {
+		attrs = append(attrs, attribute.String("error.type", errType))
+	}
+	if domain := gax.ExtractTelemetryErrorInfo(ctx, err).Domain; domain != "" {
+		attrs = append(attrs, attribute.String("gcp.errors.domain", domain))
+	}
+	return attrs
+}
+
 // endSpan retrieves the current span from ctx and completes the span.
-// If an error occurs, the error is recorded as an exception span event for this span,
-// and the span status is set in the form of a code and a description.
+// If an error occurs, the error.type and, when known, gcp.errors.domain
+// attributes are set, the error is recorded as an exception span event for
+// this span, and the span status is set in the form of a code and a
+// description.
 func endSpan(ctx context.Context, err error) {
 	if err != nil && isNotFoundError(err) {
 		isBucket, _ := ctx.Value(isBucketContextKey).(bool)
@@ -170,6 +197,7 @@ func endSpan(ctx context.Context, err error) {
 	} else {
 		span := trace.SpanFromContext(ctx)
 		if err != nil {
+			span.SetAttributes(errorAttributes(ctx, err)...)
 			span.SetStatus(otelcodes.Error, err.Error())
 			span.RecordError(err)
 		}
