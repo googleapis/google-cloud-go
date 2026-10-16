@@ -16,6 +16,7 @@ package storage
 
 import (
 	"context"
+	"strings"
 	"testing"
 )
 
@@ -60,22 +61,22 @@ func TestMergeFeatureAttributes(t *testing.T) {
 		},
 		{
 			name: "single value",
-			vals: []string{encodeUint32(1)},
+			vals: []string{encodeFeatureMask(1)},
 			want: 1,
 		},
 		{
 			name: "multiple values",
-			vals: []string{encodeUint32(1), encodeUint32(2), encodeUint32(4)},
+			vals: []string{encodeFeatureMask(1), encodeFeatureMask(2), encodeFeatureMask(4)},
 			want: 7,
 		},
 		{
 			name: "overlapping values",
-			vals: []string{encodeUint32(3), encodeUint32(6)},
+			vals: []string{encodeFeatureMask(3), encodeFeatureMask(6)},
 			want: 7, // 011 | 110 = 111 (7)
 		},
 		{
 			name: "invalid values ignored",
-			vals: []string{encodeUint32(1), "invalid", encodeUint32(8)},
+			vals: []string{encodeFeatureMask(1), "invalid", encodeFeatureMask(8)},
 			want: 9,
 		},
 	}
@@ -85,6 +86,53 @@ func TestMergeFeatureAttributes(t *testing.T) {
 			got := mergeFeatureAttributes(tc.vals)
 			if got != tc.want {
 				t.Errorf("mergeFeatureAttributes(%v) = %d; want %d", tc.vals, got, tc.want)
+			}
+		})
+	}
+}
+
+func TestEncodeFeatureMaskIsWebSafe(t *testing.T) {
+	// The server decodes this header with a strict web-safe base64 decoder,
+	// so the encoding must never contain '+' or '/' for any bitmask.
+	masks := []uint32{0, 1, 3, 0xF8, 0xFB, 0x3E00, 0x3F00, 0xFFFFFFFF}
+	for _, m := range masks {
+		got := encodeFeatureMask(m)
+		if strings.ContainsAny(got, "+/") {
+			t.Errorf("encodeFeatureMask(%#x) = %q; contains standard-alphabet characters", m, got)
+		}
+		decoded, err := decodeFeatureMask(got)
+		if err != nil {
+			t.Fatalf("decodeFeatureMask(%q) error: %v", got, err)
+		}
+		if decoded != m {
+			t.Errorf("round trip of %#x = %#x", m, decoded)
+		}
+	}
+}
+
+func TestDecodeFeatureMask(t *testing.T) {
+	tests := []struct {
+		name    string
+		in      string
+		want    uint32
+		wantErr bool
+	}{
+		{name: "url-safe padded", in: "AAAA-w==", want: 0xFB},
+		{name: "url-safe unpadded", in: "AAAA-w", want: 0xFB},
+		{name: "standard padded (legacy)", in: "AAAA+w==", want: 0xFB},
+		{name: "standard unpadded (legacy)", in: "AAAA+w", want: 0xFB},
+		{name: "not base64", in: "invalid!", wantErr: true},
+		{name: "wrong length", in: "AQID", wantErr: true},
+		{name: "oversized payload", in: strings.Repeat("A", 520), wantErr: true},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			got, err := decodeFeatureMask(tc.in)
+			if (err != nil) != tc.wantErr {
+				t.Fatalf("decodeFeatureMask(%q) error = %v; wantErr %v", tc.in, err, tc.wantErr)
+			}
+			if got != tc.want {
+				t.Errorf("decodeFeatureMask(%q) = %#x; want %#x", tc.in, got, tc.want)
 			}
 		})
 	}
