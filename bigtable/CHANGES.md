@@ -1,5 +1,20 @@
 # Changes
 
+## [1.59.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.58.0...bigtable/v1.59.0) (2026-10-16)
+
+
+### Features
+
+* **bigtable:** Add classic-path fallback to accelerator daemon ([#20598](https://github.com/googleapis/google-cloud-go/issues/20598)) ([9b5aebf](https://github.com/googleapis/google-cloud-go/commit/9b5aebf41b5f3d24c9176af4a410583de1efbc89))
+* Update API sources and regenerate ([#20607](https://github.com/googleapis/google-cloud-go/issues/20607)) ([395fc59](https://github.com/googleapis/google-cloud-go/commit/395fc59e067ed2576a1c8c961edf3f749633520c))
+* Update API sources and regenerate ([#20646](https://github.com/googleapis/google-cloud-go/issues/20646)) ([4ad5d50](https://github.com/googleapis/google-cloud-go/commit/4ad5d50aaf4392d19fd391ee71eec1c5029ecd1d))
+
+
+### Bug Fixes
+
+* **bigtable:** Hold session budget slot until OpenSession handshake c… ([#20688](https://github.com/googleapis/google-cloud-go/issues/20688)) ([a9a05e0](https://github.com/googleapis/google-cloud-go/commit/a9a05e0dc5b806d7aceddb2a54a9848d778eb074))
+* **bigtable:** Only surface partial cluster failure in UpdateInstanceAndSyncClusters when relevant ([#20629](https://github.com/googleapis/google-cloud-go/issues/20629)) ([7660eab](https://github.com/googleapis/google-cloud-go/commit/7660eabfab30f7a9c8216694568da14fd5d6f64a))
+
 ## [1.58.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.57.0...bigtable/v1.58.0) (2026-09-25)
 
 
