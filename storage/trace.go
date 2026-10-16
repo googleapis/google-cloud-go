@@ -156,10 +156,6 @@ func isNotFoundError(err error) bool {
 //
 // error.type reuses computeErrorType, the classifier behind the error.type
 // metric attribute, so spans and metrics report the same value for a failure.
-// It intentionally does not use gax's TelemetryErrorInfo.ErrorType, so values
-// can differ from the spans gax creates for the underlying RPCs (for example,
-// TIMEOUT instead of CLIENT_TIMEOUT, and the gRPC or HTTP code instead of the
-// google.rpc.ErrorInfo reason).
 // gcp.errors.domain is the google.rpc.ErrorInfo domain, extracted with
 // gax.ExtractTelemetryErrorInfo.
 func errorAttributes(ctx context.Context, err error) []attribute.KeyValue {
