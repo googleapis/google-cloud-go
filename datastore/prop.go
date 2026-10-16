@@ -189,7 +189,7 @@ func validateType(t reflect.Type) error {
 
 // validateChildType is a recursion helper func for validateType
 func validateChildType(t reflect.Type, fieldName string, flatten, prevSlice bool, prevTypes map[validatedType]bool) error {
-	vt := validatedType{t, flatten, prevSlice}
+	vt := validatedType{t: t, flatten: flatten, prevSlice: prevSlice}
 	if prevTypes[vt] {
 		return nil
 	}
