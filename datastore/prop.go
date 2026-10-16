@@ -201,7 +201,7 @@ func validateChildType(t reflect.Type, fieldName string, flatten, prevSlice bool
 		if flatten && prevSlice && t.Elem().Kind() != reflect.Uint8 {
 			return fmt.Errorf("datastore: flattening nested structs leads to a slice of slices: field %q", fieldName)
 		}
-		return validateChildType(t.Elem(), fieldName, flatten, true, prevTypes)
+		return validateChildType(t.Elem(), fieldName, flatten, flatten, prevTypes)
 	case reflect.Struct:
 		if t == typeOfTime || t == typeOfGeoPoint {
 			return nil

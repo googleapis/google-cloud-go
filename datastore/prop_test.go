@@ -665,6 +665,10 @@ func TestValidateChildTypeSharedStruct(t *testing.T) {
 		Unflattened Group `datastore:"unflattened"`
 		Flattened   Group `datastore:"flattened,flatten"`
 	}
+	type UnflattenedFirstPopulated struct {
+		Unflattened Group `datastore:"unflattened"`
+		Flattened   Group `datastore:"flattened,flatten"`
+	}
 	type SingleThenSliceFlatten struct {
 		Single   Item   `datastore:"single,flatten"`
 		Multiple []Item `datastore:"multiple,flatten"`
@@ -690,7 +694,7 @@ func TestValidateChildTypeSharedStruct(t *testing.T) {
 		},
 		{
 			desc: "populated unflattened field before flattened field sharing type",
-			src: &UnflattenedFirst{
+			src: &UnflattenedFirstPopulated{
 				Flattened: Group{Items: []Item{{Tags: []string{"a", "b"}}}},
 			},
 			wantErr: `datastore: flattening nested structs leads to a slice of slices: field "Tags"`,
@@ -718,4 +722,50 @@ func TestValidateChildTypeSharedStruct(t *testing.T) {
 			}
 		})
 	}
+
+	t.Run("unflattened slice of struct with flattened slice subfield succeeds", func(t *testing.T) {
+		type ChildWithFlat struct {
+			Meta Item `datastore:"meta,flatten"`
+		}
+		type ParentWithSharedChild struct {
+			Primary  ChildWithFlat   `datastore:"primary"`
+			Children []ChildWithFlat `datastore:"children"`
+		}
+		type RecursiveNode struct {
+			Children []RecursiveNode `datastore:"children"`
+			Meta     Item            `datastore:"meta,flatten"`
+		}
+
+		parent := &ParentWithSharedChild{
+			Primary:  ChildWithFlat{Meta: Item{Tags: []string{"a", "b"}}},
+			Children: []ChildWithFlat{{Meta: Item{Tags: []string{"c", "d"}}}},
+		}
+		props, err := SaveStruct(parent)
+		if err != nil {
+			t.Fatalf("SaveStruct(ParentWithSharedChild) unexpected error: %v", err)
+		}
+		var gotParent ParentWithSharedChild
+		if err := LoadStruct(&gotParent, props); err != nil {
+			t.Fatalf("LoadStruct(ParentWithSharedChild) unexpected error: %v", err)
+		}
+		if !testutil.Equal(&gotParent, parent) {
+			t.Errorf("ParentWithSharedChild round-trip:\ngot:  %+v\nwant: %+v", &gotParent, parent)
+		}
+
+		node := &RecursiveNode{
+			Meta:     Item{Tags: []string{"root"}},
+			Children: []RecursiveNode{{Meta: Item{Tags: []string{"child"}}}},
+		}
+		nodeProps, err := SaveStruct(node)
+		if err != nil {
+			t.Fatalf("SaveStruct(RecursiveNode) unexpected error: %v", err)
+		}
+		var gotNode RecursiveNode
+		if err := LoadStruct(&gotNode, nodeProps); err != nil {
+			t.Fatalf("LoadStruct(RecursiveNode) unexpected error: %v", err)
+		}
+		if !testutil.Equal(&gotNode, node) {
+			t.Errorf("RecursiveNode round-trip:\ngot:  %+v\nwant: %+v", &gotNode, node)
+		}
+	})
 }
