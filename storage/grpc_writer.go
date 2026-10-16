@@ -1613,6 +1613,7 @@ func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRP
 			return nil, err
 		}
 		rotate.Store(false)
+		s.chunkDelay.resetWarmUp()
 		rs := &resumableStream{
 			st:      st,
 			flushes: make(chan flushTiming, 16),

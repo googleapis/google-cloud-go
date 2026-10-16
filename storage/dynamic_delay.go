@@ -336,25 +336,36 @@ func newWriteChunkDelay(chunkSize int, chunkTransferTimeout time.Duration) *dyna
 	)
 }
 
+// resetWarmUp marks the current stream as warming up so the next sample
+// updates the baseline without triggering rotation in exceeds or recordLatency.
+// Safe to call on a nil receiver.
+func (d *dynamicDelay) resetWarmUp() {
+	if d == nil {
+		return
+	}
+	d.mu.Lock()
+	defer d.mu.Unlock()
+	d.warmedUp = false
+}
+
 // recordLatency updates d with latency using an EWMA baseline and reports
 // whether latency exceeded the threshold before the update. The first sample
-// warms up the baseline without triggering rotation. Safe to call on a nil
-// receiver.
+// after construction or resetWarmUp updates the baseline without triggering
+// rotation. Safe to call on a nil receiver.
 func (d *dynamicDelay) recordLatency(latency time.Duration) bool {
 	if d == nil {
 		return false
 	}
 	d.mu.Lock()
 	defer d.mu.Unlock()
-	if !d.warmedUp {
+	exceeded := d.warmedUp && latency > d.value
+	if d.baseline == 0 {
 		d.baseline = latency
-		d.value = min(max(time.Duration(writeChunkTriggerMultiple*float64(d.baseline)), d.minDelay), d.maxDelay)
-		d.warmedUp = true
-		return false
+	} else {
+		d.baseline = time.Duration(writeChunkEWMAAlpha*float64(latency) + (1-writeChunkEWMAAlpha)*float64(d.baseline))
 	}
-	exceeded := latency > d.value
-	d.baseline = time.Duration(writeChunkEWMAAlpha*float64(latency) + (1-writeChunkEWMAAlpha)*float64(d.baseline))
 	d.value = min(max(time.Duration(writeChunkTriggerMultiple*float64(d.baseline)), d.minDelay), d.maxDelay)
+	d.warmedUp = true
 	return exceeded
 }
 

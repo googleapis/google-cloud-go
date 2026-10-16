@@ -495,6 +495,7 @@ func TestWriteChunkDelay(t *testing.T) {
 	if nilDelay.exceeds(time.Second) {
 		t.Fatal("expected nil dynamicDelay.exceeds to return false")
 	}
+	nilDelay.resetWarmUp()
 
 	// 16 MiB chunk with 5s timeout -> minDelay = 50ms + 16*10ms = 210ms.
 	d := newWriteChunkDelay(16*1024*1024, 5*time.Second)
@@ -542,5 +543,23 @@ func TestWriteChunkDelay(t *testing.T) {
 	}
 	if !cold.recordLatency(1500 * time.Millisecond) {
 		t.Fatal("expected step slowdown to 1.5s after recovery to trigger rotation")
+	}
+
+	// After rotating to a new stream, resetWarmUp prevents a cold first chunk
+	// (2s) on the new stream from immediately triggering another rotation while
+	// still updating the EWMA baseline.
+	beforeReset := cold.getValue()
+	cold.resetWarmUp()
+	if cold.exceeds(2 * time.Second) {
+		t.Fatal("expected exceeds(2s) to be false during new-stream warm-up")
+	}
+	if cold.recordLatency(2 * time.Second) {
+		t.Fatal("expected first chunk (2s) after resetWarmUp not to trigger rotation")
+	}
+	if got := cold.getValue(); got <= beforeReset {
+		t.Fatalf("expected new-stream warm-up chunk to update EWMA threshold: %v -> %v", beforeReset, got)
+	}
+	if !cold.exceeds(cold.getValue() + time.Millisecond) {
+		t.Fatal("expected exceeds to be active again after new-stream warm-up completes")
 	}
 }
