@@ -143,7 +143,11 @@ func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (client st
 	}
 
 	if clientMetrics != nil && creds != nil {
-		creds = wrapAuthCredentials(creds, clientMetrics)
+		*creds = *wrapAuthCredentials(creds, clientMetrics)
+		s.clientOption = append(s.clientOption, option.WithAuthCredentials(creds))
+	}
+	if isOTelTracingDevEnabled() && creds != nil {
+		*creds = *wrapAuthCredentialsForTracing(creds)
 		s.clientOption = append(s.clientOption, option.WithAuthCredentials(creds))
 	}
 
