@@ -953,7 +953,6 @@ func TestTransaction_ConcurrentMutations(t *testing.T) {
 	doneCh := make(chan struct{}, numGoroutines*3)
 
 	for i := 0; i < numGoroutines; i++ {
-		i := i
 		go func() {
 			defer func() { doneCh <- struct{}{} }()
 			k := IncompleteKey("Task", nil)
@@ -1055,5 +1054,50 @@ func TestTransaction_BeginLaterConcurrentReads(t *testing.T) {
 		if err := <-errCh; err != nil {
 			t.Errorf("concurrent Get failed: %v", err)
 		}
+	}
+}
+
+func TestTransaction_BeginLaterRollbackExpiresTransaction(t *testing.T) {
+	ctx := context.Background()
+	client, srv, cleanup := newMock(t)
+	defer cleanup()
+
+	tx, err := client.NewTransaction(ctx, BeginLater)
+	if err != nil {
+		t.Fatalf("NewTransaction: %v", err)
+	}
+
+	key := NameKey("Task", "k1", nil)
+	if _, err := tx.Put(key, &struct{ N int }{N: 1}); err != nil {
+		t.Fatalf("Put before Rollback: %v", err)
+	}
+
+	// Rolling back a BeginLater transaction that has not started on the server
+	// should succeed without sending any RPCs and mark the transaction expired.
+	if err := tx.Rollback(); err != nil {
+		t.Fatalf("Rollback: %v", err)
+	}
+
+	if _, err := tx.Put(key, &struct{ N int }{N: 2}); !errors.Is(err, errExpiredTransaction) {
+		t.Errorf("Put after Rollback = %v, want %v", err, errExpiredTransaction)
+	}
+	if err := tx.Delete(key); !errors.Is(err, errExpiredTransaction) {
+		t.Errorf("Delete after Rollback = %v, want %v", err, errExpiredTransaction)
+	}
+	if _, err := tx.Mutate(NewDelete(key)); !errors.Is(err, errExpiredTransaction) {
+		t.Errorf("Mutate after Rollback = %v, want %v", err, errExpiredTransaction)
+	}
+	var dst struct{ N int }
+	if err := tx.Get(key, &dst); !errors.Is(err, errExpiredTransaction) {
+		t.Errorf("Get after Rollback = %v, want %v", err, errExpiredTransaction)
+	}
+	if _, err := tx.Commit(); !errors.Is(err, errExpiredTransaction) {
+		t.Errorf("Commit after Rollback = %v, want %v", err, errExpiredTransaction)
+	}
+	if err := tx.Rollback(); !errors.Is(err, errExpiredTransaction) {
+		t.Errorf("second Rollback = %v, want %v", err, errExpiredTransaction)
+	}
+	if len(srv.reqItems) != 0 {
+		t.Errorf("remaining expected RPCs = %d, want 0", len(srv.reqItems))
 	}
 }

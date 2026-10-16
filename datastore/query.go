@@ -1002,12 +1002,21 @@ func parseQueryReadOptions(eventual bool, t *Transaction, clientReadSettings *re
 }
 
 func acquireQueryReadOptions(eventual bool, t *Transaction, clientReadSettings *readSettings) (*pb.ReadOptions, func([]byte), error) {
-	err := validateReadOptions(eventual, t, clientReadSettings)
-	if err != nil {
-		return nil, nil, err
+	if clientReadSettings.readTimeExists() {
+		if t != nil || eventual {
+			return nil, nil, errEventualConsistencyTxnClientReadTime
+		}
+		return &pb.ReadOptions{
+			ConsistencyType: &pb.ReadOptions_ReadTime{
+				ReadTime: timestamppb.New(clientReadSettings.readTime),
+			},
+		}, func([]byte) {}, nil
 	}
 
 	if t != nil {
+		if eventual {
+			return nil, nil, errEventualConsistencyTransaction
+		}
 		return t.acquireReadOptions()
 	}
 
@@ -1015,13 +1024,6 @@ func acquireQueryReadOptions(eventual bool, t *Transaction, clientReadSettings *
 		return &pb.ReadOptions{ConsistencyType: &pb.ReadOptions_ReadConsistency_{ReadConsistency: pb.ReadOptions_EVENTUAL}}, func([]byte) {}, nil
 	}
 
-	if clientReadSettings.readTimeExists() {
-		return &pb.ReadOptions{
-			ConsistencyType: &pb.ReadOptions_ReadTime{
-				ReadTime: timestamppb.New(clientReadSettings.readTime),
-			},
-		}, func([]byte) {}, nil
-	}
 	return nil, func([]byte) {}, nil
 }
 

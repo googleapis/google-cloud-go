@@ -17,6 +17,8 @@ package datastore
 import (
 	"context"
 	"errors"
+	"maps"
+	"slices"
 	"sync"
 	"time"
 
@@ -452,7 +454,8 @@ func (t *Transaction) Commit() (c *Commit, err error) {
 		t.stateLock.Unlock()
 		return nil, errExpiredTransaction
 	}
-	mutations := append([]*pb.Mutation(nil), t.mutations...)
+	mutations := slices.Clone(t.mutations)
+	pending := maps.Clone(t.pending)
 	txID := t.id
 	t.stateLock.Unlock()
 
@@ -473,11 +476,14 @@ func (t *Transaction) Commit() (c *Commit, err error) {
 
 	t.stateLock.Lock()
 	defer t.stateLock.Unlock()
+	if t.state == transactionStateExpired {
+		return nil, errExpiredTransaction
+	}
 	t.state = transactionStateExpired
 
 	c = &Commit{}
 	// Copy any newly minted keys into the returned keys.
-	for i, p := range t.pending {
+	for i, p := range pending {
 		if i >= len(resp.MutationResults) || resp.MutationResults[i].Key == nil {
 			return nil, errors.New("datastore: internal error: server returned the wrong mutation results")
 		}
@@ -533,6 +539,7 @@ func (t *Transaction) rollback(ctx context.Context) (err error) {
 	}
 
 	if t.id == nil && t.state == transactionStateNotStarted {
+		t.state = transactionStateExpired
 		t.stateLock.Unlock()
 		// no transaction to rollback
 		return nil
@@ -565,14 +572,6 @@ func (t *Transaction) rollback(ctx context.Context) (err error) {
 	t.state = transactionStateExpired
 	t.stateLock.Unlock()
 	return nil
-}
-
-func (t *Transaction) parseReadOptions() (*pb.ReadOptions, error) {
-	opts, finish, err := t.acquireReadOptions()
-	if err == nil {
-		finish(nil)
-	}
-	return opts, err
 }
 
 // acquireReadOptions returns the ReadOptions for a read RPC and a finish
