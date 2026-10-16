@@ -47,6 +47,7 @@ import (
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/credentials"
+	"cloud.google.com/go/compute/metadata"
 	"cloud.google.com/go/httpreplay"
 	"cloud.google.com/go/iam"
 	"cloud.google.com/go/iam/apiv1/iampb"
@@ -111,6 +112,47 @@ var (
 	replaying     bool
 	testTime      time.Time
 	controlClient *control.StorageControlClient
+)
+
+// Rapid Cache Ultra (RCU) integration test harness.
+//
+// RCU tests run against long-lived, pre-provisioned regional buckets that
+// already have a running Rapid Cache (see rcuBuckets). We do not create
+// buckets or caches per run, since cache creation is slow and quota-limited.
+//
+// At init time we compare each bucket's cache zone with the zone of the
+// machine running the tests (from the GCE metadata server). A bucket with a
+// cache in the runner's zone is "co-located"; otherwise it is
+// "non-co-located". Kokoro VMs are not pinned to a zone, so co-located tests
+// only run when the runner happens to land in a cache zone, and skip
+// otherwise. We log the classification so results can be interpreted.
+//
+// RCU transports are opt-in: a test only runs against RCU buckets if its
+// context was built with skipAllButRapid (or enableRCU). This keeps generic
+// tests from mutating bucket-level config on the shared long-lived buckets.
+
+const (
+	rcuColocatedTransport    = "rcuColocated"
+	rcuNonColocatedTransport = "rcuNonColocated"
+)
+
+// rcuBuckets maps each long-lived RCU bucket to the zone of its cache. These
+// buckets live in the Go CI project (dulcet-port-762). If the test
+// credentials can't access a bucket, RCU tests fail.
+var rcuBuckets = map[string]string{
+	"go-rcu-ci-us-central1": "us-central1-b",
+}
+
+var (
+	// runnerZone is the GCE zone the tests run in, or "" if unknown.
+	runnerZone string
+	// rcuColocatedBucket is an RCU bucket with a cache in runnerZone.
+	rcuColocatedBucket string
+	// rcuNonColocatedBucket is an RCU bucket with no cache in runnerZone.
+	rcuNonColocatedBucket string
+	// rcuInitErr records RCU buckets the test credentials can't access. RCU
+	// tests fail (not skip) when it is set, so lost access is noticed.
+	rcuInitErr error
 )
 
 var (
@@ -256,6 +298,9 @@ func initIntegrationTest() func() error {
 		}); err != nil {
 			log.Fatalf("creating zonal bucket %q: %v", zonalBucketName, err)
 		}
+		// RCU buckets are long-lived and pre-provisioned; we only classify
+		// them here and never create or delete them.
+		initRCUBuckets(ctx, client)
 		return cleanup
 	}
 }
@@ -309,13 +354,19 @@ func testConfigGRPC(ctx context.Context, t *testing.T, opts ...option.ClientOpti
 func initTransportClients(ctx context.Context, t *testing.T, opts ...option.ClientOption) map[string]*Client {
 	withJSON := append(slices.Clone(opts), WithJSONReads())
 	withZonal := append(slices.Clone(opts), WithGRPCBidiReads(), WithAppendableUploads())
-	return map[string]*Client{
+	clients := map[string]*Client{
 		"http": testConfig(ctx, t, opts...),
 		"grpc": testConfigGRPC(ctx, t, opts...),
 		// TODO: remove jsonReads when support for XML reads is dropped
 		"jsonReads":   testConfig(ctx, t, withJSON...),
 		"zonalBucket": testConfigGRPC(ctx, t, withZonal...),
 	}
+	// RCU transports are opt-in; see enableRCU.
+	if ctx.Value(enableRCUKey{}) != nil {
+		clients[rcuColocatedTransport] = testConfigGRPC(ctx, t, withZonal...)
+		clients[rcuNonColocatedTransport] = testConfigGRPC(ctx, t, withZonal...)
+	}
+	return clients
 }
 
 // multiTransportTest initializes fresh clients for each transport, then runs
@@ -343,6 +394,16 @@ func multiTransportTest(ctx context.Context, t *testing.T,
 				prefix = grpcTestPrefix
 			} else if transport == "zonalBucket" {
 				bucket = zonalBucketName
+				prefix = grpcTestPrefix
+			} else if isRCUTransport(transport) {
+				if rcuInitErr != nil {
+					t.Fatalf("RCU buckets not accessible with the test credentials: %v", rcuInitErr)
+				}
+				rcuBucket, reason := rcuBucketForTransport(transport)
+				if reason != "" {
+					t.Skip("transport", fmt.Sprintf("%q", transport), "skipped:", reason)
+				}
+				bucket = rcuBucket
 				prefix = grpcTestPrefix
 			}
 
@@ -380,10 +441,10 @@ var readCases = []readCase{
 }
 
 func TestIntegration_MultiRangeDownloader(t *testing.T) {
-	multiTransportTest(skipAllButZonal(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+	multiTransportTest(skipAllButRapid(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		content := make([]byte, 5<<20)
 		rand.New(rand.NewSource(0)).Read(content)
-		objName := "MultiRangeDownloader"
+		objName := "MultiRangeDownloader" + uidSpaceObjects.New()
 
 		// Upload test data.
 		obj := client.Bucket(bucket).Object(objName)
@@ -447,10 +508,10 @@ func TestIntegration_MultiRangeDownloader(t *testing.T) {
 // Test many concurrent reads on the same MultiRangeDownloader to try to detect
 // potential deadlocks.
 func TestIntegration_MRDManyReads(t *testing.T) {
-	multiTransportTest(skipAllButZonal(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+	multiTransportTest(skipAllButRapid(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		content := make([]byte, 5<<20)
 		rand.New(rand.NewSource(0)).Read(content)
-		objName := "MultiRangeDownloaderManyReads"
+		objName := "MultiRangeDownloaderManyReads" + uidSpaceObjects.New()
 		// Upload test data.
 		obj := client.Bucket(bucket).Object(objName)
 		if err := writeObject(ctx, obj, "text/plain", content); err != nil {
@@ -499,10 +560,10 @@ func TestIntegration_MRDManyReads(t *testing.T) {
 // TestIntegration_MRDCallbackReturnsDataLength tests if the callback returns the correct data
 // read length or not.
 func TestIntegration_MRDCallbackReturnsDataLength(t *testing.T) {
-	multiTransportTest(skipAllButZonal(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+	multiTransportTest(skipAllButRapid(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		content := make([]byte, 1000)
 		rand.New(rand.NewSource(0)).Read(content)
-		objName := "MRDCallback"
+		objName := "MRDCallback" + uidSpaceObjects.New()
 
 		// Upload test data.
 		obj := client.Bucket(bucket).Object(objName)
@@ -545,7 +606,7 @@ func TestIntegration_MRDCallbackReturnsDataLength(t *testing.T) {
 	})
 }
 func TestIntegration_MRDWithReadHandle(t *testing.T) {
-	multiTransportTest(skipAllButZonal(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+	multiTransportTest(skipAllButRapid(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		const (
 			dataSize       = 1000
 			offset         = 0
@@ -556,7 +617,7 @@ func TestIntegration_MRDWithReadHandle(t *testing.T) {
 		// Generate random content for testing.
 		content := make([]byte, dataSize)
 		rand.New(rand.NewSource(0)).Read(content)
-		objName := "MRDWithReadHandle"
+		objName := "MRDWithReadHandle" + uidSpaceObjects.New()
 
 		// Upload test data.
 		obj := client.Bucket(bucket).Object(objName)
@@ -647,10 +708,10 @@ func TestIntegration_MRDWithReadHandle(t *testing.T) {
 }
 
 func TestIntegration_MRDScaleUpConnections(t *testing.T) {
-	multiTransportTest(skipAllButZonal(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+	multiTransportTest(skipAllButRapid(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		content := make([]byte, 1<<10)
 		rand.New(rand.NewSource(0)).Read(content)
-		objName := "MultiRangeDownloaderConcurrentReads"
+		objName := "MultiRangeDownloaderConcurrentReads" + uidSpaceObjects.New()
 
 		// Upload test data.
 		obj := client.Bucket(bucket).Object(objName)
@@ -743,10 +804,10 @@ func TestIntegration_MRDScaleUpConnections(t *testing.T) {
 }
 
 func TestIntegration_MRDStreamFailureSurvival(t *testing.T) {
-	multiTransportTest(skipAllButZonal(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+	multiTransportTest(skipAllButRapid(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		content := make([]byte, 1<<20)
 		rand.New(rand.NewSource(0)).Read(content)
-		objName := "mrd-survival"
+		objName := "mrd-survival" + uidSpaceObjects.New()
 		obj := client.Bucket(bucket).Object(objName)
 		if err := writeObject(ctx, obj, "text/plain", content); err != nil {
 			t.Fatal(err)
@@ -839,11 +900,11 @@ func TestIntegration_MRDStreamFailureSurvival(t *testing.T) {
 // TestIntegration_ReadSameFileConcurrentlyUsingMultiRangeDownloader tests for potential deadlocks
 // or race conditions when multiple goroutines call Add() concurrently on the same MRD multiple times.
 func TestIntegration_ReadSameFileConcurrentlyUsingMultiRangeDownloader(t *testing.T) {
-	multiTransportTest(skipAllButZonal(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+	multiTransportTest(skipAllButRapid(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		// Use a 10MB object to allow for many non-overlapping range requests.
 		content := make([]byte, 10<<20)
 		rand.New(rand.NewSource(0)).Read(content)
-		objName := "MultiRangeDownloaderConcurrentReads"
+		objName := "MultiRangeDownloaderConcurrentReads" + uidSpaceObjects.New()
 
 		// Upload test data.
 		obj := client.Bucket(bucket).Object(objName)
@@ -938,10 +999,10 @@ func TestIntegration_ReadSameFileConcurrentlyUsingMultiRangeDownloader(t *testin
 }
 
 func TestIntegration_MRDNoNewStreamsAfterPermanentError(t *testing.T) {
-	multiTransportTest(skipAllButZonal(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+	multiTransportTest(skipAllButRapid(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		content := make([]byte, 5<<20)
 		rand.New(rand.NewSource(0)).Read(content)
-		objName := "mrdnonretry"
+		objName := "mrdnonretry" + uidSpaceObjects.New()
 		// Upload test data.
 		obj := client.Bucket(bucket).Object(objName)
 		if err := writeObject(ctx, obj, "text/plain", content); err != nil {
@@ -999,10 +1060,10 @@ func TestIntegration_MRDNoNewStreamsAfterPermanentError(t *testing.T) {
 }
 
 func TestIntegration_MRDWithNonRetriableError(t *testing.T) {
-	multiTransportTest(skipAllButZonal(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+	multiTransportTest(skipAllButRapid(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		content := make([]byte, 5<<20)
 		rand.New(rand.NewSource(0)).Read(content)
-		objName := "mrdnonretry"
+		objName := "mrdnonretry" + uidSpaceObjects.New()
 		// Upload test data.
 		obj := client.Bucket(bucket).Object(objName)
 		if err := writeObject(ctx, obj, "text/plain", content); err != nil {
@@ -1055,6 +1116,76 @@ func TestIntegration_MRDWithNonRetriableError(t *testing.T) {
 		time.Sleep(10 * time.Second)
 		if err = reader.Close(); err == nil {
 			t.Fatalf("Expected error while closing reader, got nil")
+		}
+	})
+}
+
+// TestIntegration_MRDAddAfterClose checks that adding a range to a closed
+// MultiRangeDownloader fails via the callback instead of hanging.
+func TestIntegration_MRDAddAfterClose(t *testing.T) {
+	multiTransportTest(skipAllButRapid(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
+		h := testHelper{t}
+		content := []byte("read after close")
+		obj := client.Bucket(bucket).Object("MRDAddAfterClose" + uidSpaceObjects.New())
+		defer h.mustDeleteObject(obj)
+		if err := writeObject(ctx, obj, "text/plain", content); err != nil {
+			t.Fatal(err)
+		}
+
+		mrd, err := obj.NewMultiRangeDownloader(ctx)
+		if err != nil {
+			t.Fatalf("NewMultiRangeDownloader: %v", err)
+		}
+		var buf bytes.Buffer
+		var readErr error
+		mrd.Add(&buf, 0, 0, func(_, _ int64, err error) { readErr = err })
+		mrd.Wait()
+		if readErr != nil {
+			t.Fatalf("read before Close: %v", readErr)
+		}
+		if !bytes.Equal(buf.Bytes(), content) {
+			t.Fatalf("read before Close: got %q, want %q", buf.Bytes(), content)
+		}
+		if err := mrd.Close(); err != nil {
+			t.Fatalf("Close: %v", err)
+		}
+
+		done := make(chan error, 1)
+		var buf2 bytes.Buffer
+		mrd.Add(&buf2, 0, 0, func(_, _ int64, err error) { done <- err })
+		select {
+		case err := <-done:
+			if err == nil {
+				t.Errorf("Add after Close: got nil error, want error")
+			}
+			if buf2.Len() != 0 {
+				t.Errorf("Add after Close: got %d bytes, want 0", buf2.Len())
+			}
+		case <-time.After(30 * time.Second):
+			t.Fatal("Add after Close: callback was not called")
+		}
+	})
+}
+
+// TestIntegration_MRDNonExistentBucket checks that a bidi read against a
+// bucket that does not exist fails with NotFound (or PermissionDenied).
+func TestIntegration_MRDNonExistentBucket(t *testing.T) {
+	multiTransportTest(skipAllButRapid(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, _, _ string, client *Client) {
+		obj := client.Bucket("go-nonexistent-" + uidSpace.New()).Object("obj")
+		mrd, err := obj.NewMultiRangeDownloader(ctx)
+		if err == nil {
+			// The error may surface on the first range or on Close instead.
+			var cbErr error
+			mrd.Add(io.Discard, 0, 100, func(_, _ int64, err error) { cbErr = err })
+			mrd.Wait()
+			closeErr := mrd.Close()
+			err = cbErr
+			if err == nil {
+				err = closeErr
+			}
+		}
+		if !errorIsStatusCode(err, http.StatusNotFound, codes.NotFound) && !errorIsStatusCode(err, http.StatusForbidden, codes.PermissionDenied) {
+			t.Fatalf("got error %v, want NotFound or PermissionDenied", err)
 		}
 	})
 }
@@ -2603,7 +2734,7 @@ func TestIntegration_WriterCRC32CValidation(t *testing.T) {
 }
 
 func TestIntegration_AppendWriterCRC32CValidation(t *testing.T) {
-	multiTransportTest(skipAllButZonal(context.Background(), "Test for appendable writes"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+	multiTransportTest(skipAllButRapid(context.Background(), "Test for appendable writes"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		h := testHelper{t}
 		testCases := []struct {
 			name               string
@@ -2692,7 +2823,7 @@ func TestIntegration_AppendWriterCRC32CValidation(t *testing.T) {
 					h.mustDeleteObject(obj)
 				})
 
-				w := obj.NewWriter(ctx)
+				w := setRapidForRCU(obj.NewWriter(ctx))
 				w.Append = true
 				w.FinalizeOnClose = tc.finalizeOnClose
 				if tc.sendCRC32C {
@@ -4346,7 +4477,7 @@ func TestIntegration_WriterChunksize(t *testing.T) {
 // Writer test for appendable uploads with and without finalization,
 // also validating Flush() at various offsets.
 func TestIntegration_WriterAppend(t *testing.T) {
-	ctx := skipAllButZonal(context.Background(), "ZB test")
+	ctx := skipAllButRapid(context.Background(), "ZB test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
 		h := testHelper{t}
 		bkt := client.Bucket(bucket)
@@ -4432,7 +4563,7 @@ func TestIntegration_WriterAppend(t *testing.T) {
 				// Create writer and upload content.
 				obj := bkt.Object(tc.name + uidSpace.New())
 				defer h.mustDeleteObject(obj)
-				w := obj.Retryer(WithPolicy(RetryAlways)).If(Conditions{DoesNotExist: true}).NewWriter(ctx)
+				w := setRapidForRCU(obj.Retryer(WithPolicy(RetryAlways)).If(Conditions{DoesNotExist: true}).NewWriter(ctx))
 				w.Append = true
 				w.FinalizeOnClose = tc.finalize
 				w.ChunkSize = tc.chunkSize
@@ -4526,7 +4657,7 @@ func TestIntegration_WriterAppend(t *testing.T) {
 // Writer test for append takeover of unfinalized object, including
 // calls to Flush() on takeover.
 func TestIntegration_WriterAppendTakeover(t *testing.T) {
-	ctx := skipAllButZonal(context.Background(), "ZB test")
+	ctx := skipAllButRapid(context.Background(), "ZB test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
 		h := testHelper{t}
 		bkt := client.Bucket(bucket)
@@ -4670,7 +4801,7 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 				// Create non-finalized appendable writer and upload first part of content.
 				obj := bkt.Object(tc.name + uidSpace.New()).Retryer(WithPolicy(RetryAlways))
 				defer h.mustDeleteObject(obj)
-				w := obj.If(Conditions{DoesNotExist: true}).NewWriter(ctx)
+				w := setRapidForRCU(obj.If(Conditions{DoesNotExist: true}).NewWriter(ctx))
 				w.Append = true
 				w.FinalizeOnClose = false
 				if tc.opts != nil && tc.opts.ChunkSize > 0 {
@@ -4787,12 +4918,12 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 }
 
 func TestIntegration_WriterAppendEdgeCases(t *testing.T) {
-	ctx := skipAllButZonal(context.Background(), "ZB test")
+	ctx := skipAllButRapid(context.Background(), "ZB test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
 		h := testHelper{t}
 		bkt := client.Bucket(bucket)
 
-		objName := "object1"
+		objName := "object1" + uidSpaceObjects.New()
 		obj := bkt.Object(objName)
 		defer h.mustDeleteObject(obj)
 
@@ -4808,7 +4939,7 @@ func TestIntegration_WriterAppendEdgeCases(t *testing.T) {
 
 		// If a takeover is opened, flush or close to the original writer
 		// should fail.
-		w := obj.NewWriter(ctx)
+		w := setRapidForRCU(obj.NewWriter(ctx))
 		w.Append = true
 		w.ChunkSize = MiB
 		if _, err := w.Write(randomBytes3MiB); err != nil {
@@ -4840,7 +4971,7 @@ func TestIntegration_WriterAppendEdgeCases(t *testing.T) {
 
 		// Another NewWriter to the unfinalized object should be able to
 		// overwrite the existing object.
-		w2 := obj.NewWriter(ctx)
+		w2 := setRapidForRCU(obj.NewWriter(ctx))
 		w2.Append = true
 		if _, err := w2.Write([]byte("hello world")); err != nil {
 			t.Fatalf("w2.Write: %v", err)
@@ -4873,6 +5004,168 @@ func TestIntegration_WriterAppendEdgeCases(t *testing.T) {
 		}
 	})
 }
+
+// TestIntegration_AppendableEmptyObject creates an empty unfinalized
+// appendable object, then finalizes it with a takeover writer.
+func TestIntegration_AppendableEmptyObject(t *testing.T) {
+	multiTransportTest(skipAllButRapid(context.Background(), "Appendable write test"), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
+		h := testHelper{t}
+		obj := client.Bucket(bucket).Object("appendable-empty-" + uidSpaceObjects.New())
+		defer h.mustDeleteObject(obj)
+
+		w := setRapidForRCU(obj.NewWriter(ctx))
+		w.Append = true
+		w.FinalizeOnClose = false
+		if err := w.Close(); err != nil {
+			t.Fatalf("Writer.Close: %v", err)
+		}
+
+		attrs := h.mustObjectAttrs(obj)
+		if attrs.Size != 0 {
+			t.Errorf("unfinalized object size: got %d, want 0", attrs.Size)
+		}
+		if !attrs.Finalized.IsZero() {
+			t.Errorf("object finalized at %v, want unfinalized", attrs.Finalized)
+		}
+
+		tw, off, err := obj.Generation(attrs.Generation).NewWriterFromAppendableObject(ctx, &AppendableWriterOpts{FinalizeOnClose: true})
+		if err != nil {
+			t.Fatalf("NewWriterFromAppendableObject: %v", err)
+		}
+		if off != 0 {
+			t.Errorf("takeover offset: got %d, want 0", off)
+		}
+		if err := tw.Close(); err != nil {
+			t.Fatalf("takeover Writer.Close: %v", err)
+		}
+
+		attrs = h.mustObjectAttrs(obj)
+		if attrs.Size != 0 {
+			t.Errorf("finalized object size: got %d, want 0", attrs.Size)
+		}
+		if attrs.Finalized.IsZero() {
+			t.Errorf("object not finalized after takeover Close")
+		}
+		got, err := readObject(ctx, obj)
+		if err != nil {
+			t.Fatalf("readObject: %v", err)
+		}
+		if len(got) != 0 {
+			t.Errorf("read %d bytes, want 0", len(got))
+		}
+	})
+}
+
+// TestIntegration_RCU_IngestOnRead writes an object with a regular
+// (single-shot, non-appendable) regional write, then reads it with bidi reads.
+// The first read ingests the object into the cache. We check the data is
+// correct; whether a read was served from the cache is not visible to the
+// client.
+func TestIntegration_RCU_IngestOnRead(t *testing.T) {
+	multiTransportTest(skipAllButRCU("RCU-only test"), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
+		h := testHelper{t}
+		content := make([]byte, 2<<20)
+		rand.New(rand.NewSource(42)).Read(content)
+		wantCRC := crc32.Checksum(content, crc32cTable)
+		name := "rcu-ingest-on-read-" + uidSpaceObjects.New()
+
+		// Regular gRPC client: the object keeps the bucket's default class.
+		writer := testConfigGRPC(ctx, t)
+		defer writer.Close()
+		wobj := writer.Bucket(bucket).Object(name)
+		defer h.mustDeleteObject(wobj)
+		w := wobj.NewWriter(ctx)
+		if _, err := w.Write(content); err != nil {
+			t.Fatalf("Writer.Write: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			t.Fatalf("Writer.Close: %v", err)
+		}
+
+		obj := client.Bucket(bucket).Object(name)
+		for _, desc := range []string{"first read (ingest)", "second read"} {
+			got, err := readObject(ctx, obj)
+			if err != nil {
+				t.Fatalf("%s: %v", desc, err)
+			}
+			if !bytes.Equal(got, content) {
+				t.Fatalf("%s: got %d bytes, want %d bytes", desc, len(got), len(content))
+			}
+			if gotCRC := crc32.Checksum(got, crc32cTable); gotCRC != wantCRC {
+				t.Errorf("%s: CRC32C got %d, want %d", desc, gotCRC, wantCRC)
+			}
+		}
+
+		mrd, err := obj.NewMultiRangeDownloader(ctx)
+		if err != nil {
+			t.Fatalf("NewMultiRangeDownloader: %v", err)
+		}
+		var buf bytes.Buffer
+		var rangeErr error
+		mrd.Add(&buf, 1024, 4096, func(_, _ int64, err error) { rangeErr = err })
+		mrd.Wait()
+		if err := mrd.Close(); err != nil {
+			t.Errorf("MultiRangeDownloader.Close: %v", err)
+		}
+		if rangeErr != nil {
+			t.Fatalf("range read: %v", rangeErr)
+		}
+		if !bytes.Equal(buf.Bytes(), content[1024:1024+4096]) {
+			t.Errorf("range read: data mismatch")
+		}
+	})
+}
+
+// TestIntegration_RCU_HTTPAndJSONReads writes a RAPID object to an RCU bucket
+// with an appendable upload, then reads it back over XML and JSON.
+// The setup write uses gRPC because HTTP writes with the RAPID storage class
+// are rejected on regional buckets (b/532647565).
+func TestIntegration_RCU_HTTPAndJSONReads(t *testing.T) {
+	multiTransportTest(skipAllButRCU("RCU-only test"), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
+		h := testHelper{t}
+		content := []byte("Hello, RCU reads via HTTP and JSON!")
+		name := "rcu-http-json-" + uidSpaceObjects.New()
+		wobj := client.Bucket(bucket).Object(name)
+		defer h.mustDeleteObject(wobj)
+		if err := writeObject(ctx, wobj, "text/plain", content); err != nil {
+			t.Fatal(err)
+		}
+
+		xmlClient := testConfig(ctx, t)
+		defer xmlClient.Close()
+		jsonClient := testConfig(ctx, t, WithJSONReads())
+		defer jsonClient.Close()
+
+		for _, tc := range []struct {
+			name   string
+			client *Client
+		}{{"XML", xmlClient}, {"JSON", jsonClient}} {
+			t.Run(tc.name, func(t *testing.T) {
+				obj := tc.client.Bucket(bucket).Object(name)
+				got, err := readObject(ctx, obj)
+				if err != nil {
+					t.Fatalf("full read: %v", err)
+				}
+				if !bytes.Equal(got, content) {
+					t.Errorf("full read: got %q, want %q", got, content)
+				}
+				r, err := obj.NewRangeReader(ctx, 7, 3)
+				if err != nil {
+					t.Fatalf("NewRangeReader: %v", err)
+				}
+				defer r.Close()
+				got, err = io.ReadAll(r)
+				if err != nil {
+					t.Fatalf("range read: %v", err)
+				}
+				if want := "RCU"; string(got) != want {
+					t.Errorf("range read: got %q, want %q", got, want)
+				}
+			})
+		}
+	})
+}
+
 func TestIntegration_ZeroSizedObject(t *testing.T) {
 	t.Parallel()
 	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
@@ -8971,7 +9264,7 @@ func newWriter(ctx context.Context, obj *ObjectHandle, contentType string, force
 	w.ForceEmptyContentType = forceEmptyContentType
 	w.FinalizeOnClose = true // Default to finalize for appendable objects.
 
-	return w
+	return setRapidForRCU(w)
 }
 
 func readObject(ctx context.Context, obj *ObjectHandle) ([]byte, error) {
@@ -9297,6 +9590,112 @@ func skipXMLReads(ctx context.Context, reason string) context.Context {
 
 func skipJSONReads(ctx context.Context, reason string) context.Context {
 	return context.WithValue(ctx, skipTransportTestKey("jsonReads"), reason)
+}
+
+type enableRCUKey struct{}
+
+// enableRCU opts a test into the RCU transports.
+func enableRCU(ctx context.Context) context.Context {
+	return context.WithValue(ctx, enableRCUKey{}, true)
+}
+
+// skipAllButRapid runs a test only against Rapid storage: zonal buckets and
+// RCU buckets (co-located and non-co-located). Use for bidi read and
+// appendable write tests.
+func skipAllButRapid(ctx context.Context, reason string) context.Context {
+	return enableRCU(skipAllButZonal(ctx, reason))
+}
+
+// skipAllButRCU runs a test only against RCU buckets.
+func skipAllButRCU(reason string) context.Context {
+	return skipZonalBucket(skipAllButRapid(context.Background(), reason), reason)
+}
+
+func isRCUTransport(transport string) bool {
+	return transport == rcuColocatedTransport || transport == rcuNonColocatedTransport
+}
+
+// rcuBucketForTransport returns the bucket for an RCU transport, or a reason
+// to skip if there is no usable bucket for it.
+func rcuBucketForTransport(transport string) (bucket, skipReason string) {
+	switch transport {
+	case rcuColocatedTransport:
+		bucket = rcuColocatedBucket
+	case rcuNonColocatedTransport:
+		bucket = rcuNonColocatedBucket
+	}
+	if bucket != "" {
+		return bucket, ""
+	}
+	if rcuColocatedBucket == "" && rcuNonColocatedBucket == "" {
+		return "", "RCU buckets not initialized"
+	}
+	zone := runnerZone
+	if zone == "" {
+		zone = "unknown"
+	}
+	if transport == rcuColocatedTransport {
+		// Kokoro VMs are not pinned to a zone, so co-located tests only run
+		// when the runner happens to land in a cache zone.
+		return "", fmt.Sprintf("runner zone %s has no RCU cache; co-located tests run only when the runner is in a cache zone %v", zone, rcuBuckets)
+	}
+	return "", "no non-co-located RCU bucket (runner zone: " + zone + ")"
+}
+
+// setRapidForRCU sets the RAPID storage class on w if it targets an RCU
+// bucket. RCU buckets are regional STANDARD buckets, and appendable/bidi
+// writes to them must request RAPID explicitly. Zonal buckets default to
+// RAPID so they need no change.
+func setRapidForRCU(w *Writer) *Writer {
+	if _, ok := rcuBuckets[w.o.bucket]; ok {
+		w.ObjectAttrs.StorageClass = "RAPID"
+	}
+	return w
+}
+
+// detectRunnerZone returns the short zone name (e.g. "us-central1-b") of the
+// GCE VM running the tests, or "" when not on GCE.
+func detectRunnerZone(ctx context.Context) string {
+	if !metadata.OnGCE() {
+		return ""
+	}
+	zone, err := metadata.ZoneWithContext(ctx)
+	if err != nil {
+		log.Printf("RCU: could not detect runner zone: %v", err)
+		return ""
+	}
+	return zone
+}
+
+// initRCUBuckets classifies the RCU buckets in rcuBuckets as co-located or
+// non-co-located with the runner. If the test credentials can't access a
+// bucket, rcuInitErr is set and RCU tests fail.
+func initRCUBuckets(ctx context.Context, client *Client) {
+	runnerZone = detectRunnerZone(ctx)
+	log.Printf("RCU: runner zone %q", runnerZone)
+
+	var names []string
+	for b := range rcuBuckets {
+		names = append(names, b)
+	}
+	slices.Sort(names)
+	for _, b := range names {
+		cacheZone := rcuBuckets[b]
+		if _, err := client.Bucket(b).Attrs(ctx); err != nil {
+			log.Printf("RCU: bucket %q not accessible: %v", b, err)
+			rcuInitErr = errors.Join(rcuInitErr, fmt.Errorf("bucket %q: %w", b, err))
+			continue
+		}
+		colocated := runnerZone == cacheZone
+		log.Printf("RCU: bucket %q cache zone %s, co-located: %v", b, cacheZone, colocated)
+		switch {
+		case colocated && rcuColocatedBucket == "":
+			rcuColocatedBucket = b
+		case !colocated && rcuNonColocatedBucket == "":
+			rcuNonColocatedBucket = b
+		}
+	}
+	log.Printf("RCU: co-located bucket %q, non-co-located bucket %q", rcuColocatedBucket, rcuNonColocatedBucket)
 }
 
 // Extract the error code if it's a googleapi.Error
