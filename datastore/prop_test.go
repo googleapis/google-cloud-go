@@ -649,3 +649,73 @@ func TestLoadSavePLS(t *testing.T) {
 		}
 	}
 }
+
+func TestValidateChildTypeSharedStruct(t *testing.T) {
+	type Item struct {
+		Tags []string `datastore:"tags"`
+	}
+	type Group struct {
+		Items []Item `datastore:"items"`
+	}
+	type FlattenedFirst struct {
+		Flattened   Group `datastore:"flattened,flatten"`
+		Unflattened Group `datastore:"unflattened"`
+	}
+	type UnflattenedFirst struct {
+		Unflattened Group `datastore:"unflattened"`
+		Flattened   Group `datastore:"flattened,flatten"`
+	}
+	type SingleThenSliceFlatten struct {
+		Single   Item   `datastore:"single,flatten"`
+		Multiple []Item `datastore:"multiple,flatten"`
+	}
+	type RecursiveSliceFlatten struct {
+		Children []RecursiveSliceFlatten `datastore:"children,flatten"`
+	}
+
+	testCases := []struct {
+		desc    string
+		src     interface{}
+		wantErr string
+	}{
+		{
+			desc:    "flattened field before unflattened field sharing type",
+			src:     &FlattenedFirst{},
+			wantErr: `datastore: flattening nested structs leads to a slice of slices: field "Tags"`,
+		},
+		{
+			desc:    "unflattened field before flattened field sharing type",
+			src:     &UnflattenedFirst{},
+			wantErr: `datastore: flattening nested structs leads to a slice of slices: field "Tags"`,
+		},
+		{
+			desc: "populated unflattened field before flattened field sharing type",
+			src: &UnflattenedFirst{
+				Flattened: Group{Items: []Item{{Tags: []string{"a", "b"}}}},
+			},
+			wantErr: `datastore: flattening nested structs leads to a slice of slices: field "Tags"`,
+		},
+		{
+			desc:    "single flattened struct before slice of flattened struct sharing type",
+			src:     &SingleThenSliceFlatten{},
+			wantErr: `datastore: flattening nested structs leads to a slice of slices: field "Tags"`,
+		},
+		{
+			desc:    "recursive slice of flattened struct",
+			src:     &RecursiveSliceFlatten{},
+			wantErr: `datastore: flattening nested structs leads to a slice of slices: field "Children"`,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.desc, func(t *testing.T) {
+			_, err := SaveStruct(tc.src)
+			if err == nil {
+				t.Fatalf("SaveStruct(%T) = nil, want error containing %q", tc.src, tc.wantErr)
+			}
+			if !strings.Contains(err.Error(), tc.wantErr) {
+				t.Errorf("SaveStruct(%T) error = %q, want error containing %q", tc.src, err.Error(), tc.wantErr)
+			}
+		})
+	}
+}
