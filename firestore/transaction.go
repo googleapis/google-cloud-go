@@ -99,13 +99,13 @@ func (r *CommitResponse) WriteResults() ([]*WriteResult, error) {
 	if r == nil || r.response == nil {
 		return nil, nil
 	}
-	wrs := make([]*WriteResult, 0, len(r.response.WriteResults))
-	for _, pwr := range r.response.WriteResults {
+	wrs := make([]*WriteResult, len(r.response.WriteResults))
+	for i, pwr := range r.response.WriteResults {
 		wr, err := writeResultFromProto(pwr)
 		if err != nil {
 			return nil, err
 		}
-		wrs = append(wrs, wr)
+		wrs[i] = wr
 	}
 	return wrs, nil
 }
