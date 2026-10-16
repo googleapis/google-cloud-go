@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"io"
 	"net"
+	"slices"
 	"strings"
 	"sync"
 	"testing"
@@ -3019,24 +3020,53 @@ func TestGRPCWriter_TwoLayerStallAndRetryDeadline(t *testing.T) {
 	})
 }
 
+// adaptiveRotationStorageServer is an in-process Storage fake for the gRPC
+// resumable upload path. Behaviour is configured per BidiWriteObject stream,
+// numbered from 1 in the order the server accepts them.
+//
+// Like production GCS, the fake replies with one more persisted_size after the
+// client half-closes a stream and before ending it, so the client's
+// duplicate-completion handling is exercised on every rotation.
 type adaptiveRotationStorageServer struct {
 	storagepb.UnimplementedStorageServer
+
+	// flushDelay[n] delays every flush ack on stream n, starting with the
+	// delayFromFlush-th flush on that stream (1-based; 0 means the first).
+	// Skipping the first flush lets a test keep the warm-up sample fast.
+	flushDelay     map[int]time.Duration
+	delayFromFlush int
+
+	// recvDelay[n] sleeps before the server reads each data message on
+	// stream n, starting with the recvDelayFromMessage-th message (1-based;
+	// 0 means the first). Combined with a small HTTP/2 window this makes the
+	// client's Send block, which is what the sender-side rotation trigger
+	// measures.
+	recvDelay            map[int]time.Duration
+	recvDelayFromMessage int
+
+	// stallStreamAt[n] makes stream n hang once it has received a message
+	// ending at or past the given offset, until the client cancels.
+	stallStreamAt map[int]int64
+
+	// halfCloseErr[n] is returned instead of a clean end of stream when the
+	// client half-closes stream n.
+	halfCloseErr map[int]error
+
 	mu               sync.Mutex
 	startCalls       int
 	queryStatusCalls int
 	bidiStreams      int
 	persistedSize    int64
-	streamDelay      map[int]time.Duration
-	stallStreamAt    map[int]int64
-	halfCloseErr     map[int]error
 	receivedOffsets  []int64
 }
+
+const testUploadID = "upload-adaptive-1"
 
 func (s *adaptiveRotationStorageServer) StartResumableWrite(ctx context.Context, req *storagepb.StartResumableWriteRequest) (*storagepb.StartResumableWriteResponse, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.startCalls++
-	return &storagepb.StartResumableWriteResponse{UploadId: "upload-adaptive-1"}, nil
+	return &storagepb.StartResumableWriteResponse{UploadId: testUploadID}, nil
 }
 
 func (s *adaptiveRotationStorageServer) QueryWriteStatus(ctx context.Context, req *storagepb.QueryWriteStatusRequest) (*storagepb.QueryWriteStatusResponse, error) {
@@ -3054,15 +3084,39 @@ func (s *adaptiveRotationStorageServer) BidiWriteObject(stream storagepb.Storage
 	s.mu.Lock()
 	s.bidiStreams++
 	streamNum := s.bidiStreams
-	delay := s.streamDelay[streamNum]
+	flushDelay := s.flushDelay[streamNum]
+	recvDelay := s.recvDelay[streamNum]
 	stallAt, hasStall := s.stallStreamAt[streamNum]
 	halfCloseErr := s.halfCloseErr[streamNum]
 	s.mu.Unlock()
 
-	firstMsg := true
-	var unpersistedBytes int64
-	var flushesOnStream int
+	sleepOrCancel := func(d time.Duration) error {
+		select {
+		case <-time.After(d):
+			return nil
+		case <-stream.Context().Done():
+			return stream.Context().Err()
+		}
+	}
+	sendPersisted := func(size int64) error {
+		return stream.Send(&storagepb.BidiWriteObjectResponse{
+			WriteStatus: &storagepb.BidiWriteObjectResponse_PersistedSize{PersistedSize: size},
+		})
+	}
+
+	var (
+		messages         int
+		flushes          int
+		unpersistedBytes int64
+		persisted        int64
+	)
 	for {
+		messages++
+		if recvDelay > 0 && messages >= max(s.recvDelayFromMessage, 1) {
+			if err := sleepOrCancel(recvDelay); err != nil {
+				return err
+			}
+		}
 		req, err := stream.Recv()
 		if err == io.EOF {
 			if unpersistedBytes > 0 {
@@ -3071,17 +3125,19 @@ func (s *adaptiveRotationStorageServer) BidiWriteObject(stream storagepb.Storage
 			if halfCloseErr != nil {
 				return halfCloseErr
 			}
+			if err := sendPersisted(persisted); err != nil {
+				return err
+			}
 			return nil
 		}
 		if err != nil {
 			return err
 		}
 
-		if firstMsg {
-			if got := req.GetUploadId(); got != "upload-adaptive-1" {
-				return status.Errorf(codes.InvalidArgument, "stream %d first message UploadId = %q, want %q", streamNum, got, "upload-adaptive-1")
+		if messages == 1 {
+			if got := req.GetUploadId(); got != testUploadID {
+				return status.Errorf(codes.InvalidArgument, "stream %d first message UploadId = %q, want %q", streamNum, got, testUploadID)
 			}
-			firstMsg = false
 		} else if req.GetFirstMessage() != nil {
 			return status.Errorf(codes.InvalidArgument, "stream %d unexpected FirstMessage on non-initial request: %v", streamNum, req.GetFirstMessage())
 		}
@@ -3099,23 +3155,17 @@ func (s *adaptiveRotationStorageServer) BidiWriteObject(stream storagepb.Storage
 		}
 
 		if req.GetFlush() {
-			flushesOnStream++
-			// On stream 1, chunk 1 warms up the latency tracker unless every
-			// stream has a uniform delay configured (streamDelay[2] > 0).
-			s.mu.Lock()
-			uniformSlow := s.streamDelay[2] > 0
-			s.mu.Unlock()
-			if delay > 0 && (uniformSlow || flushesOnStream > 1) {
-				select {
-				case <-time.After(delay):
-				case <-stream.Context().Done():
-					return stream.Context().Err()
+			flushes++
+			if flushDelay > 0 && flushes >= max(s.delayFromFlush, 1) {
+				if err := sleepOrCancel(flushDelay); err != nil {
+					return err
 				}
 			}
 		}
 
 		if req.GetFlush() || req.GetFinishWrite() {
 			unpersistedBytes = 0
+			persisted = size
 			s.mu.Lock()
 			if size > s.persistedSize {
 				s.persistedSize = size
@@ -3126,344 +3176,372 @@ func (s *adaptiveRotationStorageServer) BidiWriteObject(stream storagepb.Storage
 		if req.GetFinishWrite() {
 			return stream.Send(&storagepb.BidiWriteObjectResponse{
 				WriteStatus: &storagepb.BidiWriteObjectResponse_Resource{
-					Resource: &storagepb.Object{
-						Bucket: "b",
-						Name:   "obj",
-						Size:   size,
-					},
+					Resource: &storagepb.Object{Bucket: "b", Name: "obj", Size: size},
 				},
 			})
 		}
 		if req.GetStateLookup() {
-			if err := stream.Send(&storagepb.BidiWriteObjectResponse{
-				WriteStatus: &storagepb.BidiWriteObjectResponse_PersistedSize{
-					PersistedSize: size,
-				},
-			}); err != nil {
+			if err := sendPersisted(size); err != nil {
 				return err
 			}
 		}
 	}
 }
 
-type uploadTestOptions struct {
+// rotationUploadOpts configures runRotationUpload.
+type rotationUploadOpts struct {
 	chunkTransferTimeout time.Duration
-	minDelay             time.Duration
-	chunkSize            int
-	writeQuantum         int
-	chunks               int
-	waitPerChunk         bool
-	flushAfterChunk      int
-	dialOpts             []grpc.DialOption
+	// thresholdFloor overrides the computed minDelay so a test with tiny
+	// chunks can assert "no rotation" without depending on scheduler jitter.
+	thresholdFloor time.Duration
+	chunkSize      int
+	writeQuantum   int
+	chunks         int
+	// waitPerChunk makes the producer wait for each chunk's ack before
+	// writing the next, i.e. no pipelining.
+	waitPerChunk bool
+	// flushAfterChunk issues an explicit Flush after the given chunk (1-based).
+	flushAfterChunk int
+	dialOpts        []grpc.DialOption
+	serverOpts      []grpc.ServerOption
 }
 
-func TestGRPCResumableBidiWriteBufferSender_AdaptiveStreamRotation(t *testing.T) {
-	runUploadWithOpts := func(t *testing.T, srv *adaptiveRotationStorageServer, opts uploadTestOptions) error {
-		t.Helper()
-		if opts.chunkSize == 0 {
-			opts.chunkSize = 100
-		}
-		if opts.writeQuantum == 0 {
-			opts.writeQuantum = 100
-		}
-		ctx := context.Background()
-		lis, err := net.Listen("tcp", "localhost:0")
-		if err != nil {
-			t.Fatalf("net.Listen: %v", err)
-		}
-		grpcSrv := grpc.NewServer()
-		storagepb.RegisterStorageServer(grpcSrv, srv)
-		go grpcSrv.Serve(lis)
-		defer grpcSrv.Stop()
+// runRotationUpload drives a gRPCWriter through run()/writeLoop against srv
+// and returns the upload's error.
+func runRotationUpload(t *testing.T, srv *adaptiveRotationStorageServer, opts rotationUploadOpts) error {
+	t.Helper()
+	if opts.chunkSize == 0 {
+		opts.chunkSize = 100
+	}
+	if opts.writeQuantum == 0 {
+		opts.writeQuantum = opts.chunkSize
+	}
+	ctx := context.Background()
+	lis, err := net.Listen("tcp", "localhost:0")
+	if err != nil {
+		t.Fatalf("net.Listen: %v", err)
+	}
+	grpcSrv := grpc.NewServer(opts.serverOpts...)
+	storagepb.RegisterStorageServer(grpcSrv, srv)
+	go grpcSrv.Serve(lis)
+	defer grpcSrv.Stop()
 
-		clientOpts := []option.ClientOption{
-			option.WithEndpoint(lis.Addr().String()),
-			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
-			option.WithoutAuthentication(),
-		}
-		for _, dOpt := range opts.dialOpts {
-			clientOpts = append(clientOpts, option.WithGRPCDialOption(dOpt))
-		}
-		rawClient, err := gapic.NewClient(ctx, clientOpts...)
-		if err != nil {
-			t.Fatalf("gapic.NewClient: %v", err)
-		}
-		defer rawClient.Close()
+	clientOpts := []option.ClientOption{
+		option.WithEndpoint(lis.Addr().String()),
+		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+		option.WithoutAuthentication(),
+	}
+	for _, dOpt := range opts.dialOpts {
+		clientOpts = append(clientOpts, option.WithGRPCDialOption(dOpt))
+	}
+	rawClient, err := gapic.NewClient(ctx, clientOpts...)
+	if err != nil {
+		t.Fatalf("gapic.NewClient: %v", err)
+	}
+	defer rawClient.Close()
 
-		progress := newProgressRecorder()
-		w := &gRPCWriter{
-			preRunCtx:            ctx,
-			c:                    &grpcStorageClient{raw: rawClient},
-			bucket:               "b",
-			attrs:                &ObjectAttrs{Name: "obj"},
-			spec:                 &storagepb.WriteObjectSpec{Resource: &storagepb.Object{Bucket: "projects/_/buckets/b", Name: "obj"}},
-			chunkTransferTimeout: opts.chunkTransferTimeout,
-			budget:               chunkRetryBudget{deadline: 2 * time.Second},
-			settings: &settings{
-				retry:      &retryConfig{backoff: &gax.Backoff{Initial: 5 * time.Millisecond}},
-				idempotent: true,
-			},
-			chunkSize:        opts.chunkSize,
-			writeQuantum:     opts.writeQuantum,
-			buf:              make([]byte, 0, opts.chunkSize),
-			bufBaseOffset:    0,
-			bufUnsentIdx:     0,
-			awaitingFirstAck: true,
-			sendableUnits:    2,
-			writesChan:       make(chan gRPCWriterCommand, 4),
-			setSize:          func(int64) {},
-			progress:         progress.report,
-			setObj:           func(*ObjectAttrs) {},
-		}
-		sender := w.newGRPCResumableBidiWriteBufferSender()
-		if opts.minDelay > 0 && sender.chunkDelay != nil {
-			sender.chunkDelay.minDelay = opts.minDelay
-			sender.chunkDelay.value = opts.minDelay
-		}
-		w.streamSender = sender
+	progress := newProgressRecorder()
+	w := &gRPCWriter{
+		preRunCtx:            ctx,
+		c:                    &grpcStorageClient{raw: rawClient},
+		bucket:               "b",
+		attrs:                &ObjectAttrs{Name: "obj"},
+		spec:                 &storagepb.WriteObjectSpec{Resource: &storagepb.Object{Bucket: "projects/_/buckets/b", Name: "obj"}},
+		chunkTransferTimeout: opts.chunkTransferTimeout,
+		budget:               chunkRetryBudget{deadline: 2 * time.Second},
+		settings: &settings{
+			retry:      &retryConfig{backoff: &gax.Backoff{Initial: 5 * time.Millisecond}},
+			idempotent: true,
+		},
+		chunkSize:        opts.chunkSize,
+		writeQuantum:     opts.writeQuantum,
+		buf:              make([]byte, 0, opts.chunkSize),
+		awaitingFirstAck: true,
+		sendableUnits:    max(opts.chunkSize/opts.writeQuantum, 1),
+		writesChan:       make(chan gRPCWriterCommand, 4),
+		setSize:          func(int64) {},
+		progress:         progress.report,
+		setObj:           func(*ObjectAttrs) {},
+	}
+	sender := w.newGRPCResumableBidiWriteBufferSender()
+	if opts.thresholdFloor > 0 && sender.chunkDelay != nil {
+		sender.chunkDelay.minDelay = opts.thresholdFloor
+		sender.chunkDelay.value = opts.thresholdFloor
+	}
+	w.streamSender = sender
 
-		runDone := make(chan struct{})
-		producerErrCh := make(chan error, 1)
-		go func() {
-			defer close(producerErrCh)
-			for i := 0; i < opts.chunks; i++ {
-				done := make(chan struct{})
-				select {
-				case w.writesChan <- &gRPCWriterCommandWrite{p: make([]byte, opts.chunkSize), done: done}:
-				case <-runDone:
-					return
-				}
-				select {
-				case <-done:
-				case <-runDone:
-					return
-				}
-				if opts.flushAfterChunk > 0 && i+1 == opts.flushAfterChunk {
-					flushDone := make(chan int64, 1)
-					select {
-					case w.writesChan <- &gRPCWriterCommandFlush{done: flushDone}:
-					case <-runDone:
-						return
-					}
-					wantFlushOffset := int64((i + 1) * opts.chunkSize)
-					select {
-					case gotOffset := <-flushDone:
-						if gotOffset != wantFlushOffset {
-							producerErrCh <- fmt.Errorf("Flush after chunk %d offset = %d, want %d", i+1, gotOffset, wantFlushOffset)
-							return
-						}
-					case <-runDone:
-						return
-					}
-				}
-				if opts.waitPerChunk {
-					if wErr := progress.waitForErr(int64((i+1)*opts.chunkSize), runDone); wErr != nil {
-						producerErrCh <- wErr
-						w.writesChan <- &gRPCWriterCommandClose{err: wErr}
-						return
-					}
-				}
+	runDone := make(chan struct{})
+	producerErrCh := make(chan error, 1)
+	go func() {
+		defer close(producerErrCh)
+		send := func(cmd gRPCWriterCommand) bool {
+			select {
+			case w.writesChan <- cmd:
+				return true
+			case <-runDone:
+				return false
+			}
+		}
+		for i := 0; i < opts.chunks; i++ {
+			done := make(chan struct{})
+			if !send(&gRPCWriterCommandWrite{p: make([]byte, opts.chunkSize), done: done}) {
+				return
 			}
 			select {
-			case w.writesChan <- &gRPCWriterCommandClose{err: nil}:
+			case <-done:
 			case <-runDone:
+				return
 			}
-		}()
-
-		err = run(w.preRunCtx, func(ctx context.Context) error {
-			w.lastErr = w.writeLoop(ctx)
-			return w.lastErr
-		}, w.writerRetryConfig(), w.settings.idempotent, withOperation("WriteObject"))
-		close(runDone)
-		if pErr := <-producerErrCh; pErr != nil {
-			t.Fatalf("producer error: %v", pErr)
-		}
-		return err
-	}
-
-	runUpload := func(t *testing.T, srv *adaptiveRotationStorageServer, chunkTransferTimeout time.Duration, chunks int, waitPerChunk bool) {
-		t.Helper()
-		if err := runUploadWithOpts(t, srv, uploadTestOptions{
-			chunkTransferTimeout: chunkTransferTimeout,
-			chunks:               chunks,
-			waitPerChunk:         waitPerChunk,
-		}); err != nil {
-			t.Fatalf("upload failed: %v", err)
-		}
-	}
-
-	assertOffsets := func(t *testing.T, got, want []int64) {
-		t.Helper()
-		if len(got) != len(want) {
-			t.Fatalf("receivedOffsets = %v, want %v", got, want)
-		}
-		for i := range want {
-			if got[i] != want[i] {
-				t.Fatalf("receivedOffsets[%d] = %d, want %d (full = %v)", i, got[i], want[i], got)
+			if opts.flushAfterChunk > 0 && i+1 == opts.flushAfterChunk {
+				flushDone := make(chan int64, 1)
+				if !send(&gRPCWriterCommandFlush{done: flushDone}) {
+					return
+				}
+				wantFlushOffset := int64((i + 1) * opts.chunkSize)
+				select {
+				case gotOffset := <-flushDone:
+					if gotOffset != wantFlushOffset {
+						producerErrCh <- fmt.Errorf("Flush after chunk %d offset = %d, want %d", i+1, gotOffset, wantFlushOffset)
+						return
+					}
+				case <-runDone:
+					return
+				}
+			}
+			if opts.waitPerChunk {
+				if wErr := progress.waitForErr(int64((i+1)*opts.chunkSize), runDone); wErr != nil {
+					producerErrCh <- wErr
+					send(&gRPCWriterCommandClose{err: wErr})
+					return
+				}
 			}
 		}
-	}
+		send(&gRPCWriterCommandClose{err: nil})
+	}()
 
+	err = run(w.preRunCtx, func(ctx context.Context) error {
+		w.lastErr = w.writeLoop(ctx)
+		return w.lastErr
+	}, w.writerRetryConfig(), w.settings.idempotent, withOperation("WriteObject"))
+	close(runDone)
+	if pErr := <-producerErrCh; pErr != nil {
+		t.Fatalf("producer error: %v", pErr)
+	}
+	return err
+}
+
+// mustRunRotationUpload is runRotationUpload for cases that must succeed.
+func mustRunRotationUpload(t *testing.T, srv *adaptiveRotationStorageServer, opts rotationUploadOpts) {
+	t.Helper()
+	if err := runRotationUpload(t, srv, opts); err != nil {
+		t.Fatalf("upload failed: %v", err)
+	}
+}
+
+// assertRotationCalls checks the RPC counts observed by srv.
+func assertRotationCalls(t *testing.T, srv *adaptiveRotationStorageServer, wantQueryStatus, wantStreams int) {
+	t.Helper()
+	srv.mu.Lock()
+	defer srv.mu.Unlock()
+	if srv.startCalls != 1 {
+		t.Errorf("StartResumableWrite calls = %d, want 1", srv.startCalls)
+	}
+	if srv.queryStatusCalls != wantQueryStatus {
+		t.Errorf("QueryWriteStatus calls = %d, want %d", srv.queryStatusCalls, wantQueryStatus)
+	}
+	if srv.bidiStreams != wantStreams {
+		t.Errorf("BidiWriteObject streams = %d, want %d", srv.bidiStreams, wantStreams)
+	}
+}
+
+// assertReceivedOffsets checks the WriteOffset of every message srv saw, in
+// order, across all streams.
+func assertReceivedOffsets(t *testing.T, srv *adaptiveRotationStorageServer, want []int64) {
+	t.Helper()
+	srv.mu.Lock()
+	defer srv.mu.Unlock()
+	if !slices.Equal(srv.receivedOffsets, want) {
+		t.Errorf("receivedOffsets = %v, want %v", srv.receivedOffsets, want)
+	}
+}
+
+// failBidiOpen returns a dial option whose interceptor fails the n-th
+// BidiWriteObject open with code.
+func failBidiOpen(n int, code codes.Code) grpc.DialOption {
+	var mu sync.Mutex
+	var calls int
+	return grpc.WithStreamInterceptor(func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+		if strings.HasSuffix(method, "/BidiWriteObject") {
+			mu.Lock()
+			calls++
+			call := calls
+			mu.Unlock()
+			if call == n {
+				return nil, status.Errorf(code, "injected failure opening BidiWriteObject #%d", n)
+			}
+		}
+		return streamer(ctx, desc, cc, method, opts...)
+	})
+}
+
+// Flush acks from the fake arrive within a few milliseconds; 150ms is far
+// above any threshold floor these tests use and far below their stall
+// timeouts, so a delayed ack rotates without tripping the watchdog.
+const slowAck = 150 * time.Millisecond
+
+func TestGRPCResumableBidiWriteBufferSender_AdaptiveStreamRotation(t *testing.T) {
 	t.Run("FastChunks_SingleStream", func(t *testing.T) {
 		srv := &adaptiveRotationStorageServer{}
-		if err := runUploadWithOpts(t, srv, uploadTestOptions{
+		mustRunRotationUpload(t, srv, rotationUploadOpts{
 			chunkTransferTimeout: time.Second,
-			minDelay:             250 * time.Millisecond,
+			thresholdFloor:       250 * time.Millisecond,
 			chunks:               3,
-		}); err != nil {
-			t.Fatalf("upload failed: %v", err)
-		}
-
-		srv.mu.Lock()
-		defer srv.mu.Unlock()
-		if srv.startCalls != 1 {
-			t.Errorf("StartResumableWrite calls = %d, want 1", srv.startCalls)
-		}
-		if srv.queryStatusCalls != 0 {
-			t.Errorf("QueryWriteStatus calls = %d, want 0", srv.queryStatusCalls)
-		}
-		if srv.bidiStreams != 1 {
-			t.Errorf("BidiWriteObject streams = %d, want 1", srv.bidiStreams)
-		}
-		assertOffsets(t, srv.receivedOffsets, []int64{0, 100, 200, 300})
+		})
+		assertRotationCalls(t, srv, 0, 1)
+		assertReceivedOffsets(t, srv, []int64{0, 100, 200, 300})
 	})
 
-	t.Run("SlowFirstStream_RotatesWithoutQueryWriteStatus_Sequential", func(t *testing.T) {
+	t.Run("SlowAcks_RotateWithoutQueryWriteStatus_Sequential", func(t *testing.T) {
+		// Chunk 1 is fast (warm-up); chunk 2's ack is slow; the writer
+		// rotates before chunk 3 and re-attaches with the UploadId only.
 		srv := &adaptiveRotationStorageServer{
-			streamDelay: map[int]time.Duration{
-				1: 150 * time.Millisecond, // > 50ms minDelay threshold, < 500ms stall timeout
-			},
+			flushDelay:     map[int]time.Duration{1: slowAck},
+			delayFromFlush: 2,
 		}
-		runUpload(t, srv, 500*time.Millisecond, 3, true)
-
-		srv.mu.Lock()
-		defer srv.mu.Unlock()
-		if srv.startCalls != 1 {
-			t.Errorf("StartResumableWrite calls = %d, want 1", srv.startCalls)
-		}
-		if srv.queryStatusCalls != 0 {
-			t.Errorf("QueryWriteStatus calls = %d, want 0", srv.queryStatusCalls)
-		}
-		if srv.bidiStreams != 2 {
-			t.Errorf("BidiWriteObject streams = %d, want 2", srv.bidiStreams)
-		}
-		assertOffsets(t, srv.receivedOffsets, []int64{0, 100, 200, 300})
+		mustRunRotationUpload(t, srv, rotationUploadOpts{
+			chunkTransferTimeout: 500 * time.Millisecond,
+			chunks:               3,
+			waitPerChunk:         true,
+		})
+		assertRotationCalls(t, srv, 0, 2)
+		assertReceivedOffsets(t, srv, []int64{0, 100, 200, 300})
 	})
 
-	t.Run("SlowFirstStream_RotatesWithoutQueryWriteStatus_Pipelined", func(t *testing.T) {
+	t.Run("SlowAcks_RotateWithoutQueryWriteStatus_Pipelined", func(t *testing.T) {
 		srv := &adaptiveRotationStorageServer{
-			streamDelay: map[int]time.Duration{
-				1: 150 * time.Millisecond, // > 50ms minDelay threshold, < 500ms stall timeout
-			},
+			flushDelay:     map[int]time.Duration{1: slowAck},
+			delayFromFlush: 2,
 		}
-		runUpload(t, srv, 500*time.Millisecond, 4, false)
-
-		srv.mu.Lock()
-		defer srv.mu.Unlock()
-		if srv.startCalls != 1 {
-			t.Errorf("StartResumableWrite calls = %d, want 1", srv.startCalls)
-		}
-		if srv.queryStatusCalls != 0 {
-			t.Errorf("QueryWriteStatus calls = %d, want 0", srv.queryStatusCalls)
-		}
-		if srv.bidiStreams != 2 {
-			t.Errorf("BidiWriteObject streams = %d, want 2", srv.bidiStreams)
-		}
-		assertOffsets(t, srv.receivedOffsets, []int64{0, 100, 200, 300, 400})
+		mustRunRotationUpload(t, srv, rotationUploadOpts{
+			chunkTransferTimeout: 500 * time.Millisecond,
+			chunks:               4,
+		})
+		assertRotationCalls(t, srv, 0, 2)
+		assertReceivedOffsets(t, srv, []int64{0, 100, 200, 300, 400})
 	})
 
 	t.Run("MultiQuantumChunk_RotatesOnlyAtChunkBoundary", func(t *testing.T) {
+		// chunkSize = 4 * writeQuantum. The slow ack lands on chunk 2; the
+		// rotation must wait until chunk 2 is fully flushed and happen before
+		// chunk 3's first quantum, never between quantums.
 		srv := &adaptiveRotationStorageServer{
-			streamDelay: map[int]time.Duration{
-				1: 150 * time.Millisecond,
-			},
+			flushDelay:     map[int]time.Duration{1: slowAck},
+			delayFromFlush: 2,
 		}
-		// chunkSize = 400 = 4 * writeQuantum (100). Stream 1 warms up on chunk 1,
-		// slows down on chunk 2, and rotates before chunk 3 without rotating
-		// mid-chunk while unflushedDataSent is true.
-		if err := runUploadWithOpts(t, srv, uploadTestOptions{
+		mustRunRotationUpload(t, srv, rotationUploadOpts{
 			chunkTransferTimeout: 500 * time.Millisecond,
 			chunkSize:            400,
 			writeQuantum:         100,
 			chunks:               3,
 			waitPerChunk:         true,
-		}); err != nil {
-			t.Fatalf("upload failed: %v", err)
-		}
-
-		srv.mu.Lock()
-		defer srv.mu.Unlock()
-		if srv.bidiStreams != 2 {
-			t.Errorf("BidiWriteObject streams = %d, want 2", srv.bidiStreams)
-		}
-		assertOffsets(t, srv.receivedOffsets, []int64{0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200})
+		})
+		assertRotationCalls(t, srv, 0, 2)
+		assertReceivedOffsets(t, srv, []int64{0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200})
 	})
 
 	t.Run("FlushMidUpload_WithStreamRotation", func(t *testing.T) {
 		srv := &adaptiveRotationStorageServer{
-			streamDelay: map[int]time.Duration{
-				1: 150 * time.Millisecond,
-			},
+			flushDelay:     map[int]time.Duration{1: slowAck},
+			delayFromFlush: 2,
 		}
-		if err := runUploadWithOpts(t, srv, uploadTestOptions{
+		mustRunRotationUpload(t, srv, rotationUploadOpts{
 			chunkTransferTimeout: 500 * time.Millisecond,
 			chunks:               4,
 			flushAfterChunk:      2,
-		}); err != nil {
-			t.Fatalf("upload failed: %v", err)
-		}
-
-		srv.mu.Lock()
-		defer srv.mu.Unlock()
-		if srv.bidiStreams != 2 {
-			t.Errorf("BidiWriteObject streams = %d, want 2", srv.bidiStreams)
-		}
+		})
+		assertRotationCalls(t, srv, 0, 2)
 		// Includes the 0-byte explicit Flush request at offset 200 before chunk 3.
-		assertOffsets(t, srv.receivedOffsets, []int64{0, 100, 200, 200, 300, 400})
+		assertReceivedOffsets(t, srv, []int64{0, 100, 200, 200, 300, 400})
 	})
 
-	t.Run("OpenFailureDuringRotation_DoesNotHang", func(t *testing.T) {
+	t.Run("SendBackpressure_RotatesFromSenderSide", func(t *testing.T) {
+		// Acks are never delayed. Instead the server reads slowly from
+		// chunk 2 on, with a 64 KiB HTTP/2 window, so each 256 KiB quantum's
+		// Send blocks for ~recvDelay. The sender-side trigger must notice the
+		// accumulated send time and rotate before chunk 3.
+		const (
+			quantum = 256 << 10
+			chunk   = 4 * quantum
+		)
 		srv := &adaptiveRotationStorageServer{
-			streamDelay: map[int]time.Duration{
-				1: 150 * time.Millisecond,
-			},
+			recvDelay:            map[int]time.Duration{1: 100 * time.Millisecond},
+			recvDelayFromMessage: 5, // first message of chunk 2
 		}
-		var streamCalls int
-		var mu sync.Mutex
-		failSecondOpen := grpc.WithStreamInterceptor(func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
-			if strings.HasSuffix(method, "/BidiWriteObject") {
-				mu.Lock()
-				streamCalls++
-				call := streamCalls
-				mu.Unlock()
-				if call == 2 {
-					return nil, status.Error(codes.Canceled, "injected openStream failure on rotation")
-				}
-			}
-			return streamer(ctx, desc, cc, method, opts...)
+		mustRunRotationUpload(t, srv, rotationUploadOpts{
+			chunkTransferTimeout: 5 * time.Second,
+			chunkSize:            chunk,
+			writeQuantum:         quantum,
+			chunks:               3,
+			waitPerChunk:         true,
+			serverOpts: []grpc.ServerOption{
+				grpc.InitialWindowSize(64 << 10),
+				grpc.InitialConnWindowSize(64 << 10),
+			},
 		})
+		assertRotationCalls(t, srv, 0, 2)
+		// Every quantum plus the empty finish_write message at the end.
+		var want []int64
+		for off := int64(0); off <= 3*chunk; off += quantum {
+			want = append(want, off)
+		}
+		assertReceivedOffsets(t, srv, want)
+	})
 
-		err := runUploadWithOpts(t, srv, uploadTestOptions{
+	t.Run("OpenFailureDuringRotation_NonRetryable_SurfacesError", func(t *testing.T) {
+		srv := &adaptiveRotationStorageServer{
+			flushDelay:     map[int]time.Duration{1: slowAck},
+			delayFromFlush: 2,
+		}
+		err := runRotationUpload(t, srv, rotationUploadOpts{
 			chunkTransferTimeout: 500 * time.Millisecond,
 			chunks:               3,
 			waitPerChunk:         true,
-			dialOpts:             []grpc.DialOption{failSecondOpen},
+			dialOpts:             []grpc.DialOption{failBidiOpen(2, codes.Canceled)},
 		})
 		if status.Code(err) != codes.Canceled {
 			t.Fatalf("got err = %v (code %v), want codes.Canceled", err, status.Code(err))
 		}
 	})
 
+	t.Run("OpenFailureDuringRotation_Retryable_ReconnectsWithQueryWriteStatus", func(t *testing.T) {
+		// The replacement stream fails to open with a code the writer retries.
+		// The attempt fails, run() retries, and connect() resumes the session
+		// via QueryWriteStatus from the persisted offset.
+		//
+		// codes.Internal rather than codes.Unavailable: gax retries the stream
+		// open itself on Unavailable with a jittered 1s backoff, which races
+		// the 500ms watchdog and makes the outcome nondeterministic.
+		srv := &adaptiveRotationStorageServer{
+			flushDelay:     map[int]time.Duration{1: slowAck},
+			delayFromFlush: 2,
+		}
+		mustRunRotationUpload(t, srv, rotationUploadOpts{
+			chunkTransferTimeout: 500 * time.Millisecond,
+			chunks:               3,
+			waitPerChunk:         true,
+			dialOpts:             []grpc.DialOption{failBidiOpen(2, codes.Internal)},
+		})
+		assertRotationCalls(t, srv, 1, 2)
+		assertReceivedOffsets(t, srv, []int64{0, 100, 200, 300})
+	})
+
 	t.Run("NonEOFErrorOnHalfClose_Propagated", func(t *testing.T) {
 		srv := &adaptiveRotationStorageServer{
-			streamDelay: map[int]time.Duration{
-				1: 150 * time.Millisecond,
-			},
-			halfCloseErr: map[int]error{
-				1: status.Error(codes.PermissionDenied, "half-close error"),
-			},
+			flushDelay:     map[int]time.Duration{1: slowAck},
+			delayFromFlush: 2,
+			halfCloseErr:   map[int]error{1: status.Error(codes.PermissionDenied, "half-close error")},
 		}
-		err := runUploadWithOpts(t, srv, uploadTestOptions{
+		err := runRotationUpload(t, srv, rotationUploadOpts{
 			chunkTransferTimeout: 500 * time.Millisecond,
 			chunks:               3,
 			waitPerChunk:         true,
@@ -3473,61 +3551,32 @@ func TestGRPCResumableBidiWriteBufferSender_AdaptiveStreamRotation(t *testing.T)
 		}
 	})
 
-	t.Run("UniformlySlowServer_AdaptsAndStabilizes", func(t *testing.T) {
-		// Every stream has the same 200ms per-chunk delay (> 50ms minDelay).
-		// Chunk 1 warms up the EWMA baseline to 200ms (threshold = 400ms)
-		// without rotating, so all 5 chunks stay on the initial stream.
+	t.Run("UniformlySlowServer_StaysOnOneStream", func(t *testing.T) {
+		// Every ack takes 200ms from the first flush on. Chunk 1 seeds the
+		// baseline at 200ms (threshold 400ms), so steady 200ms chunks never
+		// look slow and nothing rotates.
 		srv := &adaptiveRotationStorageServer{
-			streamDelay: map[int]time.Duration{
-				1: 200 * time.Millisecond,
-				2: 200 * time.Millisecond,
-			},
+			flushDelay: map[int]time.Duration{1: 200 * time.Millisecond, 2: 200 * time.Millisecond},
 		}
-		runUpload(t, srv, 600*time.Millisecond, 5, true)
-
-		srv.mu.Lock()
-		defer srv.mu.Unlock()
-		if srv.bidiStreams != 1 {
-			t.Errorf("BidiWriteObject streams = %d, want 1 (warm-up adapts on chunk 1 without rotating)", srv.bidiStreams)
-		}
-		assertOffsets(t, srv.receivedOffsets, []int64{0, 100, 200, 300, 400, 500})
-	})
-
-	t.Run("SlowFirstStream_ChunkTransferTimeoutZero_SingleStream", func(t *testing.T) {
-		srv := &adaptiveRotationStorageServer{
-			streamDelay: map[int]time.Duration{
-				1: 150 * time.Millisecond,
-			},
-		}
-		runUpload(t, srv, 0, 3, true)
-
-		srv.mu.Lock()
-		defer srv.mu.Unlock()
-		if srv.bidiStreams != 1 {
-			t.Errorf("BidiWriteObject streams = %d, want 1 when ChunkTransferTimeout == 0", srv.bidiStreams)
-		}
-		assertOffsets(t, srv.receivedOffsets, []int64{0, 100, 200, 300})
+		mustRunRotationUpload(t, srv, rotationUploadOpts{
+			chunkTransferTimeout: 600 * time.Millisecond,
+			chunks:               5,
+			waitPerChunk:         true,
+		})
+		assertRotationCalls(t, srv, 0, 1)
+		assertReceivedOffsets(t, srv, []int64{0, 100, 200, 300, 400, 500})
 	})
 
 	t.Run("HardStall_ReconnectsWithQueryWriteStatus", func(t *testing.T) {
 		srv := &adaptiveRotationStorageServer{
-			stallStreamAt: map[int]int64{
-				1: 200, // Ack chunk 1 (100), stall on chunk 2 (200)
-			},
+			stallStreamAt: map[int]int64{1: 200}, // ack chunk 1 (100), stall on chunk 2 (200)
 		}
-		runUpload(t, srv, 100*time.Millisecond, 3, true)
-
-		srv.mu.Lock()
-		defer srv.mu.Unlock()
-		if srv.startCalls != 1 {
-			t.Errorf("StartResumableWrite calls = %d, want 1", srv.startCalls)
-		}
-		if srv.queryStatusCalls != 1 {
-			t.Errorf("QueryWriteStatus calls = %d, want 1 on stall reconnect", srv.queryStatusCalls)
-		}
-		if srv.bidiStreams != 2 {
-			t.Errorf("BidiWriteObject streams = %d, want 2", srv.bidiStreams)
-		}
-		assertOffsets(t, srv.receivedOffsets, []int64{0, 100, 100, 200, 300})
+		mustRunRotationUpload(t, srv, rotationUploadOpts{
+			chunkTransferTimeout: 100 * time.Millisecond,
+			chunks:               3,
+			waitPerChunk:         true,
+		})
+		assertRotationCalls(t, srv, 1, 2)
+		assertReceivedOffsets(t, srv, []int64{0, 100, 100, 200, 300})
 	})
 }
