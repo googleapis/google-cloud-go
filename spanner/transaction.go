@@ -2322,11 +2322,18 @@ func (t *ReadWriteStmtBasedTransaction) CommitWithReturnResp(ctx context.Context
 // Rollback is called to cancel the ongoing transaction that has not been
 // committed yet.
 func (t *ReadWriteStmtBasedTransaction) Rollback(ctx context.Context) {
-	t.rollback(ctx)
+	_ = t.RollbackWithError(ctx)
+}
+
+// RollbackWithError cancels the ongoing transaction that has not been
+// committed yet and returns any error from the rollback RPC.
+func (t *ReadWriteStmtBasedTransaction) RollbackWithError(ctx context.Context) error {
+	err := t.rollbackWithError(ctx)
 	if t.sh != nil {
 		t.sh.recycle()
 		t.sh = nil
 	}
+	return err
 }
 
 // ResetForRetry resets the transaction before a retry. This should be
