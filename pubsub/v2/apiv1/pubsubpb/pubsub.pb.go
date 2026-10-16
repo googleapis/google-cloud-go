@@ -3619,13 +3619,9 @@ func (x *BigQueryConfig) GetServiceAccountEmail() string {
 	return ""
 }
 
-// Configuration for a Bigtable subscription. The Pub/Sub message will be
-// written to a Bigtable row as follows:
-//   - row key: subscription name, message ID hash, and message ID delimited by
-//     `#`.
-//   - columns: message bytes written to a single column family `data` with an
-//     empty-string column qualifier.
-//   - cell timestamp: the message publish timestamp.
+// Configuration for a Bigtable subscription, which will write a Pub/Sub message
+// to a Bigtable row. See the ColumnFamilyMapping documentation below for
+// details on how the row keys and columns will be written.
 type BigtableConfig struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Optional. The unique name of the table to write messages to.
@@ -3651,6 +3647,21 @@ type BigtableConfig struct {
 	// properties (other than data) are written to a JSON object in the attributes
 	// column.
 	WriteMetadata bool `protobuf:"varint,5,opt,name=write_metadata,json=writeMetadata,proto3" json:"write_metadata,omitempty"`
+	// How to write a Pub/Sub message to a Bigtable row, notably for defining keys
+	// and columns.
+	//
+	// If not specified, the default is the following:
+	//
+	//   - row key: subscription name, message ID hash, and message ID delimited by
+	//     `#`.
+	//   - columns: message bytes written to a single column family `data` with an
+	//     empty-string column qualifier.
+	//   - cell timestamp: the message publish timestamp.
+	//
+	// Types that are valid to be assigned to MessageMapping:
+	//
+	//	*BigtableConfig_ColumnFamilyMapping_
+	MessageMapping isBigtableConfig_MessageMapping `protobuf_oneof:"message_mapping"`
 	// Output only. An output-only field that indicates whether or not the
 	// subscription can receive messages.
 	State         BigtableConfig_State `protobuf:"varint,4,opt,name=state,proto3,enum=google.pubsub.v1.BigtableConfig_State" json:"state,omitempty"`
@@ -3716,12 +3727,41 @@ func (x *BigtableConfig) GetWriteMetadata() bool {
 	return false
 }
 
+func (x *BigtableConfig) GetMessageMapping() isBigtableConfig_MessageMapping {
+	if x != nil {
+		return x.MessageMapping
+	}
+	return nil
+}
+
+func (x *BigtableConfig) GetColumnFamilyMapping() *BigtableConfig_ColumnFamilyMapping {
+	if x != nil {
+		if x, ok := x.MessageMapping.(*BigtableConfig_ColumnFamilyMapping_); ok {
+			return x.ColumnFamilyMapping
+		}
+	}
+	return nil
+}
+
 func (x *BigtableConfig) GetState() BigtableConfig_State {
 	if x != nil {
 		return x.State
 	}
 	return BigtableConfig_STATE_UNSPECIFIED
 }
+
+type isBigtableConfig_MessageMapping interface {
+	isBigtableConfig_MessageMapping()
+}
+
+type BigtableConfig_ColumnFamilyMapping_ struct {
+	// Optional. Configuration that allows writing row keys and/or columns based
+	// on fields in the input message. The input message format must be JSON if
+	// this field is set.
+	ColumnFamilyMapping *BigtableConfig_ColumnFamilyMapping `protobuf:"bytes,6,opt,name=column_family_mapping,json=columnFamilyMapping,proto3,oneof"`
+}
+
+func (*BigtableConfig_ColumnFamilyMapping_) isBigtableConfig_MessageMapping() {}
 
 // Configuration for a Cloud Storage subscription.
 type CloudStorageConfig struct {
@@ -7317,6 +7357,226 @@ func (x *PushConfig_NoWrapper) GetWriteMetadata() bool {
 	return false
 }
 
+// Configuration for writing a Pub/Sub message to a Bigtable row with a
+// user-defined key and writing to column families.
+//
+// If this field is set:
+//
+// - The subscription messages must be formatted as JSON.
+// - The row key mapping is configured in the `key_definition` section.
+// - The top-level fields will be written either:
+//   - By default, they will be written to the `data` column family with the
+//     field name as the column qualifier.
+//   - But if the field name matches an existing column family (except for
+//     the default `data` column), then that field will be written to that
+//     column family, either as a scalar or its next level nested fields if
+//     it's a JSON object.
+//
+// - The cell timestamp will be the message publish timestamp.
+//
+// If the field is not set, the default behavior is to write:
+//
+//   - row key: subscription name, message ID hash, and message ID delimited by
+//     `#`.
+//   - columns: message bytes written to a single column family `data` with an
+//     empty-string column qualifier.
+//   - cell timestamp: the message publish timestamp.
+type BigtableConfig_ColumnFamilyMapping struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// How to construct the row key from the Pub/Sub message.
+	// If not specified, the default behavior is to construct the row key from
+	// the subscription name, message ID hash, and message ID delimited by `#`.
+	//
+	// Types that are valid to be assigned to KeyDefinition:
+	//
+	//	*BigtableConfig_ColumnFamilyMapping_RowKeySchema_
+	//	*BigtableConfig_ColumnFamilyMapping_DelimitedKey_
+	KeyDefinition isBigtableConfig_ColumnFamilyMapping_KeyDefinition `protobuf_oneof:"key_definition"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BigtableConfig_ColumnFamilyMapping) Reset() {
+	*x = BigtableConfig_ColumnFamilyMapping{}
+	mi := &file_google_pubsub_v1_pubsub_proto_msgTypes[83]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BigtableConfig_ColumnFamilyMapping) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BigtableConfig_ColumnFamilyMapping) ProtoMessage() {}
+
+func (x *BigtableConfig_ColumnFamilyMapping) ProtoReflect() protoreflect.Message {
+	mi := &file_google_pubsub_v1_pubsub_proto_msgTypes[83]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BigtableConfig_ColumnFamilyMapping.ProtoReflect.Descriptor instead.
+func (*BigtableConfig_ColumnFamilyMapping) Descriptor() ([]byte, []int) {
+	return file_google_pubsub_v1_pubsub_proto_rawDescGZIP(), []int{30, 0}
+}
+
+func (x *BigtableConfig_ColumnFamilyMapping) GetKeyDefinition() isBigtableConfig_ColumnFamilyMapping_KeyDefinition {
+	if x != nil {
+		return x.KeyDefinition
+	}
+	return nil
+}
+
+func (x *BigtableConfig_ColumnFamilyMapping) GetRowKeySchema() *BigtableConfig_ColumnFamilyMapping_RowKeySchema {
+	if x != nil {
+		if x, ok := x.KeyDefinition.(*BigtableConfig_ColumnFamilyMapping_RowKeySchema_); ok {
+			return x.RowKeySchema
+		}
+	}
+	return nil
+}
+
+func (x *BigtableConfig_ColumnFamilyMapping) GetDelimitedKey() *BigtableConfig_ColumnFamilyMapping_DelimitedKey {
+	if x != nil {
+		if x, ok := x.KeyDefinition.(*BigtableConfig_ColumnFamilyMapping_DelimitedKey_); ok {
+			return x.DelimitedKey
+		}
+	}
+	return nil
+}
+
+type isBigtableConfig_ColumnFamilyMapping_KeyDefinition interface {
+	isBigtableConfig_ColumnFamilyMapping_KeyDefinition()
+}
+
+type BigtableConfig_ColumnFamilyMapping_RowKeySchema_ struct {
+	// Optional. If set, the row key is constructed from the field names of
+	// the table's structured row key
+	// ({$universe.dns_names.final_documentation_domain}/bigtable/docs/manage-row-key-schemas).
+	// Note that if the field is nullable in the structured row key, then it
+	// need not be present in the message; null will be used instead.
+	RowKeySchema *BigtableConfig_ColumnFamilyMapping_RowKeySchema `protobuf:"bytes,1,opt,name=row_key_schema,json=rowKeySchema,proto3,oneof"`
+}
+
+type BigtableConfig_ColumnFamilyMapping_DelimitedKey_ struct {
+	// Optional. If set, the row key is constructed from the given key fields
+	// and delimiter. All key fields must be present in the message;
+	// otherwise, the message remains in the subscription backlog.
+	DelimitedKey *BigtableConfig_ColumnFamilyMapping_DelimitedKey `protobuf:"bytes,2,opt,name=delimited_key,json=delimitedKey,proto3,oneof"`
+}
+
+func (*BigtableConfig_ColumnFamilyMapping_RowKeySchema_) isBigtableConfig_ColumnFamilyMapping_KeyDefinition() {
+}
+
+func (*BigtableConfig_ColumnFamilyMapping_DelimitedKey_) isBigtableConfig_ColumnFamilyMapping_KeyDefinition() {
+}
+
+// Row key definition that reads the input message fields based on the field
+// names of the table's structured row key
+// ({$universe.dns_names.final_documentation_domain}/bigtable/docs/manage-row-key-schemas).
+// Note that if the field is nullable in the structured row key, then it
+// need not be present in the message; null will be used instead.
+type BigtableConfig_ColumnFamilyMapping_RowKeySchema struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BigtableConfig_ColumnFamilyMapping_RowKeySchema) Reset() {
+	*x = BigtableConfig_ColumnFamilyMapping_RowKeySchema{}
+	mi := &file_google_pubsub_v1_pubsub_proto_msgTypes[84]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BigtableConfig_ColumnFamilyMapping_RowKeySchema) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BigtableConfig_ColumnFamilyMapping_RowKeySchema) ProtoMessage() {}
+
+func (x *BigtableConfig_ColumnFamilyMapping_RowKeySchema) ProtoReflect() protoreflect.Message {
+	mi := &file_google_pubsub_v1_pubsub_proto_msgTypes[84]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BigtableConfig_ColumnFamilyMapping_RowKeySchema.ProtoReflect.Descriptor instead.
+func (*BigtableConfig_ColumnFamilyMapping_RowKeySchema) Descriptor() ([]byte, []int) {
+	return file_google_pubsub_v1_pubsub_proto_rawDescGZIP(), []int{30, 0, 0}
+}
+
+// Row key definition based on fields from the message.
+type BigtableConfig_ColumnFamilyMapping_DelimitedKey struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The key fields to construct from the row key. The fields must
+	// be present in the message as a top-level field, i.e. JSON path
+	// expressions will not traverse into nested objects.
+	KeyFields []string `protobuf:"bytes,1,rep,name=key_fields,json=keyFields,proto3" json:"key_fields,omitempty"`
+	// Optional. Byte sequence used to delimit concatenated fields. Must be
+	// specified if multiple key fields are used. The delimiter must contain
+	// at least 1 character and at most 50 characters.
+	Delimiter     []byte `protobuf:"bytes,2,opt,name=delimiter,proto3" json:"delimiter,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BigtableConfig_ColumnFamilyMapping_DelimitedKey) Reset() {
+	*x = BigtableConfig_ColumnFamilyMapping_DelimitedKey{}
+	mi := &file_google_pubsub_v1_pubsub_proto_msgTypes[85]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BigtableConfig_ColumnFamilyMapping_DelimitedKey) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BigtableConfig_ColumnFamilyMapping_DelimitedKey) ProtoMessage() {}
+
+func (x *BigtableConfig_ColumnFamilyMapping_DelimitedKey) ProtoReflect() protoreflect.Message {
+	mi := &file_google_pubsub_v1_pubsub_proto_msgTypes[85]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BigtableConfig_ColumnFamilyMapping_DelimitedKey.ProtoReflect.Descriptor instead.
+func (*BigtableConfig_ColumnFamilyMapping_DelimitedKey) Descriptor() ([]byte, []int) {
+	return file_google_pubsub_v1_pubsub_proto_rawDescGZIP(), []int{30, 0, 1}
+}
+
+func (x *BigtableConfig_ColumnFamilyMapping_DelimitedKey) GetKeyFields() []string {
+	if x != nil {
+		return x.KeyFields
+	}
+	return nil
+}
+
+func (x *BigtableConfig_ColumnFamilyMapping_DelimitedKey) GetDelimiter() []byte {
+	if x != nil {
+		return x.Delimiter
+	}
+	return nil
+}
+
 // Configuration for writing message data in text format.
 // Message payloads will be written to files as raw text, separated by a
 // newline.
@@ -7328,7 +7588,7 @@ type CloudStorageConfig_TextConfig struct {
 
 func (x *CloudStorageConfig_TextConfig) Reset() {
 	*x = CloudStorageConfig_TextConfig{}
-	mi := &file_google_pubsub_v1_pubsub_proto_msgTypes[83]
+	mi := &file_google_pubsub_v1_pubsub_proto_msgTypes[86]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7340,7 +7600,7 @@ func (x *CloudStorageConfig_TextConfig) String() string {
 func (*CloudStorageConfig_TextConfig) ProtoMessage() {}
 
 func (x *CloudStorageConfig_TextConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_pubsub_v1_pubsub_proto_msgTypes[83]
+	mi := &file_google_pubsub_v1_pubsub_proto_msgTypes[86]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7376,7 +7636,7 @@ type CloudStorageConfig_AvroConfig struct {
 
 func (x *CloudStorageConfig_AvroConfig) Reset() {
 	*x = CloudStorageConfig_AvroConfig{}
-	mi := &file_google_pubsub_v1_pubsub_proto_msgTypes[84]
+	mi := &file_google_pubsub_v1_pubsub_proto_msgTypes[87]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7388,7 +7648,7 @@ func (x *CloudStorageConfig_AvroConfig) String() string {
 func (*CloudStorageConfig_AvroConfig) ProtoMessage() {}
 
 func (x *CloudStorageConfig_AvroConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_pubsub_v1_pubsub_proto_msgTypes[84]
+	mi := &file_google_pubsub_v1_pubsub_proto_msgTypes[87]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7438,7 +7698,7 @@ type StreamingPullResponse_AcknowledgeConfirmation struct {
 
 func (x *StreamingPullResponse_AcknowledgeConfirmation) Reset() {
 	*x = StreamingPullResponse_AcknowledgeConfirmation{}
-	mi := &file_google_pubsub_v1_pubsub_proto_msgTypes[85]
+	mi := &file_google_pubsub_v1_pubsub_proto_msgTypes[88]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7450,7 +7710,7 @@ func (x *StreamingPullResponse_AcknowledgeConfirmation) String() string {
 func (*StreamingPullResponse_AcknowledgeConfirmation) ProtoMessage() {}
 
 func (x *StreamingPullResponse_AcknowledgeConfirmation) ProtoReflect() protoreflect.Message {
-	mi := &file_google_pubsub_v1_pubsub_proto_msgTypes[85]
+	mi := &file_google_pubsub_v1_pubsub_proto_msgTypes[88]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7512,7 +7772,7 @@ type StreamingPullResponse_ModifyAckDeadlineConfirmation struct {
 
 func (x *StreamingPullResponse_ModifyAckDeadlineConfirmation) Reset() {
 	*x = StreamingPullResponse_ModifyAckDeadlineConfirmation{}
-	mi := &file_google_pubsub_v1_pubsub_proto_msgTypes[86]
+	mi := &file_google_pubsub_v1_pubsub_proto_msgTypes[89]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7524,7 +7784,7 @@ func (x *StreamingPullResponse_ModifyAckDeadlineConfirmation) String() string {
 func (*StreamingPullResponse_ModifyAckDeadlineConfirmation) ProtoMessage() {}
 
 func (x *StreamingPullResponse_ModifyAckDeadlineConfirmation) ProtoReflect() protoreflect.Message {
-	mi := &file_google_pubsub_v1_pubsub_proto_msgTypes[86]
+	mi := &file_google_pubsub_v1_pubsub_proto_msgTypes[89]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7575,7 +7835,7 @@ type StreamingPullResponse_SubscriptionProperties struct {
 
 func (x *StreamingPullResponse_SubscriptionProperties) Reset() {
 	*x = StreamingPullResponse_SubscriptionProperties{}
-	mi := &file_google_pubsub_v1_pubsub_proto_msgTypes[87]
+	mi := &file_google_pubsub_v1_pubsub_proto_msgTypes[90]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7587,7 +7847,7 @@ func (x *StreamingPullResponse_SubscriptionProperties) String() string {
 func (*StreamingPullResponse_SubscriptionProperties) ProtoMessage() {}
 
 func (x *StreamingPullResponse_SubscriptionProperties) ProtoReflect() protoreflect.Message {
-	mi := &file_google_pubsub_v1_pubsub_proto_msgTypes[87]
+	mi := &file_google_pubsub_v1_pubsub_proto_msgTypes[90]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7636,7 +7896,7 @@ type PubsubClientTelemetry_PublishOperation struct {
 
 func (x *PubsubClientTelemetry_PublishOperation) Reset() {
 	*x = PubsubClientTelemetry_PublishOperation{}
-	mi := &file_google_pubsub_v1_pubsub_proto_msgTypes[91]
+	mi := &file_google_pubsub_v1_pubsub_proto_msgTypes[94]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7648,7 +7908,7 @@ func (x *PubsubClientTelemetry_PublishOperation) String() string {
 func (*PubsubClientTelemetry_PublishOperation) ProtoMessage() {}
 
 func (x *PubsubClientTelemetry_PublishOperation) ProtoReflect() protoreflect.Message {
-	mi := &file_google_pubsub_v1_pubsub_proto_msgTypes[91]
+	mi := &file_google_pubsub_v1_pubsub_proto_msgTypes[94]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8085,13 +8345,23 @@ const file_google_pubsub_v1_pubsub_proto_rawDesc = "" +
 	"\tNOT_FOUND\x10\x03\x12\x13\n" +
 	"\x0fSCHEMA_MISMATCH\x10\x04\x12#\n" +
 	"\x1fIN_TRANSIT_LOCATION_RESTRICTION\x10\x05\x12\"\n" +
-	"\x1eVERTEX_AI_LOCATION_RESTRICTION\x10\x06\"\xce\x03\n" +
+	"\x1eVERTEX_AI_LOCATION_RESTRICTION\x10\x06\"\xc2\a\n" +
 	"\x0eBigtableConfig\x12\x19\n" +
 	"\x05table\x18\x01 \x01(\tB\x03\xe0A\x01R\x05table\x12)\n" +
 	"\x0eapp_profile_id\x18\x02 \x01(\tB\x03\xe0A\x01R\fappProfileId\x127\n" +
 	"\x15service_account_email\x18\x03 \x01(\tB\x03\xe0A\x01R\x13serviceAccountEmail\x12*\n" +
-	"\x0ewrite_metadata\x18\x05 \x01(\bB\x03\xe0A\x01R\rwriteMetadata\x12A\n" +
-	"\x05state\x18\x04 \x01(\x0e2&.google.pubsub.v1.BigtableConfig.StateB\x03\xe0A\x03R\x05state\"\xcd\x01\n" +
+	"\x0ewrite_metadata\x18\x05 \x01(\bB\x03\xe0A\x01R\rwriteMetadata\x12o\n" +
+	"\x15column_family_mapping\x18\x06 \x01(\v24.google.pubsub.v1.BigtableConfig.ColumnFamilyMappingB\x03\xe0A\x01H\x00R\x13columnFamilyMapping\x12A\n" +
+	"\x05state\x18\x04 \x01(\x0e2&.google.pubsub.v1.BigtableConfig.StateB\x03\xe0A\x03R\x05state\x1a\xed\x02\n" +
+	"\x13ColumnFamilyMapping\x12n\n" +
+	"\x0erow_key_schema\x18\x01 \x01(\v2A.google.pubsub.v1.BigtableConfig.ColumnFamilyMapping.RowKeySchemaB\x03\xe0A\x01H\x00R\frowKeySchema\x12m\n" +
+	"\rdelimited_key\x18\x02 \x01(\v2A.google.pubsub.v1.BigtableConfig.ColumnFamilyMapping.DelimitedKeyB\x03\xe0A\x01H\x00R\fdelimitedKey\x1a\x0e\n" +
+	"\fRowKeySchema\x1aU\n" +
+	"\fDelimitedKey\x12\"\n" +
+	"\n" +
+	"key_fields\x18\x01 \x03(\tB\x03\xe0A\x02R\tkeyFields\x12!\n" +
+	"\tdelimiter\x18\x02 \x01(\fB\x03\xe0A\x01R\tdelimiterB\x10\n" +
+	"\x0ekey_definition\"\xcd\x01\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
@@ -8101,7 +8371,8 @@ const file_google_pubsub_v1_pubsub_proto_rawDesc = "" +
 	"\x11PERMISSION_DENIED\x10\x04\x12\x13\n" +
 	"\x0fSCHEMA_MISMATCH\x10\x05\x12#\n" +
 	"\x1fIN_TRANSIT_LOCATION_RESTRICTION\x10\x06\x12\"\n" +
-	"\x1eVERTEX_AI_LOCATION_RESTRICTION\x10\a\"\xc4\a\n" +
+	"\x1eVERTEX_AI_LOCATION_RESTRICTION\x10\aB\x11\n" +
+	"\x0fmessage_mapping\"\xc4\a\n" +
 	"\x12CloudStorageConfig\x12\x1b\n" +
 	"\x06bucket\x18\x01 \x01(\tB\x03\xe0A\x02R\x06bucket\x12,\n" +
 	"\x0ffilename_prefix\x18\x02 \x01(\tB\x03\xe0A\x01R\x0efilenamePrefix\x12,\n" +
@@ -8309,7 +8580,7 @@ func file_google_pubsub_v1_pubsub_proto_rawDescGZIP() []byte {
 }
 
 var file_google_pubsub_v1_pubsub_proto_enumTypes = make([]protoimpl.EnumInfo, 13)
-var file_google_pubsub_v1_pubsub_proto_msgTypes = make([]protoimpl.MessageInfo, 92)
+var file_google_pubsub_v1_pubsub_proto_msgTypes = make([]protoimpl.MessageInfo, 95)
 var file_google_pubsub_v1_pubsub_proto_goTypes = []any{
 	(IngestionDataSourceSettings_AwsKinesis_State)(0),                 // 0: google.pubsub.v1.IngestionDataSourceSettings.AwsKinesis.State
 	(IngestionDataSourceSettings_CloudStorage_State)(0),               // 1: google.pubsub.v1.IngestionDataSourceSettings.CloudStorage.State
@@ -8401,30 +8672,33 @@ var file_google_pubsub_v1_pubsub_proto_goTypes = []any{
 	nil, // 87: google.pubsub.v1.Topic.TagsEntry
 	nil, // 88: google.pubsub.v1.PubsubMessage.AttributesEntry
 	(*Subscription_AnalyticsHubSubscriptionInfo)(nil), // 89: google.pubsub.v1.Subscription.AnalyticsHubSubscriptionInfo
-	nil,                                   // 90: google.pubsub.v1.Subscription.LabelsEntry
-	nil,                                   // 91: google.pubsub.v1.Subscription.TagsEntry
-	(*PushConfig_OidcToken)(nil),          // 92: google.pubsub.v1.PushConfig.OidcToken
-	(*PushConfig_PubsubWrapper)(nil),      // 93: google.pubsub.v1.PushConfig.PubsubWrapper
-	(*PushConfig_NoWrapper)(nil),          // 94: google.pubsub.v1.PushConfig.NoWrapper
-	nil,                                   // 95: google.pubsub.v1.PushConfig.AttributesEntry
-	(*CloudStorageConfig_TextConfig)(nil), // 96: google.pubsub.v1.CloudStorageConfig.TextConfig
-	(*CloudStorageConfig_AvroConfig)(nil), // 97: google.pubsub.v1.CloudStorageConfig.AvroConfig
-	(*StreamingPullResponse_AcknowledgeConfirmation)(nil),       // 98: google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation
-	(*StreamingPullResponse_ModifyAckDeadlineConfirmation)(nil), // 99: google.pubsub.v1.StreamingPullResponse.ModifyAckDeadlineConfirmation
-	(*StreamingPullResponse_SubscriptionProperties)(nil),        // 100: google.pubsub.v1.StreamingPullResponse.SubscriptionProperties
-	nil, // 101: google.pubsub.v1.CreateSnapshotRequest.LabelsEntry
-	nil, // 102: google.pubsub.v1.CreateSnapshotRequest.TagsEntry
-	nil, // 103: google.pubsub.v1.Snapshot.LabelsEntry
-	(*PubsubClientTelemetry_PublishOperation)(nil), // 104: google.pubsub.v1.PubsubClientTelemetry.PublishOperation
-	(Encoding)(0),                 // 105: google.pubsub.v1.Encoding
-	(*durationpb.Duration)(nil),   // 106: google.protobuf.Duration
-	(*timestamppb.Timestamp)(nil), // 107: google.protobuf.Timestamp
-	(*fieldmaskpb.FieldMask)(nil), // 108: google.protobuf.FieldMask
-	(*structpb.Struct)(nil),       // 109: google.protobuf.Struct
-	(*emptypb.Empty)(nil),         // 110: google.protobuf.Empty
+	nil,                              // 90: google.pubsub.v1.Subscription.LabelsEntry
+	nil,                              // 91: google.pubsub.v1.Subscription.TagsEntry
+	(*PushConfig_OidcToken)(nil),     // 92: google.pubsub.v1.PushConfig.OidcToken
+	(*PushConfig_PubsubWrapper)(nil), // 93: google.pubsub.v1.PushConfig.PubsubWrapper
+	(*PushConfig_NoWrapper)(nil),     // 94: google.pubsub.v1.PushConfig.NoWrapper
+	nil,                              // 95: google.pubsub.v1.PushConfig.AttributesEntry
+	(*BigtableConfig_ColumnFamilyMapping)(nil),                  // 96: google.pubsub.v1.BigtableConfig.ColumnFamilyMapping
+	(*BigtableConfig_ColumnFamilyMapping_RowKeySchema)(nil),     // 97: google.pubsub.v1.BigtableConfig.ColumnFamilyMapping.RowKeySchema
+	(*BigtableConfig_ColumnFamilyMapping_DelimitedKey)(nil),     // 98: google.pubsub.v1.BigtableConfig.ColumnFamilyMapping.DelimitedKey
+	(*CloudStorageConfig_TextConfig)(nil),                       // 99: google.pubsub.v1.CloudStorageConfig.TextConfig
+	(*CloudStorageConfig_AvroConfig)(nil),                       // 100: google.pubsub.v1.CloudStorageConfig.AvroConfig
+	(*StreamingPullResponse_AcknowledgeConfirmation)(nil),       // 101: google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation
+	(*StreamingPullResponse_ModifyAckDeadlineConfirmation)(nil), // 102: google.pubsub.v1.StreamingPullResponse.ModifyAckDeadlineConfirmation
+	(*StreamingPullResponse_SubscriptionProperties)(nil),        // 103: google.pubsub.v1.StreamingPullResponse.SubscriptionProperties
+	nil, // 104: google.pubsub.v1.CreateSnapshotRequest.LabelsEntry
+	nil, // 105: google.pubsub.v1.CreateSnapshotRequest.TagsEntry
+	nil, // 106: google.pubsub.v1.Snapshot.LabelsEntry
+	(*PubsubClientTelemetry_PublishOperation)(nil), // 107: google.pubsub.v1.PubsubClientTelemetry.PublishOperation
+	(Encoding)(0),                 // 108: google.pubsub.v1.Encoding
+	(*durationpb.Duration)(nil),   // 109: google.protobuf.Duration
+	(*timestamppb.Timestamp)(nil), // 110: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil), // 111: google.protobuf.FieldMask
+	(*structpb.Struct)(nil),       // 112: google.protobuf.Struct
+	(*emptypb.Empty)(nil),         // 113: google.protobuf.Empty
 }
 var file_google_pubsub_v1_pubsub_proto_depIdxs = []int32{
-	105, // 0: google.pubsub.v1.SchemaSettings.encoding:type_name -> google.pubsub.v1.Encoding
+	108, // 0: google.pubsub.v1.SchemaSettings.encoding:type_name -> google.pubsub.v1.Encoding
 	68,  // 1: google.pubsub.v1.IngestionDataSourceSettings.aws_kinesis:type_name -> google.pubsub.v1.IngestionDataSourceSettings.AwsKinesis
 	69,  // 2: google.pubsub.v1.IngestionDataSourceSettings.cloud_storage:type_name -> google.pubsub.v1.IngestionDataSourceSettings.CloudStorage
 	70,  // 3: google.pubsub.v1.IngestionDataSourceSettings.azure_event_hubs:type_name -> google.pubsub.v1.IngestionDataSourceSettings.AzureEventHubs
@@ -8446,145 +8720,148 @@ var file_google_pubsub_v1_pubsub_proto_depIdxs = []int32{
 	86,  // 19: google.pubsub.v1.Topic.labels:type_name -> google.pubsub.v1.Topic.LabelsEntry
 	13,  // 20: google.pubsub.v1.Topic.message_storage_policy:type_name -> google.pubsub.v1.MessageStoragePolicy
 	14,  // 21: google.pubsub.v1.Topic.schema_settings:type_name -> google.pubsub.v1.SchemaSettings
-	106, // 22: google.pubsub.v1.Topic.message_retention_duration:type_name -> google.protobuf.Duration
+	109, // 22: google.pubsub.v1.Topic.message_retention_duration:type_name -> google.protobuf.Duration
 	8,   // 23: google.pubsub.v1.Topic.state:type_name -> google.pubsub.v1.Topic.State
 	15,  // 24: google.pubsub.v1.Topic.ingestion_data_source_settings:type_name -> google.pubsub.v1.IngestionDataSourceSettings
 	21,  // 25: google.pubsub.v1.Topic.message_transforms:type_name -> google.pubsub.v1.MessageTransform
 	87,  // 26: google.pubsub.v1.Topic.tags:type_name -> google.pubsub.v1.Topic.TagsEntry
 	88,  // 27: google.pubsub.v1.PubsubMessage.attributes:type_name -> google.pubsub.v1.PubsubMessage.AttributesEntry
-	107, // 28: google.pubsub.v1.PubsubMessage.publish_time:type_name -> google.protobuf.Timestamp
+	110, // 28: google.pubsub.v1.PubsubMessage.publish_time:type_name -> google.protobuf.Timestamp
 	22,  // 29: google.pubsub.v1.UpdateTopicRequest.topic:type_name -> google.pubsub.v1.Topic
-	108, // 30: google.pubsub.v1.UpdateTopicRequest.update_mask:type_name -> google.protobuf.FieldMask
+	111, // 30: google.pubsub.v1.UpdateTopicRequest.update_mask:type_name -> google.protobuf.FieldMask
 	23,  // 31: google.pubsub.v1.PublishRequest.messages:type_name -> google.pubsub.v1.PubsubMessage
 	22,  // 32: google.pubsub.v1.ListTopicsResponse.topics:type_name -> google.pubsub.v1.Topic
 	41,  // 33: google.pubsub.v1.Subscription.push_config:type_name -> google.pubsub.v1.PushConfig
 	42,  // 34: google.pubsub.v1.Subscription.bigquery_config:type_name -> google.pubsub.v1.BigQueryConfig
 	44,  // 35: google.pubsub.v1.Subscription.cloud_storage_config:type_name -> google.pubsub.v1.CloudStorageConfig
 	43,  // 36: google.pubsub.v1.Subscription.bigtable_config:type_name -> google.pubsub.v1.BigtableConfig
-	106, // 37: google.pubsub.v1.Subscription.message_retention_duration:type_name -> google.protobuf.Duration
+	109, // 37: google.pubsub.v1.Subscription.message_retention_duration:type_name -> google.protobuf.Duration
 	90,  // 38: google.pubsub.v1.Subscription.labels:type_name -> google.pubsub.v1.Subscription.LabelsEntry
 	40,  // 39: google.pubsub.v1.Subscription.expiration_policy:type_name -> google.pubsub.v1.ExpirationPolicy
 	39,  // 40: google.pubsub.v1.Subscription.dead_letter_policy:type_name -> google.pubsub.v1.DeadLetterPolicy
 	38,  // 41: google.pubsub.v1.Subscription.retry_policy:type_name -> google.pubsub.v1.RetryPolicy
-	106, // 42: google.pubsub.v1.Subscription.topic_message_retention_duration:type_name -> google.protobuf.Duration
+	109, // 42: google.pubsub.v1.Subscription.topic_message_retention_duration:type_name -> google.protobuf.Duration
 	9,   // 43: google.pubsub.v1.Subscription.state:type_name -> google.pubsub.v1.Subscription.State
 	89,  // 44: google.pubsub.v1.Subscription.analytics_hub_subscription_info:type_name -> google.pubsub.v1.Subscription.AnalyticsHubSubscriptionInfo
 	21,  // 45: google.pubsub.v1.Subscription.message_transforms:type_name -> google.pubsub.v1.MessageTransform
 	91,  // 46: google.pubsub.v1.Subscription.tags:type_name -> google.pubsub.v1.Subscription.TagsEntry
-	106, // 47: google.pubsub.v1.RetryPolicy.minimum_backoff:type_name -> google.protobuf.Duration
-	106, // 48: google.pubsub.v1.RetryPolicy.maximum_backoff:type_name -> google.protobuf.Duration
-	106, // 49: google.pubsub.v1.ExpirationPolicy.ttl:type_name -> google.protobuf.Duration
+	109, // 47: google.pubsub.v1.RetryPolicy.minimum_backoff:type_name -> google.protobuf.Duration
+	109, // 48: google.pubsub.v1.RetryPolicy.maximum_backoff:type_name -> google.protobuf.Duration
+	109, // 49: google.pubsub.v1.ExpirationPolicy.ttl:type_name -> google.protobuf.Duration
 	95,  // 50: google.pubsub.v1.PushConfig.attributes:type_name -> google.pubsub.v1.PushConfig.AttributesEntry
 	92,  // 51: google.pubsub.v1.PushConfig.oidc_token:type_name -> google.pubsub.v1.PushConfig.OidcToken
 	93,  // 52: google.pubsub.v1.PushConfig.pubsub_wrapper:type_name -> google.pubsub.v1.PushConfig.PubsubWrapper
 	94,  // 53: google.pubsub.v1.PushConfig.no_wrapper:type_name -> google.pubsub.v1.PushConfig.NoWrapper
 	10,  // 54: google.pubsub.v1.BigQueryConfig.state:type_name -> google.pubsub.v1.BigQueryConfig.State
-	11,  // 55: google.pubsub.v1.BigtableConfig.state:type_name -> google.pubsub.v1.BigtableConfig.State
-	96,  // 56: google.pubsub.v1.CloudStorageConfig.text_config:type_name -> google.pubsub.v1.CloudStorageConfig.TextConfig
-	97,  // 57: google.pubsub.v1.CloudStorageConfig.avro_config:type_name -> google.pubsub.v1.CloudStorageConfig.AvroConfig
-	106, // 58: google.pubsub.v1.CloudStorageConfig.max_duration:type_name -> google.protobuf.Duration
-	12,  // 59: google.pubsub.v1.CloudStorageConfig.state:type_name -> google.pubsub.v1.CloudStorageConfig.State
-	23,  // 60: google.pubsub.v1.ReceivedMessage.message:type_name -> google.pubsub.v1.PubsubMessage
-	37,  // 61: google.pubsub.v1.UpdateSubscriptionRequest.subscription:type_name -> google.pubsub.v1.Subscription
-	108, // 62: google.pubsub.v1.UpdateSubscriptionRequest.update_mask:type_name -> google.protobuf.FieldMask
-	37,  // 63: google.pubsub.v1.ListSubscriptionsResponse.subscriptions:type_name -> google.pubsub.v1.Subscription
-	41,  // 64: google.pubsub.v1.ModifyPushConfigRequest.push_config:type_name -> google.pubsub.v1.PushConfig
-	45,  // 65: google.pubsub.v1.PullResponse.received_messages:type_name -> google.pubsub.v1.ReceivedMessage
-	45,  // 66: google.pubsub.v1.StreamingPullResponse.received_messages:type_name -> google.pubsub.v1.ReceivedMessage
-	98,  // 67: google.pubsub.v1.StreamingPullResponse.acknowledge_confirmation:type_name -> google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation
-	99,  // 68: google.pubsub.v1.StreamingPullResponse.modify_ack_deadline_confirmation:type_name -> google.pubsub.v1.StreamingPullResponse.ModifyAckDeadlineConfirmation
-	100, // 69: google.pubsub.v1.StreamingPullResponse.subscription_properties:type_name -> google.pubsub.v1.StreamingPullResponse.SubscriptionProperties
-	101, // 70: google.pubsub.v1.CreateSnapshotRequest.labels:type_name -> google.pubsub.v1.CreateSnapshotRequest.LabelsEntry
-	102, // 71: google.pubsub.v1.CreateSnapshotRequest.tags:type_name -> google.pubsub.v1.CreateSnapshotRequest.TagsEntry
-	60,  // 72: google.pubsub.v1.UpdateSnapshotRequest.snapshot:type_name -> google.pubsub.v1.Snapshot
-	108, // 73: google.pubsub.v1.UpdateSnapshotRequest.update_mask:type_name -> google.protobuf.FieldMask
-	107, // 74: google.pubsub.v1.Snapshot.expire_time:type_name -> google.protobuf.Timestamp
-	103, // 75: google.pubsub.v1.Snapshot.labels:type_name -> google.pubsub.v1.Snapshot.LabelsEntry
-	60,  // 76: google.pubsub.v1.ListSnapshotsResponse.snapshots:type_name -> google.pubsub.v1.Snapshot
-	107, // 77: google.pubsub.v1.SeekRequest.time:type_name -> google.protobuf.Timestamp
-	104, // 78: google.pubsub.v1.PubsubClientTelemetry.publish_operation:type_name -> google.pubsub.v1.PubsubClientTelemetry.PublishOperation
-	0,   // 79: google.pubsub.v1.IngestionDataSourceSettings.AwsKinesis.state:type_name -> google.pubsub.v1.IngestionDataSourceSettings.AwsKinesis.State
-	1,   // 80: google.pubsub.v1.IngestionDataSourceSettings.CloudStorage.state:type_name -> google.pubsub.v1.IngestionDataSourceSettings.CloudStorage.State
-	73,  // 81: google.pubsub.v1.IngestionDataSourceSettings.CloudStorage.text_format:type_name -> google.pubsub.v1.IngestionDataSourceSettings.CloudStorage.TextFormat
-	74,  // 82: google.pubsub.v1.IngestionDataSourceSettings.CloudStorage.avro_format:type_name -> google.pubsub.v1.IngestionDataSourceSettings.CloudStorage.AvroFormat
-	75,  // 83: google.pubsub.v1.IngestionDataSourceSettings.CloudStorage.pubsub_avro_format:type_name -> google.pubsub.v1.IngestionDataSourceSettings.CloudStorage.PubSubAvroFormat
-	107, // 84: google.pubsub.v1.IngestionDataSourceSettings.CloudStorage.minimum_object_create_time:type_name -> google.protobuf.Timestamp
-	2,   // 85: google.pubsub.v1.IngestionDataSourceSettings.AzureEventHubs.state:type_name -> google.pubsub.v1.IngestionDataSourceSettings.AzureEventHubs.State
-	3,   // 86: google.pubsub.v1.IngestionDataSourceSettings.AwsMsk.state:type_name -> google.pubsub.v1.IngestionDataSourceSettings.AwsMsk.State
-	4,   // 87: google.pubsub.v1.IngestionDataSourceSettings.ConfluentCloud.state:type_name -> google.pubsub.v1.IngestionDataSourceSettings.ConfluentCloud.State
-	77,  // 88: google.pubsub.v1.IngestionFailureEvent.CloudStorageFailure.avro_failure_reason:type_name -> google.pubsub.v1.IngestionFailureEvent.AvroFailureReason
-	76,  // 89: google.pubsub.v1.IngestionFailureEvent.CloudStorageFailure.api_violation_reason:type_name -> google.pubsub.v1.IngestionFailureEvent.ApiViolationReason
-	78,  // 90: google.pubsub.v1.IngestionFailureEvent.CloudStorageFailure.schema_violation_reason:type_name -> google.pubsub.v1.IngestionFailureEvent.SchemaViolationReason
-	79,  // 91: google.pubsub.v1.IngestionFailureEvent.CloudStorageFailure.message_transformation_failure_reason:type_name -> google.pubsub.v1.IngestionFailureEvent.MessageTransformationFailureReason
-	76,  // 92: google.pubsub.v1.IngestionFailureEvent.AwsMskFailureReason.api_violation_reason:type_name -> google.pubsub.v1.IngestionFailureEvent.ApiViolationReason
-	78,  // 93: google.pubsub.v1.IngestionFailureEvent.AwsMskFailureReason.schema_violation_reason:type_name -> google.pubsub.v1.IngestionFailureEvent.SchemaViolationReason
-	79,  // 94: google.pubsub.v1.IngestionFailureEvent.AwsMskFailureReason.message_transformation_failure_reason:type_name -> google.pubsub.v1.IngestionFailureEvent.MessageTransformationFailureReason
-	76,  // 95: google.pubsub.v1.IngestionFailureEvent.AzureEventHubsFailureReason.api_violation_reason:type_name -> google.pubsub.v1.IngestionFailureEvent.ApiViolationReason
-	78,  // 96: google.pubsub.v1.IngestionFailureEvent.AzureEventHubsFailureReason.schema_violation_reason:type_name -> google.pubsub.v1.IngestionFailureEvent.SchemaViolationReason
-	79,  // 97: google.pubsub.v1.IngestionFailureEvent.AzureEventHubsFailureReason.message_transformation_failure_reason:type_name -> google.pubsub.v1.IngestionFailureEvent.MessageTransformationFailureReason
-	76,  // 98: google.pubsub.v1.IngestionFailureEvent.ConfluentCloudFailureReason.api_violation_reason:type_name -> google.pubsub.v1.IngestionFailureEvent.ApiViolationReason
-	78,  // 99: google.pubsub.v1.IngestionFailureEvent.ConfluentCloudFailureReason.schema_violation_reason:type_name -> google.pubsub.v1.IngestionFailureEvent.SchemaViolationReason
-	79,  // 100: google.pubsub.v1.IngestionFailureEvent.ConfluentCloudFailureReason.message_transformation_failure_reason:type_name -> google.pubsub.v1.IngestionFailureEvent.MessageTransformationFailureReason
-	78,  // 101: google.pubsub.v1.IngestionFailureEvent.AwsKinesisFailureReason.schema_violation_reason:type_name -> google.pubsub.v1.IngestionFailureEvent.SchemaViolationReason
-	79,  // 102: google.pubsub.v1.IngestionFailureEvent.AwsKinesisFailureReason.message_transformation_failure_reason:type_name -> google.pubsub.v1.IngestionFailureEvent.MessageTransformationFailureReason
-	76,  // 103: google.pubsub.v1.IngestionFailureEvent.AwsKinesisFailureReason.api_violation_reason:type_name -> google.pubsub.v1.IngestionFailureEvent.ApiViolationReason
-	109, // 104: google.pubsub.v1.AIInference.UnstructuredInference.parameters:type_name -> google.protobuf.Struct
-	107, // 105: google.pubsub.v1.PubsubClientTelemetry.PublishOperation.publish_start_time:type_name -> google.protobuf.Timestamp
-	22,  // 106: google.pubsub.v1.Publisher.CreateTopic:input_type -> google.pubsub.v1.Topic
-	25,  // 107: google.pubsub.v1.Publisher.UpdateTopic:input_type -> google.pubsub.v1.UpdateTopicRequest
-	26,  // 108: google.pubsub.v1.Publisher.Publish:input_type -> google.pubsub.v1.PublishRequest
-	24,  // 109: google.pubsub.v1.Publisher.GetTopic:input_type -> google.pubsub.v1.GetTopicRequest
-	28,  // 110: google.pubsub.v1.Publisher.ListTopics:input_type -> google.pubsub.v1.ListTopicsRequest
-	30,  // 111: google.pubsub.v1.Publisher.ListTopicSubscriptions:input_type -> google.pubsub.v1.ListTopicSubscriptionsRequest
-	32,  // 112: google.pubsub.v1.Publisher.ListTopicSnapshots:input_type -> google.pubsub.v1.ListTopicSnapshotsRequest
-	34,  // 113: google.pubsub.v1.Publisher.DeleteTopic:input_type -> google.pubsub.v1.DeleteTopicRequest
-	35,  // 114: google.pubsub.v1.Publisher.DetachSubscription:input_type -> google.pubsub.v1.DetachSubscriptionRequest
-	37,  // 115: google.pubsub.v1.Subscriber.CreateSubscription:input_type -> google.pubsub.v1.Subscription
-	46,  // 116: google.pubsub.v1.Subscriber.GetSubscription:input_type -> google.pubsub.v1.GetSubscriptionRequest
-	47,  // 117: google.pubsub.v1.Subscriber.UpdateSubscription:input_type -> google.pubsub.v1.UpdateSubscriptionRequest
-	48,  // 118: google.pubsub.v1.Subscriber.ListSubscriptions:input_type -> google.pubsub.v1.ListSubscriptionsRequest
-	50,  // 119: google.pubsub.v1.Subscriber.DeleteSubscription:input_type -> google.pubsub.v1.DeleteSubscriptionRequest
-	54,  // 120: google.pubsub.v1.Subscriber.ModifyAckDeadline:input_type -> google.pubsub.v1.ModifyAckDeadlineRequest
-	55,  // 121: google.pubsub.v1.Subscriber.Acknowledge:input_type -> google.pubsub.v1.AcknowledgeRequest
-	52,  // 122: google.pubsub.v1.Subscriber.Pull:input_type -> google.pubsub.v1.PullRequest
-	56,  // 123: google.pubsub.v1.Subscriber.StreamingPull:input_type -> google.pubsub.v1.StreamingPullRequest
-	51,  // 124: google.pubsub.v1.Subscriber.ModifyPushConfig:input_type -> google.pubsub.v1.ModifyPushConfigRequest
-	61,  // 125: google.pubsub.v1.Subscriber.GetSnapshot:input_type -> google.pubsub.v1.GetSnapshotRequest
-	62,  // 126: google.pubsub.v1.Subscriber.ListSnapshots:input_type -> google.pubsub.v1.ListSnapshotsRequest
-	58,  // 127: google.pubsub.v1.Subscriber.CreateSnapshot:input_type -> google.pubsub.v1.CreateSnapshotRequest
-	59,  // 128: google.pubsub.v1.Subscriber.UpdateSnapshot:input_type -> google.pubsub.v1.UpdateSnapshotRequest
-	64,  // 129: google.pubsub.v1.Subscriber.DeleteSnapshot:input_type -> google.pubsub.v1.DeleteSnapshotRequest
-	65,  // 130: google.pubsub.v1.Subscriber.Seek:input_type -> google.pubsub.v1.SeekRequest
-	22,  // 131: google.pubsub.v1.Publisher.CreateTopic:output_type -> google.pubsub.v1.Topic
-	22,  // 132: google.pubsub.v1.Publisher.UpdateTopic:output_type -> google.pubsub.v1.Topic
-	27,  // 133: google.pubsub.v1.Publisher.Publish:output_type -> google.pubsub.v1.PublishResponse
-	22,  // 134: google.pubsub.v1.Publisher.GetTopic:output_type -> google.pubsub.v1.Topic
-	29,  // 135: google.pubsub.v1.Publisher.ListTopics:output_type -> google.pubsub.v1.ListTopicsResponse
-	31,  // 136: google.pubsub.v1.Publisher.ListTopicSubscriptions:output_type -> google.pubsub.v1.ListTopicSubscriptionsResponse
-	33,  // 137: google.pubsub.v1.Publisher.ListTopicSnapshots:output_type -> google.pubsub.v1.ListTopicSnapshotsResponse
-	110, // 138: google.pubsub.v1.Publisher.DeleteTopic:output_type -> google.protobuf.Empty
-	36,  // 139: google.pubsub.v1.Publisher.DetachSubscription:output_type -> google.pubsub.v1.DetachSubscriptionResponse
-	37,  // 140: google.pubsub.v1.Subscriber.CreateSubscription:output_type -> google.pubsub.v1.Subscription
-	37,  // 141: google.pubsub.v1.Subscriber.GetSubscription:output_type -> google.pubsub.v1.Subscription
-	37,  // 142: google.pubsub.v1.Subscriber.UpdateSubscription:output_type -> google.pubsub.v1.Subscription
-	49,  // 143: google.pubsub.v1.Subscriber.ListSubscriptions:output_type -> google.pubsub.v1.ListSubscriptionsResponse
-	110, // 144: google.pubsub.v1.Subscriber.DeleteSubscription:output_type -> google.protobuf.Empty
-	110, // 145: google.pubsub.v1.Subscriber.ModifyAckDeadline:output_type -> google.protobuf.Empty
-	110, // 146: google.pubsub.v1.Subscriber.Acknowledge:output_type -> google.protobuf.Empty
-	53,  // 147: google.pubsub.v1.Subscriber.Pull:output_type -> google.pubsub.v1.PullResponse
-	57,  // 148: google.pubsub.v1.Subscriber.StreamingPull:output_type -> google.pubsub.v1.StreamingPullResponse
-	110, // 149: google.pubsub.v1.Subscriber.ModifyPushConfig:output_type -> google.protobuf.Empty
-	60,  // 150: google.pubsub.v1.Subscriber.GetSnapshot:output_type -> google.pubsub.v1.Snapshot
-	63,  // 151: google.pubsub.v1.Subscriber.ListSnapshots:output_type -> google.pubsub.v1.ListSnapshotsResponse
-	60,  // 152: google.pubsub.v1.Subscriber.CreateSnapshot:output_type -> google.pubsub.v1.Snapshot
-	60,  // 153: google.pubsub.v1.Subscriber.UpdateSnapshot:output_type -> google.pubsub.v1.Snapshot
-	110, // 154: google.pubsub.v1.Subscriber.DeleteSnapshot:output_type -> google.protobuf.Empty
-	66,  // 155: google.pubsub.v1.Subscriber.Seek:output_type -> google.pubsub.v1.SeekResponse
-	131, // [131:156] is the sub-list for method output_type
-	106, // [106:131] is the sub-list for method input_type
-	106, // [106:106] is the sub-list for extension type_name
-	106, // [106:106] is the sub-list for extension extendee
-	0,   // [0:106] is the sub-list for field type_name
+	96,  // 55: google.pubsub.v1.BigtableConfig.column_family_mapping:type_name -> google.pubsub.v1.BigtableConfig.ColumnFamilyMapping
+	11,  // 56: google.pubsub.v1.BigtableConfig.state:type_name -> google.pubsub.v1.BigtableConfig.State
+	99,  // 57: google.pubsub.v1.CloudStorageConfig.text_config:type_name -> google.pubsub.v1.CloudStorageConfig.TextConfig
+	100, // 58: google.pubsub.v1.CloudStorageConfig.avro_config:type_name -> google.pubsub.v1.CloudStorageConfig.AvroConfig
+	109, // 59: google.pubsub.v1.CloudStorageConfig.max_duration:type_name -> google.protobuf.Duration
+	12,  // 60: google.pubsub.v1.CloudStorageConfig.state:type_name -> google.pubsub.v1.CloudStorageConfig.State
+	23,  // 61: google.pubsub.v1.ReceivedMessage.message:type_name -> google.pubsub.v1.PubsubMessage
+	37,  // 62: google.pubsub.v1.UpdateSubscriptionRequest.subscription:type_name -> google.pubsub.v1.Subscription
+	111, // 63: google.pubsub.v1.UpdateSubscriptionRequest.update_mask:type_name -> google.protobuf.FieldMask
+	37,  // 64: google.pubsub.v1.ListSubscriptionsResponse.subscriptions:type_name -> google.pubsub.v1.Subscription
+	41,  // 65: google.pubsub.v1.ModifyPushConfigRequest.push_config:type_name -> google.pubsub.v1.PushConfig
+	45,  // 66: google.pubsub.v1.PullResponse.received_messages:type_name -> google.pubsub.v1.ReceivedMessage
+	45,  // 67: google.pubsub.v1.StreamingPullResponse.received_messages:type_name -> google.pubsub.v1.ReceivedMessage
+	101, // 68: google.pubsub.v1.StreamingPullResponse.acknowledge_confirmation:type_name -> google.pubsub.v1.StreamingPullResponse.AcknowledgeConfirmation
+	102, // 69: google.pubsub.v1.StreamingPullResponse.modify_ack_deadline_confirmation:type_name -> google.pubsub.v1.StreamingPullResponse.ModifyAckDeadlineConfirmation
+	103, // 70: google.pubsub.v1.StreamingPullResponse.subscription_properties:type_name -> google.pubsub.v1.StreamingPullResponse.SubscriptionProperties
+	104, // 71: google.pubsub.v1.CreateSnapshotRequest.labels:type_name -> google.pubsub.v1.CreateSnapshotRequest.LabelsEntry
+	105, // 72: google.pubsub.v1.CreateSnapshotRequest.tags:type_name -> google.pubsub.v1.CreateSnapshotRequest.TagsEntry
+	60,  // 73: google.pubsub.v1.UpdateSnapshotRequest.snapshot:type_name -> google.pubsub.v1.Snapshot
+	111, // 74: google.pubsub.v1.UpdateSnapshotRequest.update_mask:type_name -> google.protobuf.FieldMask
+	110, // 75: google.pubsub.v1.Snapshot.expire_time:type_name -> google.protobuf.Timestamp
+	106, // 76: google.pubsub.v1.Snapshot.labels:type_name -> google.pubsub.v1.Snapshot.LabelsEntry
+	60,  // 77: google.pubsub.v1.ListSnapshotsResponse.snapshots:type_name -> google.pubsub.v1.Snapshot
+	110, // 78: google.pubsub.v1.SeekRequest.time:type_name -> google.protobuf.Timestamp
+	107, // 79: google.pubsub.v1.PubsubClientTelemetry.publish_operation:type_name -> google.pubsub.v1.PubsubClientTelemetry.PublishOperation
+	0,   // 80: google.pubsub.v1.IngestionDataSourceSettings.AwsKinesis.state:type_name -> google.pubsub.v1.IngestionDataSourceSettings.AwsKinesis.State
+	1,   // 81: google.pubsub.v1.IngestionDataSourceSettings.CloudStorage.state:type_name -> google.pubsub.v1.IngestionDataSourceSettings.CloudStorage.State
+	73,  // 82: google.pubsub.v1.IngestionDataSourceSettings.CloudStorage.text_format:type_name -> google.pubsub.v1.IngestionDataSourceSettings.CloudStorage.TextFormat
+	74,  // 83: google.pubsub.v1.IngestionDataSourceSettings.CloudStorage.avro_format:type_name -> google.pubsub.v1.IngestionDataSourceSettings.CloudStorage.AvroFormat
+	75,  // 84: google.pubsub.v1.IngestionDataSourceSettings.CloudStorage.pubsub_avro_format:type_name -> google.pubsub.v1.IngestionDataSourceSettings.CloudStorage.PubSubAvroFormat
+	110, // 85: google.pubsub.v1.IngestionDataSourceSettings.CloudStorage.minimum_object_create_time:type_name -> google.protobuf.Timestamp
+	2,   // 86: google.pubsub.v1.IngestionDataSourceSettings.AzureEventHubs.state:type_name -> google.pubsub.v1.IngestionDataSourceSettings.AzureEventHubs.State
+	3,   // 87: google.pubsub.v1.IngestionDataSourceSettings.AwsMsk.state:type_name -> google.pubsub.v1.IngestionDataSourceSettings.AwsMsk.State
+	4,   // 88: google.pubsub.v1.IngestionDataSourceSettings.ConfluentCloud.state:type_name -> google.pubsub.v1.IngestionDataSourceSettings.ConfluentCloud.State
+	77,  // 89: google.pubsub.v1.IngestionFailureEvent.CloudStorageFailure.avro_failure_reason:type_name -> google.pubsub.v1.IngestionFailureEvent.AvroFailureReason
+	76,  // 90: google.pubsub.v1.IngestionFailureEvent.CloudStorageFailure.api_violation_reason:type_name -> google.pubsub.v1.IngestionFailureEvent.ApiViolationReason
+	78,  // 91: google.pubsub.v1.IngestionFailureEvent.CloudStorageFailure.schema_violation_reason:type_name -> google.pubsub.v1.IngestionFailureEvent.SchemaViolationReason
+	79,  // 92: google.pubsub.v1.IngestionFailureEvent.CloudStorageFailure.message_transformation_failure_reason:type_name -> google.pubsub.v1.IngestionFailureEvent.MessageTransformationFailureReason
+	76,  // 93: google.pubsub.v1.IngestionFailureEvent.AwsMskFailureReason.api_violation_reason:type_name -> google.pubsub.v1.IngestionFailureEvent.ApiViolationReason
+	78,  // 94: google.pubsub.v1.IngestionFailureEvent.AwsMskFailureReason.schema_violation_reason:type_name -> google.pubsub.v1.IngestionFailureEvent.SchemaViolationReason
+	79,  // 95: google.pubsub.v1.IngestionFailureEvent.AwsMskFailureReason.message_transformation_failure_reason:type_name -> google.pubsub.v1.IngestionFailureEvent.MessageTransformationFailureReason
+	76,  // 96: google.pubsub.v1.IngestionFailureEvent.AzureEventHubsFailureReason.api_violation_reason:type_name -> google.pubsub.v1.IngestionFailureEvent.ApiViolationReason
+	78,  // 97: google.pubsub.v1.IngestionFailureEvent.AzureEventHubsFailureReason.schema_violation_reason:type_name -> google.pubsub.v1.IngestionFailureEvent.SchemaViolationReason
+	79,  // 98: google.pubsub.v1.IngestionFailureEvent.AzureEventHubsFailureReason.message_transformation_failure_reason:type_name -> google.pubsub.v1.IngestionFailureEvent.MessageTransformationFailureReason
+	76,  // 99: google.pubsub.v1.IngestionFailureEvent.ConfluentCloudFailureReason.api_violation_reason:type_name -> google.pubsub.v1.IngestionFailureEvent.ApiViolationReason
+	78,  // 100: google.pubsub.v1.IngestionFailureEvent.ConfluentCloudFailureReason.schema_violation_reason:type_name -> google.pubsub.v1.IngestionFailureEvent.SchemaViolationReason
+	79,  // 101: google.pubsub.v1.IngestionFailureEvent.ConfluentCloudFailureReason.message_transformation_failure_reason:type_name -> google.pubsub.v1.IngestionFailureEvent.MessageTransformationFailureReason
+	78,  // 102: google.pubsub.v1.IngestionFailureEvent.AwsKinesisFailureReason.schema_violation_reason:type_name -> google.pubsub.v1.IngestionFailureEvent.SchemaViolationReason
+	79,  // 103: google.pubsub.v1.IngestionFailureEvent.AwsKinesisFailureReason.message_transformation_failure_reason:type_name -> google.pubsub.v1.IngestionFailureEvent.MessageTransformationFailureReason
+	76,  // 104: google.pubsub.v1.IngestionFailureEvent.AwsKinesisFailureReason.api_violation_reason:type_name -> google.pubsub.v1.IngestionFailureEvent.ApiViolationReason
+	112, // 105: google.pubsub.v1.AIInference.UnstructuredInference.parameters:type_name -> google.protobuf.Struct
+	97,  // 106: google.pubsub.v1.BigtableConfig.ColumnFamilyMapping.row_key_schema:type_name -> google.pubsub.v1.BigtableConfig.ColumnFamilyMapping.RowKeySchema
+	98,  // 107: google.pubsub.v1.BigtableConfig.ColumnFamilyMapping.delimited_key:type_name -> google.pubsub.v1.BigtableConfig.ColumnFamilyMapping.DelimitedKey
+	110, // 108: google.pubsub.v1.PubsubClientTelemetry.PublishOperation.publish_start_time:type_name -> google.protobuf.Timestamp
+	22,  // 109: google.pubsub.v1.Publisher.CreateTopic:input_type -> google.pubsub.v1.Topic
+	25,  // 110: google.pubsub.v1.Publisher.UpdateTopic:input_type -> google.pubsub.v1.UpdateTopicRequest
+	26,  // 111: google.pubsub.v1.Publisher.Publish:input_type -> google.pubsub.v1.PublishRequest
+	24,  // 112: google.pubsub.v1.Publisher.GetTopic:input_type -> google.pubsub.v1.GetTopicRequest
+	28,  // 113: google.pubsub.v1.Publisher.ListTopics:input_type -> google.pubsub.v1.ListTopicsRequest
+	30,  // 114: google.pubsub.v1.Publisher.ListTopicSubscriptions:input_type -> google.pubsub.v1.ListTopicSubscriptionsRequest
+	32,  // 115: google.pubsub.v1.Publisher.ListTopicSnapshots:input_type -> google.pubsub.v1.ListTopicSnapshotsRequest
+	34,  // 116: google.pubsub.v1.Publisher.DeleteTopic:input_type -> google.pubsub.v1.DeleteTopicRequest
+	35,  // 117: google.pubsub.v1.Publisher.DetachSubscription:input_type -> google.pubsub.v1.DetachSubscriptionRequest
+	37,  // 118: google.pubsub.v1.Subscriber.CreateSubscription:input_type -> google.pubsub.v1.Subscription
+	46,  // 119: google.pubsub.v1.Subscriber.GetSubscription:input_type -> google.pubsub.v1.GetSubscriptionRequest
+	47,  // 120: google.pubsub.v1.Subscriber.UpdateSubscription:input_type -> google.pubsub.v1.UpdateSubscriptionRequest
+	48,  // 121: google.pubsub.v1.Subscriber.ListSubscriptions:input_type -> google.pubsub.v1.ListSubscriptionsRequest
+	50,  // 122: google.pubsub.v1.Subscriber.DeleteSubscription:input_type -> google.pubsub.v1.DeleteSubscriptionRequest
+	54,  // 123: google.pubsub.v1.Subscriber.ModifyAckDeadline:input_type -> google.pubsub.v1.ModifyAckDeadlineRequest
+	55,  // 124: google.pubsub.v1.Subscriber.Acknowledge:input_type -> google.pubsub.v1.AcknowledgeRequest
+	52,  // 125: google.pubsub.v1.Subscriber.Pull:input_type -> google.pubsub.v1.PullRequest
+	56,  // 126: google.pubsub.v1.Subscriber.StreamingPull:input_type -> google.pubsub.v1.StreamingPullRequest
+	51,  // 127: google.pubsub.v1.Subscriber.ModifyPushConfig:input_type -> google.pubsub.v1.ModifyPushConfigRequest
+	61,  // 128: google.pubsub.v1.Subscriber.GetSnapshot:input_type -> google.pubsub.v1.GetSnapshotRequest
+	62,  // 129: google.pubsub.v1.Subscriber.ListSnapshots:input_type -> google.pubsub.v1.ListSnapshotsRequest
+	58,  // 130: google.pubsub.v1.Subscriber.CreateSnapshot:input_type -> google.pubsub.v1.CreateSnapshotRequest
+	59,  // 131: google.pubsub.v1.Subscriber.UpdateSnapshot:input_type -> google.pubsub.v1.UpdateSnapshotRequest
+	64,  // 132: google.pubsub.v1.Subscriber.DeleteSnapshot:input_type -> google.pubsub.v1.DeleteSnapshotRequest
+	65,  // 133: google.pubsub.v1.Subscriber.Seek:input_type -> google.pubsub.v1.SeekRequest
+	22,  // 134: google.pubsub.v1.Publisher.CreateTopic:output_type -> google.pubsub.v1.Topic
+	22,  // 135: google.pubsub.v1.Publisher.UpdateTopic:output_type -> google.pubsub.v1.Topic
+	27,  // 136: google.pubsub.v1.Publisher.Publish:output_type -> google.pubsub.v1.PublishResponse
+	22,  // 137: google.pubsub.v1.Publisher.GetTopic:output_type -> google.pubsub.v1.Topic
+	29,  // 138: google.pubsub.v1.Publisher.ListTopics:output_type -> google.pubsub.v1.ListTopicsResponse
+	31,  // 139: google.pubsub.v1.Publisher.ListTopicSubscriptions:output_type -> google.pubsub.v1.ListTopicSubscriptionsResponse
+	33,  // 140: google.pubsub.v1.Publisher.ListTopicSnapshots:output_type -> google.pubsub.v1.ListTopicSnapshotsResponse
+	113, // 141: google.pubsub.v1.Publisher.DeleteTopic:output_type -> google.protobuf.Empty
+	36,  // 142: google.pubsub.v1.Publisher.DetachSubscription:output_type -> google.pubsub.v1.DetachSubscriptionResponse
+	37,  // 143: google.pubsub.v1.Subscriber.CreateSubscription:output_type -> google.pubsub.v1.Subscription
+	37,  // 144: google.pubsub.v1.Subscriber.GetSubscription:output_type -> google.pubsub.v1.Subscription
+	37,  // 145: google.pubsub.v1.Subscriber.UpdateSubscription:output_type -> google.pubsub.v1.Subscription
+	49,  // 146: google.pubsub.v1.Subscriber.ListSubscriptions:output_type -> google.pubsub.v1.ListSubscriptionsResponse
+	113, // 147: google.pubsub.v1.Subscriber.DeleteSubscription:output_type -> google.protobuf.Empty
+	113, // 148: google.pubsub.v1.Subscriber.ModifyAckDeadline:output_type -> google.protobuf.Empty
+	113, // 149: google.pubsub.v1.Subscriber.Acknowledge:output_type -> google.protobuf.Empty
+	53,  // 150: google.pubsub.v1.Subscriber.Pull:output_type -> google.pubsub.v1.PullResponse
+	57,  // 151: google.pubsub.v1.Subscriber.StreamingPull:output_type -> google.pubsub.v1.StreamingPullResponse
+	113, // 152: google.pubsub.v1.Subscriber.ModifyPushConfig:output_type -> google.protobuf.Empty
+	60,  // 153: google.pubsub.v1.Subscriber.GetSnapshot:output_type -> google.pubsub.v1.Snapshot
+	63,  // 154: google.pubsub.v1.Subscriber.ListSnapshots:output_type -> google.pubsub.v1.ListSnapshotsResponse
+	60,  // 155: google.pubsub.v1.Subscriber.CreateSnapshot:output_type -> google.pubsub.v1.Snapshot
+	60,  // 156: google.pubsub.v1.Subscriber.UpdateSnapshot:output_type -> google.pubsub.v1.Snapshot
+	113, // 157: google.pubsub.v1.Subscriber.DeleteSnapshot:output_type -> google.protobuf.Empty
+	66,  // 158: google.pubsub.v1.Subscriber.Seek:output_type -> google.pubsub.v1.SeekResponse
+	134, // [134:159] is the sub-list for method output_type
+	109, // [109:134] is the sub-list for method input_type
+	109, // [109:109] is the sub-list for extension type_name
+	109, // [109:109] is the sub-list for extension extendee
+	0,   // [0:109] is the sub-list for field type_name
 }
 
 func init() { file_google_pubsub_v1_pubsub_proto_init() }
@@ -8619,6 +8896,9 @@ func file_google_pubsub_v1_pubsub_proto_init() {
 		(*PushConfig_OidcToken_)(nil),
 		(*PushConfig_PubsubWrapper_)(nil),
 		(*PushConfig_NoWrapper_)(nil),
+	}
+	file_google_pubsub_v1_pubsub_proto_msgTypes[30].OneofWrappers = []any{
+		(*BigtableConfig_ColumnFamilyMapping_)(nil),
 	}
 	file_google_pubsub_v1_pubsub_proto_msgTypes[31].OneofWrappers = []any{
 		(*CloudStorageConfig_TextConfig_)(nil),
@@ -8663,13 +8943,17 @@ func file_google_pubsub_v1_pubsub_proto_init() {
 		(*IngestionFailureEvent_AwsKinesisFailureReason_MessageTransformationFailureReason)(nil),
 		(*IngestionFailureEvent_AwsKinesisFailureReason_ApiViolationReason)(nil),
 	}
+	file_google_pubsub_v1_pubsub_proto_msgTypes[83].OneofWrappers = []any{
+		(*BigtableConfig_ColumnFamilyMapping_RowKeySchema_)(nil),
+		(*BigtableConfig_ColumnFamilyMapping_DelimitedKey_)(nil),
+	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_pubsub_v1_pubsub_proto_rawDesc), len(file_google_pubsub_v1_pubsub_proto_rawDesc)),
 			NumEnums:      13,
-			NumMessages:   92,
+			NumMessages:   95,
 			NumExtensions: 0,
 			NumServices:   2,
 		},

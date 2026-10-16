@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -70,9 +70,13 @@ type NotificationConfig struct {
 	NotifyConfig isNotificationConfig_NotifyConfig `protobuf_oneof:"notify_config"`
 	// Output only. The timestamp of when the notification config was last
 	// updated.
-	UpdateTime    *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
+	// Optional. Indicates whether the notifications will be sent for deleted
+	// findings. When enabled, the filter defined in the streaming config is still
+	// respected when sending deletion notifications.
+	DeletionNotificationsEnabled bool `protobuf:"varint,9,opt,name=deletion_notifications_enabled,json=deletionNotificationsEnabled,proto3" json:"deletion_notifications_enabled,omitempty"`
+	unknownFields                protoimpl.UnknownFields
+	sizeCache                    protoimpl.SizeCache
 }
 
 func (x *NotificationConfig) Reset() {
@@ -154,6 +158,13 @@ func (x *NotificationConfig) GetUpdateTime() *timestamppb.Timestamp {
 		return x.UpdateTime
 	}
 	return nil
+}
+
+func (x *NotificationConfig) GetDeletionNotificationsEnabled() bool {
+	if x != nil {
+		return x.DeletionNotificationsEnabled
+	}
+	return false
 }
 
 type isNotificationConfig_NotifyConfig interface {
@@ -238,7 +249,7 @@ var File_google_cloud_securitycenter_v2_notification_config_proto protoreflect.F
 
 const file_google_cloud_securitycenter_v2_notification_config_proto_rawDesc = "" +
 	"\n" +
-	"8google/cloud/securitycenter/v2/notification_config.proto\x12\x1egoogle.cloud.securitycenter.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x94\x06\n" +
+	"8google/cloud/securitycenter/v2/notification_config.proto\x12\x1egoogle.cloud.securitycenter.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdf\x06\n" +
 	"\x12NotificationConfig\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12C\n" +
@@ -247,7 +258,8 @@ const file_google_cloud_securitycenter_v2_notification_config_proto_rawDesc = ""
 	"\x0fservice_account\x18\x04 \x01(\tB\x03\xe0A\x03R\x0eserviceAccount\x12o\n" +
 	"\x10streaming_config\x18\x05 \x01(\v2B.google.cloud.securitycenter.v2.NotificationConfig.StreamingConfigH\x00R\x0fstreamingConfig\x12@\n" +
 	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x1a)\n" +
+	"updateTime\x12I\n" +
+	"\x1edeletion_notifications_enabled\x18\t \x01(\bB\x03\xe0A\x01R\x1cdeletionNotificationsEnabled\x1a)\n" +
 	"\x0fStreamingConfig\x12\x16\n" +
 	"\x06filter\x18\x01 \x01(\tR\x06filter:\xe0\x02\xeaA\xdc\x02\n" +
 	"0securitycenter.googleapis.com/NotificationConfig\x12[organizations/{organization}/locations/{location}/notificationConfigs/{notification_config}\x12Ofolders/{folder}/locations/{location}/notificationConfigs/{notification_config}\x12Qprojects/{project}/locations/{location}/notificationConfigs/{notification_config}*\x13notificationConfigs2\x12notificationConfigB\x0f\n" +

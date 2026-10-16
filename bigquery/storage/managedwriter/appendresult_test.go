@@ -22,7 +22,6 @@ import (
 
 	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 	"github.com/google/go-cmp/cmp"
-	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/testing/protocmp"
 	"google.golang.org/protobuf/types/descriptorpb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
@@ -130,7 +129,7 @@ func TestPendingWrite(t *testing.T) {
 
 func TestPendingWrite_ConstructFullRequest(t *testing.T) {
 
-	testDP := &descriptorpb.DescriptorProto{Name: proto.String("foo")}
+	testDP := &descriptorpb.DescriptorProto{Name: new("foo")}
 	testTmpl := newVersionedTemplate().revise(reviseProtoSchema(testDP))
 
 	testEmptyTraceID := buildTraceID(&streamSettings{})

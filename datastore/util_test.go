@@ -537,7 +537,7 @@ func (e *BadMultiPropEntity) Load(props []Property) error {
 func (e *BadMultiPropEntity) Save() ([]Property, error) {
 	// Write multiple properties with the same name "I".
 	var props []Property
-	for i := 0; i < 3; i++ {
+	for i := range 3 {
 		props = append(props, Property{
 			Name:  "I",
 			Value: int64(i),
