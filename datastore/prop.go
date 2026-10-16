@@ -218,11 +218,14 @@ func validateChildType(t reflect.Type, fieldName string, flatten, prevSlice bool
 			if !keep {
 				continue
 			}
+			// A flatten option belongs to this field. Writing it back onto
+			// the loop variable makes every later sibling look flattened.
+			fieldFlatten := flatten
 			if other != nil {
 				opts := other.(saveOpts)
-				flatten = flatten || opts.flatten
+				fieldFlatten = flatten || opts.flatten
 			}
-			if err := validateChildType(f.Type, f.Name, flatten, prevSlice, prevTypes); err != nil {
+			if err := validateChildType(f.Type, f.Name, fieldFlatten, prevSlice, prevTypes); err != nil {
 				return err
 			}
 		}
