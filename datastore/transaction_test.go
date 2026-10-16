@@ -970,4 +970,3 @@ func TestTransaction_ConcurrentMutations(t *testing.T) {
 		t.Errorf("len(tx.pending) = %d, want %d", gotPending, want)
 	}
 }
-
