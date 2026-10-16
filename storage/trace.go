@@ -152,19 +152,25 @@ func isNotFoundError(err error) bool {
 }
 
 // errorAttributes returns the error.type and, when known, gcp.errors.domain
-// span attributes for err, which must be non-nil.
+// span attributes for err. It returns no attributes for a nil error.
 //
 // error.type reuses computeErrorType, the classifier behind the error.type
 // metric attribute, so spans and metrics report the same value for a failure.
-// The transport is inferred from err: HTTP errors carry a *googleapi.Error.
+// It intentionally does not use gax's TelemetryErrorInfo.ErrorType, so values
+// can differ from the spans gax creates for the underlying RPCs (for example,
+// TIMEOUT instead of CLIENT_TIMEOUT, and the gRPC or HTTP code instead of the
+// google.rpc.ErrorInfo reason).
 // gcp.errors.domain is the google.rpc.ErrorInfo domain, extracted with
-// gax.ExtractTelemetryErrorInfo, the helper the cloud.google.com/go/auth
-// transports use.
+// gax.ExtractTelemetryErrorInfo.
 func errorAttributes(ctx context.Context, err error) []attribute.KeyValue {
 	var attrs []attribute.KeyValue
+	// Infer the transport from the error, since endSpan does not know it:
+	// HTTP errors always carry a *googleapi.Error.
 	var httpErr *googleapi.Error
-	// computeErrorType reports io.EOF as "OK"; error.type must not be set then.
-	if errType := computeErrorType(err, errors.As(err, &httpErr), 0); errType != "OK" {
+	isHTTP := errors.As(err, &httpErr)
+	// computeErrorType reports nil and io.EOF as "OK"; error.type must not be
+	// set then.
+	if errType := computeErrorType(err, isHTTP, 0); errType != "OK" {
 		attrs = append(attrs, attribute.String("error.type", errType))
 	}
 	if domain := gax.ExtractTelemetryErrorInfo(ctx, err).Domain; domain != "" {

@@ -358,8 +358,6 @@ func TestEndSpanEviction(t *testing.T) {
 
 func TestErrorAttributes(t *testing.T) {
 	ctx := context.Background()
-	canceledCtx, cancel := context.WithCancel(ctx)
-	cancel()
 
 	grpcWithErrorInfo, err := status.New(codes.Unimplemented, "Appendable objects are not supported for this request.").WithDetails(&errdetails.ErrorInfo{
 		Reason: "GRPC_APPENDABLE_OBJECT_NOT_SUPPORTED",
@@ -376,26 +374,22 @@ func TestErrorAttributes(t *testing.T) {
 
 	tests := []struct {
 		name       string
-		ctx        context.Context
 		err        error
 		wantType   string // "" means the attribute must not be set.
 		wantDomain string // "" means the attribute must not be set.
 	}{
 		{
 			name:     "HTTP not found",
-			ctx:      ctx,
 			err:      fmt.Errorf("%w: %w", ErrBucketNotExist, &googleapi.Error{Code: http.StatusNotFound, Message: "The specified bucket does not exist."}),
 			wantType: "NOT_FOUND",
 		},
 		{
 			name:     "HTTP precondition failed",
-			ctx:      ctx,
 			err:      &googleapi.Error{Code: http.StatusPreconditionFailed, Message: "At least one of the pre-conditions you specified did not hold."},
 			wantType: "412",
 		},
 		{
 			name: "HTTP XML error",
-			ctx:  ctx,
 			err: &googleapi.Error{
 				Code: http.StatusRequestedRangeNotSatisfiable,
 				Body: "<?xml version='1.0' encoding='UTF-8'?><Error><Code>InvalidRange</Code><Message>The requested range cannot be satisfied.</Message></Error>",
@@ -404,52 +398,49 @@ func TestErrorAttributes(t *testing.T) {
 		},
 		{
 			name:       "HTTP error with ErrorInfo",
-			ctx:        ctx,
 			err:        httpWithErrorInfo,
 			wantType:   "PERMISSION_DENIED",
 			wantDomain: "googleapis.com",
 		},
 		{
 			name:     "gRPC not found",
-			ctx:      ctx,
 			err:      fmt.Errorf("%w: %w", ErrObjectNotExist, status.Error(codes.NotFound, "No such object: bucket/obj")),
 			wantType: "NOT_FOUND",
 		},
 		{
 			name:       "gRPC error with ErrorInfo",
-			ctx:        ctx,
 			err:        grpcWithErrorInfo.Err(),
 			wantType:   "UNIMPLEMENTED",
 			wantDomain: "storage.googleapis.com",
 		},
 		{
 			name:       "wrapped gRPC error with ErrorInfo",
-			ctx:        ctx,
 			err:        fmt.Errorf("storage: write failed: %w", grpcWithErrorInfo.Err()),
 			wantType:   "UNIMPLEMENTED",
 			wantDomain: "storage.googleapis.com",
 		},
 		{
-			name:     "canceled context",
-			ctx:      canceledCtx,
+			name:     "context canceled",
 			err:      context.Canceled,
 			wantType: "CANCELLED",
 		},
 		{
 			name:     "deadline exceeded",
-			ctx:      ctx,
 			err:      context.DeadlineExceeded,
 			wantType: "TIMEOUT",
 		},
 		{
 			name:     "client-side error",
-			ctx:      ctx,
 			err:      errors.New("storage: bucket name is empty"),
 			wantType: "UNKNOWN",
 		},
 		{
+			name:     "nil error sets no attributes",
+			err:      nil,
+			wantType: "",
+		},
+		{
 			name:     "io.EOF does not set error.type",
-			ctx:      ctx,
 			err:      io.EOF,
 			wantType: "",
 		},
@@ -457,14 +448,18 @@ func TestErrorAttributes(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			got := map[attribute.Key]string{}
-			for _, kv := range errorAttributes(tc.ctx, tc.err) {
+			for _, kv := range errorAttributes(ctx, tc.err) {
 				got[kv.Key] = kv.Value.AsString()
 			}
-			for key, want := range map[attribute.Key]string{"error.type": tc.wantType, "gcp.errors.domain": tc.wantDomain} {
-				gotVal, ok := got[key]
-				if ok != (want != "") || gotVal != want {
-					t.Errorf("%s = %q (set=%v), want %q", key, gotVal, ok, want)
-				}
+			want := map[attribute.Key]string{}
+			if tc.wantType != "" {
+				want["error.type"] = tc.wantType
+			}
+			if tc.wantDomain != "" {
+				want["gcp.errors.domain"] = tc.wantDomain
+			}
+			if diff := cmp.Diff(want, got); diff != "" {
+				t.Errorf("errorAttributes(%v) mismatch (-want +got):\n%s", tc.err, diff)
 			}
 		})
 	}
@@ -511,7 +506,9 @@ func TestStorageTraceEndSpanErrorAttributes(t *testing.T) {
 			wantAttrs: map[attribute.Key]string{},
 		},
 		{
-			name:      "OTel tracing disabled sets no error attributes",
+			// The legacy internalTrace path still ends a span through the
+			// global provider; it must not get the new attributes.
+			name:      "legacy internalTrace path unchanged",
 			otelOn:    false,
 			err:       grpcWithErrorInfo.Err(),
 			wantAttrs: map[attribute.Key]string{},
