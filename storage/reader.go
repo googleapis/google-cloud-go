@@ -82,6 +82,11 @@ type ReaderObjectAttrs struct {
 	//
 	// To prevent decompression on reads, use [ObjectHandle.ReadCompressed].
 	Decompressed bool
+
+	// Unfinalized is true if the object was unfinalized when the Reader was
+	// opened. For unfinalized objects, [ReaderObjectAttrs.Size] may be out of
+	// date and [Reader.Remain] returns -1.
+	Unfinalized bool
 }
 
 // NewReader creates a new Reader to read the contents of the
@@ -380,12 +385,11 @@ type Reader struct {
 	seen, size int64
 	checkCRC   bool // Did we check the CRC? This is now only used by tests.
 
-	reader      io.ReadCloser
-	ctx         context.Context
-	mu          sync.Mutex
-	err         error // Persistent error encountered during Read or WriteTo.
-	handle      *ReadHandle
-	unfinalized bool
+	reader io.ReadCloser
+	ctx    context.Context
+	mu     sync.Mutex
+	err    error // Persistent error encountered during Read or WriteTo.
+	handle *ReadHandle
 
 	bucket string
 	object string
@@ -395,7 +399,7 @@ type Reader struct {
 
 // Close closes the Reader. It must be called when done reading.
 func (r *Reader) Close() error {
-	if !r.unfinalized && !r.Attrs.Decompressed {
+	if !r.Attrs.Unfinalized && !r.Attrs.Decompressed {
 		if rem := atomic.LoadInt64(&r.remain); rem < 0 {
 			log.Printf("storage: received %d more bytes than requested from GCS for bucket %q, object %q", -rem, r.bucket, r.object)
 		}
@@ -440,7 +444,7 @@ func (r *Reader) WriteTo(w io.Writer) (int64, error) {
 // recordRead updates remaining byte counts and metrics after a read operation,
 // and saves any persistent error encountered during Read or WriteTo.
 func (r *Reader) recordRead(n int64, err error) {
-	if !r.unfinalized && !r.Attrs.Decompressed {
+	if !r.Attrs.Unfinalized && !r.Attrs.Decompressed {
 		atomic.AddInt64(&r.remain, -n)
 	}
 	if n > 0 {
@@ -464,9 +468,9 @@ func (r *Reader) Size() int64 {
 }
 
 // Remain returns the number of bytes left to read, or -1 if unknown.
-// Unfinalized objects will return -1.
+// Returns -1 when [ReaderObjectAttrs.Unfinalized] or [ReaderObjectAttrs.Decompressed] is true.
 func (r *Reader) Remain() int64 {
-	if r.unfinalized || r.Attrs.Decompressed {
+	if r.Attrs.Unfinalized || r.Attrs.Decompressed {
 		return -1
 	}
 	rem := atomic.LoadInt64(&r.remain)
