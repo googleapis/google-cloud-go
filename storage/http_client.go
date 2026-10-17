@@ -1191,10 +1191,9 @@ func (c *httpStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 			// retry attempt header injection with "client header" injection.
 			setClientHeader(call.Header())
 
-			// The internals that perform call.Do automatically retry both the initial
-			// call to set up the upload as well as calls to upload individual chunks
-			// for a resumable upload (as long as the chunk size is non-zero). Hence
-			// there is no need to add retries here.
+			// Without a retry config, the internals that perform call.Do do not
+			// retry the initial call to set up the upload, but still retry calls to
+			// upload individual chunks with a default predicate and backoff.
 
 			// Retry only when the operation is idempotent or the retry policy is RetryAlways.
 			var useRetry bool
@@ -1216,6 +1215,9 @@ func (c *httpStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 				} else {
 					call.WithRetry(nil, nil)
 				}
+			} else if s.retry != nil && s.retry.policy == RetryNever {
+				// Disable the default chunk retries as well.
+				call.WithRetry(nil, func(error) bool { return false })
 			}
 			resp, err = call.Do()
 		}
