@@ -187,7 +187,12 @@ func run(ctx context.Context, call func(ctx context.Context) error, retry *retry
 		}
 
 		attempts++
-		if ctxErr := gax.Sleep(ctx, bo.Pause()); ctxErr != nil {
+		backoffStart := time.Now()
+		ctxErr := gax.Sleep(ctx, bo.Pause())
+		// The backoff is recorded even if ctx ended during the sleep so that the
+		// trace shows the time spent waiting before giving up.
+		recordRetryBackoff(ctx, attempts-1, backoffStart)
+		if ctxErr != nil {
 			return wrappedCallErr{ctxErr: ctxErr, wrappedErr: lastErr}
 		}
 	}
