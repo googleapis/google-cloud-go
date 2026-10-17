@@ -21,6 +21,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"time"
 
 	internalTrace "cloud.google.com/go/internal/trace"
 	"cloud.google.com/go/storage/internal"
@@ -196,4 +197,22 @@ func getCommonAttributes() []attribute.KeyValue {
 
 func appendPackageName(spanName string) string {
 	return fmt.Sprintf("%s.%s", gcpClientArtifact, spanName)
+}
+
+// recordRetryBackoff records the backoff that started at start as a
+// RetryBackoff child span of the span in ctx. It is a no-op unless dev tracing
+// is enabled and the span in ctx is recording.
+//
+// TODO: When the dev tracing flag is removed, decide whether backoff spans
+// need their own opt-in or sampling, since each retry adds one span.
+func recordRetryBackoff(ctx context.Context, start time.Time) {
+	if !isOTelTracingDevEnabled() {
+		return
+	}
+	span := trace.SpanFromContext(ctx)
+	if !span.IsRecording() {
+		return
+	}
+	_, backoffSpan := startSpan(ctx, "RetryBackoff", trace.WithTimestamp(start))
+	backoffSpan.End()
 }
