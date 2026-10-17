@@ -32,6 +32,7 @@ import (
 	gapic "cloud.google.com/go/storage/internal/apiv2"
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/googleapis/gax-go/v2"
+	"go.opentelemetry.io/otel/trace"
 
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -662,7 +663,7 @@ func (c *grpcStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 		ctx, record := startMetricsOp(it.ctx, "ListObjects", false)
 		defer func() { record(err) }()
 		// Add trace span around List API call within the fetch.
-		ctx, _ = startSpan(ctx, "grpcStorageClient.ObjectsListCall")
+		ctx, _ = startSpan(ctx, "grpcStorageClient.ObjectsListCall", trace.WithAttributes(rpcSystemGRPC))
 		defer func() { endSpan(ctx, err) }()
 		var objects []*storagepb.Object
 		var gitr *gapic.ObjectIterator
@@ -1299,7 +1300,7 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 		return c.NewRangeReaderReadObject(ctx, params, opts...)
 	}
 
-	ctx, _ = startSpan(ctx, "grpcStorageClient.NewRangeReader")
+	ctx, _ = startSpan(ctx, "grpcStorageClient.NewRangeReader", trace.WithAttributes(rpcSystemGRPC))
 	defer func() { endSpan(ctx, err) }()
 
 	s := callSettings(c.settings, opts...)
