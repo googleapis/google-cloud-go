@@ -83,7 +83,10 @@ func TestRunTransaction(t *testing.T) {
 				},
 			}},
 		},
-		&pb.CommitResponse{CommitTime: aTimestamp3},
+		&pb.CommitResponse{
+			CommitTime:   aTimestamp3,
+			WriteResults: []*pb.WriteResult{{UpdateTime: aTimestamp3}},
+		},
 	)
 	var commitResponse CommitResponse
 	err = c.RunTransaction(ctx, func(_ context.Context, tx *Transaction) error {
@@ -102,10 +105,17 @@ func TestRunTransaction(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// validate commit time
+	// validate commit time and write results
 	commitTime := commitResponse.CommitTime()
 	if commitTime != aTimestamp3.AsTime() {
 		t.Fatalf("commit time %v should equal %v", commitTime, aTimestamp3)
+	}
+	writeResults, err := commitResponse.WriteResults()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(writeResults) != 1 || !writeResults[0].UpdateTime.Equal(aTimestamp3.AsTime()) {
+		t.Fatalf("got write results %+v, want 1 result with UpdateTime %v", writeResults, aTimestamp3.AsTime())
 	}
 
 	// Query
@@ -141,6 +151,8 @@ func TestRunTransaction(t *testing.T) {
 	srv.reset()
 	srv.addRPC(beginReq, beginRes)
 	srv.addRPC(commitReq, status.Errorf(codes.Aborted, ""))
+	rollbackReq := &pb.RollbackRequest{Database: db, Transaction: tid}
+	srv.addRPC(rollbackReq, &emptypb.Empty{})
 	tid2 := []byte{2} // Use a new transaction ID for the response to the retry BeginTransaction
 	beginReqRetry := &pb.BeginTransactionRequest{
 		Database: db,
@@ -264,6 +276,7 @@ func TestTransactionErrors(t *testing.T) {
 			},
 		})
 		srv.addRPC(commitReq, unknownErr)
+		srv.addRPC(rollbackReq, &emptypb.Empty{})
 
 		err := c.RunTransaction(ctx, get)
 		if status.Code(err) != codes.Unknown {
@@ -414,6 +427,7 @@ func TestTransactionErrors(t *testing.T) {
 		// Attempt 1 (Fails)
 		srv.addRPC(beginReq, beginRes)                          // 1. BeginTransaction (tid1)
 		srv.addRPC(commitReq, status.Errorf(codes.Aborted, "")) // 2. Commit (tid1) fails (Aborted)
+		srv.addRPC(rollbackReq, &emptypb.Empty{})               // 3. Rollback (tid1)
 
 		// Attempt 2 (Fails)
 		beginReqRetry := &pb.BeginTransactionRequest{
@@ -429,6 +443,10 @@ func TestTransactionErrors(t *testing.T) {
 
 		commitReq2 := &pb.CommitRequest{Database: db, Transaction: tid2} // New commit request with tid2
 		srv.addRPC(commitReq2, status.Errorf(codes.Aborted, ""))         // 5. Commit (tid2) fails (Aborted)
+
+		// Final Rollback on Aborted error when MaxAttempts is reached
+		rollbackReq2 := &pb.RollbackRequest{Database: db, Transaction: tid2}
+		srv.addRPC(rollbackReq2, &emptypb.Empty{}) // 6. Rollback (tid2)
 
 		err := c.RunTransaction(ctx, func(context.Context, *Transaction) error { return nil },
 			MaxAttempts(2))
@@ -478,6 +496,7 @@ func TestTransactionErrors(t *testing.T) {
 		srv.addRPC(rollbackReq, &emptypb.Empty{})
 
 		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
 		err := c.RunTransaction(ctx, func(ctx context.Context, tx *Transaction) error {
 			cancel() // Cancel context inside f
 			return ctx.Err()
@@ -490,17 +509,72 @@ func TestTransactionErrors(t *testing.T) {
 		}
 	})
 
-	t.Run("Commit fails, no rollback", func(t *testing.T) {
+	t.Run("Commit fails with non-Aborted error, rollback sent", func(t *testing.T) {
 		srv.reset()
 		srv.addRPC(beginReq, beginRes)
 		srv.addRPC(commitReq, unknownErr)
-		// No rollbackReq expected here
+		srv.addRPC(rollbackReq, &emptypb.Empty{})
 
 		err := c.RunTransaction(ctx, func(ctx context.Context, tx *Transaction) error {
 			return nil
 		})
 		if status.Code(err) != codes.Unknown {
 			t.Errorf("got %v, want Unknown", err)
+		}
+		if !srv.isEmpty() {
+			t.Errorf("Expected all RPCs to be met, but got remaining: %+v", srv.reqItems)
+		}
+	})
+
+	t.Run("Commit fails with context deadline exceeded, rollback still sent", func(t *testing.T) {
+		srv.reset()
+		srv.addRPC(beginReq, beginRes)
+		srv.addRPC(commitReq, status.Error(codes.DeadlineExceeded, "context deadline exceeded"))
+		srv.addRPC(rollbackReq, &emptypb.Empty{})
+
+		err := c.RunTransaction(ctx, func(ctx context.Context, tx *Transaction) error {
+			return nil
+		})
+		if status.Code(err) != codes.DeadlineExceeded {
+			t.Errorf("got %v, want DeadlineExceeded", err)
+		}
+		if !srv.isEmpty() {
+			t.Errorf("Expected all RPCs to be met, but got remaining: %+v", srv.reqItems)
+		}
+	})
+
+	t.Run("Context cancelled before Commit reaches server, rollback still sent", func(t *testing.T) {
+		srv.reset()
+		srv.addRPC(beginReq, beginRes)
+		// Commit fails client-side due to cancelled context before reaching srv;
+		// Rollback is still sent to srv via detached context.
+		srv.addRPC(rollbackReq, &emptypb.Empty{})
+
+		txCtx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+		err := c.RunTransaction(txCtx, func(ctx context.Context, tx *Transaction) error {
+			cancel()
+			return nil
+		})
+		if status.Code(err) != codes.Canceled {
+			t.Errorf("got %v, want Canceled", err)
+		}
+		if !srv.isEmpty() {
+			t.Errorf("Expected all RPCs to be met, but got remaining: %+v", srv.reqItems)
+		}
+	})
+
+	t.Run("Commit fails with Aborted, rollback sent", func(t *testing.T) {
+		srv.reset()
+		srv.addRPC(beginReq, beginRes)
+		srv.addRPC(commitReq, abortedErr)
+		srv.addRPC(rollbackReq, &emptypb.Empty{})
+
+		err := c.RunTransaction(ctx, func(ctx context.Context, tx *Transaction) error {
+			return nil
+		}, MaxAttempts(1))
+		if status.Code(err) != codes.Aborted {
+			t.Errorf("got %v, want Aborted", err)
 		}
 		if !srv.isEmpty() {
 			t.Errorf("Expected all RPCs to be met, but got remaining: %+v", srv.reqItems)
@@ -580,6 +654,9 @@ func TestRunTransaction_Retries(t *testing.T) {
 		},
 		status.Errorf(codes.Aborted, "something failed! please retry me!"),
 	)
+
+	rollbackReq := &pb.RollbackRequest{Database: db, Transaction: tid}
+	srv.addRPC(rollbackReq, &emptypb.Empty{})
 
 	// Attempt 2: Begin (Retry)
 	srv.addRPC(

@@ -94,6 +94,22 @@ func (r *CommitResponse) CommitTime() time.Time {
 	return r.response.CommitTime.AsTime()
 }
 
+// WriteResults returns the write results from the commit response.
+func (r *CommitResponse) WriteResults() ([]*WriteResult, error) {
+	if r == nil || r.response == nil {
+		return nil, nil
+	}
+	wrs := make([]*WriteResult, len(r.response.WriteResults))
+	for i, pwr := range r.response.WriteResults {
+		wr, err := writeResultFromProto(pwr)
+		if err != nil {
+			return nil, err
+		}
+		wrs[i] = wr
+	}
+	return wrs, nil
+}
+
 // commitResponse is the TransactionOption to record a commit response.
 type commitResponse struct {
 	responseTo *CommitResponse
@@ -190,9 +206,7 @@ func (c *Client) RunTransaction(ctx context.Context, f func(context.Context, *Tr
 	// TODO(jba): use other than the standard backoff parameters?
 	// TODO(jba): get backoff time from gRPC trailer metadata? See
 	// extractRetryDelay in https://code.googlesource.com/gocloud/+/master/spanner/retry.go.
-	var errDuringCommit bool
 	for i := 0; i < t.maxAttempts; i++ {
-		errDuringCommit = false
 		t.ctx = trace.StartSpan(t.ctx, "cloud.google.com/go/firestore.Client.BeginTransaction")
 		var res *pb.BeginTransactionResponse
 		res, err = t.c.c.BeginTransaction(t.ctx, &pb.BeginTransactionRequest{
@@ -224,7 +238,6 @@ func (c *Client) RunTransaction(ctx context.Context, f func(context.Context, *Tr
 				Transaction: t.id,
 			})
 			trace.EndSpan(t.ctx, err)
-			errDuringCommit = err != nil
 
 			// on success, handle the commit response
 			if err == nil {
@@ -236,9 +249,7 @@ func (c *Client) RunTransaction(ctx context.Context, f func(context.Context, *Tr
 		}
 
 		// At this point, `err` is non-nil. It came from `f` or `Commit`.
-		if !errDuringCommit {
-			t.rollback()
-		}
+		t.rollback()
 
 		// If not a retryable error, or if read-only, return now.
 		// (We've already rolled back).

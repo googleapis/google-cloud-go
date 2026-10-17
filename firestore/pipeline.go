@@ -67,6 +67,7 @@ func newPipeline(client *Client, initialStage pipelineStage) *Pipeline {
 type executeSettings struct {
 	ExplainOptions *executeExplainOptions
 	IndexMode      string
+	Atomic         bool
 	RawOptions     map[string]any
 }
 
@@ -106,6 +107,21 @@ type executeExplainOptions struct {
 func WithExplainMode(mode ExplainMode) ExecuteOption {
 	return newFuncExecuteOption(func(eo *executeSettings) {
 		eo.ExplainOptions = &executeExplainOptions{Mode: mode}
+	})
+}
+
+// WithIndexMode sets the index mode for pipeline execution.
+func WithIndexMode(mode string) ExecuteOption {
+	return newFuncExecuteOption(func(eo *executeSettings) {
+		eo.IndexMode = mode
+	})
+}
+
+// WithAtomic configures whether the pipeline execution should be performed atomically
+// in a single auto-committed read-write transaction.
+func WithAtomic(atomic bool) ExecuteOption {
+	return newFuncExecuteOption(func(eo *executeSettings) {
+		eo.Atomic = atomic
 	})
 }
 
@@ -158,6 +174,10 @@ func (RawOptions) isFindNearestOption() {}
 func (RawOptions) isUpdateOption() {}
 
 func (RawOptions) isDeleteOption() {}
+
+func (RawOptions) isInsertOption() {}
+
+func (RawOptions) isUpsertOption() {}
 
 func (RawOptions) isCollectionOption() {}
 
@@ -278,10 +298,19 @@ func (p *Pipeline) toExecutePipelineRequest() (*pb.ExecutePipelineRequest, error
 	}
 
 	// Note that transaction ID and other consistency selectors are mutually exclusive.
-	// We respect the transaction first, any read options passed by the caller second,
-	// and any read options stored in the client third.
+	// We respect the transaction first, atomic execution second, any read options passed
+	// by the caller third, and any read options stored in the client fourth.
 	if p.tx != nil {
 		req.ConsistencySelector = &pb.ExecutePipelineRequest_Transaction{Transaction: p.tx.id}
+	} else if p.executeSettings.Atomic {
+		req.ConsistencySelector = &pb.ExecutePipelineRequest_NewTransaction{
+			NewTransaction: &pb.TransactionOptions{
+				Mode: &pb.TransactionOptions_ReadWrite_{
+					ReadWrite: &pb.TransactionOptions_ReadWrite{},
+				},
+			},
+		}
+		req.AutoCommitTransaction = true
 	} else if rt, hasOpts := parseReadTime(p.c, p.readSettings); hasOpts {
 		req.ConsistencySelector = &pb.ExecutePipelineRequest_ReadTime{ReadTime: rt}
 	}
@@ -1258,6 +1287,209 @@ func (p *Pipeline) Delete(opts ...DeleteOption) *Pipeline {
 		}
 	}
 	stage := newDeleteStage(options)
+	return p.append(stage)
+}
+
+// InsertOption is an option for an Insert pipeline stage.
+//
+// Experimental: Insert, Upsert, Update, Delete and Search stages in pipeline queries are in public preview
+// and are subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+type InsertOption interface {
+	StageOption
+	isInsertOption()
+}
+
+type funcInsertOption struct {
+	f func(map[string]any)
+}
+
+func (fio *funcInsertOption) applyStage(io map[string]any) {
+	fio.f(io)
+}
+
+func (*funcInsertOption) isInsertOption() {}
+
+func newFuncInsertOption(f func(map[string]any)) *funcInsertOption {
+	return &funcInsertOption{
+		f: f,
+	}
+}
+
+// WithInsertCollection specifies the target collection path to insert documents into.
+// If omitted, the target collection and document ID are inferred from the `__name__` field of each input document.
+//
+// Experimental: Insert, Upsert, Update, Delete and Search stages in pipeline queries are in public preview
+// and are subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func WithInsertCollection(collectionPath string) InsertOption {
+	return newFuncInsertOption(func(io map[string]any) {
+		io["collection"] = collectionPath
+	})
+}
+
+// WithInsertDocumentIDExpression specifies the expression used to determine the document ID for each inserted document.
+// If omitted when a target collection is specified, a new random document ID is generated for each document.
+//
+// Experimental: Insert, Upsert, Update, Delete and Search stages in pipeline queries are in public preview
+// and are subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func WithInsertDocumentIDExpression(documentIDExpr Expression) InsertOption {
+	return newFuncInsertOption(func(io map[string]any) {
+		io["document_id"] = documentIDExpr
+	})
+}
+
+// Insert performs an insert operation using documents from previous stages.
+//
+// If a document already exists at the target path, the pipeline fails with `codes.AlreadyExists`.
+//
+// Example:
+//
+//	// Insert literal documents using their __name__ field
+//	client.Pipeline().Literals(insertData).Insert()
+//
+//	// Copy documents into an archive collection with auto-generated IDs
+//	client.Pipeline().Collection("books").
+//		RemoveFields(Fields(DocumentID)).
+//		Insert(WithInsertCollection("archived_books"))
+//
+//	// Insert documents into a target collection with a custom document ID expression
+//	client.Pipeline().Collection("books").
+//		Insert(
+//			WithInsertCollection("archived_books"),
+//			WithInsertDocumentIDExpression(StringConcat(FieldOf("isbn"), "-archive")),
+//		)
+//
+// Experimental: Insert, Upsert, Update, Delete and Search stages in pipeline queries are in public preview
+// and are subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func (p *Pipeline) Insert(opts ...InsertOption) *Pipeline {
+	if p.err != nil {
+		return p
+	}
+
+	options := make(map[string]any)
+	for _, opt := range opts {
+		if opt != nil {
+			opt.applyStage(options)
+		}
+	}
+
+	stage, err := newInsertStage(options)
+	if err != nil {
+		p.err = err
+		return p
+	}
+	return p.append(stage)
+}
+
+// UpsertOption is an option for an Upsert pipeline stage.
+//
+// Experimental: Insert, Upsert, Update, Delete and Search stages in pipeline queries are in public preview
+// and are subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+type UpsertOption interface {
+	StageOption
+	isUpsertOption()
+}
+
+type funcUpsertOption struct {
+	f func(map[string]any)
+}
+
+func (fuo *funcUpsertOption) applyStage(uo map[string]any) {
+	fuo.f(uo)
+}
+
+func (*funcUpsertOption) isUpsertOption() {}
+
+func newFuncUpsertOption(f func(map[string]any)) *funcUpsertOption {
+	return &funcUpsertOption{
+		f: f,
+	}
+}
+
+// WithUpsertCollection specifies the target collection path to upsert documents into.
+// If omitted, the target collection and document ID are inferred from the `__name__` field of each input document.
+//
+// Experimental: Insert, Upsert, Update, Delete and Search stages in pipeline queries are in public preview
+// and are subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func WithUpsertCollection(collectionPath string) UpsertOption {
+	return newFuncUpsertOption(func(uo map[string]any) {
+		uo["collection"] = collectionPath
+	})
+}
+
+// WithUpsertDocumentIDExpression specifies the expression used to determine the document ID for each upserted document.
+// If omitted when a target collection is specified, a new random document ID is generated for each document.
+//
+// Experimental: Insert, Upsert, Update, Delete and Search stages in pipeline queries are in public preview
+// and are subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func WithUpsertDocumentIDExpression(documentIDExpr Expression) UpsertOption {
+	return newFuncUpsertOption(func(uo map[string]any) {
+		uo["document_id"] = documentIDExpr
+	})
+}
+
+// WithUpsertAdditionalFields specifies additional fields to add to or overwrite on each input document before it is written.
+//
+// Experimental: Insert, Upsert, Update, Delete and Search stages in pipeline queries are in public preview
+// and are subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func WithUpsertAdditionalFields(field Selectable, additionalFields ...Selectable) UpsertOption {
+	return newFuncUpsertOption(func(uo map[string]any) {
+		t, ok := uo["additional_fields"].([]Selectable)
+		if !ok {
+			t = []Selectable{}
+		}
+		uo["additional_fields"] = append(t, append([]Selectable{field}, additionalFields...)...)
+	})
+}
+
+// Upsert performs an upsert (insert or update) operation using documents from previous stages.
+//
+// This method inserts new documents or overwrites existing documents based on the data flowing through the pipeline.
+// You can optionally specify a target collection using [WithUpsertCollection], a document ID expression using
+// [WithUpsertDocumentIDExpression], and a list of [Selectable] additional fields using [WithUpsertAdditionalFields].
+// If no additional fields are provided, the entire document flowing from the previous stage is written as-is.
+//
+// Example:
+//
+//	// In-place upsert using __name__ from input documents
+//	client.Pipeline().Literals(upsertData).Upsert()
+//
+//	// Upsert into a target collection with a document ID expression and additional fields
+//	client.Pipeline().Collection("books").
+//		Where(GreaterThan("price", 50)).
+//		Upsert(
+//			WithUpsertCollection("featured_books"),
+//			WithUpsertDocumentIDExpression(FieldOf("isbn")),
+//			WithUpsertAdditionalFields(ConstantOf("Featured").As("status")),
+//		)
+//
+// Experimental: Insert, Upsert, Update, Delete and Search stages in pipeline queries are in public preview
+// and are subject to potential breaking changes in future versions,
+// regardless of any other documented package stability guarantees.
+func (p *Pipeline) Upsert(opts ...UpsertOption) *Pipeline {
+	if p.err != nil {
+		return p
+	}
+
+	options := make(map[string]any)
+	for _, opt := range opts {
+		if opt != nil {
+			opt.applyStage(options)
+		}
+	}
+
+	stage, err := newUpsertStage(options)
+	if err != nil {
+		p.err = err
+		return p
+	}
 	return p.append(stage)
 }
 
