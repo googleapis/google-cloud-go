@@ -530,9 +530,8 @@ func TestHTTPClientAuthTracingWithMetrics(t *testing.T) {
 		_ = meterProvider.Shutdown(ctx)
 	})
 
-	baseCreds := &auth.Credentials{
-		TokenProvider: &staticAuthTokenProvider{token: &auth.Token{Value: "fake-token"}},
-	}
+	baseProvider := &staticAuthTokenProvider{token: &auth.Token{Value: "fake-token"}}
+	baseCreds := &auth.Credentials{TokenProvider: baseProvider}
 	client, err := NewClient(ctx,
 		option.WithAuthCredentials(baseCreds),
 		withOtelMetrics(),
@@ -546,6 +545,11 @@ func TestHTTPClientAuthTracingWithMetrics(t *testing.T) {
 		_ = client.Close()
 	})
 
+	// Caller-owned credentials must not be mutated by client construction.
+	if baseCreds.TokenProvider != auth.TokenProvider(baseProvider) {
+		t.Errorf("caller-owned credentials were mutated: got TokenProvider %T, want %T", baseCreds.TokenProvider, baseProvider)
+	}
+
 	var hc *httpStorageClient
 	switch tc := client.tc.(type) {
 	case *metricsStorageClient:
@@ -554,6 +558,13 @@ func TestHTTPClientAuthTracingWithMetrics(t *testing.T) {
 		hc = tc
 	default:
 		t.Fatalf("unexpected storageClient type: %T", client.tc)
+	}
+	if hc.creds == baseCreds {
+		t.Errorf("httpStorageClient.creds aliases caller-owned credentials; want a clone")
+	}
+	// The HTTP transport built in NewClient must observe the wrapped provider.
+	if client.creds != hc.creds {
+		t.Errorf("NewClient creds (%p) and httpStorageClient creds (%p) must be the same clone", client.creds, hc.creds)
 	}
 	if _, err := hc.creds.Token(ctx); err != nil {
 		t.Fatalf("hc.creds.Token: %v", err)
