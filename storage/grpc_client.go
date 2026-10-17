@@ -241,6 +241,12 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (client *g
 		option.WithGRPCDialOption(grpc.WithChainUnaryInterceptor(ui)),
 		option.WithGRPCDialOption(grpc.WithChainStreamInterceptor(si)),
 	)
+	if isOTelTracingDevEnabled() {
+		// Registered after the transport's OpenTelemetry stats handler so
+		// that it sees the attempt span. See retryAttemptStatsHandler.
+		s.clientOption = append(s.clientOption,
+			option.WithGRPCDialOption(grpc.WithStatsHandler(retryAttemptStatsHandler{})))
+	}
 	c.dpDiag = directPathDiagnostic(ctx, s.clientOption...)
 	g, err := gapic.NewClient(ctx, s.clientOption...)
 	if err != nil {

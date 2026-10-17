@@ -131,7 +131,7 @@ func run(ctx context.Context, call func(ctx context.Context) error, retry *retry
 	}
 	if (retry.policy == RetryIdempotent && !isIdempotent) || retry.policy == RetryNever {
 		ctxWithHeaders := setInvocationHeaders(ctx, invocationID, attempts)
-		return call(ctxWithHeaders)
+		return call(withRetryAttempt(ctxWithHeaders, attempts))
 	}
 	initialBo := gax.Backoff{}
 	if retry.backoff != nil {
@@ -161,7 +161,7 @@ func run(ctx context.Context, call func(ctx context.Context) error, retry *retry
 		}
 
 		ctxWithHeaders := setInvocationHeaders(ctx, invocationID, attempts)
-		lastErr = call(ctxWithHeaders)
+		lastErr = call(withRetryAttempt(ctxWithHeaders, attempts))
 		if lastErr == nil {
 			return nil
 		}
