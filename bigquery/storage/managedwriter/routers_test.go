@@ -443,7 +443,7 @@ func BenchmarkWatchdogPulse(b *testing.B) {
 
 			var writers []*ManagedStream
 
-			for i := 0; i < numWriters; i++ {
+			for i := range numWriters {
 				wCtx, wCancel := context.WithCancel(ctx)
 				writer := &ManagedStream{
 					id:             newUUID(writerIDPrefix),
@@ -463,7 +463,7 @@ func BenchmarkWatchdogPulse(b *testing.B) {
 			r := rand.New(rand.NewSource(time.Now().UnixNano()))
 			countLoad := make([]int, numConnections)
 			byteLoad := make([]int, numConnections)
-			for i := 0; i < numConnections; i++ {
+			for i := range numConnections {
 				countLoad[i] = r.Intn(maxFlowInserts)
 				byteLoad[i] = r.Intn(maxFlowBytes)
 			}

@@ -150,7 +150,9 @@ type Writer struct {
 	// continue until the ChunkRetryDeadline is reached.
 	//
 	// For gRPC clients, ChunkTransferTimeout applies to resumable and appendable
-	// uploads. It is not supported for one-shot uploads, which send the whole
+	// uploads. For gRPC resumable uploads, a non-zero value also enables adaptive
+	// BidiWriteObject stream rotation between flushed chunks when chunk latency
+	// degrades. It is not supported for one-shot uploads, which send the whole
 	// object in a single request. A non-appendable upload is one-shot when
 	// ChunkSize is 0 or the object's total size is at most ChunkSize.
 	//

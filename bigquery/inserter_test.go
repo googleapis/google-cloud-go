@@ -177,20 +177,20 @@ func TestValueSavers(t *testing.T) {
 		t.Fatal(err)
 	}
 	for _, test := range []struct {
-		in   interface{}
+		in   any
 		want []ValueSaver
 	}{
-		{[]interface{}(nil), nil},
-		{[]interface{}{}, nil},
+		{[]any(nil), nil},
+		{[]any{}, nil},
 		{ts, []ValueSaver{ts}},
 		{T{I: 1}, []ValueSaver{&StructSaver{Schema: schema, Struct: T{I: 1}}}},
 		{[]ValueSaver{ts, ts}, []ValueSaver{ts, ts}},
-		{[]interface{}{ts, ts}, []ValueSaver{ts, ts}},
+		{[]any{ts, ts}, []ValueSaver{ts, ts}},
 		{[]T{{I: 1}, {I: 2}}, []ValueSaver{
 			&StructSaver{Schema: schema, Struct: T{I: 1}},
 			&StructSaver{Schema: schema, Struct: T{I: 2}},
 		}},
-		{[]interface{}{T{I: 1}, &T{I: 2}}, []ValueSaver{
+		{[]any{T{I: 1}, &T{I: 2}}, []ValueSaver{
 			&StructSaver{Schema: schema, Struct: T{I: 1}},
 			&StructSaver{Schema: schema, Struct: &T{I: 2}},
 		}},
@@ -217,11 +217,11 @@ func TestValueSavers(t *testing.T) {
 }
 
 func TestValueSaversErrors(t *testing.T) {
-	inputs := []interface{}{
+	inputs := []any{
 		nil,
 		1,
 		[]int{1, 2},
-		[]interface{}{
+		[]any{
 			testSaver{row: map[string]Value{"one": 1}, insertID: "a"},
 			1,
 		},

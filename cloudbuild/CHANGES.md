@@ -1,5 +1,12 @@
 # Changes
 
+## [1.35.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.34.0...cloudbuild/v1.35.0) (2026-10-15)
+
+
+### Features
+
+* Update API sources and regenerate ([#20683](https://github.com/googleapis/google-cloud-go/issues/20683)) ([005d7ce](https://github.com/googleapis/google-cloud-go/commit/005d7ce4872f1cf1ad269cd5d0ce8da7a844d3c8))
+
 ## [1.34.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.33.0...cloudbuild/v1.34.0) (2026-09-23)
 
 

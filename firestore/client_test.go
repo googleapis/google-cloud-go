@@ -493,7 +493,7 @@ func TestGetAllErrors(t *testing.T) {
 	}
 
 	// Internal server error.
-	for i := 0; i < 5; i++ {
+	for range 5 {
 		srv.addRPC(
 			&pb.BatchGetDocumentsRequest{
 				Database:  dbPath,

@@ -159,6 +159,27 @@ func TestApplyStorageOpt(t *testing.T) {
 				grpcDirectPathEnforced: true,
 			},
 		},
+		{
+			desc: "set gRPC keepalive",
+			opts: []option.ClientOption{experimental.WithGRPCKeepalive(experimental.GRPCKeepaliveConfig{
+				Time:    30 * time.Second,
+				Timeout: 20 * time.Second,
+			})},
+			want: storageConfig{
+				grpcKeepalive: &experimental.GRPCKeepaliveConfig{
+					Time:    30 * time.Second,
+					Timeout: 20 * time.Second,
+				},
+			},
+		},
+		{
+			desc: "gRPC keepalive is unset by default",
+			opts: []option.ClientOption{WithGRPCBidiReads()},
+			want: storageConfig{
+				grpcBidiReads: true,
+				grpcKeepalive: nil,
+			},
+		},
 	} {
 		t.Run(test.desc, func(t *testing.T) {
 			var got storageConfig

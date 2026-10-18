@@ -18,6 +18,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"maps"
 	"time"
 
 	"cloud.google.com/go/internal/optional"
@@ -888,9 +889,7 @@ func (tm *TableMetadata) toBQ() (*bq.Table, error) {
 	}
 	if tm.ResourceTags != nil {
 		t.ResourceTags = make(map[string]string)
-		for k, v := range tm.ResourceTags {
-			t.ResourceTags[k] = v
-		}
+		maps.Copy(t.ResourceTags, tm.ResourceTags)
 	}
 	return t, nil
 }
@@ -1018,9 +1017,7 @@ func bqToTableMetadata(t *bq.Table, c *Client) (*TableMetadata, error) {
 	}
 	if t.ResourceTags != nil {
 		md.ResourceTags = make(map[string]string)
-		for k, v := range t.ResourceTags {
-			md.ResourceTags[k] = v
-		}
+		maps.Copy(md.ResourceTags, t.ResourceTags)
 	}
 	return md, nil
 }
@@ -1211,9 +1208,7 @@ func (tm *TableMetadataToUpdate) toBQ() (*bq.Table, error) {
 	}
 	if tm.ResourceTags != nil {
 		t.ResourceTags = make(map[string]string)
-		for k, v := range tm.ResourceTags {
-			t.ResourceTags[k] = v
-		}
+		maps.Copy(t.ResourceTags, tm.ResourceTags)
 		forceSend("ResourceTags")
 	}
 	if tm.BigLakeConfiguration != nil {
@@ -1347,9 +1342,7 @@ func (u *labelUpdater) update() (labels map[string]string, forces, nulls []strin
 		return nil, nil, nil
 	}
 	labels = map[string]string{}
-	for k, v := range u.setLabels {
-		labels[k] = v
-	}
+	maps.Copy(labels, u.setLabels)
 	if len(labels) == 0 && len(u.deleteLabels) > 0 {
 		forces = []string{"Labels"}
 	}
