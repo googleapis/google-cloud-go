@@ -473,11 +473,17 @@ func (w *Writer) markClosed(err error) error {
 			state.record(closingErr)
 		}
 	}
+	// Update write mode on close once it is known whether the payload fit in a
+	// single chunk (oneshot) or used a resumable session.
+	recordWriterTraceAttributes(w.ctx, w)
 	endSpan(w.ctx, closingErr)
 	return closingErr
 }
 
 func (w *Writer) openWriter() (err error) {
+	// Record initial write mode before validation so spans on failed opens still
+	// carry the configured attribute.
+	recordWriterTraceAttributes(w.ctx, w)
 	if err := w.validateWriteAttrs(); err != nil {
 		return err
 	}
@@ -489,7 +495,6 @@ func (w *Writer) openWriter() (err error) {
 	// Append operations that takeover a specific generation are idempotent.
 	isIdempotent = isIdempotent || w.Append && w.o.gen > 0
 	opts := makeStorageOpts(isIdempotent, w.o.retry, w.o.userProject)
-	recordWriterTraceAttributes(w.ctx, w)
 	params := &openWriterParams{
 		ctx:                  w.ctx,
 		chunkSize:            w.ChunkSize,

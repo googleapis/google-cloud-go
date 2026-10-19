@@ -21,6 +21,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"sync/atomic"
 
 	internalTrace "cloud.google.com/go/internal/trace"
 	"cloud.google.com/go/storage/internal"
@@ -216,7 +217,7 @@ func recordWriterTraceAttributes(ctx context.Context, w *Writer) {
 		writeMode = "parallel"
 	} else if w.Append {
 		writeMode = "appendable"
-	} else if w.ChunkSize <= 0 {
+	} else if isOneshotUpload(w) {
 		writeMode = "oneshot"
 	}
 
@@ -230,6 +231,25 @@ func recordWriterTraceAttributes(ctx context.Context, w *Writer) {
 		)
 	}
 	span.SetAttributes(attrs...)
+}
+
+// isOneshotUpload reports whether a non-parallel, non-appendable Writer
+// performs (or is configured to perform) a single-request upload.
+// When ChunkSize <= 0, chunking is disabled and the upload is always oneshot.
+// When ChunkSize > 0, an upload that has opened and closed still runs as
+// oneshot if the entire payload fit in the first chunk buffer (via forceOneShot
+// in gRPC, or a single chunk in HTTP).
+func isOneshotUpload(w *Writer) bool {
+	if w.ChunkSize <= 0 {
+		return true
+	}
+	if gw, ok := w.iw.(*gRPCWriter); ok {
+		return gw.usesOneshotSender()
+	}
+	if w.opened && w.closed {
+		return atomic.LoadInt64(&w.bytesWritten) < int64(gRPCChunkSize(w.ChunkSize))
+	}
+	return false
 }
 
 // recordReaderTraceAttributes attaches the read strategy to the Object.Reader or

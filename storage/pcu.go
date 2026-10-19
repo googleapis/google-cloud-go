@@ -156,6 +156,13 @@ func (w *Writer) initPCU(ctx context.Context) error {
 		return nil
 	}
 
+	cfg := &w.ParallelUploadConfig
+	cfg.defaults()
+
+	// Ensure PartSize is a multiple of googleapi.MinUploadChunkSize.
+	cfg.PartSize = gRPCChunkSize(cfg.PartSize)
+	recordWriterTraceAttributes(ctx, w)
+
 	if len(w.MD5) > 0 {
 		return errors.New("storage: MD5 checksums are not supported with parallel uploads")
 	}
@@ -172,17 +179,10 @@ func (w *Writer) initPCU(ctx context.Context) error {
 		return fmt.Errorf("storage: generation supported on Writer for appendable objects only, got %v", w.o.gen)
 	}
 
-	cfg := &w.ParallelUploadConfig
-	cfg.defaults()
-
-	// Ensure PartSize is a multiple of googleapi.MinUploadChunkSize.
-	cfg.PartSize = gRPCChunkSize(cfg.PartSize)
-
 	s := newPCUSettings(cfg.MaxConcurrency)
 
 	// Track PCU operations using client feature tracking header.
 	ctx = addFeatureAttributes(ctx, featurePCU)
-	recordWriterTraceAttributes(ctx, w)
 
 	bgCtx := contextWithoutMetrics(ctx)
 	pCtx, cancel := context.WithCancel(bgCtx)
