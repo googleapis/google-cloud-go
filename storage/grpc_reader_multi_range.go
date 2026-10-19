@@ -797,7 +797,7 @@ func (m *multiRangeDownloaderManager) createNewSession(id int, readSpec *storage
 }
 
 func (m *multiRangeDownloaderManager) openAndInitializeSession(ctx context.Context, id int, spec *storagepb.BidiReadObjectSpec, waitForResult bool) (*bidiReadStreamSession, mrdSessionResult) {
-	session, err := newBidiReadStreamSession(m.ctx, id, m.sessionResps, m.client, m.settings, m.params, spec)
+	session, err := newBidiReadStreamSession(ctx, id, m.sessionResps, m.client, m.settings, m.params, spec)
 	if err != nil {
 		return nil, mrdSessionResult{err: err}
 	}

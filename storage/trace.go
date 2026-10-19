@@ -217,6 +217,9 @@ type retryAttempt struct {
 // withRetryAttempt returns ctx annotated with the given attempt number so that
 // retryAttemptStatsHandler can record it on the gRPC attempt span.
 func withRetryAttempt(ctx context.Context, attempt int) context.Context {
+	if !isOTelTracingDevEnabled() {
+		return ctx
+	}
 	return context.WithValue(ctx, retryAttemptKey{}, retryAttempt{
 		number: attempt,
 		parent: trace.SpanContextFromContext(ctx),

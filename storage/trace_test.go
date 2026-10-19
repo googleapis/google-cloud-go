@@ -372,6 +372,7 @@ func retryAttemptNumber(attrs []attribute.KeyValue) (int64, bool) {
 }
 
 func TestRetryAttemptStatsHandlerTagRPC(t *testing.T) {
+	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
 	for _, tc := range []struct {
 		name string
 		// start returns the ctx handed to TagRPC, mimicking the ctx the
