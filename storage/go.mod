@@ -6,7 +6,7 @@ retract [v1.25.0, v1.27.0] // due to https://github.com/googleapis/google-cloud-
 
 require (
 	cloud.google.com/go v0.123.0
-	cloud.google.com/go/auth v0.24.1-0.20261001053825-dbc26066f70a
+	cloud.google.com/go/auth v0.24.1
 	cloud.google.com/go/compute/metadata v0.10.0
 	cloud.google.com/go/iam v1.12.0
 	cloud.google.com/go/longrunning v1.2.0
