@@ -18,13 +18,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 	"strings"
 
 	internalTrace "cloud.google.com/go/internal/trace"
 	"cloud.google.com/go/storage/internal"
-	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/apierror"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	otelcodes "go.opentelemetry.io/otel/codes"
@@ -152,27 +153,40 @@ func isNotFoundError(err error) bool {
 }
 
 // errorAttributes returns the error.type and, when known, gcp.errors.domain
-// span attributes for err. It returns no attributes for a nil error.
+// span attributes for err. It returns no attributes for a nil error or io.EOF.
 //
 // error.type reuses computeErrorType, the classifier behind the error.type
 // metric attribute, so spans and metrics report the same value for a failure.
-// gcp.errors.domain is the google.rpc.ErrorInfo domain, extracted with
-// gax.ExtractTelemetryErrorInfo.
-func errorAttributes(ctx context.Context, err error) []attribute.KeyValue {
-	var attrs []attribute.KeyValue
+// gcp.errors.domain is the google.rpc.ErrorInfo domain of the error response.
+func errorAttributes(err error) []attribute.KeyValue {
+	if err == nil || err == io.EOF {
+		return nil
+	}
 	// Infer the transport from the error, since endSpan does not know it:
 	// HTTP errors always carry a *googleapi.Error.
 	var httpErr *googleapi.Error
 	isHTTP := errors.As(err, &httpErr)
-	// computeErrorType reports nil and io.EOF as "OK"; error.type must not be
-	// set then.
-	if errType := computeErrorType(err, isHTTP, 0); errType != "OK" {
-		attrs = append(attrs, attribute.String("error.type", errType))
-	}
-	if domain := gax.ExtractTelemetryErrorInfo(ctx, err).Domain; domain != "" {
+	attrs := []attribute.KeyValue{attribute.String("error.type", computeErrorType(err, isHTTP, 0))}
+	if domain := errorDomain(err); domain != "" {
 		attrs = append(attrs, attribute.String("gcp.errors.domain", domain))
 	}
 	return attrs
+}
+
+// errorDomain returns the google.rpc.ErrorInfo domain of err, or "" if the
+// error response carried no ErrorInfo.
+func errorDomain(err error) string {
+	// Check for an existing APIError first: the generated JSON client returns
+	// a googleapi.Error wrapping an APIError, and ParseError on that prefers
+	// the APIError's mapped gRPC status, which carries no ErrorInfo.
+	var apiErr *apierror.APIError
+	if !errors.As(err, &apiErr) {
+		var ok bool
+		if apiErr, ok = apierror.ParseError(err, false); !ok {
+			return ""
+		}
+	}
+	return apiErr.Domain()
 }
 
 // endSpan retrieves the current span from ctx and completes the span.
@@ -197,7 +211,7 @@ func endSpan(ctx context.Context, err error) {
 	} else {
 		span := trace.SpanFromContext(ctx)
 		if err != nil {
-			span.SetAttributes(errorAttributes(ctx, err)...)
+			span.SetAttributes(errorAttributes(err)...)
 			span.SetStatus(otelcodes.Error, err.Error())
 			span.RecordError(err)
 		}

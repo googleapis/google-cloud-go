@@ -26,6 +26,7 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/storage/internal"
 	"github.com/google/go-cmp/cmp"
+	"github.com/googleapis/gax-go/v2/apierror"
 	"go.opentelemetry.io/otel/attribute"
 	otcodes "go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/sdk/instrumentation"
@@ -357,8 +358,6 @@ func TestEndSpanEviction(t *testing.T) {
 }
 
 func TestErrorAttributes(t *testing.T) {
-	ctx := context.Background()
-
 	grpcWithErrorInfo, err := status.New(codes.Unimplemented, "Appendable objects are not supported for this request.").WithDetails(&errdetails.ErrorInfo{
 		Reason: "GRPC_APPENDABLE_OBJECT_NOT_SUPPORTED",
 		Domain: "storage.googleapis.com",
@@ -371,6 +370,18 @@ func TestErrorAttributes(t *testing.T) {
 		Message: "Permission denied.",
 		Body:    `{"error":{"code":403,"message":"Permission denied.","status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com"}]}}`,
 	}
+
+	// The generated JSON client returns a googleapi.Error wrapping an APIError.
+	generatedHTTPErr := &googleapi.Error{
+		Code:    http.StatusForbidden,
+		Message: "Permission denied.",
+		Body:    `{"error":{"code":403,"message":"Permission denied.","status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"storage.googleapis.com"}]}}`,
+	}
+	apiErr, ok := apierror.ParseError(generatedHTTPErr, false)
+	if !ok {
+		t.Fatal("apierror.ParseError failed")
+	}
+	generatedHTTPErr.Wrap(apiErr)
 
 	tests := []struct {
 		name       string
@@ -435,6 +446,58 @@ func TestErrorAttributes(t *testing.T) {
 			wantType: "UNKNOWN",
 		},
 		{
+			name:       "HTTP error with ErrorInfo from the generated client",
+			err:        generatedHTTPErr,
+			wantType:   "PERMISSION_DENIED",
+			wantDomain: "storage.googleapis.com",
+		},
+		{
+			name:       "wrapped HTTP error with ErrorInfo from the generated client",
+			err:        fmt.Errorf("%w: %w", ErrBucketNotExist, generatedHTTPErr),
+			wantType:   "NOT_FOUND",
+			wantDomain: "storage.googleapis.com",
+		},
+		{
+			name:     "bare ErrObjectNotExist",
+			err:      ErrObjectNotExist,
+			wantType: "NOT_FOUND",
+		},
+		{
+			name:     "bare ErrBucketNotExist",
+			err:      ErrBucketNotExist,
+			wantType: "NOT_FOUND",
+		},
+		{
+			name:     "gRPC not found with key in object name",
+			err:      fmt.Errorf("%w: %w", ErrObjectNotExist, status.Error(codes.NotFound, "No such object: bucket/my-key")),
+			wantType: "NOT_FOUND",
+		},
+		{
+			name:     "gRPC not found with timeout in object name",
+			err:      status.Error(codes.NotFound, "No such object: bucket/timeout.log"),
+			wantType: "NOT_FOUND",
+		},
+		{
+			name:     "HTTP not found with eof in object name",
+			err:      &googleapi.Error{Code: http.StatusNotFound, Message: "No such object: bucket/geofence.json"},
+			wantType: "NOT_FOUND",
+		},
+		{
+			name:     "gRPC invalid page token",
+			err:      status.Error(codes.InvalidArgument, "Invalid page token."),
+			wantType: "INVALID_ARGUMENT",
+		},
+		{
+			name:     "gRPC unavailable with network error message",
+			err:      status.Error(codes.Unavailable, "connection error: dial tcp: connection refused"),
+			wantType: "CONNECTION_ERROR",
+		},
+		{
+			name:     "gRPC unavailable from the service",
+			err:      status.Error(codes.Unavailable, "The service is currently unavailable."),
+			wantType: "UNAVAILABLE",
+		},
+		{
 			name:     "nil error sets no attributes",
 			err:      nil,
 			wantType: "",
@@ -448,7 +511,7 @@ func TestErrorAttributes(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			got := map[attribute.Key]string{}
-			for _, kv := range errorAttributes(ctx, tc.err) {
+			for _, kv := range errorAttributes(tc.err) {
 				got[kv.Key] = kv.Value.AsString()
 			}
 			want := map[attribute.Key]string{}
