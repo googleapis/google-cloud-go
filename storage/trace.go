@@ -213,6 +213,6 @@ func recordRetryBackoff(ctx context.Context, start time.Time) {
 	if !span.IsRecording() {
 		return
 	}
-	_, backoffSpan := startSpan(ctx, "RetryBackoff", trace.WithTimestamp(start))
+	_, backoffSpan := tracer().Start(ctx, appendPackageName("RetryBackoff"), append(getCommonTraceOptions(), trace.WithTimestamp(start))...)
 	backoffSpan.End()
 }

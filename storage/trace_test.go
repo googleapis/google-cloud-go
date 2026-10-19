@@ -398,7 +398,7 @@ func TestRecordRetryBackoffNoParentSpan(t *testing.T) {
 	t.Cleanup(func() {
 		te.Unregister(ctx)
 	})
-	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
+	t.Setenv(storageOtelTracingDevVar, "true")
 
 	recordRetryBackoff(ctx, time.Now())
 
@@ -470,7 +470,7 @@ func TestRunRetryBackoffTracing(t *testing.T) {
 			t.Cleanup(func() {
 				te.Unregister(ctx)
 			})
-			t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
+			t.Setenv(storageOtelTracingDevVar, "true")
 
 			spanCtx, _ := startSpan(ctx, "Bucket.Attrs")
 			runCtx := spanCtx
@@ -503,7 +503,7 @@ func TestRunRetryBackoffTracingDisabled(t *testing.T) {
 	t.Cleanup(func() {
 		te.Unregister(ctx)
 	})
-	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "false")
+	t.Setenv(storageOtelTracingDevVar, "false")
 
 	// The span is started directly so that it is recording even though dev
 	// tracing is disabled, proving that the environment gate alone prevents
