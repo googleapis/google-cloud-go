@@ -1,0 +1,203 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.auditmanager.v1",
+  "libraryPackage": "cloud.google.com/go/auditmanager/apiv1",
+  "services": {
+    "AuditManager": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateAuditSchedule": {
+              "methods": [
+                "CreateAuditSchedule"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "EnrollResource": {
+              "methods": [
+                "EnrollResource"
+              ]
+            },
+            "GenerateAuditReport": {
+              "methods": [
+                "GenerateAuditReport"
+              ]
+            },
+            "GenerateAuditScopeReport": {
+              "methods": [
+                "GenerateAuditScopeReport"
+              ]
+            },
+            "GetAuditReport": {
+              "methods": [
+                "GetAuditReport"
+              ]
+            },
+            "GetAuditSchedule": {
+              "methods": [
+                "GetAuditSchedule"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetResourceEnrollmentStatus": {
+              "methods": [
+                "GetResourceEnrollmentStatus"
+              ]
+            },
+            "ListAuditReports": {
+              "methods": [
+                "ListAuditReports"
+              ]
+            },
+            "ListAuditSchedules": {
+              "methods": [
+                "ListAuditSchedules"
+              ]
+            },
+            "ListControls": {
+              "methods": [
+                "ListControls"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListResourceEnrollmentStatuses": {
+              "methods": [
+                "ListResourceEnrollmentStatuses"
+              ]
+            },
+            "UpdateAuditSchedule": {
+              "methods": [
+                "UpdateAuditSchedule"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateAuditSchedule": {
+              "methods": [
+                "CreateAuditSchedule"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "EnrollResource": {
+              "methods": [
+                "EnrollResource"
+              ]
+            },
+            "GenerateAuditReport": {
+              "methods": [
+                "GenerateAuditReport"
+              ]
+            },
+            "GenerateAuditScopeReport": {
+              "methods": [
+                "GenerateAuditScopeReport"
+              ]
+            },
+            "GetAuditReport": {
+              "methods": [
+                "GetAuditReport"
+              ]
+            },
+            "GetAuditSchedule": {
+              "methods": [
+                "GetAuditSchedule"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetResourceEnrollmentStatus": {
+              "methods": [
+                "GetResourceEnrollmentStatus"
+              ]
+            },
+            "ListAuditReports": {
+              "methods": [
+                "ListAuditReports"
+              ]
+            },
+            "ListAuditSchedules": {
+              "methods": [
+                "ListAuditSchedules"
+              ]
+            },
+            "ListControls": {
+              "methods": [
+                "ListControls"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListResourceEnrollmentStatuses": {
+              "methods": [
+                "ListResourceEnrollmentStatuses"
+              ]
+            },
+            "UpdateAuditSchedule": {
+              "methods": [
+                "UpdateAuditSchedule"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

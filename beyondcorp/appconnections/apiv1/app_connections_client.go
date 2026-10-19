@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,6 +29,8 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -136,6 +138,11 @@ type internalClient interface {
 //
 // The AppConnectionsService service provides methods to manage
 // (create/read/update/delete) BeyondCorp AppConnections.
+//
+// Deprecated: App Connector is deprecated and creation of new App Connector
+// resources is no longer permitted. Use Security Gateway instead.
+//
+// Deprecated: AppConnectionsService may be removed in a future version.
 type Client struct {
 	// The internal transport-dependent client.
 	internalClient internalClient
@@ -151,7 +158,7 @@ type Client struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *Client) Close() error {
 	return c.internalClient.Close()
@@ -173,16 +180,22 @@ func (c *Client) Connection() *grpc.ClientConn {
 }
 
 // ListAppConnections lists AppConnections in a given project and location.
+//
+// Deprecated: ListAppConnections may be removed in a future version.
 func (c *Client) ListAppConnections(ctx context.Context, req *appconnectionspb.ListAppConnectionsRequest, opts ...gax.CallOption) *AppConnectionIterator {
 	return c.internalClient.ListAppConnections(ctx, req, opts...)
 }
 
 // GetAppConnection gets details of a single AppConnection.
+//
+// Deprecated: GetAppConnection may be removed in a future version.
 func (c *Client) GetAppConnection(ctx context.Context, req *appconnectionspb.GetAppConnectionRequest, opts ...gax.CallOption) (*appconnectionspb.AppConnection, error) {
 	return c.internalClient.GetAppConnection(ctx, req, opts...)
 }
 
 // CreateAppConnection creates a new AppConnection in a given project and location.
+//
+// Deprecated: CreateAppConnection may be removed in a future version.
 func (c *Client) CreateAppConnection(ctx context.Context, req *appconnectionspb.CreateAppConnectionRequest, opts ...gax.CallOption) (*CreateAppConnectionOperation, error) {
 	return c.internalClient.CreateAppConnection(ctx, req, opts...)
 }
@@ -194,6 +207,8 @@ func (c *Client) CreateAppConnectionOperation(name string) *CreateAppConnectionO
 }
 
 // UpdateAppConnection updates the parameters of a single AppConnection.
+//
+// Deprecated: UpdateAppConnection may be removed in a future version.
 func (c *Client) UpdateAppConnection(ctx context.Context, req *appconnectionspb.UpdateAppConnectionRequest, opts ...gax.CallOption) (*UpdateAppConnectionOperation, error) {
 	return c.internalClient.UpdateAppConnection(ctx, req, opts...)
 }
@@ -205,6 +220,8 @@ func (c *Client) UpdateAppConnectionOperation(name string) *UpdateAppConnectionO
 }
 
 // DeleteAppConnection deletes a single AppConnection.
+//
+// Deprecated: DeleteAppConnection may be removed in a future version.
 func (c *Client) DeleteAppConnection(ctx context.Context, req *appconnectionspb.DeleteAppConnectionRequest, opts ...gax.CallOption) (*DeleteAppConnectionOperation, error) {
 	return c.internalClient.DeleteAppConnection(ctx, req, opts...)
 }
@@ -218,6 +235,8 @@ func (c *Client) DeleteAppConnectionOperation(name string) *DeleteAppConnectionO
 // ResolveAppConnections resolves AppConnections details for a given AppConnector.
 // An internal method called by a connector to find AppConnections to connect
 // to.
+//
+// Deprecated: ResolveAppConnections may be removed in a future version.
 func (c *Client) ResolveAppConnections(ctx context.Context, req *appconnectionspb.ResolveAppConnectionsRequest, opts ...gax.CallOption) *ResolveAppConnectionsResponse_AppConnectionDetailsIterator {
 	return c.internalClient.ResolveAppConnections(ctx, req, opts...)
 }
@@ -228,6 +247,21 @@ func (c *Client) GetLocation(ctx context.Context, req *locationpb.GetLocationReq
 }
 
 // ListLocations lists information about the supported locations for this service.
+//
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
+//
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *Client) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	return c.internalClient.ListLocations(ctx, req, opts...)
 }
@@ -325,8 +359,23 @@ type gRPCClient struct {
 //
 // The AppConnectionsService service provides methods to manage
 // (create/read/update/delete) BeyondCorp AppConnections.
+//
+// Deprecated: App Connector is deprecated and creation of new App Connector
+// resources is no longer permitted. Use Security Gateway instead.
+//
+// Deprecated: AppConnectionsService may be removed in a future version.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "beyondcorp",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/beyondcorp/appconnections/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "beyondcorp.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -351,6 +400,89 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "beyondcorp",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/beyondcorp/appconnections/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "beyondcorp.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListAppConnections = append(client.CallOptions.ListAppConnections, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetAppConnection = append(client.CallOptions.GetAppConnection, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateAppConnection = append(client.CallOptions.CreateAppConnection, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateAppConnection = append(client.CallOptions.UpdateAppConnection, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteAppConnection = append(client.CallOptions.DeleteAppConnection, gax.WithClientMetrics(metrics))
+		client.CallOptions.ResolveAppConnections = append(client.CallOptions.ResolveAppConnections, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "beyondcorp",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/beyondcorp/appconnections/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "beyondcorp.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListAppConnections = append(client.CallOptions.ListAppConnections, gax.WithClientTracing(tracing))
+		client.CallOptions.GetAppConnection = append(client.CallOptions.GetAppConnection, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateAppConnection = append(client.CallOptions.CreateAppConnection, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateAppConnection = append(client.CallOptions.UpdateAppConnection, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteAppConnection = append(client.CallOptions.DeleteAppConnection, gax.WithClientTracing(tracing))
+		client.CallOptions.ResolveAppConnections = append(client.CallOptions.ResolveAppConnections, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "beyondcorp",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/beyondcorp/appconnections/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "beyondcorp.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListAppConnections = append(client.CallOptions.ListAppConnections, gax.WithClientLogging(logging))
+		client.CallOptions.GetAppConnection = append(client.CallOptions.GetAppConnection, gax.WithClientLogging(logging))
+		client.CallOptions.CreateAppConnection = append(client.CallOptions.CreateAppConnection, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateAppConnection = append(client.CallOptions.UpdateAppConnection, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteAppConnection = append(client.CallOptions.DeleteAppConnection, gax.WithClientLogging(logging))
+		client.CallOptions.ResolveAppConnections = append(client.CallOptions.ResolveAppConnections, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -387,7 +519,7 @@ func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *gRPCClient) Close() error {
 	return c.connPool.Close()
@@ -398,9 +530,12 @@ func (c *gRPCClient) ListAppConnections(ctx context.Context, req *appconnections
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.beyondcorp.appconnections.v1.AppConnectionsService/ListAppConnections")
+	}
 	opts = append((*c.CallOptions).ListAppConnections[0:len((*c.CallOptions).ListAppConnections):len((*c.CallOptions).ListAppConnections)], opts...)
 	it := &AppConnectionIterator{}
-	req = proto.Clone(req).(*appconnectionspb.ListAppConnectionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*appconnectionspb.AppConnection, string, error) {
 		resp := &appconnectionspb.ListAppConnectionsResponse{}
 		if pageToken != "" {
@@ -444,6 +579,9 @@ func (c *gRPCClient) GetAppConnection(ctx context.Context, req *appconnectionspb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.beyondcorp.appconnections.v1.AppConnectionsService/GetAppConnection")
+	}
 	opts = append((*c.CallOptions).GetAppConnection[0:len((*c.CallOptions).GetAppConnection):len((*c.CallOptions).GetAppConnection)], opts...)
 	var resp *appconnectionspb.AppConnection
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -462,6 +600,9 @@ func (c *gRPCClient) CreateAppConnection(ctx context.Context, req *appconnection
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.beyondcorp.appconnections.v1.AppConnectionsService/CreateAppConnection")
+	}
 	opts = append((*c.CallOptions).CreateAppConnection[0:len((*c.CallOptions).CreateAppConnection):len((*c.CallOptions).CreateAppConnection)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -472,8 +613,12 @@ func (c *gRPCClient) CreateAppConnection(ctx context.Context, req *appconnection
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*appconnections.CreateAppConnectionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateAppConnectionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -482,6 +627,9 @@ func (c *gRPCClient) UpdateAppConnection(ctx context.Context, req *appconnection
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.beyondcorp.appconnections.v1.AppConnectionsService/UpdateAppConnection")
+	}
 	opts = append((*c.CallOptions).UpdateAppConnection[0:len((*c.CallOptions).UpdateAppConnection):len((*c.CallOptions).UpdateAppConnection)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -492,8 +640,12 @@ func (c *gRPCClient) UpdateAppConnection(ctx context.Context, req *appconnection
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*appconnections.UpdateAppConnectionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateAppConnectionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -502,6 +654,9 @@ func (c *gRPCClient) DeleteAppConnection(ctx context.Context, req *appconnection
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.beyondcorp.appconnections.v1.AppConnectionsService/DeleteAppConnection")
+	}
 	opts = append((*c.CallOptions).DeleteAppConnection[0:len((*c.CallOptions).DeleteAppConnection):len((*c.CallOptions).DeleteAppConnection)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -512,8 +667,12 @@ func (c *gRPCClient) DeleteAppConnection(ctx context.Context, req *appconnection
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*appconnections.DeleteAppConnectionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteAppConnectionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -522,9 +681,12 @@ func (c *gRPCClient) ResolveAppConnections(ctx context.Context, req *appconnecti
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.beyondcorp.appconnections.v1.AppConnectionsService/ResolveAppConnections")
+	}
 	opts = append((*c.CallOptions).ResolveAppConnections[0:len((*c.CallOptions).ResolveAppConnections):len((*c.CallOptions).ResolveAppConnections)], opts...)
 	it := &ResolveAppConnectionsResponse_AppConnectionDetailsIterator{}
-	req = proto.Clone(req).(*appconnectionspb.ResolveAppConnectionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*appconnectionspb.ResolveAppConnectionsResponse_AppConnectionDetails, string, error) {
 		resp := &appconnectionspb.ResolveAppConnectionsResponse{}
 		if pageToken != "" {
@@ -568,6 +730,9 @@ func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -586,9 +751,12 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/ListLocations")
+	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -632,6 +800,9 @@ func (c *gRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -650,6 +821,9 @@ func (c *gRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -668,6 +842,9 @@ func (c *gRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -686,6 +863,9 @@ func (c *gRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -700,6 +880,9 @@ func (c *gRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+	}
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -714,6 +897,9 @@ func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -732,9 +918,12 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -777,7 +966,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created CreateAppConnectionOperation, possibly from a different process.
 func (c *gRPCClient) CreateAppConnectionOperation(name string) *CreateAppConnectionOperation {
 	return &CreateAppConnectionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*appconnections.CreateAppConnectionOperation"),
 	}
 }
 
@@ -785,7 +974,7 @@ func (c *gRPCClient) CreateAppConnectionOperation(name string) *CreateAppConnect
 // The name must be that of a previously created DeleteAppConnectionOperation, possibly from a different process.
 func (c *gRPCClient) DeleteAppConnectionOperation(name string) *DeleteAppConnectionOperation {
 	return &DeleteAppConnectionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*appconnections.DeleteAppConnectionOperation"),
 	}
 }
 
@@ -793,6 +982,6 @@ func (c *gRPCClient) DeleteAppConnectionOperation(name string) *DeleteAppConnect
 // The name must be that of a previously created UpdateAppConnectionOperation, possibly from a different process.
 func (c *gRPCClient) UpdateAppConnectionOperation(name string) *UpdateAppConnectionOperation {
 	return &UpdateAppConnectionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*appconnections.UpdateAppConnectionOperation"),
 	}
 }

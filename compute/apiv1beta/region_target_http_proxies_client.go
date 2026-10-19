@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import (
 
 	computepb "cloud.google.com/go/compute/apiv1beta/computepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -90,7 +91,7 @@ func defaultRegionTargetHttpProxiesRESTCallOptions() *RegionTargetHttpProxiesCal
 	}
 }
 
-// internalRegionTargetHttpProxiesClient is an interface that defines the methods available from Google Compute Engine API.
+// internalRegionTargetHttpProxiesClient is an interface that defines the methods available from Compute Engine API.
 type internalRegionTargetHttpProxiesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -103,7 +104,7 @@ type internalRegionTargetHttpProxiesClient interface {
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsRegionTargetHttpProxyRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 }
 
-// RegionTargetHttpProxiesClient is a client for interacting with Google Compute Engine API.
+// RegionTargetHttpProxiesClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The RegionTargetHttpProxies API.
@@ -117,7 +118,7 @@ type RegionTargetHttpProxiesClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *RegionTargetHttpProxiesClient) Close() error {
 	return c.internalClient.Close()
@@ -148,12 +149,14 @@ func (c *RegionTargetHttpProxiesClient) Get(ctx context.Context, req *computepb.
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// Insert creates a TargetHttpProxy resource in the specified project and region using the data included in the request.
+// Insert creates a TargetHttpProxy resource in the specified project and region
+// using the data included in the request.
 func (c *RegionTargetHttpProxiesClient) Insert(ctx context.Context, req *computepb.InsertRegionTargetHttpProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves the list of TargetHttpProxy resources available to the specified project in the specified region.
+// List retrieves the list of TargetHttpProxy resources available
+// to the specified project in the specified region.
 func (c *RegionTargetHttpProxiesClient) List(ctx context.Context, req *computepb.ListRegionTargetHttpProxiesRequest, opts ...gax.CallOption) *TargetHttpProxyIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
@@ -193,6 +196,16 @@ type regionTargetHttpProxiesRESTClient struct {
 // The RegionTargetHttpProxies API.
 func NewRegionTargetHttpProxiesRESTClient(ctx context.Context, opts ...option.ClientOption) (*RegionTargetHttpProxiesClient, error) {
 	clientOpts := append(defaultRegionTargetHttpProxiesRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "compute",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/compute/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "compute.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -206,6 +219,63 @@ func NewRegionTargetHttpProxiesRESTClient(ctx context.Context, opts ...option.Cl
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientMetrics(metrics))
+		callOpts.Get = append(callOpts.Get, gax.WithClientMetrics(metrics))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientMetrics(metrics))
+		callOpts.List = append(callOpts.List, gax.WithClientMetrics(metrics))
+		callOpts.SetUrlMap = append(callOpts.SetUrlMap, gax.WithClientMetrics(metrics))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientTracing(tracing))
+		callOpts.Get = append(callOpts.Get, gax.WithClientTracing(tracing))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientTracing(tracing))
+		callOpts.List = append(callOpts.List, gax.WithClientTracing(tracing))
+		callOpts.SetUrlMap = append(callOpts.SetUrlMap, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientLogging(logging))
+		callOpts.Get = append(callOpts.Get, gax.WithClientLogging(logging))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientLogging(logging))
+		callOpts.List = append(callOpts.List, gax.WithClientLogging(logging))
+		callOpts.SetUrlMap = append(callOpts.SetUrlMap, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientLogging(logging))
+	}
 
 	o := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -243,7 +313,7 @@ func (c *regionTargetHttpProxiesRESTClient) setGoogleClientInfo(keyval ...string
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *regionTargetHttpProxiesRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -282,6 +352,10 @@ func (c *regionTargetHttpProxiesRESTClient) Delete(ctx context.Context, req *com
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.RegionTargetHttpProxies/Delete")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/targetHttpProxies/{target_http_proxy}")
+	}
 	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -335,6 +409,10 @@ func (c *regionTargetHttpProxiesRESTClient) Get(ctx context.Context, req *comput
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.RegionTargetHttpProxies/Get")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/targetHttpProxies/{target_http_proxy}")
+	}
 	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.TargetHttpProxy{}
@@ -366,7 +444,8 @@ func (c *regionTargetHttpProxiesRESTClient) Get(ctx context.Context, req *comput
 	return resp, nil
 }
 
-// Insert creates a TargetHttpProxy resource in the specified project and region using the data included in the request.
+// Insert creates a TargetHttpProxy resource in the specified project and region
+// using the data included in the request.
 func (c *regionTargetHttpProxiesRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionTargetHttpProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetHttpProxyResource()
@@ -394,6 +473,10 @@ func (c *regionTargetHttpProxiesRESTClient) Insert(ctx context.Context, req *com
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.RegionTargetHttpProxies/Insert")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/targetHttpProxies")
+	}
 	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -433,10 +516,11 @@ func (c *regionTargetHttpProxiesRESTClient) Insert(ctx context.Context, req *com
 	return op, nil
 }
 
-// List retrieves the list of TargetHttpProxy resources available to the specified project in the specified region.
+// List retrieves the list of TargetHttpProxy resources available
+// to the specified project in the specified region.
 func (c *regionTargetHttpProxiesRESTClient) List(ctx context.Context, req *computepb.ListRegionTargetHttpProxiesRequest, opts ...gax.CallOption) *TargetHttpProxyIterator {
 	it := &TargetHttpProxyIterator{}
-	req = proto.Clone(req).(*computepb.ListRegionTargetHttpProxiesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.TargetHttpProxy, string, error) {
 		resp := &computepb.TargetHttpProxyList{}
@@ -547,6 +631,10 @@ func (c *regionTargetHttpProxiesRESTClient) SetUrlMap(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.RegionTargetHttpProxies/SetUrlMap")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/targetHttpProxies/{target_http_proxy}/setUrlMap")
+	}
 	opts = append((*c.CallOptions).SetUrlMap[0:len((*c.CallOptions).SetUrlMap):len((*c.CallOptions).SetUrlMap)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -607,6 +695,10 @@ func (c *regionTargetHttpProxiesRESTClient) TestIamPermissions(ctx context.Conte
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.RegionTargetHttpProxies/TestIamPermissions")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/targetHttpProxies/{resource}/testIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.TestPermissionsResponse{}

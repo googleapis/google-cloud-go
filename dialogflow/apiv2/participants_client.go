@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import (
 	dialogflowpb "cloud.google.com/go/dialogflow/apiv2/dialogflowpb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -46,21 +47,23 @@ var newParticipantsClientHook clientHook
 
 // ParticipantsCallOptions contains the retry settings for each method of ParticipantsClient.
 type ParticipantsCallOptions struct {
-	CreateParticipant       []gax.CallOption
-	GetParticipant          []gax.CallOption
-	ListParticipants        []gax.CallOption
-	UpdateParticipant       []gax.CallOption
-	AnalyzeContent          []gax.CallOption
-	StreamingAnalyzeContent []gax.CallOption
-	SuggestArticles         []gax.CallOption
-	SuggestFaqAnswers       []gax.CallOption
-	SuggestSmartReplies     []gax.CallOption
-	SuggestKnowledgeAssist  []gax.CallOption
-	GetLocation             []gax.CallOption
-	ListLocations           []gax.CallOption
-	CancelOperation         []gax.CallOption
-	GetOperation            []gax.CallOption
-	ListOperations          []gax.CallOption
+	CreateParticipant                     []gax.CallOption
+	GetParticipant                        []gax.CallOption
+	ListParticipants                      []gax.CallOption
+	UpdateParticipant                     []gax.CallOption
+	AnalyzeContent                        []gax.CallOption
+	StreamingAnalyzeContent               []gax.CallOption
+	BidiStreamingAnalyzeContent           []gax.CallOption
+	StreamingReactiveCompanionSuggestions []gax.CallOption
+	SuggestArticles                       []gax.CallOption
+	SuggestFaqAnswers                     []gax.CallOption
+	SuggestSmartReplies                   []gax.CallOption
+	SuggestKnowledgeAssist                []gax.CallOption
+	GetLocation                           []gax.CallOption
+	ListLocations                         []gax.CallOption
+	CancelOperation                       []gax.CallOption
+	GetOperation                          []gax.CallOption
+	ListOperations                        []gax.CallOption
 }
 
 func defaultParticipantsGRPCClientOptions() []option.ClientOption {
@@ -140,7 +143,9 @@ func defaultParticipantsCallOptions() *ParticipantsCallOptions {
 				})
 			}),
 		},
-		StreamingAnalyzeContent: []gax.CallOption{},
+		StreamingAnalyzeContent:               []gax.CallOption{},
+		BidiStreamingAnalyzeContent:           []gax.CallOption{},
+		StreamingReactiveCompanionSuggestions: []gax.CallOption{},
 		SuggestArticles: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -257,6 +262,12 @@ func defaultParticipantsRESTCallOptions() *ParticipantsCallOptions {
 		StreamingAnalyzeContent: []gax.CallOption{
 			gax.WithTimeout(220000 * time.Millisecond),
 		},
+		BidiStreamingAnalyzeContent: []gax.CallOption{
+			gax.WithTimeout(1800000 * time.Millisecond),
+		},
+		StreamingReactiveCompanionSuggestions: []gax.CallOption{
+			gax.WithTimeout(5400000 * time.Millisecond),
+		},
 		SuggestArticles: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -320,6 +331,8 @@ type internalParticipantsClient interface {
 	UpdateParticipant(context.Context, *dialogflowpb.UpdateParticipantRequest, ...gax.CallOption) (*dialogflowpb.Participant, error)
 	AnalyzeContent(context.Context, *dialogflowpb.AnalyzeContentRequest, ...gax.CallOption) (*dialogflowpb.AnalyzeContentResponse, error)
 	StreamingAnalyzeContent(context.Context, ...gax.CallOption) (dialogflowpb.Participants_StreamingAnalyzeContentClient, error)
+	BidiStreamingAnalyzeContent(context.Context, ...gax.CallOption) (dialogflowpb.Participants_BidiStreamingAnalyzeContentClient, error)
+	StreamingReactiveCompanionSuggestions(context.Context, ...gax.CallOption) (dialogflowpb.Participants_StreamingReactiveCompanionSuggestionsClient, error)
 	SuggestArticles(context.Context, *dialogflowpb.SuggestArticlesRequest, ...gax.CallOption) (*dialogflowpb.SuggestArticlesResponse, error)
 	SuggestFaqAnswers(context.Context, *dialogflowpb.SuggestFaqAnswersRequest, ...gax.CallOption) (*dialogflowpb.SuggestFaqAnswersResponse, error)
 	SuggestSmartReplies(context.Context, *dialogflowpb.SuggestSmartRepliesRequest, ...gax.CallOption) (*dialogflowpb.SuggestSmartRepliesResponse, error)
@@ -345,7 +358,7 @@ type ParticipantsClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *ParticipantsClient) Close() error {
 	return c.internalClient.Close()
@@ -417,6 +430,21 @@ func (c *ParticipantsClient) StreamingAnalyzeContent(ctx context.Context, opts .
 	return c.internalClient.StreamingAnalyzeContent(ctx, opts...)
 }
 
+// BidiStreamingAnalyzeContent bidirectional endless streaming version of
+// StreamingAnalyzeContent.
+//
+// This method is not supported for the REST transport.
+func (c *ParticipantsClient) BidiStreamingAnalyzeContent(ctx context.Context, opts ...gax.CallOption) (dialogflowpb.Participants_BidiStreamingAnalyzeContentClient, error) {
+	return c.internalClient.BidiStreamingAnalyzeContent(ctx, opts...)
+}
+
+// StreamingReactiveCompanionSuggestions external streaming API for direct human-agent-to-bot chats.
+//
+// This method is not supported for the REST transport.
+func (c *ParticipantsClient) StreamingReactiveCompanionSuggestions(ctx context.Context, opts ...gax.CallOption) (dialogflowpb.Participants_StreamingReactiveCompanionSuggestionsClient, error) {
+	return c.internalClient.StreamingReactiveCompanionSuggestions(ctx, opts...)
+}
+
 // SuggestArticles gets suggested articles for a participant based on specific historical
 // messages.
 func (c *ParticipantsClient) SuggestArticles(ctx context.Context, req *dialogflowpb.SuggestArticlesRequest, opts ...gax.CallOption) (*dialogflowpb.SuggestArticlesResponse, error) {
@@ -446,6 +474,21 @@ func (c *ParticipantsClient) GetLocation(ctx context.Context, req *locationpb.Ge
 }
 
 // ListLocations lists information about the supported locations for this service.
+//
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
+//
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *ParticipantsClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	return c.internalClient.ListLocations(ctx, req, opts...)
 }
@@ -494,6 +537,16 @@ type participantsGRPCClient struct {
 // Service for managing Participants.
 func NewParticipantsClient(ctx context.Context, opts ...option.ClientOption) (*ParticipantsClient, error) {
 	clientOpts := defaultParticipantsGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "dialogflow",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/dialogflow/apiv2",
+			"gcp.client.language": "go",
+			"url.domain":          "dialogflow.googleapis.com",
+		}))
+	}
 	if newParticipantsClientHook != nil {
 		hookOpts, err := newParticipantsClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -517,6 +570,95 @@ func NewParticipantsClient(ctx context.Context, opts ...option.ClientOption) (*P
 		locationsClient:    locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "dialogflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dialogflow/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "dialogflow.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateParticipant = append(client.CallOptions.CreateParticipant, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetParticipant = append(client.CallOptions.GetParticipant, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListParticipants = append(client.CallOptions.ListParticipants, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateParticipant = append(client.CallOptions.UpdateParticipant, gax.WithClientMetrics(metrics))
+		client.CallOptions.AnalyzeContent = append(client.CallOptions.AnalyzeContent, gax.WithClientMetrics(metrics))
+		client.CallOptions.StreamingAnalyzeContent = append(client.CallOptions.StreamingAnalyzeContent, gax.WithClientMetrics(metrics))
+		client.CallOptions.BidiStreamingAnalyzeContent = append(client.CallOptions.BidiStreamingAnalyzeContent, gax.WithClientMetrics(metrics))
+		client.CallOptions.StreamingReactiveCompanionSuggestions = append(client.CallOptions.StreamingReactiveCompanionSuggestions, gax.WithClientMetrics(metrics))
+		client.CallOptions.SuggestArticles = append(client.CallOptions.SuggestArticles, gax.WithClientMetrics(metrics))
+		client.CallOptions.SuggestFaqAnswers = append(client.CallOptions.SuggestFaqAnswers, gax.WithClientMetrics(metrics))
+		client.CallOptions.SuggestSmartReplies = append(client.CallOptions.SuggestSmartReplies, gax.WithClientMetrics(metrics))
+		client.CallOptions.SuggestKnowledgeAssist = append(client.CallOptions.SuggestKnowledgeAssist, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "dialogflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dialogflow/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "dialogflow.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateParticipant = append(client.CallOptions.CreateParticipant, gax.WithClientTracing(tracing))
+		client.CallOptions.GetParticipant = append(client.CallOptions.GetParticipant, gax.WithClientTracing(tracing))
+		client.CallOptions.ListParticipants = append(client.CallOptions.ListParticipants, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateParticipant = append(client.CallOptions.UpdateParticipant, gax.WithClientTracing(tracing))
+		client.CallOptions.AnalyzeContent = append(client.CallOptions.AnalyzeContent, gax.WithClientTracing(tracing))
+		client.CallOptions.StreamingAnalyzeContent = append(client.CallOptions.StreamingAnalyzeContent, gax.WithClientTracing(tracing))
+		client.CallOptions.BidiStreamingAnalyzeContent = append(client.CallOptions.BidiStreamingAnalyzeContent, gax.WithClientTracing(tracing))
+		client.CallOptions.StreamingReactiveCompanionSuggestions = append(client.CallOptions.StreamingReactiveCompanionSuggestions, gax.WithClientTracing(tracing))
+		client.CallOptions.SuggestArticles = append(client.CallOptions.SuggestArticles, gax.WithClientTracing(tracing))
+		client.CallOptions.SuggestFaqAnswers = append(client.CallOptions.SuggestFaqAnswers, gax.WithClientTracing(tracing))
+		client.CallOptions.SuggestSmartReplies = append(client.CallOptions.SuggestSmartReplies, gax.WithClientTracing(tracing))
+		client.CallOptions.SuggestKnowledgeAssist = append(client.CallOptions.SuggestKnowledgeAssist, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "dialogflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dialogflow/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "dialogflow.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateParticipant = append(client.CallOptions.CreateParticipant, gax.WithClientLogging(logging))
+		client.CallOptions.GetParticipant = append(client.CallOptions.GetParticipant, gax.WithClientLogging(logging))
+		client.CallOptions.ListParticipants = append(client.CallOptions.ListParticipants, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateParticipant = append(client.CallOptions.UpdateParticipant, gax.WithClientLogging(logging))
+		client.CallOptions.AnalyzeContent = append(client.CallOptions.AnalyzeContent, gax.WithClientLogging(logging))
+		client.CallOptions.StreamingAnalyzeContent = append(client.CallOptions.StreamingAnalyzeContent, gax.WithClientLogging(logging))
+		client.CallOptions.BidiStreamingAnalyzeContent = append(client.CallOptions.BidiStreamingAnalyzeContent, gax.WithClientLogging(logging))
+		client.CallOptions.StreamingReactiveCompanionSuggestions = append(client.CallOptions.StreamingReactiveCompanionSuggestions, gax.WithClientLogging(logging))
+		client.CallOptions.SuggestArticles = append(client.CallOptions.SuggestArticles, gax.WithClientLogging(logging))
+		client.CallOptions.SuggestFaqAnswers = append(client.CallOptions.SuggestFaqAnswers, gax.WithClientLogging(logging))
+		client.CallOptions.SuggestSmartReplies = append(client.CallOptions.SuggestSmartReplies, gax.WithClientLogging(logging))
+		client.CallOptions.SuggestKnowledgeAssist = append(client.CallOptions.SuggestKnowledgeAssist, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -542,7 +684,7 @@ func (c *participantsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *participantsGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -570,6 +712,16 @@ type participantsRESTClient struct {
 // Service for managing Participants.
 func NewParticipantsRESTClient(ctx context.Context, opts ...option.ClientOption) (*ParticipantsClient, error) {
 	clientOpts := append(defaultParticipantsRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "dialogflow",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/dialogflow/apiv2",
+			"gcp.client.language": "go",
+			"url.domain":          "dialogflow.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -583,6 +735,96 @@ func NewParticipantsRESTClient(ctx context.Context, opts ...option.ClientOption)
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "dialogflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dialogflow/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "dialogflow.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateParticipant = append(callOpts.CreateParticipant, gax.WithClientMetrics(metrics))
+		callOpts.GetParticipant = append(callOpts.GetParticipant, gax.WithClientMetrics(metrics))
+		callOpts.ListParticipants = append(callOpts.ListParticipants, gax.WithClientMetrics(metrics))
+		callOpts.UpdateParticipant = append(callOpts.UpdateParticipant, gax.WithClientMetrics(metrics))
+		callOpts.AnalyzeContent = append(callOpts.AnalyzeContent, gax.WithClientMetrics(metrics))
+		callOpts.StreamingAnalyzeContent = append(callOpts.StreamingAnalyzeContent, gax.WithClientMetrics(metrics))
+		callOpts.BidiStreamingAnalyzeContent = append(callOpts.BidiStreamingAnalyzeContent, gax.WithClientMetrics(metrics))
+		callOpts.StreamingReactiveCompanionSuggestions = append(callOpts.StreamingReactiveCompanionSuggestions, gax.WithClientMetrics(metrics))
+		callOpts.SuggestArticles = append(callOpts.SuggestArticles, gax.WithClientMetrics(metrics))
+		callOpts.SuggestFaqAnswers = append(callOpts.SuggestFaqAnswers, gax.WithClientMetrics(metrics))
+		callOpts.SuggestSmartReplies = append(callOpts.SuggestSmartReplies, gax.WithClientMetrics(metrics))
+		callOpts.SuggestKnowledgeAssist = append(callOpts.SuggestKnowledgeAssist, gax.WithClientMetrics(metrics))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "dialogflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dialogflow/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "dialogflow.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateParticipant = append(callOpts.CreateParticipant, gax.WithClientTracing(tracing))
+		callOpts.GetParticipant = append(callOpts.GetParticipant, gax.WithClientTracing(tracing))
+		callOpts.ListParticipants = append(callOpts.ListParticipants, gax.WithClientTracing(tracing))
+		callOpts.UpdateParticipant = append(callOpts.UpdateParticipant, gax.WithClientTracing(tracing))
+		callOpts.AnalyzeContent = append(callOpts.AnalyzeContent, gax.WithClientTracing(tracing))
+		callOpts.StreamingAnalyzeContent = append(callOpts.StreamingAnalyzeContent, gax.WithClientTracing(tracing))
+		callOpts.BidiStreamingAnalyzeContent = append(callOpts.BidiStreamingAnalyzeContent, gax.WithClientTracing(tracing))
+		callOpts.StreamingReactiveCompanionSuggestions = append(callOpts.StreamingReactiveCompanionSuggestions, gax.WithClientTracing(tracing))
+		callOpts.SuggestArticles = append(callOpts.SuggestArticles, gax.WithClientTracing(tracing))
+		callOpts.SuggestFaqAnswers = append(callOpts.SuggestFaqAnswers, gax.WithClientTracing(tracing))
+		callOpts.SuggestSmartReplies = append(callOpts.SuggestSmartReplies, gax.WithClientTracing(tracing))
+		callOpts.SuggestKnowledgeAssist = append(callOpts.SuggestKnowledgeAssist, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "dialogflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dialogflow/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "dialogflow.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateParticipant = append(callOpts.CreateParticipant, gax.WithClientLogging(logging))
+		callOpts.GetParticipant = append(callOpts.GetParticipant, gax.WithClientLogging(logging))
+		callOpts.ListParticipants = append(callOpts.ListParticipants, gax.WithClientLogging(logging))
+		callOpts.UpdateParticipant = append(callOpts.UpdateParticipant, gax.WithClientLogging(logging))
+		callOpts.AnalyzeContent = append(callOpts.AnalyzeContent, gax.WithClientLogging(logging))
+		callOpts.StreamingAnalyzeContent = append(callOpts.StreamingAnalyzeContent, gax.WithClientLogging(logging))
+		callOpts.BidiStreamingAnalyzeContent = append(callOpts.BidiStreamingAnalyzeContent, gax.WithClientLogging(logging))
+		callOpts.StreamingReactiveCompanionSuggestions = append(callOpts.StreamingReactiveCompanionSuggestions, gax.WithClientLogging(logging))
+		callOpts.SuggestArticles = append(callOpts.SuggestArticles, gax.WithClientLogging(logging))
+		callOpts.SuggestFaqAnswers = append(callOpts.SuggestFaqAnswers, gax.WithClientLogging(logging))
+		callOpts.SuggestSmartReplies = append(callOpts.SuggestSmartReplies, gax.WithClientLogging(logging))
+		callOpts.SuggestKnowledgeAssist = append(callOpts.SuggestKnowledgeAssist, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	return &ParticipantsClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -610,7 +852,7 @@ func (c *participantsRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *participantsRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -629,6 +871,9 @@ func (c *participantsGRPCClient) CreateParticipant(ctx context.Context, req *dia
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2.Participants/CreateParticipant")
+	}
 	opts = append((*c.CallOptions).CreateParticipant[0:len((*c.CallOptions).CreateParticipant):len((*c.CallOptions).CreateParticipant)], opts...)
 	var resp *dialogflowpb.Participant
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -647,6 +892,9 @@ func (c *participantsGRPCClient) GetParticipant(ctx context.Context, req *dialog
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2.Participants/GetParticipant")
+	}
 	opts = append((*c.CallOptions).GetParticipant[0:len((*c.CallOptions).GetParticipant):len((*c.CallOptions).GetParticipant)], opts...)
 	var resp *dialogflowpb.Participant
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -665,9 +913,12 @@ func (c *participantsGRPCClient) ListParticipants(ctx context.Context, req *dial
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2.Participants/ListParticipants")
+	}
 	opts = append((*c.CallOptions).ListParticipants[0:len((*c.CallOptions).ListParticipants):len((*c.CallOptions).ListParticipants)], opts...)
 	it := &ParticipantIterator{}
-	req = proto.Clone(req).(*dialogflowpb.ListParticipantsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dialogflowpb.Participant, string, error) {
 		resp := &dialogflowpb.ListParticipantsResponse{}
 		if pageToken != "" {
@@ -711,6 +962,9 @@ func (c *participantsGRPCClient) UpdateParticipant(ctx context.Context, req *dia
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2.Participants/UpdateParticipant")
+	}
 	opts = append((*c.CallOptions).UpdateParticipant[0:len((*c.CallOptions).UpdateParticipant):len((*c.CallOptions).UpdateParticipant)], opts...)
 	var resp *dialogflowpb.Participant
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -729,6 +983,9 @@ func (c *participantsGRPCClient) AnalyzeContent(ctx context.Context, req *dialog
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2.Participants/AnalyzeContent")
+	}
 	opts = append((*c.CallOptions).AnalyzeContent[0:len((*c.CallOptions).AnalyzeContent):len((*c.CallOptions).AnalyzeContent)], opts...)
 	var resp *dialogflowpb.AnalyzeContentResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -744,6 +1001,9 @@ func (c *participantsGRPCClient) AnalyzeContent(ctx context.Context, req *dialog
 
 func (c *participantsGRPCClient) StreamingAnalyzeContent(ctx context.Context, opts ...gax.CallOption) (dialogflowpb.Participants_StreamingAnalyzeContentClient, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2.Participants/StreamingAnalyzeContent")
+	}
 	var resp dialogflowpb.Participants_StreamingAnalyzeContentClient
 	opts = append((*c.CallOptions).StreamingAnalyzeContent[0:len((*c.CallOptions).StreamingAnalyzeContent):len((*c.CallOptions).StreamingAnalyzeContent)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -759,11 +1019,54 @@ func (c *participantsGRPCClient) StreamingAnalyzeContent(ctx context.Context, op
 	return resp, nil
 }
 
+func (c *participantsGRPCClient) BidiStreamingAnalyzeContent(ctx context.Context, opts ...gax.CallOption) (dialogflowpb.Participants_BidiStreamingAnalyzeContentClient, error) {
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2.Participants/BidiStreamingAnalyzeContent")
+	}
+	var resp dialogflowpb.Participants_BidiStreamingAnalyzeContentClient
+	opts = append((*c.CallOptions).BidiStreamingAnalyzeContent[0:len((*c.CallOptions).BidiStreamingAnalyzeContent):len((*c.CallOptions).BidiStreamingAnalyzeContent)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "BidiStreamingAnalyzeContent")
+		resp, err = c.participantsClient.BidiStreamingAnalyzeContent(ctx, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "BidiStreamingAnalyzeContent")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *participantsGRPCClient) StreamingReactiveCompanionSuggestions(ctx context.Context, opts ...gax.CallOption) (dialogflowpb.Participants_StreamingReactiveCompanionSuggestionsClient, error) {
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2.Participants/StreamingReactiveCompanionSuggestions")
+	}
+	var resp dialogflowpb.Participants_StreamingReactiveCompanionSuggestionsClient
+	opts = append((*c.CallOptions).StreamingReactiveCompanionSuggestions[0:len((*c.CallOptions).StreamingReactiveCompanionSuggestions):len((*c.CallOptions).StreamingReactiveCompanionSuggestions)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "StreamingReactiveCompanionSuggestions")
+		resp, err = c.participantsClient.StreamingReactiveCompanionSuggestions(ctx, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "StreamingReactiveCompanionSuggestions")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *participantsGRPCClient) SuggestArticles(ctx context.Context, req *dialogflowpb.SuggestArticlesRequest, opts ...gax.CallOption) (*dialogflowpb.SuggestArticlesResponse, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2.Participants/SuggestArticles")
+	}
 	opts = append((*c.CallOptions).SuggestArticles[0:len((*c.CallOptions).SuggestArticles):len((*c.CallOptions).SuggestArticles)], opts...)
 	var resp *dialogflowpb.SuggestArticlesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -782,6 +1085,9 @@ func (c *participantsGRPCClient) SuggestFaqAnswers(ctx context.Context, req *dia
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2.Participants/SuggestFaqAnswers")
+	}
 	opts = append((*c.CallOptions).SuggestFaqAnswers[0:len((*c.CallOptions).SuggestFaqAnswers):len((*c.CallOptions).SuggestFaqAnswers)], opts...)
 	var resp *dialogflowpb.SuggestFaqAnswersResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -800,6 +1106,9 @@ func (c *participantsGRPCClient) SuggestSmartReplies(ctx context.Context, req *d
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2.Participants/SuggestSmartReplies")
+	}
 	opts = append((*c.CallOptions).SuggestSmartReplies[0:len((*c.CallOptions).SuggestSmartReplies):len((*c.CallOptions).SuggestSmartReplies)], opts...)
 	var resp *dialogflowpb.SuggestSmartRepliesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -818,6 +1127,9 @@ func (c *participantsGRPCClient) SuggestKnowledgeAssist(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2.Participants/SuggestKnowledgeAssist")
+	}
 	opts = append((*c.CallOptions).SuggestKnowledgeAssist[0:len((*c.CallOptions).SuggestKnowledgeAssist):len((*c.CallOptions).SuggestKnowledgeAssist)], opts...)
 	var resp *dialogflowpb.SuggestKnowledgeAssistResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -836,6 +1148,9 @@ func (c *participantsGRPCClient) GetLocation(ctx context.Context, req *locationp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -854,9 +1169,12 @@ func (c *participantsGRPCClient) ListLocations(ctx context.Context, req *locatio
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/ListLocations")
+	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -900,6 +1218,9 @@ func (c *participantsGRPCClient) CancelOperation(ctx context.Context, req *longr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -914,6 +1235,9 @@ func (c *participantsGRPCClient) GetOperation(ctx context.Context, req *longrunn
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -932,9 +1256,12 @@ func (c *participantsGRPCClient) ListOperations(ctx context.Context, req *longru
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -999,6 +1326,10 @@ func (c *participantsRESTClient) CreateParticipant(ctx context.Context, req *dia
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2.Participants/CreateParticipant")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{parent=projects/*/conversations/*}/participants")
+	}
 	opts = append((*c.CallOptions).CreateParticipant[0:len((*c.CallOptions).CreateParticipant):len((*c.CallOptions).CreateParticipant)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dialogflowpb.Participant{}
@@ -1049,6 +1380,10 @@ func (c *participantsRESTClient) GetParticipant(ctx context.Context, req *dialog
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2.Participants/GetParticipant")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/conversations/*/participants/*}")
+	}
 	opts = append((*c.CallOptions).GetParticipant[0:len((*c.CallOptions).GetParticipant):len((*c.CallOptions).GetParticipant)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dialogflowpb.Participant{}
@@ -1083,7 +1418,7 @@ func (c *participantsRESTClient) GetParticipant(ctx context.Context, req *dialog
 // ListParticipants returns the list of all participants in the specified conversation.
 func (c *participantsRESTClient) ListParticipants(ctx context.Context, req *dialogflowpb.ListParticipantsRequest, opts ...gax.CallOption) *ParticipantIterator {
 	it := &ParticipantIterator{}
-	req = proto.Clone(req).(*dialogflowpb.ListParticipantsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dialogflowpb.Participant, string, error) {
 		resp := &dialogflowpb.ListParticipantsResponse{}
@@ -1191,6 +1526,10 @@ func (c *participantsRESTClient) UpdateParticipant(ctx context.Context, req *dia
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2.Participants/UpdateParticipant")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{participant.name=projects/*/conversations/*/participants/*}")
+	}
 	opts = append((*c.CallOptions).UpdateParticipant[0:len((*c.CallOptions).UpdateParticipant):len((*c.CallOptions).UpdateParticipant)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dialogflowpb.Participant{}
@@ -1252,6 +1591,10 @@ func (c *participantsRESTClient) AnalyzeContent(ctx context.Context, req *dialog
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2.Participants/AnalyzeContent")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{participant=projects/*/conversations/*/participants/*}:analyzeContent")
+	}
 	opts = append((*c.CallOptions).AnalyzeContent[0:len((*c.CallOptions).AnalyzeContent):len((*c.CallOptions).AnalyzeContent)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dialogflowpb.AnalyzeContentResponse{}
@@ -1304,6 +1647,21 @@ func (c *participantsRESTClient) StreamingAnalyzeContent(ctx context.Context, op
 	return nil, errors.New("StreamingAnalyzeContent not yet supported for REST clients")
 }
 
+// BidiStreamingAnalyzeContent bidirectional endless streaming version of
+// StreamingAnalyzeContent.
+//
+// This method is not supported for the REST transport.
+func (c *participantsRESTClient) BidiStreamingAnalyzeContent(ctx context.Context, opts ...gax.CallOption) (dialogflowpb.Participants_BidiStreamingAnalyzeContentClient, error) {
+	return nil, errors.New("BidiStreamingAnalyzeContent not yet supported for REST clients")
+}
+
+// StreamingReactiveCompanionSuggestions external streaming API for direct human-agent-to-bot chats.
+//
+// This method is not supported for the REST transport.
+func (c *participantsRESTClient) StreamingReactiveCompanionSuggestions(ctx context.Context, opts ...gax.CallOption) (dialogflowpb.Participants_StreamingReactiveCompanionSuggestionsClient, error) {
+	return nil, errors.New("StreamingReactiveCompanionSuggestions not yet supported for REST clients")
+}
+
 // SuggestArticles gets suggested articles for a participant based on specific historical
 // messages.
 func (c *participantsRESTClient) SuggestArticles(ctx context.Context, req *dialogflowpb.SuggestArticlesRequest, opts ...gax.CallOption) (*dialogflowpb.SuggestArticlesResponse, error) {
@@ -1330,6 +1688,10 @@ func (c *participantsRESTClient) SuggestArticles(ctx context.Context, req *dialo
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2.Participants/SuggestArticles")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{parent=projects/*/conversations/*/participants/*}/suggestions:suggestArticles")
+	}
 	opts = append((*c.CallOptions).SuggestArticles[0:len((*c.CallOptions).SuggestArticles):len((*c.CallOptions).SuggestArticles)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dialogflowpb.SuggestArticlesResponse{}
@@ -1387,6 +1749,10 @@ func (c *participantsRESTClient) SuggestFaqAnswers(ctx context.Context, req *dia
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2.Participants/SuggestFaqAnswers")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{parent=projects/*/conversations/*/participants/*}/suggestions:suggestFaqAnswers")
+	}
 	opts = append((*c.CallOptions).SuggestFaqAnswers[0:len((*c.CallOptions).SuggestFaqAnswers):len((*c.CallOptions).SuggestFaqAnswers)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dialogflowpb.SuggestFaqAnswersResponse{}
@@ -1444,6 +1810,10 @@ func (c *participantsRESTClient) SuggestSmartReplies(ctx context.Context, req *d
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2.Participants/SuggestSmartReplies")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{parent=projects/*/conversations/*/participants/*}/suggestions:suggestSmartReplies")
+	}
 	opts = append((*c.CallOptions).SuggestSmartReplies[0:len((*c.CallOptions).SuggestSmartReplies):len((*c.CallOptions).SuggestSmartReplies)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dialogflowpb.SuggestSmartRepliesResponse{}
@@ -1500,6 +1870,10 @@ func (c *participantsRESTClient) SuggestKnowledgeAssist(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2.Participants/SuggestKnowledgeAssist")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{parent=projects/*/conversations/*/participants/*}/suggestions:suggestKnowledgeAssist")
+	}
 	opts = append((*c.CallOptions).SuggestKnowledgeAssist[0:len((*c.CallOptions).SuggestKnowledgeAssist):len((*c.CallOptions).SuggestKnowledgeAssist)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dialogflowpb.SuggestKnowledgeAssistResponse{}
@@ -1550,6 +1924,10 @@ func (c *participantsRESTClient) GetLocation(ctx context.Context, req *locationp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*}")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &locationpb.Location{}
@@ -1582,9 +1960,24 @@ func (c *participantsRESTClient) GetLocation(ctx context.Context, req *locationp
 }
 
 // ListLocations lists information about the supported locations for this service.
+//
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
+//
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *participantsRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -1681,6 +2074,10 @@ func (c *participantsRESTClient) CancelOperation(ctx context.Context, req *longr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/operations/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1716,6 +2113,10 @@ func (c *participantsRESTClient) GetOperation(ctx context.Context, req *longrunn
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -1750,7 +2151,7 @@ func (c *participantsRESTClient) GetOperation(ctx context.Context, req *longrunn
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *participantsRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
@@ -1778,6 +2179,9 @@ func (c *participantsRESTClient) ListOperations(ctx context.Context, req *longru
 		}
 		if req.GetPageToken() != "" {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req.GetReturnPartialSuccess() {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()

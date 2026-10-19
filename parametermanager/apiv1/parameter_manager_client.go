@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import (
 
 	parametermanagerpb "cloud.google.com/go/parametermanager/apiv1/parametermanagerpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -55,6 +56,17 @@ type CallOptions struct {
 	CreateParameterVersion []gax.CallOption
 	UpdateParameterVersion []gax.CallOption
 	DeleteParameterVersion []gax.CallOption
+	ListTemplates          []gax.CallOption
+	GetTemplate            []gax.CallOption
+	CreateTemplate         []gax.CallOption
+	UpdateTemplate         []gax.CallOption
+	DeleteTemplate         []gax.CallOption
+	ListTemplateVersions   []gax.CallOption
+	GetTemplateVersion     []gax.CallOption
+	CreateTemplateVersion  []gax.CallOption
+	UpdateTemplateVersion  []gax.CallOption
+	DeleteTemplateVersion  []gax.CallOption
+	RenderTemplateVersion  []gax.CallOption
 	GetLocation            []gax.CallOption
 	ListLocations          []gax.CallOption
 }
@@ -154,8 +166,19 @@ func defaultCallOptions() *CallOptions {
 		DeleteParameterVersion: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
-		GetLocation:   []gax.CallOption{},
-		ListLocations: []gax.CallOption{},
+		ListTemplates:         []gax.CallOption{},
+		GetTemplate:           []gax.CallOption{},
+		CreateTemplate:        []gax.CallOption{},
+		UpdateTemplate:        []gax.CallOption{},
+		DeleteTemplate:        []gax.CallOption{},
+		ListTemplateVersions:  []gax.CallOption{},
+		GetTemplateVersion:    []gax.CallOption{},
+		CreateTemplateVersion: []gax.CallOption{},
+		UpdateTemplateVersion: []gax.CallOption{},
+		DeleteTemplateVersion: []gax.CallOption{},
+		RenderTemplateVersion: []gax.CallOption{},
+		GetLocation:           []gax.CallOption{},
+		ListLocations:         []gax.CallOption{},
 	}
 }
 
@@ -234,8 +257,19 @@ func defaultRESTCallOptions() *CallOptions {
 		DeleteParameterVersion: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
-		GetLocation:   []gax.CallOption{},
-		ListLocations: []gax.CallOption{},
+		ListTemplates:         []gax.CallOption{},
+		GetTemplate:           []gax.CallOption{},
+		CreateTemplate:        []gax.CallOption{},
+		UpdateTemplate:        []gax.CallOption{},
+		DeleteTemplate:        []gax.CallOption{},
+		ListTemplateVersions:  []gax.CallOption{},
+		GetTemplateVersion:    []gax.CallOption{},
+		CreateTemplateVersion: []gax.CallOption{},
+		UpdateTemplateVersion: []gax.CallOption{},
+		DeleteTemplateVersion: []gax.CallOption{},
+		RenderTemplateVersion: []gax.CallOption{},
+		GetLocation:           []gax.CallOption{},
+		ListLocations:         []gax.CallOption{},
 	}
 }
 
@@ -255,6 +289,17 @@ type internalClient interface {
 	CreateParameterVersion(context.Context, *parametermanagerpb.CreateParameterVersionRequest, ...gax.CallOption) (*parametermanagerpb.ParameterVersion, error)
 	UpdateParameterVersion(context.Context, *parametermanagerpb.UpdateParameterVersionRequest, ...gax.CallOption) (*parametermanagerpb.ParameterVersion, error)
 	DeleteParameterVersion(context.Context, *parametermanagerpb.DeleteParameterVersionRequest, ...gax.CallOption) error
+	ListTemplates(context.Context, *parametermanagerpb.ListTemplatesRequest, ...gax.CallOption) *TemplateIterator
+	GetTemplate(context.Context, *parametermanagerpb.GetTemplateRequest, ...gax.CallOption) (*parametermanagerpb.Template, error)
+	CreateTemplate(context.Context, *parametermanagerpb.CreateTemplateRequest, ...gax.CallOption) (*parametermanagerpb.Template, error)
+	UpdateTemplate(context.Context, *parametermanagerpb.UpdateTemplateRequest, ...gax.CallOption) (*parametermanagerpb.Template, error)
+	DeleteTemplate(context.Context, *parametermanagerpb.DeleteTemplateRequest, ...gax.CallOption) error
+	ListTemplateVersions(context.Context, *parametermanagerpb.ListTemplateVersionsRequest, ...gax.CallOption) *TemplateVersionIterator
+	GetTemplateVersion(context.Context, *parametermanagerpb.GetTemplateVersionRequest, ...gax.CallOption) (*parametermanagerpb.TemplateVersion, error)
+	CreateTemplateVersion(context.Context, *parametermanagerpb.CreateTemplateVersionRequest, ...gax.CallOption) (*parametermanagerpb.TemplateVersion, error)
+	UpdateTemplateVersion(context.Context, *parametermanagerpb.UpdateTemplateVersionRequest, ...gax.CallOption) (*parametermanagerpb.TemplateVersion, error)
+	DeleteTemplateVersion(context.Context, *parametermanagerpb.DeleteTemplateVersionRequest, ...gax.CallOption) error
+	RenderTemplateVersion(context.Context, *parametermanagerpb.RenderTemplateVersionRequest, ...gax.CallOption) (*parametermanagerpb.RenderTemplateVersionResponse, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 }
@@ -273,7 +318,7 @@ type Client struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *Client) Close() error {
 	return c.internalClient.Close()
@@ -349,12 +394,82 @@ func (c *Client) DeleteParameterVersion(ctx context.Context, req *parametermanag
 	return c.internalClient.DeleteParameterVersion(ctx, req, opts...)
 }
 
+// ListTemplates lists Templates in a given project and location.
+func (c *Client) ListTemplates(ctx context.Context, req *parametermanagerpb.ListTemplatesRequest, opts ...gax.CallOption) *TemplateIterator {
+	return c.internalClient.ListTemplates(ctx, req, opts...)
+}
+
+// GetTemplate gets details of a single Template.
+func (c *Client) GetTemplate(ctx context.Context, req *parametermanagerpb.GetTemplateRequest, opts ...gax.CallOption) (*parametermanagerpb.Template, error) {
+	return c.internalClient.GetTemplate(ctx, req, opts...)
+}
+
+// CreateTemplate creates a new Template in a given project and location.
+func (c *Client) CreateTemplate(ctx context.Context, req *parametermanagerpb.CreateTemplateRequest, opts ...gax.CallOption) (*parametermanagerpb.Template, error) {
+	return c.internalClient.CreateTemplate(ctx, req, opts...)
+}
+
+// UpdateTemplate updates a single Template.
+func (c *Client) UpdateTemplate(ctx context.Context, req *parametermanagerpb.UpdateTemplateRequest, opts ...gax.CallOption) (*parametermanagerpb.Template, error) {
+	return c.internalClient.UpdateTemplate(ctx, req, opts...)
+}
+
+// DeleteTemplate deletes a single Template.
+func (c *Client) DeleteTemplate(ctx context.Context, req *parametermanagerpb.DeleteTemplateRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteTemplate(ctx, req, opts...)
+}
+
+// ListTemplateVersions lists TemplateVersions in a given project, location, and template.
+func (c *Client) ListTemplateVersions(ctx context.Context, req *parametermanagerpb.ListTemplateVersionsRequest, opts ...gax.CallOption) *TemplateVersionIterator {
+	return c.internalClient.ListTemplateVersions(ctx, req, opts...)
+}
+
+// GetTemplateVersion gets details of a single TemplateVersion.
+func (c *Client) GetTemplateVersion(ctx context.Context, req *parametermanagerpb.GetTemplateVersionRequest, opts ...gax.CallOption) (*parametermanagerpb.TemplateVersion, error) {
+	return c.internalClient.GetTemplateVersion(ctx, req, opts...)
+}
+
+// CreateTemplateVersion creates a new TemplateVersion in a given project, location, and template.
+func (c *Client) CreateTemplateVersion(ctx context.Context, req *parametermanagerpb.CreateTemplateVersionRequest, opts ...gax.CallOption) (*parametermanagerpb.TemplateVersion, error) {
+	return c.internalClient.CreateTemplateVersion(ctx, req, opts...)
+}
+
+// UpdateTemplateVersion updates a single TemplateVersion.
+func (c *Client) UpdateTemplateVersion(ctx context.Context, req *parametermanagerpb.UpdateTemplateVersionRequest, opts ...gax.CallOption) (*parametermanagerpb.TemplateVersion, error) {
+	return c.internalClient.UpdateTemplateVersion(ctx, req, opts...)
+}
+
+// DeleteTemplateVersion deletes a single TemplateVersion.
+func (c *Client) DeleteTemplateVersion(ctx context.Context, req *parametermanagerpb.DeleteTemplateVersionRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteTemplateVersion(ctx, req, opts...)
+}
+
+// RenderTemplateVersion gets rendered version of a TemplateVersion.
+func (c *Client) RenderTemplateVersion(ctx context.Context, req *parametermanagerpb.RenderTemplateVersionRequest, opts ...gax.CallOption) (*parametermanagerpb.RenderTemplateVersionResponse, error) {
+	return c.internalClient.RenderTemplateVersion(ctx, req, opts...)
+}
+
 // GetLocation gets information about a location.
 func (c *Client) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	return c.internalClient.GetLocation(ctx, req, opts...)
 }
 
 // ListLocations lists information about the supported locations for this service.
+//
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
+//
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *Client) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	return c.internalClient.ListLocations(ctx, req, opts...)
 }
@@ -386,6 +501,16 @@ type gRPCClient struct {
 // Service describing handlers for resources
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "parametermanager",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/parametermanager/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "parametermanager.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -408,6 +533,116 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		locationsClient: locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "parametermanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/parametermanager/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "parametermanager.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListParameters = append(client.CallOptions.ListParameters, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetParameter = append(client.CallOptions.GetParameter, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateParameter = append(client.CallOptions.CreateParameter, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateParameter = append(client.CallOptions.UpdateParameter, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteParameter = append(client.CallOptions.DeleteParameter, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListParameterVersions = append(client.CallOptions.ListParameterVersions, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetParameterVersion = append(client.CallOptions.GetParameterVersion, gax.WithClientMetrics(metrics))
+		client.CallOptions.RenderParameterVersion = append(client.CallOptions.RenderParameterVersion, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateParameterVersion = append(client.CallOptions.CreateParameterVersion, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateParameterVersion = append(client.CallOptions.UpdateParameterVersion, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteParameterVersion = append(client.CallOptions.DeleteParameterVersion, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListTemplates = append(client.CallOptions.ListTemplates, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetTemplate = append(client.CallOptions.GetTemplate, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateTemplate = append(client.CallOptions.CreateTemplate, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateTemplate = append(client.CallOptions.UpdateTemplate, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteTemplate = append(client.CallOptions.DeleteTemplate, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListTemplateVersions = append(client.CallOptions.ListTemplateVersions, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetTemplateVersion = append(client.CallOptions.GetTemplateVersion, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateTemplateVersion = append(client.CallOptions.CreateTemplateVersion, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateTemplateVersion = append(client.CallOptions.UpdateTemplateVersion, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteTemplateVersion = append(client.CallOptions.DeleteTemplateVersion, gax.WithClientMetrics(metrics))
+		client.CallOptions.RenderTemplateVersion = append(client.CallOptions.RenderTemplateVersion, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "parametermanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/parametermanager/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "parametermanager.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListParameters = append(client.CallOptions.ListParameters, gax.WithClientTracing(tracing))
+		client.CallOptions.GetParameter = append(client.CallOptions.GetParameter, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateParameter = append(client.CallOptions.CreateParameter, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateParameter = append(client.CallOptions.UpdateParameter, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteParameter = append(client.CallOptions.DeleteParameter, gax.WithClientTracing(tracing))
+		client.CallOptions.ListParameterVersions = append(client.CallOptions.ListParameterVersions, gax.WithClientTracing(tracing))
+		client.CallOptions.GetParameterVersion = append(client.CallOptions.GetParameterVersion, gax.WithClientTracing(tracing))
+		client.CallOptions.RenderParameterVersion = append(client.CallOptions.RenderParameterVersion, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateParameterVersion = append(client.CallOptions.CreateParameterVersion, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateParameterVersion = append(client.CallOptions.UpdateParameterVersion, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteParameterVersion = append(client.CallOptions.DeleteParameterVersion, gax.WithClientTracing(tracing))
+		client.CallOptions.ListTemplates = append(client.CallOptions.ListTemplates, gax.WithClientTracing(tracing))
+		client.CallOptions.GetTemplate = append(client.CallOptions.GetTemplate, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateTemplate = append(client.CallOptions.CreateTemplate, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateTemplate = append(client.CallOptions.UpdateTemplate, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteTemplate = append(client.CallOptions.DeleteTemplate, gax.WithClientTracing(tracing))
+		client.CallOptions.ListTemplateVersions = append(client.CallOptions.ListTemplateVersions, gax.WithClientTracing(tracing))
+		client.CallOptions.GetTemplateVersion = append(client.CallOptions.GetTemplateVersion, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateTemplateVersion = append(client.CallOptions.CreateTemplateVersion, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateTemplateVersion = append(client.CallOptions.UpdateTemplateVersion, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteTemplateVersion = append(client.CallOptions.DeleteTemplateVersion, gax.WithClientTracing(tracing))
+		client.CallOptions.RenderTemplateVersion = append(client.CallOptions.RenderTemplateVersion, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "parametermanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/parametermanager/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "parametermanager.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListParameters = append(client.CallOptions.ListParameters, gax.WithClientLogging(logging))
+		client.CallOptions.GetParameter = append(client.CallOptions.GetParameter, gax.WithClientLogging(logging))
+		client.CallOptions.CreateParameter = append(client.CallOptions.CreateParameter, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateParameter = append(client.CallOptions.UpdateParameter, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteParameter = append(client.CallOptions.DeleteParameter, gax.WithClientLogging(logging))
+		client.CallOptions.ListParameterVersions = append(client.CallOptions.ListParameterVersions, gax.WithClientLogging(logging))
+		client.CallOptions.GetParameterVersion = append(client.CallOptions.GetParameterVersion, gax.WithClientLogging(logging))
+		client.CallOptions.RenderParameterVersion = append(client.CallOptions.RenderParameterVersion, gax.WithClientLogging(logging))
+		client.CallOptions.CreateParameterVersion = append(client.CallOptions.CreateParameterVersion, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateParameterVersion = append(client.CallOptions.UpdateParameterVersion, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteParameterVersion = append(client.CallOptions.DeleteParameterVersion, gax.WithClientLogging(logging))
+		client.CallOptions.ListTemplates = append(client.CallOptions.ListTemplates, gax.WithClientLogging(logging))
+		client.CallOptions.GetTemplate = append(client.CallOptions.GetTemplate, gax.WithClientLogging(logging))
+		client.CallOptions.CreateTemplate = append(client.CallOptions.CreateTemplate, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateTemplate = append(client.CallOptions.UpdateTemplate, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteTemplate = append(client.CallOptions.DeleteTemplate, gax.WithClientLogging(logging))
+		client.CallOptions.ListTemplateVersions = append(client.CallOptions.ListTemplateVersions, gax.WithClientLogging(logging))
+		client.CallOptions.GetTemplateVersion = append(client.CallOptions.GetTemplateVersion, gax.WithClientLogging(logging))
+		client.CallOptions.CreateTemplateVersion = append(client.CallOptions.CreateTemplateVersion, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateTemplateVersion = append(client.CallOptions.UpdateTemplateVersion, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteTemplateVersion = append(client.CallOptions.DeleteTemplateVersion, gax.WithClientLogging(logging))
+		client.CallOptions.RenderTemplateVersion = append(client.CallOptions.RenderTemplateVersion, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -433,7 +668,7 @@ func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *gRPCClient) Close() error {
 	return c.connPool.Close()
@@ -461,6 +696,16 @@ type restClient struct {
 // Service describing handlers for resources
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "parametermanager",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/parametermanager/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "parametermanager.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -474,6 +719,117 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "parametermanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/parametermanager/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "parametermanager.googleapis.com",
+			}),
+		)
+
+		callOpts.ListParameters = append(callOpts.ListParameters, gax.WithClientMetrics(metrics))
+		callOpts.GetParameter = append(callOpts.GetParameter, gax.WithClientMetrics(metrics))
+		callOpts.CreateParameter = append(callOpts.CreateParameter, gax.WithClientMetrics(metrics))
+		callOpts.UpdateParameter = append(callOpts.UpdateParameter, gax.WithClientMetrics(metrics))
+		callOpts.DeleteParameter = append(callOpts.DeleteParameter, gax.WithClientMetrics(metrics))
+		callOpts.ListParameterVersions = append(callOpts.ListParameterVersions, gax.WithClientMetrics(metrics))
+		callOpts.GetParameterVersion = append(callOpts.GetParameterVersion, gax.WithClientMetrics(metrics))
+		callOpts.RenderParameterVersion = append(callOpts.RenderParameterVersion, gax.WithClientMetrics(metrics))
+		callOpts.CreateParameterVersion = append(callOpts.CreateParameterVersion, gax.WithClientMetrics(metrics))
+		callOpts.UpdateParameterVersion = append(callOpts.UpdateParameterVersion, gax.WithClientMetrics(metrics))
+		callOpts.DeleteParameterVersion = append(callOpts.DeleteParameterVersion, gax.WithClientMetrics(metrics))
+		callOpts.ListTemplates = append(callOpts.ListTemplates, gax.WithClientMetrics(metrics))
+		callOpts.GetTemplate = append(callOpts.GetTemplate, gax.WithClientMetrics(metrics))
+		callOpts.CreateTemplate = append(callOpts.CreateTemplate, gax.WithClientMetrics(metrics))
+		callOpts.UpdateTemplate = append(callOpts.UpdateTemplate, gax.WithClientMetrics(metrics))
+		callOpts.DeleteTemplate = append(callOpts.DeleteTemplate, gax.WithClientMetrics(metrics))
+		callOpts.ListTemplateVersions = append(callOpts.ListTemplateVersions, gax.WithClientMetrics(metrics))
+		callOpts.GetTemplateVersion = append(callOpts.GetTemplateVersion, gax.WithClientMetrics(metrics))
+		callOpts.CreateTemplateVersion = append(callOpts.CreateTemplateVersion, gax.WithClientMetrics(metrics))
+		callOpts.UpdateTemplateVersion = append(callOpts.UpdateTemplateVersion, gax.WithClientMetrics(metrics))
+		callOpts.DeleteTemplateVersion = append(callOpts.DeleteTemplateVersion, gax.WithClientMetrics(metrics))
+		callOpts.RenderTemplateVersion = append(callOpts.RenderTemplateVersion, gax.WithClientMetrics(metrics))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "parametermanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/parametermanager/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "parametermanager.googleapis.com",
+			}),
+		)
+
+		callOpts.ListParameters = append(callOpts.ListParameters, gax.WithClientTracing(tracing))
+		callOpts.GetParameter = append(callOpts.GetParameter, gax.WithClientTracing(tracing))
+		callOpts.CreateParameter = append(callOpts.CreateParameter, gax.WithClientTracing(tracing))
+		callOpts.UpdateParameter = append(callOpts.UpdateParameter, gax.WithClientTracing(tracing))
+		callOpts.DeleteParameter = append(callOpts.DeleteParameter, gax.WithClientTracing(tracing))
+		callOpts.ListParameterVersions = append(callOpts.ListParameterVersions, gax.WithClientTracing(tracing))
+		callOpts.GetParameterVersion = append(callOpts.GetParameterVersion, gax.WithClientTracing(tracing))
+		callOpts.RenderParameterVersion = append(callOpts.RenderParameterVersion, gax.WithClientTracing(tracing))
+		callOpts.CreateParameterVersion = append(callOpts.CreateParameterVersion, gax.WithClientTracing(tracing))
+		callOpts.UpdateParameterVersion = append(callOpts.UpdateParameterVersion, gax.WithClientTracing(tracing))
+		callOpts.DeleteParameterVersion = append(callOpts.DeleteParameterVersion, gax.WithClientTracing(tracing))
+		callOpts.ListTemplates = append(callOpts.ListTemplates, gax.WithClientTracing(tracing))
+		callOpts.GetTemplate = append(callOpts.GetTemplate, gax.WithClientTracing(tracing))
+		callOpts.CreateTemplate = append(callOpts.CreateTemplate, gax.WithClientTracing(tracing))
+		callOpts.UpdateTemplate = append(callOpts.UpdateTemplate, gax.WithClientTracing(tracing))
+		callOpts.DeleteTemplate = append(callOpts.DeleteTemplate, gax.WithClientTracing(tracing))
+		callOpts.ListTemplateVersions = append(callOpts.ListTemplateVersions, gax.WithClientTracing(tracing))
+		callOpts.GetTemplateVersion = append(callOpts.GetTemplateVersion, gax.WithClientTracing(tracing))
+		callOpts.CreateTemplateVersion = append(callOpts.CreateTemplateVersion, gax.WithClientTracing(tracing))
+		callOpts.UpdateTemplateVersion = append(callOpts.UpdateTemplateVersion, gax.WithClientTracing(tracing))
+		callOpts.DeleteTemplateVersion = append(callOpts.DeleteTemplateVersion, gax.WithClientTracing(tracing))
+		callOpts.RenderTemplateVersion = append(callOpts.RenderTemplateVersion, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "parametermanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/parametermanager/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "parametermanager.googleapis.com",
+			}),
+		)
+
+		callOpts.ListParameters = append(callOpts.ListParameters, gax.WithClientLogging(logging))
+		callOpts.GetParameter = append(callOpts.GetParameter, gax.WithClientLogging(logging))
+		callOpts.CreateParameter = append(callOpts.CreateParameter, gax.WithClientLogging(logging))
+		callOpts.UpdateParameter = append(callOpts.UpdateParameter, gax.WithClientLogging(logging))
+		callOpts.DeleteParameter = append(callOpts.DeleteParameter, gax.WithClientLogging(logging))
+		callOpts.ListParameterVersions = append(callOpts.ListParameterVersions, gax.WithClientLogging(logging))
+		callOpts.GetParameterVersion = append(callOpts.GetParameterVersion, gax.WithClientLogging(logging))
+		callOpts.RenderParameterVersion = append(callOpts.RenderParameterVersion, gax.WithClientLogging(logging))
+		callOpts.CreateParameterVersion = append(callOpts.CreateParameterVersion, gax.WithClientLogging(logging))
+		callOpts.UpdateParameterVersion = append(callOpts.UpdateParameterVersion, gax.WithClientLogging(logging))
+		callOpts.DeleteParameterVersion = append(callOpts.DeleteParameterVersion, gax.WithClientLogging(logging))
+		callOpts.ListTemplates = append(callOpts.ListTemplates, gax.WithClientLogging(logging))
+		callOpts.GetTemplate = append(callOpts.GetTemplate, gax.WithClientLogging(logging))
+		callOpts.CreateTemplate = append(callOpts.CreateTemplate, gax.WithClientLogging(logging))
+		callOpts.UpdateTemplate = append(callOpts.UpdateTemplate, gax.WithClientLogging(logging))
+		callOpts.DeleteTemplate = append(callOpts.DeleteTemplate, gax.WithClientLogging(logging))
+		callOpts.ListTemplateVersions = append(callOpts.ListTemplateVersions, gax.WithClientLogging(logging))
+		callOpts.GetTemplateVersion = append(callOpts.GetTemplateVersion, gax.WithClientLogging(logging))
+		callOpts.CreateTemplateVersion = append(callOpts.CreateTemplateVersion, gax.WithClientLogging(logging))
+		callOpts.UpdateTemplateVersion = append(callOpts.UpdateTemplateVersion, gax.WithClientLogging(logging))
+		callOpts.DeleteTemplateVersion = append(callOpts.DeleteTemplateVersion, gax.WithClientLogging(logging))
+		callOpts.RenderTemplateVersion = append(callOpts.RenderTemplateVersion, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -501,7 +857,7 @@ func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *restClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -520,9 +876,12 @@ func (c *gRPCClient) ListParameters(ctx context.Context, req *parametermanagerpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/ListParameters")
+	}
 	opts = append((*c.CallOptions).ListParameters[0:len((*c.CallOptions).ListParameters):len((*c.CallOptions).ListParameters)], opts...)
 	it := &ParameterIterator{}
-	req = proto.Clone(req).(*parametermanagerpb.ListParametersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*parametermanagerpb.Parameter, string, error) {
 		resp := &parametermanagerpb.ListParametersResponse{}
 		if pageToken != "" {
@@ -566,6 +925,9 @@ func (c *gRPCClient) GetParameter(ctx context.Context, req *parametermanagerpb.G
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/GetParameter")
+	}
 	opts = append((*c.CallOptions).GetParameter[0:len((*c.CallOptions).GetParameter):len((*c.CallOptions).GetParameter)], opts...)
 	var resp *parametermanagerpb.Parameter
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -584,6 +946,9 @@ func (c *gRPCClient) CreateParameter(ctx context.Context, req *parametermanagerp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/CreateParameter")
+	}
 	opts = append((*c.CallOptions).CreateParameter[0:len((*c.CallOptions).CreateParameter):len((*c.CallOptions).CreateParameter)], opts...)
 	var resp *parametermanagerpb.Parameter
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -602,6 +967,9 @@ func (c *gRPCClient) UpdateParameter(ctx context.Context, req *parametermanagerp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/UpdateParameter")
+	}
 	opts = append((*c.CallOptions).UpdateParameter[0:len((*c.CallOptions).UpdateParameter):len((*c.CallOptions).UpdateParameter)], opts...)
 	var resp *parametermanagerpb.Parameter
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -620,6 +988,9 @@ func (c *gRPCClient) DeleteParameter(ctx context.Context, req *parametermanagerp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/DeleteParameter")
+	}
 	opts = append((*c.CallOptions).DeleteParameter[0:len((*c.CallOptions).DeleteParameter):len((*c.CallOptions).DeleteParameter)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -634,9 +1005,12 @@ func (c *gRPCClient) ListParameterVersions(ctx context.Context, req *parameterma
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/ListParameterVersions")
+	}
 	opts = append((*c.CallOptions).ListParameterVersions[0:len((*c.CallOptions).ListParameterVersions):len((*c.CallOptions).ListParameterVersions)], opts...)
 	it := &ParameterVersionIterator{}
-	req = proto.Clone(req).(*parametermanagerpb.ListParameterVersionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*parametermanagerpb.ParameterVersion, string, error) {
 		resp := &parametermanagerpb.ListParameterVersionsResponse{}
 		if pageToken != "" {
@@ -680,6 +1054,9 @@ func (c *gRPCClient) GetParameterVersion(ctx context.Context, req *parametermana
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/GetParameterVersion")
+	}
 	opts = append((*c.CallOptions).GetParameterVersion[0:len((*c.CallOptions).GetParameterVersion):len((*c.CallOptions).GetParameterVersion)], opts...)
 	var resp *parametermanagerpb.ParameterVersion
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -698,6 +1075,9 @@ func (c *gRPCClient) RenderParameterVersion(ctx context.Context, req *parameterm
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/RenderParameterVersion")
+	}
 	opts = append((*c.CallOptions).RenderParameterVersion[0:len((*c.CallOptions).RenderParameterVersion):len((*c.CallOptions).RenderParameterVersion)], opts...)
 	var resp *parametermanagerpb.RenderParameterVersionResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -716,6 +1096,9 @@ func (c *gRPCClient) CreateParameterVersion(ctx context.Context, req *parameterm
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/CreateParameterVersion")
+	}
 	opts = append((*c.CallOptions).CreateParameterVersion[0:len((*c.CallOptions).CreateParameterVersion):len((*c.CallOptions).CreateParameterVersion)], opts...)
 	var resp *parametermanagerpb.ParameterVersion
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -734,6 +1117,9 @@ func (c *gRPCClient) UpdateParameterVersion(ctx context.Context, req *parameterm
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/UpdateParameterVersion")
+	}
 	opts = append((*c.CallOptions).UpdateParameterVersion[0:len((*c.CallOptions).UpdateParameterVersion):len((*c.CallOptions).UpdateParameterVersion)], opts...)
 	var resp *parametermanagerpb.ParameterVersion
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -752,6 +1138,9 @@ func (c *gRPCClient) DeleteParameterVersion(ctx context.Context, req *parameterm
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/DeleteParameterVersion")
+	}
 	opts = append((*c.CallOptions).DeleteParameterVersion[0:len((*c.CallOptions).DeleteParameterVersion):len((*c.CallOptions).DeleteParameterVersion)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -761,11 +1150,293 @@ func (c *gRPCClient) DeleteParameterVersion(ctx context.Context, req *parameterm
 	return err
 }
 
+func (c *gRPCClient) ListTemplates(ctx context.Context, req *parametermanagerpb.ListTemplatesRequest, opts ...gax.CallOption) *TemplateIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/ListTemplates")
+	}
+	opts = append((*c.CallOptions).ListTemplates[0:len((*c.CallOptions).ListTemplates):len((*c.CallOptions).ListTemplates)], opts...)
+	it := &TemplateIterator{}
+	req = proto.CloneOf(req)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*parametermanagerpb.Template, string, error) {
+		resp := &parametermanagerpb.ListTemplatesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListTemplates, req, settings.GRPC, c.logger, "ListTemplates")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetTemplates(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) GetTemplate(ctx context.Context, req *parametermanagerpb.GetTemplateRequest, opts ...gax.CallOption) (*parametermanagerpb.Template, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/GetTemplate")
+	}
+	opts = append((*c.CallOptions).GetTemplate[0:len((*c.CallOptions).GetTemplate):len((*c.CallOptions).GetTemplate)], opts...)
+	var resp *parametermanagerpb.Template
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetTemplate, req, settings.GRPC, c.logger, "GetTemplate")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) CreateTemplate(ctx context.Context, req *parametermanagerpb.CreateTemplateRequest, opts ...gax.CallOption) (*parametermanagerpb.Template, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/CreateTemplate")
+	}
+	opts = append((*c.CallOptions).CreateTemplate[0:len((*c.CallOptions).CreateTemplate):len((*c.CallOptions).CreateTemplate)], opts...)
+	var resp *parametermanagerpb.Template
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreateTemplate, req, settings.GRPC, c.logger, "CreateTemplate")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) UpdateTemplate(ctx context.Context, req *parametermanagerpb.UpdateTemplateRequest, opts ...gax.CallOption) (*parametermanagerpb.Template, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "template.name", url.QueryEscape(req.GetTemplate().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/UpdateTemplate")
+	}
+	opts = append((*c.CallOptions).UpdateTemplate[0:len((*c.CallOptions).UpdateTemplate):len((*c.CallOptions).UpdateTemplate)], opts...)
+	var resp *parametermanagerpb.Template
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdateTemplate, req, settings.GRPC, c.logger, "UpdateTemplate")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) DeleteTemplate(ctx context.Context, req *parametermanagerpb.DeleteTemplateRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/DeleteTemplate")
+	}
+	opts = append((*c.CallOptions).DeleteTemplate[0:len((*c.CallOptions).DeleteTemplate):len((*c.CallOptions).DeleteTemplate)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = executeRPC(ctx, c.client.DeleteTemplate, req, settings.GRPC, c.logger, "DeleteTemplate")
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *gRPCClient) ListTemplateVersions(ctx context.Context, req *parametermanagerpb.ListTemplateVersionsRequest, opts ...gax.CallOption) *TemplateVersionIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/ListTemplateVersions")
+	}
+	opts = append((*c.CallOptions).ListTemplateVersions[0:len((*c.CallOptions).ListTemplateVersions):len((*c.CallOptions).ListTemplateVersions)], opts...)
+	it := &TemplateVersionIterator{}
+	req = proto.CloneOf(req)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*parametermanagerpb.TemplateVersion, string, error) {
+		resp := &parametermanagerpb.ListTemplateVersionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListTemplateVersions, req, settings.GRPC, c.logger, "ListTemplateVersions")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetTemplateVersions(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) GetTemplateVersion(ctx context.Context, req *parametermanagerpb.GetTemplateVersionRequest, opts ...gax.CallOption) (*parametermanagerpb.TemplateVersion, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/GetTemplateVersion")
+	}
+	opts = append((*c.CallOptions).GetTemplateVersion[0:len((*c.CallOptions).GetTemplateVersion):len((*c.CallOptions).GetTemplateVersion)], opts...)
+	var resp *parametermanagerpb.TemplateVersion
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetTemplateVersion, req, settings.GRPC, c.logger, "GetTemplateVersion")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) CreateTemplateVersion(ctx context.Context, req *parametermanagerpb.CreateTemplateVersionRequest, opts ...gax.CallOption) (*parametermanagerpb.TemplateVersion, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/CreateTemplateVersion")
+	}
+	opts = append((*c.CallOptions).CreateTemplateVersion[0:len((*c.CallOptions).CreateTemplateVersion):len((*c.CallOptions).CreateTemplateVersion)], opts...)
+	var resp *parametermanagerpb.TemplateVersion
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreateTemplateVersion, req, settings.GRPC, c.logger, "CreateTemplateVersion")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) UpdateTemplateVersion(ctx context.Context, req *parametermanagerpb.UpdateTemplateVersionRequest, opts ...gax.CallOption) (*parametermanagerpb.TemplateVersion, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "template_version.name", url.QueryEscape(req.GetTemplateVersion().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/UpdateTemplateVersion")
+	}
+	opts = append((*c.CallOptions).UpdateTemplateVersion[0:len((*c.CallOptions).UpdateTemplateVersion):len((*c.CallOptions).UpdateTemplateVersion)], opts...)
+	var resp *parametermanagerpb.TemplateVersion
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdateTemplateVersion, req, settings.GRPC, c.logger, "UpdateTemplateVersion")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) DeleteTemplateVersion(ctx context.Context, req *parametermanagerpb.DeleteTemplateVersionRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/DeleteTemplateVersion")
+	}
+	opts = append((*c.CallOptions).DeleteTemplateVersion[0:len((*c.CallOptions).DeleteTemplateVersion):len((*c.CallOptions).DeleteTemplateVersion)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = executeRPC(ctx, c.client.DeleteTemplateVersion, req, settings.GRPC, c.logger, "DeleteTemplateVersion")
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *gRPCClient) RenderTemplateVersion(ctx context.Context, req *parametermanagerpb.RenderTemplateVersionRequest, opts ...gax.CallOption) (*parametermanagerpb.RenderTemplateVersionResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/RenderTemplateVersion")
+	}
+	opts = append((*c.CallOptions).RenderTemplateVersion[0:len((*c.CallOptions).RenderTemplateVersion):len((*c.CallOptions).RenderTemplateVersion)], opts...)
+	var resp *parametermanagerpb.RenderTemplateVersionResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.RenderTemplateVersion, req, settings.GRPC, c.logger, "RenderTemplateVersion")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -784,9 +1455,12 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/ListLocations")
+	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -828,7 +1502,7 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 // ListParameters lists Parameters in a given project and location.
 func (c *restClient) ListParameters(ctx context.Context, req *parametermanagerpb.ListParametersRequest, opts ...gax.CallOption) *ParameterIterator {
 	it := &ParameterIterator{}
-	req = proto.Clone(req).(*parametermanagerpb.ListParametersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*parametermanagerpb.Parameter, string, error) {
 		resp := &parametermanagerpb.ListParametersResponse{}
@@ -928,6 +1602,10 @@ func (c *restClient) GetParameter(ctx context.Context, req *parametermanagerpb.G
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/GetParameter")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/parameters/*}")
+	}
 	opts = append((*c.CallOptions).GetParameter[0:len((*c.CallOptions).GetParameter):len((*c.CallOptions).GetParameter)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &parametermanagerpb.Parameter{}
@@ -989,6 +1667,10 @@ func (c *restClient) CreateParameter(ctx context.Context, req *parametermanagerp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/CreateParameter")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/parameters")
+	}
 	opts = append((*c.CallOptions).CreateParameter[0:len((*c.CallOptions).CreateParameter):len((*c.CallOptions).CreateParameter)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &parametermanagerpb.Parameter{}
@@ -1056,6 +1738,10 @@ func (c *restClient) UpdateParameter(ctx context.Context, req *parametermanagerp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/UpdateParameter")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parameter.name=projects/*/locations/*/parameters/*}")
+	}
 	opts = append((*c.CallOptions).UpdateParameter[0:len((*c.CallOptions).UpdateParameter):len((*c.CallOptions).UpdateParameter)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &parametermanagerpb.Parameter{}
@@ -1109,6 +1795,10 @@ func (c *restClient) DeleteParameter(ctx context.Context, req *parametermanagerp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/DeleteParameter")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/parameters/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1128,7 +1818,7 @@ func (c *restClient) DeleteParameter(ctx context.Context, req *parametermanagerp
 // ListParameterVersions lists ParameterVersions in a given project, location, and parameter.
 func (c *restClient) ListParameterVersions(ctx context.Context, req *parametermanagerpb.ListParameterVersionsRequest, opts ...gax.CallOption) *ParameterVersionIterator {
 	it := &ParameterVersionIterator{}
-	req = proto.Clone(req).(*parametermanagerpb.ListParameterVersionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*parametermanagerpb.ParameterVersion, string, error) {
 		resp := &parametermanagerpb.ListParameterVersionsResponse{}
@@ -1231,6 +1921,10 @@ func (c *restClient) GetParameterVersion(ctx context.Context, req *parametermana
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/GetParameterVersion")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/parameters/*/versions/*}")
+	}
 	opts = append((*c.CallOptions).GetParameterVersion[0:len((*c.CallOptions).GetParameterVersion):len((*c.CallOptions).GetParameterVersion)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &parametermanagerpb.ParameterVersion{}
@@ -1281,6 +1975,10 @@ func (c *restClient) RenderParameterVersion(ctx context.Context, req *parameterm
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/RenderParameterVersion")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/parameters/*/versions/*}:render")
+	}
 	opts = append((*c.CallOptions).RenderParameterVersion[0:len((*c.CallOptions).RenderParameterVersion):len((*c.CallOptions).RenderParameterVersion)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &parametermanagerpb.RenderParameterVersionResponse{}
@@ -1342,6 +2040,10 @@ func (c *restClient) CreateParameterVersion(ctx context.Context, req *parameterm
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/CreateParameterVersion")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/parameters/*}/versions")
+	}
 	opts = append((*c.CallOptions).CreateParameterVersion[0:len((*c.CallOptions).CreateParameterVersion):len((*c.CallOptions).CreateParameterVersion)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &parametermanagerpb.ParameterVersion{}
@@ -1409,6 +2111,10 @@ func (c *restClient) UpdateParameterVersion(ctx context.Context, req *parameterm
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/UpdateParameterVersion")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parameter_version.name=projects/*/locations/*/parameters/*/versions/*}")
+	}
 	opts = append((*c.CallOptions).UpdateParameterVersion[0:len((*c.CallOptions).UpdateParameterVersion):len((*c.CallOptions).UpdateParameterVersion)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &parametermanagerpb.ParameterVersion{}
@@ -1462,6 +2168,10 @@ func (c *restClient) DeleteParameterVersion(ctx context.Context, req *parameterm
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/DeleteParameterVersion")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/parameters/*/versions/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1476,6 +2186,696 @@ func (c *restClient) DeleteParameterVersion(ctx context.Context, req *parameterm
 		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteParameterVersion")
 		return err
 	}, opts...)
+}
+
+// ListTemplates lists Templates in a given project and location.
+func (c *restClient) ListTemplates(ctx context.Context, req *parametermanagerpb.ListTemplatesRequest, opts ...gax.CallOption) *TemplateIterator {
+	it := &TemplateIterator{}
+	req = proto.CloneOf(req)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*parametermanagerpb.Template, string, error) {
+		resp := &parametermanagerpb.ListTemplatesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/templates", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListTemplates")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetTemplates(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetTemplate gets details of a single Template.
+func (c *restClient) GetTemplate(ctx context.Context, req *parametermanagerpb.GetTemplateRequest, opts ...gax.CallOption) (*parametermanagerpb.Template, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/GetTemplate")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/templates/*}")
+	}
+	opts = append((*c.CallOptions).GetTemplate[0:len((*c.CallOptions).GetTemplate):len((*c.CallOptions).GetTemplate)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &parametermanagerpb.Template{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetTemplate")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateTemplate creates a new Template in a given project and location.
+func (c *restClient) CreateTemplate(ctx context.Context, req *parametermanagerpb.CreateTemplateRequest, opts ...gax.CallOption) (*parametermanagerpb.Template, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetTemplate()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/templates", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+	params.Add("templateId", fmt.Sprintf("%v", req.GetTemplateId()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/CreateTemplate")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/templates")
+	}
+	opts = append((*c.CallOptions).CreateTemplate[0:len((*c.CallOptions).CreateTemplate):len((*c.CallOptions).CreateTemplate)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &parametermanagerpb.Template{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateTemplate")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpdateTemplate updates a single Template.
+func (c *restClient) UpdateTemplate(ctx context.Context, req *parametermanagerpb.UpdateTemplateRequest, opts ...gax.CallOption) (*parametermanagerpb.Template, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetTemplate()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetTemplate().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "template.name", url.QueryEscape(req.GetTemplate().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/UpdateTemplate")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{template.name=projects/*/locations/*/templates/*}")
+	}
+	opts = append((*c.CallOptions).UpdateTemplate[0:len((*c.CallOptions).UpdateTemplate):len((*c.CallOptions).UpdateTemplate)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &parametermanagerpb.Template{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateTemplate")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteTemplate deletes a single Template.
+func (c *restClient) DeleteTemplate(ctx context.Context, req *parametermanagerpb.DeleteTemplateRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/DeleteTemplate")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/templates/*}")
+	}
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteTemplate")
+		return err
+	}, opts...)
+}
+
+// ListTemplateVersions lists TemplateVersions in a given project, location, and template.
+func (c *restClient) ListTemplateVersions(ctx context.Context, req *parametermanagerpb.ListTemplateVersionsRequest, opts ...gax.CallOption) *TemplateVersionIterator {
+	it := &TemplateVersionIterator{}
+	req = proto.CloneOf(req)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*parametermanagerpb.TemplateVersion, string, error) {
+		resp := &parametermanagerpb.ListTemplateVersionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/versions", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListTemplateVersions")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetTemplateVersions(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetTemplateVersion gets details of a single TemplateVersion.
+func (c *restClient) GetTemplateVersion(ctx context.Context, req *parametermanagerpb.GetTemplateVersionRequest, opts ...gax.CallOption) (*parametermanagerpb.TemplateVersion, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetView() != 0 {
+		params.Add("view", fmt.Sprintf("%v", req.GetView()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/GetTemplateVersion")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/templates/*/versions/*}")
+	}
+	opts = append((*c.CallOptions).GetTemplateVersion[0:len((*c.CallOptions).GetTemplateVersion):len((*c.CallOptions).GetTemplateVersion)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &parametermanagerpb.TemplateVersion{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetTemplateVersion")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateTemplateVersion creates a new TemplateVersion in a given project, location, and template.
+func (c *restClient) CreateTemplateVersion(ctx context.Context, req *parametermanagerpb.CreateTemplateVersionRequest, opts ...gax.CallOption) (*parametermanagerpb.TemplateVersion, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetTemplateVersion()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/versions", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+	params.Add("templateVersionId", fmt.Sprintf("%v", req.GetTemplateVersionId()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/CreateTemplateVersion")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/templates/*}/versions")
+	}
+	opts = append((*c.CallOptions).CreateTemplateVersion[0:len((*c.CallOptions).CreateTemplateVersion):len((*c.CallOptions).CreateTemplateVersion)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &parametermanagerpb.TemplateVersion{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateTemplateVersion")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpdateTemplateVersion updates a single TemplateVersion.
+func (c *restClient) UpdateTemplateVersion(ctx context.Context, req *parametermanagerpb.UpdateTemplateVersionRequest, opts ...gax.CallOption) (*parametermanagerpb.TemplateVersion, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetTemplateVersion()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetTemplateVersion().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "template_version.name", url.QueryEscape(req.GetTemplateVersion().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/UpdateTemplateVersion")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{template_version.name=projects/*/locations/*/templates/*/versions/*}")
+	}
+	opts = append((*c.CallOptions).UpdateTemplateVersion[0:len((*c.CallOptions).UpdateTemplateVersion):len((*c.CallOptions).UpdateTemplateVersion)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &parametermanagerpb.TemplateVersion{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateTemplateVersion")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteTemplateVersion deletes a single TemplateVersion.
+func (c *restClient) DeleteTemplateVersion(ctx context.Context, req *parametermanagerpb.DeleteTemplateVersionRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/DeleteTemplateVersion")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/templates/*/versions/*}")
+	}
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteTemplateVersion")
+		return err
+	}, opts...)
+}
+
+// RenderTemplateVersion gets rendered version of a TemplateVersion.
+func (c *restClient) RenderTemplateVersion(ctx context.Context, req *parametermanagerpb.RenderTemplateVersionRequest, opts ...gax.CallOption) (*parametermanagerpb.RenderTemplateVersionResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:render", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("parameterVersion", fmt.Sprintf("%v", req.GetParameterVersion()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/RenderTemplateVersion")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/templates/*/versions/*}:render")
+	}
+	opts = append((*c.CallOptions).RenderTemplateVersion[0:len((*c.CallOptions).RenderTemplateVersion):len((*c.CallOptions).RenderTemplateVersion)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &parametermanagerpb.RenderTemplateVersionResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "RenderTemplateVersion")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // GetLocation gets information about a location.
@@ -1497,6 +2897,10 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*}")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &locationpb.Location{}
@@ -1529,9 +2933,24 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 }
 
 // ListLocations lists information about the supported locations for this service.
+//
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
+//
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}

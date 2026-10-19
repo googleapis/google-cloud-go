@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import (
 
 	tracepb "cloud.google.com/go/trace/apiv1/tracepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -57,6 +58,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://cloudtrace.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.AllowHardBoundTokens("MTLS_S2A"),
 		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -176,7 +178,7 @@ type Client struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *Client) Close() error {
 	return c.internalClient.Close()
@@ -187,6 +189,16 @@ func (c *Client) Close() error {
 // use by Google-written clients.
 func (c *Client) setGoogleClientInfo(keyval ...string) {
 	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// SetGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+//
+// SetGoogleClientInfo is not concurrency-safe and should only be invoked
+// sequentially before concurrent operations begin.
+func (c *Client) SetGoogleClientInfo(keyval ...string) {
+	c.setGoogleClientInfo(keyval...)
 }
 
 // Connection returns a connection to the API service.
@@ -245,6 +257,16 @@ type gRPCClient struct {
 // may span multiple services.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "cloudtrace",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/trace/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "cloudtrace.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -266,6 +288,53 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "cloudtrace",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/trace/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudtrace.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListTraces = append(client.CallOptions.ListTraces, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetTrace = append(client.CallOptions.GetTrace, gax.WithClientMetrics(metrics))
+		client.CallOptions.PatchTraces = append(client.CallOptions.PatchTraces, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudtrace",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/trace/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudtrace.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListTraces = append(client.CallOptions.ListTraces, gax.WithClientTracing(tracing))
+		client.CallOptions.GetTrace = append(client.CallOptions.GetTrace, gax.WithClientTracing(tracing))
+		client.CallOptions.PatchTraces = append(client.CallOptions.PatchTraces, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudtrace",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/trace/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudtrace.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListTraces = append(client.CallOptions.ListTraces, gax.WithClientLogging(logging))
+		client.CallOptions.GetTrace = append(client.CallOptions.GetTrace, gax.WithClientLogging(logging))
+		client.CallOptions.PatchTraces = append(client.CallOptions.PatchTraces, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -291,7 +360,7 @@ func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *gRPCClient) Close() error {
 	return c.connPool.Close()
@@ -323,6 +392,16 @@ type restClient struct {
 // may span multiple services.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "cloudtrace",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/trace/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "cloudtrace.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -336,6 +415,54 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "cloudtrace",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/trace/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudtrace.googleapis.com",
+			}),
+		)
+
+		callOpts.ListTraces = append(callOpts.ListTraces, gax.WithClientMetrics(metrics))
+		callOpts.GetTrace = append(callOpts.GetTrace, gax.WithClientMetrics(metrics))
+		callOpts.PatchTraces = append(callOpts.PatchTraces, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudtrace",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/trace/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudtrace.googleapis.com",
+			}),
+		)
+
+		callOpts.ListTraces = append(callOpts.ListTraces, gax.WithClientTracing(tracing))
+		callOpts.GetTrace = append(callOpts.GetTrace, gax.WithClientTracing(tracing))
+		callOpts.PatchTraces = append(callOpts.PatchTraces, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudtrace",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/trace/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudtrace.googleapis.com",
+			}),
+		)
+
+		callOpts.ListTraces = append(callOpts.ListTraces, gax.WithClientLogging(logging))
+		callOpts.GetTrace = append(callOpts.GetTrace, gax.WithClientLogging(logging))
+		callOpts.PatchTraces = append(callOpts.PatchTraces, gax.WithClientLogging(logging))
+	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -363,7 +490,7 @@ func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *restClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -382,9 +509,12 @@ func (c *gRPCClient) ListTraces(ctx context.Context, req *tracepb.ListTracesRequ
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudtrace.v1.TraceService/ListTraces")
+	}
 	opts = append((*c.CallOptions).ListTraces[0:len((*c.CallOptions).ListTraces):len((*c.CallOptions).ListTraces)], opts...)
 	it := &TraceIterator{}
-	req = proto.Clone(req).(*tracepb.ListTracesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*tracepb.Trace, string, error) {
 		resp := &tracepb.ListTracesResponse{}
 		if pageToken != "" {
@@ -428,6 +558,9 @@ func (c *gRPCClient) GetTrace(ctx context.Context, req *tracepb.GetTraceRequest,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudtrace.v1.TraceService/GetTrace")
+	}
 	opts = append((*c.CallOptions).GetTrace[0:len((*c.CallOptions).GetTrace):len((*c.CallOptions).GetTrace)], opts...)
 	var resp *tracepb.Trace
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -446,6 +579,9 @@ func (c *gRPCClient) PatchTraces(ctx context.Context, req *tracepb.PatchTracesRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudtrace.v1.TraceService/PatchTraces")
+	}
 	opts = append((*c.CallOptions).PatchTraces[0:len((*c.CallOptions).PatchTraces):len((*c.CallOptions).PatchTraces)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -458,7 +594,7 @@ func (c *gRPCClient) PatchTraces(ctx context.Context, req *tracepb.PatchTracesRe
 // ListTraces returns of a list of traces that match the specified filter conditions.
 func (c *restClient) ListTraces(ctx context.Context, req *tracepb.ListTracesRequest, opts ...gax.CallOption) *TraceIterator {
 	it := &TraceIterator{}
-	req = proto.Clone(req).(*tracepb.ListTracesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*tracepb.Trace, string, error) {
 		resp := &tracepb.ListTracesResponse{}
@@ -575,6 +711,10 @@ func (c *restClient) GetTrace(ctx context.Context, req *tracepb.GetTraceRequest,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudtrace.v1.TraceService/GetTrace")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/projects/{project_id}/traces/{trace_id}")
+	}
 	opts = append((*c.CallOptions).GetTrace[0:len((*c.CallOptions).GetTrace):len((*c.CallOptions).GetTrace)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &tracepb.Trace{}
@@ -636,6 +776,10 @@ func (c *restClient) PatchTraces(ctx context.Context, req *tracepb.PatchTracesRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.cloudtrace.v1.TraceService/PatchTraces")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/projects/{project_id}/traces")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path

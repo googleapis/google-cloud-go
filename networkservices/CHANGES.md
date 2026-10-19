@@ -1,5 +1,72 @@
 # Changes
 
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/networkservices/v1.6.0...networkservices/v1.7.0) (2026-09-23)
+
+
+### Features
+
+* **all:** Update supported go versions ([#20520](https://github.com/googleapis/google-cloud-go/issues/20520)) ([90413d3](https://github.com/googleapis/google-cloud-go/commit/90413d3e9d381ef4b92e3c496d98b023c5b2d8cc))
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/networkservices/v1.5.0...networkservices/v1.6.0) (2026-09-17)
+
+
+### Features
+
+* **google/cloud/networkservices/v1beta1:** Add networkservices ([#20533](https://github.com/googleapis/google-cloud-go/issues/20533)) ([c5626ad](https://github.com/googleapis/google-cloud-go/commit/c5626adf844e75388b25b675cc722226b3333be7))
+
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/networkservices/v1.4.0...networkservices/v1.5.0) (2026-07-30)
+
+
+### Features
+
+* Update API sources and regenerate ([#20252](https://github.com/googleapis/google-cloud-go/issues/20252)) ([ac017a0](https://github.com/googleapis/google-cloud-go/commit/ac017a0d30ec2d42db35f7d3b5ea7fb20b4b860a))
+
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/networkservices/v1.3.0...networkservices/v1.4.0) (2026-07-23)
+
+
+### Features
+
+* Update API sources and regenerate ([#20188](https://github.com/googleapis/google-cloud-go/issues/20188)) ([104e0de](https://github.com/googleapis/google-cloud-go/commit/104e0de4fb40e0008232a9a01f100f089ec18d8b))
+
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/networkservices/v1.2.0...networkservices/v1.3.0) (2026-07-13)
+
+
+### Features
+
+* **o11y:** Regenerate clients for LRO tracing ([#20107](https://github.com/googleapis/google-cloud-go/issues/20107)) ([779074e](https://github.com/googleapis/google-cloud-go/commit/779074edd267a26520bae459307660953129eb07))
+
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/networkservices/v1.1.0...networkservices/v1.2.0) (2026-06-26)
+
+
+### Features
+
+* Update API sources and regenerate ([#20047](https://github.com/googleapis/google-cloud-go/issues/20047)) ([e10c9bf](https://github.com/googleapis/google-cloud-go/commit/e10c9bf14d4fc23906d0b369e106420d44915660))
+
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/networkservices/v1.0.0...networkservices/v1.1.0) (2026-06-22)
+
+
+### Features
+
+* Update API sources and regenerate ([#20007](https://github.com/googleapis/google-cloud-go/issues/20007)) ([4d633c8](https://github.com/googleapis/google-cloud-go/commit/4d633c893dd35be48ca353da133e7d483151cd3e))
+
+## [1.0.0](https://github.com/googleapis/google-cloud-go/releases/tag/networkservices%2Fv1.0.0) (2026-05-08)
+
+## [0.11.0](https://github.com/googleapis/google-cloud-go/releases/tag/networkservices%2Fv0.11.0) (2026-05-07)
+
+## [0.10.0](https://github.com/googleapis/google-cloud-go/releases/tag/networkservices%2Fv0.10.0) (2026-04-30)
+
+## [0.9.0](https://github.com/googleapis/google-cloud-go/releases/tag/networkservices%2Fv0.9.0) (2026-04-13)
+
+## [0.8.0](https://github.com/googleapis/google-cloud-go/releases/tag/networkservices%2Fv0.8.0) (2026-04-09)
+
+## [0.7.0](https://github.com/googleapis/google-cloud-go/releases/tag/networkservices%2Fv0.7.0) (2026-04-02)
+
+## [0.6.0](https://github.com/googleapis/google-cloud-go/releases/tag/networkservices%2Fv0.6.0) (2025-11-06)
+
+### Features
+
+* Add support for LbEdgeExtension resource in NetworkServices API ([4a640b5](https://github.com/googleapis/google-cloud-go/commit/4a640b5d1833b6dc4fc159aa2204ec9d930cc0d7))
+
 ## [0.5.1](https://github.com/googleapis/google-cloud-go/compare/networkservices/v0.5.0...networkservices/v0.5.1) (2025-09-18)
 
 

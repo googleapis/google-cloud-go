@@ -1,5 +1,51 @@
 # Changes
 
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/logging/v1.19.1...logging/v1.20.0) (2026-09-23)
+
+
+### Features
+
+* **all:** Update supported go versions ([#20520](https://github.com/googleapis/google-cloud-go/issues/20520)) ([90413d3](https://github.com/googleapis/google-cloud-go/commit/90413d3e9d381ef4b92e3c496d98b023c5b2d8cc))
+
+## [1.19.1](https://github.com/googleapis/google-cloud-go/compare/logging/v1.19.0...logging/v1.19.1) (2026-08-07)
+
+
+### Bug Fixes
+
+* **logging:** Add HTTP client Timeout to fix metadata probe hang ([#19979](https://github.com/googleapis/google-cloud-go/issues/19979)) ([a47a42b](https://github.com/googleapis/google-cloud-go/commit/a47a42b853e6afcdf492ad7e40268f03614165c6))
+
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/logging/v1.18.0...logging/v1.19.0) (2026-07-13)
+
+
+### Features
+
+* **o11y:** Regenerate clients for LRO tracing ([#20107](https://github.com/googleapis/google-cloud-go/issues/20107)) ([779074e](https://github.com/googleapis/google-cloud-go/commit/779074edd267a26520bae459307660953129eb07))
+
+## [1.18.0](https://github.com/googleapis/google-cloud-go/releases/tag/logging%2Fv1.18.0) (2026-05-07)
+
+## [1.17.0](https://github.com/googleapis/google-cloud-go/releases/tag/logging%2Fv1.17.0) (2026-04-30)
+
+## [1.16.0](https://github.com/googleapis/google-cloud-go/releases/tag/logging%2Fv1.16.0) (2026-04-13)
+
+## [1.15.0](https://github.com/googleapis/google-cloud-go/releases/tag/logging%2Fv1.15.0) (2026-04-09)
+
+## [1.14.0](https://github.com/googleapis/google-cloud-go/releases/tag/logging%2Fv1.14.0) (2026-04-02)
+
+## [1.13.2](https://github.com/googleapis/google-cloud-go/releases/tag/logging%2Fv1.13.2) (2026-02-04)
+
+
+### Features
+
+* **logging:** Enable AllowHardBoundTokens for Go logging library ([#13615](https://github.com/googleapis/google-cloud-go/pull/13615)) ([18dec3a](https://github.com/googleapis/google-cloud-go/commit/18dec3a31f1d24dfa1dc58eeb532991336772dac))
+
+## [1.13.1](https://github.com/googleapis/google-cloud-go/compare/logging/v1.13.0...logging/v1.13.1) (2025-10-28)
+
+
+### Bug Fixes
+
+* **logging:** Upgrade gRPC service registration func ([486bd40](https://github.com/googleapis/google-cloud-go/commit/486bd406336fe91eae7c9040f2496ebfc8aee342))
+* **logging:** Upgrade gRPC service registration func ([#13139](https://github.com/googleapis/google-cloud-go/issues/13139)) ([39af2f9](https://github.com/googleapis/google-cloud-go/commit/39af2f9683b76ab290cc66b009ddc366fe63986b))
+
 ## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/logging/v1.12.0...logging/v1.13.0) (2025-01-02)
 
 
@@ -216,4 +262,3 @@
 
 This is the first tag to carve out logging as its own module. See:
 https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository.
-

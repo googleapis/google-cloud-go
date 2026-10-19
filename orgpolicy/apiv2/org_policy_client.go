@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import (
 
 	orgpolicypb "cloud.google.com/go/orgpolicy/apiv2/orgpolicypb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -66,6 +67,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://orgpolicy.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.AllowHardBoundTokens("MTLS_S2A"),
 		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -434,7 +436,7 @@ type Client struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *Client) Close() error {
 	return c.internalClient.Close()
@@ -602,6 +604,16 @@ type gRPCClient struct {
 // particular resource and its child resources.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "orgpolicy",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/orgpolicy/apiv2",
+			"gcp.client.language": "go",
+			"url.domain":          "orgpolicy.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -623,6 +635,80 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "orgpolicy",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/orgpolicy/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "orgpolicy.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListConstraints = append(client.CallOptions.ListConstraints, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListPolicies = append(client.CallOptions.ListPolicies, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetPolicy = append(client.CallOptions.GetPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetEffectivePolicy = append(client.CallOptions.GetEffectivePolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreatePolicy = append(client.CallOptions.CreatePolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdatePolicy = append(client.CallOptions.UpdatePolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeletePolicy = append(client.CallOptions.DeletePolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateCustomConstraint = append(client.CallOptions.CreateCustomConstraint, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateCustomConstraint = append(client.CallOptions.UpdateCustomConstraint, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetCustomConstraint = append(client.CallOptions.GetCustomConstraint, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListCustomConstraints = append(client.CallOptions.ListCustomConstraints, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteCustomConstraint = append(client.CallOptions.DeleteCustomConstraint, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "orgpolicy",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/orgpolicy/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "orgpolicy.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListConstraints = append(client.CallOptions.ListConstraints, gax.WithClientTracing(tracing))
+		client.CallOptions.ListPolicies = append(client.CallOptions.ListPolicies, gax.WithClientTracing(tracing))
+		client.CallOptions.GetPolicy = append(client.CallOptions.GetPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.GetEffectivePolicy = append(client.CallOptions.GetEffectivePolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.CreatePolicy = append(client.CallOptions.CreatePolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdatePolicy = append(client.CallOptions.UpdatePolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.DeletePolicy = append(client.CallOptions.DeletePolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateCustomConstraint = append(client.CallOptions.CreateCustomConstraint, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateCustomConstraint = append(client.CallOptions.UpdateCustomConstraint, gax.WithClientTracing(tracing))
+		client.CallOptions.GetCustomConstraint = append(client.CallOptions.GetCustomConstraint, gax.WithClientTracing(tracing))
+		client.CallOptions.ListCustomConstraints = append(client.CallOptions.ListCustomConstraints, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteCustomConstraint = append(client.CallOptions.DeleteCustomConstraint, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "orgpolicy",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/orgpolicy/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "orgpolicy.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListConstraints = append(client.CallOptions.ListConstraints, gax.WithClientLogging(logging))
+		client.CallOptions.ListPolicies = append(client.CallOptions.ListPolicies, gax.WithClientLogging(logging))
+		client.CallOptions.GetPolicy = append(client.CallOptions.GetPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.GetEffectivePolicy = append(client.CallOptions.GetEffectivePolicy, gax.WithClientLogging(logging))
+		client.CallOptions.CreatePolicy = append(client.CallOptions.CreatePolicy, gax.WithClientLogging(logging))
+		client.CallOptions.UpdatePolicy = append(client.CallOptions.UpdatePolicy, gax.WithClientLogging(logging))
+		client.CallOptions.DeletePolicy = append(client.CallOptions.DeletePolicy, gax.WithClientLogging(logging))
+		client.CallOptions.CreateCustomConstraint = append(client.CallOptions.CreateCustomConstraint, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateCustomConstraint = append(client.CallOptions.UpdateCustomConstraint, gax.WithClientLogging(logging))
+		client.CallOptions.GetCustomConstraint = append(client.CallOptions.GetCustomConstraint, gax.WithClientLogging(logging))
+		client.CallOptions.ListCustomConstraints = append(client.CallOptions.ListCustomConstraints, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteCustomConstraint = append(client.CallOptions.DeleteCustomConstraint, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -648,7 +734,7 @@ func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *gRPCClient) Close() error {
 	return c.connPool.Close()
@@ -695,6 +781,16 @@ type restClient struct {
 // particular resource and its child resources.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "orgpolicy",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/orgpolicy/apiv2",
+			"gcp.client.language": "go",
+			"url.domain":          "orgpolicy.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -708,6 +804,81 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "orgpolicy",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/orgpolicy/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "orgpolicy.googleapis.com",
+			}),
+		)
+
+		callOpts.ListConstraints = append(callOpts.ListConstraints, gax.WithClientMetrics(metrics))
+		callOpts.ListPolicies = append(callOpts.ListPolicies, gax.WithClientMetrics(metrics))
+		callOpts.GetPolicy = append(callOpts.GetPolicy, gax.WithClientMetrics(metrics))
+		callOpts.GetEffectivePolicy = append(callOpts.GetEffectivePolicy, gax.WithClientMetrics(metrics))
+		callOpts.CreatePolicy = append(callOpts.CreatePolicy, gax.WithClientMetrics(metrics))
+		callOpts.UpdatePolicy = append(callOpts.UpdatePolicy, gax.WithClientMetrics(metrics))
+		callOpts.DeletePolicy = append(callOpts.DeletePolicy, gax.WithClientMetrics(metrics))
+		callOpts.CreateCustomConstraint = append(callOpts.CreateCustomConstraint, gax.WithClientMetrics(metrics))
+		callOpts.UpdateCustomConstraint = append(callOpts.UpdateCustomConstraint, gax.WithClientMetrics(metrics))
+		callOpts.GetCustomConstraint = append(callOpts.GetCustomConstraint, gax.WithClientMetrics(metrics))
+		callOpts.ListCustomConstraints = append(callOpts.ListCustomConstraints, gax.WithClientMetrics(metrics))
+		callOpts.DeleteCustomConstraint = append(callOpts.DeleteCustomConstraint, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "orgpolicy",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/orgpolicy/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "orgpolicy.googleapis.com",
+			}),
+		)
+
+		callOpts.ListConstraints = append(callOpts.ListConstraints, gax.WithClientTracing(tracing))
+		callOpts.ListPolicies = append(callOpts.ListPolicies, gax.WithClientTracing(tracing))
+		callOpts.GetPolicy = append(callOpts.GetPolicy, gax.WithClientTracing(tracing))
+		callOpts.GetEffectivePolicy = append(callOpts.GetEffectivePolicy, gax.WithClientTracing(tracing))
+		callOpts.CreatePolicy = append(callOpts.CreatePolicy, gax.WithClientTracing(tracing))
+		callOpts.UpdatePolicy = append(callOpts.UpdatePolicy, gax.WithClientTracing(tracing))
+		callOpts.DeletePolicy = append(callOpts.DeletePolicy, gax.WithClientTracing(tracing))
+		callOpts.CreateCustomConstraint = append(callOpts.CreateCustomConstraint, gax.WithClientTracing(tracing))
+		callOpts.UpdateCustomConstraint = append(callOpts.UpdateCustomConstraint, gax.WithClientTracing(tracing))
+		callOpts.GetCustomConstraint = append(callOpts.GetCustomConstraint, gax.WithClientTracing(tracing))
+		callOpts.ListCustomConstraints = append(callOpts.ListCustomConstraints, gax.WithClientTracing(tracing))
+		callOpts.DeleteCustomConstraint = append(callOpts.DeleteCustomConstraint, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "orgpolicy",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/orgpolicy/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "orgpolicy.googleapis.com",
+			}),
+		)
+
+		callOpts.ListConstraints = append(callOpts.ListConstraints, gax.WithClientLogging(logging))
+		callOpts.ListPolicies = append(callOpts.ListPolicies, gax.WithClientLogging(logging))
+		callOpts.GetPolicy = append(callOpts.GetPolicy, gax.WithClientLogging(logging))
+		callOpts.GetEffectivePolicy = append(callOpts.GetEffectivePolicy, gax.WithClientLogging(logging))
+		callOpts.CreatePolicy = append(callOpts.CreatePolicy, gax.WithClientLogging(logging))
+		callOpts.UpdatePolicy = append(callOpts.UpdatePolicy, gax.WithClientLogging(logging))
+		callOpts.DeletePolicy = append(callOpts.DeletePolicy, gax.WithClientLogging(logging))
+		callOpts.CreateCustomConstraint = append(callOpts.CreateCustomConstraint, gax.WithClientLogging(logging))
+		callOpts.UpdateCustomConstraint = append(callOpts.UpdateCustomConstraint, gax.WithClientLogging(logging))
+		callOpts.GetCustomConstraint = append(callOpts.GetCustomConstraint, gax.WithClientLogging(logging))
+		callOpts.ListCustomConstraints = append(callOpts.ListCustomConstraints, gax.WithClientLogging(logging))
+		callOpts.DeleteCustomConstraint = append(callOpts.DeleteCustomConstraint, gax.WithClientLogging(logging))
+	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -735,7 +906,7 @@ func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *restClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -754,9 +925,12 @@ func (c *gRPCClient) ListConstraints(ctx context.Context, req *orgpolicypb.ListC
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orgpolicy.v2.OrgPolicy/ListConstraints")
+	}
 	opts = append((*c.CallOptions).ListConstraints[0:len((*c.CallOptions).ListConstraints):len((*c.CallOptions).ListConstraints)], opts...)
 	it := &ConstraintIterator{}
-	req = proto.Clone(req).(*orgpolicypb.ListConstraintsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*orgpolicypb.Constraint, string, error) {
 		resp := &orgpolicypb.ListConstraintsResponse{}
 		if pageToken != "" {
@@ -800,9 +974,12 @@ func (c *gRPCClient) ListPolicies(ctx context.Context, req *orgpolicypb.ListPoli
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orgpolicy.v2.OrgPolicy/ListPolicies")
+	}
 	opts = append((*c.CallOptions).ListPolicies[0:len((*c.CallOptions).ListPolicies):len((*c.CallOptions).ListPolicies)], opts...)
 	it := &PolicyIterator{}
-	req = proto.Clone(req).(*orgpolicypb.ListPoliciesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*orgpolicypb.Policy, string, error) {
 		resp := &orgpolicypb.ListPoliciesResponse{}
 		if pageToken != "" {
@@ -846,6 +1023,9 @@ func (c *gRPCClient) GetPolicy(ctx context.Context, req *orgpolicypb.GetPolicyRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orgpolicy.v2.OrgPolicy/GetPolicy")
+	}
 	opts = append((*c.CallOptions).GetPolicy[0:len((*c.CallOptions).GetPolicy):len((*c.CallOptions).GetPolicy)], opts...)
 	var resp *orgpolicypb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -864,6 +1044,9 @@ func (c *gRPCClient) GetEffectivePolicy(ctx context.Context, req *orgpolicypb.Ge
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orgpolicy.v2.OrgPolicy/GetEffectivePolicy")
+	}
 	opts = append((*c.CallOptions).GetEffectivePolicy[0:len((*c.CallOptions).GetEffectivePolicy):len((*c.CallOptions).GetEffectivePolicy)], opts...)
 	var resp *orgpolicypb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -882,6 +1065,9 @@ func (c *gRPCClient) CreatePolicy(ctx context.Context, req *orgpolicypb.CreatePo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orgpolicy.v2.OrgPolicy/CreatePolicy")
+	}
 	opts = append((*c.CallOptions).CreatePolicy[0:len((*c.CallOptions).CreatePolicy):len((*c.CallOptions).CreatePolicy)], opts...)
 	var resp *orgpolicypb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -900,6 +1086,9 @@ func (c *gRPCClient) UpdatePolicy(ctx context.Context, req *orgpolicypb.UpdatePo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orgpolicy.v2.OrgPolicy/UpdatePolicy")
+	}
 	opts = append((*c.CallOptions).UpdatePolicy[0:len((*c.CallOptions).UpdatePolicy):len((*c.CallOptions).UpdatePolicy)], opts...)
 	var resp *orgpolicypb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -918,6 +1107,9 @@ func (c *gRPCClient) DeletePolicy(ctx context.Context, req *orgpolicypb.DeletePo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orgpolicy.v2.OrgPolicy/DeletePolicy")
+	}
 	opts = append((*c.CallOptions).DeletePolicy[0:len((*c.CallOptions).DeletePolicy):len((*c.CallOptions).DeletePolicy)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -932,6 +1124,9 @@ func (c *gRPCClient) CreateCustomConstraint(ctx context.Context, req *orgpolicyp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orgpolicy.v2.OrgPolicy/CreateCustomConstraint")
+	}
 	opts = append((*c.CallOptions).CreateCustomConstraint[0:len((*c.CallOptions).CreateCustomConstraint):len((*c.CallOptions).CreateCustomConstraint)], opts...)
 	var resp *orgpolicypb.CustomConstraint
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -950,6 +1145,9 @@ func (c *gRPCClient) UpdateCustomConstraint(ctx context.Context, req *orgpolicyp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orgpolicy.v2.OrgPolicy/UpdateCustomConstraint")
+	}
 	opts = append((*c.CallOptions).UpdateCustomConstraint[0:len((*c.CallOptions).UpdateCustomConstraint):len((*c.CallOptions).UpdateCustomConstraint)], opts...)
 	var resp *orgpolicypb.CustomConstraint
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -968,6 +1166,9 @@ func (c *gRPCClient) GetCustomConstraint(ctx context.Context, req *orgpolicypb.G
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orgpolicy.v2.OrgPolicy/GetCustomConstraint")
+	}
 	opts = append((*c.CallOptions).GetCustomConstraint[0:len((*c.CallOptions).GetCustomConstraint):len((*c.CallOptions).GetCustomConstraint)], opts...)
 	var resp *orgpolicypb.CustomConstraint
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -986,9 +1187,12 @@ func (c *gRPCClient) ListCustomConstraints(ctx context.Context, req *orgpolicypb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orgpolicy.v2.OrgPolicy/ListCustomConstraints")
+	}
 	opts = append((*c.CallOptions).ListCustomConstraints[0:len((*c.CallOptions).ListCustomConstraints):len((*c.CallOptions).ListCustomConstraints)], opts...)
 	it := &CustomConstraintIterator{}
-	req = proto.Clone(req).(*orgpolicypb.ListCustomConstraintsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*orgpolicypb.CustomConstraint, string, error) {
 		resp := &orgpolicypb.ListCustomConstraintsResponse{}
 		if pageToken != "" {
@@ -1032,6 +1236,9 @@ func (c *gRPCClient) DeleteCustomConstraint(ctx context.Context, req *orgpolicyp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orgpolicy.v2.OrgPolicy/DeleteCustomConstraint")
+	}
 	opts = append((*c.CallOptions).DeleteCustomConstraint[0:len((*c.CallOptions).DeleteCustomConstraint):len((*c.CallOptions).DeleteCustomConstraint)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1044,7 +1251,7 @@ func (c *gRPCClient) DeleteCustomConstraint(ctx context.Context, req *orgpolicyp
 // ListConstraints lists constraints that could be applied on the specified resource.
 func (c *restClient) ListConstraints(ctx context.Context, req *orgpolicypb.ListConstraintsRequest, opts ...gax.CallOption) *ConstraintIterator {
 	it := &ConstraintIterator{}
-	req = proto.Clone(req).(*orgpolicypb.ListConstraintsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*orgpolicypb.Constraint, string, error) {
 		resp := &orgpolicypb.ListConstraintsResponse{}
@@ -1122,7 +1329,7 @@ func (c *restClient) ListConstraints(ctx context.Context, req *orgpolicypb.ListC
 // ListPolicies retrieves all of the policies that exist on a particular resource.
 func (c *restClient) ListPolicies(ctx context.Context, req *orgpolicypb.ListPoliciesRequest, opts ...gax.CallOption) *PolicyIterator {
 	it := &PolicyIterator{}
-	req = proto.Clone(req).(*orgpolicypb.ListPoliciesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*orgpolicypb.Policy, string, error) {
 		resp := &orgpolicypb.ListPoliciesResponse{}
@@ -1220,6 +1427,10 @@ func (c *restClient) GetPolicy(ctx context.Context, req *orgpolicypb.GetPolicyRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orgpolicy.v2.OrgPolicy/GetPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/policies/*}")
+	}
 	opts = append((*c.CallOptions).GetPolicy[0:len((*c.CallOptions).GetPolicy):len((*c.CallOptions).GetPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &orgpolicypb.Policy{}
@@ -1275,6 +1486,10 @@ func (c *restClient) GetEffectivePolicy(ctx context.Context, req *orgpolicypb.Ge
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orgpolicy.v2.OrgPolicy/GetEffectivePolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/policies/*}:getEffectivePolicy")
+	}
 	opts = append((*c.CallOptions).GetEffectivePolicy[0:len((*c.CallOptions).GetEffectivePolicy):len((*c.CallOptions).GetEffectivePolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &orgpolicypb.Policy{}
@@ -1337,6 +1552,10 @@ func (c *restClient) CreatePolicy(ctx context.Context, req *orgpolicypb.CreatePo
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orgpolicy.v2.OrgPolicy/CreatePolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{parent=projects/*}/policies")
+	}
 	opts = append((*c.CallOptions).CreatePolicy[0:len((*c.CallOptions).CreatePolicy):len((*c.CallOptions).CreatePolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &orgpolicypb.Policy{}
@@ -1409,6 +1628,10 @@ func (c *restClient) UpdatePolicy(ctx context.Context, req *orgpolicypb.UpdatePo
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orgpolicy.v2.OrgPolicy/UpdatePolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{policy.name=projects/*/policies/*}")
+	}
 	opts = append((*c.CallOptions).UpdatePolicy[0:len((*c.CallOptions).UpdatePolicy):len((*c.CallOptions).UpdatePolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &orgpolicypb.Policy{}
@@ -1465,6 +1688,10 @@ func (c *restClient) DeletePolicy(ctx context.Context, req *orgpolicypb.DeletePo
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orgpolicy.v2.OrgPolicy/DeletePolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/policies/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1512,6 +1739,10 @@ func (c *restClient) CreateCustomConstraint(ctx context.Context, req *orgpolicyp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orgpolicy.v2.OrgPolicy/CreateCustomConstraint")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{parent=organizations/*}/customConstraints")
+	}
 	opts = append((*c.CallOptions).CreateCustomConstraint[0:len((*c.CallOptions).CreateCustomConstraint):len((*c.CallOptions).CreateCustomConstraint)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &orgpolicypb.CustomConstraint{}
@@ -1575,6 +1806,10 @@ func (c *restClient) UpdateCustomConstraint(ctx context.Context, req *orgpolicyp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orgpolicy.v2.OrgPolicy/UpdateCustomConstraint")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{custom_constraint.name=organizations/*/customConstraints/*}")
+	}
 	opts = append((*c.CallOptions).UpdateCustomConstraint[0:len((*c.CallOptions).UpdateCustomConstraint):len((*c.CallOptions).UpdateCustomConstraint)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &orgpolicypb.CustomConstraint{}
@@ -1628,6 +1863,10 @@ func (c *restClient) GetCustomConstraint(ctx context.Context, req *orgpolicypb.G
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orgpolicy.v2.OrgPolicy/GetCustomConstraint")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=organizations/*/customConstraints/*}")
+	}
 	opts = append((*c.CallOptions).GetCustomConstraint[0:len((*c.CallOptions).GetCustomConstraint):len((*c.CallOptions).GetCustomConstraint)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &orgpolicypb.CustomConstraint{}
@@ -1663,7 +1902,7 @@ func (c *restClient) GetCustomConstraint(ctx context.Context, req *orgpolicypb.G
 // organization resource.
 func (c *restClient) ListCustomConstraints(ctx context.Context, req *orgpolicypb.ListCustomConstraintsRequest, opts ...gax.CallOption) *CustomConstraintIterator {
 	it := &CustomConstraintIterator{}
-	req = proto.Clone(req).(*orgpolicypb.ListCustomConstraintsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*orgpolicypb.CustomConstraint, string, error) {
 		resp := &orgpolicypb.ListCustomConstraintsResponse{}
@@ -1760,6 +1999,10 @@ func (c *restClient) DeleteCustomConstraint(ctx context.Context, req *orgpolicyp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orgpolicy.v2.OrgPolicy/DeleteCustomConstraint")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=organizations/*/customConstraints/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path

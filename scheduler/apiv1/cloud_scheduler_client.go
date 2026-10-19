@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import (
 
 	schedulerpb "cloud.google.com/go/scheduler/apiv1/schedulerpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -222,7 +223,7 @@ type CloudSchedulerClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *CloudSchedulerClient) Close() error {
 	return c.internalClient.Close()
@@ -350,6 +351,16 @@ type cloudSchedulerGRPCClient struct {
 // schedule asynchronous jobs.
 func NewCloudSchedulerClient(ctx context.Context, opts ...option.ClientOption) (*CloudSchedulerClient, error) {
 	clientOpts := defaultCloudSchedulerGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "cloudscheduler",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/scheduler/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "cloudscheduler.googleapis.com",
+		}))
+	}
 	if newCloudSchedulerClientHook != nil {
 		hookOpts, err := newCloudSchedulerClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -372,6 +383,74 @@ func NewCloudSchedulerClient(ctx context.Context, opts ...option.ClientOption) (
 		locationsClient:      locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "cloudscheduler",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/scheduler/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudscheduler.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListJobs = append(client.CallOptions.ListJobs, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetJob = append(client.CallOptions.GetJob, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateJob = append(client.CallOptions.CreateJob, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateJob = append(client.CallOptions.UpdateJob, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteJob = append(client.CallOptions.DeleteJob, gax.WithClientMetrics(metrics))
+		client.CallOptions.PauseJob = append(client.CallOptions.PauseJob, gax.WithClientMetrics(metrics))
+		client.CallOptions.ResumeJob = append(client.CallOptions.ResumeJob, gax.WithClientMetrics(metrics))
+		client.CallOptions.RunJob = append(client.CallOptions.RunJob, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudscheduler",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/scheduler/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudscheduler.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListJobs = append(client.CallOptions.ListJobs, gax.WithClientTracing(tracing))
+		client.CallOptions.GetJob = append(client.CallOptions.GetJob, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateJob = append(client.CallOptions.CreateJob, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateJob = append(client.CallOptions.UpdateJob, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteJob = append(client.CallOptions.DeleteJob, gax.WithClientTracing(tracing))
+		client.CallOptions.PauseJob = append(client.CallOptions.PauseJob, gax.WithClientTracing(tracing))
+		client.CallOptions.ResumeJob = append(client.CallOptions.ResumeJob, gax.WithClientTracing(tracing))
+		client.CallOptions.RunJob = append(client.CallOptions.RunJob, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudscheduler",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/scheduler/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudscheduler.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListJobs = append(client.CallOptions.ListJobs, gax.WithClientLogging(logging))
+		client.CallOptions.GetJob = append(client.CallOptions.GetJob, gax.WithClientLogging(logging))
+		client.CallOptions.CreateJob = append(client.CallOptions.CreateJob, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateJob = append(client.CallOptions.UpdateJob, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteJob = append(client.CallOptions.DeleteJob, gax.WithClientLogging(logging))
+		client.CallOptions.PauseJob = append(client.CallOptions.PauseJob, gax.WithClientLogging(logging))
+		client.CallOptions.ResumeJob = append(client.CallOptions.ResumeJob, gax.WithClientLogging(logging))
+		client.CallOptions.RunJob = append(client.CallOptions.RunJob, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -397,7 +476,7 @@ func (c *cloudSchedulerGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *cloudSchedulerGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -426,6 +505,16 @@ type cloudSchedulerRESTClient struct {
 // schedule asynchronous jobs.
 func NewCloudSchedulerRESTClient(ctx context.Context, opts ...option.ClientOption) (*CloudSchedulerClient, error) {
 	clientOpts := append(defaultCloudSchedulerRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "cloudscheduler",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/scheduler/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "cloudscheduler.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -439,6 +528,75 @@ func NewCloudSchedulerRESTClient(ctx context.Context, opts ...option.ClientOptio
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "cloudscheduler",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/scheduler/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudscheduler.googleapis.com",
+			}),
+		)
+
+		callOpts.ListJobs = append(callOpts.ListJobs, gax.WithClientMetrics(metrics))
+		callOpts.GetJob = append(callOpts.GetJob, gax.WithClientMetrics(metrics))
+		callOpts.CreateJob = append(callOpts.CreateJob, gax.WithClientMetrics(metrics))
+		callOpts.UpdateJob = append(callOpts.UpdateJob, gax.WithClientMetrics(metrics))
+		callOpts.DeleteJob = append(callOpts.DeleteJob, gax.WithClientMetrics(metrics))
+		callOpts.PauseJob = append(callOpts.PauseJob, gax.WithClientMetrics(metrics))
+		callOpts.ResumeJob = append(callOpts.ResumeJob, gax.WithClientMetrics(metrics))
+		callOpts.RunJob = append(callOpts.RunJob, gax.WithClientMetrics(metrics))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudscheduler",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/scheduler/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudscheduler.googleapis.com",
+			}),
+		)
+
+		callOpts.ListJobs = append(callOpts.ListJobs, gax.WithClientTracing(tracing))
+		callOpts.GetJob = append(callOpts.GetJob, gax.WithClientTracing(tracing))
+		callOpts.CreateJob = append(callOpts.CreateJob, gax.WithClientTracing(tracing))
+		callOpts.UpdateJob = append(callOpts.UpdateJob, gax.WithClientTracing(tracing))
+		callOpts.DeleteJob = append(callOpts.DeleteJob, gax.WithClientTracing(tracing))
+		callOpts.PauseJob = append(callOpts.PauseJob, gax.WithClientTracing(tracing))
+		callOpts.ResumeJob = append(callOpts.ResumeJob, gax.WithClientTracing(tracing))
+		callOpts.RunJob = append(callOpts.RunJob, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudscheduler",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/scheduler/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudscheduler.googleapis.com",
+			}),
+		)
+
+		callOpts.ListJobs = append(callOpts.ListJobs, gax.WithClientLogging(logging))
+		callOpts.GetJob = append(callOpts.GetJob, gax.WithClientLogging(logging))
+		callOpts.CreateJob = append(callOpts.CreateJob, gax.WithClientLogging(logging))
+		callOpts.UpdateJob = append(callOpts.UpdateJob, gax.WithClientLogging(logging))
+		callOpts.DeleteJob = append(callOpts.DeleteJob, gax.WithClientLogging(logging))
+		callOpts.PauseJob = append(callOpts.PauseJob, gax.WithClientLogging(logging))
+		callOpts.ResumeJob = append(callOpts.ResumeJob, gax.WithClientLogging(logging))
+		callOpts.RunJob = append(callOpts.RunJob, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+	}
 
 	return &CloudSchedulerClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -466,7 +624,7 @@ func (c *cloudSchedulerRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *cloudSchedulerRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -485,9 +643,12 @@ func (c *cloudSchedulerGRPCClient) ListJobs(ctx context.Context, req *schedulerp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.scheduler.v1.CloudScheduler/ListJobs")
+	}
 	opts = append((*c.CallOptions).ListJobs[0:len((*c.CallOptions).ListJobs):len((*c.CallOptions).ListJobs)], opts...)
 	it := &JobIterator{}
-	req = proto.Clone(req).(*schedulerpb.ListJobsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*schedulerpb.Job, string, error) {
 		resp := &schedulerpb.ListJobsResponse{}
 		if pageToken != "" {
@@ -531,6 +692,9 @@ func (c *cloudSchedulerGRPCClient) GetJob(ctx context.Context, req *schedulerpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.scheduler.v1.CloudScheduler/GetJob")
+	}
 	opts = append((*c.CallOptions).GetJob[0:len((*c.CallOptions).GetJob):len((*c.CallOptions).GetJob)], opts...)
 	var resp *schedulerpb.Job
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -549,6 +713,9 @@ func (c *cloudSchedulerGRPCClient) CreateJob(ctx context.Context, req *scheduler
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.scheduler.v1.CloudScheduler/CreateJob")
+	}
 	opts = append((*c.CallOptions).CreateJob[0:len((*c.CallOptions).CreateJob):len((*c.CallOptions).CreateJob)], opts...)
 	var resp *schedulerpb.Job
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -567,6 +734,9 @@ func (c *cloudSchedulerGRPCClient) UpdateJob(ctx context.Context, req *scheduler
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.scheduler.v1.CloudScheduler/UpdateJob")
+	}
 	opts = append((*c.CallOptions).UpdateJob[0:len((*c.CallOptions).UpdateJob):len((*c.CallOptions).UpdateJob)], opts...)
 	var resp *schedulerpb.Job
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -585,6 +755,9 @@ func (c *cloudSchedulerGRPCClient) DeleteJob(ctx context.Context, req *scheduler
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.scheduler.v1.CloudScheduler/DeleteJob")
+	}
 	opts = append((*c.CallOptions).DeleteJob[0:len((*c.CallOptions).DeleteJob):len((*c.CallOptions).DeleteJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -599,6 +772,9 @@ func (c *cloudSchedulerGRPCClient) PauseJob(ctx context.Context, req *schedulerp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.scheduler.v1.CloudScheduler/PauseJob")
+	}
 	opts = append((*c.CallOptions).PauseJob[0:len((*c.CallOptions).PauseJob):len((*c.CallOptions).PauseJob)], opts...)
 	var resp *schedulerpb.Job
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -617,6 +793,9 @@ func (c *cloudSchedulerGRPCClient) ResumeJob(ctx context.Context, req *scheduler
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.scheduler.v1.CloudScheduler/ResumeJob")
+	}
 	opts = append((*c.CallOptions).ResumeJob[0:len((*c.CallOptions).ResumeJob):len((*c.CallOptions).ResumeJob)], opts...)
 	var resp *schedulerpb.Job
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -635,6 +814,9 @@ func (c *cloudSchedulerGRPCClient) RunJob(ctx context.Context, req *schedulerpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.scheduler.v1.CloudScheduler/RunJob")
+	}
 	opts = append((*c.CallOptions).RunJob[0:len((*c.CallOptions).RunJob):len((*c.CallOptions).RunJob)], opts...)
 	var resp *schedulerpb.Job
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -653,6 +835,9 @@ func (c *cloudSchedulerGRPCClient) GetLocation(ctx context.Context, req *locatio
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -671,9 +856,12 @@ func (c *cloudSchedulerGRPCClient) ListLocations(ctx context.Context, req *locat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/ListLocations")
+	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -715,7 +903,7 @@ func (c *cloudSchedulerGRPCClient) ListLocations(ctx context.Context, req *locat
 // ListJobs lists jobs.
 func (c *cloudSchedulerRESTClient) ListJobs(ctx context.Context, req *schedulerpb.ListJobsRequest, opts ...gax.CallOption) *JobIterator {
 	it := &JobIterator{}
-	req = proto.Clone(req).(*schedulerpb.ListJobsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*schedulerpb.Job, string, error) {
 		resp := &schedulerpb.ListJobsResponse{}
@@ -809,6 +997,10 @@ func (c *cloudSchedulerRESTClient) GetJob(ctx context.Context, req *schedulerpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.scheduler.v1.CloudScheduler/GetJob")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/jobs/*}")
+	}
 	opts = append((*c.CallOptions).GetJob[0:len((*c.CallOptions).GetJob):len((*c.CallOptions).GetJob)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &schedulerpb.Job{}
@@ -866,6 +1058,10 @@ func (c *cloudSchedulerRESTClient) CreateJob(ctx context.Context, req *scheduler
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.scheduler.v1.CloudScheduler/CreateJob")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/jobs")
+	}
 	opts = append((*c.CallOptions).CreateJob[0:len((*c.CallOptions).CreateJob):len((*c.CallOptions).CreateJob)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &schedulerpb.Job{}
@@ -939,6 +1135,10 @@ func (c *cloudSchedulerRESTClient) UpdateJob(ctx context.Context, req *scheduler
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.scheduler.v1.CloudScheduler/UpdateJob")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{job.name=projects/*/locations/*/jobs/*}")
+	}
 	opts = append((*c.CallOptions).UpdateJob[0:len((*c.CallOptions).UpdateJob):len((*c.CallOptions).UpdateJob)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &schedulerpb.Job{}
@@ -989,6 +1189,10 @@ func (c *cloudSchedulerRESTClient) DeleteJob(ctx context.Context, req *scheduler
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.scheduler.v1.CloudScheduler/DeleteJob")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/jobs/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1039,6 +1243,10 @@ func (c *cloudSchedulerRESTClient) PauseJob(ctx context.Context, req *schedulerp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.scheduler.v1.CloudScheduler/PauseJob")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/jobs/*}:pause")
+	}
 	opts = append((*c.CallOptions).PauseJob[0:len((*c.CallOptions).PauseJob):len((*c.CallOptions).PauseJob)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &schedulerpb.Job{}
@@ -1103,6 +1311,10 @@ func (c *cloudSchedulerRESTClient) ResumeJob(ctx context.Context, req *scheduler
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.scheduler.v1.CloudScheduler/ResumeJob")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/jobs/*}:resume")
+	}
 	opts = append((*c.CallOptions).ResumeJob[0:len((*c.CallOptions).ResumeJob):len((*c.CallOptions).ResumeJob)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &schedulerpb.Job{}
@@ -1162,6 +1374,10 @@ func (c *cloudSchedulerRESTClient) RunJob(ctx context.Context, req *schedulerpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.scheduler.v1.CloudScheduler/RunJob")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/jobs/*}:run")
+	}
 	opts = append((*c.CallOptions).RunJob[0:len((*c.CallOptions).RunJob):len((*c.CallOptions).RunJob)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &schedulerpb.Job{}
@@ -1212,6 +1428,10 @@ func (c *cloudSchedulerRESTClient) GetLocation(ctx context.Context, req *locatio
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*}")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &locationpb.Location{}
@@ -1246,7 +1466,7 @@ func (c *cloudSchedulerRESTClient) GetLocation(ctx context.Context, req *locatio
 // ListLocations lists information about the supported locations for this service.
 func (c *cloudSchedulerRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}

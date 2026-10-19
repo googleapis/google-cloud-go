@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,12 +18,14 @@ package policysimulator
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	policysimulatorpb "cloud.google.com/go/policysimulator/apiv1/policysimulatorpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
 
@@ -155,6 +157,12 @@ func (op *CreateReplayOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OperationIterator manages a stream of *longrunningpb.Operation.
 type OperationIterator struct {
 	items    []*longrunningpb.Operation
@@ -200,6 +208,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OrgPolicyViolationIterator) All() iter.Seq2[*policysimulatorpb.OrgPolicyViolation, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // OrgPolicyViolationIterator manages a stream of *policysimulatorpb.OrgPolicyViolation.
@@ -249,6 +263,12 @@ func (it *OrgPolicyViolationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OrgPolicyViolationsPreviewIterator) All() iter.Seq2[*policysimulatorpb.OrgPolicyViolationsPreview, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OrgPolicyViolationsPreviewIterator manages a stream of *policysimulatorpb.OrgPolicyViolationsPreview.
 type OrgPolicyViolationsPreviewIterator struct {
 	items    []*policysimulatorpb.OrgPolicyViolationsPreview
@@ -294,6 +314,12 @@ func (it *OrgPolicyViolationsPreviewIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ReplayResultIterator) All() iter.Seq2[*policysimulatorpb.ReplayResult, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ReplayResultIterator manages a stream of *policysimulatorpb.ReplayResult.

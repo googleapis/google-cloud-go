@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import (
 
 	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -42,15 +43,16 @@ var newUrlMapsClientHook clientHook
 
 // UrlMapsCallOptions contains the retry settings for each method of UrlMapsClient.
 type UrlMapsCallOptions struct {
-	AggregatedList  []gax.CallOption
-	Delete          []gax.CallOption
-	Get             []gax.CallOption
-	Insert          []gax.CallOption
-	InvalidateCache []gax.CallOption
-	List            []gax.CallOption
-	Patch           []gax.CallOption
-	Update          []gax.CallOption
-	Validate        []gax.CallOption
+	AggregatedList     []gax.CallOption
+	Delete             []gax.CallOption
+	Get                []gax.CallOption
+	Insert             []gax.CallOption
+	InvalidateCache    []gax.CallOption
+	List               []gax.CallOption
+	Patch              []gax.CallOption
+	TestIamPermissions []gax.CallOption
+	Update             []gax.CallOption
+	Validate           []gax.CallOption
 }
 
 func defaultUrlMapsRESTCallOptions() *UrlMapsCallOptions {
@@ -103,6 +105,9 @@ func defaultUrlMapsRESTCallOptions() *UrlMapsCallOptions {
 		Patch: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
+		TestIamPermissions: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		Update: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
@@ -112,7 +117,7 @@ func defaultUrlMapsRESTCallOptions() *UrlMapsCallOptions {
 	}
 }
 
-// internalUrlMapsClient is an interface that defines the methods available from Google Compute Engine API.
+// internalUrlMapsClient is an interface that defines the methods available from Compute Engine API.
 type internalUrlMapsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -124,14 +129,17 @@ type internalUrlMapsClient interface {
 	InvalidateCache(context.Context, *computepb.InvalidateCacheUrlMapRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListUrlMapsRequest, ...gax.CallOption) *UrlMapIterator
 	Patch(context.Context, *computepb.PatchUrlMapRequest, ...gax.CallOption) (*Operation, error)
+	TestIamPermissions(context.Context, *computepb.TestIamPermissionsUrlMapRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 	Update(context.Context, *computepb.UpdateUrlMapRequest, ...gax.CallOption) (*Operation, error)
 	Validate(context.Context, *computepb.ValidateUrlMapRequest, ...gax.CallOption) (*computepb.UrlMapsValidateResponse, error)
 }
 
-// UrlMapsClient is a client for interacting with Google Compute Engine API.
+// UrlMapsClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The UrlMaps API.
+//
+// This client uses UrlMaps version 2026-09-01.
 type UrlMapsClient struct {
 	// The internal transport-dependent client.
 	internalClient internalUrlMapsClient
@@ -142,7 +150,7 @@ type UrlMapsClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *UrlMapsClient) Close() error {
 	return c.internalClient.Close()
@@ -163,7 +171,11 @@ func (c *UrlMapsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves the list of all UrlMap resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves the list of all UrlMap resources, regional and global,
+// available to the specified project.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *UrlMapsClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListUrlMapsRequest, opts ...gax.CallOption) *UrlMapsScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -178,32 +190,49 @@ func (c *UrlMapsClient) Get(ctx context.Context, req *computepb.GetUrlMapRequest
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// Insert creates a UrlMap resource in the specified project using the data included in the request.
+// Insert creates a UrlMap resource in the specified project using
+// the data included in the request.
 func (c *UrlMapsClient) Insert(ctx context.Context, req *computepb.InsertUrlMapRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// InvalidateCache initiates a cache invalidation operation, invalidating the specified path, scoped to the specified UrlMap. For more information, see Invalidating cached content (at /cdn/docs/invalidating-cached-content).
+// InvalidateCache initiates a cache invalidation operation, invalidating the specified path,
+// scoped to the specified UrlMap.
+//
+// For more information, see Invalidating cached
+// content (at /cdn/docs/invalidating-cached-content).
 func (c *UrlMapsClient) InvalidateCache(ctx context.Context, req *computepb.InvalidateCacheUrlMapRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.InvalidateCache(ctx, req, opts...)
 }
 
-// List retrieves the list of UrlMap resources available to the specified project.
+// List retrieves the list of UrlMap resources available to the specified
+// project.
 func (c *UrlMapsClient) List(ctx context.Context, req *computepb.ListUrlMapsRequest, opts ...gax.CallOption) *UrlMapIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// Patch patches the specified UrlMap resource with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+// Patch patches the specified UrlMap resource with the data included in the
+// request. This method supportsPATCH
+// semantics and uses theJSON merge
+// patch format and processing rules.
 func (c *UrlMapsClient) Patch(ctx context.Context, req *computepb.PatchUrlMapRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
 
-// Update updates the specified UrlMap resource with the data included in the request.
+// TestIamPermissions returns permissions that a caller has on the specified resource.
+func (c *UrlMapsClient) TestIamPermissions(ctx context.Context, req *computepb.TestIamPermissionsUrlMapRequest, opts ...gax.CallOption) (*computepb.TestPermissionsResponse, error) {
+	return c.internalClient.TestIamPermissions(ctx, req, opts...)
+}
+
+// Update updates the specified UrlMap resource with the data included in the
+// request.
 func (c *UrlMapsClient) Update(ctx context.Context, req *computepb.UpdateUrlMapRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Update(ctx, req, opts...)
 }
 
-// Validate runs static validation for the UrlMap. In particular, the tests of the provided UrlMap will be run. Calling this method does NOT create the UrlMap.
+// Validate runs static validation for the UrlMap. In particular, the tests of the
+// provided UrlMap will be run. Calling this method does NOT create the
+// UrlMap.
 func (c *UrlMapsClient) Validate(ctx context.Context, req *computepb.ValidateUrlMapRequest, opts ...gax.CallOption) (*computepb.UrlMapsValidateResponse, error) {
 	return c.internalClient.Validate(ctx, req, opts...)
 }
@@ -233,6 +262,16 @@ type urlMapsRESTClient struct {
 // The UrlMaps API.
 func NewUrlMapsRESTClient(ctx context.Context, opts ...option.ClientOption) (*UrlMapsClient, error) {
 	clientOpts := append(defaultUrlMapsRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "compute",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/compute/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "compute.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -246,6 +285,75 @@ func NewUrlMapsRESTClient(ctx context.Context, opts ...option.ClientOption) (*Ur
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientMetrics(metrics))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientMetrics(metrics))
+		callOpts.Get = append(callOpts.Get, gax.WithClientMetrics(metrics))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientMetrics(metrics))
+		callOpts.InvalidateCache = append(callOpts.InvalidateCache, gax.WithClientMetrics(metrics))
+		callOpts.List = append(callOpts.List, gax.WithClientMetrics(metrics))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientMetrics(metrics))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
+		callOpts.Update = append(callOpts.Update, gax.WithClientMetrics(metrics))
+		callOpts.Validate = append(callOpts.Validate, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientTracing(tracing))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientTracing(tracing))
+		callOpts.Get = append(callOpts.Get, gax.WithClientTracing(tracing))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientTracing(tracing))
+		callOpts.InvalidateCache = append(callOpts.InvalidateCache, gax.WithClientTracing(tracing))
+		callOpts.List = append(callOpts.List, gax.WithClientTracing(tracing))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientTracing(tracing))
+		callOpts.Update = append(callOpts.Update, gax.WithClientTracing(tracing))
+		callOpts.Validate = append(callOpts.Validate, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientLogging(logging))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientLogging(logging))
+		callOpts.Get = append(callOpts.Get, gax.WithClientLogging(logging))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientLogging(logging))
+		callOpts.InvalidateCache = append(callOpts.InvalidateCache, gax.WithClientLogging(logging))
+		callOpts.List = append(callOpts.List, gax.WithClientLogging(logging))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientLogging(logging))
+		callOpts.Update = append(callOpts.Update, gax.WithClientLogging(logging))
+		callOpts.Validate = append(callOpts.Validate, gax.WithClientLogging(logging))
+	}
 
 	o := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -280,10 +388,11 @@ func (c *urlMapsRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
+		"x-goog-api-version", "2026-09-01",
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *urlMapsRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -301,10 +410,14 @@ func (c *urlMapsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves the list of all UrlMap resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves the list of all UrlMap resources, regional and global,
+// available to the specified project.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *urlMapsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListUrlMapsRequest, opts ...gax.CallOption) *UrlMapsScopedListPairIterator {
 	it := &UrlMapsScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListUrlMapsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]UrlMapsScopedListPair, string, error) {
 		resp := &computepb.UrlMapsAggregatedList{}
@@ -337,9 +450,6 @@ func (c *urlMapsRESTClient) AggregatedList(ctx context.Context, req *computepb.A
 		}
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 		if req != nil && req.ServiceProjectNumber != nil {
 			params.Add("serviceProjectNumber", fmt.Sprintf("%v", req.GetServiceProjectNumber()))
@@ -421,6 +531,10 @@ func (c *urlMapsRESTClient) Delete(ctx context.Context, req *computepb.DeleteUrl
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.UrlMaps/Delete")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/urlMaps/{url_map}")
+	}
 	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -473,6 +587,10 @@ func (c *urlMapsRESTClient) Get(ctx context.Context, req *computepb.GetUrlMapReq
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.UrlMaps/Get")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/urlMaps/{url_map}")
+	}
 	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.UrlMap{}
@@ -504,7 +622,8 @@ func (c *urlMapsRESTClient) Get(ctx context.Context, req *computepb.GetUrlMapReq
 	return resp, nil
 }
 
-// Insert creates a UrlMap resource in the specified project using the data included in the request.
+// Insert creates a UrlMap resource in the specified project using
+// the data included in the request.
 func (c *urlMapsRESTClient) Insert(ctx context.Context, req *computepb.InsertUrlMapRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetUrlMapResource()
@@ -532,6 +651,10 @@ func (c *urlMapsRESTClient) Insert(ctx context.Context, req *computepb.InsertUrl
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.UrlMaps/Insert")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/urlMaps")
+	}
 	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -570,7 +693,11 @@ func (c *urlMapsRESTClient) Insert(ctx context.Context, req *computepb.InsertUrl
 	return op, nil
 }
 
-// InvalidateCache initiates a cache invalidation operation, invalidating the specified path, scoped to the specified UrlMap. For more information, see Invalidating cached content (at /cdn/docs/invalidating-cached-content).
+// InvalidateCache initiates a cache invalidation operation, invalidating the specified path,
+// scoped to the specified UrlMap.
+//
+// For more information, see Invalidating cached
+// content (at /cdn/docs/invalidating-cached-content).
 func (c *urlMapsRESTClient) InvalidateCache(ctx context.Context, req *computepb.InvalidateCacheUrlMapRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetCacheInvalidationRuleResource()
@@ -598,6 +725,10 @@ func (c *urlMapsRESTClient) InvalidateCache(ctx context.Context, req *computepb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.UrlMaps/InvalidateCache")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/urlMaps/{url_map}/invalidateCache")
+	}
 	opts = append((*c.CallOptions).InvalidateCache[0:len((*c.CallOptions).InvalidateCache):len((*c.CallOptions).InvalidateCache)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -636,10 +767,11 @@ func (c *urlMapsRESTClient) InvalidateCache(ctx context.Context, req *computepb.
 	return op, nil
 }
 
-// List retrieves the list of UrlMap resources available to the specified project.
+// List retrieves the list of UrlMap resources available to the specified
+// project.
 func (c *urlMapsRESTClient) List(ctx context.Context, req *computepb.ListUrlMapsRequest, opts ...gax.CallOption) *UrlMapIterator {
 	it := &UrlMapIterator{}
-	req = proto.Clone(req).(*computepb.ListUrlMapsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.UrlMap, string, error) {
 		resp := &computepb.UrlMapList{}
@@ -669,9 +801,6 @@ func (c *urlMapsRESTClient) List(ctx context.Context, req *computepb.ListUrlMaps
 		}
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -722,7 +851,10 @@ func (c *urlMapsRESTClient) List(ctx context.Context, req *computepb.ListUrlMaps
 	return it
 }
 
-// Patch patches the specified UrlMap resource with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+// Patch patches the specified UrlMap resource with the data included in the
+// request. This method supportsPATCH
+// semantics and uses theJSON merge
+// patch format and processing rules.
 func (c *urlMapsRESTClient) Patch(ctx context.Context, req *computepb.PatchUrlMapRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetUrlMapResource()
@@ -750,6 +882,10 @@ func (c *urlMapsRESTClient) Patch(ctx context.Context, req *computepb.PatchUrlMa
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.UrlMaps/Patch")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/urlMaps/{url_map}")
+	}
 	opts = append((*c.CallOptions).Patch[0:len((*c.CallOptions).Patch):len((*c.CallOptions).Patch)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -788,7 +924,64 @@ func (c *urlMapsRESTClient) Patch(ctx context.Context, req *computepb.PatchUrlMa
 	return op, nil
 }
 
-// Update updates the specified UrlMap resource with the data included in the request.
+// TestIamPermissions returns permissions that a caller has on the specified resource.
+func (c *urlMapsRESTClient) TestIamPermissions(ctx context.Context, req *computepb.TestIamPermissionsUrlMapRequest, opts ...gax.CallOption) (*computepb.TestPermissionsResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetTestPermissionsRequestResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/urlMaps/%v/testIamPermissions", req.GetProject(), req.GetResource())
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.UrlMaps/TestIamPermissions")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/urlMaps/{resource}/testIamPermissions")
+	}
+	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.TestPermissionsResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TestIamPermissions")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// Update updates the specified UrlMap resource with the data included in the
+// request.
 func (c *urlMapsRESTClient) Update(ctx context.Context, req *computepb.UpdateUrlMapRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetUrlMapResource()
@@ -816,6 +1009,10 @@ func (c *urlMapsRESTClient) Update(ctx context.Context, req *computepb.UpdateUrl
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.UrlMaps/Update")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/urlMaps/{url_map}")
+	}
 	opts = append((*c.CallOptions).Update[0:len((*c.CallOptions).Update):len((*c.CallOptions).Update)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -854,7 +1051,9 @@ func (c *urlMapsRESTClient) Update(ctx context.Context, req *computepb.UpdateUrl
 	return op, nil
 }
 
-// Validate runs static validation for the UrlMap. In particular, the tests of the provided UrlMap will be run. Calling this method does NOT create the UrlMap.
+// Validate runs static validation for the UrlMap. In particular, the tests of the
+// provided UrlMap will be run. Calling this method does NOT create the
+// UrlMap.
 func (c *urlMapsRESTClient) Validate(ctx context.Context, req *computepb.ValidateUrlMapRequest, opts ...gax.CallOption) (*computepb.UrlMapsValidateResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetUrlMapsValidateRequestResource()
@@ -875,6 +1074,10 @@ func (c *urlMapsRESTClient) Validate(ctx context.Context, req *computepb.Validat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.UrlMaps/Validate")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/urlMaps/{url_map}/validate")
+	}
 	opts = append((*c.CallOptions).Validate[0:len((*c.CallOptions).Validate):len((*c.CallOptions).Validate)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.UrlMapsValidateResponse{}

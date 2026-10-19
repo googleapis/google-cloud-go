@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,9 +17,7 @@
 // Package developerconnect is an auto-generated package for the
 // Developer Connect API.
 //
-// Connect third-party source code management to Google
-//
-//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
+// # Connect third-party source code management to Google
 //
 // # General documentation
 //

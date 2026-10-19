@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -56,11 +56,11 @@
 //
 // The following is an example of making an API call with the newly created client, mentioned above.
 //
-//	req := &memorystorepb.CreateInstanceRequest{
+//	req := &memorystorepb.AddAuthTokenRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/memorystore/apiv1beta/memorystorepb#CreateInstanceRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/memorystore/apiv1beta/memorystorepb#AddAuthTokenRequest.
 //	}
-//	op, err := c.CreateInstance(ctx, req)
+//	op, err := c.AddAuthToken(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

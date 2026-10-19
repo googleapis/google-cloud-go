@@ -25,6 +25,7 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
+	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 func TestRunTransaction(t *testing.T) {
@@ -82,7 +83,10 @@ func TestRunTransaction(t *testing.T) {
 				},
 			}},
 		},
-		&pb.CommitResponse{CommitTime: aTimestamp3},
+		&pb.CommitResponse{
+			CommitTime:   aTimestamp3,
+			WriteResults: []*pb.WriteResult{{UpdateTime: aTimestamp3}},
+		},
 	)
 	var commitResponse CommitResponse
 	err = c.RunTransaction(ctx, func(_ context.Context, tx *Transaction) error {
@@ -101,10 +105,17 @@ func TestRunTransaction(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// validate commit time
+	// validate commit time and write results
 	commitTime := commitResponse.CommitTime()
 	if commitTime != aTimestamp3.AsTime() {
 		t.Fatalf("commit time %v should equal %v", commitTime, aTimestamp3)
+	}
+	writeResults, err := commitResponse.WriteResults()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(writeResults) != 1 || !writeResults[0].UpdateTime.Equal(aTimestamp3.AsTime()) {
+		t.Fatalf("got write results %+v, want 1 result with UpdateTime %v", writeResults, aTimestamp3.AsTime())
 	}
 
 	// Query
@@ -339,6 +350,27 @@ func TestTransactionErrors(t *testing.T) {
 		}
 	})
 
+	t.Run("Read after write, with pipeline", func(t *testing.T) {
+		srv.reset()
+		srv.addRPC(beginReq, beginRes)
+		srv.addRPC(rollbackReq, &emptypb.Empty{})
+		err := c.RunTransaction(ctx, func(_ context.Context, tx *Transaction) error {
+			if err := tx.Delete(c.Doc("C/a")); err != nil {
+				return err
+			}
+			p := c.Pipeline().Collection("C").Select(Fields("x"))
+			it := tx.Execute(p).Results()
+			it.Stop()
+			return it.err
+		})
+		if err != errReadAfterWrite {
+			t.Errorf("got <%v>, want <%v>", err, errReadAfterWrite)
+		}
+		if !srv.isEmpty() {
+			t.Errorf("Expected %+v requests but not received. srv.reqItems: %+v", len(srv.reqItems), srv.reqItems)
+		}
+	})
+
 	t.Run("Read after write fails even if the user ignores the read's error", func(t *testing.T) {
 		srv.reset()
 		srv.addRPC(beginReq, beginRes)
@@ -455,6 +487,97 @@ func TestTransactionErrors(t *testing.T) {
 		}
 		if !srv.isEmpty() {
 			t.Errorf("Expected %+v requests but not received. srv.reqItems: %+v", len(srv.reqItems), srv.reqItems)
+		}
+	})
+
+	t.Run("Cancel context during f", func(t *testing.T) {
+		srv.reset()
+		srv.addRPC(beginReq, beginRes)
+		srv.addRPC(rollbackReq, &emptypb.Empty{})
+
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+		err := c.RunTransaction(ctx, func(ctx context.Context, tx *Transaction) error {
+			cancel() // Cancel context inside f
+			return ctx.Err()
+		})
+		if err != context.Canceled {
+			t.Errorf("got %v, want Canceled", err)
+		}
+		if !srv.isEmpty() {
+			t.Errorf("Expected all RPCs to be met, but got remaining: %+v", srv.reqItems)
+		}
+	})
+
+	t.Run("Commit fails with non-Aborted error, rollback sent", func(t *testing.T) {
+		srv.reset()
+		srv.addRPC(beginReq, beginRes)
+		srv.addRPC(commitReq, unknownErr)
+		srv.addRPC(rollbackReq, &emptypb.Empty{})
+
+		err := c.RunTransaction(ctx, func(ctx context.Context, tx *Transaction) error {
+			return nil
+		})
+		if status.Code(err) != codes.Unknown {
+			t.Errorf("got %v, want Unknown", err)
+		}
+		if !srv.isEmpty() {
+			t.Errorf("Expected all RPCs to be met, but got remaining: %+v", srv.reqItems)
+		}
+	})
+
+	t.Run("Commit fails with context deadline exceeded, rollback still sent", func(t *testing.T) {
+		srv.reset()
+		srv.addRPC(beginReq, beginRes)
+		srv.addRPC(commitReq, status.Error(codes.DeadlineExceeded, "context deadline exceeded"))
+		srv.addRPC(rollbackReq, &emptypb.Empty{})
+
+		err := c.RunTransaction(ctx, func(ctx context.Context, tx *Transaction) error {
+			return nil
+		})
+		if status.Code(err) != codes.DeadlineExceeded {
+			t.Errorf("got %v, want DeadlineExceeded", err)
+		}
+		if !srv.isEmpty() {
+			t.Errorf("Expected all RPCs to be met, but got remaining: %+v", srv.reqItems)
+		}
+	})
+
+	t.Run("Context cancelled before Commit reaches server, rollback still sent", func(t *testing.T) {
+		srv.reset()
+		srv.addRPC(beginReq, beginRes)
+		// Commit fails client-side due to cancelled context before reaching srv;
+		// Rollback is still sent to srv via detached context.
+		srv.addRPC(rollbackReq, &emptypb.Empty{})
+
+		txCtx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+		err := c.RunTransaction(txCtx, func(ctx context.Context, tx *Transaction) error {
+			cancel()
+			return nil
+		})
+		if status.Code(err) != codes.Canceled {
+			t.Errorf("got %v, want Canceled", err)
+		}
+		if !srv.isEmpty() {
+			t.Errorf("Expected all RPCs to be met, but got remaining: %+v", srv.reqItems)
+		}
+	})
+
+	t.Run("Commit fails with Aborted, rollback sent", func(t *testing.T) {
+		srv.reset()
+		srv.addRPC(beginReq, beginRes)
+		srv.addRPC(commitReq, abortedErr)
+		srv.addRPC(rollbackReq, &emptypb.Empty{})
+
+		err := c.RunTransaction(ctx, func(ctx context.Context, tx *Transaction) error {
+			return nil
+		}, MaxAttempts(1))
+		if status.Code(err) != codes.Aborted {
+			t.Errorf("got %v, want Aborted", err)
+		}
+		if !srv.isEmpty() {
+			t.Errorf("Expected all RPCs to be met, but got remaining: %+v", srv.reqItems)
 		}
 	})
 }
@@ -629,7 +752,6 @@ func TestTransaction_WithReadOptions(t *testing.T) {
 
 	const db = "projects/projectID/databases/(default)"
 	tm := time.Date(2021, time.February, 20, 0, 0, 0, 0, time.UTC)
-	ts := &timestamppb.Timestamp{Nanos: int32(tm.UnixNano())}
 	tid := []byte{1}
 
 	beginReq := &pb.BeginTransactionRequest{Database: db}
@@ -637,28 +759,171 @@ func TestTransaction_WithReadOptions(t *testing.T) {
 
 	srv.reset()
 	srv.addRPC(beginReq, beginRes)
-
 	srv.addRPC(
-		&pb.CommitRequest{
+		&pb.RollbackRequest{
 			Database:    db,
 			Transaction: tid,
 		},
-		&pb.CommitResponse{CommitTime: ts},
+		&emptypb.Empty{},
 	)
 
-	srv.addRPC(
-		&pb.CommitRequest{
-			Database:    db,
-			Transaction: tid,
-		},
-		&pb.CommitResponse{CommitTime: ts},
-	)
-
-	if err := c.RunTransaction(ctx, func(ctx2 context.Context, tx *Transaction) error {
+	err := c.RunTransaction(ctx, func(ctx2 context.Context, tx *Transaction) error {
 		docref := c.Collection("C").Doc("a")
 		tx.WithReadOptions(ReadTime(tm)).Get(docref)
 		return nil
-	}); err != nil {
+	})
+	if err != errInvalidReadTime {
+		t.Fatalf("got err %v, want %v", err, errInvalidReadTime)
+	}
+}
+
+func TestRunTransaction_VectorQuery(t *testing.T) {
+	ctx := context.Background()
+	c, srv, cleanup := newMock(t)
+	defer cleanup()
+
+	const db = "projects/projectID/databases/(default)"
+	tid := []byte{1}
+
+	beginReq := &pb.BeginTransactionRequest{Database: db}
+	beginRes := &pb.BeginTransactionResponse{Transaction: tid}
+	commitReq := &pb.CommitRequest{Database: db, Transaction: tid}
+
+	srv.addRPC(beginReq, beginRes)
+
+	distanceThreshold := 20.0
+	srv.addRPC(
+		&pb.RunQueryRequest{
+			Parent: db + "/documents",
+			QueryType: &pb.RunQueryRequest_StructuredQuery{
+				StructuredQuery: &pb.StructuredQuery{
+					From: []*pb.StructuredQuery_CollectionSelector{{CollectionId: "C"}},
+					FindNearest: &pb.StructuredQuery_FindNearest{
+						VectorField: &pb.StructuredQuery_FieldReference{FieldPath: "vectorField"},
+						QueryVector: &pb.Value{ValueType: &pb.Value_MapValue{MapValue: &pb.MapValue{
+							Fields: map[string]*pb.Value{
+								"__type__": {ValueType: &pb.Value_StringValue{StringValue: "__vector__"}},
+								"value": {ValueType: &pb.Value_ArrayValue{ArrayValue: &pb.ArrayValue{
+									Values: []*pb.Value{
+										{ValueType: &pb.Value_DoubleValue{DoubleValue: 1.0}},
+										{ValueType: &pb.Value_DoubleValue{DoubleValue: 2.0}},
+										{ValueType: &pb.Value_DoubleValue{DoubleValue: 3.0}},
+									},
+								}}},
+							},
+						}}},
+						DistanceMeasure:     pb.StructuredQuery_FindNearest_EUCLIDEAN,
+						Limit:               &wrapperspb.Int32Value{Value: 10},
+						DistanceResultField: "distance",
+						DistanceThreshold:   &wrapperspb.DoubleValue{Value: distanceThreshold},
+					},
+				},
+			},
+			ConsistencySelector: &pb.RunQueryRequest_Transaction{Transaction: tid},
+		},
+		[]interface{}{},
+	)
+	srv.addRPC(commitReq, &pb.CommitResponse{CommitTime: aTimestamp})
+
+	err := c.RunTransaction(ctx, func(_ context.Context, tx *Transaction) error {
+		vq := c.Collection("C").FindNearest("vectorField", []float64{1.0, 2.0, 3.0}, 10, DistanceMeasureEuclidean, &FindNearestOptions{
+			DistanceResultField: "distance",
+			DistanceThreshold:   &distanceThreshold,
+		})
+		it := tx.Documents(vq)
+		defer it.Stop()
+		_, err := it.Next()
+		if err != iterator.Done {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestTransaction_TransactionReadTime_Success(t *testing.T) {
+	ctx := context.Background()
+	c, srv, cleanup := newMock(t)
+	defer cleanup()
+
+	const db = "projects/projectID/databases/(default)"
+	tm := time.Date(2021, time.February, 20, 0, 0, 0, 0, time.UTC)
+	ts := timestamppb.New(tm)
+	tid := []byte{1}
+
+	beginReq := &pb.BeginTransactionRequest{
+		Database: db,
+		Options: &pb.TransactionOptions{
+			Mode: &pb.TransactionOptions_ReadOnly_{
+				ReadOnly: &pb.TransactionOptions_ReadOnly{
+					ConsistencySelector: &pb.TransactionOptions_ReadOnly_ReadTime{
+						ReadTime: ts,
+					},
+				},
+			},
+		},
+	}
+	beginRes := &pb.BeginTransactionResponse{Transaction: tid}
+
+	srv.reset()
+	srv.addRPC(beginReq, beginRes)
+	srv.addRPC(
+		&pb.CommitRequest{
+			Database:    db,
+			Transaction: tid,
+		},
+		&pb.CommitResponse{CommitTime: ts},
+	)
+
+	err := c.RunTransaction(ctx, func(ctx2 context.Context, tx *Transaction) error {
+		return nil
+	}, ReadOnly, TransactionReadTime(tm))
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestTransaction_WithReadOptions_Empty_AfterTransactionReadTime(t *testing.T) {
+	ctx := context.Background()
+	c, srv, cleanup := newMock(t)
+	defer cleanup()
+
+	const db = "projects/projectID/databases/(default)"
+	tm := time.Date(2021, time.February, 20, 0, 0, 0, 0, time.UTC)
+	ts := timestamppb.New(tm)
+	tid := []byte{1}
+
+	beginReq := &pb.BeginTransactionRequest{
+		Database: db,
+		Options: &pb.TransactionOptions{
+			Mode: &pb.TransactionOptions_ReadOnly_{
+				ReadOnly: &pb.TransactionOptions_ReadOnly{
+					ConsistencySelector: &pb.TransactionOptions_ReadOnly_ReadTime{
+						ReadTime: ts,
+					},
+				},
+			},
+		},
+	}
+	beginRes := &pb.BeginTransactionResponse{Transaction: tid}
+
+	srv.reset()
+	srv.addRPC(beginReq, beginRes)
+	srv.addRPC(
+		&pb.CommitRequest{
+			Database:    db,
+			Transaction: tid,
+		},
+		&pb.CommitResponse{CommitTime: ts},
+	)
+
+	err := c.RunTransaction(ctx, func(ctx2 context.Context, tx *Transaction) error {
+		tx.WithReadOptions()
+		return nil
+	}, ReadOnly, TransactionReadTime(tm))
+	if err != nil {
 		t.Fatal(err)
 	}
 }

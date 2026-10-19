@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -31,6 +31,8 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -205,7 +207,7 @@ type DataStoreClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *DataStoreClient) Close() error {
 	return c.internalClient.Close()
@@ -336,6 +338,16 @@ type dataStoreGRPCClient struct {
 // DataStore configuration.
 func NewDataStoreClient(ctx context.Context, opts ...option.ClientOption) (*DataStoreClient, error) {
 	clientOpts := defaultDataStoreGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "discoveryengine",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/discoveryengine/apiv1alpha",
+			"gcp.client.language": "go",
+			"url.domain":          "discoveryengine.googleapis.com",
+		}))
+	}
 	if newDataStoreClientHook != nil {
 		hookOpts, err := newDataStoreClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -358,6 +370,74 @@ func NewDataStoreClient(ctx context.Context, opts ...option.ClientOption) (*Data
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "discoveryengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/discoveryengine/apiv1alpha",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "discoveryengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateDataStore = append(client.CallOptions.CreateDataStore, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetDataStore = append(client.CallOptions.GetDataStore, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListDataStores = append(client.CallOptions.ListDataStores, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteDataStore = append(client.CallOptions.DeleteDataStore, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateDataStore = append(client.CallOptions.UpdateDataStore, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetDocumentProcessingConfig = append(client.CallOptions.GetDocumentProcessingConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateDocumentProcessingConfig = append(client.CallOptions.UpdateDocumentProcessingConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "discoveryengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/discoveryengine/apiv1alpha",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "discoveryengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateDataStore = append(client.CallOptions.CreateDataStore, gax.WithClientTracing(tracing))
+		client.CallOptions.GetDataStore = append(client.CallOptions.GetDataStore, gax.WithClientTracing(tracing))
+		client.CallOptions.ListDataStores = append(client.CallOptions.ListDataStores, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteDataStore = append(client.CallOptions.DeleteDataStore, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateDataStore = append(client.CallOptions.UpdateDataStore, gax.WithClientTracing(tracing))
+		client.CallOptions.GetDocumentProcessingConfig = append(client.CallOptions.GetDocumentProcessingConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateDocumentProcessingConfig = append(client.CallOptions.UpdateDocumentProcessingConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "discoveryengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/discoveryengine/apiv1alpha",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "discoveryengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateDataStore = append(client.CallOptions.CreateDataStore, gax.WithClientLogging(logging))
+		client.CallOptions.GetDataStore = append(client.CallOptions.GetDataStore, gax.WithClientLogging(logging))
+		client.CallOptions.ListDataStores = append(client.CallOptions.ListDataStores, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteDataStore = append(client.CallOptions.DeleteDataStore, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateDataStore = append(client.CallOptions.UpdateDataStore, gax.WithClientLogging(logging))
+		client.CallOptions.GetDocumentProcessingConfig = append(client.CallOptions.GetDocumentProcessingConfig, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateDocumentProcessingConfig = append(client.CallOptions.UpdateDocumentProcessingConfig, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -394,7 +474,7 @@ func (c *dataStoreGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *dataStoreGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -428,6 +508,16 @@ type dataStoreRESTClient struct {
 // DataStore configuration.
 func NewDataStoreRESTClient(ctx context.Context, opts ...option.ClientOption) (*DataStoreClient, error) {
 	clientOpts := append(defaultDataStoreRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "discoveryengine",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/discoveryengine/apiv1alpha",
+			"gcp.client.language": "go",
+			"url.domain":          "discoveryengine.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -441,6 +531,75 @@ func NewDataStoreRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "discoveryengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/discoveryengine/apiv1alpha",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "discoveryengine.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateDataStore = append(callOpts.CreateDataStore, gax.WithClientMetrics(metrics))
+		callOpts.GetDataStore = append(callOpts.GetDataStore, gax.WithClientMetrics(metrics))
+		callOpts.ListDataStores = append(callOpts.ListDataStores, gax.WithClientMetrics(metrics))
+		callOpts.DeleteDataStore = append(callOpts.DeleteDataStore, gax.WithClientMetrics(metrics))
+		callOpts.UpdateDataStore = append(callOpts.UpdateDataStore, gax.WithClientMetrics(metrics))
+		callOpts.GetDocumentProcessingConfig = append(callOpts.GetDocumentProcessingConfig, gax.WithClientMetrics(metrics))
+		callOpts.UpdateDocumentProcessingConfig = append(callOpts.UpdateDocumentProcessingConfig, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "discoveryengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/discoveryengine/apiv1alpha",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "discoveryengine.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateDataStore = append(callOpts.CreateDataStore, gax.WithClientTracing(tracing))
+		callOpts.GetDataStore = append(callOpts.GetDataStore, gax.WithClientTracing(tracing))
+		callOpts.ListDataStores = append(callOpts.ListDataStores, gax.WithClientTracing(tracing))
+		callOpts.DeleteDataStore = append(callOpts.DeleteDataStore, gax.WithClientTracing(tracing))
+		callOpts.UpdateDataStore = append(callOpts.UpdateDataStore, gax.WithClientTracing(tracing))
+		callOpts.GetDocumentProcessingConfig = append(callOpts.GetDocumentProcessingConfig, gax.WithClientTracing(tracing))
+		callOpts.UpdateDocumentProcessingConfig = append(callOpts.UpdateDocumentProcessingConfig, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "discoveryengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/discoveryengine/apiv1alpha",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "discoveryengine.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateDataStore = append(callOpts.CreateDataStore, gax.WithClientLogging(logging))
+		callOpts.GetDataStore = append(callOpts.GetDataStore, gax.WithClientLogging(logging))
+		callOpts.ListDataStores = append(callOpts.ListDataStores, gax.WithClientLogging(logging))
+		callOpts.DeleteDataStore = append(callOpts.DeleteDataStore, gax.WithClientLogging(logging))
+		callOpts.UpdateDataStore = append(callOpts.UpdateDataStore, gax.WithClientLogging(logging))
+		callOpts.GetDocumentProcessingConfig = append(callOpts.GetDocumentProcessingConfig, gax.WithClientLogging(logging))
+		callOpts.UpdateDocumentProcessingConfig = append(callOpts.UpdateDocumentProcessingConfig, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -478,7 +637,7 @@ func (c *dataStoreRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *dataStoreRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -497,6 +656,9 @@ func (c *dataStoreGRPCClient) CreateDataStore(ctx context.Context, req *discover
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1alpha.DataStoreService/CreateDataStore")
+	}
 	opts = append((*c.CallOptions).CreateDataStore[0:len((*c.CallOptions).CreateDataStore):len((*c.CallOptions).CreateDataStore)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -507,8 +669,12 @@ func (c *dataStoreGRPCClient) CreateDataStore(ctx context.Context, req *discover
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.CreateDataStoreOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateDataStoreOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -517,6 +683,9 @@ func (c *dataStoreGRPCClient) GetDataStore(ctx context.Context, req *discoveryen
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1alpha.DataStoreService/GetDataStore")
+	}
 	opts = append((*c.CallOptions).GetDataStore[0:len((*c.CallOptions).GetDataStore):len((*c.CallOptions).GetDataStore)], opts...)
 	var resp *discoveryenginepb.DataStore
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -535,9 +704,12 @@ func (c *dataStoreGRPCClient) ListDataStores(ctx context.Context, req *discovery
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1alpha.DataStoreService/ListDataStores")
+	}
 	opts = append((*c.CallOptions).ListDataStores[0:len((*c.CallOptions).ListDataStores):len((*c.CallOptions).ListDataStores)], opts...)
 	it := &DataStoreIterator{}
-	req = proto.Clone(req).(*discoveryenginepb.ListDataStoresRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*discoveryenginepb.DataStore, string, error) {
 		resp := &discoveryenginepb.ListDataStoresResponse{}
 		if pageToken != "" {
@@ -581,6 +753,9 @@ func (c *dataStoreGRPCClient) DeleteDataStore(ctx context.Context, req *discover
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1alpha.DataStoreService/DeleteDataStore")
+	}
 	opts = append((*c.CallOptions).DeleteDataStore[0:len((*c.CallOptions).DeleteDataStore):len((*c.CallOptions).DeleteDataStore)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -591,8 +766,12 @@ func (c *dataStoreGRPCClient) DeleteDataStore(ctx context.Context, req *discover
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.DeleteDataStoreOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteDataStoreOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -601,6 +780,9 @@ func (c *dataStoreGRPCClient) UpdateDataStore(ctx context.Context, req *discover
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1alpha.DataStoreService/UpdateDataStore")
+	}
 	opts = append((*c.CallOptions).UpdateDataStore[0:len((*c.CallOptions).UpdateDataStore):len((*c.CallOptions).UpdateDataStore)], opts...)
 	var resp *discoveryenginepb.DataStore
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -619,6 +801,9 @@ func (c *dataStoreGRPCClient) GetDocumentProcessingConfig(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1alpha.DataStoreService/GetDocumentProcessingConfig")
+	}
 	opts = append((*c.CallOptions).GetDocumentProcessingConfig[0:len((*c.CallOptions).GetDocumentProcessingConfig):len((*c.CallOptions).GetDocumentProcessingConfig)], opts...)
 	var resp *discoveryenginepb.DocumentProcessingConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -637,6 +822,9 @@ func (c *dataStoreGRPCClient) UpdateDocumentProcessingConfig(ctx context.Context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1alpha.DataStoreService/UpdateDocumentProcessingConfig")
+	}
 	opts = append((*c.CallOptions).UpdateDocumentProcessingConfig[0:len((*c.CallOptions).UpdateDocumentProcessingConfig):len((*c.CallOptions).UpdateDocumentProcessingConfig)], opts...)
 	var resp *discoveryenginepb.DocumentProcessingConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -655,6 +843,9 @@ func (c *dataStoreGRPCClient) CancelOperation(ctx context.Context, req *longrunn
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -669,6 +860,9 @@ func (c *dataStoreGRPCClient) GetOperation(ctx context.Context, req *longrunning
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -687,9 +881,12 @@ func (c *dataStoreGRPCClient) ListOperations(ctx context.Context, req *longrunni
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -767,6 +964,10 @@ func (c *dataStoreRESTClient) CreateDataStore(ctx context.Context, req *discover
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1alpha.DataStoreService/CreateDataStore")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{parent=projects/*/locations/*}/dataStores")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -795,8 +996,12 @@ func (c *dataStoreRESTClient) CreateDataStore(ctx context.Context, req *discover
 	}
 
 	override := fmt.Sprintf("/v1alpha/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.CreateDataStoreOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateDataStoreOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -820,6 +1025,10 @@ func (c *dataStoreRESTClient) GetDataStore(ctx context.Context, req *discoveryen
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1alpha.DataStoreService/GetDataStore")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=projects/*/locations/*/dataStores/*}")
+	}
 	opts = append((*c.CallOptions).GetDataStore[0:len((*c.CallOptions).GetDataStore):len((*c.CallOptions).GetDataStore)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &discoveryenginepb.DataStore{}
@@ -855,7 +1064,7 @@ func (c *dataStoreRESTClient) GetDataStore(ctx context.Context, req *discoveryen
 // associated with the project.
 func (c *dataStoreRESTClient) ListDataStores(ctx context.Context, req *discoveryenginepb.ListDataStoresRequest, opts ...gax.CallOption) *DataStoreIterator {
 	it := &DataStoreIterator{}
-	req = proto.Clone(req).(*discoveryenginepb.ListDataStoresRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*discoveryenginepb.DataStore, string, error) {
 		resp := &discoveryenginepb.ListDataStoresResponse{}
@@ -952,6 +1161,10 @@ func (c *dataStoreRESTClient) DeleteDataStore(ctx context.Context, req *discover
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1alpha.DataStoreService/DeleteDataStore")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=projects/*/locations/*/dataStores/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -980,8 +1193,12 @@ func (c *dataStoreRESTClient) DeleteDataStore(ctx context.Context, req *discover
 	}
 
 	override := fmt.Sprintf("/v1alpha/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*discoveryengine.DeleteDataStoreOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteDataStoreOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1019,6 +1236,10 @@ func (c *dataStoreRESTClient) UpdateDataStore(ctx context.Context, req *discover
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1alpha.DataStoreService/UpdateDataStore")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{data_store.name=projects/*/locations/*/dataStores/*}")
+	}
 	opts = append((*c.CallOptions).UpdateDataStore[0:len((*c.CallOptions).UpdateDataStore):len((*c.CallOptions).UpdateDataStore)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &discoveryenginepb.DataStore{}
@@ -1070,6 +1291,10 @@ func (c *dataStoreRESTClient) GetDocumentProcessingConfig(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1alpha.DataStoreService/GetDocumentProcessingConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=projects/*/locations/*/dataStores/*/documentProcessingConfig}")
+	}
 	opts = append((*c.CallOptions).GetDocumentProcessingConfig[0:len((*c.CallOptions).GetDocumentProcessingConfig):len((*c.CallOptions).GetDocumentProcessingConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &discoveryenginepb.DocumentProcessingConfig{}
@@ -1141,6 +1366,10 @@ func (c *dataStoreRESTClient) UpdateDocumentProcessingConfig(ctx context.Context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1alpha.DataStoreService/UpdateDocumentProcessingConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{document_processing_config.name=projects/*/locations/*/dataStores/*/documentProcessingConfig}")
+	}
 	opts = append((*c.CallOptions).UpdateDocumentProcessingConfig[0:len((*c.CallOptions).UpdateDocumentProcessingConfig):len((*c.CallOptions).UpdateDocumentProcessingConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &discoveryenginepb.DocumentProcessingConfig{}
@@ -1197,6 +1426,10 @@ func (c *dataStoreRESTClient) CancelOperation(ctx context.Context, req *longrunn
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=projects/*/locations/*/collections/*/dataStores/*/branches/*/operations/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1232,6 +1465,10 @@ func (c *dataStoreRESTClient) GetOperation(ctx context.Context, req *longrunning
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=projects/*/locations/*/collections/*/dataConnector/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -1266,7 +1503,7 @@ func (c *dataStoreRESTClient) GetOperation(ctx context.Context, req *longrunning
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *dataStoreRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
@@ -1294,6 +1531,9 @@ func (c *dataStoreRESTClient) ListOperations(ctx context.Context, req *longrunni
 		}
 		if req.GetPageToken() != "" {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req.GetReturnPartialSuccess() {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -1348,7 +1588,7 @@ func (c *dataStoreRESTClient) ListOperations(ctx context.Context, req *longrunni
 // The name must be that of a previously created CreateDataStoreOperation, possibly from a different process.
 func (c *dataStoreGRPCClient) CreateDataStoreOperation(name string) *CreateDataStoreOperation {
 	return &CreateDataStoreOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.CreateDataStoreOperation"),
 	}
 }
 
@@ -1357,7 +1597,7 @@ func (c *dataStoreGRPCClient) CreateDataStoreOperation(name string) *CreateDataS
 func (c *dataStoreRESTClient) CreateDataStoreOperation(name string) *CreateDataStoreOperation {
 	override := fmt.Sprintf("/v1alpha/%s", name)
 	return &CreateDataStoreOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.CreateDataStoreOperation"),
 		pollPath: override,
 	}
 }
@@ -1366,7 +1606,7 @@ func (c *dataStoreRESTClient) CreateDataStoreOperation(name string) *CreateDataS
 // The name must be that of a previously created DeleteDataStoreOperation, possibly from a different process.
 func (c *dataStoreGRPCClient) DeleteDataStoreOperation(name string) *DeleteDataStoreOperation {
 	return &DeleteDataStoreOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.DeleteDataStoreOperation"),
 	}
 }
 
@@ -1375,7 +1615,7 @@ func (c *dataStoreGRPCClient) DeleteDataStoreOperation(name string) *DeleteDataS
 func (c *dataStoreRESTClient) DeleteDataStoreOperation(name string) *DeleteDataStoreOperation {
 	override := fmt.Sprintf("/v1alpha/%s", name)
 	return &DeleteDataStoreOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*discoveryengine.DeleteDataStoreOperation"),
 		pollPath: override,
 	}
 }

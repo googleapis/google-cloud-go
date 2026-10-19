@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,6 +26,32 @@ import (
 	networkservicespb "cloud.google.com/go/networkservices/apiv1/networkservicespb"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
+
+func ExampleClient_ListAgentGateways_all() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := networkservices.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &networkservicespb.ListAgentGatewaysRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/networkservices/apiv1/networkservicespb#ListAgentGatewaysRequest.
+	}
+	for resp, err := range c.ListAgentGateways(ctx, req).All() {
+		if err != nil {
+			// TODO: Handle error and break/return/continue. Iteration will stop after any error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
 
 func ExampleClient_ListEndpointPolicies_all() {
 	ctx := context.Background()

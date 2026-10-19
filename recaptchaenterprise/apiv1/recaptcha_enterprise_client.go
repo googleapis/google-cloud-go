@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import (
 
 	recaptchaenterprisepb "cloud.google.com/go/recaptchaenterprise/v2/apiv1/recaptchaenterprisepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -51,6 +52,8 @@ type CallOptions struct {
 	RemoveIpOverride                     []gax.CallOption
 	ListIpOverrides                      []gax.CallOption
 	GetMetrics                           []gax.CallOption
+	GetPolicy                            []gax.CallOption
+	UpdatePolicy                         []gax.CallOption
 	CreateFirewallPolicy                 []gax.CallOption
 	ListFirewallPolicies                 []gax.CallOption
 	GetFirewallPolicy                    []gax.CallOption
@@ -106,6 +109,8 @@ func defaultCallOptions() *CallOptions {
 		RemoveIpOverride:                     []gax.CallOption{},
 		ListIpOverrides:                      []gax.CallOption{},
 		GetMetrics:                           []gax.CallOption{},
+		GetPolicy:                            []gax.CallOption{},
+		UpdatePolicy:                         []gax.CallOption{},
 		CreateFirewallPolicy:                 []gax.CallOption{},
 		ListFirewallPolicies:                 []gax.CallOption{},
 		GetFirewallPolicy:                    []gax.CallOption{},
@@ -136,6 +141,8 @@ type internalClient interface {
 	RemoveIpOverride(context.Context, *recaptchaenterprisepb.RemoveIpOverrideRequest, ...gax.CallOption) (*recaptchaenterprisepb.RemoveIpOverrideResponse, error)
 	ListIpOverrides(context.Context, *recaptchaenterprisepb.ListIpOverridesRequest, ...gax.CallOption) *IpOverrideDataIterator
 	GetMetrics(context.Context, *recaptchaenterprisepb.GetMetricsRequest, ...gax.CallOption) (*recaptchaenterprisepb.Metrics, error)
+	GetPolicy(context.Context, *recaptchaenterprisepb.GetPolicyRequest, ...gax.CallOption) (*recaptchaenterprisepb.Policy, error)
+	UpdatePolicy(context.Context, *recaptchaenterprisepb.UpdatePolicyRequest, ...gax.CallOption) (*recaptchaenterprisepb.Policy, error)
 	CreateFirewallPolicy(context.Context, *recaptchaenterprisepb.CreateFirewallPolicyRequest, ...gax.CallOption) (*recaptchaenterprisepb.FirewallPolicy, error)
 	ListFirewallPolicies(context.Context, *recaptchaenterprisepb.ListFirewallPoliciesRequest, ...gax.CallOption) *FirewallPolicyIterator
 	GetFirewallPolicy(context.Context, *recaptchaenterprisepb.GetFirewallPolicyRequest, ...gax.CallOption) (*recaptchaenterprisepb.FirewallPolicy, error)
@@ -161,7 +168,7 @@ type Client struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *Client) Close() error {
 	return c.internalClient.Close()
@@ -237,7 +244,7 @@ func (c *Client) MigrateKey(ctx context.Context, req *recaptchaenterprisepb.Migr
 
 // AddIpOverride adds an IP override to a key. The following restrictions hold:
 //
-//	The maximum number of IP overrides per key is 100.
+//	The maximum number of IP overrides per key is 1000.
 //
 //	For any conflict (such as IP already exists or IP part of an existing
 //	IP range), an error is returned.
@@ -265,6 +272,16 @@ func (c *Client) ListIpOverrides(ctx context.Context, req *recaptchaenterprisepb
 // dashboards.
 func (c *Client) GetMetrics(ctx context.Context, req *recaptchaenterprisepb.GetMetricsRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.Metrics, error) {
 	return c.internalClient.GetMetrics(ctx, req, opts...)
+}
+
+// GetPolicy get the policy for a key.
+func (c *Client) GetPolicy(ctx context.Context, req *recaptchaenterprisepb.GetPolicyRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.Policy, error) {
+	return c.internalClient.GetPolicy(ctx, req, opts...)
+}
+
+// UpdatePolicy updates the policy for a key.
+func (c *Client) UpdatePolicy(ctx context.Context, req *recaptchaenterprisepb.UpdatePolicyRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.Policy, error) {
+	return c.internalClient.UpdatePolicy(ctx, req, opts...)
 }
 
 // CreateFirewallPolicy creates a new FirewallPolicy, specifying conditions at which reCAPTCHA
@@ -339,6 +356,16 @@ type gRPCClient struct {
 // Service to determine the likelihood an event is legitimate.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "recaptchaenterprise",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/recaptchaenterprise/v2/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "recaptchaenterprise.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -360,6 +387,116 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "recaptchaenterprise",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/recaptchaenterprise/v2/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "recaptchaenterprise.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateAssessment = append(client.CallOptions.CreateAssessment, gax.WithClientMetrics(metrics))
+		client.CallOptions.AnnotateAssessment = append(client.CallOptions.AnnotateAssessment, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateKey = append(client.CallOptions.CreateKey, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListKeys = append(client.CallOptions.ListKeys, gax.WithClientMetrics(metrics))
+		client.CallOptions.RetrieveLegacySecretKey = append(client.CallOptions.RetrieveLegacySecretKey, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetKey = append(client.CallOptions.GetKey, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateKey = append(client.CallOptions.UpdateKey, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteKey = append(client.CallOptions.DeleteKey, gax.WithClientMetrics(metrics))
+		client.CallOptions.MigrateKey = append(client.CallOptions.MigrateKey, gax.WithClientMetrics(metrics))
+		client.CallOptions.AddIpOverride = append(client.CallOptions.AddIpOverride, gax.WithClientMetrics(metrics))
+		client.CallOptions.RemoveIpOverride = append(client.CallOptions.RemoveIpOverride, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListIpOverrides = append(client.CallOptions.ListIpOverrides, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetMetrics = append(client.CallOptions.GetMetrics, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetPolicy = append(client.CallOptions.GetPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdatePolicy = append(client.CallOptions.UpdatePolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateFirewallPolicy = append(client.CallOptions.CreateFirewallPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListFirewallPolicies = append(client.CallOptions.ListFirewallPolicies, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetFirewallPolicy = append(client.CallOptions.GetFirewallPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateFirewallPolicy = append(client.CallOptions.UpdateFirewallPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteFirewallPolicy = append(client.CallOptions.DeleteFirewallPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.ReorderFirewallPolicies = append(client.CallOptions.ReorderFirewallPolicies, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListRelatedAccountGroups = append(client.CallOptions.ListRelatedAccountGroups, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListRelatedAccountGroupMemberships = append(client.CallOptions.ListRelatedAccountGroupMemberships, gax.WithClientMetrics(metrics))
+		client.CallOptions.SearchRelatedAccountGroupMemberships = append(client.CallOptions.SearchRelatedAccountGroupMemberships, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "recaptchaenterprise",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/recaptchaenterprise/v2/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "recaptchaenterprise.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateAssessment = append(client.CallOptions.CreateAssessment, gax.WithClientTracing(tracing))
+		client.CallOptions.AnnotateAssessment = append(client.CallOptions.AnnotateAssessment, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateKey = append(client.CallOptions.CreateKey, gax.WithClientTracing(tracing))
+		client.CallOptions.ListKeys = append(client.CallOptions.ListKeys, gax.WithClientTracing(tracing))
+		client.CallOptions.RetrieveLegacySecretKey = append(client.CallOptions.RetrieveLegacySecretKey, gax.WithClientTracing(tracing))
+		client.CallOptions.GetKey = append(client.CallOptions.GetKey, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateKey = append(client.CallOptions.UpdateKey, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteKey = append(client.CallOptions.DeleteKey, gax.WithClientTracing(tracing))
+		client.CallOptions.MigrateKey = append(client.CallOptions.MigrateKey, gax.WithClientTracing(tracing))
+		client.CallOptions.AddIpOverride = append(client.CallOptions.AddIpOverride, gax.WithClientTracing(tracing))
+		client.CallOptions.RemoveIpOverride = append(client.CallOptions.RemoveIpOverride, gax.WithClientTracing(tracing))
+		client.CallOptions.ListIpOverrides = append(client.CallOptions.ListIpOverrides, gax.WithClientTracing(tracing))
+		client.CallOptions.GetMetrics = append(client.CallOptions.GetMetrics, gax.WithClientTracing(tracing))
+		client.CallOptions.GetPolicy = append(client.CallOptions.GetPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdatePolicy = append(client.CallOptions.UpdatePolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateFirewallPolicy = append(client.CallOptions.CreateFirewallPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.ListFirewallPolicies = append(client.CallOptions.ListFirewallPolicies, gax.WithClientTracing(tracing))
+		client.CallOptions.GetFirewallPolicy = append(client.CallOptions.GetFirewallPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateFirewallPolicy = append(client.CallOptions.UpdateFirewallPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteFirewallPolicy = append(client.CallOptions.DeleteFirewallPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.ReorderFirewallPolicies = append(client.CallOptions.ReorderFirewallPolicies, gax.WithClientTracing(tracing))
+		client.CallOptions.ListRelatedAccountGroups = append(client.CallOptions.ListRelatedAccountGroups, gax.WithClientTracing(tracing))
+		client.CallOptions.ListRelatedAccountGroupMemberships = append(client.CallOptions.ListRelatedAccountGroupMemberships, gax.WithClientTracing(tracing))
+		client.CallOptions.SearchRelatedAccountGroupMemberships = append(client.CallOptions.SearchRelatedAccountGroupMemberships, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "recaptchaenterprise",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/recaptchaenterprise/v2/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "recaptchaenterprise.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateAssessment = append(client.CallOptions.CreateAssessment, gax.WithClientLogging(logging))
+		client.CallOptions.AnnotateAssessment = append(client.CallOptions.AnnotateAssessment, gax.WithClientLogging(logging))
+		client.CallOptions.CreateKey = append(client.CallOptions.CreateKey, gax.WithClientLogging(logging))
+		client.CallOptions.ListKeys = append(client.CallOptions.ListKeys, gax.WithClientLogging(logging))
+		client.CallOptions.RetrieveLegacySecretKey = append(client.CallOptions.RetrieveLegacySecretKey, gax.WithClientLogging(logging))
+		client.CallOptions.GetKey = append(client.CallOptions.GetKey, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateKey = append(client.CallOptions.UpdateKey, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteKey = append(client.CallOptions.DeleteKey, gax.WithClientLogging(logging))
+		client.CallOptions.MigrateKey = append(client.CallOptions.MigrateKey, gax.WithClientLogging(logging))
+		client.CallOptions.AddIpOverride = append(client.CallOptions.AddIpOverride, gax.WithClientLogging(logging))
+		client.CallOptions.RemoveIpOverride = append(client.CallOptions.RemoveIpOverride, gax.WithClientLogging(logging))
+		client.CallOptions.ListIpOverrides = append(client.CallOptions.ListIpOverrides, gax.WithClientLogging(logging))
+		client.CallOptions.GetMetrics = append(client.CallOptions.GetMetrics, gax.WithClientLogging(logging))
+		client.CallOptions.GetPolicy = append(client.CallOptions.GetPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.UpdatePolicy = append(client.CallOptions.UpdatePolicy, gax.WithClientLogging(logging))
+		client.CallOptions.CreateFirewallPolicy = append(client.CallOptions.CreateFirewallPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.ListFirewallPolicies = append(client.CallOptions.ListFirewallPolicies, gax.WithClientLogging(logging))
+		client.CallOptions.GetFirewallPolicy = append(client.CallOptions.GetFirewallPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateFirewallPolicy = append(client.CallOptions.UpdateFirewallPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteFirewallPolicy = append(client.CallOptions.DeleteFirewallPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.ReorderFirewallPolicies = append(client.CallOptions.ReorderFirewallPolicies, gax.WithClientLogging(logging))
+		client.CallOptions.ListRelatedAccountGroups = append(client.CallOptions.ListRelatedAccountGroups, gax.WithClientLogging(logging))
+		client.CallOptions.ListRelatedAccountGroupMemberships = append(client.CallOptions.ListRelatedAccountGroupMemberships, gax.WithClientLogging(logging))
+		client.CallOptions.SearchRelatedAccountGroupMemberships = append(client.CallOptions.SearchRelatedAccountGroupMemberships, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -385,7 +522,7 @@ func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *gRPCClient) Close() error {
 	return c.connPool.Close()
@@ -396,6 +533,9 @@ func (c *gRPCClient) CreateAssessment(ctx context.Context, req *recaptchaenterpr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService/CreateAssessment")
+	}
 	opts = append((*c.CallOptions).CreateAssessment[0:len((*c.CallOptions).CreateAssessment):len((*c.CallOptions).CreateAssessment)], opts...)
 	var resp *recaptchaenterprisepb.Assessment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -414,6 +554,9 @@ func (c *gRPCClient) AnnotateAssessment(ctx context.Context, req *recaptchaenter
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService/AnnotateAssessment")
+	}
 	opts = append((*c.CallOptions).AnnotateAssessment[0:len((*c.CallOptions).AnnotateAssessment):len((*c.CallOptions).AnnotateAssessment)], opts...)
 	var resp *recaptchaenterprisepb.AnnotateAssessmentResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -432,6 +575,9 @@ func (c *gRPCClient) CreateKey(ctx context.Context, req *recaptchaenterprisepb.C
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService/CreateKey")
+	}
 	opts = append((*c.CallOptions).CreateKey[0:len((*c.CallOptions).CreateKey):len((*c.CallOptions).CreateKey)], opts...)
 	var resp *recaptchaenterprisepb.Key
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -450,9 +596,12 @@ func (c *gRPCClient) ListKeys(ctx context.Context, req *recaptchaenterprisepb.Li
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService/ListKeys")
+	}
 	opts = append((*c.CallOptions).ListKeys[0:len((*c.CallOptions).ListKeys):len((*c.CallOptions).ListKeys)], opts...)
 	it := &KeyIterator{}
-	req = proto.Clone(req).(*recaptchaenterprisepb.ListKeysRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*recaptchaenterprisepb.Key, string, error) {
 		resp := &recaptchaenterprisepb.ListKeysResponse{}
 		if pageToken != "" {
@@ -496,6 +645,9 @@ func (c *gRPCClient) RetrieveLegacySecretKey(ctx context.Context, req *recaptcha
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService/RetrieveLegacySecretKey")
+	}
 	opts = append((*c.CallOptions).RetrieveLegacySecretKey[0:len((*c.CallOptions).RetrieveLegacySecretKey):len((*c.CallOptions).RetrieveLegacySecretKey)], opts...)
 	var resp *recaptchaenterprisepb.RetrieveLegacySecretKeyResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -514,6 +666,9 @@ func (c *gRPCClient) GetKey(ctx context.Context, req *recaptchaenterprisepb.GetK
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService/GetKey")
+	}
 	opts = append((*c.CallOptions).GetKey[0:len((*c.CallOptions).GetKey):len((*c.CallOptions).GetKey)], opts...)
 	var resp *recaptchaenterprisepb.Key
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -532,6 +687,9 @@ func (c *gRPCClient) UpdateKey(ctx context.Context, req *recaptchaenterprisepb.U
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService/UpdateKey")
+	}
 	opts = append((*c.CallOptions).UpdateKey[0:len((*c.CallOptions).UpdateKey):len((*c.CallOptions).UpdateKey)], opts...)
 	var resp *recaptchaenterprisepb.Key
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -550,6 +708,9 @@ func (c *gRPCClient) DeleteKey(ctx context.Context, req *recaptchaenterprisepb.D
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService/DeleteKey")
+	}
 	opts = append((*c.CallOptions).DeleteKey[0:len((*c.CallOptions).DeleteKey):len((*c.CallOptions).DeleteKey)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -564,6 +725,9 @@ func (c *gRPCClient) MigrateKey(ctx context.Context, req *recaptchaenterprisepb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService/MigrateKey")
+	}
 	opts = append((*c.CallOptions).MigrateKey[0:len((*c.CallOptions).MigrateKey):len((*c.CallOptions).MigrateKey)], opts...)
 	var resp *recaptchaenterprisepb.Key
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -582,6 +746,9 @@ func (c *gRPCClient) AddIpOverride(ctx context.Context, req *recaptchaenterprise
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService/AddIpOverride")
+	}
 	opts = append((*c.CallOptions).AddIpOverride[0:len((*c.CallOptions).AddIpOverride):len((*c.CallOptions).AddIpOverride)], opts...)
 	var resp *recaptchaenterprisepb.AddIpOverrideResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -600,6 +767,9 @@ func (c *gRPCClient) RemoveIpOverride(ctx context.Context, req *recaptchaenterpr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService/RemoveIpOverride")
+	}
 	opts = append((*c.CallOptions).RemoveIpOverride[0:len((*c.CallOptions).RemoveIpOverride):len((*c.CallOptions).RemoveIpOverride)], opts...)
 	var resp *recaptchaenterprisepb.RemoveIpOverrideResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -618,9 +788,12 @@ func (c *gRPCClient) ListIpOverrides(ctx context.Context, req *recaptchaenterpri
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService/ListIpOverrides")
+	}
 	opts = append((*c.CallOptions).ListIpOverrides[0:len((*c.CallOptions).ListIpOverrides):len((*c.CallOptions).ListIpOverrides)], opts...)
 	it := &IpOverrideDataIterator{}
-	req = proto.Clone(req).(*recaptchaenterprisepb.ListIpOverridesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*recaptchaenterprisepb.IpOverrideData, string, error) {
 		resp := &recaptchaenterprisepb.ListIpOverridesResponse{}
 		if pageToken != "" {
@@ -664,6 +837,9 @@ func (c *gRPCClient) GetMetrics(ctx context.Context, req *recaptchaenterprisepb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService/GetMetrics")
+	}
 	opts = append((*c.CallOptions).GetMetrics[0:len((*c.CallOptions).GetMetrics):len((*c.CallOptions).GetMetrics)], opts...)
 	var resp *recaptchaenterprisepb.Metrics
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -677,11 +853,56 @@ func (c *gRPCClient) GetMetrics(ctx context.Context, req *recaptchaenterprisepb.
 	return resp, nil
 }
 
+func (c *gRPCClient) GetPolicy(ctx context.Context, req *recaptchaenterprisepb.GetPolicyRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.Policy, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService/GetPolicy")
+	}
+	opts = append((*c.CallOptions).GetPolicy[0:len((*c.CallOptions).GetPolicy):len((*c.CallOptions).GetPolicy)], opts...)
+	var resp *recaptchaenterprisepb.Policy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetPolicy, req, settings.GRPC, c.logger, "GetPolicy")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) UpdatePolicy(ctx context.Context, req *recaptchaenterprisepb.UpdatePolicyRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.Policy, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "policy.name", url.QueryEscape(req.GetPolicy().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService/UpdatePolicy")
+	}
+	opts = append((*c.CallOptions).UpdatePolicy[0:len((*c.CallOptions).UpdatePolicy):len((*c.CallOptions).UpdatePolicy)], opts...)
+	var resp *recaptchaenterprisepb.Policy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdatePolicy, req, settings.GRPC, c.logger, "UpdatePolicy")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *gRPCClient) CreateFirewallPolicy(ctx context.Context, req *recaptchaenterprisepb.CreateFirewallPolicyRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.FirewallPolicy, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService/CreateFirewallPolicy")
+	}
 	opts = append((*c.CallOptions).CreateFirewallPolicy[0:len((*c.CallOptions).CreateFirewallPolicy):len((*c.CallOptions).CreateFirewallPolicy)], opts...)
 	var resp *recaptchaenterprisepb.FirewallPolicy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -700,9 +921,12 @@ func (c *gRPCClient) ListFirewallPolicies(ctx context.Context, req *recaptchaent
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService/ListFirewallPolicies")
+	}
 	opts = append((*c.CallOptions).ListFirewallPolicies[0:len((*c.CallOptions).ListFirewallPolicies):len((*c.CallOptions).ListFirewallPolicies)], opts...)
 	it := &FirewallPolicyIterator{}
-	req = proto.Clone(req).(*recaptchaenterprisepb.ListFirewallPoliciesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*recaptchaenterprisepb.FirewallPolicy, string, error) {
 		resp := &recaptchaenterprisepb.ListFirewallPoliciesResponse{}
 		if pageToken != "" {
@@ -746,6 +970,9 @@ func (c *gRPCClient) GetFirewallPolicy(ctx context.Context, req *recaptchaenterp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService/GetFirewallPolicy")
+	}
 	opts = append((*c.CallOptions).GetFirewallPolicy[0:len((*c.CallOptions).GetFirewallPolicy):len((*c.CallOptions).GetFirewallPolicy)], opts...)
 	var resp *recaptchaenterprisepb.FirewallPolicy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -764,6 +991,9 @@ func (c *gRPCClient) UpdateFirewallPolicy(ctx context.Context, req *recaptchaent
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService/UpdateFirewallPolicy")
+	}
 	opts = append((*c.CallOptions).UpdateFirewallPolicy[0:len((*c.CallOptions).UpdateFirewallPolicy):len((*c.CallOptions).UpdateFirewallPolicy)], opts...)
 	var resp *recaptchaenterprisepb.FirewallPolicy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -782,6 +1012,9 @@ func (c *gRPCClient) DeleteFirewallPolicy(ctx context.Context, req *recaptchaent
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService/DeleteFirewallPolicy")
+	}
 	opts = append((*c.CallOptions).DeleteFirewallPolicy[0:len((*c.CallOptions).DeleteFirewallPolicy):len((*c.CallOptions).DeleteFirewallPolicy)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -796,6 +1029,9 @@ func (c *gRPCClient) ReorderFirewallPolicies(ctx context.Context, req *recaptcha
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService/ReorderFirewallPolicies")
+	}
 	opts = append((*c.CallOptions).ReorderFirewallPolicies[0:len((*c.CallOptions).ReorderFirewallPolicies):len((*c.CallOptions).ReorderFirewallPolicies)], opts...)
 	var resp *recaptchaenterprisepb.ReorderFirewallPoliciesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -814,9 +1050,12 @@ func (c *gRPCClient) ListRelatedAccountGroups(ctx context.Context, req *recaptch
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService/ListRelatedAccountGroups")
+	}
 	opts = append((*c.CallOptions).ListRelatedAccountGroups[0:len((*c.CallOptions).ListRelatedAccountGroups):len((*c.CallOptions).ListRelatedAccountGroups)], opts...)
 	it := &RelatedAccountGroupIterator{}
-	req = proto.Clone(req).(*recaptchaenterprisepb.ListRelatedAccountGroupsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*recaptchaenterprisepb.RelatedAccountGroup, string, error) {
 		resp := &recaptchaenterprisepb.ListRelatedAccountGroupsResponse{}
 		if pageToken != "" {
@@ -860,9 +1099,12 @@ func (c *gRPCClient) ListRelatedAccountGroupMemberships(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService/ListRelatedAccountGroupMemberships")
+	}
 	opts = append((*c.CallOptions).ListRelatedAccountGroupMemberships[0:len((*c.CallOptions).ListRelatedAccountGroupMemberships):len((*c.CallOptions).ListRelatedAccountGroupMemberships)], opts...)
 	it := &RelatedAccountGroupMembershipIterator{}
-	req = proto.Clone(req).(*recaptchaenterprisepb.ListRelatedAccountGroupMembershipsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*recaptchaenterprisepb.RelatedAccountGroupMembership, string, error) {
 		resp := &recaptchaenterprisepb.ListRelatedAccountGroupMembershipsResponse{}
 		if pageToken != "" {
@@ -906,9 +1148,12 @@ func (c *gRPCClient) SearchRelatedAccountGroupMemberships(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService/SearchRelatedAccountGroupMemberships")
+	}
 	opts = append((*c.CallOptions).SearchRelatedAccountGroupMemberships[0:len((*c.CallOptions).SearchRelatedAccountGroupMemberships):len((*c.CallOptions).SearchRelatedAccountGroupMemberships)], opts...)
 	it := &RelatedAccountGroupMembershipIterator{}
-	req = proto.Clone(req).(*recaptchaenterprisepb.SearchRelatedAccountGroupMembershipsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*recaptchaenterprisepb.RelatedAccountGroupMembership, string, error) {
 		resp := &recaptchaenterprisepb.SearchRelatedAccountGroupMembershipsResponse{}
 		if pageToken != "" {

@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import (
 
 	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	httptransport "google.golang.org/api/transport/http"
@@ -39,6 +40,8 @@ var newLicenseCodesClientHook clientHook
 // LicenseCodesCallOptions contains the retry settings for each method of LicenseCodesClient.
 type LicenseCodesCallOptions struct {
 	Get                []gax.CallOption
+	GetIamPolicy       []gax.CallOption
+	SetIamPolicy       []gax.CallOption
 	TestIamPermissions []gax.CallOption
 }
 
@@ -56,25 +59,44 @@ func defaultLicenseCodesRESTCallOptions() *LicenseCodesCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		GetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		SetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		TestIamPermissions: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
 	}
 }
 
-// internalLicenseCodesClient is an interface that defines the methods available from Google Compute Engine API.
+// internalLicenseCodesClient is an interface that defines the methods available from Compute Engine API.
 type internalLicenseCodesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	Get(context.Context, *computepb.GetLicenseCodeRequest, ...gax.CallOption) (*computepb.LicenseCode, error)
+	GetIamPolicy(context.Context, *computepb.GetIamPolicyLicenseCodeRequest, ...gax.CallOption) (*computepb.Policy, error)
+	SetIamPolicy(context.Context, *computepb.SetIamPolicyLicenseCodeRequest, ...gax.CallOption) (*computepb.Policy, error)
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsLicenseCodeRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 }
 
-// LicenseCodesClient is a client for interacting with Google Compute Engine API.
+// LicenseCodesClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The LicenseCodes API.
+//
+// This client uses LicenseCodes version 2026-09-01.
 type LicenseCodesClient struct {
 	// The internal transport-dependent client.
 	internalClient internalLicenseCodesClient
@@ -85,7 +107,7 @@ type LicenseCodesClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *LicenseCodesClient) Close() error {
 	return c.internalClient.Close()
@@ -106,12 +128,37 @@ func (c *LicenseCodesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// Get return a specified license code. License codes are mirrored across all projects that have permissions to read the License Code. Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
+// Get return a specified license code. License codes are mirrored across
+// all projects that have permissions to read the License Code.
+// Caution This resource is intended
+// for use only by third-party partners who are creatingCloud Marketplace
+// images.
 func (c *LicenseCodesClient) Get(ctx context.Context, req *computepb.GetLicenseCodeRequest, opts ...gax.CallOption) (*computepb.LicenseCode, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// TestIamPermissions returns permissions that a caller has on the specified resource. Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such
+// policy or resource exists.
+// Caution This resource is intended
+// for use only by third-party partners who are creatingCloud Marketplace
+// images.
+func (c *LicenseCodesClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyLicenseCodeRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
+	return c.internalClient.GetIamPolicy(ctx, req, opts...)
+}
+
+// SetIamPolicy sets the access control policy on the specified resource.
+// Replaces any existing policy.
+// Caution This resource is intended
+// for use only by third-party partners who are creatingCloud Marketplace
+// images.
+func (c *LicenseCodesClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyLicenseCodeRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
+	return c.internalClient.SetIamPolicy(ctx, req, opts...)
+}
+
+// TestIamPermissions returns permissions that a caller has on the specified resource.
+// Caution This resource is intended
+// for use only by third-party partners who are creatingCloud Marketplace
+// images.
 func (c *LicenseCodesClient) TestIamPermissions(ctx context.Context, req *computepb.TestIamPermissionsLicenseCodeRequest, opts ...gax.CallOption) (*computepb.TestPermissionsResponse, error) {
 	return c.internalClient.TestIamPermissions(ctx, req, opts...)
 }
@@ -138,6 +185,16 @@ type licenseCodesRESTClient struct {
 // The LicenseCodes API.
 func NewLicenseCodesRESTClient(ctx context.Context, opts ...option.ClientOption) (*LicenseCodesClient, error) {
 	clientOpts := append(defaultLicenseCodesRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "compute",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/compute/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "compute.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -151,6 +208,57 @@ func NewLicenseCodesRESTClient(ctx context.Context, opts ...option.ClientOption)
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Get = append(callOpts.Get, gax.WithClientMetrics(metrics))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Get = append(callOpts.Get, gax.WithClientTracing(tracing))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Get = append(callOpts.Get, gax.WithClientLogging(logging))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientLogging(logging))
+	}
 
 	return &LicenseCodesClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -175,10 +283,11 @@ func (c *licenseCodesRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
+		"x-goog-api-version", "2026-09-01",
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *licenseCodesRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -193,7 +302,11 @@ func (c *licenseCodesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// Get return a specified license code. License codes are mirrored across all projects that have permissions to read the License Code. Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
+// Get return a specified license code. License codes are mirrored across
+// all projects that have permissions to read the License Code.
+// Caution This resource is intended
+// for use only by third-party partners who are creatingCloud Marketplace
+// images.
 func (c *licenseCodesRESTClient) Get(ctx context.Context, req *computepb.GetLicenseCodeRequest, opts ...gax.CallOption) (*computepb.LicenseCode, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -207,6 +320,10 @@ func (c *licenseCodesRESTClient) Get(ctx context.Context, req *computepb.GetLice
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.LicenseCodes/Get")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/licenseCodes/{license_code}")
+	}
 	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.LicenseCode{}
@@ -238,7 +355,130 @@ func (c *licenseCodesRESTClient) Get(ctx context.Context, req *computepb.GetLice
 	return resp, nil
 }
 
-// TestIamPermissions returns permissions that a caller has on the specified resource. Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such
+// policy or resource exists.
+// Caution This resource is intended
+// for use only by third-party partners who are creatingCloud Marketplace
+// images.
+func (c *licenseCodesRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyLicenseCodeRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/licenseCodes/%v/getIamPolicy", req.GetProject(), req.GetResource())
+
+	params := url.Values{}
+	if req != nil && req.OptionsRequestedPolicyVersion != nil {
+		params.Add("optionsRequestedPolicyVersion", fmt.Sprintf("%v", req.GetOptionsRequestedPolicyVersion()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.LicenseCodes/GetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/licenseCodes/{resource}/getIamPolicy")
+	}
+	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Policy{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetIamPolicy")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// SetIamPolicy sets the access control policy on the specified resource.
+// Replaces any existing policy.
+// Caution This resource is intended
+// for use only by third-party partners who are creatingCloud Marketplace
+// images.
+func (c *licenseCodesRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyLicenseCodeRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetGlobalSetPolicyRequestResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/licenseCodes/%v/setIamPolicy", req.GetProject(), req.GetResource())
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.LicenseCodes/SetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/licenseCodes/{resource}/setIamPolicy")
+	}
+	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Policy{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetIamPolicy")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// TestIamPermissions returns permissions that a caller has on the specified resource.
+// Caution This resource is intended
+// for use only by third-party partners who are creatingCloud Marketplace
+// images.
 func (c *licenseCodesRESTClient) TestIamPermissions(ctx context.Context, req *computepb.TestIamPermissionsLicenseCodeRequest, opts ...gax.CallOption) (*computepb.TestPermissionsResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTestPermissionsRequestResource()
@@ -259,6 +499,10 @@ func (c *licenseCodesRESTClient) TestIamPermissions(ctx context.Context, req *co
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.LicenseCodes/TestIamPermissions")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/licenseCodes/{resource}/testIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.TestPermissionsResponse{}

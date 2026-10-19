@@ -28,8 +28,10 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	longrunning "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	"github.com/google/go-cmp/cmp"
+	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/anypb"
+	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -51,6 +53,16 @@ type mockTableAdminClock struct {
 	createAuthorizedViewError error
 	updateAuthorizedViewReq   *btapb.UpdateAuthorizedViewRequest
 	updateAuthorizedViewError error
+
+	getTableReq  *btapb.GetTableRequest
+	getTableResp *btapb.Table
+}
+
+func (c *mockTableAdminClock) GetTable(
+	ctx context.Context, in *btapb.GetTableRequest, opts ...grpc.CallOption,
+) (*btapb.Table, error) {
+	c.getTableReq = in
+	return c.getTableResp, nil
 }
 
 func (c *mockTableAdminClock) CreateTable(
@@ -189,7 +201,11 @@ func TestTableAdmin_CreateTableFromConf_AutomatedBackupPolicy_Valid(t *testing.T
 	if err != nil {
 		t.Fatalf("Frequency not valid: %v", err)
 	}
-	automatedBackupPolicy := TableAutomatedBackupPolicy{RetentionPeriod: retentionPeriod, Frequency: frequency}
+	automatedBackupPolicy := TableAutomatedBackupPolicy{
+		RetentionPeriod: retentionPeriod,
+		Frequency:       frequency,
+		Locations:       []string{"projects/my-cool-project/locations/us-east1-b"},
+	}
 
 	err = c.CreateTableFromConf(context.Background(), &TableConf{TableID: "My-table", AutomatedBackupConfig: &automatedBackupPolicy})
 	if err != nil {
@@ -204,6 +220,40 @@ func TestTableAdmin_CreateTableFromConf_AutomatedBackupPolicy_Valid(t *testing.T
 	}
 	if !cmp.Equal(createTableReq.Table.GetAutomatedBackupPolicy().RetentionPeriod.Seconds, int64(automatedBackupPolicy.RetentionPeriod.(time.Duration).Seconds())) {
 		t.Errorf("Unexpected table automated backup policy retention period: %v, expected %v", createTableReq.Table.GetAutomatedBackupPolicy().Frequency.Seconds, automatedBackupPolicy.Frequency.(time.Duration))
+	}
+	if !cmp.Equal(createTableReq.Table.GetAutomatedBackupPolicy().Locations, automatedBackupPolicy.Locations) {
+		t.Errorf("Unexpected table automated backup policy locations: %v, expected %v", createTableReq.Table.GetAutomatedBackupPolicy().Locations, automatedBackupPolicy.Locations)
+	}
+}
+
+func TestTableAdmin_CreateTableFromConf_TieredStorageConfig_Valid(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	tieredStorageConfig := TieredStorageConfig{
+		InfrequentAccess: &TieredStorageIncludeIfOlderThan{Duration: 30 * 24 * time.Hour},
+	}
+
+	err := c.CreateTableFromConf(context.Background(), &TableConf{
+		TableID:             "My-table",
+		TieredStorageConfig: &tieredStorageConfig,
+	})
+	if err != nil {
+		t.Fatalf("CreateTableFromConf failed: %v", err)
+	}
+	createTableReq := mock.createTableReq
+	if !cmp.Equal(createTableReq.TableId, "My-table") {
+		t.Errorf("Unexpected table ID: %v, expected %v", createTableReq.TableId, "My-table")
+	}
+	got := createTableReq.Table.TieredStorageConfig
+	if got == nil {
+		t.Fatal("TieredStorageConfig is nil")
+	}
+	if got.InfrequentAccess == nil {
+		t.Fatal("InfrequentAccess is nil")
+	}
+	if got.InfrequentAccess.GetIncludeIfOlderThan().AsDuration() != 30*24*time.Hour {
+		t.Errorf("Unexpected IncludeIfOlderThan: %v, expected %v", got.InfrequentAccess.GetIncludeIfOlderThan().AsDuration(), 30*24*time.Hour)
 	}
 }
 
@@ -627,7 +677,11 @@ func TestTableAdmin_UpdateTableWithAutomatedBackupPolicy_Valid(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Frequency not valid: %v", err)
 	}
-	automatedBackupPolicy := TableAutomatedBackupPolicy{RetentionPeriod: retentionPeriod, Frequency: frequency}
+	automatedBackupPolicy := TableAutomatedBackupPolicy{
+		RetentionPeriod: retentionPeriod,
+		Frequency:       frequency,
+		Locations:       []string{"projects/my-cool-project/locations/us-east1-b"},
+	}
 
 	err = c.UpdateTableWithAutomatedBackupPolicy(context.Background(), "My-table", automatedBackupPolicy)
 	if err != nil {
@@ -643,14 +697,20 @@ func TestTableAdmin_UpdateTableWithAutomatedBackupPolicy_Valid(t *testing.T) {
 	if !cmp.Equal(updateTableReq.Table.GetAutomatedBackupPolicy().Frequency.Seconds, int64(automatedBackupPolicy.Frequency.(time.Duration).Seconds())) {
 		t.Errorf("UpdateTableRequest does not match, AutomatedBackupPolicy.Frequency: %v", updateTableReq.Table.GetAutomatedBackupPolicy().Frequency)
 	}
-	if !cmp.Equal(len(updateTableReq.UpdateMask.Paths), 2) {
-		t.Errorf("UpdateTableRequest does not match, UpdateMask has length of %d, expected 1", len(updateTableReq.UpdateMask.Paths))
+	if !cmp.Equal(updateTableReq.Table.GetAutomatedBackupPolicy().Locations, automatedBackupPolicy.Locations) {
+		t.Errorf("UpdateTableRequest does not match, AutomatedBackupPolicy.Locations: %v", updateTableReq.Table.GetAutomatedBackupPolicy().Locations)
+	}
+	if !cmp.Equal(len(updateTableReq.UpdateMask.Paths), 3) {
+		t.Errorf("UpdateTableRequest does not match, UpdateMask has length of %d, expected 3", len(updateTableReq.UpdateMask.Paths))
 	}
 	if !cmp.Equal(updateTableReq.UpdateMask.Paths[0], "automated_backup_policy.retention_period") {
 		t.Errorf("UpdateTableRequest does not match, UpdateMask: %v", updateTableReq.UpdateMask.Paths[0])
 	}
 	if !cmp.Equal(updateTableReq.UpdateMask.Paths[1], "automated_backup_policy.frequency") {
 		t.Errorf("UpdateTableRequest does not match, UpdateMask: %v", updateTableReq.UpdateMask.Paths[1])
+	}
+	if !cmp.Equal(updateTableReq.UpdateMask.Paths[2], "automated_backup_policy.locations") {
+		t.Errorf("UpdateTableRequest does not match, UpdateMask: %v", updateTableReq.UpdateMask.Paths[2])
 	}
 }
 
@@ -742,7 +802,7 @@ func TestTableAdmin_UpdateTableWithAutomatedBackupPolicy_NilFields_Invalid(t *te
 	mock := &mockTableAdminClock{}
 	c := setupTableClient(t, mock)
 
-	err := c.UpdateTableWithAutomatedBackupPolicy(context.Background(), "My-table", TableAutomatedBackupPolicy{nil, nil})
+	err := c.UpdateTableWithAutomatedBackupPolicy(context.Background(), "My-table", TableAutomatedBackupPolicy{RetentionPeriod: nil, Frequency: nil})
 	if err == nil {
 		t.Fatalf("Expected UpdateTableDisableAutomatedBackupPolicy to fail due to misspecified AutomatedBackupPolicy")
 	}
@@ -752,9 +812,248 @@ func TestTableAdmin_UpdateTableWithAutomatedBackupPolicy_ZeroFields_Invalid(t *t
 	mock := &mockTableAdminClock{}
 	c := setupTableClient(t, mock)
 
-	err := c.UpdateTableWithAutomatedBackupPolicy(context.Background(), "My-table", TableAutomatedBackupPolicy{time.Duration(0), time.Duration(0)})
+	err := c.UpdateTableWithAutomatedBackupPolicy(context.Background(), "My-table", TableAutomatedBackupPolicy{RetentionPeriod: time.Duration(0), Frequency: time.Duration(0)})
 	if err == nil {
 		t.Fatalf("Expected UpdateTableDisableAutomatedBackupPolicy to fail due to misspecified AutomatedBackupPolicy")
+	}
+}
+
+func TestTableAdmin_CreateTableFromConf_AutomatedBackupPolicy_KeepHotDurationAndDisabled(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	keepHotDuration := 48 * time.Hour
+	automatedBackupPolicy := TableAutomatedBackupPolicy{
+		RetentionPeriod: 72 * time.Hour,
+		Frequency:       24 * time.Hour,
+		KeepHotDuration: keepHotDuration,
+	}
+
+	err := c.CreateTableFromConf(context.Background(), &TableConf{TableID: "My-table", AutomatedBackupConfig: &automatedBackupPolicy})
+	if err != nil {
+		t.Fatalf("CreateTableFromConf failed: %v", err)
+	}
+	createTableReq := mock.createTableReq
+	if !cmp.Equal(createTableReq.Table.GetAutomatedBackupPolicy().GetKeepHotDuration().GetSeconds(), int64(keepHotDuration.Seconds())) {
+		t.Errorf("Unexpected table automated backup policy keep_hot_duration: %v, expected %v", createTableReq.Table.GetAutomatedBackupPolicy().GetKeepHotDuration(), keepHotDuration)
+	}
+
+	disabledPolicy := TableAutomatedBackupPolicy{
+		Disabled: true,
+	}
+	err = c.CreateTableFromConf(context.Background(), &TableConf{TableID: "My-disabled-table", AutomatedBackupConfig: &disabledPolicy})
+	if err != nil {
+		t.Fatalf("CreateTableFromConf with Disabled=true failed: %v", err)
+	}
+	if !mock.createTableReq.Table.GetAutomatedBackupPolicy().GetDisabled() {
+		t.Errorf("Expected Disabled=true on CreateTableRequest automated backup policy")
+	}
+
+	invalidDisabledPolicy := TableAutomatedBackupPolicy{
+		Disabled:        true,
+		RetentionPeriod: 72 * time.Hour,
+	}
+	if err := c.CreateTableFromConf(context.Background(), &TableConf{TableID: "My-invalid-table", AutomatedBackupConfig: &invalidDisabledPolicy}); err == nil {
+		t.Errorf("Expected CreateTableFromConf to fail when Disabled=true is set alongside other fields")
+	}
+}
+
+func TestTableAdmin_UpdateTableWithAutomatedBackupPolicy_KeepHotDuration(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	keepHotDuration := 48 * time.Hour
+	automatedBackupPolicy := TableAutomatedBackupPolicy{
+		KeepHotDuration: keepHotDuration,
+	}
+
+	err := c.UpdateTableWithAutomatedBackupPolicy(context.Background(), "My-table", automatedBackupPolicy)
+	if err != nil {
+		t.Fatalf("UpdateTableWithAutomatedBackupPolicy failed: %v", err)
+	}
+	updateTableReq := mock.updateTableReq
+	if !cmp.Equal(updateTableReq.Table.GetAutomatedBackupPolicy().GetKeepHotDuration().GetSeconds(), int64(keepHotDuration.Seconds())) {
+		t.Errorf("UpdateTableRequest does not match, KeepHotDuration: %v", updateTableReq.Table.GetAutomatedBackupPolicy().GetKeepHotDuration())
+	}
+	if !cmp.Equal(updateTableReq.UpdateMask.Paths, []string{"automated_backup_policy.keep_hot_duration"}) {
+		t.Errorf("UpdateTableRequest does not match, UpdateMask: %v", updateTableReq.UpdateMask.Paths)
+	}
+}
+
+func TestTableAdmin_UpdateTableWithAutomatedBackupPolicy_Disabled(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	automatedBackupPolicy := TableAutomatedBackupPolicy{
+		Disabled: true,
+	}
+
+	err := c.UpdateTableWithAutomatedBackupPolicy(context.Background(), "My-table", automatedBackupPolicy)
+	if err != nil {
+		t.Fatalf("UpdateTableWithAutomatedBackupPolicy failed: %v", err)
+	}
+	updateTableReq := mock.updateTableReq
+	if !updateTableReq.Table.GetAutomatedBackupPolicy().GetDisabled() {
+		t.Errorf("UpdateTableRequest does not match, expected Disabled=true")
+	}
+	if !cmp.Equal(updateTableReq.UpdateMask.Paths, []string{"automated_backup_policy.disabled"}) {
+		t.Errorf("UpdateTableRequest does not match, UpdateMask: %v", updateTableReq.UpdateMask.Paths)
+	}
+
+	invalidPolicy := TableAutomatedBackupPolicy{
+		Disabled:  true,
+		Frequency: 24 * time.Hour,
+	}
+	if err := c.UpdateTableWithAutomatedBackupPolicy(context.Background(), "My-table", invalidPolicy); err == nil {
+		t.Errorf("Expected UpdateTableWithAutomatedBackupPolicy to fail when Disabled=true is combined with other fields")
+	}
+}
+
+func TestTableAdmin_TableInfo_AutomatedBackupPolicyAndEffectivePolicy(t *testing.T) {
+	mock := &mockTableAdminClock{
+		getTableResp: &btapb.Table{
+			Name: "projects/my-cool-project/instances/my-cool-instance/tables/My-table",
+			AutomatedBackupConfig: &btapb.Table_AutomatedBackupPolicy_{
+				AutomatedBackupPolicy: &btapb.Table_AutomatedBackupPolicy{
+					RetentionPeriod: durationpb.New(72 * time.Hour),
+					Frequency:       durationpb.New(24 * time.Hour),
+					Locations:       []string{"projects/my-cool-project/locations/us-east1-b"},
+					KeepHotDuration: durationpb.New(48 * time.Hour),
+				},
+			},
+			EffectiveAutomatedBackupPolicy: &btapb.Table_AutomatedBackupPolicy{
+				RetentionPeriod: durationpb.New(72 * time.Hour),
+				Frequency:       durationpb.New(24 * time.Hour),
+				Locations:       []string{"projects/my-cool-project/locations/us-east1-b"},
+				KeepHotDuration: durationpb.New(48 * time.Hour),
+			},
+		},
+	}
+	c := setupTableClient(t, mock)
+
+	info, err := c.TableInfo(context.Background(), "My-table")
+	if err != nil {
+		t.Fatalf("TableInfo failed: %v", err)
+	}
+	abp, ok := info.AutomatedBackupConfig.(*TableAutomatedBackupPolicy)
+	if !ok || abp == nil {
+		t.Fatalf("Expected AutomatedBackupConfig to be *TableAutomatedBackupPolicy, got %T", info.AutomatedBackupConfig)
+	}
+	if !cmp.Equal(abp.KeepHotDuration, optional.Duration(48*time.Hour)) {
+		t.Errorf("Unexpected AutomatedBackupConfig.KeepHotDuration: %v", abp.KeepHotDuration)
+	}
+	if info.EffectiveAutomatedBackupPolicy == nil {
+		t.Fatalf("Expected EffectiveAutomatedBackupPolicy to be non-nil")
+	}
+	if !cmp.Equal(info.EffectiveAutomatedBackupPolicy.KeepHotDuration, optional.Duration(48*time.Hour)) {
+		t.Errorf("Unexpected EffectiveAutomatedBackupPolicy.KeepHotDuration: %v", info.EffectiveAutomatedBackupPolicy.KeepHotDuration)
+	}
+
+	// Verify GetTable returning {disabled: true} leaves duration fields nil.
+	mock.getTableResp = &btapb.Table{
+		Name: "projects/my-cool-project/instances/my-cool-instance/tables/My-disabled-table",
+		AutomatedBackupConfig: &btapb.Table_AutomatedBackupPolicy_{
+			AutomatedBackupPolicy: &btapb.Table_AutomatedBackupPolicy{
+				Disabled: true,
+			},
+		},
+	}
+	disabledInfo, err := c.TableInfo(context.Background(), "My-disabled-table")
+	if err != nil {
+		t.Fatalf("TableInfo for disabled table failed: %v", err)
+	}
+	disabledAbp, ok := disabledInfo.AutomatedBackupConfig.(*TableAutomatedBackupPolicy)
+	if !ok || disabledAbp == nil {
+		t.Fatalf("Expected AutomatedBackupConfig to be *TableAutomatedBackupPolicy, got %T", disabledInfo.AutomatedBackupConfig)
+	}
+	if !disabledAbp.Disabled {
+		t.Errorf("Expected Disabled=true on TableInfo.AutomatedBackupConfig")
+	}
+	if disabledAbp.RetentionPeriod != nil || disabledAbp.Frequency != nil || disabledAbp.KeepHotDuration != nil {
+		t.Errorf("Expected nil duration fields when Disabled=true, got RetentionPeriod=%v, Frequency=%v, KeepHotDuration=%v",
+			disabledAbp.RetentionPeriod, disabledAbp.Frequency, disabledAbp.KeepHotDuration)
+	}
+}
+
+func TestTableAdmin_UpdateTableWithTieredStorageConfig(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	tieredStorageConfig := TieredStorageConfig{
+		InfrequentAccess: &TieredStorageIncludeIfOlderThan{Duration: 30 * 24 * time.Hour},
+	}
+
+	err := c.UpdateTableWithTieredStorageConfig(context.Background(), "My-table", &tieredStorageConfig)
+	if err != nil {
+		t.Fatalf("UpdateTableWithTieredStorageConfig failed: %v", err)
+	}
+
+	updateTableReq := mock.updateTableReq
+	if updateTableReq.UpdateMask.Paths[0] != tieredStorageConfigFieldMask {
+		t.Errorf("Unexpected update mask: %v, expected %v", updateTableReq.UpdateMask.Paths[0], tieredStorageConfigFieldMask)
+	}
+	got := updateTableReq.Table.TieredStorageConfig
+	if got == nil {
+		t.Fatal("TieredStorageConfig is nil")
+	}
+	if got.InfrequentAccess == nil {
+		t.Fatal("InfrequentAccess is nil")
+	}
+	if got.InfrequentAccess.GetIncludeIfOlderThan().AsDuration() != 30*24*time.Hour {
+		t.Errorf("Unexpected IncludeIfOlderThan: %v, expected %v", got.InfrequentAccess.GetIncludeIfOlderThan().AsDuration(), 30*24*time.Hour)
+	}
+}
+
+func TestTableAdmin_TableInfo_TieredStorageConfig(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	mock.getTableResp = &btapb.Table{
+		Name: "projects/my-cool-project/instances/my-cool-instance/tables/My-table",
+		TieredStorageConfig: &btapb.TieredStorageConfig{
+			InfrequentAccess: &btapb.TieredStorageRule{
+				Rule: &btapb.TieredStorageRule_IncludeIfOlderThan{
+					IncludeIfOlderThan: durationpb.New(30 * 24 * time.Hour),
+				},
+			},
+		},
+	}
+
+	ti, err := c.TableInfo(context.Background(), "My-table")
+	if err != nil {
+		t.Fatalf("TableInfo failed: %v", err)
+	}
+
+	if ti.TieredStorageConfig == nil {
+		t.Fatal("TieredStorageConfig is nil")
+	}
+	if ti.TieredStorageConfig.InfrequentAccess == nil {
+		t.Fatal("InfrequentAccess is nil")
+	}
+	rule, ok := ti.TieredStorageConfig.InfrequentAccess.(*TieredStorageIncludeIfOlderThan)
+	if !ok {
+		t.Fatalf("Unexpected rule type: %T", ti.TieredStorageConfig.InfrequentAccess)
+	}
+	if optional.ToDuration(rule.Duration) != 30*24*time.Hour {
+		t.Errorf("Unexpected IncludeIfOlderThan: %v, expected %v", optional.ToDuration(rule.Duration), 30*24*time.Hour)
+	}
+}
+
+func TestTableAdmin_UpdateTableRemoveTieredStorageConfig(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	err := c.UpdateTableRemoveTieredStorageConfig(context.Background(), "My-table")
+	if err != nil {
+		t.Fatalf("UpdateTableRemoveTieredStorageConfig failed: %v", err)
+	}
+
+	updateTableReq := mock.updateTableReq
+	if updateTableReq.UpdateMask.Paths[0] != tieredStorageConfigFieldMask {
+		t.Errorf("Unexpected update mask: %v, expected %v", updateTableReq.UpdateMask.Paths[0], tieredStorageConfigFieldMask)
+	}
+	if updateTableReq.Table.TieredStorageConfig != nil {
+		t.Errorf("TieredStorageConfig should be nil")
 	}
 }
 
@@ -1096,6 +1395,79 @@ func TestInstanceAdmin_CreateInstance_WithAutoscaling(t *testing.T) {
 	mycc = mock.createInstanceReq.Clusters["mycluster"]
 	if cc := mycc.GetClusterConfig(); cc != nil {
 		t.Fatalf("want config = nil, got = %v", gotConfig)
+	}
+}
+
+func TestInstanceAdmin_CreateInstance_WithEdition(t *testing.T) {
+	mock := &mockAdminClock{}
+	c := setupClient(t, mock)
+
+	err := c.CreateInstance(context.Background(), &InstanceConf{
+		InstanceId:   "myinst",
+		DisplayName:  "myinst",
+		InstanceType: PRODUCTION,
+		ClusterId:    "mycluster",
+		Zone:         "us-central1-a",
+		StorageType:  SSD,
+		Edition:      EnterprisePlus,
+	})
+	if err != nil {
+		t.Fatalf("CreateInstance failed: %v", err)
+	}
+
+	got := mock.createInstanceReq.Instance.Edition
+	want := btapb.Instance_ENTERPRISE_PLUS
+	if got != want {
+		t.Errorf("got edition %v, want %v", got, want)
+	}
+}
+
+func TestInstanceAdmin_CreateInstanceWithClusters_WithEdition(t *testing.T) {
+	mock := &mockAdminClock{}
+	c := setupClient(t, mock)
+
+	err := c.CreateInstanceWithClusters(context.Background(), &InstanceWithClustersConfig{
+		InstanceID:   "myinst",
+		DisplayName:  "myinst",
+		InstanceType: PRODUCTION,
+		Edition:      EnterprisePlus,
+		Clusters: []ClusterConfig{
+			{
+				ClusterID:   "mycluster",
+				Zone:        "us-central1-a",
+				StorageType: SSD,
+			},
+		},
+	})
+	if err != nil {
+		t.Fatalf("CreateInstanceWithClusters failed: %v", err)
+	}
+
+	got := mock.createInstanceReq.Instance.Edition
+	want := btapb.Instance_ENTERPRISE_PLUS
+	if got != want {
+		t.Errorf("got edition %v, want %v", got, want)
+	}
+}
+
+// Test that CreateInstance with a tags argument completes without error.
+// We cannot verify tag creation itself, as tags are not stored in the Instance metadata
+// and thus are not observable here.
+func TestInstanceAdmin_CreateInstance_WithTags(t *testing.T) {
+	mock := &mockAdminClock{}
+	c := setupClient(t, mock)
+
+	err := c.CreateInstance(context.Background(), &InstanceConf{
+		InstanceId:   "myinst",
+		DisplayName:  "myinst",
+		InstanceType: PRODUCTION,
+		ClusterId:    "mycluster",
+		Zone:         "us-central1-a",
+		StorageType:  SSD,
+		Tags:         map[string]string{"tagKeys/123": "tagValues/456"},
+	})
+	if err != nil {
+		t.Fatalf("CreateInstance failed: %v", err)
 	}
 }
 
@@ -1589,5 +1961,61 @@ func TestInstanceAdmin_UpdateAppProfile(t *testing.T) {
 				t.Errorf("UpdateAppProfileRequest mismatch (-got +want):\n%s", diff)
 			}
 		})
+	}
+}
+
+func TestTableAdminClientV2(t *testing.T) {
+	ctx := context.Background()
+	c, err := NewAdminClient(ctx, "my-cool-project", "my-cool-instance", option.WithoutAuthentication())
+	if err != nil {
+		t.Fatalf("NewAdminClient failed: %v", err)
+	}
+
+	gapicClient := c.TableAdminClientV2()
+	if gapicClient == nil {
+		t.Fatal("Expected non-nil BigtableTableAdminClient")
+	}
+
+	// Close the gapic client. It should close the underlying connPool.
+	if err := gapicClient.Close(); err != nil {
+		t.Errorf("gapicClient.Close() failed: %v", err)
+	}
+
+	// Now trying to use AdminClient should fail because the connection pool is closed.
+	err = c.CreateTable(ctx, "some-table")
+	if err == nil {
+		t.Error("Expected error when calling method on closed client")
+	} else {
+		if !strings.Contains(err.Error(), "closing") && !strings.Contains(err.Error(), "closed") && !strings.Contains(err.Error(), "Shutdown") {
+			t.Errorf("Unexpected error: %v", err)
+		}
+	}
+}
+
+func TestInstanceAdminClientV2(t *testing.T) {
+	ctx := context.Background()
+	c, err := NewInstanceAdminClient(ctx, "my-cool-project", option.WithoutAuthentication())
+	if err != nil {
+		t.Fatalf("NewInstanceAdminClient failed: %v", err)
+	}
+
+	gapicClient := c.InstanceAdminClientV2()
+	if gapicClient == nil {
+		t.Fatal("Expected non-nil BigtableInstanceAdminClient")
+	}
+
+	// Close the gapic client. It should close the underlying connPool.
+	if err := gapicClient.Close(); err != nil {
+		t.Errorf("gapicClient.Close() failed: %v", err)
+	}
+
+	// Now trying to use InstanceAdminClient should fail because the connection pool is closed.
+	_, err = c.Instances(ctx)
+	if err == nil {
+		t.Error("Expected error when calling method on closed client")
+	} else {
+		if !strings.Contains(err.Error(), "closing") && !strings.Contains(err.Error(), "closed") && !strings.Contains(err.Error(), "Shutdown") {
+			t.Errorf("Unexpected error: %v", err)
+		}
 	}
 }

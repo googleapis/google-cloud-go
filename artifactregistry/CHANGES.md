@@ -1,5 +1,61 @@
 # Changes
 
+## [1.27.0](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.26.0...artifactregistry/v1.27.0) (2026-09-23)
+
+
+### Features
+
+* **all:** Update supported go versions ([#20520](https://github.com/googleapis/google-cloud-go/issues/20520)) ([90413d3](https://github.com/googleapis/google-cloud-go/commit/90413d3e9d381ef4b92e3c496d98b023c5b2d8cc))
+
+## [1.26.0](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.25.0...artifactregistry/v1.26.0) (2026-07-13)
+
+
+### Features
+
+* **o11y:** Regenerate clients for LRO tracing ([#20107](https://github.com/googleapis/google-cloud-go/issues/20107)) ([779074e](https://github.com/googleapis/google-cloud-go/commit/779074edd267a26520bae459307660953129eb07))
+
+## [1.25.0](https://github.com/googleapis/google-cloud-go/releases/tag/artifactregistry%2Fv1.25.0) (2026-05-07)
+
+## [1.24.0](https://github.com/googleapis/google-cloud-go/releases/tag/artifactregistry%2Fv1.24.0) (2026-04-30)
+
+## [1.23.0](https://github.com/googleapis/google-cloud-go/releases/tag/artifactregistry%2Fv1.23.0) (2026-04-13)
+
+## [1.22.0](https://github.com/googleapis/google-cloud-go/releases/tag/artifactregistry%2Fv1.22.0) (2026-04-09)
+
+## [1.21.0](https://github.com/googleapis/google-cloud-go/releases/tag/artifactregistry%2Fv1.21.0) (2026-04-02)
+
+## [1.20.0](https://github.com/googleapis/google-cloud-go/releases/tag/artifactregistry%2Fv1.20.0) (2026-02-12)
+
+### Features
+
+* add DIRSUM_SHA256 hash type ([6f31019](https://github.com/googleapis/google-cloud-go/commit/6f310199e136b133bb4fadaa353e264e809db6d7))
+
+## [1.19.0](https://github.com/googleapis/google-cloud-go/releases/tag/artifactregistry%2Fv1.19.0) (2026-01-08)
+
+### Features
+
+* add Fingerprint to Artifact Registry Version resource ([db65e79](https://github.com/googleapis/google-cloud-go/commit/db65e7927e54b21a39a54f685810495d2885cb33))
+
+### Documentation
+
+* update the description of ExportArtifact ([db65e79](https://github.com/googleapis/google-cloud-go/commit/db65e7927e54b21a39a54f685810495d2885cb33))
+
+## [1.18.0](https://github.com/googleapis/google-cloud-go/releases/tag/artifactregistry%2Fv1.18.0) (2025-12-04)
+
+### Features
+
+* add ExportArtifact API ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* add Ruby format in VulnerabilityScanningConfig ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* add artifact_type field in DockerImage ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* add image_manifest field in DockerImage ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+
+### Documentation
+
+* A comment for enum value `ENABLEMENT_CONFIG_UNSPECIFIED` in enum `EnablementConfig` is changed ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A comment for field `name` in message `.google.devtools.artifactregistry.v1.DockerImage` is changed ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A comment for field `satisfies_pzi` in message `.google.devtools.artifactregistry.v1.Repository` is changed ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A comment for field `satisfies_pzs` in message `.google.devtools.artifactregistry.v1.Repository` is changed ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+
 ## [1.17.2](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.17.1...artifactregistry/v1.17.2) (2025-10-07)
 
 

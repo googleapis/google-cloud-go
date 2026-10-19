@@ -1,5 +1,42 @@
 # Changes
 
+## [1.28.0](https://github.com/googleapis/google-cloud-go/compare/security/v1.27.0...security/v1.28.0) (2026-09-23)
+
+
+### Features
+
+* **all:** Update supported go versions ([#20520](https://github.com/googleapis/google-cloud-go/issues/20520)) ([90413d3](https://github.com/googleapis/google-cloud-go/commit/90413d3e9d381ef4b92e3c496d98b023c5b2d8cc))
+
+## [1.27.0](https://github.com/googleapis/google-cloud-go/compare/security/v1.26.0...security/v1.27.0) (2026-08-20)
+
+
+### Features
+
+* Update sources and regenerate ([#20399](https://github.com/googleapis/google-cloud-go/issues/20399)) ([a6b5cdb](https://github.com/googleapis/google-cloud-go/commit/a6b5cdb4eec5e66fb6bb4a00f9ec89c088826e26))
+
+## [1.26.0](https://github.com/googleapis/google-cloud-go/compare/security/v1.25.0...security/v1.26.0) (2026-07-13)
+
+
+### Features
+
+* **o11y:** Regenerate clients for LRO tracing ([#20107](https://github.com/googleapis/google-cloud-go/issues/20107)) ([779074e](https://github.com/googleapis/google-cloud-go/commit/779074edd267a26520bae459307660953129eb07))
+
+## [1.25.0](https://github.com/googleapis/google-cloud-go/releases/tag/security%2Fv1.25.0) (2026-05-28)
+
+### Features
+
+* update API sources and regenerate (#14661) ([d0cd917](https://github.com/googleapis/google-cloud-go/commit/d0cd917ce0ad46a4d2c1cd4ea2ef8efa60b591d3))
+
+## [1.24.0](https://github.com/googleapis/google-cloud-go/releases/tag/security%2Fv1.24.0) (2026-05-07)
+
+## [1.23.0](https://github.com/googleapis/google-cloud-go/releases/tag/security%2Fv1.23.0) (2026-04-30)
+
+## [1.22.0](https://github.com/googleapis/google-cloud-go/releases/tag/security%2Fv1.22.0) (2026-04-13)
+
+## [1.21.0](https://github.com/googleapis/google-cloud-go/releases/tag/security%2Fv1.21.0) (2026-04-09)
+
+## [1.20.0](https://github.com/googleapis/google-cloud-go/releases/tag/security%2Fv1.20.0) (2026-04-02)
+
 ## [1.19.2](https://github.com/googleapis/google-cloud-go/compare/security/v1.19.1...security/v1.19.2) (2025-09-22)
 
 

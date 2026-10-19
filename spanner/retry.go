@@ -45,14 +45,20 @@ var DefaultRetryBackoff = gax.Backoff{
 // retry info returned by Cloud Spanner and uses that if present.
 type spannerRetryer struct {
 	gax.Retryer
+	allowResourceExhaustedWithoutRetryInfo bool
 }
 
 // onCodes returns a spannerRetryer that will retry on the specified error
 // codes. For Internal errors, only errors that have one of a list of known
 // descriptions should be retried.
 func onCodes(bo gax.Backoff, cc ...codes.Code) gax.Retryer {
+	return onCodesWithResourceExhaustedRetryOption(bo, false, cc...)
+}
+
+func onCodesWithResourceExhaustedRetryOption(bo gax.Backoff, allowResourceExhaustedWithoutRetryInfo bool, cc ...codes.Code) gax.Retryer {
 	return &spannerRetryer{
-		Retryer: gax.OnCodes(cc, bo),
+		Retryer:                                gax.OnCodes(cc, bo),
+		allowResourceExhaustedWithoutRetryInfo: allowResourceExhaustedWithoutRetryInfo,
 	}
 }
 
@@ -77,7 +83,12 @@ func (r *spannerRetryer) Retry(err error) (time.Duration, bool) {
 	}
 
 	serverDelay, hasServerDelay := ExtractRetryDelay(err)
-	// Retry ResourceExhausted error only if there's a server delay in the trailer
+	// Location-aware retries move to a different replica immediately after marking
+	// cooldown/exclusion, so they should not sleep before retrying.
+	if errCode == codes.ResourceExhausted && r.allowResourceExhaustedWithoutRetryInfo {
+		return 0, true
+	}
+	// Retry ResourceExhausted error only if there's a server delay in the trailer.
 	if errCode == codes.ResourceExhausted && (!hasServerDelay || serverDelay <= 0) {
 		return 0, false
 	}
@@ -88,13 +99,13 @@ func (r *spannerRetryer) Retry(err error) (time.Duration, bool) {
 	return delay, true
 }
 
-// runWithRetryOnAbortedOrFailedInlineBeginOrSessionNotFound executes the given function and
-// retries it if it returns an Aborted, Session not found error or certain Internal errors. The retry
+// runWithRetryOnAbortedOrFailedInlineBegin executes the given function and
+// retries it if it returns an Aborted, or certain Internal errors. The retry
 // is delayed if the error was Aborted or Internal error. The delay between retries is the delay
 // returned by Cloud Spanner, or if none is returned, the calculated delay with
 // a minimum of 10ms and maximum of 32s. There is no delay before the retry if
 // the error was Session not found or failed inline begin transaction.
-func runWithRetryOnAbortedOrFailedInlineBeginOrSessionNotFound(ctx context.Context, f func(context.Context) error) error {
+func runWithRetryOnAbortedOrFailedInlineBegin(ctx context.Context, f func(context.Context) error) error {
 	retryer := onCodes(DefaultRetryBackoff, codes.Aborted, codes.ResourceExhausted, codes.Internal)
 	funcWithRetry := func(ctx context.Context) error {
 		for {
@@ -119,10 +130,6 @@ func runWithRetryOnAbortedOrFailedInlineBeginOrSessionNotFound(ctx context.Conte
 					return err
 				}
 				retryErr = err
-			}
-			if isSessionNotFoundError(retryErr) {
-				trace.TracePrintf(ctx, nil, "Retrying after Session not found")
-				continue
 			}
 			if isFailedInlineBeginTransaction(retryErr) {
 				trace.TracePrintf(ctx, nil, "Retrying after failed inline begin transaction")

@@ -1,35 +1,29 @@
 assign_issues_by:
 - labels:
   - 'api: bigtable'
+  to:
+  - sushanb
+- labels:
   - 'api: datastore'
   - 'api: firestore'
   to:
-  - bhshkh
+  - shollyman
 - labels:
   - 'api: storage'
   to:
   - cpriti-os
 - labels:
-  - 'api: bigquery'
-  to:
-  - alvarowolfx
-- labels:
   - 'api: pubsub'
   to:
-  - hongalex
+  - shollyman
 - labels:
   - 'api: pubsublite'
   to:
-  - tmdiep
+  - brownsuga918
 - labels:
   - 'api: spanner'
   to:
   - rahul2393
-- labels:
-  - 'api: logging'
-  - 'api: clouderrorreporting'
-  to:
-  - googleapis/api-logging-go-reviewers
 - labels:
   - 'api: cloudprofiler'
   to:

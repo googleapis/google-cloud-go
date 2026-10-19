@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import (
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -217,7 +218,7 @@ type PolicyTagManagerClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *PolicyTagManagerClient) Close() error {
 	return c.internalClient.Close()
@@ -370,6 +371,16 @@ type policyTagManagerGRPCClient struct {
 // classify data along a common axis.
 func NewPolicyTagManagerClient(ctx context.Context, opts ...option.ClientOption) (*PolicyTagManagerClient, error) {
 	clientOpts := defaultPolicyTagManagerGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "datacatalog",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/datacatalog/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "datacatalog.googleapis.com",
+		}))
+	}
 	if newPolicyTagManagerClientHook != nil {
 		hookOpts, err := newPolicyTagManagerClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -392,6 +403,95 @@ func NewPolicyTagManagerClient(ctx context.Context, opts ...option.ClientOption)
 		operationsClient:       longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "datacatalog",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datacatalog/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "datacatalog.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateTaxonomy = append(client.CallOptions.CreateTaxonomy, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteTaxonomy = append(client.CallOptions.DeleteTaxonomy, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateTaxonomy = append(client.CallOptions.UpdateTaxonomy, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListTaxonomies = append(client.CallOptions.ListTaxonomies, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetTaxonomy = append(client.CallOptions.GetTaxonomy, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreatePolicyTag = append(client.CallOptions.CreatePolicyTag, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeletePolicyTag = append(client.CallOptions.DeletePolicyTag, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdatePolicyTag = append(client.CallOptions.UpdatePolicyTag, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListPolicyTags = append(client.CallOptions.ListPolicyTags, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetPolicyTag = append(client.CallOptions.GetPolicyTag, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "datacatalog",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datacatalog/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "datacatalog.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateTaxonomy = append(client.CallOptions.CreateTaxonomy, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteTaxonomy = append(client.CallOptions.DeleteTaxonomy, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateTaxonomy = append(client.CallOptions.UpdateTaxonomy, gax.WithClientTracing(tracing))
+		client.CallOptions.ListTaxonomies = append(client.CallOptions.ListTaxonomies, gax.WithClientTracing(tracing))
+		client.CallOptions.GetTaxonomy = append(client.CallOptions.GetTaxonomy, gax.WithClientTracing(tracing))
+		client.CallOptions.CreatePolicyTag = append(client.CallOptions.CreatePolicyTag, gax.WithClientTracing(tracing))
+		client.CallOptions.DeletePolicyTag = append(client.CallOptions.DeletePolicyTag, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdatePolicyTag = append(client.CallOptions.UpdatePolicyTag, gax.WithClientTracing(tracing))
+		client.CallOptions.ListPolicyTags = append(client.CallOptions.ListPolicyTags, gax.WithClientTracing(tracing))
+		client.CallOptions.GetPolicyTag = append(client.CallOptions.GetPolicyTag, gax.WithClientTracing(tracing))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "datacatalog",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datacatalog/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "datacatalog.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateTaxonomy = append(client.CallOptions.CreateTaxonomy, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteTaxonomy = append(client.CallOptions.DeleteTaxonomy, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateTaxonomy = append(client.CallOptions.UpdateTaxonomy, gax.WithClientLogging(logging))
+		client.CallOptions.ListTaxonomies = append(client.CallOptions.ListTaxonomies, gax.WithClientLogging(logging))
+		client.CallOptions.GetTaxonomy = append(client.CallOptions.GetTaxonomy, gax.WithClientLogging(logging))
+		client.CallOptions.CreatePolicyTag = append(client.CallOptions.CreatePolicyTag, gax.WithClientLogging(logging))
+		client.CallOptions.DeletePolicyTag = append(client.CallOptions.DeletePolicyTag, gax.WithClientLogging(logging))
+		client.CallOptions.UpdatePolicyTag = append(client.CallOptions.UpdatePolicyTag, gax.WithClientLogging(logging))
+		client.CallOptions.ListPolicyTags = append(client.CallOptions.ListPolicyTags, gax.WithClientLogging(logging))
+		client.CallOptions.GetPolicyTag = append(client.CallOptions.GetPolicyTag, gax.WithClientLogging(logging))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -417,7 +517,7 @@ func (c *policyTagManagerGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *policyTagManagerGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -450,6 +550,16 @@ type policyTagManagerRESTClient struct {
 // classify data along a common axis.
 func NewPolicyTagManagerRESTClient(ctx context.Context, opts ...option.ClientOption) (*PolicyTagManagerClient, error) {
 	clientOpts := append(defaultPolicyTagManagerRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "datacatalog",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/datacatalog/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "datacatalog.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -463,6 +573,96 @@ func NewPolicyTagManagerRESTClient(ctx context.Context, opts ...option.ClientOpt
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "datacatalog",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datacatalog/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "datacatalog.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateTaxonomy = append(callOpts.CreateTaxonomy, gax.WithClientMetrics(metrics))
+		callOpts.DeleteTaxonomy = append(callOpts.DeleteTaxonomy, gax.WithClientMetrics(metrics))
+		callOpts.UpdateTaxonomy = append(callOpts.UpdateTaxonomy, gax.WithClientMetrics(metrics))
+		callOpts.ListTaxonomies = append(callOpts.ListTaxonomies, gax.WithClientMetrics(metrics))
+		callOpts.GetTaxonomy = append(callOpts.GetTaxonomy, gax.WithClientMetrics(metrics))
+		callOpts.CreatePolicyTag = append(callOpts.CreatePolicyTag, gax.WithClientMetrics(metrics))
+		callOpts.DeletePolicyTag = append(callOpts.DeletePolicyTag, gax.WithClientMetrics(metrics))
+		callOpts.UpdatePolicyTag = append(callOpts.UpdatePolicyTag, gax.WithClientMetrics(metrics))
+		callOpts.ListPolicyTags = append(callOpts.ListPolicyTags, gax.WithClientMetrics(metrics))
+		callOpts.GetPolicyTag = append(callOpts.GetPolicyTag, gax.WithClientMetrics(metrics))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "datacatalog",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datacatalog/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "datacatalog.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateTaxonomy = append(callOpts.CreateTaxonomy, gax.WithClientTracing(tracing))
+		callOpts.DeleteTaxonomy = append(callOpts.DeleteTaxonomy, gax.WithClientTracing(tracing))
+		callOpts.UpdateTaxonomy = append(callOpts.UpdateTaxonomy, gax.WithClientTracing(tracing))
+		callOpts.ListTaxonomies = append(callOpts.ListTaxonomies, gax.WithClientTracing(tracing))
+		callOpts.GetTaxonomy = append(callOpts.GetTaxonomy, gax.WithClientTracing(tracing))
+		callOpts.CreatePolicyTag = append(callOpts.CreatePolicyTag, gax.WithClientTracing(tracing))
+		callOpts.DeletePolicyTag = append(callOpts.DeletePolicyTag, gax.WithClientTracing(tracing))
+		callOpts.UpdatePolicyTag = append(callOpts.UpdatePolicyTag, gax.WithClientTracing(tracing))
+		callOpts.ListPolicyTags = append(callOpts.ListPolicyTags, gax.WithClientTracing(tracing))
+		callOpts.GetPolicyTag = append(callOpts.GetPolicyTag, gax.WithClientTracing(tracing))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "datacatalog",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datacatalog/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "datacatalog.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateTaxonomy = append(callOpts.CreateTaxonomy, gax.WithClientLogging(logging))
+		callOpts.DeleteTaxonomy = append(callOpts.DeleteTaxonomy, gax.WithClientLogging(logging))
+		callOpts.UpdateTaxonomy = append(callOpts.UpdateTaxonomy, gax.WithClientLogging(logging))
+		callOpts.ListTaxonomies = append(callOpts.ListTaxonomies, gax.WithClientLogging(logging))
+		callOpts.GetTaxonomy = append(callOpts.GetTaxonomy, gax.WithClientLogging(logging))
+		callOpts.CreatePolicyTag = append(callOpts.CreatePolicyTag, gax.WithClientLogging(logging))
+		callOpts.DeletePolicyTag = append(callOpts.DeletePolicyTag, gax.WithClientLogging(logging))
+		callOpts.UpdatePolicyTag = append(callOpts.UpdatePolicyTag, gax.WithClientLogging(logging))
+		callOpts.ListPolicyTags = append(callOpts.ListPolicyTags, gax.WithClientLogging(logging))
+		callOpts.GetPolicyTag = append(callOpts.GetPolicyTag, gax.WithClientLogging(logging))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	return &PolicyTagManagerClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -490,7 +690,7 @@ func (c *policyTagManagerRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *policyTagManagerRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -509,6 +709,9 @@ func (c *policyTagManagerGRPCClient) CreateTaxonomy(ctx context.Context, req *da
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.v1.PolicyTagManager/CreateTaxonomy")
+	}
 	opts = append((*c.CallOptions).CreateTaxonomy[0:len((*c.CallOptions).CreateTaxonomy):len((*c.CallOptions).CreateTaxonomy)], opts...)
 	var resp *datacatalogpb.Taxonomy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -527,6 +730,9 @@ func (c *policyTagManagerGRPCClient) DeleteTaxonomy(ctx context.Context, req *da
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.v1.PolicyTagManager/DeleteTaxonomy")
+	}
 	opts = append((*c.CallOptions).DeleteTaxonomy[0:len((*c.CallOptions).DeleteTaxonomy):len((*c.CallOptions).DeleteTaxonomy)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -541,6 +747,9 @@ func (c *policyTagManagerGRPCClient) UpdateTaxonomy(ctx context.Context, req *da
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.v1.PolicyTagManager/UpdateTaxonomy")
+	}
 	opts = append((*c.CallOptions).UpdateTaxonomy[0:len((*c.CallOptions).UpdateTaxonomy):len((*c.CallOptions).UpdateTaxonomy)], opts...)
 	var resp *datacatalogpb.Taxonomy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -559,9 +768,12 @@ func (c *policyTagManagerGRPCClient) ListTaxonomies(ctx context.Context, req *da
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.v1.PolicyTagManager/ListTaxonomies")
+	}
 	opts = append((*c.CallOptions).ListTaxonomies[0:len((*c.CallOptions).ListTaxonomies):len((*c.CallOptions).ListTaxonomies)], opts...)
 	it := &TaxonomyIterator{}
-	req = proto.Clone(req).(*datacatalogpb.ListTaxonomiesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datacatalogpb.Taxonomy, string, error) {
 		resp := &datacatalogpb.ListTaxonomiesResponse{}
 		if pageToken != "" {
@@ -605,6 +817,9 @@ func (c *policyTagManagerGRPCClient) GetTaxonomy(ctx context.Context, req *datac
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.v1.PolicyTagManager/GetTaxonomy")
+	}
 	opts = append((*c.CallOptions).GetTaxonomy[0:len((*c.CallOptions).GetTaxonomy):len((*c.CallOptions).GetTaxonomy)], opts...)
 	var resp *datacatalogpb.Taxonomy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -623,6 +838,9 @@ func (c *policyTagManagerGRPCClient) CreatePolicyTag(ctx context.Context, req *d
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.v1.PolicyTagManager/CreatePolicyTag")
+	}
 	opts = append((*c.CallOptions).CreatePolicyTag[0:len((*c.CallOptions).CreatePolicyTag):len((*c.CallOptions).CreatePolicyTag)], opts...)
 	var resp *datacatalogpb.PolicyTag
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -641,6 +859,9 @@ func (c *policyTagManagerGRPCClient) DeletePolicyTag(ctx context.Context, req *d
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.v1.PolicyTagManager/DeletePolicyTag")
+	}
 	opts = append((*c.CallOptions).DeletePolicyTag[0:len((*c.CallOptions).DeletePolicyTag):len((*c.CallOptions).DeletePolicyTag)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -655,6 +876,9 @@ func (c *policyTagManagerGRPCClient) UpdatePolicyTag(ctx context.Context, req *d
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.v1.PolicyTagManager/UpdatePolicyTag")
+	}
 	opts = append((*c.CallOptions).UpdatePolicyTag[0:len((*c.CallOptions).UpdatePolicyTag):len((*c.CallOptions).UpdatePolicyTag)], opts...)
 	var resp *datacatalogpb.PolicyTag
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -673,9 +897,12 @@ func (c *policyTagManagerGRPCClient) ListPolicyTags(ctx context.Context, req *da
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.v1.PolicyTagManager/ListPolicyTags")
+	}
 	opts = append((*c.CallOptions).ListPolicyTags[0:len((*c.CallOptions).ListPolicyTags):len((*c.CallOptions).ListPolicyTags)], opts...)
 	it := &PolicyTagIterator{}
-	req = proto.Clone(req).(*datacatalogpb.ListPolicyTagsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datacatalogpb.PolicyTag, string, error) {
 		resp := &datacatalogpb.ListPolicyTagsResponse{}
 		if pageToken != "" {
@@ -719,6 +946,9 @@ func (c *policyTagManagerGRPCClient) GetPolicyTag(ctx context.Context, req *data
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.v1.PolicyTagManager/GetPolicyTag")
+	}
 	opts = append((*c.CallOptions).GetPolicyTag[0:len((*c.CallOptions).GetPolicyTag):len((*c.CallOptions).GetPolicyTag)], opts...)
 	var resp *datacatalogpb.PolicyTag
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -737,6 +967,9 @@ func (c *policyTagManagerGRPCClient) GetIamPolicy(ctx context.Context, req *iamp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.v1.PolicyTagManager/GetIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -755,6 +988,9 @@ func (c *policyTagManagerGRPCClient) SetIamPolicy(ctx context.Context, req *iamp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.v1.PolicyTagManager/SetIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -773,6 +1009,9 @@ func (c *policyTagManagerGRPCClient) TestIamPermissions(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.v1.PolicyTagManager/TestIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -791,6 +1030,9 @@ func (c *policyTagManagerGRPCClient) CancelOperation(ctx context.Context, req *l
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -805,6 +1047,9 @@ func (c *policyTagManagerGRPCClient) DeleteOperation(ctx context.Context, req *l
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+	}
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -819,6 +1064,9 @@ func (c *policyTagManagerGRPCClient) GetOperation(ctx context.Context, req *long
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -837,9 +1085,12 @@ func (c *policyTagManagerGRPCClient) ListOperations(ctx context.Context, req *lo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -901,6 +1152,10 @@ func (c *policyTagManagerRESTClient) CreateTaxonomy(ctx context.Context, req *da
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.v1.PolicyTagManager/CreateTaxonomy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/taxonomies")
+	}
 	opts = append((*c.CallOptions).CreateTaxonomy[0:len((*c.CallOptions).CreateTaxonomy):len((*c.CallOptions).CreateTaxonomy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &datacatalogpb.Taxonomy{}
@@ -948,6 +1203,10 @@ func (c *policyTagManagerRESTClient) DeleteTaxonomy(ctx context.Context, req *da
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.v1.PolicyTagManager/DeleteTaxonomy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/taxonomies/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -997,6 +1256,10 @@ func (c *policyTagManagerRESTClient) UpdateTaxonomy(ctx context.Context, req *da
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.v1.PolicyTagManager/UpdateTaxonomy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{taxonomy.name=projects/*/locations/*/taxonomies/*}")
+	}
 	opts = append((*c.CallOptions).UpdateTaxonomy[0:len((*c.CallOptions).UpdateTaxonomy):len((*c.CallOptions).UpdateTaxonomy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &datacatalogpb.Taxonomy{}
@@ -1032,7 +1295,7 @@ func (c *policyTagManagerRESTClient) UpdateTaxonomy(ctx context.Context, req *da
 // have a permission to view.
 func (c *policyTagManagerRESTClient) ListTaxonomies(ctx context.Context, req *datacatalogpb.ListTaxonomiesRequest, opts ...gax.CallOption) *TaxonomyIterator {
 	it := &TaxonomyIterator{}
-	req = proto.Clone(req).(*datacatalogpb.ListTaxonomiesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datacatalogpb.Taxonomy, string, error) {
 		resp := &datacatalogpb.ListTaxonomiesResponse{}
@@ -1123,6 +1386,10 @@ func (c *policyTagManagerRESTClient) GetTaxonomy(ctx context.Context, req *datac
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.v1.PolicyTagManager/GetTaxonomy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/taxonomies/*}")
+	}
 	opts = append((*c.CallOptions).GetTaxonomy[0:len((*c.CallOptions).GetTaxonomy):len((*c.CallOptions).GetTaxonomy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &datacatalogpb.Taxonomy{}
@@ -1175,6 +1442,10 @@ func (c *policyTagManagerRESTClient) CreatePolicyTag(ctx context.Context, req *d
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.v1.PolicyTagManager/CreatePolicyTag")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/taxonomies/*}/policyTags")
+	}
 	opts = append((*c.CallOptions).CreatePolicyTag[0:len((*c.CallOptions).CreatePolicyTag):len((*c.CallOptions).CreatePolicyTag)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &datacatalogpb.PolicyTag{}
@@ -1227,6 +1498,10 @@ func (c *policyTagManagerRESTClient) DeletePolicyTag(ctx context.Context, req *d
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.v1.PolicyTagManager/DeletePolicyTag")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/taxonomies/*/policyTags/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1276,6 +1551,10 @@ func (c *policyTagManagerRESTClient) UpdatePolicyTag(ctx context.Context, req *d
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.v1.PolicyTagManager/UpdatePolicyTag")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{policy_tag.name=projects/*/locations/*/taxonomies/*/policyTags/*}")
+	}
 	opts = append((*c.CallOptions).UpdatePolicyTag[0:len((*c.CallOptions).UpdatePolicyTag):len((*c.CallOptions).UpdatePolicyTag)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &datacatalogpb.PolicyTag{}
@@ -1310,7 +1589,7 @@ func (c *policyTagManagerRESTClient) UpdatePolicyTag(ctx context.Context, req *d
 // ListPolicyTags lists all policy tags in a taxonomy.
 func (c *policyTagManagerRESTClient) ListPolicyTags(ctx context.Context, req *datacatalogpb.ListPolicyTagsRequest, opts ...gax.CallOption) *PolicyTagIterator {
 	it := &PolicyTagIterator{}
-	req = proto.Clone(req).(*datacatalogpb.ListPolicyTagsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datacatalogpb.PolicyTag, string, error) {
 		resp := &datacatalogpb.ListPolicyTagsResponse{}
@@ -1398,6 +1677,10 @@ func (c *policyTagManagerRESTClient) GetPolicyTag(ctx context.Context, req *data
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.v1.PolicyTagManager/GetPolicyTag")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/taxonomies/*/policyTags/*}")
+	}
 	opts = append((*c.CallOptions).GetPolicyTag[0:len((*c.CallOptions).GetPolicyTag):len((*c.CallOptions).GetPolicyTag)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &datacatalogpb.PolicyTag{}
@@ -1449,6 +1732,10 @@ func (c *policyTagManagerRESTClient) GetIamPolicy(ctx context.Context, req *iamp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.v1.PolicyTagManager/GetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/taxonomies/*}:getIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -1500,6 +1787,10 @@ func (c *policyTagManagerRESTClient) SetIamPolicy(ctx context.Context, req *iamp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.v1.PolicyTagManager/SetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/taxonomies/*}:setIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -1552,6 +1843,10 @@ func (c *policyTagManagerRESTClient) TestIamPermissions(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datacatalog.v1.PolicyTagManager/TestIamPermissions")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/taxonomies/*}:testIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.TestIamPermissionsResponse{}
@@ -1597,6 +1892,10 @@ func (c *policyTagManagerRESTClient) CancelOperation(ctx context.Context, req *l
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1627,6 +1926,10 @@ func (c *policyTagManagerRESTClient) DeleteOperation(ctx context.Context, req *l
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1657,6 +1960,10 @@ func (c *policyTagManagerRESTClient) GetOperation(ctx context.Context, req *long
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -1691,7 +1998,7 @@ func (c *policyTagManagerRESTClient) GetOperation(ctx context.Context, req *long
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *policyTagManagerRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
@@ -1718,6 +2025,9 @@ func (c *policyTagManagerRESTClient) ListOperations(ctx context.Context, req *lo
 		}
 		if req.GetPageToken() != "" {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req.GetReturnPartialSuccess() {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()

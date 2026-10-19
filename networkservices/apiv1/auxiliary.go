@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,15 +18,81 @@ package networkservices
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	networkservicespb "cloud.google.com/go/networkservices/apiv1/networkservicespb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
+
+// CreateAgentGatewayOperation manages a long-running operation from CreateAgentGateway.
+type CreateAgentGatewayOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *CreateAgentGatewayOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*networkservicespb.AgentGateway, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp networkservicespb.AgentGateway
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *CreateAgentGatewayOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*networkservicespb.AgentGateway, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp networkservicespb.AgentGateway
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *CreateAgentGatewayOperation) Metadata() (*networkservicespb.OperationMetadata, error) {
+	var meta networkservicespb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *CreateAgentGatewayOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *CreateAgentGatewayOperation) Name() string {
+	return op.lro.Name()
+}
 
 // CreateAuthzExtensionOperation manages a long-running operation from CreateAuthzExtension.
 type CreateAuthzExtensionOperation struct {
@@ -345,6 +411,70 @@ func (op *CreateHttpRouteOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *CreateHttpRouteOperation) Name() string {
+	return op.lro.Name()
+}
+
+// CreateLbEdgeExtensionOperation manages a long-running operation from CreateLbEdgeExtension.
+type CreateLbEdgeExtensionOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *CreateLbEdgeExtensionOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*networkservicespb.LbEdgeExtension, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp networkservicespb.LbEdgeExtension
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *CreateLbEdgeExtensionOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*networkservicespb.LbEdgeExtension, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp networkservicespb.LbEdgeExtension
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *CreateLbEdgeExtensionOperation) Metadata() (*networkservicespb.OperationMetadata, error) {
+	var meta networkservicespb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *CreateLbEdgeExtensionOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *CreateLbEdgeExtensionOperation) Name() string {
 	return op.lro.Name()
 }
 
@@ -924,6 +1054,59 @@ func (op *CreateWasmPluginVersionOperation) Name() string {
 	return op.lro.Name()
 }
 
+// DeleteAgentGatewayOperation manages a long-running operation from DeleteAgentGateway.
+type DeleteAgentGatewayOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *DeleteAgentGatewayOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *DeleteAgentGatewayOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	return op.lro.Poll(ctx, nil, opts...)
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *DeleteAgentGatewayOperation) Metadata() (*networkservicespb.OperationMetadata, error) {
+	var meta networkservicespb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *DeleteAgentGatewayOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *DeleteAgentGatewayOperation) Name() string {
+	return op.lro.Name()
+}
+
 // DeleteAuthzExtensionOperation manages a long-running operation from DeleteAuthzExtension.
 type DeleteAuthzExtensionOperation struct {
 	lro      *longrunning.Operation
@@ -1186,6 +1369,59 @@ func (op *DeleteHttpRouteOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *DeleteHttpRouteOperation) Name() string {
+	return op.lro.Name()
+}
+
+// DeleteLbEdgeExtensionOperation manages a long-running operation from DeleteLbEdgeExtension.
+type DeleteLbEdgeExtensionOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *DeleteLbEdgeExtensionOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *DeleteLbEdgeExtensionOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	return op.lro.Poll(ctx, nil, opts...)
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *DeleteLbEdgeExtensionOperation) Metadata() (*networkservicespb.OperationMetadata, error) {
+	var meta networkservicespb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *DeleteLbEdgeExtensionOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *DeleteLbEdgeExtensionOperation) Name() string {
 	return op.lro.Name()
 }
 
@@ -1666,6 +1902,70 @@ func (op *DeleteWasmPluginVersionOperation) Name() string {
 	return op.lro.Name()
 }
 
+// UpdateAgentGatewayOperation manages a long-running operation from UpdateAgentGateway.
+type UpdateAgentGatewayOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *UpdateAgentGatewayOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*networkservicespb.AgentGateway, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp networkservicespb.AgentGateway
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *UpdateAgentGatewayOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*networkservicespb.AgentGateway, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp networkservicespb.AgentGateway
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *UpdateAgentGatewayOperation) Metadata() (*networkservicespb.OperationMetadata, error) {
+	var meta networkservicespb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *UpdateAgentGatewayOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *UpdateAgentGatewayOperation) Name() string {
+	return op.lro.Name()
+}
+
 // UpdateAuthzExtensionOperation manages a long-running operation from UpdateAuthzExtension.
 type UpdateAuthzExtensionOperation struct {
 	lro      *longrunning.Operation
@@ -1983,6 +2283,70 @@ func (op *UpdateHttpRouteOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *UpdateHttpRouteOperation) Name() string {
+	return op.lro.Name()
+}
+
+// UpdateLbEdgeExtensionOperation manages a long-running operation from UpdateLbEdgeExtension.
+type UpdateLbEdgeExtensionOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *UpdateLbEdgeExtensionOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*networkservicespb.LbEdgeExtension, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp networkservicespb.LbEdgeExtension
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *UpdateLbEdgeExtensionOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*networkservicespb.LbEdgeExtension, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp networkservicespb.LbEdgeExtension
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *UpdateLbEdgeExtensionOperation) Metadata() (*networkservicespb.OperationMetadata, error) {
+	var meta networkservicespb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *UpdateLbEdgeExtensionOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *UpdateLbEdgeExtensionOperation) Name() string {
 	return op.lro.Name()
 }
 
@@ -2498,6 +2862,65 @@ func (op *UpdateWasmPluginOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AgentGatewayIterator) All() iter.Seq2[*networkservicespb.AgentGateway, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
+// AgentGatewayIterator manages a stream of *networkservicespb.AgentGateway.
+type AgentGatewayIterator struct {
+	items    []*networkservicespb.AgentGateway
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*networkservicespb.AgentGateway, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *AgentGatewayIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *AgentGatewayIterator) Next() (*networkservicespb.AgentGateway, error) {
+	var item *networkservicespb.AgentGateway
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *AgentGatewayIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *AgentGatewayIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AuthzExtensionIterator) All() iter.Seq2[*networkservicespb.AuthzExtension, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // AuthzExtensionIterator manages a stream of *networkservicespb.AuthzExtension.
 type AuthzExtensionIterator struct {
 	items    []*networkservicespb.AuthzExtension
@@ -2543,6 +2966,12 @@ func (it *AuthzExtensionIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *EndpointPolicyIterator) All() iter.Seq2[*networkservicespb.EndpointPolicy, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // EndpointPolicyIterator manages a stream of *networkservicespb.EndpointPolicy.
@@ -2592,6 +3021,12 @@ func (it *EndpointPolicyIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *GatewayIterator) All() iter.Seq2[*networkservicespb.Gateway, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // GatewayIterator manages a stream of *networkservicespb.Gateway.
 type GatewayIterator struct {
 	items    []*networkservicespb.Gateway
@@ -2637,6 +3072,12 @@ func (it *GatewayIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *GatewayRouteViewIterator) All() iter.Seq2[*networkservicespb.GatewayRouteView, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // GatewayRouteViewIterator manages a stream of *networkservicespb.GatewayRouteView.
@@ -2686,6 +3127,12 @@ func (it *GatewayRouteViewIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *GrpcRouteIterator) All() iter.Seq2[*networkservicespb.GrpcRoute, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // GrpcRouteIterator manages a stream of *networkservicespb.GrpcRoute.
 type GrpcRouteIterator struct {
 	items    []*networkservicespb.GrpcRoute
@@ -2731,6 +3178,12 @@ func (it *GrpcRouteIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *HttpRouteIterator) All() iter.Seq2[*networkservicespb.HttpRoute, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // HttpRouteIterator manages a stream of *networkservicespb.HttpRoute.
@@ -2780,6 +3233,65 @@ func (it *HttpRouteIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LbEdgeExtensionIterator) All() iter.Seq2[*networkservicespb.LbEdgeExtension, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
+// LbEdgeExtensionIterator manages a stream of *networkservicespb.LbEdgeExtension.
+type LbEdgeExtensionIterator struct {
+	items    []*networkservicespb.LbEdgeExtension
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*networkservicespb.LbEdgeExtension, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *LbEdgeExtensionIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *LbEdgeExtensionIterator) Next() (*networkservicespb.LbEdgeExtension, error) {
+	var item *networkservicespb.LbEdgeExtension
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *LbEdgeExtensionIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *LbEdgeExtensionIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LbRouteExtensionIterator) All() iter.Seq2[*networkservicespb.LbRouteExtension, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // LbRouteExtensionIterator manages a stream of *networkservicespb.LbRouteExtension.
 type LbRouteExtensionIterator struct {
 	items    []*networkservicespb.LbRouteExtension
@@ -2825,6 +3337,12 @@ func (it *LbRouteExtensionIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LbTrafficExtensionIterator) All() iter.Seq2[*networkservicespb.LbTrafficExtension, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // LbTrafficExtensionIterator manages a stream of *networkservicespb.LbTrafficExtension.
@@ -2874,6 +3392,12 @@ func (it *LbTrafficExtensionIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // LocationIterator manages a stream of *locationpb.Location.
 type LocationIterator struct {
 	items    []*locationpb.Location
@@ -2919,6 +3443,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *MeshIterator) All() iter.Seq2[*networkservicespb.Mesh, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // MeshIterator manages a stream of *networkservicespb.Mesh.
@@ -2968,6 +3498,12 @@ func (it *MeshIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *MeshRouteViewIterator) All() iter.Seq2[*networkservicespb.MeshRouteView, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // MeshRouteViewIterator manages a stream of *networkservicespb.MeshRouteView.
 type MeshRouteViewIterator struct {
 	items    []*networkservicespb.MeshRouteView
@@ -3013,6 +3549,12 @@ func (it *MeshRouteViewIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // OperationIterator manages a stream of *longrunningpb.Operation.
@@ -3062,6 +3604,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ServiceBindingIterator) All() iter.Seq2[*networkservicespb.ServiceBinding, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ServiceBindingIterator manages a stream of *networkservicespb.ServiceBinding.
 type ServiceBindingIterator struct {
 	items    []*networkservicespb.ServiceBinding
@@ -3107,6 +3655,12 @@ func (it *ServiceBindingIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ServiceLbPolicyIterator) All() iter.Seq2[*networkservicespb.ServiceLbPolicy, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ServiceLbPolicyIterator manages a stream of *networkservicespb.ServiceLbPolicy.
@@ -3156,6 +3710,12 @@ func (it *ServiceLbPolicyIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TcpRouteIterator) All() iter.Seq2[*networkservicespb.TcpRoute, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // TcpRouteIterator manages a stream of *networkservicespb.TcpRoute.
 type TcpRouteIterator struct {
 	items    []*networkservicespb.TcpRoute
@@ -3201,6 +3761,12 @@ func (it *TcpRouteIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TlsRouteIterator) All() iter.Seq2[*networkservicespb.TlsRoute, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // TlsRouteIterator manages a stream of *networkservicespb.TlsRoute.
@@ -3250,6 +3816,12 @@ func (it *TlsRouteIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *WasmPluginIterator) All() iter.Seq2[*networkservicespb.WasmPlugin, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // WasmPluginIterator manages a stream of *networkservicespb.WasmPlugin.
 type WasmPluginIterator struct {
 	items    []*networkservicespb.WasmPlugin
@@ -3295,6 +3867,12 @@ func (it *WasmPluginIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *WasmPluginVersionIterator) All() iter.Seq2[*networkservicespb.WasmPluginVersion, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // WasmPluginVersionIterator manages a stream of *networkservicespb.WasmPluginVersion.

@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import (
 
 	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -104,7 +105,7 @@ func defaultPacketMirroringsRESTCallOptions() *PacketMirroringsCallOptions {
 	}
 }
 
-// internalPacketMirroringsClient is an interface that defines the methods available from Google Compute Engine API.
+// internalPacketMirroringsClient is an interface that defines the methods available from Compute Engine API.
 type internalPacketMirroringsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -118,10 +119,12 @@ type internalPacketMirroringsClient interface {
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsPacketMirroringRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 }
 
-// PacketMirroringsClient is a client for interacting with Google Compute Engine API.
+// PacketMirroringsClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The PacketMirrorings API.
+//
+// This client uses PacketMirrorings version 2026-09-01.
 type PacketMirroringsClient struct {
 	// The internal transport-dependent client.
 	internalClient internalPacketMirroringsClient
@@ -132,7 +135,7 @@ type PacketMirroringsClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *PacketMirroringsClient) Close() error {
 	return c.internalClient.Close()
@@ -153,7 +156,10 @@ func (c *PacketMirroringsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves an aggregated list of packetMirrorings. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of packetMirrorings.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *PacketMirroringsClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListPacketMirroringsRequest, opts ...gax.CallOption) *PacketMirroringsScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -168,17 +174,22 @@ func (c *PacketMirroringsClient) Get(ctx context.Context, req *computepb.GetPack
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// Insert creates a PacketMirroring resource in the specified project and region using the data included in the request.
+// Insert creates a PacketMirroring resource in the specified project and region
+// using the data included in the request.
 func (c *PacketMirroringsClient) Insert(ctx context.Context, req *computepb.InsertPacketMirroringRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves a list of PacketMirroring resources available to the specified project and region.
+// List retrieves a list of PacketMirroring resources available to the specified
+// project and region.
 func (c *PacketMirroringsClient) List(ctx context.Context, req *computepb.ListPacketMirroringsRequest, opts ...gax.CallOption) *PacketMirroringIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// Patch patches the specified PacketMirroring resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+// Patch patches the specified PacketMirroring resource with the data included in
+// the request. This method supportsPATCH
+// semantics and usesJSON merge
+// patch format and processing rules.
 func (c *PacketMirroringsClient) Patch(ctx context.Context, req *computepb.PatchPacketMirroringRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
@@ -213,6 +224,16 @@ type packetMirroringsRESTClient struct {
 // The PacketMirrorings API.
 func NewPacketMirroringsRESTClient(ctx context.Context, opts ...option.ClientOption) (*PacketMirroringsClient, error) {
 	clientOpts := append(defaultPacketMirroringsRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "compute",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/compute/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "compute.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -226,6 +247,66 @@ func NewPacketMirroringsRESTClient(ctx context.Context, opts ...option.ClientOpt
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientMetrics(metrics))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientMetrics(metrics))
+		callOpts.Get = append(callOpts.Get, gax.WithClientMetrics(metrics))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientMetrics(metrics))
+		callOpts.List = append(callOpts.List, gax.WithClientMetrics(metrics))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientMetrics(metrics))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientTracing(tracing))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientTracing(tracing))
+		callOpts.Get = append(callOpts.Get, gax.WithClientTracing(tracing))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientTracing(tracing))
+		callOpts.List = append(callOpts.List, gax.WithClientTracing(tracing))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientLogging(logging))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientLogging(logging))
+		callOpts.Get = append(callOpts.Get, gax.WithClientLogging(logging))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientLogging(logging))
+		callOpts.List = append(callOpts.List, gax.WithClientLogging(logging))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientLogging(logging))
+	}
 
 	o := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -260,10 +341,11 @@ func (c *packetMirroringsRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
+		"x-goog-api-version", "2026-09-01",
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *packetMirroringsRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -281,10 +363,13 @@ func (c *packetMirroringsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves an aggregated list of packetMirrorings. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of packetMirrorings.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *packetMirroringsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListPacketMirroringsRequest, opts ...gax.CallOption) *PacketMirroringsScopedListPairIterator {
 	it := &PacketMirroringsScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListPacketMirroringsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]PacketMirroringsScopedListPair, string, error) {
 		resp := &computepb.PacketMirroringAggregatedList{}
@@ -317,9 +402,6 @@ func (c *packetMirroringsRESTClient) AggregatedList(ctx context.Context, req *co
 		}
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 		if req != nil && req.ServiceProjectNumber != nil {
 			params.Add("serviceProjectNumber", fmt.Sprintf("%v", req.GetServiceProjectNumber()))
@@ -401,6 +483,10 @@ func (c *packetMirroringsRESTClient) Delete(ctx context.Context, req *computepb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.PacketMirrorings/Delete")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/packetMirrorings/{packet_mirroring}")
+	}
 	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -454,6 +540,10 @@ func (c *packetMirroringsRESTClient) Get(ctx context.Context, req *computepb.Get
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.PacketMirrorings/Get")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/packetMirrorings/{packet_mirroring}")
+	}
 	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.PacketMirroring{}
@@ -485,7 +575,8 @@ func (c *packetMirroringsRESTClient) Get(ctx context.Context, req *computepb.Get
 	return resp, nil
 }
 
-// Insert creates a PacketMirroring resource in the specified project and region using the data included in the request.
+// Insert creates a PacketMirroring resource in the specified project and region
+// using the data included in the request.
 func (c *packetMirroringsRESTClient) Insert(ctx context.Context, req *computepb.InsertPacketMirroringRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetPacketMirroringResource()
@@ -513,6 +604,10 @@ func (c *packetMirroringsRESTClient) Insert(ctx context.Context, req *computepb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.PacketMirrorings/Insert")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/packetMirrorings")
+	}
 	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -552,10 +647,11 @@ func (c *packetMirroringsRESTClient) Insert(ctx context.Context, req *computepb.
 	return op, nil
 }
 
-// List retrieves a list of PacketMirroring resources available to the specified project and region.
+// List retrieves a list of PacketMirroring resources available to the specified
+// project and region.
 func (c *packetMirroringsRESTClient) List(ctx context.Context, req *computepb.ListPacketMirroringsRequest, opts ...gax.CallOption) *PacketMirroringIterator {
 	it := &PacketMirroringIterator{}
-	req = proto.Clone(req).(*computepb.ListPacketMirroringsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.PacketMirroring, string, error) {
 		resp := &computepb.PacketMirroringList{}
@@ -585,9 +681,6 @@ func (c *packetMirroringsRESTClient) List(ctx context.Context, req *computepb.Li
 		}
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -638,7 +731,10 @@ func (c *packetMirroringsRESTClient) List(ctx context.Context, req *computepb.Li
 	return it
 }
 
-// Patch patches the specified PacketMirroring resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+// Patch patches the specified PacketMirroring resource with the data included in
+// the request. This method supportsPATCH
+// semantics and usesJSON merge
+// patch format and processing rules.
 func (c *packetMirroringsRESTClient) Patch(ctx context.Context, req *computepb.PatchPacketMirroringRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetPacketMirroringResource()
@@ -666,6 +762,10 @@ func (c *packetMirroringsRESTClient) Patch(ctx context.Context, req *computepb.P
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.PacketMirrorings/Patch")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/packetMirrorings/{packet_mirroring}")
+	}
 	opts = append((*c.CallOptions).Patch[0:len((*c.CallOptions).Patch):len((*c.CallOptions).Patch)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -726,6 +826,10 @@ func (c *packetMirroringsRESTClient) TestIamPermissions(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.PacketMirrorings/TestIamPermissions")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/packetMirrorings/{resource}/testIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.TestPermissionsResponse{}

@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -31,6 +31,8 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -670,7 +672,7 @@ type AlloyDBAdminClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *AlloyDBAdminClient) Close() error {
 	return c.internalClient.Close()
@@ -1099,6 +1101,16 @@ type alloyDBAdminGRPCClient struct {
 // Service describing handlers for resources
 func NewAlloyDBAdminClient(ctx context.Context, opts ...option.ClientOption) (*AlloyDBAdminClient, error) {
 	clientOpts := defaultAlloyDBAdminGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "alloydb",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/alloydb/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "alloydb.googleapis.com",
+		}))
+	}
 	if newAlloyDBAdminClientHook != nil {
 		hookOpts, err := newAlloyDBAdminClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -1122,6 +1134,176 @@ func NewAlloyDBAdminClient(ctx context.Context, opts ...option.ClientOption) (*A
 		locationsClient:    locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "alloydb",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/alloydb/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "alloydb.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListClusters = append(client.CallOptions.ListClusters, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetCluster = append(client.CallOptions.GetCluster, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateCluster = append(client.CallOptions.CreateCluster, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateCluster = append(client.CallOptions.UpdateCluster, gax.WithClientMetrics(metrics))
+		client.CallOptions.ExportCluster = append(client.CallOptions.ExportCluster, gax.WithClientMetrics(metrics))
+		client.CallOptions.ImportCluster = append(client.CallOptions.ImportCluster, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpgradeCluster = append(client.CallOptions.UpgradeCluster, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteCluster = append(client.CallOptions.DeleteCluster, gax.WithClientMetrics(metrics))
+		client.CallOptions.PromoteCluster = append(client.CallOptions.PromoteCluster, gax.WithClientMetrics(metrics))
+		client.CallOptions.SwitchoverCluster = append(client.CallOptions.SwitchoverCluster, gax.WithClientMetrics(metrics))
+		client.CallOptions.RestoreCluster = append(client.CallOptions.RestoreCluster, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateSecondaryCluster = append(client.CallOptions.CreateSecondaryCluster, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListInstances = append(client.CallOptions.ListInstances, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetInstance = append(client.CallOptions.GetInstance, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateInstance = append(client.CallOptions.CreateInstance, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateSecondaryInstance = append(client.CallOptions.CreateSecondaryInstance, gax.WithClientMetrics(metrics))
+		client.CallOptions.BatchCreateInstances = append(client.CallOptions.BatchCreateInstances, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateInstance = append(client.CallOptions.UpdateInstance, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteInstance = append(client.CallOptions.DeleteInstance, gax.WithClientMetrics(metrics))
+		client.CallOptions.FailoverInstance = append(client.CallOptions.FailoverInstance, gax.WithClientMetrics(metrics))
+		client.CallOptions.InjectFault = append(client.CallOptions.InjectFault, gax.WithClientMetrics(metrics))
+		client.CallOptions.RestartInstance = append(client.CallOptions.RestartInstance, gax.WithClientMetrics(metrics))
+		client.CallOptions.ExecuteSql = append(client.CallOptions.ExecuteSql, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListBackups = append(client.CallOptions.ListBackups, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetBackup = append(client.CallOptions.GetBackup, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateBackup = append(client.CallOptions.CreateBackup, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateBackup = append(client.CallOptions.UpdateBackup, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteBackup = append(client.CallOptions.DeleteBackup, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListSupportedDatabaseFlags = append(client.CallOptions.ListSupportedDatabaseFlags, gax.WithClientMetrics(metrics))
+		client.CallOptions.GenerateClientCertificate = append(client.CallOptions.GenerateClientCertificate, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetConnectionInfo = append(client.CallOptions.GetConnectionInfo, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListUsers = append(client.CallOptions.ListUsers, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetUser = append(client.CallOptions.GetUser, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateUser = append(client.CallOptions.CreateUser, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateUser = append(client.CallOptions.UpdateUser, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteUser = append(client.CallOptions.DeleteUser, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListDatabases = append(client.CallOptions.ListDatabases, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateDatabase = append(client.CallOptions.CreateDatabase, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "alloydb",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/alloydb/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "alloydb.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListClusters = append(client.CallOptions.ListClusters, gax.WithClientTracing(tracing))
+		client.CallOptions.GetCluster = append(client.CallOptions.GetCluster, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateCluster = append(client.CallOptions.CreateCluster, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateCluster = append(client.CallOptions.UpdateCluster, gax.WithClientTracing(tracing))
+		client.CallOptions.ExportCluster = append(client.CallOptions.ExportCluster, gax.WithClientTracing(tracing))
+		client.CallOptions.ImportCluster = append(client.CallOptions.ImportCluster, gax.WithClientTracing(tracing))
+		client.CallOptions.UpgradeCluster = append(client.CallOptions.UpgradeCluster, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteCluster = append(client.CallOptions.DeleteCluster, gax.WithClientTracing(tracing))
+		client.CallOptions.PromoteCluster = append(client.CallOptions.PromoteCluster, gax.WithClientTracing(tracing))
+		client.CallOptions.SwitchoverCluster = append(client.CallOptions.SwitchoverCluster, gax.WithClientTracing(tracing))
+		client.CallOptions.RestoreCluster = append(client.CallOptions.RestoreCluster, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateSecondaryCluster = append(client.CallOptions.CreateSecondaryCluster, gax.WithClientTracing(tracing))
+		client.CallOptions.ListInstances = append(client.CallOptions.ListInstances, gax.WithClientTracing(tracing))
+		client.CallOptions.GetInstance = append(client.CallOptions.GetInstance, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateInstance = append(client.CallOptions.CreateInstance, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateSecondaryInstance = append(client.CallOptions.CreateSecondaryInstance, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchCreateInstances = append(client.CallOptions.BatchCreateInstances, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateInstance = append(client.CallOptions.UpdateInstance, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteInstance = append(client.CallOptions.DeleteInstance, gax.WithClientTracing(tracing))
+		client.CallOptions.FailoverInstance = append(client.CallOptions.FailoverInstance, gax.WithClientTracing(tracing))
+		client.CallOptions.InjectFault = append(client.CallOptions.InjectFault, gax.WithClientTracing(tracing))
+		client.CallOptions.RestartInstance = append(client.CallOptions.RestartInstance, gax.WithClientTracing(tracing))
+		client.CallOptions.ExecuteSql = append(client.CallOptions.ExecuteSql, gax.WithClientTracing(tracing))
+		client.CallOptions.ListBackups = append(client.CallOptions.ListBackups, gax.WithClientTracing(tracing))
+		client.CallOptions.GetBackup = append(client.CallOptions.GetBackup, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateBackup = append(client.CallOptions.CreateBackup, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateBackup = append(client.CallOptions.UpdateBackup, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteBackup = append(client.CallOptions.DeleteBackup, gax.WithClientTracing(tracing))
+		client.CallOptions.ListSupportedDatabaseFlags = append(client.CallOptions.ListSupportedDatabaseFlags, gax.WithClientTracing(tracing))
+		client.CallOptions.GenerateClientCertificate = append(client.CallOptions.GenerateClientCertificate, gax.WithClientTracing(tracing))
+		client.CallOptions.GetConnectionInfo = append(client.CallOptions.GetConnectionInfo, gax.WithClientTracing(tracing))
+		client.CallOptions.ListUsers = append(client.CallOptions.ListUsers, gax.WithClientTracing(tracing))
+		client.CallOptions.GetUser = append(client.CallOptions.GetUser, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateUser = append(client.CallOptions.CreateUser, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateUser = append(client.CallOptions.UpdateUser, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteUser = append(client.CallOptions.DeleteUser, gax.WithClientTracing(tracing))
+		client.CallOptions.ListDatabases = append(client.CallOptions.ListDatabases, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateDatabase = append(client.CallOptions.CreateDatabase, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "alloydb",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/alloydb/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "alloydb.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListClusters = append(client.CallOptions.ListClusters, gax.WithClientLogging(logging))
+		client.CallOptions.GetCluster = append(client.CallOptions.GetCluster, gax.WithClientLogging(logging))
+		client.CallOptions.CreateCluster = append(client.CallOptions.CreateCluster, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateCluster = append(client.CallOptions.UpdateCluster, gax.WithClientLogging(logging))
+		client.CallOptions.ExportCluster = append(client.CallOptions.ExportCluster, gax.WithClientLogging(logging))
+		client.CallOptions.ImportCluster = append(client.CallOptions.ImportCluster, gax.WithClientLogging(logging))
+		client.CallOptions.UpgradeCluster = append(client.CallOptions.UpgradeCluster, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteCluster = append(client.CallOptions.DeleteCluster, gax.WithClientLogging(logging))
+		client.CallOptions.PromoteCluster = append(client.CallOptions.PromoteCluster, gax.WithClientLogging(logging))
+		client.CallOptions.SwitchoverCluster = append(client.CallOptions.SwitchoverCluster, gax.WithClientLogging(logging))
+		client.CallOptions.RestoreCluster = append(client.CallOptions.RestoreCluster, gax.WithClientLogging(logging))
+		client.CallOptions.CreateSecondaryCluster = append(client.CallOptions.CreateSecondaryCluster, gax.WithClientLogging(logging))
+		client.CallOptions.ListInstances = append(client.CallOptions.ListInstances, gax.WithClientLogging(logging))
+		client.CallOptions.GetInstance = append(client.CallOptions.GetInstance, gax.WithClientLogging(logging))
+		client.CallOptions.CreateInstance = append(client.CallOptions.CreateInstance, gax.WithClientLogging(logging))
+		client.CallOptions.CreateSecondaryInstance = append(client.CallOptions.CreateSecondaryInstance, gax.WithClientLogging(logging))
+		client.CallOptions.BatchCreateInstances = append(client.CallOptions.BatchCreateInstances, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateInstance = append(client.CallOptions.UpdateInstance, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteInstance = append(client.CallOptions.DeleteInstance, gax.WithClientLogging(logging))
+		client.CallOptions.FailoverInstance = append(client.CallOptions.FailoverInstance, gax.WithClientLogging(logging))
+		client.CallOptions.InjectFault = append(client.CallOptions.InjectFault, gax.WithClientLogging(logging))
+		client.CallOptions.RestartInstance = append(client.CallOptions.RestartInstance, gax.WithClientLogging(logging))
+		client.CallOptions.ExecuteSql = append(client.CallOptions.ExecuteSql, gax.WithClientLogging(logging))
+		client.CallOptions.ListBackups = append(client.CallOptions.ListBackups, gax.WithClientLogging(logging))
+		client.CallOptions.GetBackup = append(client.CallOptions.GetBackup, gax.WithClientLogging(logging))
+		client.CallOptions.CreateBackup = append(client.CallOptions.CreateBackup, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateBackup = append(client.CallOptions.UpdateBackup, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteBackup = append(client.CallOptions.DeleteBackup, gax.WithClientLogging(logging))
+		client.CallOptions.ListSupportedDatabaseFlags = append(client.CallOptions.ListSupportedDatabaseFlags, gax.WithClientLogging(logging))
+		client.CallOptions.GenerateClientCertificate = append(client.CallOptions.GenerateClientCertificate, gax.WithClientLogging(logging))
+		client.CallOptions.GetConnectionInfo = append(client.CallOptions.GetConnectionInfo, gax.WithClientLogging(logging))
+		client.CallOptions.ListUsers = append(client.CallOptions.ListUsers, gax.WithClientLogging(logging))
+		client.CallOptions.GetUser = append(client.CallOptions.GetUser, gax.WithClientLogging(logging))
+		client.CallOptions.CreateUser = append(client.CallOptions.CreateUser, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateUser = append(client.CallOptions.UpdateUser, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteUser = append(client.CallOptions.DeleteUser, gax.WithClientLogging(logging))
+		client.CallOptions.ListDatabases = append(client.CallOptions.ListDatabases, gax.WithClientLogging(logging))
+		client.CallOptions.CreateDatabase = append(client.CallOptions.CreateDatabase, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -1158,7 +1340,7 @@ func (c *alloyDBAdminGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *alloyDBAdminGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -1191,6 +1373,16 @@ type alloyDBAdminRESTClient struct {
 // Service describing handlers for resources
 func NewAlloyDBAdminRESTClient(ctx context.Context, opts ...option.ClientOption) (*AlloyDBAdminClient, error) {
 	clientOpts := append(defaultAlloyDBAdminRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "alloydb",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/alloydb/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "alloydb.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -1204,6 +1396,177 @@ func NewAlloyDBAdminRESTClient(ctx context.Context, opts ...option.ClientOption)
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "alloydb",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/alloydb/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "alloydb.googleapis.com",
+			}),
+		)
+
+		callOpts.ListClusters = append(callOpts.ListClusters, gax.WithClientMetrics(metrics))
+		callOpts.GetCluster = append(callOpts.GetCluster, gax.WithClientMetrics(metrics))
+		callOpts.CreateCluster = append(callOpts.CreateCluster, gax.WithClientMetrics(metrics))
+		callOpts.UpdateCluster = append(callOpts.UpdateCluster, gax.WithClientMetrics(metrics))
+		callOpts.ExportCluster = append(callOpts.ExportCluster, gax.WithClientMetrics(metrics))
+		callOpts.ImportCluster = append(callOpts.ImportCluster, gax.WithClientMetrics(metrics))
+		callOpts.UpgradeCluster = append(callOpts.UpgradeCluster, gax.WithClientMetrics(metrics))
+		callOpts.DeleteCluster = append(callOpts.DeleteCluster, gax.WithClientMetrics(metrics))
+		callOpts.PromoteCluster = append(callOpts.PromoteCluster, gax.WithClientMetrics(metrics))
+		callOpts.SwitchoverCluster = append(callOpts.SwitchoverCluster, gax.WithClientMetrics(metrics))
+		callOpts.RestoreCluster = append(callOpts.RestoreCluster, gax.WithClientMetrics(metrics))
+		callOpts.CreateSecondaryCluster = append(callOpts.CreateSecondaryCluster, gax.WithClientMetrics(metrics))
+		callOpts.ListInstances = append(callOpts.ListInstances, gax.WithClientMetrics(metrics))
+		callOpts.GetInstance = append(callOpts.GetInstance, gax.WithClientMetrics(metrics))
+		callOpts.CreateInstance = append(callOpts.CreateInstance, gax.WithClientMetrics(metrics))
+		callOpts.CreateSecondaryInstance = append(callOpts.CreateSecondaryInstance, gax.WithClientMetrics(metrics))
+		callOpts.BatchCreateInstances = append(callOpts.BatchCreateInstances, gax.WithClientMetrics(metrics))
+		callOpts.UpdateInstance = append(callOpts.UpdateInstance, gax.WithClientMetrics(metrics))
+		callOpts.DeleteInstance = append(callOpts.DeleteInstance, gax.WithClientMetrics(metrics))
+		callOpts.FailoverInstance = append(callOpts.FailoverInstance, gax.WithClientMetrics(metrics))
+		callOpts.InjectFault = append(callOpts.InjectFault, gax.WithClientMetrics(metrics))
+		callOpts.RestartInstance = append(callOpts.RestartInstance, gax.WithClientMetrics(metrics))
+		callOpts.ExecuteSql = append(callOpts.ExecuteSql, gax.WithClientMetrics(metrics))
+		callOpts.ListBackups = append(callOpts.ListBackups, gax.WithClientMetrics(metrics))
+		callOpts.GetBackup = append(callOpts.GetBackup, gax.WithClientMetrics(metrics))
+		callOpts.CreateBackup = append(callOpts.CreateBackup, gax.WithClientMetrics(metrics))
+		callOpts.UpdateBackup = append(callOpts.UpdateBackup, gax.WithClientMetrics(metrics))
+		callOpts.DeleteBackup = append(callOpts.DeleteBackup, gax.WithClientMetrics(metrics))
+		callOpts.ListSupportedDatabaseFlags = append(callOpts.ListSupportedDatabaseFlags, gax.WithClientMetrics(metrics))
+		callOpts.GenerateClientCertificate = append(callOpts.GenerateClientCertificate, gax.WithClientMetrics(metrics))
+		callOpts.GetConnectionInfo = append(callOpts.GetConnectionInfo, gax.WithClientMetrics(metrics))
+		callOpts.ListUsers = append(callOpts.ListUsers, gax.WithClientMetrics(metrics))
+		callOpts.GetUser = append(callOpts.GetUser, gax.WithClientMetrics(metrics))
+		callOpts.CreateUser = append(callOpts.CreateUser, gax.WithClientMetrics(metrics))
+		callOpts.UpdateUser = append(callOpts.UpdateUser, gax.WithClientMetrics(metrics))
+		callOpts.DeleteUser = append(callOpts.DeleteUser, gax.WithClientMetrics(metrics))
+		callOpts.ListDatabases = append(callOpts.ListDatabases, gax.WithClientMetrics(metrics))
+		callOpts.CreateDatabase = append(callOpts.CreateDatabase, gax.WithClientMetrics(metrics))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "alloydb",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/alloydb/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "alloydb.googleapis.com",
+			}),
+		)
+
+		callOpts.ListClusters = append(callOpts.ListClusters, gax.WithClientTracing(tracing))
+		callOpts.GetCluster = append(callOpts.GetCluster, gax.WithClientTracing(tracing))
+		callOpts.CreateCluster = append(callOpts.CreateCluster, gax.WithClientTracing(tracing))
+		callOpts.UpdateCluster = append(callOpts.UpdateCluster, gax.WithClientTracing(tracing))
+		callOpts.ExportCluster = append(callOpts.ExportCluster, gax.WithClientTracing(tracing))
+		callOpts.ImportCluster = append(callOpts.ImportCluster, gax.WithClientTracing(tracing))
+		callOpts.UpgradeCluster = append(callOpts.UpgradeCluster, gax.WithClientTracing(tracing))
+		callOpts.DeleteCluster = append(callOpts.DeleteCluster, gax.WithClientTracing(tracing))
+		callOpts.PromoteCluster = append(callOpts.PromoteCluster, gax.WithClientTracing(tracing))
+		callOpts.SwitchoverCluster = append(callOpts.SwitchoverCluster, gax.WithClientTracing(tracing))
+		callOpts.RestoreCluster = append(callOpts.RestoreCluster, gax.WithClientTracing(tracing))
+		callOpts.CreateSecondaryCluster = append(callOpts.CreateSecondaryCluster, gax.WithClientTracing(tracing))
+		callOpts.ListInstances = append(callOpts.ListInstances, gax.WithClientTracing(tracing))
+		callOpts.GetInstance = append(callOpts.GetInstance, gax.WithClientTracing(tracing))
+		callOpts.CreateInstance = append(callOpts.CreateInstance, gax.WithClientTracing(tracing))
+		callOpts.CreateSecondaryInstance = append(callOpts.CreateSecondaryInstance, gax.WithClientTracing(tracing))
+		callOpts.BatchCreateInstances = append(callOpts.BatchCreateInstances, gax.WithClientTracing(tracing))
+		callOpts.UpdateInstance = append(callOpts.UpdateInstance, gax.WithClientTracing(tracing))
+		callOpts.DeleteInstance = append(callOpts.DeleteInstance, gax.WithClientTracing(tracing))
+		callOpts.FailoverInstance = append(callOpts.FailoverInstance, gax.WithClientTracing(tracing))
+		callOpts.InjectFault = append(callOpts.InjectFault, gax.WithClientTracing(tracing))
+		callOpts.RestartInstance = append(callOpts.RestartInstance, gax.WithClientTracing(tracing))
+		callOpts.ExecuteSql = append(callOpts.ExecuteSql, gax.WithClientTracing(tracing))
+		callOpts.ListBackups = append(callOpts.ListBackups, gax.WithClientTracing(tracing))
+		callOpts.GetBackup = append(callOpts.GetBackup, gax.WithClientTracing(tracing))
+		callOpts.CreateBackup = append(callOpts.CreateBackup, gax.WithClientTracing(tracing))
+		callOpts.UpdateBackup = append(callOpts.UpdateBackup, gax.WithClientTracing(tracing))
+		callOpts.DeleteBackup = append(callOpts.DeleteBackup, gax.WithClientTracing(tracing))
+		callOpts.ListSupportedDatabaseFlags = append(callOpts.ListSupportedDatabaseFlags, gax.WithClientTracing(tracing))
+		callOpts.GenerateClientCertificate = append(callOpts.GenerateClientCertificate, gax.WithClientTracing(tracing))
+		callOpts.GetConnectionInfo = append(callOpts.GetConnectionInfo, gax.WithClientTracing(tracing))
+		callOpts.ListUsers = append(callOpts.ListUsers, gax.WithClientTracing(tracing))
+		callOpts.GetUser = append(callOpts.GetUser, gax.WithClientTracing(tracing))
+		callOpts.CreateUser = append(callOpts.CreateUser, gax.WithClientTracing(tracing))
+		callOpts.UpdateUser = append(callOpts.UpdateUser, gax.WithClientTracing(tracing))
+		callOpts.DeleteUser = append(callOpts.DeleteUser, gax.WithClientTracing(tracing))
+		callOpts.ListDatabases = append(callOpts.ListDatabases, gax.WithClientTracing(tracing))
+		callOpts.CreateDatabase = append(callOpts.CreateDatabase, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "alloydb",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/alloydb/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "alloydb.googleapis.com",
+			}),
+		)
+
+		callOpts.ListClusters = append(callOpts.ListClusters, gax.WithClientLogging(logging))
+		callOpts.GetCluster = append(callOpts.GetCluster, gax.WithClientLogging(logging))
+		callOpts.CreateCluster = append(callOpts.CreateCluster, gax.WithClientLogging(logging))
+		callOpts.UpdateCluster = append(callOpts.UpdateCluster, gax.WithClientLogging(logging))
+		callOpts.ExportCluster = append(callOpts.ExportCluster, gax.WithClientLogging(logging))
+		callOpts.ImportCluster = append(callOpts.ImportCluster, gax.WithClientLogging(logging))
+		callOpts.UpgradeCluster = append(callOpts.UpgradeCluster, gax.WithClientLogging(logging))
+		callOpts.DeleteCluster = append(callOpts.DeleteCluster, gax.WithClientLogging(logging))
+		callOpts.PromoteCluster = append(callOpts.PromoteCluster, gax.WithClientLogging(logging))
+		callOpts.SwitchoverCluster = append(callOpts.SwitchoverCluster, gax.WithClientLogging(logging))
+		callOpts.RestoreCluster = append(callOpts.RestoreCluster, gax.WithClientLogging(logging))
+		callOpts.CreateSecondaryCluster = append(callOpts.CreateSecondaryCluster, gax.WithClientLogging(logging))
+		callOpts.ListInstances = append(callOpts.ListInstances, gax.WithClientLogging(logging))
+		callOpts.GetInstance = append(callOpts.GetInstance, gax.WithClientLogging(logging))
+		callOpts.CreateInstance = append(callOpts.CreateInstance, gax.WithClientLogging(logging))
+		callOpts.CreateSecondaryInstance = append(callOpts.CreateSecondaryInstance, gax.WithClientLogging(logging))
+		callOpts.BatchCreateInstances = append(callOpts.BatchCreateInstances, gax.WithClientLogging(logging))
+		callOpts.UpdateInstance = append(callOpts.UpdateInstance, gax.WithClientLogging(logging))
+		callOpts.DeleteInstance = append(callOpts.DeleteInstance, gax.WithClientLogging(logging))
+		callOpts.FailoverInstance = append(callOpts.FailoverInstance, gax.WithClientLogging(logging))
+		callOpts.InjectFault = append(callOpts.InjectFault, gax.WithClientLogging(logging))
+		callOpts.RestartInstance = append(callOpts.RestartInstance, gax.WithClientLogging(logging))
+		callOpts.ExecuteSql = append(callOpts.ExecuteSql, gax.WithClientLogging(logging))
+		callOpts.ListBackups = append(callOpts.ListBackups, gax.WithClientLogging(logging))
+		callOpts.GetBackup = append(callOpts.GetBackup, gax.WithClientLogging(logging))
+		callOpts.CreateBackup = append(callOpts.CreateBackup, gax.WithClientLogging(logging))
+		callOpts.UpdateBackup = append(callOpts.UpdateBackup, gax.WithClientLogging(logging))
+		callOpts.DeleteBackup = append(callOpts.DeleteBackup, gax.WithClientLogging(logging))
+		callOpts.ListSupportedDatabaseFlags = append(callOpts.ListSupportedDatabaseFlags, gax.WithClientLogging(logging))
+		callOpts.GenerateClientCertificate = append(callOpts.GenerateClientCertificate, gax.WithClientLogging(logging))
+		callOpts.GetConnectionInfo = append(callOpts.GetConnectionInfo, gax.WithClientLogging(logging))
+		callOpts.ListUsers = append(callOpts.ListUsers, gax.WithClientLogging(logging))
+		callOpts.GetUser = append(callOpts.GetUser, gax.WithClientLogging(logging))
+		callOpts.CreateUser = append(callOpts.CreateUser, gax.WithClientLogging(logging))
+		callOpts.UpdateUser = append(callOpts.UpdateUser, gax.WithClientLogging(logging))
+		callOpts.DeleteUser = append(callOpts.DeleteUser, gax.WithClientLogging(logging))
+		callOpts.ListDatabases = append(callOpts.ListDatabases, gax.WithClientLogging(logging))
+		callOpts.CreateDatabase = append(callOpts.CreateDatabase, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -1241,7 +1604,7 @@ func (c *alloyDBAdminRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *alloyDBAdminRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -1260,9 +1623,12 @@ func (c *alloyDBAdminGRPCClient) ListClusters(ctx context.Context, req *alloydbp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/ListClusters")
+	}
 	opts = append((*c.CallOptions).ListClusters[0:len((*c.CallOptions).ListClusters):len((*c.CallOptions).ListClusters)], opts...)
 	it := &ClusterIterator{}
-	req = proto.Clone(req).(*alloydbpb.ListClustersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*alloydbpb.Cluster, string, error) {
 		resp := &alloydbpb.ListClustersResponse{}
 		if pageToken != "" {
@@ -1306,6 +1672,9 @@ func (c *alloyDBAdminGRPCClient) GetCluster(ctx context.Context, req *alloydbpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/GetCluster")
+	}
 	opts = append((*c.CallOptions).GetCluster[0:len((*c.CallOptions).GetCluster):len((*c.CallOptions).GetCluster)], opts...)
 	var resp *alloydbpb.Cluster
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1324,6 +1693,9 @@ func (c *alloyDBAdminGRPCClient) CreateCluster(ctx context.Context, req *alloydb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/CreateCluster")
+	}
 	opts = append((*c.CallOptions).CreateCluster[0:len((*c.CallOptions).CreateCluster):len((*c.CallOptions).CreateCluster)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1334,8 +1706,12 @@ func (c *alloyDBAdminGRPCClient) CreateCluster(ctx context.Context, req *alloydb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.CreateClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1344,6 +1720,9 @@ func (c *alloyDBAdminGRPCClient) UpdateCluster(ctx context.Context, req *alloydb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/UpdateCluster")
+	}
 	opts = append((*c.CallOptions).UpdateCluster[0:len((*c.CallOptions).UpdateCluster):len((*c.CallOptions).UpdateCluster)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1354,8 +1733,12 @@ func (c *alloyDBAdminGRPCClient) UpdateCluster(ctx context.Context, req *alloydb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.UpdateClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1364,6 +1747,9 @@ func (c *alloyDBAdminGRPCClient) ExportCluster(ctx context.Context, req *alloydb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/ExportCluster")
+	}
 	opts = append((*c.CallOptions).ExportCluster[0:len((*c.CallOptions).ExportCluster):len((*c.CallOptions).ExportCluster)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1374,8 +1760,12 @@ func (c *alloyDBAdminGRPCClient) ExportCluster(ctx context.Context, req *alloydb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.ExportClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1384,6 +1774,9 @@ func (c *alloyDBAdminGRPCClient) ImportCluster(ctx context.Context, req *alloydb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/ImportCluster")
+	}
 	opts = append((*c.CallOptions).ImportCluster[0:len((*c.CallOptions).ImportCluster):len((*c.CallOptions).ImportCluster)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1394,8 +1787,12 @@ func (c *alloyDBAdminGRPCClient) ImportCluster(ctx context.Context, req *alloydb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.ImportClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1404,6 +1801,9 @@ func (c *alloyDBAdminGRPCClient) UpgradeCluster(ctx context.Context, req *alloyd
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/UpgradeCluster")
+	}
 	opts = append((*c.CallOptions).UpgradeCluster[0:len((*c.CallOptions).UpgradeCluster):len((*c.CallOptions).UpgradeCluster)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1414,8 +1814,12 @@ func (c *alloyDBAdminGRPCClient) UpgradeCluster(ctx context.Context, req *alloyd
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.UpgradeClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpgradeClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1424,6 +1828,9 @@ func (c *alloyDBAdminGRPCClient) DeleteCluster(ctx context.Context, req *alloydb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/DeleteCluster")
+	}
 	opts = append((*c.CallOptions).DeleteCluster[0:len((*c.CallOptions).DeleteCluster):len((*c.CallOptions).DeleteCluster)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1434,8 +1841,12 @@ func (c *alloyDBAdminGRPCClient) DeleteCluster(ctx context.Context, req *alloydb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.DeleteClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1444,6 +1855,9 @@ func (c *alloyDBAdminGRPCClient) PromoteCluster(ctx context.Context, req *alloyd
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/PromoteCluster")
+	}
 	opts = append((*c.CallOptions).PromoteCluster[0:len((*c.CallOptions).PromoteCluster):len((*c.CallOptions).PromoteCluster)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1454,8 +1868,12 @@ func (c *alloyDBAdminGRPCClient) PromoteCluster(ctx context.Context, req *alloyd
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.PromoteClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &PromoteClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1464,6 +1882,9 @@ func (c *alloyDBAdminGRPCClient) SwitchoverCluster(ctx context.Context, req *all
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/SwitchoverCluster")
+	}
 	opts = append((*c.CallOptions).SwitchoverCluster[0:len((*c.CallOptions).SwitchoverCluster):len((*c.CallOptions).SwitchoverCluster)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1474,8 +1895,12 @@ func (c *alloyDBAdminGRPCClient) SwitchoverCluster(ctx context.Context, req *all
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.SwitchoverClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &SwitchoverClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1484,6 +1909,9 @@ func (c *alloyDBAdminGRPCClient) RestoreCluster(ctx context.Context, req *alloyd
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/RestoreCluster")
+	}
 	opts = append((*c.CallOptions).RestoreCluster[0:len((*c.CallOptions).RestoreCluster):len((*c.CallOptions).RestoreCluster)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1494,8 +1922,12 @@ func (c *alloyDBAdminGRPCClient) RestoreCluster(ctx context.Context, req *alloyd
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.RestoreClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RestoreClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1504,6 +1936,9 @@ func (c *alloyDBAdminGRPCClient) CreateSecondaryCluster(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/CreateSecondaryCluster")
+	}
 	opts = append((*c.CallOptions).CreateSecondaryCluster[0:len((*c.CallOptions).CreateSecondaryCluster):len((*c.CallOptions).CreateSecondaryCluster)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1514,8 +1949,12 @@ func (c *alloyDBAdminGRPCClient) CreateSecondaryCluster(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.CreateSecondaryClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateSecondaryClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1524,9 +1963,12 @@ func (c *alloyDBAdminGRPCClient) ListInstances(ctx context.Context, req *alloydb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/ListInstances")
+	}
 	opts = append((*c.CallOptions).ListInstances[0:len((*c.CallOptions).ListInstances):len((*c.CallOptions).ListInstances)], opts...)
 	it := &InstanceIterator{}
-	req = proto.Clone(req).(*alloydbpb.ListInstancesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*alloydbpb.Instance, string, error) {
 		resp := &alloydbpb.ListInstancesResponse{}
 		if pageToken != "" {
@@ -1570,6 +2012,9 @@ func (c *alloyDBAdminGRPCClient) GetInstance(ctx context.Context, req *alloydbpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/GetInstance")
+	}
 	opts = append((*c.CallOptions).GetInstance[0:len((*c.CallOptions).GetInstance):len((*c.CallOptions).GetInstance)], opts...)
 	var resp *alloydbpb.Instance
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1588,6 +2033,9 @@ func (c *alloyDBAdminGRPCClient) CreateInstance(ctx context.Context, req *alloyd
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/CreateInstance")
+	}
 	opts = append((*c.CallOptions).CreateInstance[0:len((*c.CallOptions).CreateInstance):len((*c.CallOptions).CreateInstance)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1598,8 +2046,12 @@ func (c *alloyDBAdminGRPCClient) CreateInstance(ctx context.Context, req *alloyd
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.CreateInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1608,6 +2060,9 @@ func (c *alloyDBAdminGRPCClient) CreateSecondaryInstance(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/CreateSecondaryInstance")
+	}
 	opts = append((*c.CallOptions).CreateSecondaryInstance[0:len((*c.CallOptions).CreateSecondaryInstance):len((*c.CallOptions).CreateSecondaryInstance)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1618,8 +2073,12 @@ func (c *alloyDBAdminGRPCClient) CreateSecondaryInstance(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.CreateSecondaryInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateSecondaryInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1628,6 +2087,9 @@ func (c *alloyDBAdminGRPCClient) BatchCreateInstances(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/BatchCreateInstances")
+	}
 	opts = append((*c.CallOptions).BatchCreateInstances[0:len((*c.CallOptions).BatchCreateInstances):len((*c.CallOptions).BatchCreateInstances)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1638,8 +2100,12 @@ func (c *alloyDBAdminGRPCClient) BatchCreateInstances(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.BatchCreateInstancesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &BatchCreateInstancesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1648,6 +2114,9 @@ func (c *alloyDBAdminGRPCClient) UpdateInstance(ctx context.Context, req *alloyd
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/UpdateInstance")
+	}
 	opts = append((*c.CallOptions).UpdateInstance[0:len((*c.CallOptions).UpdateInstance):len((*c.CallOptions).UpdateInstance)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1658,8 +2127,12 @@ func (c *alloyDBAdminGRPCClient) UpdateInstance(ctx context.Context, req *alloyd
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.UpdateInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1668,6 +2141,9 @@ func (c *alloyDBAdminGRPCClient) DeleteInstance(ctx context.Context, req *alloyd
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/DeleteInstance")
+	}
 	opts = append((*c.CallOptions).DeleteInstance[0:len((*c.CallOptions).DeleteInstance):len((*c.CallOptions).DeleteInstance)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1678,8 +2154,12 @@ func (c *alloyDBAdminGRPCClient) DeleteInstance(ctx context.Context, req *alloyd
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.DeleteInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1688,6 +2168,9 @@ func (c *alloyDBAdminGRPCClient) FailoverInstance(ctx context.Context, req *allo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/FailoverInstance")
+	}
 	opts = append((*c.CallOptions).FailoverInstance[0:len((*c.CallOptions).FailoverInstance):len((*c.CallOptions).FailoverInstance)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1698,8 +2181,12 @@ func (c *alloyDBAdminGRPCClient) FailoverInstance(ctx context.Context, req *allo
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.FailoverInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &FailoverInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1708,6 +2195,9 @@ func (c *alloyDBAdminGRPCClient) InjectFault(ctx context.Context, req *alloydbpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/InjectFault")
+	}
 	opts = append((*c.CallOptions).InjectFault[0:len((*c.CallOptions).InjectFault):len((*c.CallOptions).InjectFault)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1718,8 +2208,12 @@ func (c *alloyDBAdminGRPCClient) InjectFault(ctx context.Context, req *alloydbpb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.InjectFaultOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &InjectFaultOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1728,6 +2222,9 @@ func (c *alloyDBAdminGRPCClient) RestartInstance(ctx context.Context, req *alloy
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/RestartInstance")
+	}
 	opts = append((*c.CallOptions).RestartInstance[0:len((*c.CallOptions).RestartInstance):len((*c.CallOptions).RestartInstance)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1738,8 +2235,12 @@ func (c *alloyDBAdminGRPCClient) RestartInstance(ctx context.Context, req *alloy
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.RestartInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RestartInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1748,6 +2249,9 @@ func (c *alloyDBAdminGRPCClient) ExecuteSql(ctx context.Context, req *alloydbpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/ExecuteSql")
+	}
 	opts = append((*c.CallOptions).ExecuteSql[0:len((*c.CallOptions).ExecuteSql):len((*c.CallOptions).ExecuteSql)], opts...)
 	var resp *alloydbpb.ExecuteSqlResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1766,9 +2270,12 @@ func (c *alloyDBAdminGRPCClient) ListBackups(ctx context.Context, req *alloydbpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/ListBackups")
+	}
 	opts = append((*c.CallOptions).ListBackups[0:len((*c.CallOptions).ListBackups):len((*c.CallOptions).ListBackups)], opts...)
 	it := &BackupIterator{}
-	req = proto.Clone(req).(*alloydbpb.ListBackupsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*alloydbpb.Backup, string, error) {
 		resp := &alloydbpb.ListBackupsResponse{}
 		if pageToken != "" {
@@ -1812,6 +2319,9 @@ func (c *alloyDBAdminGRPCClient) GetBackup(ctx context.Context, req *alloydbpb.G
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/GetBackup")
+	}
 	opts = append((*c.CallOptions).GetBackup[0:len((*c.CallOptions).GetBackup):len((*c.CallOptions).GetBackup)], opts...)
 	var resp *alloydbpb.Backup
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1830,6 +2340,9 @@ func (c *alloyDBAdminGRPCClient) CreateBackup(ctx context.Context, req *alloydbp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/CreateBackup")
+	}
 	opts = append((*c.CallOptions).CreateBackup[0:len((*c.CallOptions).CreateBackup):len((*c.CallOptions).CreateBackup)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1840,8 +2353,12 @@ func (c *alloyDBAdminGRPCClient) CreateBackup(ctx context.Context, req *alloydbp
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.CreateBackupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateBackupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1850,6 +2367,9 @@ func (c *alloyDBAdminGRPCClient) UpdateBackup(ctx context.Context, req *alloydbp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/UpdateBackup")
+	}
 	opts = append((*c.CallOptions).UpdateBackup[0:len((*c.CallOptions).UpdateBackup):len((*c.CallOptions).UpdateBackup)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1860,8 +2380,12 @@ func (c *alloyDBAdminGRPCClient) UpdateBackup(ctx context.Context, req *alloydbp
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.UpdateBackupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateBackupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1870,6 +2394,9 @@ func (c *alloyDBAdminGRPCClient) DeleteBackup(ctx context.Context, req *alloydbp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/DeleteBackup")
+	}
 	opts = append((*c.CallOptions).DeleteBackup[0:len((*c.CallOptions).DeleteBackup):len((*c.CallOptions).DeleteBackup)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1880,8 +2407,12 @@ func (c *alloyDBAdminGRPCClient) DeleteBackup(ctx context.Context, req *alloydbp
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.DeleteBackupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteBackupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1890,9 +2421,12 @@ func (c *alloyDBAdminGRPCClient) ListSupportedDatabaseFlags(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/ListSupportedDatabaseFlags")
+	}
 	opts = append((*c.CallOptions).ListSupportedDatabaseFlags[0:len((*c.CallOptions).ListSupportedDatabaseFlags):len((*c.CallOptions).ListSupportedDatabaseFlags)], opts...)
 	it := &SupportedDatabaseFlagIterator{}
-	req = proto.Clone(req).(*alloydbpb.ListSupportedDatabaseFlagsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*alloydbpb.SupportedDatabaseFlag, string, error) {
 		resp := &alloydbpb.ListSupportedDatabaseFlagsResponse{}
 		if pageToken != "" {
@@ -1936,6 +2470,9 @@ func (c *alloyDBAdminGRPCClient) GenerateClientCertificate(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/GenerateClientCertificate")
+	}
 	opts = append((*c.CallOptions).GenerateClientCertificate[0:len((*c.CallOptions).GenerateClientCertificate):len((*c.CallOptions).GenerateClientCertificate)], opts...)
 	var resp *alloydbpb.GenerateClientCertificateResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1954,6 +2491,9 @@ func (c *alloyDBAdminGRPCClient) GetConnectionInfo(ctx context.Context, req *all
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/GetConnectionInfo")
+	}
 	opts = append((*c.CallOptions).GetConnectionInfo[0:len((*c.CallOptions).GetConnectionInfo):len((*c.CallOptions).GetConnectionInfo)], opts...)
 	var resp *alloydbpb.ConnectionInfo
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1972,9 +2512,12 @@ func (c *alloyDBAdminGRPCClient) ListUsers(ctx context.Context, req *alloydbpb.L
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/ListUsers")
+	}
 	opts = append((*c.CallOptions).ListUsers[0:len((*c.CallOptions).ListUsers):len((*c.CallOptions).ListUsers)], opts...)
 	it := &UserIterator{}
-	req = proto.Clone(req).(*alloydbpb.ListUsersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*alloydbpb.User, string, error) {
 		resp := &alloydbpb.ListUsersResponse{}
 		if pageToken != "" {
@@ -2018,6 +2561,9 @@ func (c *alloyDBAdminGRPCClient) GetUser(ctx context.Context, req *alloydbpb.Get
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/GetUser")
+	}
 	opts = append((*c.CallOptions).GetUser[0:len((*c.CallOptions).GetUser):len((*c.CallOptions).GetUser)], opts...)
 	var resp *alloydbpb.User
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2036,6 +2582,9 @@ func (c *alloyDBAdminGRPCClient) CreateUser(ctx context.Context, req *alloydbpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/CreateUser")
+	}
 	opts = append((*c.CallOptions).CreateUser[0:len((*c.CallOptions).CreateUser):len((*c.CallOptions).CreateUser)], opts...)
 	var resp *alloydbpb.User
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2054,6 +2603,9 @@ func (c *alloyDBAdminGRPCClient) UpdateUser(ctx context.Context, req *alloydbpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/UpdateUser")
+	}
 	opts = append((*c.CallOptions).UpdateUser[0:len((*c.CallOptions).UpdateUser):len((*c.CallOptions).UpdateUser)], opts...)
 	var resp *alloydbpb.User
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2072,6 +2624,9 @@ func (c *alloyDBAdminGRPCClient) DeleteUser(ctx context.Context, req *alloydbpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/DeleteUser")
+	}
 	opts = append((*c.CallOptions).DeleteUser[0:len((*c.CallOptions).DeleteUser):len((*c.CallOptions).DeleteUser)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -2086,9 +2641,12 @@ func (c *alloyDBAdminGRPCClient) ListDatabases(ctx context.Context, req *alloydb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/ListDatabases")
+	}
 	opts = append((*c.CallOptions).ListDatabases[0:len((*c.CallOptions).ListDatabases):len((*c.CallOptions).ListDatabases)], opts...)
 	it := &DatabaseIterator{}
-	req = proto.Clone(req).(*alloydbpb.ListDatabasesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*alloydbpb.Database, string, error) {
 		resp := &alloydbpb.ListDatabasesResponse{}
 		if pageToken != "" {
@@ -2132,6 +2690,9 @@ func (c *alloyDBAdminGRPCClient) CreateDatabase(ctx context.Context, req *alloyd
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/CreateDatabase")
+	}
 	opts = append((*c.CallOptions).CreateDatabase[0:len((*c.CallOptions).CreateDatabase):len((*c.CallOptions).CreateDatabase)], opts...)
 	var resp *alloydbpb.Database
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2150,6 +2711,9 @@ func (c *alloyDBAdminGRPCClient) GetLocation(ctx context.Context, req *locationp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2168,9 +2732,12 @@ func (c *alloyDBAdminGRPCClient) ListLocations(ctx context.Context, req *locatio
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/ListLocations")
+	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -2214,6 +2781,9 @@ func (c *alloyDBAdminGRPCClient) CancelOperation(ctx context.Context, req *longr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -2228,6 +2798,9 @@ func (c *alloyDBAdminGRPCClient) DeleteOperation(ctx context.Context, req *longr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+	}
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -2242,6 +2815,9 @@ func (c *alloyDBAdminGRPCClient) GetOperation(ctx context.Context, req *longrunn
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2260,9 +2836,12 @@ func (c *alloyDBAdminGRPCClient) ListOperations(ctx context.Context, req *longru
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -2304,7 +2883,7 @@ func (c *alloyDBAdminGRPCClient) ListOperations(ctx context.Context, req *longru
 // ListClusters lists Clusters in a given project and location.
 func (c *alloyDBAdminRESTClient) ListClusters(ctx context.Context, req *alloydbpb.ListClustersRequest, opts ...gax.CallOption) *ClusterIterator {
 	it := &ClusterIterator{}
-	req = proto.Clone(req).(*alloydbpb.ListClustersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*alloydbpb.Cluster, string, error) {
 		resp := &alloydbpb.ListClustersResponse{}
@@ -2407,6 +2986,10 @@ func (c *alloyDBAdminRESTClient) GetCluster(ctx context.Context, req *alloydbpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/GetCluster")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/clusters/*}")
+	}
 	opts = append((*c.CallOptions).GetCluster[0:len((*c.CallOptions).GetCluster):len((*c.CallOptions).GetCluster)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &alloydbpb.Cluster{}
@@ -2471,6 +3054,10 @@ func (c *alloyDBAdminRESTClient) CreateCluster(ctx context.Context, req *alloydb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/CreateCluster")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*}/clusters")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2499,8 +3086,12 @@ func (c *alloyDBAdminRESTClient) CreateCluster(ctx context.Context, req *alloydb
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.CreateClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2547,6 +3138,10 @@ func (c *alloyDBAdminRESTClient) UpdateCluster(ctx context.Context, req *alloydb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/UpdateCluster")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{cluster.name=projects/*/locations/*/clusters/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2575,8 +3170,12 @@ func (c *alloyDBAdminRESTClient) UpdateCluster(ctx context.Context, req *alloydb
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.UpdateClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2607,6 +3206,10 @@ func (c *alloyDBAdminRESTClient) ExportCluster(ctx context.Context, req *alloydb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/ExportCluster")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/clusters/*}:export")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2635,8 +3238,12 @@ func (c *alloyDBAdminRESTClient) ExportCluster(ctx context.Context, req *alloydb
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.ExportClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2667,6 +3274,10 @@ func (c *alloyDBAdminRESTClient) ImportCluster(ctx context.Context, req *alloydb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/ImportCluster")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/clusters/*}:import")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2695,8 +3306,12 @@ func (c *alloyDBAdminRESTClient) ImportCluster(ctx context.Context, req *alloydb
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.ImportClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2727,6 +3342,10 @@ func (c *alloyDBAdminRESTClient) UpgradeCluster(ctx context.Context, req *alloyd
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/UpgradeCluster")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/clusters/*}:upgrade")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2755,8 +3374,12 @@ func (c *alloyDBAdminRESTClient) UpgradeCluster(ctx context.Context, req *alloyd
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.UpgradeClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpgradeClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2792,6 +3415,10 @@ func (c *alloyDBAdminRESTClient) DeleteCluster(ctx context.Context, req *alloydb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/DeleteCluster")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/clusters/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2820,8 +3447,12 @@ func (c *alloyDBAdminRESTClient) DeleteCluster(ctx context.Context, req *alloydb
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.DeleteClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2854,6 +3485,10 @@ func (c *alloyDBAdminRESTClient) PromoteCluster(ctx context.Context, req *alloyd
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/PromoteCluster")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/clusters/*}:promote")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2882,8 +3517,12 @@ func (c *alloyDBAdminRESTClient) PromoteCluster(ctx context.Context, req *alloyd
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.PromoteClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &PromoteClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2915,6 +3554,10 @@ func (c *alloyDBAdminRESTClient) SwitchoverCluster(ctx context.Context, req *all
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/SwitchoverCluster")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/clusters/*}:switchover")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2943,8 +3586,12 @@ func (c *alloyDBAdminRESTClient) SwitchoverCluster(ctx context.Context, req *all
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.SwitchoverClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &SwitchoverClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2976,6 +3623,10 @@ func (c *alloyDBAdminRESTClient) RestoreCluster(ctx context.Context, req *alloyd
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/RestoreCluster")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*}/clusters:restore")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3004,8 +3655,12 @@ func (c *alloyDBAdminRESTClient) RestoreCluster(ctx context.Context, req *alloyd
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.RestoreClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RestoreClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3044,6 +3699,10 @@ func (c *alloyDBAdminRESTClient) CreateSecondaryCluster(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/CreateSecondaryCluster")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*}/clusters:createsecondary")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3072,8 +3731,12 @@ func (c *alloyDBAdminRESTClient) CreateSecondaryCluster(ctx context.Context, req
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.CreateSecondaryClusterOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateSecondaryClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3081,7 +3744,7 @@ func (c *alloyDBAdminRESTClient) CreateSecondaryCluster(ctx context.Context, req
 // ListInstances lists Instances in a given project and location.
 func (c *alloyDBAdminRESTClient) ListInstances(ctx context.Context, req *alloydbpb.ListInstancesRequest, opts ...gax.CallOption) *InstanceIterator {
 	it := &InstanceIterator{}
-	req = proto.Clone(req).(*alloydbpb.ListInstancesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*alloydbpb.Instance, string, error) {
 		resp := &alloydbpb.ListInstancesResponse{}
@@ -3184,6 +3847,10 @@ func (c *alloyDBAdminRESTClient) GetInstance(ctx context.Context, req *alloydbpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/GetInstance")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/clusters/*/instances/*}")
+	}
 	opts = append((*c.CallOptions).GetInstance[0:len((*c.CallOptions).GetInstance):len((*c.CallOptions).GetInstance)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &alloydbpb.Instance{}
@@ -3248,6 +3915,10 @@ func (c *alloyDBAdminRESTClient) CreateInstance(ctx context.Context, req *alloyd
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/CreateInstance")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*/clusters/*}/instances")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3276,8 +3947,12 @@ func (c *alloyDBAdminRESTClient) CreateInstance(ctx context.Context, req *alloyd
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.CreateInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3315,6 +3990,10 @@ func (c *alloyDBAdminRESTClient) CreateSecondaryInstance(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/CreateSecondaryInstance")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*/clusters/*}/instances:createsecondary")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3343,8 +4022,12 @@ func (c *alloyDBAdminRESTClient) CreateSecondaryInstance(ctx context.Context, re
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.CreateSecondaryInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateSecondaryInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3387,6 +4070,10 @@ func (c *alloyDBAdminRESTClient) BatchCreateInstances(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/BatchCreateInstances")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*/clusters/*}/instances:batchCreate")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3415,8 +4102,12 @@ func (c *alloyDBAdminRESTClient) BatchCreateInstances(ctx context.Context, req *
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.BatchCreateInstancesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &BatchCreateInstancesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3463,6 +4154,10 @@ func (c *alloyDBAdminRESTClient) UpdateInstance(ctx context.Context, req *alloyd
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/UpdateInstance")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{instance.name=projects/*/locations/*/clusters/*/instances/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3491,8 +4186,12 @@ func (c *alloyDBAdminRESTClient) UpdateInstance(ctx context.Context, req *alloyd
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.UpdateInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3525,6 +4224,10 @@ func (c *alloyDBAdminRESTClient) DeleteInstance(ctx context.Context, req *alloyd
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/DeleteInstance")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/clusters/*/instances/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3553,8 +4256,12 @@ func (c *alloyDBAdminRESTClient) DeleteInstance(ctx context.Context, req *alloyd
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.DeleteInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3586,6 +4293,10 @@ func (c *alloyDBAdminRESTClient) FailoverInstance(ctx context.Context, req *allo
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/FailoverInstance")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/clusters/*/instances/*}:failover")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3614,8 +4325,12 @@ func (c *alloyDBAdminRESTClient) FailoverInstance(ctx context.Context, req *allo
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.FailoverInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &FailoverInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3646,6 +4361,10 @@ func (c *alloyDBAdminRESTClient) InjectFault(ctx context.Context, req *alloydbpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/InjectFault")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/clusters/*/instances/*}:injectFault")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3674,8 +4393,12 @@ func (c *alloyDBAdminRESTClient) InjectFault(ctx context.Context, req *alloydbpb
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.InjectFaultOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &InjectFaultOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3706,6 +4429,10 @@ func (c *alloyDBAdminRESTClient) RestartInstance(ctx context.Context, req *alloy
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/RestartInstance")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/clusters/*/instances/*}:restart")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3734,8 +4461,12 @@ func (c *alloyDBAdminRESTClient) RestartInstance(ctx context.Context, req *alloy
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.RestartInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RestartInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3765,6 +4496,10 @@ func (c *alloyDBAdminRESTClient) ExecuteSql(ctx context.Context, req *alloydbpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/ExecuteSql")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{instance=projects/*/locations/*/clusters/*/instances/*}:executeSql")
+	}
 	opts = append((*c.CallOptions).ExecuteSql[0:len((*c.CallOptions).ExecuteSql):len((*c.CallOptions).ExecuteSql)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &alloydbpb.ExecuteSqlResponse{}
@@ -3799,7 +4534,7 @@ func (c *alloyDBAdminRESTClient) ExecuteSql(ctx context.Context, req *alloydbpb.
 // ListBackups lists Backups in a given project and location.
 func (c *alloyDBAdminRESTClient) ListBackups(ctx context.Context, req *alloydbpb.ListBackupsRequest, opts ...gax.CallOption) *BackupIterator {
 	it := &BackupIterator{}
-	req = proto.Clone(req).(*alloydbpb.ListBackupsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*alloydbpb.Backup, string, error) {
 		resp := &alloydbpb.ListBackupsResponse{}
@@ -3899,6 +4634,10 @@ func (c *alloyDBAdminRESTClient) GetBackup(ctx context.Context, req *alloydbpb.G
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/GetBackup")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/backups/*}")
+	}
 	opts = append((*c.CallOptions).GetBackup[0:len((*c.CallOptions).GetBackup):len((*c.CallOptions).GetBackup)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &alloydbpb.Backup{}
@@ -3963,6 +4702,10 @@ func (c *alloyDBAdminRESTClient) CreateBackup(ctx context.Context, req *alloydbp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/CreateBackup")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*}/backups")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3991,8 +4734,12 @@ func (c *alloyDBAdminRESTClient) CreateBackup(ctx context.Context, req *alloydbp
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.CreateBackupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateBackupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4039,6 +4786,10 @@ func (c *alloyDBAdminRESTClient) UpdateBackup(ctx context.Context, req *alloydbp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/UpdateBackup")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{backup.name=projects/*/locations/*/backups/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4067,8 +4818,12 @@ func (c *alloyDBAdminRESTClient) UpdateBackup(ctx context.Context, req *alloydbp
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.UpdateBackupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateBackupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4101,6 +4856,10 @@ func (c *alloyDBAdminRESTClient) DeleteBackup(ctx context.Context, req *alloydbp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/DeleteBackup")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/backups/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4129,8 +4888,12 @@ func (c *alloyDBAdminRESTClient) DeleteBackup(ctx context.Context, req *alloydbp
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*alloydb.DeleteBackupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteBackupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4138,7 +4901,7 @@ func (c *alloyDBAdminRESTClient) DeleteBackup(ctx context.Context, req *alloydbp
 // ListSupportedDatabaseFlags lists SupportedDatabaseFlags for a given project and location.
 func (c *alloyDBAdminRESTClient) ListSupportedDatabaseFlags(ctx context.Context, req *alloydbpb.ListSupportedDatabaseFlagsRequest, opts ...gax.CallOption) *SupportedDatabaseFlagIterator {
 	it := &SupportedDatabaseFlagIterator{}
-	req = proto.Clone(req).(*alloydbpb.ListSupportedDatabaseFlagsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*alloydbpb.SupportedDatabaseFlag, string, error) {
 		resp := &alloydbpb.ListSupportedDatabaseFlagsResponse{}
@@ -4245,6 +5008,10 @@ func (c *alloyDBAdminRESTClient) GenerateClientCertificate(ctx context.Context, 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/GenerateClientCertificate")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*/clusters/*}:generateClientCertificate")
+	}
 	opts = append((*c.CallOptions).GenerateClientCertificate[0:len((*c.CallOptions).GenerateClientCertificate):len((*c.CallOptions).GenerateClientCertificate)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &alloydbpb.GenerateClientCertificateResponse{}
@@ -4298,6 +5065,10 @@ func (c *alloyDBAdminRESTClient) GetConnectionInfo(ctx context.Context, req *all
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/GetConnectionInfo")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*/clusters/*/instances/*}/connectionInfo")
+	}
 	opts = append((*c.CallOptions).GetConnectionInfo[0:len((*c.CallOptions).GetConnectionInfo):len((*c.CallOptions).GetConnectionInfo)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &alloydbpb.ConnectionInfo{}
@@ -4332,7 +5103,7 @@ func (c *alloyDBAdminRESTClient) GetConnectionInfo(ctx context.Context, req *all
 // ListUsers lists Users in a given project and location.
 func (c *alloyDBAdminRESTClient) ListUsers(ctx context.Context, req *alloydbpb.ListUsersRequest, opts ...gax.CallOption) *UserIterator {
 	it := &UserIterator{}
-	req = proto.Clone(req).(*alloydbpb.ListUsersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*alloydbpb.User, string, error) {
 		resp := &alloydbpb.ListUsersResponse{}
@@ -4432,6 +5203,10 @@ func (c *alloyDBAdminRESTClient) GetUser(ctx context.Context, req *alloydbpb.Get
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/GetUser")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/clusters/*/users/*}")
+	}
 	opts = append((*c.CallOptions).GetUser[0:len((*c.CallOptions).GetUser):len((*c.CallOptions).GetUser)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &alloydbpb.User{}
@@ -4496,6 +5271,10 @@ func (c *alloyDBAdminRESTClient) CreateUser(ctx context.Context, req *alloydbpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/CreateUser")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*/clusters/*}/users")
+	}
 	opts = append((*c.CallOptions).CreateUser[0:len((*c.CallOptions).CreateUser):len((*c.CallOptions).CreateUser)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &alloydbpb.User{}
@@ -4569,6 +5348,10 @@ func (c *alloyDBAdminRESTClient) UpdateUser(ctx context.Context, req *alloydbpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/UpdateUser")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{user.name=projects/*/locations/*/clusters/*/users/*}")
+	}
 	opts = append((*c.CallOptions).UpdateUser[0:len((*c.CallOptions).UpdateUser):len((*c.CallOptions).UpdateUser)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &alloydbpb.User{}
@@ -4625,6 +5408,10 @@ func (c *alloyDBAdminRESTClient) DeleteUser(ctx context.Context, req *alloydbpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/DeleteUser")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/clusters/*/users/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -4644,7 +5431,7 @@ func (c *alloyDBAdminRESTClient) DeleteUser(ctx context.Context, req *alloydbpb.
 // ListDatabases lists Databases in a given project and location.
 func (c *alloyDBAdminRESTClient) ListDatabases(ctx context.Context, req *alloydbpb.ListDatabasesRequest, opts ...gax.CallOption) *DatabaseIterator {
 	it := &DatabaseIterator{}
-	req = proto.Clone(req).(*alloydbpb.ListDatabasesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*alloydbpb.Database, string, error) {
 		resp := &alloydbpb.ListDatabasesResponse{}
@@ -4749,6 +5536,10 @@ func (c *alloyDBAdminRESTClient) CreateDatabase(ctx context.Context, req *alloyd
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.alloydb.v1beta.AlloyDBAdmin/CreateDatabase")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*/clusters/*}/databases")
+	}
 	opts = append((*c.CallOptions).CreateDatabase[0:len((*c.CallOptions).CreateDatabase):len((*c.CallOptions).CreateDatabase)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &alloydbpb.Database{}
@@ -4799,6 +5590,10 @@ func (c *alloyDBAdminRESTClient) GetLocation(ctx context.Context, req *locationp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*}")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &locationpb.Location{}
@@ -4833,7 +5628,7 @@ func (c *alloyDBAdminRESTClient) GetLocation(ctx context.Context, req *locationp
 // ListLocations lists information about the supported locations for this service.
 func (c *alloyDBAdminRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -4930,6 +5725,10 @@ func (c *alloyDBAdminRESTClient) CancelOperation(ctx context.Context, req *longr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/operations/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -4965,6 +5764,10 @@ func (c *alloyDBAdminRESTClient) DeleteOperation(ctx context.Context, req *longr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/operations/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -5000,6 +5803,10 @@ func (c *alloyDBAdminRESTClient) GetOperation(ctx context.Context, req *longrunn
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -5034,7 +5841,7 @@ func (c *alloyDBAdminRESTClient) GetOperation(ctx context.Context, req *longrunn
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *alloyDBAdminRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
@@ -5062,6 +5869,9 @@ func (c *alloyDBAdminRESTClient) ListOperations(ctx context.Context, req *longru
 		}
 		if req.GetPageToken() != "" {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req.GetReturnPartialSuccess() {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -5116,7 +5926,7 @@ func (c *alloyDBAdminRESTClient) ListOperations(ctx context.Context, req *longru
 // The name must be that of a previously created BatchCreateInstancesOperation, possibly from a different process.
 func (c *alloyDBAdminGRPCClient) BatchCreateInstancesOperation(name string) *BatchCreateInstancesOperation {
 	return &BatchCreateInstancesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.BatchCreateInstancesOperation"),
 	}
 }
 
@@ -5125,7 +5935,7 @@ func (c *alloyDBAdminGRPCClient) BatchCreateInstancesOperation(name string) *Bat
 func (c *alloyDBAdminRESTClient) BatchCreateInstancesOperation(name string) *BatchCreateInstancesOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &BatchCreateInstancesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.BatchCreateInstancesOperation"),
 		pollPath: override,
 	}
 }
@@ -5134,7 +5944,7 @@ func (c *alloyDBAdminRESTClient) BatchCreateInstancesOperation(name string) *Bat
 // The name must be that of a previously created CreateBackupOperation, possibly from a different process.
 func (c *alloyDBAdminGRPCClient) CreateBackupOperation(name string) *CreateBackupOperation {
 	return &CreateBackupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.CreateBackupOperation"),
 	}
 }
 
@@ -5143,7 +5953,7 @@ func (c *alloyDBAdminGRPCClient) CreateBackupOperation(name string) *CreateBacku
 func (c *alloyDBAdminRESTClient) CreateBackupOperation(name string) *CreateBackupOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &CreateBackupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.CreateBackupOperation"),
 		pollPath: override,
 	}
 }
@@ -5152,7 +5962,7 @@ func (c *alloyDBAdminRESTClient) CreateBackupOperation(name string) *CreateBacku
 // The name must be that of a previously created CreateClusterOperation, possibly from a different process.
 func (c *alloyDBAdminGRPCClient) CreateClusterOperation(name string) *CreateClusterOperation {
 	return &CreateClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.CreateClusterOperation"),
 	}
 }
 
@@ -5161,7 +5971,7 @@ func (c *alloyDBAdminGRPCClient) CreateClusterOperation(name string) *CreateClus
 func (c *alloyDBAdminRESTClient) CreateClusterOperation(name string) *CreateClusterOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &CreateClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.CreateClusterOperation"),
 		pollPath: override,
 	}
 }
@@ -5170,7 +5980,7 @@ func (c *alloyDBAdminRESTClient) CreateClusterOperation(name string) *CreateClus
 // The name must be that of a previously created CreateInstanceOperation, possibly from a different process.
 func (c *alloyDBAdminGRPCClient) CreateInstanceOperation(name string) *CreateInstanceOperation {
 	return &CreateInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.CreateInstanceOperation"),
 	}
 }
 
@@ -5179,7 +5989,7 @@ func (c *alloyDBAdminGRPCClient) CreateInstanceOperation(name string) *CreateIns
 func (c *alloyDBAdminRESTClient) CreateInstanceOperation(name string) *CreateInstanceOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &CreateInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.CreateInstanceOperation"),
 		pollPath: override,
 	}
 }
@@ -5188,7 +5998,7 @@ func (c *alloyDBAdminRESTClient) CreateInstanceOperation(name string) *CreateIns
 // The name must be that of a previously created CreateSecondaryClusterOperation, possibly from a different process.
 func (c *alloyDBAdminGRPCClient) CreateSecondaryClusterOperation(name string) *CreateSecondaryClusterOperation {
 	return &CreateSecondaryClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.CreateSecondaryClusterOperation"),
 	}
 }
 
@@ -5197,7 +6007,7 @@ func (c *alloyDBAdminGRPCClient) CreateSecondaryClusterOperation(name string) *C
 func (c *alloyDBAdminRESTClient) CreateSecondaryClusterOperation(name string) *CreateSecondaryClusterOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &CreateSecondaryClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.CreateSecondaryClusterOperation"),
 		pollPath: override,
 	}
 }
@@ -5206,7 +6016,7 @@ func (c *alloyDBAdminRESTClient) CreateSecondaryClusterOperation(name string) *C
 // The name must be that of a previously created CreateSecondaryInstanceOperation, possibly from a different process.
 func (c *alloyDBAdminGRPCClient) CreateSecondaryInstanceOperation(name string) *CreateSecondaryInstanceOperation {
 	return &CreateSecondaryInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.CreateSecondaryInstanceOperation"),
 	}
 }
 
@@ -5215,7 +6025,7 @@ func (c *alloyDBAdminGRPCClient) CreateSecondaryInstanceOperation(name string) *
 func (c *alloyDBAdminRESTClient) CreateSecondaryInstanceOperation(name string) *CreateSecondaryInstanceOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &CreateSecondaryInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.CreateSecondaryInstanceOperation"),
 		pollPath: override,
 	}
 }
@@ -5224,7 +6034,7 @@ func (c *alloyDBAdminRESTClient) CreateSecondaryInstanceOperation(name string) *
 // The name must be that of a previously created DeleteBackupOperation, possibly from a different process.
 func (c *alloyDBAdminGRPCClient) DeleteBackupOperation(name string) *DeleteBackupOperation {
 	return &DeleteBackupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.DeleteBackupOperation"),
 	}
 }
 
@@ -5233,7 +6043,7 @@ func (c *alloyDBAdminGRPCClient) DeleteBackupOperation(name string) *DeleteBacku
 func (c *alloyDBAdminRESTClient) DeleteBackupOperation(name string) *DeleteBackupOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &DeleteBackupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.DeleteBackupOperation"),
 		pollPath: override,
 	}
 }
@@ -5242,7 +6052,7 @@ func (c *alloyDBAdminRESTClient) DeleteBackupOperation(name string) *DeleteBacku
 // The name must be that of a previously created DeleteClusterOperation, possibly from a different process.
 func (c *alloyDBAdminGRPCClient) DeleteClusterOperation(name string) *DeleteClusterOperation {
 	return &DeleteClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.DeleteClusterOperation"),
 	}
 }
 
@@ -5251,7 +6061,7 @@ func (c *alloyDBAdminGRPCClient) DeleteClusterOperation(name string) *DeleteClus
 func (c *alloyDBAdminRESTClient) DeleteClusterOperation(name string) *DeleteClusterOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &DeleteClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.DeleteClusterOperation"),
 		pollPath: override,
 	}
 }
@@ -5260,7 +6070,7 @@ func (c *alloyDBAdminRESTClient) DeleteClusterOperation(name string) *DeleteClus
 // The name must be that of a previously created DeleteInstanceOperation, possibly from a different process.
 func (c *alloyDBAdminGRPCClient) DeleteInstanceOperation(name string) *DeleteInstanceOperation {
 	return &DeleteInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.DeleteInstanceOperation"),
 	}
 }
 
@@ -5269,7 +6079,7 @@ func (c *alloyDBAdminGRPCClient) DeleteInstanceOperation(name string) *DeleteIns
 func (c *alloyDBAdminRESTClient) DeleteInstanceOperation(name string) *DeleteInstanceOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &DeleteInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.DeleteInstanceOperation"),
 		pollPath: override,
 	}
 }
@@ -5278,7 +6088,7 @@ func (c *alloyDBAdminRESTClient) DeleteInstanceOperation(name string) *DeleteIns
 // The name must be that of a previously created ExportClusterOperation, possibly from a different process.
 func (c *alloyDBAdminGRPCClient) ExportClusterOperation(name string) *ExportClusterOperation {
 	return &ExportClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.ExportClusterOperation"),
 	}
 }
 
@@ -5287,7 +6097,7 @@ func (c *alloyDBAdminGRPCClient) ExportClusterOperation(name string) *ExportClus
 func (c *alloyDBAdminRESTClient) ExportClusterOperation(name string) *ExportClusterOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &ExportClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.ExportClusterOperation"),
 		pollPath: override,
 	}
 }
@@ -5296,7 +6106,7 @@ func (c *alloyDBAdminRESTClient) ExportClusterOperation(name string) *ExportClus
 // The name must be that of a previously created FailoverInstanceOperation, possibly from a different process.
 func (c *alloyDBAdminGRPCClient) FailoverInstanceOperation(name string) *FailoverInstanceOperation {
 	return &FailoverInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.FailoverInstanceOperation"),
 	}
 }
 
@@ -5305,7 +6115,7 @@ func (c *alloyDBAdminGRPCClient) FailoverInstanceOperation(name string) *Failove
 func (c *alloyDBAdminRESTClient) FailoverInstanceOperation(name string) *FailoverInstanceOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &FailoverInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.FailoverInstanceOperation"),
 		pollPath: override,
 	}
 }
@@ -5314,7 +6124,7 @@ func (c *alloyDBAdminRESTClient) FailoverInstanceOperation(name string) *Failove
 // The name must be that of a previously created ImportClusterOperation, possibly from a different process.
 func (c *alloyDBAdminGRPCClient) ImportClusterOperation(name string) *ImportClusterOperation {
 	return &ImportClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.ImportClusterOperation"),
 	}
 }
 
@@ -5323,7 +6133,7 @@ func (c *alloyDBAdminGRPCClient) ImportClusterOperation(name string) *ImportClus
 func (c *alloyDBAdminRESTClient) ImportClusterOperation(name string) *ImportClusterOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &ImportClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.ImportClusterOperation"),
 		pollPath: override,
 	}
 }
@@ -5332,7 +6142,7 @@ func (c *alloyDBAdminRESTClient) ImportClusterOperation(name string) *ImportClus
 // The name must be that of a previously created InjectFaultOperation, possibly from a different process.
 func (c *alloyDBAdminGRPCClient) InjectFaultOperation(name string) *InjectFaultOperation {
 	return &InjectFaultOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.InjectFaultOperation"),
 	}
 }
 
@@ -5341,7 +6151,7 @@ func (c *alloyDBAdminGRPCClient) InjectFaultOperation(name string) *InjectFaultO
 func (c *alloyDBAdminRESTClient) InjectFaultOperation(name string) *InjectFaultOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &InjectFaultOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.InjectFaultOperation"),
 		pollPath: override,
 	}
 }
@@ -5350,7 +6160,7 @@ func (c *alloyDBAdminRESTClient) InjectFaultOperation(name string) *InjectFaultO
 // The name must be that of a previously created PromoteClusterOperation, possibly from a different process.
 func (c *alloyDBAdminGRPCClient) PromoteClusterOperation(name string) *PromoteClusterOperation {
 	return &PromoteClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.PromoteClusterOperation"),
 	}
 }
 
@@ -5359,7 +6169,7 @@ func (c *alloyDBAdminGRPCClient) PromoteClusterOperation(name string) *PromoteCl
 func (c *alloyDBAdminRESTClient) PromoteClusterOperation(name string) *PromoteClusterOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &PromoteClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.PromoteClusterOperation"),
 		pollPath: override,
 	}
 }
@@ -5368,7 +6178,7 @@ func (c *alloyDBAdminRESTClient) PromoteClusterOperation(name string) *PromoteCl
 // The name must be that of a previously created RestartInstanceOperation, possibly from a different process.
 func (c *alloyDBAdminGRPCClient) RestartInstanceOperation(name string) *RestartInstanceOperation {
 	return &RestartInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.RestartInstanceOperation"),
 	}
 }
 
@@ -5377,7 +6187,7 @@ func (c *alloyDBAdminGRPCClient) RestartInstanceOperation(name string) *RestartI
 func (c *alloyDBAdminRESTClient) RestartInstanceOperation(name string) *RestartInstanceOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &RestartInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.RestartInstanceOperation"),
 		pollPath: override,
 	}
 }
@@ -5386,7 +6196,7 @@ func (c *alloyDBAdminRESTClient) RestartInstanceOperation(name string) *RestartI
 // The name must be that of a previously created RestoreClusterOperation, possibly from a different process.
 func (c *alloyDBAdminGRPCClient) RestoreClusterOperation(name string) *RestoreClusterOperation {
 	return &RestoreClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.RestoreClusterOperation"),
 	}
 }
 
@@ -5395,7 +6205,7 @@ func (c *alloyDBAdminGRPCClient) RestoreClusterOperation(name string) *RestoreCl
 func (c *alloyDBAdminRESTClient) RestoreClusterOperation(name string) *RestoreClusterOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &RestoreClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.RestoreClusterOperation"),
 		pollPath: override,
 	}
 }
@@ -5404,7 +6214,7 @@ func (c *alloyDBAdminRESTClient) RestoreClusterOperation(name string) *RestoreCl
 // The name must be that of a previously created SwitchoverClusterOperation, possibly from a different process.
 func (c *alloyDBAdminGRPCClient) SwitchoverClusterOperation(name string) *SwitchoverClusterOperation {
 	return &SwitchoverClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.SwitchoverClusterOperation"),
 	}
 }
 
@@ -5413,7 +6223,7 @@ func (c *alloyDBAdminGRPCClient) SwitchoverClusterOperation(name string) *Switch
 func (c *alloyDBAdminRESTClient) SwitchoverClusterOperation(name string) *SwitchoverClusterOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &SwitchoverClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.SwitchoverClusterOperation"),
 		pollPath: override,
 	}
 }
@@ -5422,7 +6232,7 @@ func (c *alloyDBAdminRESTClient) SwitchoverClusterOperation(name string) *Switch
 // The name must be that of a previously created UpdateBackupOperation, possibly from a different process.
 func (c *alloyDBAdminGRPCClient) UpdateBackupOperation(name string) *UpdateBackupOperation {
 	return &UpdateBackupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.UpdateBackupOperation"),
 	}
 }
 
@@ -5431,7 +6241,7 @@ func (c *alloyDBAdminGRPCClient) UpdateBackupOperation(name string) *UpdateBacku
 func (c *alloyDBAdminRESTClient) UpdateBackupOperation(name string) *UpdateBackupOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &UpdateBackupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.UpdateBackupOperation"),
 		pollPath: override,
 	}
 }
@@ -5440,7 +6250,7 @@ func (c *alloyDBAdminRESTClient) UpdateBackupOperation(name string) *UpdateBacku
 // The name must be that of a previously created UpdateClusterOperation, possibly from a different process.
 func (c *alloyDBAdminGRPCClient) UpdateClusterOperation(name string) *UpdateClusterOperation {
 	return &UpdateClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.UpdateClusterOperation"),
 	}
 }
 
@@ -5449,7 +6259,7 @@ func (c *alloyDBAdminGRPCClient) UpdateClusterOperation(name string) *UpdateClus
 func (c *alloyDBAdminRESTClient) UpdateClusterOperation(name string) *UpdateClusterOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &UpdateClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.UpdateClusterOperation"),
 		pollPath: override,
 	}
 }
@@ -5458,7 +6268,7 @@ func (c *alloyDBAdminRESTClient) UpdateClusterOperation(name string) *UpdateClus
 // The name must be that of a previously created UpdateInstanceOperation, possibly from a different process.
 func (c *alloyDBAdminGRPCClient) UpdateInstanceOperation(name string) *UpdateInstanceOperation {
 	return &UpdateInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.UpdateInstanceOperation"),
 	}
 }
 
@@ -5467,7 +6277,7 @@ func (c *alloyDBAdminGRPCClient) UpdateInstanceOperation(name string) *UpdateIns
 func (c *alloyDBAdminRESTClient) UpdateInstanceOperation(name string) *UpdateInstanceOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &UpdateInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.UpdateInstanceOperation"),
 		pollPath: override,
 	}
 }
@@ -5476,7 +6286,7 @@ func (c *alloyDBAdminRESTClient) UpdateInstanceOperation(name string) *UpdateIns
 // The name must be that of a previously created UpgradeClusterOperation, possibly from a different process.
 func (c *alloyDBAdminGRPCClient) UpgradeClusterOperation(name string) *UpgradeClusterOperation {
 	return &UpgradeClusterOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.UpgradeClusterOperation"),
 	}
 }
 
@@ -5485,7 +6295,7 @@ func (c *alloyDBAdminGRPCClient) UpgradeClusterOperation(name string) *UpgradeCl
 func (c *alloyDBAdminRESTClient) UpgradeClusterOperation(name string) *UpgradeClusterOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &UpgradeClusterOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*alloydb.UpgradeClusterOperation"),
 		pollPath: override,
 	}
 }

@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import (
 
 	biglakepb "cloud.google.com/go/bigquery/biglake/apiv1alpha1/biglakepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -617,7 +618,7 @@ type MetastoreClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *MetastoreClient) Close() error {
 	return c.internalClient.Close()
@@ -771,6 +772,16 @@ type metastoreGRPCClient struct {
 //	Each database has a collection of tables: /tables/*
 func NewMetastoreClient(ctx context.Context, opts ...option.ClientOption) (*MetastoreClient, error) {
 	clientOpts := defaultMetastoreGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "biglake",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/bigquery/biglake/apiv1alpha1",
+			"gcp.client.language": "go",
+			"url.domain":          "biglake.googleapis.com",
+		}))
+	}
 	if newMetastoreClientHook != nil {
 		hookOpts, err := newMetastoreClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -792,6 +803,101 @@ func NewMetastoreClient(ctx context.Context, opts ...option.ClientOption) (*Meta
 		logger:          internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "biglake",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/biglake/apiv1alpha1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "biglake.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateCatalog = append(client.CallOptions.CreateCatalog, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteCatalog = append(client.CallOptions.DeleteCatalog, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetCatalog = append(client.CallOptions.GetCatalog, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListCatalogs = append(client.CallOptions.ListCatalogs, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateDatabase = append(client.CallOptions.CreateDatabase, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteDatabase = append(client.CallOptions.DeleteDatabase, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateDatabase = append(client.CallOptions.UpdateDatabase, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetDatabase = append(client.CallOptions.GetDatabase, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListDatabases = append(client.CallOptions.ListDatabases, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateTable = append(client.CallOptions.CreateTable, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteTable = append(client.CallOptions.DeleteTable, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateTable = append(client.CallOptions.UpdateTable, gax.WithClientMetrics(metrics))
+		client.CallOptions.RenameTable = append(client.CallOptions.RenameTable, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetTable = append(client.CallOptions.GetTable, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListTables = append(client.CallOptions.ListTables, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateLock = append(client.CallOptions.CreateLock, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteLock = append(client.CallOptions.DeleteLock, gax.WithClientMetrics(metrics))
+		client.CallOptions.CheckLock = append(client.CallOptions.CheckLock, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLocks = append(client.CallOptions.ListLocks, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "biglake",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/biglake/apiv1alpha1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "biglake.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateCatalog = append(client.CallOptions.CreateCatalog, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteCatalog = append(client.CallOptions.DeleteCatalog, gax.WithClientTracing(tracing))
+		client.CallOptions.GetCatalog = append(client.CallOptions.GetCatalog, gax.WithClientTracing(tracing))
+		client.CallOptions.ListCatalogs = append(client.CallOptions.ListCatalogs, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateDatabase = append(client.CallOptions.CreateDatabase, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteDatabase = append(client.CallOptions.DeleteDatabase, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateDatabase = append(client.CallOptions.UpdateDatabase, gax.WithClientTracing(tracing))
+		client.CallOptions.GetDatabase = append(client.CallOptions.GetDatabase, gax.WithClientTracing(tracing))
+		client.CallOptions.ListDatabases = append(client.CallOptions.ListDatabases, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateTable = append(client.CallOptions.CreateTable, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteTable = append(client.CallOptions.DeleteTable, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateTable = append(client.CallOptions.UpdateTable, gax.WithClientTracing(tracing))
+		client.CallOptions.RenameTable = append(client.CallOptions.RenameTable, gax.WithClientTracing(tracing))
+		client.CallOptions.GetTable = append(client.CallOptions.GetTable, gax.WithClientTracing(tracing))
+		client.CallOptions.ListTables = append(client.CallOptions.ListTables, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateLock = append(client.CallOptions.CreateLock, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteLock = append(client.CallOptions.DeleteLock, gax.WithClientTracing(tracing))
+		client.CallOptions.CheckLock = append(client.CallOptions.CheckLock, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocks = append(client.CallOptions.ListLocks, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "biglake",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/biglake/apiv1alpha1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "biglake.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateCatalog = append(client.CallOptions.CreateCatalog, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteCatalog = append(client.CallOptions.DeleteCatalog, gax.WithClientLogging(logging))
+		client.CallOptions.GetCatalog = append(client.CallOptions.GetCatalog, gax.WithClientLogging(logging))
+		client.CallOptions.ListCatalogs = append(client.CallOptions.ListCatalogs, gax.WithClientLogging(logging))
+		client.CallOptions.CreateDatabase = append(client.CallOptions.CreateDatabase, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteDatabase = append(client.CallOptions.DeleteDatabase, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateDatabase = append(client.CallOptions.UpdateDatabase, gax.WithClientLogging(logging))
+		client.CallOptions.GetDatabase = append(client.CallOptions.GetDatabase, gax.WithClientLogging(logging))
+		client.CallOptions.ListDatabases = append(client.CallOptions.ListDatabases, gax.WithClientLogging(logging))
+		client.CallOptions.CreateTable = append(client.CallOptions.CreateTable, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteTable = append(client.CallOptions.DeleteTable, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateTable = append(client.CallOptions.UpdateTable, gax.WithClientLogging(logging))
+		client.CallOptions.RenameTable = append(client.CallOptions.RenameTable, gax.WithClientLogging(logging))
+		client.CallOptions.GetTable = append(client.CallOptions.GetTable, gax.WithClientLogging(logging))
+		client.CallOptions.ListTables = append(client.CallOptions.ListTables, gax.WithClientLogging(logging))
+		client.CallOptions.CreateLock = append(client.CallOptions.CreateLock, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteLock = append(client.CallOptions.DeleteLock, gax.WithClientLogging(logging))
+		client.CallOptions.CheckLock = append(client.CallOptions.CheckLock, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocks = append(client.CallOptions.ListLocks, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -817,7 +923,7 @@ func (c *metastoreGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *metastoreGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -858,6 +964,16 @@ type metastoreRESTClient struct {
 //	Each database has a collection of tables: /tables/*
 func NewMetastoreRESTClient(ctx context.Context, opts ...option.ClientOption) (*MetastoreClient, error) {
 	clientOpts := append(defaultMetastoreRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "biglake",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/bigquery/biglake/apiv1alpha1",
+			"gcp.client.language": "go",
+			"url.domain":          "biglake.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -871,6 +987,102 @@ func NewMetastoreRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "biglake",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/biglake/apiv1alpha1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "biglake.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateCatalog = append(callOpts.CreateCatalog, gax.WithClientMetrics(metrics))
+		callOpts.DeleteCatalog = append(callOpts.DeleteCatalog, gax.WithClientMetrics(metrics))
+		callOpts.GetCatalog = append(callOpts.GetCatalog, gax.WithClientMetrics(metrics))
+		callOpts.ListCatalogs = append(callOpts.ListCatalogs, gax.WithClientMetrics(metrics))
+		callOpts.CreateDatabase = append(callOpts.CreateDatabase, gax.WithClientMetrics(metrics))
+		callOpts.DeleteDatabase = append(callOpts.DeleteDatabase, gax.WithClientMetrics(metrics))
+		callOpts.UpdateDatabase = append(callOpts.UpdateDatabase, gax.WithClientMetrics(metrics))
+		callOpts.GetDatabase = append(callOpts.GetDatabase, gax.WithClientMetrics(metrics))
+		callOpts.ListDatabases = append(callOpts.ListDatabases, gax.WithClientMetrics(metrics))
+		callOpts.CreateTable = append(callOpts.CreateTable, gax.WithClientMetrics(metrics))
+		callOpts.DeleteTable = append(callOpts.DeleteTable, gax.WithClientMetrics(metrics))
+		callOpts.UpdateTable = append(callOpts.UpdateTable, gax.WithClientMetrics(metrics))
+		callOpts.RenameTable = append(callOpts.RenameTable, gax.WithClientMetrics(metrics))
+		callOpts.GetTable = append(callOpts.GetTable, gax.WithClientMetrics(metrics))
+		callOpts.ListTables = append(callOpts.ListTables, gax.WithClientMetrics(metrics))
+		callOpts.CreateLock = append(callOpts.CreateLock, gax.WithClientMetrics(metrics))
+		callOpts.DeleteLock = append(callOpts.DeleteLock, gax.WithClientMetrics(metrics))
+		callOpts.CheckLock = append(callOpts.CheckLock, gax.WithClientMetrics(metrics))
+		callOpts.ListLocks = append(callOpts.ListLocks, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "biglake",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/biglake/apiv1alpha1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "biglake.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateCatalog = append(callOpts.CreateCatalog, gax.WithClientTracing(tracing))
+		callOpts.DeleteCatalog = append(callOpts.DeleteCatalog, gax.WithClientTracing(tracing))
+		callOpts.GetCatalog = append(callOpts.GetCatalog, gax.WithClientTracing(tracing))
+		callOpts.ListCatalogs = append(callOpts.ListCatalogs, gax.WithClientTracing(tracing))
+		callOpts.CreateDatabase = append(callOpts.CreateDatabase, gax.WithClientTracing(tracing))
+		callOpts.DeleteDatabase = append(callOpts.DeleteDatabase, gax.WithClientTracing(tracing))
+		callOpts.UpdateDatabase = append(callOpts.UpdateDatabase, gax.WithClientTracing(tracing))
+		callOpts.GetDatabase = append(callOpts.GetDatabase, gax.WithClientTracing(tracing))
+		callOpts.ListDatabases = append(callOpts.ListDatabases, gax.WithClientTracing(tracing))
+		callOpts.CreateTable = append(callOpts.CreateTable, gax.WithClientTracing(tracing))
+		callOpts.DeleteTable = append(callOpts.DeleteTable, gax.WithClientTracing(tracing))
+		callOpts.UpdateTable = append(callOpts.UpdateTable, gax.WithClientTracing(tracing))
+		callOpts.RenameTable = append(callOpts.RenameTable, gax.WithClientTracing(tracing))
+		callOpts.GetTable = append(callOpts.GetTable, gax.WithClientTracing(tracing))
+		callOpts.ListTables = append(callOpts.ListTables, gax.WithClientTracing(tracing))
+		callOpts.CreateLock = append(callOpts.CreateLock, gax.WithClientTracing(tracing))
+		callOpts.DeleteLock = append(callOpts.DeleteLock, gax.WithClientTracing(tracing))
+		callOpts.CheckLock = append(callOpts.CheckLock, gax.WithClientTracing(tracing))
+		callOpts.ListLocks = append(callOpts.ListLocks, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "biglake",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/biglake/apiv1alpha1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "biglake.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateCatalog = append(callOpts.CreateCatalog, gax.WithClientLogging(logging))
+		callOpts.DeleteCatalog = append(callOpts.DeleteCatalog, gax.WithClientLogging(logging))
+		callOpts.GetCatalog = append(callOpts.GetCatalog, gax.WithClientLogging(logging))
+		callOpts.ListCatalogs = append(callOpts.ListCatalogs, gax.WithClientLogging(logging))
+		callOpts.CreateDatabase = append(callOpts.CreateDatabase, gax.WithClientLogging(logging))
+		callOpts.DeleteDatabase = append(callOpts.DeleteDatabase, gax.WithClientLogging(logging))
+		callOpts.UpdateDatabase = append(callOpts.UpdateDatabase, gax.WithClientLogging(logging))
+		callOpts.GetDatabase = append(callOpts.GetDatabase, gax.WithClientLogging(logging))
+		callOpts.ListDatabases = append(callOpts.ListDatabases, gax.WithClientLogging(logging))
+		callOpts.CreateTable = append(callOpts.CreateTable, gax.WithClientLogging(logging))
+		callOpts.DeleteTable = append(callOpts.DeleteTable, gax.WithClientLogging(logging))
+		callOpts.UpdateTable = append(callOpts.UpdateTable, gax.WithClientLogging(logging))
+		callOpts.RenameTable = append(callOpts.RenameTable, gax.WithClientLogging(logging))
+		callOpts.GetTable = append(callOpts.GetTable, gax.WithClientLogging(logging))
+		callOpts.ListTables = append(callOpts.ListTables, gax.WithClientLogging(logging))
+		callOpts.CreateLock = append(callOpts.CreateLock, gax.WithClientLogging(logging))
+		callOpts.DeleteLock = append(callOpts.DeleteLock, gax.WithClientLogging(logging))
+		callOpts.CheckLock = append(callOpts.CheckLock, gax.WithClientLogging(logging))
+		callOpts.ListLocks = append(callOpts.ListLocks, gax.WithClientLogging(logging))
+	}
 
 	return &MetastoreClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -898,7 +1110,7 @@ func (c *metastoreRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *metastoreRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -917,6 +1129,9 @@ func (c *metastoreGRPCClient) CreateCatalog(ctx context.Context, req *biglakepb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.biglake.v1alpha1.MetastoreService/CreateCatalog")
+	}
 	opts = append((*c.CallOptions).CreateCatalog[0:len((*c.CallOptions).CreateCatalog):len((*c.CallOptions).CreateCatalog)], opts...)
 	var resp *biglakepb.Catalog
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -935,6 +1150,9 @@ func (c *metastoreGRPCClient) DeleteCatalog(ctx context.Context, req *biglakepb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.biglake.v1alpha1.MetastoreService/DeleteCatalog")
+	}
 	opts = append((*c.CallOptions).DeleteCatalog[0:len((*c.CallOptions).DeleteCatalog):len((*c.CallOptions).DeleteCatalog)], opts...)
 	var resp *biglakepb.Catalog
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -953,6 +1171,9 @@ func (c *metastoreGRPCClient) GetCatalog(ctx context.Context, req *biglakepb.Get
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.biglake.v1alpha1.MetastoreService/GetCatalog")
+	}
 	opts = append((*c.CallOptions).GetCatalog[0:len((*c.CallOptions).GetCatalog):len((*c.CallOptions).GetCatalog)], opts...)
 	var resp *biglakepb.Catalog
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -971,9 +1192,12 @@ func (c *metastoreGRPCClient) ListCatalogs(ctx context.Context, req *biglakepb.L
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.biglake.v1alpha1.MetastoreService/ListCatalogs")
+	}
 	opts = append((*c.CallOptions).ListCatalogs[0:len((*c.CallOptions).ListCatalogs):len((*c.CallOptions).ListCatalogs)], opts...)
 	it := &CatalogIterator{}
-	req = proto.Clone(req).(*biglakepb.ListCatalogsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*biglakepb.Catalog, string, error) {
 		resp := &biglakepb.ListCatalogsResponse{}
 		if pageToken != "" {
@@ -1017,6 +1241,9 @@ func (c *metastoreGRPCClient) CreateDatabase(ctx context.Context, req *biglakepb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.biglake.v1alpha1.MetastoreService/CreateDatabase")
+	}
 	opts = append((*c.CallOptions).CreateDatabase[0:len((*c.CallOptions).CreateDatabase):len((*c.CallOptions).CreateDatabase)], opts...)
 	var resp *biglakepb.Database
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1035,6 +1262,9 @@ func (c *metastoreGRPCClient) DeleteDatabase(ctx context.Context, req *biglakepb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.biglake.v1alpha1.MetastoreService/DeleteDatabase")
+	}
 	opts = append((*c.CallOptions).DeleteDatabase[0:len((*c.CallOptions).DeleteDatabase):len((*c.CallOptions).DeleteDatabase)], opts...)
 	var resp *biglakepb.Database
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1053,6 +1283,9 @@ func (c *metastoreGRPCClient) UpdateDatabase(ctx context.Context, req *biglakepb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.biglake.v1alpha1.MetastoreService/UpdateDatabase")
+	}
 	opts = append((*c.CallOptions).UpdateDatabase[0:len((*c.CallOptions).UpdateDatabase):len((*c.CallOptions).UpdateDatabase)], opts...)
 	var resp *biglakepb.Database
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1071,6 +1304,9 @@ func (c *metastoreGRPCClient) GetDatabase(ctx context.Context, req *biglakepb.Ge
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.biglake.v1alpha1.MetastoreService/GetDatabase")
+	}
 	opts = append((*c.CallOptions).GetDatabase[0:len((*c.CallOptions).GetDatabase):len((*c.CallOptions).GetDatabase)], opts...)
 	var resp *biglakepb.Database
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1089,9 +1325,12 @@ func (c *metastoreGRPCClient) ListDatabases(ctx context.Context, req *biglakepb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.biglake.v1alpha1.MetastoreService/ListDatabases")
+	}
 	opts = append((*c.CallOptions).ListDatabases[0:len((*c.CallOptions).ListDatabases):len((*c.CallOptions).ListDatabases)], opts...)
 	it := &DatabaseIterator{}
-	req = proto.Clone(req).(*biglakepb.ListDatabasesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*biglakepb.Database, string, error) {
 		resp := &biglakepb.ListDatabasesResponse{}
 		if pageToken != "" {
@@ -1135,6 +1374,9 @@ func (c *metastoreGRPCClient) CreateTable(ctx context.Context, req *biglakepb.Cr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.biglake.v1alpha1.MetastoreService/CreateTable")
+	}
 	opts = append((*c.CallOptions).CreateTable[0:len((*c.CallOptions).CreateTable):len((*c.CallOptions).CreateTable)], opts...)
 	var resp *biglakepb.Table
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1153,6 +1395,9 @@ func (c *metastoreGRPCClient) DeleteTable(ctx context.Context, req *biglakepb.De
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.biglake.v1alpha1.MetastoreService/DeleteTable")
+	}
 	opts = append((*c.CallOptions).DeleteTable[0:len((*c.CallOptions).DeleteTable):len((*c.CallOptions).DeleteTable)], opts...)
 	var resp *biglakepb.Table
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1171,6 +1416,9 @@ func (c *metastoreGRPCClient) UpdateTable(ctx context.Context, req *biglakepb.Up
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.biglake.v1alpha1.MetastoreService/UpdateTable")
+	}
 	opts = append((*c.CallOptions).UpdateTable[0:len((*c.CallOptions).UpdateTable):len((*c.CallOptions).UpdateTable)], opts...)
 	var resp *biglakepb.Table
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1189,6 +1437,9 @@ func (c *metastoreGRPCClient) RenameTable(ctx context.Context, req *biglakepb.Re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.biglake.v1alpha1.MetastoreService/RenameTable")
+	}
 	opts = append((*c.CallOptions).RenameTable[0:len((*c.CallOptions).RenameTable):len((*c.CallOptions).RenameTable)], opts...)
 	var resp *biglakepb.Table
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1207,6 +1458,9 @@ func (c *metastoreGRPCClient) GetTable(ctx context.Context, req *biglakepb.GetTa
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.biglake.v1alpha1.MetastoreService/GetTable")
+	}
 	opts = append((*c.CallOptions).GetTable[0:len((*c.CallOptions).GetTable):len((*c.CallOptions).GetTable)], opts...)
 	var resp *biglakepb.Table
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1225,9 +1479,12 @@ func (c *metastoreGRPCClient) ListTables(ctx context.Context, req *biglakepb.Lis
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.biglake.v1alpha1.MetastoreService/ListTables")
+	}
 	opts = append((*c.CallOptions).ListTables[0:len((*c.CallOptions).ListTables):len((*c.CallOptions).ListTables)], opts...)
 	it := &TableIterator{}
-	req = proto.Clone(req).(*biglakepb.ListTablesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*biglakepb.Table, string, error) {
 		resp := &biglakepb.ListTablesResponse{}
 		if pageToken != "" {
@@ -1271,6 +1528,9 @@ func (c *metastoreGRPCClient) CreateLock(ctx context.Context, req *biglakepb.Cre
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.biglake.v1alpha1.MetastoreService/CreateLock")
+	}
 	opts = append((*c.CallOptions).CreateLock[0:len((*c.CallOptions).CreateLock):len((*c.CallOptions).CreateLock)], opts...)
 	var resp *biglakepb.Lock
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1289,6 +1549,9 @@ func (c *metastoreGRPCClient) DeleteLock(ctx context.Context, req *biglakepb.Del
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.biglake.v1alpha1.MetastoreService/DeleteLock")
+	}
 	opts = append((*c.CallOptions).DeleteLock[0:len((*c.CallOptions).DeleteLock):len((*c.CallOptions).DeleteLock)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1303,6 +1566,9 @@ func (c *metastoreGRPCClient) CheckLock(ctx context.Context, req *biglakepb.Chec
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.biglake.v1alpha1.MetastoreService/CheckLock")
+	}
 	opts = append((*c.CallOptions).CheckLock[0:len((*c.CallOptions).CheckLock):len((*c.CallOptions).CheckLock)], opts...)
 	var resp *biglakepb.Lock
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1321,9 +1587,12 @@ func (c *metastoreGRPCClient) ListLocks(ctx context.Context, req *biglakepb.List
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.biglake.v1alpha1.MetastoreService/ListLocks")
+	}
 	opts = append((*c.CallOptions).ListLocks[0:len((*c.CallOptions).ListLocks):len((*c.CallOptions).ListLocks)], opts...)
 	it := &LockIterator{}
-	req = proto.Clone(req).(*biglakepb.ListLocksRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*biglakepb.Lock, string, error) {
 		resp := &biglakepb.ListLocksResponse{}
 		if pageToken != "" {
@@ -1389,6 +1658,10 @@ func (c *metastoreRESTClient) CreateCatalog(ctx context.Context, req *biglakepb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.biglake.v1alpha1.MetastoreService/CreateCatalog")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha1/{parent=projects/*/locations/*}/catalogs")
+	}
 	opts = append((*c.CallOptions).CreateCatalog[0:len((*c.CallOptions).CreateCatalog):len((*c.CallOptions).CreateCatalog)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &biglakepb.Catalog{}
@@ -1439,6 +1712,10 @@ func (c *metastoreRESTClient) DeleteCatalog(ctx context.Context, req *biglakepb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.biglake.v1alpha1.MetastoreService/DeleteCatalog")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha1/{name=projects/*/locations/*/catalogs/*}")
+	}
 	opts = append((*c.CallOptions).DeleteCatalog[0:len((*c.CallOptions).DeleteCatalog):len((*c.CallOptions).DeleteCatalog)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &biglakepb.Catalog{}
@@ -1489,6 +1766,10 @@ func (c *metastoreRESTClient) GetCatalog(ctx context.Context, req *biglakepb.Get
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.biglake.v1alpha1.MetastoreService/GetCatalog")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha1/{name=projects/*/locations/*/catalogs/*}")
+	}
 	opts = append((*c.CallOptions).GetCatalog[0:len((*c.CallOptions).GetCatalog):len((*c.CallOptions).GetCatalog)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &biglakepb.Catalog{}
@@ -1523,7 +1804,7 @@ func (c *metastoreRESTClient) GetCatalog(ctx context.Context, req *biglakepb.Get
 // ListCatalogs list all catalogs in a specified project.
 func (c *metastoreRESTClient) ListCatalogs(ctx context.Context, req *biglakepb.ListCatalogsRequest, opts ...gax.CallOption) *CatalogIterator {
 	it := &CatalogIterator{}
-	req = proto.Clone(req).(*biglakepb.ListCatalogsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*biglakepb.Catalog, string, error) {
 		resp := &biglakepb.ListCatalogsResponse{}
@@ -1625,6 +1906,10 @@ func (c *metastoreRESTClient) CreateDatabase(ctx context.Context, req *biglakepb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.biglake.v1alpha1.MetastoreService/CreateDatabase")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha1/{parent=projects/*/locations/*/catalogs/*}/databases")
+	}
 	opts = append((*c.CallOptions).CreateDatabase[0:len((*c.CallOptions).CreateDatabase):len((*c.CallOptions).CreateDatabase)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &biglakepb.Database{}
@@ -1675,6 +1960,10 @@ func (c *metastoreRESTClient) DeleteDatabase(ctx context.Context, req *biglakepb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.biglake.v1alpha1.MetastoreService/DeleteDatabase")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha1/{name=projects/*/locations/*/catalogs/*/databases/*}")
+	}
 	opts = append((*c.CallOptions).DeleteDatabase[0:len((*c.CallOptions).DeleteDatabase):len((*c.CallOptions).DeleteDatabase)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &biglakepb.Database{}
@@ -1739,6 +2028,10 @@ func (c *metastoreRESTClient) UpdateDatabase(ctx context.Context, req *biglakepb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.biglake.v1alpha1.MetastoreService/UpdateDatabase")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha1/{database.name=projects/*/locations/*/catalogs/*/databases/*}")
+	}
 	opts = append((*c.CallOptions).UpdateDatabase[0:len((*c.CallOptions).UpdateDatabase):len((*c.CallOptions).UpdateDatabase)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &biglakepb.Database{}
@@ -1789,6 +2082,10 @@ func (c *metastoreRESTClient) GetDatabase(ctx context.Context, req *biglakepb.Ge
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.biglake.v1alpha1.MetastoreService/GetDatabase")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha1/{name=projects/*/locations/*/catalogs/*/databases/*}")
+	}
 	opts = append((*c.CallOptions).GetDatabase[0:len((*c.CallOptions).GetDatabase):len((*c.CallOptions).GetDatabase)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &biglakepb.Database{}
@@ -1823,7 +2120,7 @@ func (c *metastoreRESTClient) GetDatabase(ctx context.Context, req *biglakepb.Ge
 // ListDatabases list all databases in a specified catalog.
 func (c *metastoreRESTClient) ListDatabases(ctx context.Context, req *biglakepb.ListDatabasesRequest, opts ...gax.CallOption) *DatabaseIterator {
 	it := &DatabaseIterator{}
-	req = proto.Clone(req).(*biglakepb.ListDatabasesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*biglakepb.Database, string, error) {
 		resp := &biglakepb.ListDatabasesResponse{}
@@ -1925,6 +2222,10 @@ func (c *metastoreRESTClient) CreateTable(ctx context.Context, req *biglakepb.Cr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.biglake.v1alpha1.MetastoreService/CreateTable")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha1/{parent=projects/*/locations/*/catalogs/*/databases/*}/tables")
+	}
 	opts = append((*c.CallOptions).CreateTable[0:len((*c.CallOptions).CreateTable):len((*c.CallOptions).CreateTable)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &biglakepb.Table{}
@@ -1975,6 +2276,10 @@ func (c *metastoreRESTClient) DeleteTable(ctx context.Context, req *biglakepb.De
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.biglake.v1alpha1.MetastoreService/DeleteTable")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha1/{name=projects/*/locations/*/catalogs/*/databases/*/tables/*}")
+	}
 	opts = append((*c.CallOptions).DeleteTable[0:len((*c.CallOptions).DeleteTable):len((*c.CallOptions).DeleteTable)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &biglakepb.Table{}
@@ -2039,6 +2344,10 @@ func (c *metastoreRESTClient) UpdateTable(ctx context.Context, req *biglakepb.Up
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.biglake.v1alpha1.MetastoreService/UpdateTable")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha1/{table.name=projects/*/locations/*/catalogs/*/databases/*/tables/*}")
+	}
 	opts = append((*c.CallOptions).UpdateTable[0:len((*c.CallOptions).UpdateTable):len((*c.CallOptions).UpdateTable)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &biglakepb.Table{}
@@ -2095,6 +2404,10 @@ func (c *metastoreRESTClient) RenameTable(ctx context.Context, req *biglakepb.Re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.biglake.v1alpha1.MetastoreService/RenameTable")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha1/{name=projects/*/locations/*/catalogs/*/databases/*/tables/*}:rename")
+	}
 	opts = append((*c.CallOptions).RenameTable[0:len((*c.CallOptions).RenameTable):len((*c.CallOptions).RenameTable)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &biglakepb.Table{}
@@ -2145,6 +2458,10 @@ func (c *metastoreRESTClient) GetTable(ctx context.Context, req *biglakepb.GetTa
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.biglake.v1alpha1.MetastoreService/GetTable")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha1/{name=projects/*/locations/*/catalogs/*/databases/*/tables/*}")
+	}
 	opts = append((*c.CallOptions).GetTable[0:len((*c.CallOptions).GetTable):len((*c.CallOptions).GetTable)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &biglakepb.Table{}
@@ -2179,7 +2496,7 @@ func (c *metastoreRESTClient) GetTable(ctx context.Context, req *biglakepb.GetTa
 // ListTables list all tables in a specified database.
 func (c *metastoreRESTClient) ListTables(ctx context.Context, req *biglakepb.ListTablesRequest, opts ...gax.CallOption) *TableIterator {
 	it := &TableIterator{}
-	req = proto.Clone(req).(*biglakepb.ListTablesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*biglakepb.Table, string, error) {
 		resp := &biglakepb.ListTablesResponse{}
@@ -2283,6 +2600,10 @@ func (c *metastoreRESTClient) CreateLock(ctx context.Context, req *biglakepb.Cre
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.biglake.v1alpha1.MetastoreService/CreateLock")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha1/{parent=projects/*/locations/*/catalogs/*/databases/*}/locks")
+	}
 	opts = append((*c.CallOptions).CreateLock[0:len((*c.CallOptions).CreateLock):len((*c.CallOptions).CreateLock)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &biglakepb.Lock{}
@@ -2333,6 +2654,10 @@ func (c *metastoreRESTClient) DeleteLock(ctx context.Context, req *biglakepb.Del
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.biglake.v1alpha1.MetastoreService/DeleteLock")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha1/{name=projects/*/locations/*/catalogs/*/databases/*/locks/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2374,6 +2699,10 @@ func (c *metastoreRESTClient) CheckLock(ctx context.Context, req *biglakepb.Chec
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.biglake.v1alpha1.MetastoreService/CheckLock")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha1/{name=projects/*/locations/*/catalogs/*/databases/*/locks/*}:check")
+	}
 	opts = append((*c.CallOptions).CheckLock[0:len((*c.CallOptions).CheckLock):len((*c.CallOptions).CheckLock)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &biglakepb.Lock{}
@@ -2408,7 +2737,7 @@ func (c *metastoreRESTClient) CheckLock(ctx context.Context, req *biglakepb.Chec
 // ListLocks list all locks in a specified database.
 func (c *metastoreRESTClient) ListLocks(ctx context.Context, req *biglakepb.ListLocksRequest, opts ...gax.CallOption) *LockIterator {
 	it := &LockIterator{}
-	req = proto.Clone(req).(*biglakepb.ListLocksRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*biglakepb.Lock, string, error) {
 		resp := &biglakepb.ListLocksResponse{}

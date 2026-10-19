@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import (
 
 	locationfinderpb "cloud.google.com/go/locationfinder/apiv1/locationfinderpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -174,7 +175,7 @@ type CloudLocationFinderClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *CloudLocationFinderClient) Close() error {
 	return c.internalClient.Close()
@@ -247,6 +248,16 @@ type cloudLocationFinderGRPCClient struct {
 // Service describing handlers for resources
 func NewCloudLocationFinderClient(ctx context.Context, opts ...option.ClientOption) (*CloudLocationFinderClient, error) {
 	clientOpts := defaultCloudLocationFinderGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "cloudlocationfinder",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/locationfinder/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "cloudlocationfinder.googleapis.com",
+		}))
+	}
 	if newCloudLocationFinderClientHook != nil {
 		hookOpts, err := newCloudLocationFinderClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -269,6 +280,59 @@ func NewCloudLocationFinderClient(ctx context.Context, opts ...option.ClientOpti
 		locationsClient:           locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "cloudlocationfinder",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/locationfinder/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudlocationfinder.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListCloudLocations = append(client.CallOptions.ListCloudLocations, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetCloudLocation = append(client.CallOptions.GetCloudLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.SearchCloudLocations = append(client.CallOptions.SearchCloudLocations, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudlocationfinder",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/locationfinder/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudlocationfinder.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListCloudLocations = append(client.CallOptions.ListCloudLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.GetCloudLocation = append(client.CallOptions.GetCloudLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.SearchCloudLocations = append(client.CallOptions.SearchCloudLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudlocationfinder",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/locationfinder/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudlocationfinder.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListCloudLocations = append(client.CallOptions.ListCloudLocations, gax.WithClientLogging(logging))
+		client.CallOptions.GetCloudLocation = append(client.CallOptions.GetCloudLocation, gax.WithClientLogging(logging))
+		client.CallOptions.SearchCloudLocations = append(client.CallOptions.SearchCloudLocations, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -294,7 +358,7 @@ func (c *cloudLocationFinderGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *cloudLocationFinderGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -322,6 +386,16 @@ type cloudLocationFinderRESTClient struct {
 // Service describing handlers for resources
 func NewCloudLocationFinderRESTClient(ctx context.Context, opts ...option.ClientOption) (*CloudLocationFinderClient, error) {
 	clientOpts := append(defaultCloudLocationFinderRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "cloudlocationfinder",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/locationfinder/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "cloudlocationfinder.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -335,6 +409,60 @@ func NewCloudLocationFinderRESTClient(ctx context.Context, opts ...option.Client
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "cloudlocationfinder",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/locationfinder/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudlocationfinder.googleapis.com",
+			}),
+		)
+
+		callOpts.ListCloudLocations = append(callOpts.ListCloudLocations, gax.WithClientMetrics(metrics))
+		callOpts.GetCloudLocation = append(callOpts.GetCloudLocation, gax.WithClientMetrics(metrics))
+		callOpts.SearchCloudLocations = append(callOpts.SearchCloudLocations, gax.WithClientMetrics(metrics))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudlocationfinder",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/locationfinder/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudlocationfinder.googleapis.com",
+			}),
+		)
+
+		callOpts.ListCloudLocations = append(callOpts.ListCloudLocations, gax.WithClientTracing(tracing))
+		callOpts.GetCloudLocation = append(callOpts.GetCloudLocation, gax.WithClientTracing(tracing))
+		callOpts.SearchCloudLocations = append(callOpts.SearchCloudLocations, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudlocationfinder",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/locationfinder/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudlocationfinder.googleapis.com",
+			}),
+		)
+
+		callOpts.ListCloudLocations = append(callOpts.ListCloudLocations, gax.WithClientLogging(logging))
+		callOpts.GetCloudLocation = append(callOpts.GetCloudLocation, gax.WithClientLogging(logging))
+		callOpts.SearchCloudLocations = append(callOpts.SearchCloudLocations, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+	}
 
 	return &CloudLocationFinderClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -362,7 +490,7 @@ func (c *cloudLocationFinderRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *cloudLocationFinderRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -381,9 +509,12 @@ func (c *cloudLocationFinderGRPCClient) ListCloudLocations(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.locationfinder.v1.CloudLocationFinder/ListCloudLocations")
+	}
 	opts = append((*c.CallOptions).ListCloudLocations[0:len((*c.CallOptions).ListCloudLocations):len((*c.CallOptions).ListCloudLocations)], opts...)
 	it := &CloudLocationIterator{}
-	req = proto.Clone(req).(*locationfinderpb.ListCloudLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationfinderpb.CloudLocation, string, error) {
 		resp := &locationfinderpb.ListCloudLocationsResponse{}
 		if pageToken != "" {
@@ -427,6 +558,9 @@ func (c *cloudLocationFinderGRPCClient) GetCloudLocation(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.locationfinder.v1.CloudLocationFinder/GetCloudLocation")
+	}
 	opts = append((*c.CallOptions).GetCloudLocation[0:len((*c.CallOptions).GetCloudLocation):len((*c.CallOptions).GetCloudLocation)], opts...)
 	var resp *locationfinderpb.CloudLocation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -445,9 +579,12 @@ func (c *cloudLocationFinderGRPCClient) SearchCloudLocations(ctx context.Context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.locationfinder.v1.CloudLocationFinder/SearchCloudLocations")
+	}
 	opts = append((*c.CallOptions).SearchCloudLocations[0:len((*c.CallOptions).SearchCloudLocations):len((*c.CallOptions).SearchCloudLocations)], opts...)
 	it := &CloudLocationIterator{}
-	req = proto.Clone(req).(*locationfinderpb.SearchCloudLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationfinderpb.CloudLocation, string, error) {
 		resp := &locationfinderpb.SearchCloudLocationsResponse{}
 		if pageToken != "" {
@@ -491,6 +628,9 @@ func (c *cloudLocationFinderGRPCClient) GetLocation(ctx context.Context, req *lo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -509,9 +649,12 @@ func (c *cloudLocationFinderGRPCClient) ListLocations(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/ListLocations")
+	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -553,7 +696,7 @@ func (c *cloudLocationFinderGRPCClient) ListLocations(ctx context.Context, req *
 // ListCloudLocations lists cloud locations under a given project and location.
 func (c *cloudLocationFinderRESTClient) ListCloudLocations(ctx context.Context, req *locationfinderpb.ListCloudLocationsRequest, opts ...gax.CallOption) *CloudLocationIterator {
 	it := &CloudLocationIterator{}
-	req = proto.Clone(req).(*locationfinderpb.ListCloudLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationfinderpb.CloudLocation, string, error) {
 		resp := &locationfinderpb.ListCloudLocationsResponse{}
@@ -650,6 +793,10 @@ func (c *cloudLocationFinderRESTClient) GetCloudLocation(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.locationfinder.v1.CloudLocationFinder/GetCloudLocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/cloudLocations/*}")
+	}
 	opts = append((*c.CallOptions).GetCloudLocation[0:len((*c.CallOptions).GetCloudLocation):len((*c.CallOptions).GetCloudLocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &locationfinderpb.CloudLocation{}
@@ -684,7 +831,7 @@ func (c *cloudLocationFinderRESTClient) GetCloudLocation(ctx context.Context, re
 // SearchCloudLocations searches for cloud locations from a given source location.
 func (c *cloudLocationFinderRESTClient) SearchCloudLocations(ctx context.Context, req *locationfinderpb.SearchCloudLocationsRequest, opts ...gax.CallOption) *CloudLocationIterator {
 	it := &CloudLocationIterator{}
-	req = proto.Clone(req).(*locationfinderpb.SearchCloudLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationfinderpb.CloudLocation, string, error) {
 		resp := &locationfinderpb.SearchCloudLocationsResponse{}
@@ -782,6 +929,10 @@ func (c *cloudLocationFinderRESTClient) GetLocation(ctx context.Context, req *lo
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*}")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &locationpb.Location{}
@@ -816,7 +967,7 @@ func (c *cloudLocationFinderRESTClient) GetLocation(ctx context.Context, req *lo
 // ListLocations lists information about the supported locations for this service.
 func (c *cloudLocationFinderRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}

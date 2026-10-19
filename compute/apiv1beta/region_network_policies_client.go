@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import (
 
 	computepb "cloud.google.com/go/compute/apiv1beta/computepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -146,7 +147,7 @@ func defaultRegionNetworkPoliciesRESTCallOptions() *RegionNetworkPoliciesCallOpt
 	}
 }
 
-// internalRegionNetworkPoliciesClient is an interface that defines the methods available from Google Compute Engine API.
+// internalRegionNetworkPoliciesClient is an interface that defines the methods available from Compute Engine API.
 type internalRegionNetworkPoliciesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -166,7 +167,7 @@ type internalRegionNetworkPoliciesClient interface {
 	RemoveTrafficClassificationRule(context.Context, *computepb.RemoveTrafficClassificationRuleRegionNetworkPolicyRequest, ...gax.CallOption) (*Operation, error)
 }
 
-// RegionNetworkPoliciesClient is a client for interacting with Google Compute Engine API.
+// RegionNetworkPoliciesClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The RegionNetworkPolicies API.
@@ -180,7 +181,7 @@ type RegionNetworkPoliciesClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *RegionNetworkPoliciesClient) Close() error {
 	return c.internalClient.Close()
@@ -211,7 +212,10 @@ func (c *RegionNetworkPoliciesClient) AddTrafficClassificationRule(ctx context.C
 	return c.internalClient.AddTrafficClassificationRule(ctx, req, opts...)
 }
 
-// AggregatedList retrieves an aggregated list of network policies. To prevent failure, it’s recommended that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of network policies.
+//
+// To prevent failure, it’s recommended that you set the
+// returnPartialSuccess parameter to true.
 func (c *RegionNetworkPoliciesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListRegionNetworkPoliciesRequest, opts ...gax.CallOption) *NetworkPoliciesScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -236,17 +240,20 @@ func (c *RegionNetworkPoliciesClient) GetTrafficClassificationRule(ctx context.C
 	return c.internalClient.GetTrafficClassificationRule(ctx, req, opts...)
 }
 
-// Insert creates a new policy in the specified project using the data included in the request.
+// Insert creates a new policy in the specified project using the data included in
+// the request.
 func (c *RegionNetworkPoliciesClient) Insert(ctx context.Context, req *computepb.InsertRegionNetworkPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List lists all the policies that have been configured for the specified project in the given region.
+// List lists all the policies that have been configured for the specified project
+// in the given region.
 func (c *RegionNetworkPoliciesClient) List(ctx context.Context, req *computepb.ListRegionNetworkPoliciesRequest, opts ...gax.CallOption) *NetworkPolicyIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// Patch patches the specified policy with the data included in the request.
+// Patch patches the specified policy with the data included in the
+// request.
 func (c *RegionNetworkPoliciesClient) Patch(ctx context.Context, req *computepb.PatchRegionNetworkPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
@@ -291,6 +298,16 @@ type regionNetworkPoliciesRESTClient struct {
 // The RegionNetworkPolicies API.
 func NewRegionNetworkPoliciesRESTClient(ctx context.Context, opts ...option.ClientOption) (*RegionNetworkPoliciesClient, error) {
 	clientOpts := append(defaultRegionNetworkPoliciesRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "compute",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/compute/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "compute.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -304,6 +321,84 @@ func NewRegionNetworkPoliciesRESTClient(ctx context.Context, opts ...option.Clie
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AddAssociation = append(callOpts.AddAssociation, gax.WithClientMetrics(metrics))
+		callOpts.AddTrafficClassificationRule = append(callOpts.AddTrafficClassificationRule, gax.WithClientMetrics(metrics))
+		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientMetrics(metrics))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientMetrics(metrics))
+		callOpts.Get = append(callOpts.Get, gax.WithClientMetrics(metrics))
+		callOpts.GetAssociation = append(callOpts.GetAssociation, gax.WithClientMetrics(metrics))
+		callOpts.GetTrafficClassificationRule = append(callOpts.GetTrafficClassificationRule, gax.WithClientMetrics(metrics))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientMetrics(metrics))
+		callOpts.List = append(callOpts.List, gax.WithClientMetrics(metrics))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientMetrics(metrics))
+		callOpts.PatchTrafficClassificationRule = append(callOpts.PatchTrafficClassificationRule, gax.WithClientMetrics(metrics))
+		callOpts.RemoveAssociation = append(callOpts.RemoveAssociation, gax.WithClientMetrics(metrics))
+		callOpts.RemoveTrafficClassificationRule = append(callOpts.RemoveTrafficClassificationRule, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AddAssociation = append(callOpts.AddAssociation, gax.WithClientTracing(tracing))
+		callOpts.AddTrafficClassificationRule = append(callOpts.AddTrafficClassificationRule, gax.WithClientTracing(tracing))
+		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientTracing(tracing))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientTracing(tracing))
+		callOpts.Get = append(callOpts.Get, gax.WithClientTracing(tracing))
+		callOpts.GetAssociation = append(callOpts.GetAssociation, gax.WithClientTracing(tracing))
+		callOpts.GetTrafficClassificationRule = append(callOpts.GetTrafficClassificationRule, gax.WithClientTracing(tracing))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientTracing(tracing))
+		callOpts.List = append(callOpts.List, gax.WithClientTracing(tracing))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientTracing(tracing))
+		callOpts.PatchTrafficClassificationRule = append(callOpts.PatchTrafficClassificationRule, gax.WithClientTracing(tracing))
+		callOpts.RemoveAssociation = append(callOpts.RemoveAssociation, gax.WithClientTracing(tracing))
+		callOpts.RemoveTrafficClassificationRule = append(callOpts.RemoveTrafficClassificationRule, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AddAssociation = append(callOpts.AddAssociation, gax.WithClientLogging(logging))
+		callOpts.AddTrafficClassificationRule = append(callOpts.AddTrafficClassificationRule, gax.WithClientLogging(logging))
+		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientLogging(logging))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientLogging(logging))
+		callOpts.Get = append(callOpts.Get, gax.WithClientLogging(logging))
+		callOpts.GetAssociation = append(callOpts.GetAssociation, gax.WithClientLogging(logging))
+		callOpts.GetTrafficClassificationRule = append(callOpts.GetTrafficClassificationRule, gax.WithClientLogging(logging))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientLogging(logging))
+		callOpts.List = append(callOpts.List, gax.WithClientLogging(logging))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientLogging(logging))
+		callOpts.PatchTrafficClassificationRule = append(callOpts.PatchTrafficClassificationRule, gax.WithClientLogging(logging))
+		callOpts.RemoveAssociation = append(callOpts.RemoveAssociation, gax.WithClientLogging(logging))
+		callOpts.RemoveTrafficClassificationRule = append(callOpts.RemoveTrafficClassificationRule, gax.WithClientLogging(logging))
+	}
 
 	o := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -341,7 +436,7 @@ func (c *regionNetworkPoliciesRESTClient) setGoogleClientInfo(keyval ...string) 
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *regionNetworkPoliciesRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -387,6 +482,10 @@ func (c *regionNetworkPoliciesRESTClient) AddAssociation(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.RegionNetworkPolicies/AddAssociation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/networkPolicies/{network_policy}/addAssociation")
+	}
 	opts = append((*c.CallOptions).AddAssociation[0:len((*c.CallOptions).AddAssociation):len((*c.CallOptions).AddAssociation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -454,6 +553,10 @@ func (c *regionNetworkPoliciesRESTClient) AddTrafficClassificationRule(ctx conte
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.RegionNetworkPolicies/AddTrafficClassificationRule")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/networkPolicies/{network_policy}/addTrafficClassificationRule")
+	}
 	opts = append((*c.CallOptions).AddTrafficClassificationRule[0:len((*c.CallOptions).AddTrafficClassificationRule):len((*c.CallOptions).AddTrafficClassificationRule)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -493,10 +596,13 @@ func (c *regionNetworkPoliciesRESTClient) AddTrafficClassificationRule(ctx conte
 	return op, nil
 }
 
-// AggregatedList retrieves an aggregated list of network policies. To prevent failure, it’s recommended that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of network policies.
+//
+// To prevent failure, it’s recommended that you set the
+// returnPartialSuccess parameter to true.
 func (c *regionNetworkPoliciesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListRegionNetworkPoliciesRequest, opts ...gax.CallOption) *NetworkPoliciesScopedListPairIterator {
 	it := &NetworkPoliciesScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListRegionNetworkPoliciesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]NetworkPoliciesScopedListPair, string, error) {
 		resp := &computepb.NetworkPolicyAggregatedList{}
@@ -613,6 +719,10 @@ func (c *regionNetworkPoliciesRESTClient) Delete(ctx context.Context, req *compu
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.RegionNetworkPolicies/Delete")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/networkPolicies/{network_policy}")
+	}
 	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -666,6 +776,10 @@ func (c *regionNetworkPoliciesRESTClient) Get(ctx context.Context, req *computep
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.RegionNetworkPolicies/Get")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/networkPolicies/{network_policy}")
+	}
 	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.NetworkPolicy{}
@@ -718,6 +832,10 @@ func (c *regionNetworkPoliciesRESTClient) GetAssociation(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.RegionNetworkPolicies/GetAssociation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/networkPolicies/{network_policy}/getAssociation")
+	}
 	opts = append((*c.CallOptions).GetAssociation[0:len((*c.CallOptions).GetAssociation):len((*c.CallOptions).GetAssociation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.NetworkPolicyAssociation{}
@@ -770,6 +888,10 @@ func (c *regionNetworkPoliciesRESTClient) GetTrafficClassificationRule(ctx conte
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.RegionNetworkPolicies/GetTrafficClassificationRule")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/networkPolicies/{network_policy}/getTrafficClassificationRule")
+	}
 	opts = append((*c.CallOptions).GetTrafficClassificationRule[0:len((*c.CallOptions).GetTrafficClassificationRule):len((*c.CallOptions).GetTrafficClassificationRule)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.NetworkPolicyTrafficClassificationRule{}
@@ -801,7 +923,8 @@ func (c *regionNetworkPoliciesRESTClient) GetTrafficClassificationRule(ctx conte
 	return resp, nil
 }
 
-// Insert creates a new policy in the specified project using the data included in the request.
+// Insert creates a new policy in the specified project using the data included in
+// the request.
 func (c *regionNetworkPoliciesRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionNetworkPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNetworkPolicyResource()
@@ -829,6 +952,10 @@ func (c *regionNetworkPoliciesRESTClient) Insert(ctx context.Context, req *compu
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.RegionNetworkPolicies/Insert")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/networkPolicies")
+	}
 	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -868,10 +995,11 @@ func (c *regionNetworkPoliciesRESTClient) Insert(ctx context.Context, req *compu
 	return op, nil
 }
 
-// List lists all the policies that have been configured for the specified project in the given region.
+// List lists all the policies that have been configured for the specified project
+// in the given region.
 func (c *regionNetworkPoliciesRESTClient) List(ctx context.Context, req *computepb.ListRegionNetworkPoliciesRequest, opts ...gax.CallOption) *NetworkPolicyIterator {
 	it := &NetworkPolicyIterator{}
-	req = proto.Clone(req).(*computepb.ListRegionNetworkPoliciesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.NetworkPolicy, string, error) {
 		resp := &computepb.NetworkPolicyList{}
@@ -954,7 +1082,8 @@ func (c *regionNetworkPoliciesRESTClient) List(ctx context.Context, req *compute
 	return it
 }
 
-// Patch patches the specified policy with the data included in the request.
+// Patch patches the specified policy with the data included in the
+// request.
 func (c *regionNetworkPoliciesRESTClient) Patch(ctx context.Context, req *computepb.PatchRegionNetworkPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNetworkPolicyResource()
@@ -982,6 +1111,10 @@ func (c *regionNetworkPoliciesRESTClient) Patch(ctx context.Context, req *comput
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.RegionNetworkPolicies/Patch")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/networkPolicies/{network_policy}")
+	}
 	opts = append((*c.CallOptions).Patch[0:len((*c.CallOptions).Patch):len((*c.CallOptions).Patch)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -1052,6 +1185,10 @@ func (c *regionNetworkPoliciesRESTClient) PatchTrafficClassificationRule(ctx con
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.RegionNetworkPolicies/PatchTrafficClassificationRule")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/networkPolicies/{network_policy}/patchTrafficClassificationRule")
+	}
 	opts = append((*c.CallOptions).PatchTrafficClassificationRule[0:len((*c.CallOptions).PatchTrafficClassificationRule):len((*c.CallOptions).PatchTrafficClassificationRule)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -1115,6 +1252,10 @@ func (c *regionNetworkPoliciesRESTClient) RemoveAssociation(ctx context.Context,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.RegionNetworkPolicies/RemoveAssociation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/networkPolicies/{network_policy}/removeAssociation")
+	}
 	opts = append((*c.CallOptions).RemoveAssociation[0:len((*c.CallOptions).RemoveAssociation):len((*c.CallOptions).RemoveAssociation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -1178,6 +1319,10 @@ func (c *regionNetworkPoliciesRESTClient) RemoveTrafficClassificationRule(ctx co
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.RegionNetworkPolicies/RemoveTrafficClassificationRule")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/networkPolicies/{network_policy}/removeTrafficClassificationRule")
+	}
 	opts = append((*c.CallOptions).RemoveTrafficClassificationRule[0:len((*c.CallOptions).RemoveTrafficClassificationRule):len((*c.CallOptions).RemoveTrafficClassificationRule)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}

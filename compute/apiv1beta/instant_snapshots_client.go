@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import (
 
 	computepb "cloud.google.com/go/compute/apiv1beta/computepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -121,7 +122,7 @@ func defaultInstantSnapshotsRESTCallOptions() *InstantSnapshotsCallOptions {
 	}
 }
 
-// internalInstantSnapshotsClient is an interface that defines the methods available from Google Compute Engine API.
+// internalInstantSnapshotsClient is an interface that defines the methods available from Compute Engine API.
 type internalInstantSnapshotsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -137,7 +138,7 @@ type internalInstantSnapshotsClient interface {
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsInstantSnapshotRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 }
 
-// InstantSnapshotsClient is a client for interacting with Google Compute Engine API.
+// InstantSnapshotsClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The InstantSnapshots API.
@@ -151,7 +152,7 @@ type InstantSnapshotsClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *InstantSnapshotsClient) Close() error {
 	return c.internalClient.Close()
@@ -172,12 +173,22 @@ func (c *InstantSnapshotsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves an aggregated list of instantSnapshots. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of instantSnapshots.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *InstantSnapshotsClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListInstantSnapshotsRequest, opts ...gax.CallOption) *InstantSnapshotsScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
 
-// Delete deletes the specified InstantSnapshot resource. Keep in mind that deleting a single instantSnapshot might not necessarily delete all the data on that instantSnapshot. If any data on the instantSnapshot that is marked for deletion is needed for subsequent instantSnapshots, the data will be moved to the next corresponding instantSnapshot. For more information, see Deleting instantSnapshots.
+// Delete deletes the specified InstantSnapshot resource. Keep in mind that deleting
+// a single instantSnapshot might not necessarily delete all the data on that
+// instantSnapshot. If any data on the instantSnapshot that is marked for
+// deletion is needed for subsequent instantSnapshots, the data will be moved
+// to the next corresponding instantSnapshot.
+//
+// For more information, seeDeleting
+// instantSnapshots.
 func (c *InstantSnapshotsClient) Delete(ctx context.Context, req *computepb.DeleteInstantSnapshotRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
@@ -187,7 +198,8 @@ func (c *InstantSnapshotsClient) Get(ctx context.Context, req *computepb.GetInst
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such
+// policy or resource exists.
 func (c *InstantSnapshotsClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyInstantSnapshotRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.GetIamPolicy(ctx, req, opts...)
 }
@@ -197,17 +209,21 @@ func (c *InstantSnapshotsClient) Insert(ctx context.Context, req *computepb.Inse
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves the list of InstantSnapshot resources contained within the specified zone.
+// List retrieves the list of InstantSnapshot resources contained within
+// the specified zone.
 func (c *InstantSnapshotsClient) List(ctx context.Context, req *computepb.ListInstantSnapshotsRequest, opts ...gax.CallOption) *InstantSnapshotIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
+// SetIamPolicy sets the access control policy on the specified resource.
+// Replaces any existing policy.
 func (c *InstantSnapshotsClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyInstantSnapshotRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.SetIamPolicy(ctx, req, opts...)
 }
 
-// SetLabels sets the labels on a instantSnapshot in the given zone. To learn more about labels, read the Labeling Resources documentation.
+// SetLabels sets the labels on a instantSnapshot in the given zone. To learn more about
+// labels, read the Labeling
+// Resources documentation.
 func (c *InstantSnapshotsClient) SetLabels(ctx context.Context, req *computepb.SetLabelsInstantSnapshotRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetLabels(ctx, req, opts...)
 }
@@ -242,6 +258,16 @@ type instantSnapshotsRESTClient struct {
 // The InstantSnapshots API.
 func NewInstantSnapshotsRESTClient(ctx context.Context, opts ...option.ClientOption) (*InstantSnapshotsClient, error) {
 	clientOpts := append(defaultInstantSnapshotsRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "compute",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/compute/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "compute.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -255,6 +281,72 @@ func NewInstantSnapshotsRESTClient(ctx context.Context, opts ...option.ClientOpt
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientMetrics(metrics))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientMetrics(metrics))
+		callOpts.Get = append(callOpts.Get, gax.WithClientMetrics(metrics))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientMetrics(metrics))
+		callOpts.List = append(callOpts.List, gax.WithClientMetrics(metrics))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.SetLabels = append(callOpts.SetLabels, gax.WithClientMetrics(metrics))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientTracing(tracing))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientTracing(tracing))
+		callOpts.Get = append(callOpts.Get, gax.WithClientTracing(tracing))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientTracing(tracing))
+		callOpts.List = append(callOpts.List, gax.WithClientTracing(tracing))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.SetLabels = append(callOpts.SetLabels, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientLogging(logging))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientLogging(logging))
+		callOpts.Get = append(callOpts.Get, gax.WithClientLogging(logging))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientLogging(logging))
+		callOpts.List = append(callOpts.List, gax.WithClientLogging(logging))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.SetLabels = append(callOpts.SetLabels, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientLogging(logging))
+	}
 
 	o := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -292,7 +384,7 @@ func (c *instantSnapshotsRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *instantSnapshotsRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -310,10 +402,13 @@ func (c *instantSnapshotsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves an aggregated list of instantSnapshots. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of instantSnapshots.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *instantSnapshotsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListInstantSnapshotsRequest, opts ...gax.CallOption) *InstantSnapshotsScopedListPairIterator {
 	it := &InstantSnapshotsScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListInstantSnapshotsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]InstantSnapshotsScopedListPair, string, error) {
 		resp := &computepb.InstantSnapshotAggregatedList{}
@@ -409,7 +504,14 @@ func (c *instantSnapshotsRESTClient) AggregatedList(ctx context.Context, req *co
 	return it
 }
 
-// Delete deletes the specified InstantSnapshot resource. Keep in mind that deleting a single instantSnapshot might not necessarily delete all the data on that instantSnapshot. If any data on the instantSnapshot that is marked for deletion is needed for subsequent instantSnapshots, the data will be moved to the next corresponding instantSnapshot. For more information, see Deleting instantSnapshots.
+// Delete deletes the specified InstantSnapshot resource. Keep in mind that deleting
+// a single instantSnapshot might not necessarily delete all the data on that
+// instantSnapshot. If any data on the instantSnapshot that is marked for
+// deletion is needed for subsequent instantSnapshots, the data will be moved
+// to the next corresponding instantSnapshot.
+//
+// For more information, seeDeleting
+// instantSnapshots.
 func (c *instantSnapshotsRESTClient) Delete(ctx context.Context, req *computepb.DeleteInstantSnapshotRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -430,6 +532,10 @@ func (c *instantSnapshotsRESTClient) Delete(ctx context.Context, req *computepb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.InstantSnapshots/Delete")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/zones/{zone}/instantSnapshots/{instant_snapshot}")
+	}
 	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -483,6 +589,10 @@ func (c *instantSnapshotsRESTClient) Get(ctx context.Context, req *computepb.Get
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.InstantSnapshots/Get")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/zones/{zone}/instantSnapshots/{instant_snapshot}")
+	}
 	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.InstantSnapshot{}
@@ -514,7 +624,8 @@ func (c *instantSnapshotsRESTClient) Get(ctx context.Context, req *computepb.Get
 	return resp, nil
 }
 
-// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such
+// policy or resource exists.
 func (c *instantSnapshotsRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyInstantSnapshotRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -535,6 +646,10 @@ func (c *instantSnapshotsRESTClient) GetIamPolicy(ctx context.Context, req *comp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.InstantSnapshots/GetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/zones/{zone}/instantSnapshots/{resource}/getIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Policy{}
@@ -594,6 +709,10 @@ func (c *instantSnapshotsRESTClient) Insert(ctx context.Context, req *computepb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.InstantSnapshots/Insert")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/zones/{zone}/instantSnapshots")
+	}
 	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -633,10 +752,11 @@ func (c *instantSnapshotsRESTClient) Insert(ctx context.Context, req *computepb.
 	return op, nil
 }
 
-// List retrieves the list of InstantSnapshot resources contained within the specified zone.
+// List retrieves the list of InstantSnapshot resources contained within
+// the specified zone.
 func (c *instantSnapshotsRESTClient) List(ctx context.Context, req *computepb.ListInstantSnapshotsRequest, opts ...gax.CallOption) *InstantSnapshotIterator {
 	it := &InstantSnapshotIterator{}
-	req = proto.Clone(req).(*computepb.ListInstantSnapshotsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.InstantSnapshot, string, error) {
 		resp := &computepb.InstantSnapshotList{}
@@ -719,7 +839,8 @@ func (c *instantSnapshotsRESTClient) List(ctx context.Context, req *computepb.Li
 	return it
 }
 
-// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
+// SetIamPolicy sets the access control policy on the specified resource.
+// Replaces any existing policy.
 func (c *instantSnapshotsRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyInstantSnapshotRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetZoneSetPolicyRequestResource()
@@ -740,6 +861,10 @@ func (c *instantSnapshotsRESTClient) SetIamPolicy(ctx context.Context, req *comp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.InstantSnapshots/SetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/zones/{zone}/instantSnapshots/{resource}/setIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Policy{}
@@ -771,7 +896,9 @@ func (c *instantSnapshotsRESTClient) SetIamPolicy(ctx context.Context, req *comp
 	return resp, nil
 }
 
-// SetLabels sets the labels on a instantSnapshot in the given zone. To learn more about labels, read the Labeling Resources documentation.
+// SetLabels sets the labels on a instantSnapshot in the given zone. To learn more about
+// labels, read the Labeling
+// Resources documentation.
 func (c *instantSnapshotsRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabelsInstantSnapshotRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetZoneSetLabelsRequestResource()
@@ -799,6 +926,10 @@ func (c *instantSnapshotsRESTClient) SetLabels(ctx context.Context, req *compute
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.InstantSnapshots/SetLabels")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/zones/{zone}/instantSnapshots/{resource}/setLabels")
+	}
 	opts = append((*c.CallOptions).SetLabels[0:len((*c.CallOptions).SetLabels):len((*c.CallOptions).SetLabels)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -859,6 +990,10 @@ func (c *instantSnapshotsRESTClient) TestIamPermissions(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.InstantSnapshots/TestIamPermissions")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/zones/{zone}/instantSnapshots/{resource}/testIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.TestPermissionsResponse{}

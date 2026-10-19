@@ -65,10 +65,7 @@ type Client struct {
 // between the client and the BigQuery Storage service.
 func NewClient(ctx context.Context, projectID string, opts ...option.ClientOption) (c *Client, err error) {
 	// Set a reasonable default for the gRPC connection pool size.
-	numConns := runtime.GOMAXPROCS(0)
-	if numConns > 4 {
-		numConns = 4
-	}
+	numConns := min(runtime.GOMAXPROCS(0), 4)
 	o := []option.ClientOption{
 		option.WithGRPCConnectionPool(numConns),
 	}

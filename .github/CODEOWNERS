@@ -1,30 +1,31 @@
 # Default owner for all directories not owned by others
+# The cloud-sdk-go-team team are the effective repo maintainers, but automatic
+# generation/releasing PRs are in the purview of the librarian team.
+# The following list is only used for notifications, not for approvals.
+*                       @googleapis/cloud-sdk-go-team
 
-*                       @googleapis/cloud-sdk-librarian-team # Librarian team access for merging Librarian PRs
-*                       @googleapis/cloud-sdk-go-eng
+/librarian.yaml         @googleapis/cloud-sdk-librarian-team
+/ai/                    @googleapis/vertexai-team @googleapis/cloud-sdk-go-team
+/aiplatform/            @googleapis/vertexai-team @googleapis/cloud-sdk-go-team
+/agentplatform/         @googleapis/vertexai-team @googleapis/cloud-sdk-go-team
+/auth/                  @googleapis/aion-team @googleapis/cloud-sdk-go-team
+/bigtable/              @googleapis/bigtable-team @googleapis/cloud-sdk-go-team
+/bigtable/cmd/cbt       @googleapis/bigtable-team @googleapis/cloud-sdk-go-team
+/bigtable/cmd/emulator  @googleapis/bigtable-team @googleapis/cloud-sdk-go-team
+/bigtable/bttest        @googleapis/bigtable-team @googleapis/cloud-sdk-go-team
+/datastore/             @googleapis/cloud-sdk-go-team
+/firestore/             @googleapis/cloud-sdk-go-team
+/pubsub/                @googleapis/pubsub-team @googleapis/cloud-sdk-go-team
+/pubsublite/            @googleapis/pubsub-team @googleapis/cloud-sdk-go-team
+/spanner/               @googleapis/spanner-team @googleapis/cloud-sdk-go-team
+/storage/               @googleapis/gcs-team @googleapis/cloud-sdk-go-team
+/httpreplay/            @googleapis/gcs-team @googleapis/cloud-sdk-go-team
+/errorreporting/        @googleapis/cloud-sdk-go-team
+/logging/               @googleapis/cloud-sdk-go-team
+/profiler/              @googleapis/cloud-profiler-team @googleapis/cloud-sdk-go-team
+/vertexai/              @googleapis/vertexai-team @googleapis/cloud-sdk-go-team
+/internal/protoveneer/  @googleapis/cloud-sdk-go-team
 
-/ai/                    @googleapis/go-vertexai @googleapis/cloud-sdk-go-eng
-/aiplatform/            @googleapis/go-vertexai @googleapis/cloud-sdk-go-eng
-/bigtable/              @googleapis/cloud-native-db-dpes @googleapis/api-bigtable-partners @googleapis/api-bigtable @googleapis/cloud-sdk-go-eng
-/bigtable/cmd/cbt       @igorbernstein2 @googleapis/cloud-native-db-dpes @googleapis/api-bigtable-partners @googleapis/api-bigtable @googleapis/cloud-sdk-go-eng
-/bigtable/cmd/emulator  @igorbernstein2 @googleapis/cloud-native-db-dpes @googleapis/api-bigtable-partners @googleapis/api-bigtable @googleapis/cloud-sdk-go-eng
-/bigtable/bttest        @igorbernstein2 @googleapis/cloud-native-db-dpes @googleapis/api-bigtable-partners @googleapis/api-bigtable @googleapis/cloud-sdk-go-eng
-/bigquery/              @googleapis/api-bigquery @googleapis/cloud-sdk-go-eng
-/datastore/             @googleapis/cloud-native-db-dpes @googleapis/api-firestore-partners @googleapis/cloud-sdk-go-eng
-/firestore/             @googleapis/cloud-native-db-dpes @googleapis/api-firestore-partners @googleapis/cloud-sdk-go-eng
-/pubsub/                @googleapis/api-pubsub @googleapis/cloud-sdk-go-eng @googleapis/cloud-native-db-dpes
-/pubsublite/            @googleapis/api-pubsub @googleapis/cloud-sdk-go-eng
-/spanner/               @googleapis/spanner-client-libraries-go @googleapis/cloud-sdk-go-eng
-/storage/               @googleapis/gcs-sdk-team @googleapis/cloud-sdk-go-eng
-/httpreplay/            @googleapis/gcs-sdk-team @googleapis/cloud-sdk-go-eng
-/errorreporting/        @googleapis/api-logging @googleapis/api-logging-partners @googleapis/cloud-sdk-go-eng
-/logging/               @googleapis/api-logging @googleapis/api-logging-partners @googleapis/cloud-sdk-go-eng
-/profiler/              @googleapis/api-profiler @googleapis/cloud-sdk-go-eng
-/vertexai/              @googleapis/go-vertexai @googleapis/cloud-sdk-go-eng
-/internal/protoveneer/  @googleapis/cloud-sdk-go-eng @jba
 
-# individual release versions manifest is unowned (to avoid notifying every team)
-.release-please-manifest-individual.json
-# Owned by all
-go.work
-go.work.sum
+# We mark the release please individual manifest unowned as well to allow teams to release the individual modules without secondary approvals.
+/.release-please-individual-manifest.json

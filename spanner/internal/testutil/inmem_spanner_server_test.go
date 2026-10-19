@@ -15,19 +15,18 @@
 package testutil_test
 
 import (
-	"io"
-	"strconv"
-
-	. "cloud.google.com/go/spanner/internal/testutil"
-
 	"context"
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"net"
 	"os"
+	"strconv"
 	"strings"
 	"testing"
+
+	. "cloud.google.com/go/spanner/internal/testutil"
 
 	"cloud.google.com/go/spanner/apiv1/spannerpb"
 	"google.golang.org/grpc/codes"
@@ -60,6 +59,7 @@ const updateSQL = "UPDATE FOO SET BAR=1 WHERE ID=ID"
 const updateRowCount int64 = 2
 
 func TestMain(m *testing.M) {
+	_ = os.Setenv("GOOGLE_CLOUD_SPANNER_DISABLE_LOG_CLIENT_OPTIONS", "true")
 	flag.Parse()
 
 	testSpanner = NewInMemSpannerServer()

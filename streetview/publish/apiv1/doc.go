@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,8 +20,6 @@
 // Publishes 360 photos to Google Maps, along with position, orientation, and
 // connectivity metadata. Apps can offer an interface for positioning,
 // connecting, and uploading user-generated Street View images.
-//
-//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
 //
 // # General documentation
 //

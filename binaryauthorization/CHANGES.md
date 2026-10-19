@@ -1,6 +1,30 @@
 # Changes
 
 
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/binaryauthorization/v1.16.0...binaryauthorization/v1.17.0) (2026-09-23)
+
+
+### Features
+
+* **all:** Update supported go versions ([#20520](https://github.com/googleapis/google-cloud-go/issues/20520)) ([90413d3](https://github.com/googleapis/google-cloud-go/commit/90413d3e9d381ef4b92e3c496d98b023c5b2d8cc))
+
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/binaryauthorization/v1.15.0...binaryauthorization/v1.16.0) (2026-07-13)
+
+
+### Features
+
+* Update API sources and regenerate ([#20109](https://github.com/googleapis/google-cloud-go/issues/20109)) ([4314d30](https://github.com/googleapis/google-cloud-go/commit/4314d305008d9a4b2d9f464d07519f8081b2277d))
+
+## [1.15.0](https://github.com/googleapis/google-cloud-go/releases/tag/binaryauthorization%2Fv1.15.0) (2026-05-07)
+
+## [1.14.0](https://github.com/googleapis/google-cloud-go/releases/tag/binaryauthorization%2Fv1.14.0) (2026-04-30)
+
+## [1.13.0](https://github.com/googleapis/google-cloud-go/releases/tag/binaryauthorization%2Fv1.13.0) (2026-04-13)
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/releases/tag/binaryauthorization%2Fv1.12.0) (2026-04-09)
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/releases/tag/binaryauthorization%2Fv1.11.0) (2026-04-02)
+
 ## [1.10.0](https://github.com/googleapis/google-cloud-go/releases/tag/binaryauthorization%2Fv1.10.0) (2025-10-10)
 
 ### Features

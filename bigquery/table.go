@@ -18,6 +18,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"maps"
 	"time"
 
 	"cloud.google.com/go/internal/optional"
@@ -796,6 +797,7 @@ func (t *Table) Create(ctx context.Context, tm *TableMetadata) (err error) {
 		TableId:   t.TableID,
 	}
 
+	ctx = setDatasetItemTraceMetadata(ctx, t.ProjectID, t.DatasetID, "tables")
 	req := t.c.bqs.Tables.Insert(t.ProjectID, t.DatasetID, table).Context(ctx)
 	setClientHeader(req.Header())
 	return runWithRetry(ctx, func() (err error) {
@@ -855,32 +857,18 @@ func (tm *TableMetadata) toBQ() (*bq.Table, error) {
 		t.ExternalDataConfiguration = &edc
 	}
 	t.EncryptionConfiguration = tm.EncryptionConfig.toBQ()
-	if tm.FullID != "" {
-		return nil, errors.New("cannot set FullID on create")
-	}
-	if tm.Type != "" {
-		return nil, errors.New("cannot set Type on create")
-	}
+	// Propagate read-only fields.
+	t.Id = tm.FullID
+	t.Type = string(tm.Type)
+	t.NumBytes = tm.NumBytes
+	t.NumLongTermBytes = tm.NumLongTermBytes
+	t.NumRows = tm.NumRows
+	t.Etag = tm.ETag
 	if !tm.CreationTime.IsZero() {
-		return nil, errors.New("cannot set CreationTime on create")
+		t.CreationTime = tm.CreationTime.UnixMilli()
 	}
 	if !tm.LastModifiedTime.IsZero() {
-		return nil, errors.New("cannot set LastModifiedTime on create")
-	}
-	if tm.NumBytes != 0 {
-		return nil, errors.New("cannot set NumBytes on create")
-	}
-	if tm.NumLongTermBytes != 0 {
-		return nil, errors.New("cannot set NumLongTermBytes on create")
-	}
-	if tm.NumRows != 0 {
-		return nil, errors.New("cannot set NumRows on create")
-	}
-	if tm.StreamingBuffer != nil {
-		return nil, errors.New("cannot set StreamingBuffer on create")
-	}
-	if tm.ETag != "" {
-		return nil, errors.New("cannot set ETag on create")
+		t.LastModifiedTime = uint64(tm.LastModifiedTime.UnixMilli())
 	}
 	t.DefaultCollation = string(tm.DefaultCollation)
 
@@ -901,9 +889,7 @@ func (tm *TableMetadata) toBQ() (*bq.Table, error) {
 	}
 	if tm.ResourceTags != nil {
 		t.ResourceTags = make(map[string]string)
-		for k, v := range tm.ResourceTags {
-			t.ResourceTags[k] = v
-		}
+		maps.Copy(t.ResourceTags, tm.ResourceTags)
 	}
 	return t, nil
 }
@@ -949,6 +935,7 @@ func (t *Table) Metadata(ctx context.Context, opts ...TableMetadataOption) (md *
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.Table.Metadata")
 	defer func() { trace.EndSpan(ctx, err) }()
 
+	ctx = setTableTraceMetadata(ctx, t.ProjectID, t.DatasetID, t.TableID)
 	tgc := &tableGetCall{
 		call: t.c.bqs.Tables.Get(t.ProjectID, t.DatasetID, t.TableID).Context(ctx),
 	}
@@ -1030,9 +1017,7 @@ func bqToTableMetadata(t *bq.Table, c *Client) (*TableMetadata, error) {
 	}
 	if t.ResourceTags != nil {
 		md.ResourceTags = make(map[string]string)
-		for k, v := range t.ResourceTags {
-			md.ResourceTags[k] = v
-		}
+		maps.Copy(md.ResourceTags, t.ResourceTags)
 	}
 	return md, nil
 }
@@ -1042,6 +1027,7 @@ func (t *Table) Delete(ctx context.Context) (err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.Table.Delete")
 	defer func() { trace.EndSpan(ctx, err) }()
 
+	ctx = setTableTraceMetadata(ctx, t.ProjectID, t.DatasetID, t.TableID)
 	call := t.c.bqs.Tables.Delete(t.ProjectID, t.DatasetID, t.TableID).Context(ctx)
 	setClientHeader(call.Header())
 
@@ -1098,6 +1084,7 @@ func (t *Table) Update(ctx context.Context, tm TableMetadataToUpdate, etag strin
 		return nil, err
 	}
 
+	ctx = setTableTraceMetadata(ctx, t.ProjectID, t.DatasetID, t.TableID)
 	tpc := &tablePatchCall{
 		call: t.c.bqs.Tables.Patch(t.ProjectID, t.DatasetID, t.TableID, bqt).Context(ctx),
 	}
@@ -1154,6 +1141,13 @@ func (tm *TableMetadataToUpdate) toBQ() (*bq.Table, error) {
 
 	if tm.Clustering != nil {
 		t.Clustering = tm.Clustering.toBQ()
+		if t.Clustering != nil && len(t.Clustering.Fields) == 0 {
+			// Special logic for clearing fields.  The service rejects the empty list of fields,
+			// so we alter the payload to clear the message and leverage NullFields to send the
+			// default value.
+			t.Clustering = nil
+			t.NullFields = append(t.NullFields, "Clustering")
+		}
 	}
 
 	if !validExpiration(tm.ExpirationTime) {
@@ -1214,9 +1208,7 @@ func (tm *TableMetadataToUpdate) toBQ() (*bq.Table, error) {
 	}
 	if tm.ResourceTags != nil {
 		t.ResourceTags = make(map[string]string)
-		for k, v := range tm.ResourceTags {
-			t.ResourceTags[k] = v
-		}
+		maps.Copy(t.ResourceTags, tm.ResourceTags)
 		forceSend("ResourceTags")
 	}
 	if tm.BigLakeConfiguration != nil {
@@ -1350,9 +1342,7 @@ func (u *labelUpdater) update() (labels map[string]string, forces, nulls []strin
 		return nil, nil, nil
 	}
 	labels = map[string]string{}
-	for k, v := range u.setLabels {
-		labels[k] = v
-	}
+	maps.Copy(labels, u.setLabels)
 	if len(labels) == 0 && len(u.deleteLabels) > 0 {
 		forces = []string{"Labels"}
 	}

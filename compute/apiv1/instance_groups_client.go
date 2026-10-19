@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import (
 
 	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -116,7 +117,7 @@ func defaultInstanceGroupsRESTCallOptions() *InstanceGroupsCallOptions {
 	}
 }
 
-// internalInstanceGroupsClient is an interface that defines the methods available from Google Compute Engine API.
+// internalInstanceGroupsClient is an interface that defines the methods available from Compute Engine API.
 type internalInstanceGroupsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -133,10 +134,12 @@ type internalInstanceGroupsClient interface {
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsInstanceGroupRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 }
 
-// InstanceGroupsClient is a client for interacting with Google Compute Engine API.
+// InstanceGroupsClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The InstanceGroups API.
+//
+// This client uses InstanceGroups version 2026-09-01.
 type InstanceGroupsClient struct {
 	// The internal transport-dependent client.
 	internalClient internalInstanceGroupsClient
@@ -147,7 +150,7 @@ type InstanceGroupsClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *InstanceGroupsClient) Close() error {
 	return c.internalClient.Close()
@@ -168,42 +171,71 @@ func (c *InstanceGroupsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AddInstances adds a list of instances to the specified instance group. All of the instances in the instance group must be in the same network/subnetwork. Read Adding instances for more information.
+// AddInstances adds a list of instances to the specified instance group.  All of the
+// instances in the instance group must be in the same network/subnetwork.
+// Read
+// Adding instances for more information.
 func (c *InstanceGroupsClient) AddInstances(ctx context.Context, req *computepb.AddInstancesInstanceGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.AddInstances(ctx, req, opts...)
 }
 
-// AggregatedList retrieves the list of instance groups and sorts them by zone. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves the list of instance groups and sorts them by zone.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *InstanceGroupsClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListInstanceGroupsRequest, opts ...gax.CallOption) *InstanceGroupsScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
 
-// Delete deletes the specified instance group. The instances in the group are not deleted. Note that instance group must not belong to a backend service. Read Deleting an instance group for more information.
+// Delete deletes the specified instance group. The instances in the group are not
+// deleted. Note that instance group must not belong to a backend service.
+// Read
+// Deleting an instance group for more information.
 func (c *InstanceGroupsClient) Delete(ctx context.Context, req *computepb.DeleteInstanceGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
-// Get returns the specified zonal instance group. Get a list of available zonal instance groups by making a list() request. For managed instance groups, use the instanceGroupManagers or regionInstanceGroupManagers methods instead.
+// Get returns the specified zonal instance group. Get a list of available zonal
+// instance groups by making a list() request.
+//
+// For managed instance groups, use theinstanceGroupManagers
+// or regionInstanceGroupManagers
+// methods instead.
 func (c *InstanceGroupsClient) Get(ctx context.Context, req *computepb.GetInstanceGroupRequest, opts ...gax.CallOption) (*computepb.InstanceGroup, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// Insert creates an instance group in the specified project using the parameters that are included in the request.
+// Insert creates an instance group in the specified project using the
+// parameters that are included in the request.
 func (c *InstanceGroupsClient) Insert(ctx context.Context, req *computepb.InsertInstanceGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves the list of zonal instance group resources contained within the specified zone. For managed instance groups, use the instanceGroupManagers or regionInstanceGroupManagers methods instead.
+// List retrieves the list of zonal instance group resources contained within the
+// specified zone.
+//
+// For managed instance groups, use theinstanceGroupManagers
+// or regionInstanceGroupManagers
+// methods instead.
 func (c *InstanceGroupsClient) List(ctx context.Context, req *computepb.ListInstanceGroupsRequest, opts ...gax.CallOption) *InstanceGroupIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// ListInstances lists the instances in the specified instance group. The orderBy query parameter is not supported. The filter query parameter is supported, but only for expressions that use eq (equal) or ne (not equal) operators.
+// ListInstances lists the instances in the specified instance group.
+// The orderBy query parameter is not supported.
+// The filter query parameter is supported, but only for
+// expressions that use eq (equal) or ne (not equal) operators.
 func (c *InstanceGroupsClient) ListInstances(ctx context.Context, req *computepb.ListInstancesInstanceGroupsRequest, opts ...gax.CallOption) *InstanceWithNamedPortsIterator {
 	return c.internalClient.ListInstances(ctx, req, opts...)
 }
 
-// RemoveInstances removes one or more instances from the specified instance group, but does not delete those instances. If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration before the VM instance is removed or deleted.
+// RemoveInstances removes one or more instances from the specified instance group, but does
+// not delete those instances.
+//
+// If the group is part of a backend
+// service that has enabled
+// connection draining, it can take up to 60 seconds after the connection
+// draining duration before the VM instance is removed or deleted.
 func (c *InstanceGroupsClient) RemoveInstances(ctx context.Context, req *computepb.RemoveInstancesInstanceGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.RemoveInstances(ctx, req, opts...)
 }
@@ -243,6 +275,16 @@ type instanceGroupsRESTClient struct {
 // The InstanceGroups API.
 func NewInstanceGroupsRESTClient(ctx context.Context, opts ...option.ClientOption) (*InstanceGroupsClient, error) {
 	clientOpts := append(defaultInstanceGroupsRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "compute",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/compute/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "compute.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -256,6 +298,75 @@ func NewInstanceGroupsRESTClient(ctx context.Context, opts ...option.ClientOptio
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AddInstances = append(callOpts.AddInstances, gax.WithClientMetrics(metrics))
+		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientMetrics(metrics))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientMetrics(metrics))
+		callOpts.Get = append(callOpts.Get, gax.WithClientMetrics(metrics))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientMetrics(metrics))
+		callOpts.List = append(callOpts.List, gax.WithClientMetrics(metrics))
+		callOpts.ListInstances = append(callOpts.ListInstances, gax.WithClientMetrics(metrics))
+		callOpts.RemoveInstances = append(callOpts.RemoveInstances, gax.WithClientMetrics(metrics))
+		callOpts.SetNamedPorts = append(callOpts.SetNamedPorts, gax.WithClientMetrics(metrics))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AddInstances = append(callOpts.AddInstances, gax.WithClientTracing(tracing))
+		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientTracing(tracing))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientTracing(tracing))
+		callOpts.Get = append(callOpts.Get, gax.WithClientTracing(tracing))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientTracing(tracing))
+		callOpts.List = append(callOpts.List, gax.WithClientTracing(tracing))
+		callOpts.ListInstances = append(callOpts.ListInstances, gax.WithClientTracing(tracing))
+		callOpts.RemoveInstances = append(callOpts.RemoveInstances, gax.WithClientTracing(tracing))
+		callOpts.SetNamedPorts = append(callOpts.SetNamedPorts, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AddInstances = append(callOpts.AddInstances, gax.WithClientLogging(logging))
+		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientLogging(logging))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientLogging(logging))
+		callOpts.Get = append(callOpts.Get, gax.WithClientLogging(logging))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientLogging(logging))
+		callOpts.List = append(callOpts.List, gax.WithClientLogging(logging))
+		callOpts.ListInstances = append(callOpts.ListInstances, gax.WithClientLogging(logging))
+		callOpts.RemoveInstances = append(callOpts.RemoveInstances, gax.WithClientLogging(logging))
+		callOpts.SetNamedPorts = append(callOpts.SetNamedPorts, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientLogging(logging))
+	}
 
 	o := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -290,10 +401,11 @@ func (c *instanceGroupsRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
+		"x-goog-api-version", "2026-09-01",
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *instanceGroupsRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -311,7 +423,10 @@ func (c *instanceGroupsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AddInstances adds a list of instances to the specified instance group. All of the instances in the instance group must be in the same network/subnetwork. Read Adding instances for more information.
+// AddInstances adds a list of instances to the specified instance group.  All of the
+// instances in the instance group must be in the same network/subnetwork.
+// Read
+// Adding instances for more information.
 func (c *instanceGroupsRESTClient) AddInstances(ctx context.Context, req *computepb.AddInstancesInstanceGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceGroupsAddInstancesRequestResource()
@@ -339,6 +454,10 @@ func (c *instanceGroupsRESTClient) AddInstances(ctx context.Context, req *comput
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.InstanceGroups/AddInstances")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/zones/{zone}/instanceGroups/{instance_group}/addInstances")
+	}
 	opts = append((*c.CallOptions).AddInstances[0:len((*c.CallOptions).AddInstances):len((*c.CallOptions).AddInstances)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -378,10 +497,13 @@ func (c *instanceGroupsRESTClient) AddInstances(ctx context.Context, req *comput
 	return op, nil
 }
 
-// AggregatedList retrieves the list of instance groups and sorts them by zone. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves the list of instance groups and sorts them by zone.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *instanceGroupsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListInstanceGroupsRequest, opts ...gax.CallOption) *InstanceGroupsScopedListPairIterator {
 	it := &InstanceGroupsScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListInstanceGroupsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]InstanceGroupsScopedListPair, string, error) {
 		resp := &computepb.InstanceGroupAggregatedList{}
@@ -414,9 +536,6 @@ func (c *instanceGroupsRESTClient) AggregatedList(ctx context.Context, req *comp
 		}
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 		if req != nil && req.ServiceProjectNumber != nil {
 			params.Add("serviceProjectNumber", fmt.Sprintf("%v", req.GetServiceProjectNumber()))
@@ -477,7 +596,10 @@ func (c *instanceGroupsRESTClient) AggregatedList(ctx context.Context, req *comp
 	return it
 }
 
-// Delete deletes the specified instance group. The instances in the group are not deleted. Note that instance group must not belong to a backend service. Read Deleting an instance group for more information.
+// Delete deletes the specified instance group. The instances in the group are not
+// deleted. Note that instance group must not belong to a backend service.
+// Read
+// Deleting an instance group for more information.
 func (c *instanceGroupsRESTClient) Delete(ctx context.Context, req *computepb.DeleteInstanceGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -498,6 +620,10 @@ func (c *instanceGroupsRESTClient) Delete(ctx context.Context, req *computepb.De
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.InstanceGroups/Delete")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/zones/{zone}/instanceGroups/{instance_group}")
+	}
 	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -537,7 +663,12 @@ func (c *instanceGroupsRESTClient) Delete(ctx context.Context, req *computepb.De
 	return op, nil
 }
 
-// Get returns the specified zonal instance group. Get a list of available zonal instance groups by making a list() request. For managed instance groups, use the instanceGroupManagers or regionInstanceGroupManagers methods instead.
+// Get returns the specified zonal instance group. Get a list of available zonal
+// instance groups by making a list() request.
+//
+// For managed instance groups, use theinstanceGroupManagers
+// or regionInstanceGroupManagers
+// methods instead.
 func (c *instanceGroupsRESTClient) Get(ctx context.Context, req *computepb.GetInstanceGroupRequest, opts ...gax.CallOption) (*computepb.InstanceGroup, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -551,6 +682,10 @@ func (c *instanceGroupsRESTClient) Get(ctx context.Context, req *computepb.GetIn
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.InstanceGroups/Get")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/zones/{zone}/instanceGroups/{instance_group}")
+	}
 	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.InstanceGroup{}
@@ -582,7 +717,8 @@ func (c *instanceGroupsRESTClient) Get(ctx context.Context, req *computepb.GetIn
 	return resp, nil
 }
 
-// Insert creates an instance group in the specified project using the parameters that are included in the request.
+// Insert creates an instance group in the specified project using the
+// parameters that are included in the request.
 func (c *instanceGroupsRESTClient) Insert(ctx context.Context, req *computepb.InsertInstanceGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceGroupResource()
@@ -610,6 +746,10 @@ func (c *instanceGroupsRESTClient) Insert(ctx context.Context, req *computepb.In
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.InstanceGroups/Insert")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/zones/{zone}/instanceGroups")
+	}
 	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -649,10 +789,15 @@ func (c *instanceGroupsRESTClient) Insert(ctx context.Context, req *computepb.In
 	return op, nil
 }
 
-// List retrieves the list of zonal instance group resources contained within the specified zone. For managed instance groups, use the instanceGroupManagers or regionInstanceGroupManagers methods instead.
+// List retrieves the list of zonal instance group resources contained within the
+// specified zone.
+//
+// For managed instance groups, use theinstanceGroupManagers
+// or regionInstanceGroupManagers
+// methods instead.
 func (c *instanceGroupsRESTClient) List(ctx context.Context, req *computepb.ListInstanceGroupsRequest, opts ...gax.CallOption) *InstanceGroupIterator {
 	it := &InstanceGroupIterator{}
-	req = proto.Clone(req).(*computepb.ListInstanceGroupsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.InstanceGroup, string, error) {
 		resp := &computepb.InstanceGroupList{}
@@ -682,9 +827,6 @@ func (c *instanceGroupsRESTClient) List(ctx context.Context, req *computepb.List
 		}
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -735,10 +877,13 @@ func (c *instanceGroupsRESTClient) List(ctx context.Context, req *computepb.List
 	return it
 }
 
-// ListInstances lists the instances in the specified instance group. The orderBy query parameter is not supported. The filter query parameter is supported, but only for expressions that use eq (equal) or ne (not equal) operators.
+// ListInstances lists the instances in the specified instance group.
+// The orderBy query parameter is not supported.
+// The filter query parameter is supported, but only for
+// expressions that use eq (equal) or ne (not equal) operators.
 func (c *instanceGroupsRESTClient) ListInstances(ctx context.Context, req *computepb.ListInstancesInstanceGroupsRequest, opts ...gax.CallOption) *InstanceWithNamedPortsIterator {
 	it := &InstanceWithNamedPortsIterator{}
-	req = proto.Clone(req).(*computepb.ListInstancesInstanceGroupsRequest)
+	req = proto.CloneOf(req)
 	m := protojson.MarshalOptions{AllowPartial: true}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.InstanceWithNamedPorts, string, error) {
@@ -774,9 +919,6 @@ func (c *instanceGroupsRESTClient) ListInstances(ctx context.Context, req *compu
 		}
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -827,7 +969,13 @@ func (c *instanceGroupsRESTClient) ListInstances(ctx context.Context, req *compu
 	return it
 }
 
-// RemoveInstances removes one or more instances from the specified instance group, but does not delete those instances. If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration before the VM instance is removed or deleted.
+// RemoveInstances removes one or more instances from the specified instance group, but does
+// not delete those instances.
+//
+// If the group is part of a backend
+// service that has enabled
+// connection draining, it can take up to 60 seconds after the connection
+// draining duration before the VM instance is removed or deleted.
 func (c *instanceGroupsRESTClient) RemoveInstances(ctx context.Context, req *computepb.RemoveInstancesInstanceGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceGroupsRemoveInstancesRequestResource()
@@ -855,6 +1003,10 @@ func (c *instanceGroupsRESTClient) RemoveInstances(ctx context.Context, req *com
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.InstanceGroups/RemoveInstances")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/zones/{zone}/instanceGroups/{instance_group}/removeInstances")
+	}
 	opts = append((*c.CallOptions).RemoveInstances[0:len((*c.CallOptions).RemoveInstances):len((*c.CallOptions).RemoveInstances)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -922,6 +1074,10 @@ func (c *instanceGroupsRESTClient) SetNamedPorts(ctx context.Context, req *compu
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.InstanceGroups/SetNamedPorts")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/zones/{zone}/instanceGroups/{instance_group}/setNamedPorts")
+	}
 	opts = append((*c.CallOptions).SetNamedPorts[0:len((*c.CallOptions).SetNamedPorts):len((*c.CallOptions).SetNamedPorts)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -982,6 +1138,10 @@ func (c *instanceGroupsRESTClient) TestIamPermissions(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.InstanceGroups/TestIamPermissions")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/zones/{zone}/instanceGroups/{resource}/testIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.TestPermissionsResponse{}

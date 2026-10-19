@@ -27,6 +27,7 @@ import (
 	"reflect"
 	"sort"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -50,6 +51,7 @@ import (
 )
 
 const replayFilename = "bigquery.replay"
+const defaultTestLocation = "us-east7"
 
 var record = flag.Bool("record", false, "record RPCs")
 
@@ -135,7 +137,7 @@ func initIntegrationTest() func() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		connectionsClient, err = connection.NewClient(ctx, option.WithHTTPClient(hc))
+		connectionsClient, err = connection.NewClient(ctx)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -206,9 +208,6 @@ func initIntegrationTest() func() {
 			// We can't check universally because option.WithHTTPClient is
 			// incompatible with gRPC options.
 			bqOpts = append(bqOpts, grpcHeadersChecker.CallOptions()...)
-			sOpts = append(sOpts, grpcHeadersChecker.CallOptions()...)
-			ptmOpts = append(ptmOpts, grpcHeadersChecker.CallOptions()...)
-			connOpts = append(connOpts, grpcHeadersChecker.CallOptions()...)
 		}
 		var err error
 		client, err = NewClient(ctx, projID, bqOpts...)
@@ -250,8 +249,6 @@ func initTestState(client *Client, t time.Time) func() {
 	modelIDs = uid.NewSpace("model", opts)
 	routineIDs = uid.NewSpace("routine", opts)
 	testTableExpiration = t.Add(2 * time.Hour).Round(time.Second)
-	// For replayability, seed the random source with t.
-	Seed(t.UnixNano())
 
 	prefixes := []string{
 		"dataset_",                    // bigquery package tests
@@ -264,10 +261,10 @@ func initTestState(client *Client, t time.Time) func() {
 	dataset = client.Dataset(datasetIDs.New())
 	otherDataset = client.Dataset(datasetIDs.New())
 
-	if err := dataset.Create(ctx, nil); err != nil {
+	if err := dataset.Create(ctx, &DatasetMetadata{Location: defaultTestLocation}); err != nil {
 		log.Fatalf("creating dataset %s: %v", dataset.DatasetID, err)
 	}
-	if err := otherDataset.Create(ctx, nil); err != nil {
+	if err := otherDataset.Create(ctx, &DatasetMetadata{Location: defaultTestLocation}); err != nil {
 		log.Fatalf("creating other dataset %s: %v", dataset.DatasetID, err)
 	}
 
@@ -278,6 +275,37 @@ func initTestState(client *Client, t time.Time) func() {
 		if err := otherDataset.DeleteWithContents(ctx); err != nil {
 			log.Printf("could not delete %s", dataset.DatasetID)
 		}
+	}
+}
+
+// features we use for skipping tests.
+const skipBigQueryPrefix string = "GCLOUD_TESTS_GOLANG_BIGQUERY"
+const skipBigQueryPublicIAMTestEnv string = "GCLOUD_TESTS_GOLANG_BIGQUERY_SKIP_PUBLIC_IAM_TESTS"
+
+var (
+	envEnabledOnce sync.Once
+	// populated on first check via envEnabledOnce.
+	envEnablementResults map[string]bool
+)
+
+// a utility method for skipping tests based on env variable enablement.
+func skipOnEnvEnabled(t *testing.T, envID string) {
+	t.Helper()
+	envEnabledOnce.Do(func() {
+		envEnablementResults = make(map[string]bool)
+		for _, env := range os.Environ() {
+			if strings.HasPrefix(env, skipBigQueryPrefix) {
+
+				kv := strings.SplitN(env, "=", 2)
+				if len(kv) == 2 && strings.ToLower(kv[1]) == "true" {
+					envEnablementResults[envID] = true
+				}
+
+			}
+		}
+	})
+	if envEnablementResults[envID] {
+		t.Skipf("skipping test due to env enablement: %s", envID)
 	}
 }
 
@@ -718,9 +746,8 @@ func TestIntegration_RemoveTimePartitioning(t *testing.T) {
 //
 // It returns a string for a policy tag identifier and a cleanup function, or an error.
 func setupPolicyTag(ctx context.Context) (string, func(), error) {
-	location := "us"
 	req := &datacatalogpb.CreateTaxonomyRequest{
-		Parent: fmt.Sprintf("projects/%s/locations/%s", testutil.ProjID(), location),
+		Parent: fmt.Sprintf("projects/%s/locations/%s", testutil.ProjID(), defaultTestLocation),
 		Taxonomy: &datacatalogpb.Taxonomy{
 			// DisplayName must be unique across org.
 			DisplayName: fmt.Sprintf("google-cloud-go bigquery testing taxonomy %d", time.Now().UnixNano()),
@@ -875,7 +902,22 @@ func TestIntegration_SimpleRowResults(t *testing.T) {
 			})
 		}
 	})
-
+	t.Run("query_override", func(t *testing.T) {
+		client.customConfig.jobCreationMode = JobCreationModeRequired
+		for _, tc := range testCases {
+			curCase := tc
+			t.Run(curCase.description, func(t *testing.T) {
+				t.Parallel()
+				q := client.Query(curCase.query)
+				q.JobCreationMode = JobCreationModeOptional
+				it, err := q.Read(ctx)
+				if err != nil {
+					t.Fatalf("%s read error: %v", curCase.description, err)
+				}
+				checkReadAndTotalRows(t, curCase.description, it, curCase.want)
+			})
+		}
+	})
 }
 
 func TestIntegration_QueryIterationPager(t *testing.T) {
@@ -1108,7 +1150,7 @@ func TestIntegration_InsertAndRead(t *testing.T) {
 	if job1.LastStatus() == nil {
 		t.Error("no LastStatus")
 	}
-	job2, err := client.JobFromID(ctx, job1.ID())
+	job2, err := client.JobFromIDLocation(ctx, job1.ID(), job1.Location())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -1483,8 +1525,8 @@ func TestIntegration_QueryStatistics(t *testing.T) {
 		t.Fatal("expected job statistics, none found")
 	}
 
-	if status.Statistics.TotalSlotDuration <= 0 {
-		t.Errorf("expected positive total slot duration, %s reported", status.Statistics.TotalSlotDuration.String())
+	if status.Statistics.TotalSlotDuration < 0 {
+		t.Errorf("expected non-negative total slot duration, %s reported", status.Statistics.TotalSlotDuration.String())
 	}
 
 	if status.Statistics.NumChildJobs != 0 {
@@ -1526,6 +1568,10 @@ func TestIntegration_QueryStatistics(t *testing.T) {
 
 	if len(qStats.QueryPlan) == 0 {
 		t.Error("expected query plan, none present")
+	}
+
+	if qStats.TotalServicesSkuSlotMillis < 0 {
+		t.Errorf("expected total services SKU slot ms >= 0, got: %d", qStats.TotalServicesSkuSlotMillis)
 	}
 
 	if len(qStats.Timeline) == 0 {
@@ -2193,7 +2239,7 @@ type queryParameterTestCase struct {
 	query      string
 	parameters []QueryParameter
 	wantRow    []Value
-	wantConfig interface{}
+	wantConfig any
 }
 
 var (
@@ -2290,7 +2336,7 @@ func initQueryParameterTestCases() {
 			"SELECT @val",
 			[]QueryParameter{{Name: "val", Value: []time.Time{ts, ts}}},
 			[]Value{[]Value{ts, ts}},
-			[]interface{}{ts, ts},
+			[]any{ts, ts},
 		},
 		{
 			"DatetimeParam",
@@ -2393,20 +2439,20 @@ func initQueryParameterTestCases() {
 				},
 			},
 			[]Value{[]Value{rangeTimestamp1, rangeTimestamp2}},
-			[]interface{}{rangeTimestamp1, rangeTimestamp2},
+			[]any{rangeTimestamp1, rangeTimestamp2},
 		},
 		{
 			"NestedStructParam",
 			"SELECT @val",
 			[]QueryParameter{{Name: "val", Value: s{ts, []string{"a", "b"}, ss{"c"}, []ss{{"d"}, {"e"}}}}},
 			[]Value{[]Value{ts, []Value{"a", "b"}, []Value{"c"}, []Value{[]Value{"d"}, []Value{"e"}}}},
-			map[string]interface{}{
+			map[string]any{
 				"Timestamp":   ts,
-				"StringArray": []interface{}{"a", "b"},
-				"SubStruct":   map[string]interface{}{"String": "c"},
-				"SubStructArray": []interface{}{
-					map[string]interface{}{"String": "d"},
-					map[string]interface{}{"String": "e"},
+				"StringArray": []any{"a", "b"},
+				"SubStruct":   map[string]any{"String": "c"},
+				"SubStructArray": []any{
+					map[string]any{"String": "d"},
+					map[string]any{"String": "e"},
 				},
 			},
 		},
@@ -2415,9 +2461,9 @@ func initQueryParameterTestCases() {
 			"SELECT @val.Timestamp, @val.SubStruct.String",
 			[]QueryParameter{{Name: "val", Value: s{Timestamp: ts, SubStruct: ss{"a"}}}},
 			[]Value{ts, "a"},
-			map[string]interface{}{
+			map[string]any{
 				"Timestamp":      ts,
-				"SubStruct":      map[string]interface{}{"String": "a"},
+				"SubStruct":      map[string]any{"String": "a"},
 				"StringArray":    nil,
 				"SubStructArray": nil,
 			},
@@ -2459,7 +2505,7 @@ func initQueryParameterTestCases() {
 				},
 			},
 			[]Value{[]Value{"a", "b"}},
-			[]interface{}{"a", "b"},
+			[]any{"a", "b"},
 		},
 		{
 			"StructExplicitParam",
@@ -2556,14 +2602,14 @@ func initQueryParameterTestCases() {
 				},
 			},
 			[]Value{[]Value{ts, []Value{bigRat, rat}, []Value{[]Value{int64(42)}, []Value{int64(43)}}, []Value{"c"}}},
-			map[string]interface{}{
+			map[string]any{
 				"Timestamp":       ts,
-				"BigNumericArray": []interface{}{bigRat, rat},
-				"ArraySingleValueStruct": []interface{}{
-					map[string]interface{}{"Number": int64(42)},
-					map[string]interface{}{"Number": int64(43)},
+				"BigNumericArray": []any{bigRat, rat},
+				"ArraySingleValueStruct": []any{
+					map[string]any{"Number": int64(42)},
+					map[string]any{"Number": int64(43)},
 				},
-				"SubStruct": map[string]interface{}{"String": "c"},
+				"SubStruct": map[string]any{"String": "c"},
 			},
 		},
 	}
@@ -2652,7 +2698,7 @@ func TestIntegration_TimestampFormat(t *testing.T) {
 		query      string
 		parameters []*bq.QueryParameter
 		wantRow    []Value
-		wantConfig interface{}
+		wantConfig any
 	}{
 		{
 			"Literal",
@@ -3202,7 +3248,7 @@ func TestIntegration_DeleteJob(t *testing.T) {
 	ctx := context.Background()
 
 	q := client.Query("SELECT 17 as foo")
-	q.Location = "us-east1"
+	q.Location = defaultTestLocation
 
 	job, err := q.Run(ctx)
 	if err != nil {

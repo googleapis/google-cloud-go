@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,9 +17,18 @@
 package iot
 
 import (
+	"iter"
+
 	iotpb "cloud.google.com/go/iot/apiv1/iotpb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DeviceIterator) All() iter.Seq2[*iotpb.Device, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // DeviceIterator manages a stream of *iotpb.Device.
 type DeviceIterator struct {
@@ -66,6 +75,12 @@ func (it *DeviceIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DeviceRegistryIterator) All() iter.Seq2[*iotpb.DeviceRegistry, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // DeviceRegistryIterator manages a stream of *iotpb.DeviceRegistry.

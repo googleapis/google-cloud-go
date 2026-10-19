@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import (
 
 	cloudquotaspb "cloud.google.com/go/cloudquotas/apiv1beta/cloudquotaspb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -250,7 +251,7 @@ type Client struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *Client) Close() error {
 	return c.internalClient.Close()
@@ -336,6 +337,16 @@ type gRPCClient struct {
 //	List/Get pending and historical quota preference.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "cloudquotas",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/cloudquotas/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "cloudquotas.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -357,6 +368,62 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "cloudquotas",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/cloudquotas/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudquotas.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListQuotaInfos = append(client.CallOptions.ListQuotaInfos, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetQuotaInfo = append(client.CallOptions.GetQuotaInfo, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListQuotaPreferences = append(client.CallOptions.ListQuotaPreferences, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetQuotaPreference = append(client.CallOptions.GetQuotaPreference, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateQuotaPreference = append(client.CallOptions.CreateQuotaPreference, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateQuotaPreference = append(client.CallOptions.UpdateQuotaPreference, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudquotas",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/cloudquotas/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudquotas.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListQuotaInfos = append(client.CallOptions.ListQuotaInfos, gax.WithClientTracing(tracing))
+		client.CallOptions.GetQuotaInfo = append(client.CallOptions.GetQuotaInfo, gax.WithClientTracing(tracing))
+		client.CallOptions.ListQuotaPreferences = append(client.CallOptions.ListQuotaPreferences, gax.WithClientTracing(tracing))
+		client.CallOptions.GetQuotaPreference = append(client.CallOptions.GetQuotaPreference, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateQuotaPreference = append(client.CallOptions.CreateQuotaPreference, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateQuotaPreference = append(client.CallOptions.UpdateQuotaPreference, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudquotas",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/cloudquotas/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudquotas.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListQuotaInfos = append(client.CallOptions.ListQuotaInfos, gax.WithClientLogging(logging))
+		client.CallOptions.GetQuotaInfo = append(client.CallOptions.GetQuotaInfo, gax.WithClientLogging(logging))
+		client.CallOptions.ListQuotaPreferences = append(client.CallOptions.ListQuotaPreferences, gax.WithClientLogging(logging))
+		client.CallOptions.GetQuotaPreference = append(client.CallOptions.GetQuotaPreference, gax.WithClientLogging(logging))
+		client.CallOptions.CreateQuotaPreference = append(client.CallOptions.CreateQuotaPreference, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateQuotaPreference = append(client.CallOptions.UpdateQuotaPreference, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -382,7 +449,7 @@ func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *gRPCClient) Close() error {
 	return c.connPool.Close()
@@ -419,6 +486,16 @@ type restClient struct {
 //	List/Get pending and historical quota preference.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "cloudquotas",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/cloudquotas/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "cloudquotas.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -432,6 +509,63 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "cloudquotas",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/cloudquotas/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudquotas.googleapis.com",
+			}),
+		)
+
+		callOpts.ListQuotaInfos = append(callOpts.ListQuotaInfos, gax.WithClientMetrics(metrics))
+		callOpts.GetQuotaInfo = append(callOpts.GetQuotaInfo, gax.WithClientMetrics(metrics))
+		callOpts.ListQuotaPreferences = append(callOpts.ListQuotaPreferences, gax.WithClientMetrics(metrics))
+		callOpts.GetQuotaPreference = append(callOpts.GetQuotaPreference, gax.WithClientMetrics(metrics))
+		callOpts.CreateQuotaPreference = append(callOpts.CreateQuotaPreference, gax.WithClientMetrics(metrics))
+		callOpts.UpdateQuotaPreference = append(callOpts.UpdateQuotaPreference, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudquotas",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/cloudquotas/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudquotas.googleapis.com",
+			}),
+		)
+
+		callOpts.ListQuotaInfos = append(callOpts.ListQuotaInfos, gax.WithClientTracing(tracing))
+		callOpts.GetQuotaInfo = append(callOpts.GetQuotaInfo, gax.WithClientTracing(tracing))
+		callOpts.ListQuotaPreferences = append(callOpts.ListQuotaPreferences, gax.WithClientTracing(tracing))
+		callOpts.GetQuotaPreference = append(callOpts.GetQuotaPreference, gax.WithClientTracing(tracing))
+		callOpts.CreateQuotaPreference = append(callOpts.CreateQuotaPreference, gax.WithClientTracing(tracing))
+		callOpts.UpdateQuotaPreference = append(callOpts.UpdateQuotaPreference, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudquotas",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/cloudquotas/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudquotas.googleapis.com",
+			}),
+		)
+
+		callOpts.ListQuotaInfos = append(callOpts.ListQuotaInfos, gax.WithClientLogging(logging))
+		callOpts.GetQuotaInfo = append(callOpts.GetQuotaInfo, gax.WithClientLogging(logging))
+		callOpts.ListQuotaPreferences = append(callOpts.ListQuotaPreferences, gax.WithClientLogging(logging))
+		callOpts.GetQuotaPreference = append(callOpts.GetQuotaPreference, gax.WithClientLogging(logging))
+		callOpts.CreateQuotaPreference = append(callOpts.CreateQuotaPreference, gax.WithClientLogging(logging))
+		callOpts.UpdateQuotaPreference = append(callOpts.UpdateQuotaPreference, gax.WithClientLogging(logging))
+	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -459,7 +593,7 @@ func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *restClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -478,9 +612,12 @@ func (c *gRPCClient) ListQuotaInfos(ctx context.Context, req *cloudquotaspb.List
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.api.cloudquotas.v1beta.CloudQuotas/ListQuotaInfos")
+	}
 	opts = append((*c.CallOptions).ListQuotaInfos[0:len((*c.CallOptions).ListQuotaInfos):len((*c.CallOptions).ListQuotaInfos)], opts...)
 	it := &QuotaInfoIterator{}
-	req = proto.Clone(req).(*cloudquotaspb.ListQuotaInfosRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudquotaspb.QuotaInfo, string, error) {
 		resp := &cloudquotaspb.ListQuotaInfosResponse{}
 		if pageToken != "" {
@@ -524,6 +661,9 @@ func (c *gRPCClient) GetQuotaInfo(ctx context.Context, req *cloudquotaspb.GetQuo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.api.cloudquotas.v1beta.CloudQuotas/GetQuotaInfo")
+	}
 	opts = append((*c.CallOptions).GetQuotaInfo[0:len((*c.CallOptions).GetQuotaInfo):len((*c.CallOptions).GetQuotaInfo)], opts...)
 	var resp *cloudquotaspb.QuotaInfo
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -542,9 +682,12 @@ func (c *gRPCClient) ListQuotaPreferences(ctx context.Context, req *cloudquotasp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.api.cloudquotas.v1beta.CloudQuotas/ListQuotaPreferences")
+	}
 	opts = append((*c.CallOptions).ListQuotaPreferences[0:len((*c.CallOptions).ListQuotaPreferences):len((*c.CallOptions).ListQuotaPreferences)], opts...)
 	it := &QuotaPreferenceIterator{}
-	req = proto.Clone(req).(*cloudquotaspb.ListQuotaPreferencesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudquotaspb.QuotaPreference, string, error) {
 		resp := &cloudquotaspb.ListQuotaPreferencesResponse{}
 		if pageToken != "" {
@@ -588,6 +731,9 @@ func (c *gRPCClient) GetQuotaPreference(ctx context.Context, req *cloudquotaspb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.api.cloudquotas.v1beta.CloudQuotas/GetQuotaPreference")
+	}
 	opts = append((*c.CallOptions).GetQuotaPreference[0:len((*c.CallOptions).GetQuotaPreference):len((*c.CallOptions).GetQuotaPreference)], opts...)
 	var resp *cloudquotaspb.QuotaPreference
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -606,6 +752,9 @@ func (c *gRPCClient) CreateQuotaPreference(ctx context.Context, req *cloudquotas
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.api.cloudquotas.v1beta.CloudQuotas/CreateQuotaPreference")
+	}
 	opts = append((*c.CallOptions).CreateQuotaPreference[0:len((*c.CallOptions).CreateQuotaPreference):len((*c.CallOptions).CreateQuotaPreference)], opts...)
 	var resp *cloudquotaspb.QuotaPreference
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -624,6 +773,9 @@ func (c *gRPCClient) UpdateQuotaPreference(ctx context.Context, req *cloudquotas
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.api.cloudquotas.v1beta.CloudQuotas/UpdateQuotaPreference")
+	}
 	opts = append((*c.CallOptions).UpdateQuotaPreference[0:len((*c.CallOptions).UpdateQuotaPreference):len((*c.CallOptions).UpdateQuotaPreference)], opts...)
 	var resp *cloudquotaspb.QuotaPreference
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -640,7 +792,7 @@ func (c *gRPCClient) UpdateQuotaPreference(ctx context.Context, req *cloudquotas
 // ListQuotaInfos lists QuotaInfos of all quotas for a given project, folder or organization.
 func (c *restClient) ListQuotaInfos(ctx context.Context, req *cloudquotaspb.ListQuotaInfosRequest, opts ...gax.CallOption) *QuotaInfoIterator {
 	it := &QuotaInfoIterator{}
-	req = proto.Clone(req).(*cloudquotaspb.ListQuotaInfosRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudquotaspb.QuotaInfo, string, error) {
 		resp := &cloudquotaspb.ListQuotaInfosResponse{}
@@ -734,6 +886,10 @@ func (c *restClient) GetQuotaInfo(ctx context.Context, req *cloudquotaspb.GetQuo
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.api.cloudquotas.v1beta.CloudQuotas/GetQuotaInfo")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/services/*/quotaInfos/*}")
+	}
 	opts = append((*c.CallOptions).GetQuotaInfo[0:len((*c.CallOptions).GetQuotaInfo):len((*c.CallOptions).GetQuotaInfo)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cloudquotaspb.QuotaInfo{}
@@ -768,7 +924,7 @@ func (c *restClient) GetQuotaInfo(ctx context.Context, req *cloudquotaspb.GetQuo
 // ListQuotaPreferences lists QuotaPreferences in a given project, folder or organization.
 func (c *restClient) ListQuotaPreferences(ctx context.Context, req *cloudquotaspb.ListQuotaPreferencesRequest, opts ...gax.CallOption) *QuotaPreferenceIterator {
 	it := &QuotaPreferenceIterator{}
-	req = proto.Clone(req).(*cloudquotaspb.ListQuotaPreferencesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudquotaspb.QuotaPreference, string, error) {
 		resp := &cloudquotaspb.ListQuotaPreferencesResponse{}
@@ -868,6 +1024,10 @@ func (c *restClient) GetQuotaPreference(ctx context.Context, req *cloudquotaspb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.api.cloudquotas.v1beta.CloudQuotas/GetQuotaPreference")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/quotaPreferences/*}")
+	}
 	opts = append((*c.CallOptions).GetQuotaPreference[0:len((*c.CallOptions).GetQuotaPreference):len((*c.CallOptions).GetQuotaPreference)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cloudquotaspb.QuotaPreference{}
@@ -933,6 +1093,10 @@ func (c *restClient) CreateQuotaPreference(ctx context.Context, req *cloudquotas
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.api.cloudquotas.v1beta.CloudQuotas/CreateQuotaPreference")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*}/quotaPreferences")
+	}
 	opts = append((*c.CallOptions).CreateQuotaPreference[0:len((*c.CallOptions).CreateQuotaPreference):len((*c.CallOptions).CreateQuotaPreference)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cloudquotaspb.QuotaPreference{}
@@ -1009,6 +1173,10 @@ func (c *restClient) UpdateQuotaPreference(ctx context.Context, req *cloudquotas
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.api.cloudquotas.v1beta.CloudQuotas/UpdateQuotaPreference")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{quota_preference.name=projects/*/locations/*/quotaPreferences/*}")
+	}
 	opts = append((*c.CallOptions).UpdateQuotaPreference[0:len((*c.CallOptions).UpdateQuotaPreference):len((*c.CallOptions).UpdateQuotaPreference)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cloudquotaspb.QuotaPreference{}

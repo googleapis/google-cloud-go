@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import (
 
 	lfppb "cloud.google.com/go/shopping/merchant/lfp/apiv1/lfppb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -118,7 +119,7 @@ type LfpMerchantStateClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *LfpMerchantStateClient) Close() error {
 	return c.internalClient.Close()
@@ -174,6 +175,16 @@ type lfpMerchantStateGRPCClient struct {
 // retailer (at https://support.google.com/merchants/answer/15243706).
 func NewLfpMerchantStateClient(ctx context.Context, opts ...option.ClientOption) (*LfpMerchantStateClient, error) {
 	clientOpts := defaultLfpMerchantStateGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "merchantapi",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/merchant/lfp/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "merchantapi.googleapis.com",
+		}))
+	}
 	if newLfpMerchantStateClientHook != nil {
 		hookOpts, err := newLfpMerchantStateClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -195,6 +206,47 @@ func NewLfpMerchantStateClient(ctx context.Context, opts ...option.ClientOption)
 		logger:                 internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/lfp/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetLfpMerchantState = append(client.CallOptions.GetLfpMerchantState, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/lfp/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetLfpMerchantState = append(client.CallOptions.GetLfpMerchantState, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/lfp/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetLfpMerchantState = append(client.CallOptions.GetLfpMerchantState, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -220,7 +272,7 @@ func (c *lfpMerchantStateGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *lfpMerchantStateGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -253,6 +305,16 @@ type lfpMerchantStateRESTClient struct {
 // retailer (at https://support.google.com/merchants/answer/15243706).
 func NewLfpMerchantStateRESTClient(ctx context.Context, opts ...option.ClientOption) (*LfpMerchantStateClient, error) {
 	clientOpts := append(defaultLfpMerchantStateRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "merchantapi",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/merchant/lfp/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "merchantapi.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -266,6 +328,48 @@ func NewLfpMerchantStateRESTClient(ctx context.Context, opts ...option.ClientOpt
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/lfp/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.GetLfpMerchantState = append(callOpts.GetLfpMerchantState, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/lfp/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.GetLfpMerchantState = append(callOpts.GetLfpMerchantState, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/lfp/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.GetLfpMerchantState = append(callOpts.GetLfpMerchantState, gax.WithClientLogging(logging))
+	}
 
 	return &LfpMerchantStateClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -293,7 +397,7 @@ func (c *lfpMerchantStateRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *lfpMerchantStateRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -312,6 +416,9 @@ func (c *lfpMerchantStateGRPCClient) GetLfpMerchantState(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.lfp.v1.LfpMerchantStateService/GetLfpMerchantState")
+	}
 	opts = append((*c.CallOptions).GetLfpMerchantState[0:len((*c.CallOptions).GetLfpMerchantState):len((*c.CallOptions).GetLfpMerchantState)], opts...)
 	var resp *lfppb.LfpMerchantState
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -344,6 +451,10 @@ func (c *lfpMerchantStateRESTClient) GetLfpMerchantState(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.lfp.v1.LfpMerchantStateService/GetLfpMerchantState")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/lfp/v1/{name=accounts/*/lfpMerchantStates/*}")
+	}
 	opts = append((*c.CallOptions).GetLfpMerchantState[0:len((*c.CallOptions).GetLfpMerchantState):len((*c.CallOptions).GetLfpMerchantState)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &lfppb.LfpMerchantState{}

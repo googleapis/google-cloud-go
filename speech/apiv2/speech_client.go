@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -32,6 +32,8 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	speechpb "cloud.google.com/go/speech/apiv2/speechpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -758,7 +760,7 @@ type Client struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *Client) Close() error {
 	return c.internalClient.Close()
@@ -989,6 +991,14 @@ func (c *Client) GetLocation(ctx context.Context, req *locationpb.GetLocationReq
 }
 
 // ListLocations lists information about the supported locations for this service.
+// This method can be called in two ways:
+//
+//	List all public locations: Use the path GET /v1/locations.
+//
+//	List project-visible locations: Use the path
+//	GET /v1/projects/{project_id}/locations. This may include public
+//	locations as well as private or other locations specifically visible
+//	to the project.
 func (c *Client) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	return c.internalClient.ListLocations(ctx, req, opts...)
 }
@@ -1047,6 +1057,16 @@ type gRPCClient struct {
 // Enables speech transcription and resource management.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "speech",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/speech/apiv2",
+			"gcp.client.language": "go",
+			"url.domain":          "speech.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -1070,6 +1090,131 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "speech",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/speech/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "speech.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateRecognizer = append(client.CallOptions.CreateRecognizer, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListRecognizers = append(client.CallOptions.ListRecognizers, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetRecognizer = append(client.CallOptions.GetRecognizer, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateRecognizer = append(client.CallOptions.UpdateRecognizer, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteRecognizer = append(client.CallOptions.DeleteRecognizer, gax.WithClientMetrics(metrics))
+		client.CallOptions.UndeleteRecognizer = append(client.CallOptions.UndeleteRecognizer, gax.WithClientMetrics(metrics))
+		client.CallOptions.Recognize = append(client.CallOptions.Recognize, gax.WithClientMetrics(metrics))
+		client.CallOptions.StreamingRecognize = append(client.CallOptions.StreamingRecognize, gax.WithClientMetrics(metrics))
+		client.CallOptions.BatchRecognize = append(client.CallOptions.BatchRecognize, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetConfig = append(client.CallOptions.GetConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateConfig = append(client.CallOptions.UpdateConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateCustomClass = append(client.CallOptions.CreateCustomClass, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListCustomClasses = append(client.CallOptions.ListCustomClasses, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetCustomClass = append(client.CallOptions.GetCustomClass, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateCustomClass = append(client.CallOptions.UpdateCustomClass, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteCustomClass = append(client.CallOptions.DeleteCustomClass, gax.WithClientMetrics(metrics))
+		client.CallOptions.UndeleteCustomClass = append(client.CallOptions.UndeleteCustomClass, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreatePhraseSet = append(client.CallOptions.CreatePhraseSet, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListPhraseSets = append(client.CallOptions.ListPhraseSets, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetPhraseSet = append(client.CallOptions.GetPhraseSet, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdatePhraseSet = append(client.CallOptions.UpdatePhraseSet, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeletePhraseSet = append(client.CallOptions.DeletePhraseSet, gax.WithClientMetrics(metrics))
+		client.CallOptions.UndeletePhraseSet = append(client.CallOptions.UndeletePhraseSet, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "speech",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/speech/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "speech.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateRecognizer = append(client.CallOptions.CreateRecognizer, gax.WithClientTracing(tracing))
+		client.CallOptions.ListRecognizers = append(client.CallOptions.ListRecognizers, gax.WithClientTracing(tracing))
+		client.CallOptions.GetRecognizer = append(client.CallOptions.GetRecognizer, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateRecognizer = append(client.CallOptions.UpdateRecognizer, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteRecognizer = append(client.CallOptions.DeleteRecognizer, gax.WithClientTracing(tracing))
+		client.CallOptions.UndeleteRecognizer = append(client.CallOptions.UndeleteRecognizer, gax.WithClientTracing(tracing))
+		client.CallOptions.Recognize = append(client.CallOptions.Recognize, gax.WithClientTracing(tracing))
+		client.CallOptions.StreamingRecognize = append(client.CallOptions.StreamingRecognize, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchRecognize = append(client.CallOptions.BatchRecognize, gax.WithClientTracing(tracing))
+		client.CallOptions.GetConfig = append(client.CallOptions.GetConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateConfig = append(client.CallOptions.UpdateConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateCustomClass = append(client.CallOptions.CreateCustomClass, gax.WithClientTracing(tracing))
+		client.CallOptions.ListCustomClasses = append(client.CallOptions.ListCustomClasses, gax.WithClientTracing(tracing))
+		client.CallOptions.GetCustomClass = append(client.CallOptions.GetCustomClass, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateCustomClass = append(client.CallOptions.UpdateCustomClass, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteCustomClass = append(client.CallOptions.DeleteCustomClass, gax.WithClientTracing(tracing))
+		client.CallOptions.UndeleteCustomClass = append(client.CallOptions.UndeleteCustomClass, gax.WithClientTracing(tracing))
+		client.CallOptions.CreatePhraseSet = append(client.CallOptions.CreatePhraseSet, gax.WithClientTracing(tracing))
+		client.CallOptions.ListPhraseSets = append(client.CallOptions.ListPhraseSets, gax.WithClientTracing(tracing))
+		client.CallOptions.GetPhraseSet = append(client.CallOptions.GetPhraseSet, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdatePhraseSet = append(client.CallOptions.UpdatePhraseSet, gax.WithClientTracing(tracing))
+		client.CallOptions.DeletePhraseSet = append(client.CallOptions.DeletePhraseSet, gax.WithClientTracing(tracing))
+		client.CallOptions.UndeletePhraseSet = append(client.CallOptions.UndeletePhraseSet, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "speech",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/speech/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "speech.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateRecognizer = append(client.CallOptions.CreateRecognizer, gax.WithClientLogging(logging))
+		client.CallOptions.ListRecognizers = append(client.CallOptions.ListRecognizers, gax.WithClientLogging(logging))
+		client.CallOptions.GetRecognizer = append(client.CallOptions.GetRecognizer, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateRecognizer = append(client.CallOptions.UpdateRecognizer, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteRecognizer = append(client.CallOptions.DeleteRecognizer, gax.WithClientLogging(logging))
+		client.CallOptions.UndeleteRecognizer = append(client.CallOptions.UndeleteRecognizer, gax.WithClientLogging(logging))
+		client.CallOptions.Recognize = append(client.CallOptions.Recognize, gax.WithClientLogging(logging))
+		client.CallOptions.StreamingRecognize = append(client.CallOptions.StreamingRecognize, gax.WithClientLogging(logging))
+		client.CallOptions.BatchRecognize = append(client.CallOptions.BatchRecognize, gax.WithClientLogging(logging))
+		client.CallOptions.GetConfig = append(client.CallOptions.GetConfig, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateConfig = append(client.CallOptions.UpdateConfig, gax.WithClientLogging(logging))
+		client.CallOptions.CreateCustomClass = append(client.CallOptions.CreateCustomClass, gax.WithClientLogging(logging))
+		client.CallOptions.ListCustomClasses = append(client.CallOptions.ListCustomClasses, gax.WithClientLogging(logging))
+		client.CallOptions.GetCustomClass = append(client.CallOptions.GetCustomClass, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateCustomClass = append(client.CallOptions.UpdateCustomClass, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteCustomClass = append(client.CallOptions.DeleteCustomClass, gax.WithClientLogging(logging))
+		client.CallOptions.UndeleteCustomClass = append(client.CallOptions.UndeleteCustomClass, gax.WithClientLogging(logging))
+		client.CallOptions.CreatePhraseSet = append(client.CallOptions.CreatePhraseSet, gax.WithClientLogging(logging))
+		client.CallOptions.ListPhraseSets = append(client.CallOptions.ListPhraseSets, gax.WithClientLogging(logging))
+		client.CallOptions.GetPhraseSet = append(client.CallOptions.GetPhraseSet, gax.WithClientLogging(logging))
+		client.CallOptions.UpdatePhraseSet = append(client.CallOptions.UpdatePhraseSet, gax.WithClientLogging(logging))
+		client.CallOptions.DeletePhraseSet = append(client.CallOptions.DeletePhraseSet, gax.WithClientLogging(logging))
+		client.CallOptions.UndeletePhraseSet = append(client.CallOptions.UndeletePhraseSet, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -1106,7 +1251,7 @@ func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *gRPCClient) Close() error {
 	return c.connPool.Close()
@@ -1139,6 +1284,16 @@ type restClient struct {
 // Enables speech transcription and resource management.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "speech",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/speech/apiv2",
+			"gcp.client.language": "go",
+			"url.domain":          "speech.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -1152,6 +1307,132 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "speech",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/speech/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "speech.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateRecognizer = append(callOpts.CreateRecognizer, gax.WithClientMetrics(metrics))
+		callOpts.ListRecognizers = append(callOpts.ListRecognizers, gax.WithClientMetrics(metrics))
+		callOpts.GetRecognizer = append(callOpts.GetRecognizer, gax.WithClientMetrics(metrics))
+		callOpts.UpdateRecognizer = append(callOpts.UpdateRecognizer, gax.WithClientMetrics(metrics))
+		callOpts.DeleteRecognizer = append(callOpts.DeleteRecognizer, gax.WithClientMetrics(metrics))
+		callOpts.UndeleteRecognizer = append(callOpts.UndeleteRecognizer, gax.WithClientMetrics(metrics))
+		callOpts.Recognize = append(callOpts.Recognize, gax.WithClientMetrics(metrics))
+		callOpts.StreamingRecognize = append(callOpts.StreamingRecognize, gax.WithClientMetrics(metrics))
+		callOpts.BatchRecognize = append(callOpts.BatchRecognize, gax.WithClientMetrics(metrics))
+		callOpts.GetConfig = append(callOpts.GetConfig, gax.WithClientMetrics(metrics))
+		callOpts.UpdateConfig = append(callOpts.UpdateConfig, gax.WithClientMetrics(metrics))
+		callOpts.CreateCustomClass = append(callOpts.CreateCustomClass, gax.WithClientMetrics(metrics))
+		callOpts.ListCustomClasses = append(callOpts.ListCustomClasses, gax.WithClientMetrics(metrics))
+		callOpts.GetCustomClass = append(callOpts.GetCustomClass, gax.WithClientMetrics(metrics))
+		callOpts.UpdateCustomClass = append(callOpts.UpdateCustomClass, gax.WithClientMetrics(metrics))
+		callOpts.DeleteCustomClass = append(callOpts.DeleteCustomClass, gax.WithClientMetrics(metrics))
+		callOpts.UndeleteCustomClass = append(callOpts.UndeleteCustomClass, gax.WithClientMetrics(metrics))
+		callOpts.CreatePhraseSet = append(callOpts.CreatePhraseSet, gax.WithClientMetrics(metrics))
+		callOpts.ListPhraseSets = append(callOpts.ListPhraseSets, gax.WithClientMetrics(metrics))
+		callOpts.GetPhraseSet = append(callOpts.GetPhraseSet, gax.WithClientMetrics(metrics))
+		callOpts.UpdatePhraseSet = append(callOpts.UpdatePhraseSet, gax.WithClientMetrics(metrics))
+		callOpts.DeletePhraseSet = append(callOpts.DeletePhraseSet, gax.WithClientMetrics(metrics))
+		callOpts.UndeletePhraseSet = append(callOpts.UndeletePhraseSet, gax.WithClientMetrics(metrics))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "speech",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/speech/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "speech.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateRecognizer = append(callOpts.CreateRecognizer, gax.WithClientTracing(tracing))
+		callOpts.ListRecognizers = append(callOpts.ListRecognizers, gax.WithClientTracing(tracing))
+		callOpts.GetRecognizer = append(callOpts.GetRecognizer, gax.WithClientTracing(tracing))
+		callOpts.UpdateRecognizer = append(callOpts.UpdateRecognizer, gax.WithClientTracing(tracing))
+		callOpts.DeleteRecognizer = append(callOpts.DeleteRecognizer, gax.WithClientTracing(tracing))
+		callOpts.UndeleteRecognizer = append(callOpts.UndeleteRecognizer, gax.WithClientTracing(tracing))
+		callOpts.Recognize = append(callOpts.Recognize, gax.WithClientTracing(tracing))
+		callOpts.StreamingRecognize = append(callOpts.StreamingRecognize, gax.WithClientTracing(tracing))
+		callOpts.BatchRecognize = append(callOpts.BatchRecognize, gax.WithClientTracing(tracing))
+		callOpts.GetConfig = append(callOpts.GetConfig, gax.WithClientTracing(tracing))
+		callOpts.UpdateConfig = append(callOpts.UpdateConfig, gax.WithClientTracing(tracing))
+		callOpts.CreateCustomClass = append(callOpts.CreateCustomClass, gax.WithClientTracing(tracing))
+		callOpts.ListCustomClasses = append(callOpts.ListCustomClasses, gax.WithClientTracing(tracing))
+		callOpts.GetCustomClass = append(callOpts.GetCustomClass, gax.WithClientTracing(tracing))
+		callOpts.UpdateCustomClass = append(callOpts.UpdateCustomClass, gax.WithClientTracing(tracing))
+		callOpts.DeleteCustomClass = append(callOpts.DeleteCustomClass, gax.WithClientTracing(tracing))
+		callOpts.UndeleteCustomClass = append(callOpts.UndeleteCustomClass, gax.WithClientTracing(tracing))
+		callOpts.CreatePhraseSet = append(callOpts.CreatePhraseSet, gax.WithClientTracing(tracing))
+		callOpts.ListPhraseSets = append(callOpts.ListPhraseSets, gax.WithClientTracing(tracing))
+		callOpts.GetPhraseSet = append(callOpts.GetPhraseSet, gax.WithClientTracing(tracing))
+		callOpts.UpdatePhraseSet = append(callOpts.UpdatePhraseSet, gax.WithClientTracing(tracing))
+		callOpts.DeletePhraseSet = append(callOpts.DeletePhraseSet, gax.WithClientTracing(tracing))
+		callOpts.UndeletePhraseSet = append(callOpts.UndeletePhraseSet, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "speech",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/speech/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "speech.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateRecognizer = append(callOpts.CreateRecognizer, gax.WithClientLogging(logging))
+		callOpts.ListRecognizers = append(callOpts.ListRecognizers, gax.WithClientLogging(logging))
+		callOpts.GetRecognizer = append(callOpts.GetRecognizer, gax.WithClientLogging(logging))
+		callOpts.UpdateRecognizer = append(callOpts.UpdateRecognizer, gax.WithClientLogging(logging))
+		callOpts.DeleteRecognizer = append(callOpts.DeleteRecognizer, gax.WithClientLogging(logging))
+		callOpts.UndeleteRecognizer = append(callOpts.UndeleteRecognizer, gax.WithClientLogging(logging))
+		callOpts.Recognize = append(callOpts.Recognize, gax.WithClientLogging(logging))
+		callOpts.StreamingRecognize = append(callOpts.StreamingRecognize, gax.WithClientLogging(logging))
+		callOpts.BatchRecognize = append(callOpts.BatchRecognize, gax.WithClientLogging(logging))
+		callOpts.GetConfig = append(callOpts.GetConfig, gax.WithClientLogging(logging))
+		callOpts.UpdateConfig = append(callOpts.UpdateConfig, gax.WithClientLogging(logging))
+		callOpts.CreateCustomClass = append(callOpts.CreateCustomClass, gax.WithClientLogging(logging))
+		callOpts.ListCustomClasses = append(callOpts.ListCustomClasses, gax.WithClientLogging(logging))
+		callOpts.GetCustomClass = append(callOpts.GetCustomClass, gax.WithClientLogging(logging))
+		callOpts.UpdateCustomClass = append(callOpts.UpdateCustomClass, gax.WithClientLogging(logging))
+		callOpts.DeleteCustomClass = append(callOpts.DeleteCustomClass, gax.WithClientLogging(logging))
+		callOpts.UndeleteCustomClass = append(callOpts.UndeleteCustomClass, gax.WithClientLogging(logging))
+		callOpts.CreatePhraseSet = append(callOpts.CreatePhraseSet, gax.WithClientLogging(logging))
+		callOpts.ListPhraseSets = append(callOpts.ListPhraseSets, gax.WithClientLogging(logging))
+		callOpts.GetPhraseSet = append(callOpts.GetPhraseSet, gax.WithClientLogging(logging))
+		callOpts.UpdatePhraseSet = append(callOpts.UpdatePhraseSet, gax.WithClientLogging(logging))
+		callOpts.DeletePhraseSet = append(callOpts.DeletePhraseSet, gax.WithClientLogging(logging))
+		callOpts.UndeletePhraseSet = append(callOpts.UndeletePhraseSet, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -1189,7 +1470,7 @@ func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *restClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -1208,6 +1489,9 @@ func (c *gRPCClient) CreateRecognizer(ctx context.Context, req *speechpb.CreateR
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.speech.v2.Speech/CreateRecognizer")
+	}
 	opts = append((*c.CallOptions).CreateRecognizer[0:len((*c.CallOptions).CreateRecognizer):len((*c.CallOptions).CreateRecognizer)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1218,8 +1502,12 @@ func (c *gRPCClient) CreateRecognizer(ctx context.Context, req *speechpb.CreateR
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*speech.CreateRecognizerOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateRecognizerOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1228,9 +1516,12 @@ func (c *gRPCClient) ListRecognizers(ctx context.Context, req *speechpb.ListReco
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.speech.v2.Speech/ListRecognizers")
+	}
 	opts = append((*c.CallOptions).ListRecognizers[0:len((*c.CallOptions).ListRecognizers):len((*c.CallOptions).ListRecognizers)], opts...)
 	it := &RecognizerIterator{}
-	req = proto.Clone(req).(*speechpb.ListRecognizersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*speechpb.Recognizer, string, error) {
 		resp := &speechpb.ListRecognizersResponse{}
 		if pageToken != "" {
@@ -1274,6 +1565,9 @@ func (c *gRPCClient) GetRecognizer(ctx context.Context, req *speechpb.GetRecogni
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.speech.v2.Speech/GetRecognizer")
+	}
 	opts = append((*c.CallOptions).GetRecognizer[0:len((*c.CallOptions).GetRecognizer):len((*c.CallOptions).GetRecognizer)], opts...)
 	var resp *speechpb.Recognizer
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1292,6 +1586,9 @@ func (c *gRPCClient) UpdateRecognizer(ctx context.Context, req *speechpb.UpdateR
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.speech.v2.Speech/UpdateRecognizer")
+	}
 	opts = append((*c.CallOptions).UpdateRecognizer[0:len((*c.CallOptions).UpdateRecognizer):len((*c.CallOptions).UpdateRecognizer)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1302,8 +1599,12 @@ func (c *gRPCClient) UpdateRecognizer(ctx context.Context, req *speechpb.UpdateR
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*speech.UpdateRecognizerOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateRecognizerOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1312,6 +1613,9 @@ func (c *gRPCClient) DeleteRecognizer(ctx context.Context, req *speechpb.DeleteR
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.speech.v2.Speech/DeleteRecognizer")
+	}
 	opts = append((*c.CallOptions).DeleteRecognizer[0:len((*c.CallOptions).DeleteRecognizer):len((*c.CallOptions).DeleteRecognizer)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1322,8 +1626,12 @@ func (c *gRPCClient) DeleteRecognizer(ctx context.Context, req *speechpb.DeleteR
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*speech.DeleteRecognizerOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteRecognizerOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1332,6 +1640,9 @@ func (c *gRPCClient) UndeleteRecognizer(ctx context.Context, req *speechpb.Undel
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.speech.v2.Speech/UndeleteRecognizer")
+	}
 	opts = append((*c.CallOptions).UndeleteRecognizer[0:len((*c.CallOptions).UndeleteRecognizer):len((*c.CallOptions).UndeleteRecognizer)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1342,8 +1653,12 @@ func (c *gRPCClient) UndeleteRecognizer(ctx context.Context, req *speechpb.Undel
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*speech.UndeleteRecognizerOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UndeleteRecognizerOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1352,6 +1667,9 @@ func (c *gRPCClient) Recognize(ctx context.Context, req *speechpb.RecognizeReque
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.speech.v2.Speech/Recognize")
+	}
 	opts = append((*c.CallOptions).Recognize[0:len((*c.CallOptions).Recognize):len((*c.CallOptions).Recognize)], opts...)
 	var resp *speechpb.RecognizeResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1367,6 +1685,9 @@ func (c *gRPCClient) Recognize(ctx context.Context, req *speechpb.RecognizeReque
 
 func (c *gRPCClient) StreamingRecognize(ctx context.Context, opts ...gax.CallOption) (speechpb.Speech_StreamingRecognizeClient, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.speech.v2.Speech/StreamingRecognize")
+	}
 	var resp speechpb.Speech_StreamingRecognizeClient
 	opts = append((*c.CallOptions).StreamingRecognize[0:len((*c.CallOptions).StreamingRecognize):len((*c.CallOptions).StreamingRecognize)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1387,6 +1708,9 @@ func (c *gRPCClient) BatchRecognize(ctx context.Context, req *speechpb.BatchReco
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.speech.v2.Speech/BatchRecognize")
+	}
 	opts = append((*c.CallOptions).BatchRecognize[0:len((*c.CallOptions).BatchRecognize):len((*c.CallOptions).BatchRecognize)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1397,8 +1721,12 @@ func (c *gRPCClient) BatchRecognize(ctx context.Context, req *speechpb.BatchReco
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*speech.BatchRecognizeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &BatchRecognizeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1407,6 +1735,9 @@ func (c *gRPCClient) GetConfig(ctx context.Context, req *speechpb.GetConfigReque
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.speech.v2.Speech/GetConfig")
+	}
 	opts = append((*c.CallOptions).GetConfig[0:len((*c.CallOptions).GetConfig):len((*c.CallOptions).GetConfig)], opts...)
 	var resp *speechpb.Config
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1425,6 +1756,9 @@ func (c *gRPCClient) UpdateConfig(ctx context.Context, req *speechpb.UpdateConfi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.speech.v2.Speech/UpdateConfig")
+	}
 	opts = append((*c.CallOptions).UpdateConfig[0:len((*c.CallOptions).UpdateConfig):len((*c.CallOptions).UpdateConfig)], opts...)
 	var resp *speechpb.Config
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1443,6 +1777,9 @@ func (c *gRPCClient) CreateCustomClass(ctx context.Context, req *speechpb.Create
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.speech.v2.Speech/CreateCustomClass")
+	}
 	opts = append((*c.CallOptions).CreateCustomClass[0:len((*c.CallOptions).CreateCustomClass):len((*c.CallOptions).CreateCustomClass)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1453,8 +1790,12 @@ func (c *gRPCClient) CreateCustomClass(ctx context.Context, req *speechpb.Create
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*speech.CreateCustomClassOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateCustomClassOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1463,9 +1804,12 @@ func (c *gRPCClient) ListCustomClasses(ctx context.Context, req *speechpb.ListCu
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.speech.v2.Speech/ListCustomClasses")
+	}
 	opts = append((*c.CallOptions).ListCustomClasses[0:len((*c.CallOptions).ListCustomClasses):len((*c.CallOptions).ListCustomClasses)], opts...)
 	it := &CustomClassIterator{}
-	req = proto.Clone(req).(*speechpb.ListCustomClassesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*speechpb.CustomClass, string, error) {
 		resp := &speechpb.ListCustomClassesResponse{}
 		if pageToken != "" {
@@ -1509,6 +1853,9 @@ func (c *gRPCClient) GetCustomClass(ctx context.Context, req *speechpb.GetCustom
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.speech.v2.Speech/GetCustomClass")
+	}
 	opts = append((*c.CallOptions).GetCustomClass[0:len((*c.CallOptions).GetCustomClass):len((*c.CallOptions).GetCustomClass)], opts...)
 	var resp *speechpb.CustomClass
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1527,6 +1874,9 @@ func (c *gRPCClient) UpdateCustomClass(ctx context.Context, req *speechpb.Update
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.speech.v2.Speech/UpdateCustomClass")
+	}
 	opts = append((*c.CallOptions).UpdateCustomClass[0:len((*c.CallOptions).UpdateCustomClass):len((*c.CallOptions).UpdateCustomClass)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1537,8 +1887,12 @@ func (c *gRPCClient) UpdateCustomClass(ctx context.Context, req *speechpb.Update
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*speech.UpdateCustomClassOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateCustomClassOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1547,6 +1901,9 @@ func (c *gRPCClient) DeleteCustomClass(ctx context.Context, req *speechpb.Delete
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.speech.v2.Speech/DeleteCustomClass")
+	}
 	opts = append((*c.CallOptions).DeleteCustomClass[0:len((*c.CallOptions).DeleteCustomClass):len((*c.CallOptions).DeleteCustomClass)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1557,8 +1914,12 @@ func (c *gRPCClient) DeleteCustomClass(ctx context.Context, req *speechpb.Delete
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*speech.DeleteCustomClassOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteCustomClassOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1567,6 +1928,9 @@ func (c *gRPCClient) UndeleteCustomClass(ctx context.Context, req *speechpb.Unde
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.speech.v2.Speech/UndeleteCustomClass")
+	}
 	opts = append((*c.CallOptions).UndeleteCustomClass[0:len((*c.CallOptions).UndeleteCustomClass):len((*c.CallOptions).UndeleteCustomClass)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1577,8 +1941,12 @@ func (c *gRPCClient) UndeleteCustomClass(ctx context.Context, req *speechpb.Unde
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*speech.UndeleteCustomClassOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UndeleteCustomClassOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1587,6 +1955,9 @@ func (c *gRPCClient) CreatePhraseSet(ctx context.Context, req *speechpb.CreatePh
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.speech.v2.Speech/CreatePhraseSet")
+	}
 	opts = append((*c.CallOptions).CreatePhraseSet[0:len((*c.CallOptions).CreatePhraseSet):len((*c.CallOptions).CreatePhraseSet)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1597,8 +1968,12 @@ func (c *gRPCClient) CreatePhraseSet(ctx context.Context, req *speechpb.CreatePh
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*speech.CreatePhraseSetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreatePhraseSetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1607,9 +1982,12 @@ func (c *gRPCClient) ListPhraseSets(ctx context.Context, req *speechpb.ListPhras
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.speech.v2.Speech/ListPhraseSets")
+	}
 	opts = append((*c.CallOptions).ListPhraseSets[0:len((*c.CallOptions).ListPhraseSets):len((*c.CallOptions).ListPhraseSets)], opts...)
 	it := &PhraseSetIterator{}
-	req = proto.Clone(req).(*speechpb.ListPhraseSetsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*speechpb.PhraseSet, string, error) {
 		resp := &speechpb.ListPhraseSetsResponse{}
 		if pageToken != "" {
@@ -1653,6 +2031,9 @@ func (c *gRPCClient) GetPhraseSet(ctx context.Context, req *speechpb.GetPhraseSe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.speech.v2.Speech/GetPhraseSet")
+	}
 	opts = append((*c.CallOptions).GetPhraseSet[0:len((*c.CallOptions).GetPhraseSet):len((*c.CallOptions).GetPhraseSet)], opts...)
 	var resp *speechpb.PhraseSet
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1671,6 +2052,9 @@ func (c *gRPCClient) UpdatePhraseSet(ctx context.Context, req *speechpb.UpdatePh
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.speech.v2.Speech/UpdatePhraseSet")
+	}
 	opts = append((*c.CallOptions).UpdatePhraseSet[0:len((*c.CallOptions).UpdatePhraseSet):len((*c.CallOptions).UpdatePhraseSet)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1681,8 +2065,12 @@ func (c *gRPCClient) UpdatePhraseSet(ctx context.Context, req *speechpb.UpdatePh
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*speech.UpdatePhraseSetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdatePhraseSetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1691,6 +2079,9 @@ func (c *gRPCClient) DeletePhraseSet(ctx context.Context, req *speechpb.DeletePh
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.speech.v2.Speech/DeletePhraseSet")
+	}
 	opts = append((*c.CallOptions).DeletePhraseSet[0:len((*c.CallOptions).DeletePhraseSet):len((*c.CallOptions).DeletePhraseSet)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1701,8 +2092,12 @@ func (c *gRPCClient) DeletePhraseSet(ctx context.Context, req *speechpb.DeletePh
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*speech.DeletePhraseSetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeletePhraseSetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1711,6 +2106,9 @@ func (c *gRPCClient) UndeletePhraseSet(ctx context.Context, req *speechpb.Undele
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.speech.v2.Speech/UndeletePhraseSet")
+	}
 	opts = append((*c.CallOptions).UndeletePhraseSet[0:len((*c.CallOptions).UndeletePhraseSet):len((*c.CallOptions).UndeletePhraseSet)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1721,8 +2119,12 @@ func (c *gRPCClient) UndeletePhraseSet(ctx context.Context, req *speechpb.Undele
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*speech.UndeletePhraseSetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UndeletePhraseSetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1731,6 +2133,9 @@ func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1749,9 +2154,12 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/ListLocations")
+	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1795,6 +2203,9 @@ func (c *gRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1809,6 +2220,9 @@ func (c *gRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+	}
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1823,6 +2237,9 @@ func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1841,9 +2258,12 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1914,6 +2334,10 @@ func (c *restClient) CreateRecognizer(ctx context.Context, req *speechpb.CreateR
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.speech.v2.Speech/CreateRecognizer")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{parent=projects/*/locations/*}/recognizers")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1942,8 +2366,12 @@ func (c *restClient) CreateRecognizer(ctx context.Context, req *speechpb.CreateR
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*speech.CreateRecognizerOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateRecognizerOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1951,7 +2379,7 @@ func (c *restClient) CreateRecognizer(ctx context.Context, req *speechpb.CreateR
 // ListRecognizers lists Recognizers.
 func (c *restClient) ListRecognizers(ctx context.Context, req *speechpb.ListRecognizersRequest, opts ...gax.CallOption) *RecognizerIterator {
 	it := &RecognizerIterator{}
-	req = proto.Clone(req).(*speechpb.ListRecognizersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*speechpb.Recognizer, string, error) {
 		resp := &speechpb.ListRecognizersResponse{}
@@ -2051,6 +2479,10 @@ func (c *restClient) GetRecognizer(ctx context.Context, req *speechpb.GetRecogni
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.speech.v2.Speech/GetRecognizer")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/recognizers/*}")
+	}
 	opts = append((*c.CallOptions).GetRecognizer[0:len((*c.CallOptions).GetRecognizer):len((*c.CallOptions).GetRecognizer)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &speechpb.Recognizer{}
@@ -2118,6 +2550,10 @@ func (c *restClient) UpdateRecognizer(ctx context.Context, req *speechpb.UpdateR
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.speech.v2.Speech/UpdateRecognizer")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{recognizer.name=projects/*/locations/*/recognizers/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2146,8 +2582,12 @@ func (c *restClient) UpdateRecognizer(ctx context.Context, req *speechpb.UpdateR
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*speech.UpdateRecognizerOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateRecognizerOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2180,6 +2620,10 @@ func (c *restClient) DeleteRecognizer(ctx context.Context, req *speechpb.DeleteR
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.speech.v2.Speech/DeleteRecognizer")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/recognizers/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2208,8 +2652,12 @@ func (c *restClient) DeleteRecognizer(ctx context.Context, req *speechpb.DeleteR
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*speech.DeleteRecognizerOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteRecognizerOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2239,6 +2687,10 @@ func (c *restClient) UndeleteRecognizer(ctx context.Context, req *speechpb.Undel
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.speech.v2.Speech/UndeleteRecognizer")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/recognizers/*}:undelete")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2267,8 +2719,12 @@ func (c *restClient) UndeleteRecognizer(ctx context.Context, req *speechpb.Undel
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*speech.UndeleteRecognizerOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UndeleteRecognizerOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2299,6 +2755,10 @@ func (c *restClient) Recognize(ctx context.Context, req *speechpb.RecognizeReque
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.speech.v2.Speech/Recognize")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{recognizer=projects/*/locations/*/recognizers/*}:recognize")
+	}
 	opts = append((*c.CallOptions).Recognize[0:len((*c.CallOptions).Recognize):len((*c.CallOptions).Recognize)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &speechpb.RecognizeResponse{}
@@ -2365,6 +2825,10 @@ func (c *restClient) BatchRecognize(ctx context.Context, req *speechpb.BatchReco
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.speech.v2.Speech/BatchRecognize")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{recognizer=projects/*/locations/*/recognizers/*}:batchRecognize")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2393,8 +2857,12 @@ func (c *restClient) BatchRecognize(ctx context.Context, req *speechpb.BatchReco
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*speech.BatchRecognizeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &BatchRecognizeOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2418,6 +2886,10 @@ func (c *restClient) GetConfig(ctx context.Context, req *speechpb.GetConfigReque
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.speech.v2.Speech/GetConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/config}")
+	}
 	opts = append((*c.CallOptions).GetConfig[0:len((*c.CallOptions).GetConfig):len((*c.CallOptions).GetConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &speechpb.Config{}
@@ -2482,6 +2954,10 @@ func (c *restClient) UpdateConfig(ctx context.Context, req *speechpb.UpdateConfi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.speech.v2.Speech/UpdateConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{config.name=projects/*/locations/*/config}")
+	}
 	opts = append((*c.CallOptions).UpdateConfig[0:len((*c.CallOptions).UpdateConfig):len((*c.CallOptions).UpdateConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &speechpb.Config{}
@@ -2545,6 +3021,10 @@ func (c *restClient) CreateCustomClass(ctx context.Context, req *speechpb.Create
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.speech.v2.Speech/CreateCustomClass")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{parent=projects/*/locations/*}/customClasses")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2573,8 +3053,12 @@ func (c *restClient) CreateCustomClass(ctx context.Context, req *speechpb.Create
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*speech.CreateCustomClassOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateCustomClassOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2582,7 +3066,7 @@ func (c *restClient) CreateCustomClass(ctx context.Context, req *speechpb.Create
 // ListCustomClasses lists CustomClasses.
 func (c *restClient) ListCustomClasses(ctx context.Context, req *speechpb.ListCustomClassesRequest, opts ...gax.CallOption) *CustomClassIterator {
 	it := &CustomClassIterator{}
-	req = proto.Clone(req).(*speechpb.ListCustomClassesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*speechpb.CustomClass, string, error) {
 		resp := &speechpb.ListCustomClassesResponse{}
@@ -2680,6 +3164,10 @@ func (c *restClient) GetCustomClass(ctx context.Context, req *speechpb.GetCustom
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.speech.v2.Speech/GetCustomClass")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/customClasses/*}")
+	}
 	opts = append((*c.CallOptions).GetCustomClass[0:len((*c.CallOptions).GetCustomClass):len((*c.CallOptions).GetCustomClass)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &speechpb.CustomClass{}
@@ -2747,6 +3235,10 @@ func (c *restClient) UpdateCustomClass(ctx context.Context, req *speechpb.Update
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.speech.v2.Speech/UpdateCustomClass")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{custom_class.name=projects/*/locations/*/customClasses/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2775,8 +3267,12 @@ func (c *restClient) UpdateCustomClass(ctx context.Context, req *speechpb.Update
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*speech.UpdateCustomClassOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateCustomClassOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2809,6 +3305,10 @@ func (c *restClient) DeleteCustomClass(ctx context.Context, req *speechpb.Delete
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.speech.v2.Speech/DeleteCustomClass")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/customClasses/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2837,8 +3337,12 @@ func (c *restClient) DeleteCustomClass(ctx context.Context, req *speechpb.Delete
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*speech.DeleteCustomClassOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteCustomClassOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2868,6 +3372,10 @@ func (c *restClient) UndeleteCustomClass(ctx context.Context, req *speechpb.Unde
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.speech.v2.Speech/UndeleteCustomClass")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/customClasses/*}:undelete")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2896,8 +3404,12 @@ func (c *restClient) UndeleteCustomClass(ctx context.Context, req *speechpb.Unde
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*speech.UndeleteCustomClassOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UndeleteCustomClassOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2934,6 +3446,10 @@ func (c *restClient) CreatePhraseSet(ctx context.Context, req *speechpb.CreatePh
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.speech.v2.Speech/CreatePhraseSet")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{parent=projects/*/locations/*}/phraseSets")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2962,8 +3478,12 @@ func (c *restClient) CreatePhraseSet(ctx context.Context, req *speechpb.CreatePh
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*speech.CreatePhraseSetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreatePhraseSetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2971,7 +3491,7 @@ func (c *restClient) CreatePhraseSet(ctx context.Context, req *speechpb.CreatePh
 // ListPhraseSets lists PhraseSets.
 func (c *restClient) ListPhraseSets(ctx context.Context, req *speechpb.ListPhraseSetsRequest, opts ...gax.CallOption) *PhraseSetIterator {
 	it := &PhraseSetIterator{}
-	req = proto.Clone(req).(*speechpb.ListPhraseSetsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*speechpb.PhraseSet, string, error) {
 		resp := &speechpb.ListPhraseSetsResponse{}
@@ -3069,6 +3589,10 @@ func (c *restClient) GetPhraseSet(ctx context.Context, req *speechpb.GetPhraseSe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.speech.v2.Speech/GetPhraseSet")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/phraseSets/*}")
+	}
 	opts = append((*c.CallOptions).GetPhraseSet[0:len((*c.CallOptions).GetPhraseSet):len((*c.CallOptions).GetPhraseSet)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &speechpb.PhraseSet{}
@@ -3136,6 +3660,10 @@ func (c *restClient) UpdatePhraseSet(ctx context.Context, req *speechpb.UpdatePh
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.speech.v2.Speech/UpdatePhraseSet")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{phrase_set.name=projects/*/locations/*/phraseSets/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3164,8 +3692,12 @@ func (c *restClient) UpdatePhraseSet(ctx context.Context, req *speechpb.UpdatePh
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*speech.UpdatePhraseSetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdatePhraseSetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3198,6 +3730,10 @@ func (c *restClient) DeletePhraseSet(ctx context.Context, req *speechpb.DeletePh
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.speech.v2.Speech/DeletePhraseSet")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/phraseSets/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3226,8 +3762,12 @@ func (c *restClient) DeletePhraseSet(ctx context.Context, req *speechpb.DeletePh
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*speech.DeletePhraseSetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeletePhraseSetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3257,6 +3797,10 @@ func (c *restClient) UndeletePhraseSet(ctx context.Context, req *speechpb.Undele
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.speech.v2.Speech/UndeletePhraseSet")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/phraseSets/*}:undelete")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3285,8 +3829,12 @@ func (c *restClient) UndeletePhraseSet(ctx context.Context, req *speechpb.Undele
 	}
 
 	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*speech.UndeletePhraseSetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UndeletePhraseSetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3310,6 +3858,10 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*}")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &locationpb.Location{}
@@ -3342,9 +3894,17 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 }
 
 // ListLocations lists information about the supported locations for this service.
+// This method can be called in two ways:
+//
+//	List all public locations: Use the path GET /v1/locations.
+//
+//	List project-visible locations: Use the path
+//	GET /v1/projects/{project_id}/locations. This may include public
+//	locations as well as private or other locations specifically visible
+//	to the project.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -3447,6 +4007,10 @@ func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/operations/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -3482,6 +4046,10 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/operations/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -3517,6 +4085,10 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -3551,7 +4123,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
@@ -3579,6 +4151,9 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 		}
 		if req.GetPageToken() != "" {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req.GetReturnPartialSuccess() {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -3633,7 +4208,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created BatchRecognizeOperation, possibly from a different process.
 func (c *gRPCClient) BatchRecognizeOperation(name string) *BatchRecognizeOperation {
 	return &BatchRecognizeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*speech.BatchRecognizeOperation"),
 	}
 }
 
@@ -3642,7 +4217,7 @@ func (c *gRPCClient) BatchRecognizeOperation(name string) *BatchRecognizeOperati
 func (c *restClient) BatchRecognizeOperation(name string) *BatchRecognizeOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &BatchRecognizeOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*speech.BatchRecognizeOperation"),
 		pollPath: override,
 	}
 }
@@ -3651,7 +4226,7 @@ func (c *restClient) BatchRecognizeOperation(name string) *BatchRecognizeOperati
 // The name must be that of a previously created CreateCustomClassOperation, possibly from a different process.
 func (c *gRPCClient) CreateCustomClassOperation(name string) *CreateCustomClassOperation {
 	return &CreateCustomClassOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*speech.CreateCustomClassOperation"),
 	}
 }
 
@@ -3660,7 +4235,7 @@ func (c *gRPCClient) CreateCustomClassOperation(name string) *CreateCustomClassO
 func (c *restClient) CreateCustomClassOperation(name string) *CreateCustomClassOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &CreateCustomClassOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*speech.CreateCustomClassOperation"),
 		pollPath: override,
 	}
 }
@@ -3669,7 +4244,7 @@ func (c *restClient) CreateCustomClassOperation(name string) *CreateCustomClassO
 // The name must be that of a previously created CreatePhraseSetOperation, possibly from a different process.
 func (c *gRPCClient) CreatePhraseSetOperation(name string) *CreatePhraseSetOperation {
 	return &CreatePhraseSetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*speech.CreatePhraseSetOperation"),
 	}
 }
 
@@ -3678,7 +4253,7 @@ func (c *gRPCClient) CreatePhraseSetOperation(name string) *CreatePhraseSetOpera
 func (c *restClient) CreatePhraseSetOperation(name string) *CreatePhraseSetOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &CreatePhraseSetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*speech.CreatePhraseSetOperation"),
 		pollPath: override,
 	}
 }
@@ -3687,7 +4262,7 @@ func (c *restClient) CreatePhraseSetOperation(name string) *CreatePhraseSetOpera
 // The name must be that of a previously created CreateRecognizerOperation, possibly from a different process.
 func (c *gRPCClient) CreateRecognizerOperation(name string) *CreateRecognizerOperation {
 	return &CreateRecognizerOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*speech.CreateRecognizerOperation"),
 	}
 }
 
@@ -3696,7 +4271,7 @@ func (c *gRPCClient) CreateRecognizerOperation(name string) *CreateRecognizerOpe
 func (c *restClient) CreateRecognizerOperation(name string) *CreateRecognizerOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &CreateRecognizerOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*speech.CreateRecognizerOperation"),
 		pollPath: override,
 	}
 }
@@ -3705,7 +4280,7 @@ func (c *restClient) CreateRecognizerOperation(name string) *CreateRecognizerOpe
 // The name must be that of a previously created DeleteCustomClassOperation, possibly from a different process.
 func (c *gRPCClient) DeleteCustomClassOperation(name string) *DeleteCustomClassOperation {
 	return &DeleteCustomClassOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*speech.DeleteCustomClassOperation"),
 	}
 }
 
@@ -3714,7 +4289,7 @@ func (c *gRPCClient) DeleteCustomClassOperation(name string) *DeleteCustomClassO
 func (c *restClient) DeleteCustomClassOperation(name string) *DeleteCustomClassOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &DeleteCustomClassOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*speech.DeleteCustomClassOperation"),
 		pollPath: override,
 	}
 }
@@ -3723,7 +4298,7 @@ func (c *restClient) DeleteCustomClassOperation(name string) *DeleteCustomClassO
 // The name must be that of a previously created DeletePhraseSetOperation, possibly from a different process.
 func (c *gRPCClient) DeletePhraseSetOperation(name string) *DeletePhraseSetOperation {
 	return &DeletePhraseSetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*speech.DeletePhraseSetOperation"),
 	}
 }
 
@@ -3732,7 +4307,7 @@ func (c *gRPCClient) DeletePhraseSetOperation(name string) *DeletePhraseSetOpera
 func (c *restClient) DeletePhraseSetOperation(name string) *DeletePhraseSetOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &DeletePhraseSetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*speech.DeletePhraseSetOperation"),
 		pollPath: override,
 	}
 }
@@ -3741,7 +4316,7 @@ func (c *restClient) DeletePhraseSetOperation(name string) *DeletePhraseSetOpera
 // The name must be that of a previously created DeleteRecognizerOperation, possibly from a different process.
 func (c *gRPCClient) DeleteRecognizerOperation(name string) *DeleteRecognizerOperation {
 	return &DeleteRecognizerOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*speech.DeleteRecognizerOperation"),
 	}
 }
 
@@ -3750,7 +4325,7 @@ func (c *gRPCClient) DeleteRecognizerOperation(name string) *DeleteRecognizerOpe
 func (c *restClient) DeleteRecognizerOperation(name string) *DeleteRecognizerOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &DeleteRecognizerOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*speech.DeleteRecognizerOperation"),
 		pollPath: override,
 	}
 }
@@ -3759,7 +4334,7 @@ func (c *restClient) DeleteRecognizerOperation(name string) *DeleteRecognizerOpe
 // The name must be that of a previously created UndeleteCustomClassOperation, possibly from a different process.
 func (c *gRPCClient) UndeleteCustomClassOperation(name string) *UndeleteCustomClassOperation {
 	return &UndeleteCustomClassOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*speech.UndeleteCustomClassOperation"),
 	}
 }
 
@@ -3768,7 +4343,7 @@ func (c *gRPCClient) UndeleteCustomClassOperation(name string) *UndeleteCustomCl
 func (c *restClient) UndeleteCustomClassOperation(name string) *UndeleteCustomClassOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &UndeleteCustomClassOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*speech.UndeleteCustomClassOperation"),
 		pollPath: override,
 	}
 }
@@ -3777,7 +4352,7 @@ func (c *restClient) UndeleteCustomClassOperation(name string) *UndeleteCustomCl
 // The name must be that of a previously created UndeletePhraseSetOperation, possibly from a different process.
 func (c *gRPCClient) UndeletePhraseSetOperation(name string) *UndeletePhraseSetOperation {
 	return &UndeletePhraseSetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*speech.UndeletePhraseSetOperation"),
 	}
 }
 
@@ -3786,7 +4361,7 @@ func (c *gRPCClient) UndeletePhraseSetOperation(name string) *UndeletePhraseSetO
 func (c *restClient) UndeletePhraseSetOperation(name string) *UndeletePhraseSetOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &UndeletePhraseSetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*speech.UndeletePhraseSetOperation"),
 		pollPath: override,
 	}
 }
@@ -3795,7 +4370,7 @@ func (c *restClient) UndeletePhraseSetOperation(name string) *UndeletePhraseSetO
 // The name must be that of a previously created UndeleteRecognizerOperation, possibly from a different process.
 func (c *gRPCClient) UndeleteRecognizerOperation(name string) *UndeleteRecognizerOperation {
 	return &UndeleteRecognizerOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*speech.UndeleteRecognizerOperation"),
 	}
 }
 
@@ -3804,7 +4379,7 @@ func (c *gRPCClient) UndeleteRecognizerOperation(name string) *UndeleteRecognize
 func (c *restClient) UndeleteRecognizerOperation(name string) *UndeleteRecognizerOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &UndeleteRecognizerOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*speech.UndeleteRecognizerOperation"),
 		pollPath: override,
 	}
 }
@@ -3813,7 +4388,7 @@ func (c *restClient) UndeleteRecognizerOperation(name string) *UndeleteRecognize
 // The name must be that of a previously created UpdateCustomClassOperation, possibly from a different process.
 func (c *gRPCClient) UpdateCustomClassOperation(name string) *UpdateCustomClassOperation {
 	return &UpdateCustomClassOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*speech.UpdateCustomClassOperation"),
 	}
 }
 
@@ -3822,7 +4397,7 @@ func (c *gRPCClient) UpdateCustomClassOperation(name string) *UpdateCustomClassO
 func (c *restClient) UpdateCustomClassOperation(name string) *UpdateCustomClassOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &UpdateCustomClassOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*speech.UpdateCustomClassOperation"),
 		pollPath: override,
 	}
 }
@@ -3831,7 +4406,7 @@ func (c *restClient) UpdateCustomClassOperation(name string) *UpdateCustomClassO
 // The name must be that of a previously created UpdatePhraseSetOperation, possibly from a different process.
 func (c *gRPCClient) UpdatePhraseSetOperation(name string) *UpdatePhraseSetOperation {
 	return &UpdatePhraseSetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*speech.UpdatePhraseSetOperation"),
 	}
 }
 
@@ -3840,7 +4415,7 @@ func (c *gRPCClient) UpdatePhraseSetOperation(name string) *UpdatePhraseSetOpera
 func (c *restClient) UpdatePhraseSetOperation(name string) *UpdatePhraseSetOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &UpdatePhraseSetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*speech.UpdatePhraseSetOperation"),
 		pollPath: override,
 	}
 }
@@ -3849,7 +4424,7 @@ func (c *restClient) UpdatePhraseSetOperation(name string) *UpdatePhraseSetOpera
 // The name must be that of a previously created UpdateRecognizerOperation, possibly from a different process.
 func (c *gRPCClient) UpdateRecognizerOperation(name string) *UpdateRecognizerOperation {
 	return &UpdateRecognizerOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*speech.UpdateRecognizerOperation"),
 	}
 }
 
@@ -3858,7 +4433,7 @@ func (c *gRPCClient) UpdateRecognizerOperation(name string) *UpdateRecognizerOpe
 func (c *restClient) UpdateRecognizerOperation(name string) *UpdateRecognizerOperation {
 	override := fmt.Sprintf("/v2/%s", name)
 	return &UpdateRecognizerOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*speech.UpdateRecognizerOperation"),
 		pollPath: override,
 	}
 }

@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import (
 
 	devicestreamingpb "cloud.google.com/go/devicestreaming/apiv1/devicestreamingpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -198,7 +199,7 @@ type DirectAccessClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *DirectAccessClient) Close() error {
 	return c.internalClient.Close()
@@ -295,6 +296,16 @@ type directAccessGRPCClient struct {
 // https://developer.android.com/studio/preview/android-device-streaming (at https://developer.android.com/studio/preview/android-device-streaming)
 func NewDirectAccessClient(ctx context.Context, opts ...option.ClientOption) (*DirectAccessClient, error) {
 	clientOpts := defaultDirectAccessGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "devicestreaming",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/devicestreaming/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "devicestreaming.googleapis.com",
+		}))
+	}
 	if newDirectAccessClientHook != nil {
 		hookOpts, err := newDirectAccessClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -316,6 +327,62 @@ func NewDirectAccessClient(ctx context.Context, opts ...option.ClientOption) (*D
 		logger:             internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "devicestreaming",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/devicestreaming/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "devicestreaming.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateDeviceSession = append(client.CallOptions.CreateDeviceSession, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListDeviceSessions = append(client.CallOptions.ListDeviceSessions, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetDeviceSession = append(client.CallOptions.GetDeviceSession, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelDeviceSession = append(client.CallOptions.CancelDeviceSession, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateDeviceSession = append(client.CallOptions.UpdateDeviceSession, gax.WithClientMetrics(metrics))
+		client.CallOptions.AdbConnect = append(client.CallOptions.AdbConnect, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "devicestreaming",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/devicestreaming/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "devicestreaming.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateDeviceSession = append(client.CallOptions.CreateDeviceSession, gax.WithClientTracing(tracing))
+		client.CallOptions.ListDeviceSessions = append(client.CallOptions.ListDeviceSessions, gax.WithClientTracing(tracing))
+		client.CallOptions.GetDeviceSession = append(client.CallOptions.GetDeviceSession, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelDeviceSession = append(client.CallOptions.CancelDeviceSession, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateDeviceSession = append(client.CallOptions.UpdateDeviceSession, gax.WithClientTracing(tracing))
+		client.CallOptions.AdbConnect = append(client.CallOptions.AdbConnect, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "devicestreaming",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/devicestreaming/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "devicestreaming.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateDeviceSession = append(client.CallOptions.CreateDeviceSession, gax.WithClientLogging(logging))
+		client.CallOptions.ListDeviceSessions = append(client.CallOptions.ListDeviceSessions, gax.WithClientLogging(logging))
+		client.CallOptions.GetDeviceSession = append(client.CallOptions.GetDeviceSession, gax.WithClientLogging(logging))
+		client.CallOptions.CancelDeviceSession = append(client.CallOptions.CancelDeviceSession, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateDeviceSession = append(client.CallOptions.UpdateDeviceSession, gax.WithClientLogging(logging))
+		client.CallOptions.AdbConnect = append(client.CallOptions.AdbConnect, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -341,7 +408,7 @@ func (c *directAccessGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *directAccessGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -378,6 +445,16 @@ type directAccessRESTClient struct {
 // https://developer.android.com/studio/preview/android-device-streaming (at https://developer.android.com/studio/preview/android-device-streaming)
 func NewDirectAccessRESTClient(ctx context.Context, opts ...option.ClientOption) (*DirectAccessClient, error) {
 	clientOpts := append(defaultDirectAccessRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "devicestreaming",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/devicestreaming/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "devicestreaming.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -391,6 +468,63 @@ func NewDirectAccessRESTClient(ctx context.Context, opts ...option.ClientOption)
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "devicestreaming",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/devicestreaming/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "devicestreaming.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateDeviceSession = append(callOpts.CreateDeviceSession, gax.WithClientMetrics(metrics))
+		callOpts.ListDeviceSessions = append(callOpts.ListDeviceSessions, gax.WithClientMetrics(metrics))
+		callOpts.GetDeviceSession = append(callOpts.GetDeviceSession, gax.WithClientMetrics(metrics))
+		callOpts.CancelDeviceSession = append(callOpts.CancelDeviceSession, gax.WithClientMetrics(metrics))
+		callOpts.UpdateDeviceSession = append(callOpts.UpdateDeviceSession, gax.WithClientMetrics(metrics))
+		callOpts.AdbConnect = append(callOpts.AdbConnect, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "devicestreaming",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/devicestreaming/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "devicestreaming.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateDeviceSession = append(callOpts.CreateDeviceSession, gax.WithClientTracing(tracing))
+		callOpts.ListDeviceSessions = append(callOpts.ListDeviceSessions, gax.WithClientTracing(tracing))
+		callOpts.GetDeviceSession = append(callOpts.GetDeviceSession, gax.WithClientTracing(tracing))
+		callOpts.CancelDeviceSession = append(callOpts.CancelDeviceSession, gax.WithClientTracing(tracing))
+		callOpts.UpdateDeviceSession = append(callOpts.UpdateDeviceSession, gax.WithClientTracing(tracing))
+		callOpts.AdbConnect = append(callOpts.AdbConnect, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "devicestreaming",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/devicestreaming/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "devicestreaming.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateDeviceSession = append(callOpts.CreateDeviceSession, gax.WithClientLogging(logging))
+		callOpts.ListDeviceSessions = append(callOpts.ListDeviceSessions, gax.WithClientLogging(logging))
+		callOpts.GetDeviceSession = append(callOpts.GetDeviceSession, gax.WithClientLogging(logging))
+		callOpts.CancelDeviceSession = append(callOpts.CancelDeviceSession, gax.WithClientLogging(logging))
+		callOpts.UpdateDeviceSession = append(callOpts.UpdateDeviceSession, gax.WithClientLogging(logging))
+		callOpts.AdbConnect = append(callOpts.AdbConnect, gax.WithClientLogging(logging))
+	}
 
 	return &DirectAccessClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -418,7 +552,7 @@ func (c *directAccessRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *directAccessRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -437,6 +571,9 @@ func (c *directAccessGRPCClient) CreateDeviceSession(ctx context.Context, req *d
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.devicestreaming.v1.DirectAccessService/CreateDeviceSession")
+	}
 	opts = append((*c.CallOptions).CreateDeviceSession[0:len((*c.CallOptions).CreateDeviceSession):len((*c.CallOptions).CreateDeviceSession)], opts...)
 	var resp *devicestreamingpb.DeviceSession
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -455,9 +592,12 @@ func (c *directAccessGRPCClient) ListDeviceSessions(ctx context.Context, req *de
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.devicestreaming.v1.DirectAccessService/ListDeviceSessions")
+	}
 	opts = append((*c.CallOptions).ListDeviceSessions[0:len((*c.CallOptions).ListDeviceSessions):len((*c.CallOptions).ListDeviceSessions)], opts...)
 	it := &DeviceSessionIterator{}
-	req = proto.Clone(req).(*devicestreamingpb.ListDeviceSessionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*devicestreamingpb.DeviceSession, string, error) {
 		resp := &devicestreamingpb.ListDeviceSessionsResponse{}
 		if pageToken != "" {
@@ -501,6 +641,9 @@ func (c *directAccessGRPCClient) GetDeviceSession(ctx context.Context, req *devi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.devicestreaming.v1.DirectAccessService/GetDeviceSession")
+	}
 	opts = append((*c.CallOptions).GetDeviceSession[0:len((*c.CallOptions).GetDeviceSession):len((*c.CallOptions).GetDeviceSession)], opts...)
 	var resp *devicestreamingpb.DeviceSession
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -519,6 +662,9 @@ func (c *directAccessGRPCClient) CancelDeviceSession(ctx context.Context, req *d
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.devicestreaming.v1.DirectAccessService/CancelDeviceSession")
+	}
 	opts = append((*c.CallOptions).CancelDeviceSession[0:len((*c.CallOptions).CancelDeviceSession):len((*c.CallOptions).CancelDeviceSession)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -533,6 +679,9 @@ func (c *directAccessGRPCClient) UpdateDeviceSession(ctx context.Context, req *d
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.devicestreaming.v1.DirectAccessService/UpdateDeviceSession")
+	}
 	opts = append((*c.CallOptions).UpdateDeviceSession[0:len((*c.CallOptions).UpdateDeviceSession):len((*c.CallOptions).UpdateDeviceSession)], opts...)
 	var resp *devicestreamingpb.DeviceSession
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -548,6 +697,9 @@ func (c *directAccessGRPCClient) UpdateDeviceSession(ctx context.Context, req *d
 
 func (c *directAccessGRPCClient) AdbConnect(ctx context.Context, opts ...gax.CallOption) (devicestreamingpb.DirectAccessService_AdbConnectClient, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.devicestreaming.v1.DirectAccessService/AdbConnect")
+	}
 	var resp devicestreamingpb.DirectAccessService_AdbConnectClient
 	opts = append((*c.CallOptions).AdbConnect[0:len((*c.CallOptions).AdbConnect):len((*c.CallOptions).AdbConnect)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -592,6 +744,10 @@ func (c *directAccessRESTClient) CreateDeviceSession(ctx context.Context, req *d
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.devicestreaming.v1.DirectAccessService/CreateDeviceSession")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*}/deviceSessions")
+	}
 	opts = append((*c.CallOptions).CreateDeviceSession[0:len((*c.CallOptions).CreateDeviceSession):len((*c.CallOptions).CreateDeviceSession)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &devicestreamingpb.DeviceSession{}
@@ -626,7 +782,7 @@ func (c *directAccessRESTClient) CreateDeviceSession(ctx context.Context, req *d
 // ListDeviceSessions lists DeviceSessions owned by the project user.
 func (c *directAccessRESTClient) ListDeviceSessions(ctx context.Context, req *devicestreamingpb.ListDeviceSessionsRequest, opts ...gax.CallOption) *DeviceSessionIterator {
 	it := &DeviceSessionIterator{}
-	req = proto.Clone(req).(*devicestreamingpb.ListDeviceSessionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*devicestreamingpb.DeviceSession, string, error) {
 		resp := &devicestreamingpb.ListDeviceSessionsResponse{}
@@ -725,6 +881,10 @@ func (c *directAccessRESTClient) GetDeviceSession(ctx context.Context, req *devi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.devicestreaming.v1.DirectAccessService/GetDeviceSession")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/deviceSessions/*}")
+	}
 	opts = append((*c.CallOptions).GetDeviceSession[0:len((*c.CallOptions).GetDeviceSession):len((*c.CallOptions).GetDeviceSession)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &devicestreamingpb.DeviceSession{}
@@ -785,6 +945,10 @@ func (c *directAccessRESTClient) CancelDeviceSession(ctx context.Context, req *d
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.devicestreaming.v1.DirectAccessService/CancelDeviceSession")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/deviceSessions/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -835,6 +999,10 @@ func (c *directAccessRESTClient) UpdateDeviceSession(ctx context.Context, req *d
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.devicestreaming.v1.DirectAccessService/UpdateDeviceSession")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{device_session.name=projects/*/deviceSessions/*}")
+	}
 	opts = append((*c.CallOptions).UpdateDeviceSession[0:len((*c.CallOptions).UpdateDeviceSession):len((*c.CallOptions).UpdateDeviceSession)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &devicestreamingpb.DeviceSession{}

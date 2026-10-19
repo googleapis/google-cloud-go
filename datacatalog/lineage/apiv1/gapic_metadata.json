@@ -100,6 +100,11 @@
                 "ProcessOpenLineageRunEvent"
               ]
             },
+            "SearchLineageStreaming": {
+              "methods": [
+                "SearchLineageStreaming"
+              ]
+            },
             "SearchLinks": {
               "methods": [
                 "SearchLinks"
@@ -208,6 +213,11 @@
             "ProcessOpenLineageRunEvent": {
               "methods": [
                 "ProcessOpenLineageRunEvent"
+              ]
+            },
+            "SearchLineageStreaming": {
+              "methods": [
+                "SearchLineageStreaming"
               ]
             },
             "SearchLinks": {

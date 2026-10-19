@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import (
 
 	storagepb "cloud.google.com/go/bigquery/storage/apiv1beta2/storagepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -261,7 +262,7 @@ type BigQueryWriteClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *BigQueryWriteClient) Close() error {
 	return c.internalClient.Close()
@@ -392,6 +393,16 @@ type bigQueryWriteGRPCClient struct {
 // Deprecated: BigQueryWrite may be removed in a future version.
 func NewBigQueryWriteClient(ctx context.Context, opts ...option.ClientOption) (*BigQueryWriteClient, error) {
 	clientOpts := defaultBigQueryWriteGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "bigquerystorage",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/bigquery/storage/apiv1beta2",
+			"gcp.client.language": "go",
+			"url.domain":          "bigquerystorage.googleapis.com",
+		}))
+	}
 	if newBigQueryWriteClientHook != nil {
 		hookOpts, err := newBigQueryWriteClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -413,6 +424,62 @@ func NewBigQueryWriteClient(ctx context.Context, opts ...option.ClientOption) (*
 		logger:              internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "bigquerystorage",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/storage/apiv1beta2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "bigquerystorage.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateWriteStream = append(client.CallOptions.CreateWriteStream, gax.WithClientMetrics(metrics))
+		client.CallOptions.AppendRows = append(client.CallOptions.AppendRows, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetWriteStream = append(client.CallOptions.GetWriteStream, gax.WithClientMetrics(metrics))
+		client.CallOptions.FinalizeWriteStream = append(client.CallOptions.FinalizeWriteStream, gax.WithClientMetrics(metrics))
+		client.CallOptions.BatchCommitWriteStreams = append(client.CallOptions.BatchCommitWriteStreams, gax.WithClientMetrics(metrics))
+		client.CallOptions.FlushRows = append(client.CallOptions.FlushRows, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "bigquerystorage",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/storage/apiv1beta2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "bigquerystorage.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateWriteStream = append(client.CallOptions.CreateWriteStream, gax.WithClientTracing(tracing))
+		client.CallOptions.AppendRows = append(client.CallOptions.AppendRows, gax.WithClientTracing(tracing))
+		client.CallOptions.GetWriteStream = append(client.CallOptions.GetWriteStream, gax.WithClientTracing(tracing))
+		client.CallOptions.FinalizeWriteStream = append(client.CallOptions.FinalizeWriteStream, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchCommitWriteStreams = append(client.CallOptions.BatchCommitWriteStreams, gax.WithClientTracing(tracing))
+		client.CallOptions.FlushRows = append(client.CallOptions.FlushRows, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "bigquerystorage",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/storage/apiv1beta2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "bigquerystorage.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateWriteStream = append(client.CallOptions.CreateWriteStream, gax.WithClientLogging(logging))
+		client.CallOptions.AppendRows = append(client.CallOptions.AppendRows, gax.WithClientLogging(logging))
+		client.CallOptions.GetWriteStream = append(client.CallOptions.GetWriteStream, gax.WithClientLogging(logging))
+		client.CallOptions.FinalizeWriteStream = append(client.CallOptions.FinalizeWriteStream, gax.WithClientLogging(logging))
+		client.CallOptions.BatchCommitWriteStreams = append(client.CallOptions.BatchCommitWriteStreams, gax.WithClientLogging(logging))
+		client.CallOptions.FlushRows = append(client.CallOptions.FlushRows, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -438,7 +505,7 @@ func (c *bigQueryWriteGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *bigQueryWriteGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -474,6 +541,16 @@ type bigQueryWriteRESTClient struct {
 // Deprecated: BigQueryWrite may be removed in a future version.
 func NewBigQueryWriteRESTClient(ctx context.Context, opts ...option.ClientOption) (*BigQueryWriteClient, error) {
 	clientOpts := append(defaultBigQueryWriteRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "bigquerystorage",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/bigquery/storage/apiv1beta2",
+			"gcp.client.language": "go",
+			"url.domain":          "bigquerystorage.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -487,6 +564,63 @@ func NewBigQueryWriteRESTClient(ctx context.Context, opts ...option.ClientOption
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "bigquerystorage",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/storage/apiv1beta2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "bigquerystorage.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateWriteStream = append(callOpts.CreateWriteStream, gax.WithClientMetrics(metrics))
+		callOpts.AppendRows = append(callOpts.AppendRows, gax.WithClientMetrics(metrics))
+		callOpts.GetWriteStream = append(callOpts.GetWriteStream, gax.WithClientMetrics(metrics))
+		callOpts.FinalizeWriteStream = append(callOpts.FinalizeWriteStream, gax.WithClientMetrics(metrics))
+		callOpts.BatchCommitWriteStreams = append(callOpts.BatchCommitWriteStreams, gax.WithClientMetrics(metrics))
+		callOpts.FlushRows = append(callOpts.FlushRows, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "bigquerystorage",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/storage/apiv1beta2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "bigquerystorage.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateWriteStream = append(callOpts.CreateWriteStream, gax.WithClientTracing(tracing))
+		callOpts.AppendRows = append(callOpts.AppendRows, gax.WithClientTracing(tracing))
+		callOpts.GetWriteStream = append(callOpts.GetWriteStream, gax.WithClientTracing(tracing))
+		callOpts.FinalizeWriteStream = append(callOpts.FinalizeWriteStream, gax.WithClientTracing(tracing))
+		callOpts.BatchCommitWriteStreams = append(callOpts.BatchCommitWriteStreams, gax.WithClientTracing(tracing))
+		callOpts.FlushRows = append(callOpts.FlushRows, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "bigquerystorage",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/storage/apiv1beta2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "bigquerystorage.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateWriteStream = append(callOpts.CreateWriteStream, gax.WithClientLogging(logging))
+		callOpts.AppendRows = append(callOpts.AppendRows, gax.WithClientLogging(logging))
+		callOpts.GetWriteStream = append(callOpts.GetWriteStream, gax.WithClientLogging(logging))
+		callOpts.FinalizeWriteStream = append(callOpts.FinalizeWriteStream, gax.WithClientLogging(logging))
+		callOpts.BatchCommitWriteStreams = append(callOpts.BatchCommitWriteStreams, gax.WithClientLogging(logging))
+		callOpts.FlushRows = append(callOpts.FlushRows, gax.WithClientLogging(logging))
+	}
 
 	return &BigQueryWriteClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -514,7 +648,7 @@ func (c *bigQueryWriteRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *bigQueryWriteRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -533,6 +667,9 @@ func (c *bigQueryWriteGRPCClient) CreateWriteStream(ctx context.Context, req *st
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.storage.v1beta2.BigQueryWrite/CreateWriteStream")
+	}
 	opts = append((*c.CallOptions).CreateWriteStream[0:len((*c.CallOptions).CreateWriteStream):len((*c.CallOptions).CreateWriteStream)], opts...)
 	var resp *storagepb.WriteStream
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -548,6 +685,9 @@ func (c *bigQueryWriteGRPCClient) CreateWriteStream(ctx context.Context, req *st
 
 func (c *bigQueryWriteGRPCClient) AppendRows(ctx context.Context, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.storage.v1beta2.BigQueryWrite/AppendRows")
+	}
 	var resp storagepb.BigQueryWrite_AppendRowsClient
 	opts = append((*c.CallOptions).AppendRows[0:len((*c.CallOptions).AppendRows):len((*c.CallOptions).AppendRows)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -568,6 +708,9 @@ func (c *bigQueryWriteGRPCClient) GetWriteStream(ctx context.Context, req *stora
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.storage.v1beta2.BigQueryWrite/GetWriteStream")
+	}
 	opts = append((*c.CallOptions).GetWriteStream[0:len((*c.CallOptions).GetWriteStream):len((*c.CallOptions).GetWriteStream)], opts...)
 	var resp *storagepb.WriteStream
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -586,6 +729,9 @@ func (c *bigQueryWriteGRPCClient) FinalizeWriteStream(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.storage.v1beta2.BigQueryWrite/FinalizeWriteStream")
+	}
 	opts = append((*c.CallOptions).FinalizeWriteStream[0:len((*c.CallOptions).FinalizeWriteStream):len((*c.CallOptions).FinalizeWriteStream)], opts...)
 	var resp *storagepb.FinalizeWriteStreamResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -604,6 +750,9 @@ func (c *bigQueryWriteGRPCClient) BatchCommitWriteStreams(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.storage.v1beta2.BigQueryWrite/BatchCommitWriteStreams")
+	}
 	opts = append((*c.CallOptions).BatchCommitWriteStreams[0:len((*c.CallOptions).BatchCommitWriteStreams):len((*c.CallOptions).BatchCommitWriteStreams)], opts...)
 	var resp *storagepb.BatchCommitWriteStreamsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -622,6 +771,9 @@ func (c *bigQueryWriteGRPCClient) FlushRows(ctx context.Context, req *storagepb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.storage.v1beta2.BigQueryWrite/FlushRows")
+	}
 	opts = append((*c.CallOptions).FlushRows[0:len((*c.CallOptions).FlushRows):len((*c.CallOptions).FlushRows)], opts...)
 	var resp *storagepb.FlushRowsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -663,6 +815,10 @@ func (c *bigQueryWriteRESTClient) CreateWriteStream(ctx context.Context, req *st
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.storage.v1beta2.BigQueryWrite/CreateWriteStream")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta2/{parent=projects/*/datasets/*/tables/*}")
+	}
 	opts = append((*c.CallOptions).CreateWriteStream[0:len((*c.CallOptions).CreateWriteStream):len((*c.CallOptions).CreateWriteStream)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &storagepb.WriteStream{}
@@ -743,6 +899,10 @@ func (c *bigQueryWriteRESTClient) GetWriteStream(ctx context.Context, req *stora
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.storage.v1beta2.BigQueryWrite/GetWriteStream")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta2/{name=projects/*/datasets/*/tables/*/streams/*}")
+	}
 	opts = append((*c.CallOptions).GetWriteStream[0:len((*c.CallOptions).GetWriteStream):len((*c.CallOptions).GetWriteStream)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &storagepb.WriteStream{}
@@ -797,6 +957,10 @@ func (c *bigQueryWriteRESTClient) FinalizeWriteStream(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.storage.v1beta2.BigQueryWrite/FinalizeWriteStream")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta2/{name=projects/*/datasets/*/tables/*/streams/*}")
+	}
 	opts = append((*c.CallOptions).FinalizeWriteStream[0:len((*c.CallOptions).FinalizeWriteStream):len((*c.CallOptions).FinalizeWriteStream)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &storagepb.FinalizeWriteStreamResponse{}
@@ -857,6 +1021,10 @@ func (c *bigQueryWriteRESTClient) BatchCommitWriteStreams(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.storage.v1beta2.BigQueryWrite/BatchCommitWriteStreams")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta2/{parent=projects/*/datasets/*/tables/*}")
+	}
 	opts = append((*c.CallOptions).BatchCommitWriteStreams[0:len((*c.CallOptions).BatchCommitWriteStreams):len((*c.CallOptions).BatchCommitWriteStreams)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &storagepb.BatchCommitWriteStreamsResponse{}
@@ -915,6 +1083,10 @@ func (c *bigQueryWriteRESTClient) FlushRows(ctx context.Context, req *storagepb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.storage.v1beta2.BigQueryWrite/FlushRows")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta2/{write_stream=projects/*/datasets/*/tables/*/streams/*}")
+	}
 	opts = append((*c.CallOptions).FlushRows[0:len((*c.CallOptions).FlushRows):len((*c.CallOptions).FlushRows)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &storagepb.FlushRowsResponse{}

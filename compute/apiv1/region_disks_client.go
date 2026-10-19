@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import (
 
 	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -58,6 +59,7 @@ type RegionDisksCallOptions struct {
 	StopGroupAsyncReplication []gax.CallOption
 	TestIamPermissions        []gax.CallOption
 	Update                    []gax.CallOption
+	UpdateKmsKey              []gax.CallOption
 }
 
 func defaultRegionDisksRESTCallOptions() *RegionDisksCallOptions {
@@ -140,10 +142,13 @@ func defaultRegionDisksRESTCallOptions() *RegionDisksCallOptions {
 		Update: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
+		UpdateKmsKey: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 	}
 }
 
-// internalRegionDisksClient is an interface that defines the methods available from Google Compute Engine API.
+// internalRegionDisksClient is an interface that defines the methods available from Compute Engine API.
 type internalRegionDisksClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -165,12 +170,15 @@ type internalRegionDisksClient interface {
 	StopGroupAsyncReplication(context.Context, *computepb.StopGroupAsyncReplicationRegionDiskRequest, ...gax.CallOption) (*Operation, error)
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsRegionDiskRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 	Update(context.Context, *computepb.UpdateRegionDiskRequest, ...gax.CallOption) (*Operation, error)
+	UpdateKmsKey(context.Context, *computepb.UpdateKmsKeyRegionDiskRequest, ...gax.CallOption) (*Operation, error)
 }
 
-// RegionDisksClient is a client for interacting with Google Compute Engine API.
+// RegionDisksClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The RegionDisks API.
+//
+// This client uses RegionDisks version 2026-09-01.
 type RegionDisksClient struct {
 	// The internal transport-dependent client.
 	internalClient internalRegionDisksClient
@@ -181,7 +189,7 @@ type RegionDisksClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *RegionDisksClient) Close() error {
 	return c.internalClient.Close()
@@ -202,7 +210,9 @@ func (c *RegionDisksClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AddResourcePolicies adds existing resource policies to a regional disk. You can only add one policy which will be applied to this disk for scheduling snapshot creation.
+// AddResourcePolicies adds existing resource policies to a regional disk. You can only add one
+// policy which will be applied to this disk for scheduling snapshot
+// creation.
 func (c *RegionDisksClient) AddResourcePolicies(ctx context.Context, req *computepb.AddResourcePoliciesRegionDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.AddResourcePolicies(ctx, req, opts...)
 }
@@ -212,12 +222,19 @@ func (c *RegionDisksClient) BulkInsert(ctx context.Context, req *computepb.BulkI
 	return c.internalClient.BulkInsert(ctx, req, opts...)
 }
 
-// CreateSnapshot creates a snapshot of a specified persistent disk. For regular snapshot creation, consider using snapshots.insert instead, as that method supports more features, such as creating snapshots in a project different from the source disk project.
+// CreateSnapshot creates a snapshot of a specified persistent disk. For regular snapshot
+// creation, consider using snapshots.insert
+// instead, as that method supports more features, such as creating snapshots
+// in a project different from the source disk project.
 func (c *RegionDisksClient) CreateSnapshot(ctx context.Context, req *computepb.CreateSnapshotRegionDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.CreateSnapshot(ctx, req, opts...)
 }
 
-// Delete deletes the specified regional persistent disk. Deleting a regional disk removes all the replicas of its data permanently and is irreversible. However, deleting a disk does not delete any snapshots previously made from the disk. You must separately delete snapshots.
+// Delete deletes the specified regional persistent disk. Deleting a regional disk
+// removes all the replicas of its data permanently and is irreversible.
+// However, deleting a disk does not delete anysnapshots
+// previously made from the disk. You must separatelydelete
+// snapshots.
 func (c *RegionDisksClient) Delete(ctx context.Context, req *computepb.DeleteRegionDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
@@ -227,17 +244,20 @@ func (c *RegionDisksClient) Get(ctx context.Context, req *computepb.GetRegionDis
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such
+// policy or resource exists.
 func (c *RegionDisksClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyRegionDiskRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.GetIamPolicy(ctx, req, opts...)
 }
 
-// Insert creates a persistent regional disk in the specified project using the data included in the request.
+// Insert creates a persistent regional disk in the specified project using the data
+// included in the request.
 func (c *RegionDisksClient) Insert(ctx context.Context, req *computepb.InsertRegionDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves the list of persistent disks contained within the specified region.
+// List retrieves the list of persistent disks contained within
+// the specified region.
 func (c *RegionDisksClient) List(ctx context.Context, req *computepb.ListRegionDisksRequest, opts ...gax.CallOption) *DiskIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
@@ -252,7 +272,8 @@ func (c *RegionDisksClient) Resize(ctx context.Context, req *computepb.ResizeReg
 	return c.internalClient.Resize(ctx, req, opts...)
 }
 
-// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
+// SetIamPolicy sets the access control policy on the specified resource.
+// Replaces any existing policy.
 func (c *RegionDisksClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyRegionDiskRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.SetIamPolicy(ctx, req, opts...)
 }
@@ -262,17 +283,20 @@ func (c *RegionDisksClient) SetLabels(ctx context.Context, req *computepb.SetLab
 	return c.internalClient.SetLabels(ctx, req, opts...)
 }
 
-// StartAsyncReplication starts asynchronous replication. Must be invoked on the primary disk.
+// StartAsyncReplication starts asynchronous replication.
+// Must be invoked on the primary disk.
 func (c *RegionDisksClient) StartAsyncReplication(ctx context.Context, req *computepb.StartAsyncReplicationRegionDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.StartAsyncReplication(ctx, req, opts...)
 }
 
-// StopAsyncReplication stops asynchronous replication. Can be invoked either on the primary or on the secondary disk.
+// StopAsyncReplication stops asynchronous replication.
+// Can be invoked either on the primary or on the secondary disk.
 func (c *RegionDisksClient) StopAsyncReplication(ctx context.Context, req *computepb.StopAsyncReplicationRegionDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.StopAsyncReplication(ctx, req, opts...)
 }
 
-// StopGroupAsyncReplication stops asynchronous replication for a consistency group of disks. Can be invoked either in the primary or secondary scope.
+// StopGroupAsyncReplication stops asynchronous replication for a consistency group of disks.
+// Can be invoked either in the primary or secondary scope.
 func (c *RegionDisksClient) StopGroupAsyncReplication(ctx context.Context, req *computepb.StopGroupAsyncReplicationRegionDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.StopGroupAsyncReplication(ctx, req, opts...)
 }
@@ -282,9 +306,16 @@ func (c *RegionDisksClient) TestIamPermissions(ctx context.Context, req *compute
 	return c.internalClient.TestIamPermissions(ctx, req, opts...)
 }
 
-// Update update the specified disk with the data included in the request. Update is performed only on selected fields included as part of update-mask. Only the following fields can be modified: user_license.
+// Update update the specified disk with the data included in the request. Update is
+// performed only on selected fields included as part of update-mask.
 func (c *RegionDisksClient) Update(ctx context.Context, req *computepb.UpdateRegionDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Update(ctx, req, opts...)
+}
+
+// UpdateKmsKey rotates the customer-managed
+// encryption key to the latest version for the specified persistent disk.
+func (c *RegionDisksClient) UpdateKmsKey(ctx context.Context, req *computepb.UpdateKmsKeyRegionDiskRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.UpdateKmsKey(ctx, req, opts...)
 }
 
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -312,6 +343,16 @@ type regionDisksRESTClient struct {
 // The RegionDisks API.
 func NewRegionDisksRESTClient(ctx context.Context, opts ...option.ClientOption) (*RegionDisksClient, error) {
 	clientOpts := append(defaultRegionDisksRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "compute",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/compute/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "compute.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -325,6 +366,99 @@ func NewRegionDisksRESTClient(ctx context.Context, opts ...option.ClientOption) 
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AddResourcePolicies = append(callOpts.AddResourcePolicies, gax.WithClientMetrics(metrics))
+		callOpts.BulkInsert = append(callOpts.BulkInsert, gax.WithClientMetrics(metrics))
+		callOpts.CreateSnapshot = append(callOpts.CreateSnapshot, gax.WithClientMetrics(metrics))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientMetrics(metrics))
+		callOpts.Get = append(callOpts.Get, gax.WithClientMetrics(metrics))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientMetrics(metrics))
+		callOpts.List = append(callOpts.List, gax.WithClientMetrics(metrics))
+		callOpts.RemoveResourcePolicies = append(callOpts.RemoveResourcePolicies, gax.WithClientMetrics(metrics))
+		callOpts.Resize = append(callOpts.Resize, gax.WithClientMetrics(metrics))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.SetLabels = append(callOpts.SetLabels, gax.WithClientMetrics(metrics))
+		callOpts.StartAsyncReplication = append(callOpts.StartAsyncReplication, gax.WithClientMetrics(metrics))
+		callOpts.StopAsyncReplication = append(callOpts.StopAsyncReplication, gax.WithClientMetrics(metrics))
+		callOpts.StopGroupAsyncReplication = append(callOpts.StopGroupAsyncReplication, gax.WithClientMetrics(metrics))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
+		callOpts.Update = append(callOpts.Update, gax.WithClientMetrics(metrics))
+		callOpts.UpdateKmsKey = append(callOpts.UpdateKmsKey, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AddResourcePolicies = append(callOpts.AddResourcePolicies, gax.WithClientTracing(tracing))
+		callOpts.BulkInsert = append(callOpts.BulkInsert, gax.WithClientTracing(tracing))
+		callOpts.CreateSnapshot = append(callOpts.CreateSnapshot, gax.WithClientTracing(tracing))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientTracing(tracing))
+		callOpts.Get = append(callOpts.Get, gax.WithClientTracing(tracing))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientTracing(tracing))
+		callOpts.List = append(callOpts.List, gax.WithClientTracing(tracing))
+		callOpts.RemoveResourcePolicies = append(callOpts.RemoveResourcePolicies, gax.WithClientTracing(tracing))
+		callOpts.Resize = append(callOpts.Resize, gax.WithClientTracing(tracing))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.SetLabels = append(callOpts.SetLabels, gax.WithClientTracing(tracing))
+		callOpts.StartAsyncReplication = append(callOpts.StartAsyncReplication, gax.WithClientTracing(tracing))
+		callOpts.StopAsyncReplication = append(callOpts.StopAsyncReplication, gax.WithClientTracing(tracing))
+		callOpts.StopGroupAsyncReplication = append(callOpts.StopGroupAsyncReplication, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientTracing(tracing))
+		callOpts.Update = append(callOpts.Update, gax.WithClientTracing(tracing))
+		callOpts.UpdateKmsKey = append(callOpts.UpdateKmsKey, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AddResourcePolicies = append(callOpts.AddResourcePolicies, gax.WithClientLogging(logging))
+		callOpts.BulkInsert = append(callOpts.BulkInsert, gax.WithClientLogging(logging))
+		callOpts.CreateSnapshot = append(callOpts.CreateSnapshot, gax.WithClientLogging(logging))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientLogging(logging))
+		callOpts.Get = append(callOpts.Get, gax.WithClientLogging(logging))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientLogging(logging))
+		callOpts.List = append(callOpts.List, gax.WithClientLogging(logging))
+		callOpts.RemoveResourcePolicies = append(callOpts.RemoveResourcePolicies, gax.WithClientLogging(logging))
+		callOpts.Resize = append(callOpts.Resize, gax.WithClientLogging(logging))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.SetLabels = append(callOpts.SetLabels, gax.WithClientLogging(logging))
+		callOpts.StartAsyncReplication = append(callOpts.StartAsyncReplication, gax.WithClientLogging(logging))
+		callOpts.StopAsyncReplication = append(callOpts.StopAsyncReplication, gax.WithClientLogging(logging))
+		callOpts.StopGroupAsyncReplication = append(callOpts.StopGroupAsyncReplication, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientLogging(logging))
+		callOpts.Update = append(callOpts.Update, gax.WithClientLogging(logging))
+		callOpts.UpdateKmsKey = append(callOpts.UpdateKmsKey, gax.WithClientLogging(logging))
+	}
 
 	o := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -359,10 +493,11 @@ func (c *regionDisksRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
+		"x-goog-api-version", "2026-09-01",
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *regionDisksRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -380,7 +515,9 @@ func (c *regionDisksRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AddResourcePolicies adds existing resource policies to a regional disk. You can only add one policy which will be applied to this disk for scheduling snapshot creation.
+// AddResourcePolicies adds existing resource policies to a regional disk. You can only add one
+// policy which will be applied to this disk for scheduling snapshot
+// creation.
 func (c *regionDisksRESTClient) AddResourcePolicies(ctx context.Context, req *computepb.AddResourcePoliciesRegionDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRegionDisksAddResourcePoliciesRequestResource()
@@ -408,6 +545,10 @@ func (c *regionDisksRESTClient) AddResourcePolicies(ctx context.Context, req *co
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionDisks/AddResourcePolicies")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/disks/{disk}/addResourcePolicies")
+	}
 	opts = append((*c.CallOptions).AddResourcePolicies[0:len((*c.CallOptions).AddResourcePolicies):len((*c.CallOptions).AddResourcePolicies)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -475,6 +616,10 @@ func (c *regionDisksRESTClient) BulkInsert(ctx context.Context, req *computepb.B
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionDisks/BulkInsert")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/disks/bulkInsert")
+	}
 	opts = append((*c.CallOptions).BulkInsert[0:len((*c.CallOptions).BulkInsert):len((*c.CallOptions).BulkInsert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -514,7 +659,10 @@ func (c *regionDisksRESTClient) BulkInsert(ctx context.Context, req *computepb.B
 	return op, nil
 }
 
-// CreateSnapshot creates a snapshot of a specified persistent disk. For regular snapshot creation, consider using snapshots.insert instead, as that method supports more features, such as creating snapshots in a project different from the source disk project.
+// CreateSnapshot creates a snapshot of a specified persistent disk. For regular snapshot
+// creation, consider using snapshots.insert
+// instead, as that method supports more features, such as creating snapshots
+// in a project different from the source disk project.
 func (c *regionDisksRESTClient) CreateSnapshot(ctx context.Context, req *computepb.CreateSnapshotRegionDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSnapshotResource()
@@ -542,6 +690,10 @@ func (c *regionDisksRESTClient) CreateSnapshot(ctx context.Context, req *compute
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionDisks/CreateSnapshot")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/disks/{disk}/createSnapshot")
+	}
 	opts = append((*c.CallOptions).CreateSnapshot[0:len((*c.CallOptions).CreateSnapshot):len((*c.CallOptions).CreateSnapshot)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -581,7 +733,11 @@ func (c *regionDisksRESTClient) CreateSnapshot(ctx context.Context, req *compute
 	return op, nil
 }
 
-// Delete deletes the specified regional persistent disk. Deleting a regional disk removes all the replicas of its data permanently and is irreversible. However, deleting a disk does not delete any snapshots previously made from the disk. You must separately delete snapshots.
+// Delete deletes the specified regional persistent disk. Deleting a regional disk
+// removes all the replicas of its data permanently and is irreversible.
+// However, deleting a disk does not delete anysnapshots
+// previously made from the disk. You must separatelydelete
+// snapshots.
 func (c *regionDisksRESTClient) Delete(ctx context.Context, req *computepb.DeleteRegionDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -602,6 +758,10 @@ func (c *regionDisksRESTClient) Delete(ctx context.Context, req *computepb.Delet
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionDisks/Delete")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/disks/{disk}")
+	}
 	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -655,6 +815,10 @@ func (c *regionDisksRESTClient) Get(ctx context.Context, req *computepb.GetRegio
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionDisks/Get")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/disks/{disk}")
+	}
 	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Disk{}
@@ -686,7 +850,8 @@ func (c *regionDisksRESTClient) Get(ctx context.Context, req *computepb.GetRegio
 	return resp, nil
 }
 
-// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such
+// policy or resource exists.
 func (c *regionDisksRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyRegionDiskRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -707,6 +872,10 @@ func (c *regionDisksRESTClient) GetIamPolicy(ctx context.Context, req *computepb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionDisks/GetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/disks/{resource}/getIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Policy{}
@@ -738,7 +907,8 @@ func (c *regionDisksRESTClient) GetIamPolicy(ctx context.Context, req *computepb
 	return resp, nil
 }
 
-// Insert creates a persistent regional disk in the specified project using the data included in the request.
+// Insert creates a persistent regional disk in the specified project using the data
+// included in the request.
 func (c *regionDisksRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetDiskResource()
@@ -769,6 +939,10 @@ func (c *regionDisksRESTClient) Insert(ctx context.Context, req *computepb.Inser
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionDisks/Insert")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/disks")
+	}
 	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -808,10 +982,11 @@ func (c *regionDisksRESTClient) Insert(ctx context.Context, req *computepb.Inser
 	return op, nil
 }
 
-// List retrieves the list of persistent disks contained within the specified region.
+// List retrieves the list of persistent disks contained within
+// the specified region.
 func (c *regionDisksRESTClient) List(ctx context.Context, req *computepb.ListRegionDisksRequest, opts ...gax.CallOption) *DiskIterator {
 	it := &DiskIterator{}
-	req = proto.Clone(req).(*computepb.ListRegionDisksRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.Disk, string, error) {
 		resp := &computepb.DiskList{}
@@ -841,9 +1016,6 @@ func (c *regionDisksRESTClient) List(ctx context.Context, req *computepb.ListReg
 		}
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -922,6 +1094,10 @@ func (c *regionDisksRESTClient) RemoveResourcePolicies(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionDisks/RemoveResourcePolicies")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/disks/{disk}/removeResourcePolicies")
+	}
 	opts = append((*c.CallOptions).RemoveResourcePolicies[0:len((*c.CallOptions).RemoveResourcePolicies):len((*c.CallOptions).RemoveResourcePolicies)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -989,6 +1165,10 @@ func (c *regionDisksRESTClient) Resize(ctx context.Context, req *computepb.Resiz
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionDisks/Resize")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/disks/{disk}/resize")
+	}
 	opts = append((*c.CallOptions).Resize[0:len((*c.CallOptions).Resize):len((*c.CallOptions).Resize)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -1028,7 +1208,8 @@ func (c *regionDisksRESTClient) Resize(ctx context.Context, req *computepb.Resiz
 	return op, nil
 }
 
-// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
+// SetIamPolicy sets the access control policy on the specified resource.
+// Replaces any existing policy.
 func (c *regionDisksRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyRegionDiskRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRegionSetPolicyRequestResource()
@@ -1049,6 +1230,10 @@ func (c *regionDisksRESTClient) SetIamPolicy(ctx context.Context, req *computepb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionDisks/SetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/disks/{resource}/setIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Policy{}
@@ -1108,6 +1293,10 @@ func (c *regionDisksRESTClient) SetLabels(ctx context.Context, req *computepb.Se
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionDisks/SetLabels")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/disks/{resource}/setLabels")
+	}
 	opts = append((*c.CallOptions).SetLabels[0:len((*c.CallOptions).SetLabels):len((*c.CallOptions).SetLabels)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -1147,7 +1336,8 @@ func (c *regionDisksRESTClient) SetLabels(ctx context.Context, req *computepb.Se
 	return op, nil
 }
 
-// StartAsyncReplication starts asynchronous replication. Must be invoked on the primary disk.
+// StartAsyncReplication starts asynchronous replication.
+// Must be invoked on the primary disk.
 func (c *regionDisksRESTClient) StartAsyncReplication(ctx context.Context, req *computepb.StartAsyncReplicationRegionDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRegionDisksStartAsyncReplicationRequestResource()
@@ -1175,6 +1365,10 @@ func (c *regionDisksRESTClient) StartAsyncReplication(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionDisks/StartAsyncReplication")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/disks/{disk}/startAsyncReplication")
+	}
 	opts = append((*c.CallOptions).StartAsyncReplication[0:len((*c.CallOptions).StartAsyncReplication):len((*c.CallOptions).StartAsyncReplication)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -1214,7 +1408,8 @@ func (c *regionDisksRESTClient) StartAsyncReplication(ctx context.Context, req *
 	return op, nil
 }
 
-// StopAsyncReplication stops asynchronous replication. Can be invoked either on the primary or on the secondary disk.
+// StopAsyncReplication stops asynchronous replication.
+// Can be invoked either on the primary or on the secondary disk.
 func (c *regionDisksRESTClient) StopAsyncReplication(ctx context.Context, req *computepb.StopAsyncReplicationRegionDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1235,6 +1430,10 @@ func (c *regionDisksRESTClient) StopAsyncReplication(ctx context.Context, req *c
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionDisks/StopAsyncReplication")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/disks/{disk}/stopAsyncReplication")
+	}
 	opts = append((*c.CallOptions).StopAsyncReplication[0:len((*c.CallOptions).StopAsyncReplication):len((*c.CallOptions).StopAsyncReplication)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -1274,7 +1473,8 @@ func (c *regionDisksRESTClient) StopAsyncReplication(ctx context.Context, req *c
 	return op, nil
 }
 
-// StopGroupAsyncReplication stops asynchronous replication for a consistency group of disks. Can be invoked either in the primary or secondary scope.
+// StopGroupAsyncReplication stops asynchronous replication for a consistency group of disks.
+// Can be invoked either in the primary or secondary scope.
 func (c *regionDisksRESTClient) StopGroupAsyncReplication(ctx context.Context, req *computepb.StopGroupAsyncReplicationRegionDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetDisksStopGroupAsyncReplicationResourceResource()
@@ -1302,6 +1502,10 @@ func (c *regionDisksRESTClient) StopGroupAsyncReplication(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionDisks/StopGroupAsyncReplication")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/disks/stopGroupAsyncReplication")
+	}
 	opts = append((*c.CallOptions).StopGroupAsyncReplication[0:len((*c.CallOptions).StopGroupAsyncReplication):len((*c.CallOptions).StopGroupAsyncReplication)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -1362,6 +1566,10 @@ func (c *regionDisksRESTClient) TestIamPermissions(ctx context.Context, req *com
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionDisks/TestIamPermissions")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/disks/{resource}/testIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.TestPermissionsResponse{}
@@ -1393,7 +1601,8 @@ func (c *regionDisksRESTClient) TestIamPermissions(ctx context.Context, req *com
 	return resp, nil
 }
 
-// Update update the specified disk with the data included in the request. Update is performed only on selected fields included as part of update-mask. Only the following fields can be modified: user_license.
+// Update update the specified disk with the data included in the request. Update is
+// performed only on selected fields included as part of update-mask.
 func (c *regionDisksRESTClient) Update(ctx context.Context, req *computepb.UpdateRegionDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetDiskResource()
@@ -1427,6 +1636,10 @@ func (c *regionDisksRESTClient) Update(ctx context.Context, req *computepb.Updat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionDisks/Update")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/disks/{disk}")
+	}
 	opts = append((*c.CallOptions).Update[0:len((*c.CallOptions).Update):len((*c.CallOptions).Update)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -1442,6 +1655,78 @@ func (c *regionDisksRESTClient) Update(ctx context.Context, req *computepb.Updat
 		httpReq.Header = headers
 
 		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "Update")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&regionOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			region:  req.GetRegion(),
+		},
+	}
+	return op, nil
+}
+
+// UpdateKmsKey rotates the customer-managed
+// encryption key to the latest version for the specified persistent disk.
+func (c *regionDisksRESTClient) UpdateKmsKey(ctx context.Context, req *computepb.UpdateKmsKeyRegionDiskRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetRegionDiskUpdateKmsKeyRequestResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/disks/%v/updateKmsKey", req.GetProject(), req.GetRegion(), req.GetDisk())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "disk", url.QueryEscape(req.GetDisk()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionDisks/UpdateKmsKey")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/disks/{disk}/updateKmsKey")
+	}
+	opts = append((*c.CallOptions).UpdateKmsKey[0:len((*c.CallOptions).UpdateKmsKey):len((*c.CallOptions).UpdateKmsKey)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateKmsKey")
 		if err != nil {
 			return err
 		}

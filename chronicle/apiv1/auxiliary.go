@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,12 +18,14 @@ package chronicle
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	chroniclepb "cloud.google.com/go/chronicle/apiv1/chroniclepb"
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
 
@@ -91,6 +93,12 @@ func (op *CreateRetrohuntOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DataAccessLabelIterator) All() iter.Seq2[*chroniclepb.DataAccessLabel, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // DataAccessLabelIterator manages a stream of *chroniclepb.DataAccessLabel.
 type DataAccessLabelIterator struct {
 	items    []*chroniclepb.DataAccessLabel
@@ -136,6 +144,12 @@ func (it *DataAccessLabelIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DataAccessScopeIterator) All() iter.Seq2[*chroniclepb.DataAccessScope, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // DataAccessScopeIterator manages a stream of *chroniclepb.DataAccessScope.
@@ -185,6 +199,542 @@ func (it *DataAccessScopeIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DataTableIterator) All() iter.Seq2[*chroniclepb.DataTable, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
+// DataTableIterator manages a stream of *chroniclepb.DataTable.
+type DataTableIterator struct {
+	items    []*chroniclepb.DataTable
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*chroniclepb.DataTable, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *DataTableIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *DataTableIterator) Next() (*chroniclepb.DataTable, error) {
+	var item *chroniclepb.DataTable
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *DataTableIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *DataTableIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DataTableRowIterator) All() iter.Seq2[*chroniclepb.DataTableRow, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
+// DataTableRowIterator manages a stream of *chroniclepb.DataTableRow.
+type DataTableRowIterator struct {
+	items    []*chroniclepb.DataTableRow
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*chroniclepb.DataTableRow, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *DataTableRowIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *DataTableRowIterator) Next() (*chroniclepb.DataTableRow, error) {
+	var item *chroniclepb.DataTableRow
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *DataTableRowIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *DataTableRowIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *FeaturedContentNativeDashboardIterator) All() iter.Seq2[*chroniclepb.FeaturedContentNativeDashboard, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
+// FeaturedContentNativeDashboardIterator manages a stream of *chroniclepb.FeaturedContentNativeDashboard.
+type FeaturedContentNativeDashboardIterator struct {
+	items    []*chroniclepb.FeaturedContentNativeDashboard
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*chroniclepb.FeaturedContentNativeDashboard, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *FeaturedContentNativeDashboardIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *FeaturedContentNativeDashboardIterator) Next() (*chroniclepb.FeaturedContentNativeDashboard, error) {
+	var item *chroniclepb.FeaturedContentNativeDashboard
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *FeaturedContentNativeDashboardIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *FeaturedContentNativeDashboardIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *FeedIterator) All() iter.Seq2[*chroniclepb.Feed, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
+// FeedIterator manages a stream of *chroniclepb.Feed.
+type FeedIterator struct {
+	items    []*chroniclepb.Feed
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*chroniclepb.Feed, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *FeedIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *FeedIterator) Next() (*chroniclepb.Feed, error) {
+	var item *chroniclepb.Feed
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *FeedIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *FeedIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *FeedPackIterator) All() iter.Seq2[*chroniclepb.FeedPack, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
+// FeedPackIterator manages a stream of *chroniclepb.FeedPack.
+type FeedPackIterator struct {
+	items    []*chroniclepb.FeedPack
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*chroniclepb.FeedPack, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *FeedPackIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *FeedPackIterator) Next() (*chroniclepb.FeedPack, error) {
+	var item *chroniclepb.FeedPack
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *FeedPackIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *FeedPackIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *FeedSourceTypeSchemaIterator) All() iter.Seq2[*chroniclepb.FeedSourceTypeSchema, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
+// FeedSourceTypeSchemaIterator manages a stream of *chroniclepb.FeedSourceTypeSchema.
+type FeedSourceTypeSchemaIterator struct {
+	items    []*chroniclepb.FeedSourceTypeSchema
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*chroniclepb.FeedSourceTypeSchema, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *FeedSourceTypeSchemaIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *FeedSourceTypeSchemaIterator) Next() (*chroniclepb.FeedSourceTypeSchema, error) {
+	var item *chroniclepb.FeedSourceTypeSchema
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *FeedSourceTypeSchemaIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *FeedSourceTypeSchemaIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *FindingsRefinementDeploymentIterator) All() iter.Seq2[*chroniclepb.FindingsRefinementDeployment, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
+// FindingsRefinementDeploymentIterator manages a stream of *chroniclepb.FindingsRefinementDeployment.
+type FindingsRefinementDeploymentIterator struct {
+	items    []*chroniclepb.FindingsRefinementDeployment
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*chroniclepb.FindingsRefinementDeployment, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *FindingsRefinementDeploymentIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *FindingsRefinementDeploymentIterator) Next() (*chroniclepb.FindingsRefinementDeployment, error) {
+	var item *chroniclepb.FindingsRefinementDeployment
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *FindingsRefinementDeploymentIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *FindingsRefinementDeploymentIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *FindingsRefinementIterator) All() iter.Seq2[*chroniclepb.FindingsRefinement, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
+// FindingsRefinementIterator manages a stream of *chroniclepb.FindingsRefinement.
+type FindingsRefinementIterator struct {
+	items    []*chroniclepb.FindingsRefinement
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*chroniclepb.FindingsRefinement, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *FindingsRefinementIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *FindingsRefinementIterator) Next() (*chroniclepb.FindingsRefinement, error) {
+	var item *chroniclepb.FindingsRefinement
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *FindingsRefinementIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *FindingsRefinementIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LogTypeSchemaIterator) All() iter.Seq2[*chroniclepb.LogTypeSchema, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
+// LogTypeSchemaIterator manages a stream of *chroniclepb.LogTypeSchema.
+type LogTypeSchemaIterator struct {
+	items    []*chroniclepb.LogTypeSchema
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*chroniclepb.LogTypeSchema, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *LogTypeSchemaIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *LogTypeSchemaIterator) Next() (*chroniclepb.LogTypeSchema, error) {
+	var item *chroniclepb.LogTypeSchema
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *LogTypeSchemaIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *LogTypeSchemaIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *NativeDashboardIterator) All() iter.Seq2[*chroniclepb.NativeDashboard, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
+// NativeDashboardIterator manages a stream of *chroniclepb.NativeDashboard.
+type NativeDashboardIterator struct {
+	items    []*chroniclepb.NativeDashboard
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*chroniclepb.NativeDashboard, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *NativeDashboardIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *NativeDashboardIterator) Next() (*chroniclepb.NativeDashboard, error) {
+	var item *chroniclepb.NativeDashboard
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *NativeDashboardIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *NativeDashboardIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OperationIterator manages a stream of *longrunningpb.Operation.
 type OperationIterator struct {
 	items    []*longrunningpb.Operation
@@ -230,6 +780,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ReferenceListIterator) All() iter.Seq2[*chroniclepb.ReferenceList, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ReferenceListIterator manages a stream of *chroniclepb.ReferenceList.
@@ -279,6 +835,12 @@ func (it *ReferenceListIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RetrohuntIterator) All() iter.Seq2[*chroniclepb.Retrohunt, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // RetrohuntIterator manages a stream of *chroniclepb.Retrohunt.
 type RetrohuntIterator struct {
 	items    []*chroniclepb.Retrohunt
@@ -324,6 +886,12 @@ func (it *RetrohuntIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RuleDeploymentIterator) All() iter.Seq2[*chroniclepb.RuleDeployment, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // RuleDeploymentIterator manages a stream of *chroniclepb.RuleDeployment.
@@ -373,6 +941,65 @@ func (it *RuleDeploymentIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RuleExecutionErrorIterator) All() iter.Seq2[*chroniclepb.RuleExecutionError, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
+// RuleExecutionErrorIterator manages a stream of *chroniclepb.RuleExecutionError.
+type RuleExecutionErrorIterator struct {
+	items    []*chroniclepb.RuleExecutionError
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*chroniclepb.RuleExecutionError, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *RuleExecutionErrorIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *RuleExecutionErrorIterator) Next() (*chroniclepb.RuleExecutionError, error) {
+	var item *chroniclepb.RuleExecutionError
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *RuleExecutionErrorIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *RuleExecutionErrorIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RuleIterator) All() iter.Seq2[*chroniclepb.Rule, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // RuleIterator manages a stream of *chroniclepb.Rule.
 type RuleIterator struct {
 	items    []*chroniclepb.Rule
@@ -418,6 +1045,12 @@ func (it *RuleIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *WatchlistIterator) All() iter.Seq2[*chroniclepb.Watchlist, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // WatchlistIterator manages a stream of *chroniclepb.Watchlist.

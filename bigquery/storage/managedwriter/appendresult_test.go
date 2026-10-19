@@ -22,8 +22,6 @@ import (
 
 	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 	"github.com/google/go-cmp/cmp"
-	"google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
-	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/testing/protocmp"
 	"google.golang.org/protobuf/types/descriptorpb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
@@ -48,7 +46,7 @@ func TestPendingWrite(t *testing.T) {
 	// verify no offset behavior
 	pending := newPendingWrite(ctx, nil, wantReq, nil, "", "")
 	if pending.req.GetOffset() != nil {
-		t.Errorf("request should have no offset, but is present: %q", pending.req.GetOffset().GetValue())
+		t.Errorf("request should have no offset, but is present: %d", pending.req.GetOffset().GetValue())
 	}
 
 	if diff := cmp.Diff(pending.req, wantReq, protocmp.Transform()); diff != "" {
@@ -64,7 +62,7 @@ func TestPendingWrite(t *testing.T) {
 	}
 
 	// Mark completed, verify result.
-	pending.markDone(&storage.AppendRowsResponse{}, nil)
+	pending.markDone(&storagepb.AppendRowsResponse{}, nil)
 	if gotOff := pending.result.offset(ctx); gotOff != NoStreamOffset {
 		t.Errorf("mismatch on completed AppendResult without offset: got %d want %d", gotOff, NoStreamOffset)
 	}
@@ -131,7 +129,7 @@ func TestPendingWrite(t *testing.T) {
 
 func TestPendingWrite_ConstructFullRequest(t *testing.T) {
 
-	testDP := &descriptorpb.DescriptorProto{Name: proto.String("foo")}
+	testDP := &descriptorpb.DescriptorProto{Name: new("foo")}
 	testTmpl := newVersionedTemplate().revise(reviseProtoSchema(testDP))
 
 	testEmptyTraceID := buildTraceID(&streamSettings{})

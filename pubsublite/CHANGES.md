@@ -1,5 +1,30 @@
 # Changes
 
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/pubsublite/v1.9.0...pubsublite/v1.10.0) (2026-07-15)
+
+
+### Features
+
+* **o11y:** Regenerate clients for LRO tracing ([#20107](https://github.com/googleapis/google-cloud-go/issues/20107)) ([779074e](https://github.com/googleapis/google-cloud-go/commit/779074edd267a26520bae459307660953129eb07))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/pubsublite/v1.8.2...pubsublite/v1.9.0) (2026-07-06)
+
+
+### Features
+
+* Enable open telemetry attrs ([#14426](https://github.com/googleapis/google-cloud-go/issues/14426)) ([74eab64](https://github.com/googleapis/google-cloud-go/commit/74eab64d1b4e22d8c79b0de4e5fc9a36bc4c6c19))
+* **pubsublite:** Add GMK Implementation changes ([#14466](https://github.com/googleapis/google-cloud-go/issues/14466)) ([50a5550](https://github.com/googleapis/google-cloud-go/commit/50a55504dcecf7ca307722260da9f832c84fe56c))
+
+
+### Bug Fixes
+
+* **pubsublite:** Reduce pscompat BufferedByteLimit ([#14234](https://github.com/googleapis/google-cloud-go/issues/14234)) ([e768524](https://github.com/googleapis/google-cloud-go/commit/e768524ba5e8617a0b06ca2e3e73c60ffbb2129e)), closes [#14237](https://github.com/googleapis/google-cloud-go/issues/14237)
+
+
+### Reverts
+
+* Release pubsublite 2.0.0 ([#19998](https://github.com/googleapis/google-cloud-go/issues/19998)) ([#20006](https://github.com/googleapis/google-cloud-go/issues/20006)) ([d7b7078](https://github.com/googleapis/google-cloud-go/commit/d7b70782f0eb7f092f7933b00061f3fe91026f94))
+
 ## [1.8.2](https://github.com/googleapis/google-cloud-go/compare/pubsublite/v1.8.1...pubsublite/v1.8.2) (2024-06-05)
 
 
@@ -337,5 +362,3 @@ pubsublite/internal/wire implementation:
 
 This is the first tag to carve out pubsublite as its own module. See:
 https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository.
-
-

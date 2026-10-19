@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -32,6 +32,8 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -260,7 +262,7 @@ type CloudFunctionsClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *CloudFunctionsClient) Close() error {
 	return c.internalClient.Close()
@@ -447,6 +449,16 @@ type cloudFunctionsGRPCClient struct {
 // A service that application uses to manipulate triggers and functions.
 func NewCloudFunctionsClient(ctx context.Context, opts ...option.ClientOption) (*CloudFunctionsClient, error) {
 	clientOpts := defaultCloudFunctionsGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "cloudfunctions",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/functions/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "cloudfunctions.googleapis.com",
+		}))
+	}
 	if newCloudFunctionsClientHook != nil {
 		hookOpts, err := newCloudFunctionsClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -470,6 +482,86 @@ func NewCloudFunctionsClient(ctx context.Context, opts ...option.ClientOption) (
 		locationsClient:      locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "cloudfunctions",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/functions/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudfunctions.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListFunctions = append(client.CallOptions.ListFunctions, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetFunction = append(client.CallOptions.GetFunction, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateFunction = append(client.CallOptions.CreateFunction, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateFunction = append(client.CallOptions.UpdateFunction, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteFunction = append(client.CallOptions.DeleteFunction, gax.WithClientMetrics(metrics))
+		client.CallOptions.CallFunction = append(client.CallOptions.CallFunction, gax.WithClientMetrics(metrics))
+		client.CallOptions.GenerateUploadUrl = append(client.CallOptions.GenerateUploadUrl, gax.WithClientMetrics(metrics))
+		client.CallOptions.GenerateDownloadUrl = append(client.CallOptions.GenerateDownloadUrl, gax.WithClientMetrics(metrics))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudfunctions",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/functions/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudfunctions.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListFunctions = append(client.CallOptions.ListFunctions, gax.WithClientTracing(tracing))
+		client.CallOptions.GetFunction = append(client.CallOptions.GetFunction, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateFunction = append(client.CallOptions.CreateFunction, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateFunction = append(client.CallOptions.UpdateFunction, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteFunction = append(client.CallOptions.DeleteFunction, gax.WithClientTracing(tracing))
+		client.CallOptions.CallFunction = append(client.CallOptions.CallFunction, gax.WithClientTracing(tracing))
+		client.CallOptions.GenerateUploadUrl = append(client.CallOptions.GenerateUploadUrl, gax.WithClientTracing(tracing))
+		client.CallOptions.GenerateDownloadUrl = append(client.CallOptions.GenerateDownloadUrl, gax.WithClientTracing(tracing))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudfunctions",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/functions/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudfunctions.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListFunctions = append(client.CallOptions.ListFunctions, gax.WithClientLogging(logging))
+		client.CallOptions.GetFunction = append(client.CallOptions.GetFunction, gax.WithClientLogging(logging))
+		client.CallOptions.CreateFunction = append(client.CallOptions.CreateFunction, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateFunction = append(client.CallOptions.UpdateFunction, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteFunction = append(client.CallOptions.DeleteFunction, gax.WithClientLogging(logging))
+		client.CallOptions.CallFunction = append(client.CallOptions.CallFunction, gax.WithClientLogging(logging))
+		client.CallOptions.GenerateUploadUrl = append(client.CallOptions.GenerateUploadUrl, gax.WithClientLogging(logging))
+		client.CallOptions.GenerateDownloadUrl = append(client.CallOptions.GenerateDownloadUrl, gax.WithClientLogging(logging))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -506,7 +598,7 @@ func (c *cloudFunctionsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *cloudFunctionsGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -539,6 +631,16 @@ type cloudFunctionsRESTClient struct {
 // A service that application uses to manipulate triggers and functions.
 func NewCloudFunctionsRESTClient(ctx context.Context, opts ...option.ClientOption) (*CloudFunctionsClient, error) {
 	clientOpts := append(defaultCloudFunctionsRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "cloudfunctions",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/functions/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "cloudfunctions.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -552,6 +654,87 @@ func NewCloudFunctionsRESTClient(ctx context.Context, opts ...option.ClientOptio
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "cloudfunctions",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/functions/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudfunctions.googleapis.com",
+			}),
+		)
+
+		callOpts.ListFunctions = append(callOpts.ListFunctions, gax.WithClientMetrics(metrics))
+		callOpts.GetFunction = append(callOpts.GetFunction, gax.WithClientMetrics(metrics))
+		callOpts.CreateFunction = append(callOpts.CreateFunction, gax.WithClientMetrics(metrics))
+		callOpts.UpdateFunction = append(callOpts.UpdateFunction, gax.WithClientMetrics(metrics))
+		callOpts.DeleteFunction = append(callOpts.DeleteFunction, gax.WithClientMetrics(metrics))
+		callOpts.CallFunction = append(callOpts.CallFunction, gax.WithClientMetrics(metrics))
+		callOpts.GenerateUploadUrl = append(callOpts.GenerateUploadUrl, gax.WithClientMetrics(metrics))
+		callOpts.GenerateDownloadUrl = append(callOpts.GenerateDownloadUrl, gax.WithClientMetrics(metrics))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudfunctions",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/functions/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudfunctions.googleapis.com",
+			}),
+		)
+
+		callOpts.ListFunctions = append(callOpts.ListFunctions, gax.WithClientTracing(tracing))
+		callOpts.GetFunction = append(callOpts.GetFunction, gax.WithClientTracing(tracing))
+		callOpts.CreateFunction = append(callOpts.CreateFunction, gax.WithClientTracing(tracing))
+		callOpts.UpdateFunction = append(callOpts.UpdateFunction, gax.WithClientTracing(tracing))
+		callOpts.DeleteFunction = append(callOpts.DeleteFunction, gax.WithClientTracing(tracing))
+		callOpts.CallFunction = append(callOpts.CallFunction, gax.WithClientTracing(tracing))
+		callOpts.GenerateUploadUrl = append(callOpts.GenerateUploadUrl, gax.WithClientTracing(tracing))
+		callOpts.GenerateDownloadUrl = append(callOpts.GenerateDownloadUrl, gax.WithClientTracing(tracing))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudfunctions",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/functions/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudfunctions.googleapis.com",
+			}),
+		)
+
+		callOpts.ListFunctions = append(callOpts.ListFunctions, gax.WithClientLogging(logging))
+		callOpts.GetFunction = append(callOpts.GetFunction, gax.WithClientLogging(logging))
+		callOpts.CreateFunction = append(callOpts.CreateFunction, gax.WithClientLogging(logging))
+		callOpts.UpdateFunction = append(callOpts.UpdateFunction, gax.WithClientLogging(logging))
+		callOpts.DeleteFunction = append(callOpts.DeleteFunction, gax.WithClientLogging(logging))
+		callOpts.CallFunction = append(callOpts.CallFunction, gax.WithClientLogging(logging))
+		callOpts.GenerateUploadUrl = append(callOpts.GenerateUploadUrl, gax.WithClientLogging(logging))
+		callOpts.GenerateDownloadUrl = append(callOpts.GenerateDownloadUrl, gax.WithClientLogging(logging))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -589,7 +772,7 @@ func (c *cloudFunctionsRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *cloudFunctionsRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -608,9 +791,12 @@ func (c *cloudFunctionsGRPCClient) ListFunctions(ctx context.Context, req *funct
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.functions.v1.CloudFunctionsService/ListFunctions")
+	}
 	opts = append((*c.CallOptions).ListFunctions[0:len((*c.CallOptions).ListFunctions):len((*c.CallOptions).ListFunctions)], opts...)
 	it := &CloudFunctionIterator{}
-	req = proto.Clone(req).(*functionspb.ListFunctionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*functionspb.CloudFunction, string, error) {
 		resp := &functionspb.ListFunctionsResponse{}
 		if pageToken != "" {
@@ -654,6 +840,9 @@ func (c *cloudFunctionsGRPCClient) GetFunction(ctx context.Context, req *functio
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.functions.v1.CloudFunctionsService/GetFunction")
+	}
 	opts = append((*c.CallOptions).GetFunction[0:len((*c.CallOptions).GetFunction):len((*c.CallOptions).GetFunction)], opts...)
 	var resp *functionspb.CloudFunction
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -672,6 +861,9 @@ func (c *cloudFunctionsGRPCClient) CreateFunction(ctx context.Context, req *func
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.functions.v1.CloudFunctionsService/CreateFunction")
+	}
 	opts = append((*c.CallOptions).CreateFunction[0:len((*c.CallOptions).CreateFunction):len((*c.CallOptions).CreateFunction)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -682,8 +874,12 @@ func (c *cloudFunctionsGRPCClient) CreateFunction(ctx context.Context, req *func
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*functions.CreateFunctionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateFunctionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -692,6 +888,9 @@ func (c *cloudFunctionsGRPCClient) UpdateFunction(ctx context.Context, req *func
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.functions.v1.CloudFunctionsService/UpdateFunction")
+	}
 	opts = append((*c.CallOptions).UpdateFunction[0:len((*c.CallOptions).UpdateFunction):len((*c.CallOptions).UpdateFunction)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -702,8 +901,12 @@ func (c *cloudFunctionsGRPCClient) UpdateFunction(ctx context.Context, req *func
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*functions.UpdateFunctionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateFunctionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -712,6 +915,9 @@ func (c *cloudFunctionsGRPCClient) DeleteFunction(ctx context.Context, req *func
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.functions.v1.CloudFunctionsService/DeleteFunction")
+	}
 	opts = append((*c.CallOptions).DeleteFunction[0:len((*c.CallOptions).DeleteFunction):len((*c.CallOptions).DeleteFunction)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -722,8 +928,12 @@ func (c *cloudFunctionsGRPCClient) DeleteFunction(ctx context.Context, req *func
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*functions.DeleteFunctionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteFunctionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -732,6 +942,9 @@ func (c *cloudFunctionsGRPCClient) CallFunction(ctx context.Context, req *functi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.functions.v1.CloudFunctionsService/CallFunction")
+	}
 	opts = append((*c.CallOptions).CallFunction[0:len((*c.CallOptions).CallFunction):len((*c.CallOptions).CallFunction)], opts...)
 	var resp *functionspb.CallFunctionResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -750,6 +963,9 @@ func (c *cloudFunctionsGRPCClient) GenerateUploadUrl(ctx context.Context, req *f
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.functions.v1.CloudFunctionsService/GenerateUploadUrl")
+	}
 	opts = append((*c.CallOptions).GenerateUploadUrl[0:len((*c.CallOptions).GenerateUploadUrl):len((*c.CallOptions).GenerateUploadUrl)], opts...)
 	var resp *functionspb.GenerateUploadUrlResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -768,6 +984,9 @@ func (c *cloudFunctionsGRPCClient) GenerateDownloadUrl(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.functions.v1.CloudFunctionsService/GenerateDownloadUrl")
+	}
 	opts = append((*c.CallOptions).GenerateDownloadUrl[0:len((*c.CallOptions).GenerateDownloadUrl):len((*c.CallOptions).GenerateDownloadUrl)], opts...)
 	var resp *functionspb.GenerateDownloadUrlResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -786,6 +1005,9 @@ func (c *cloudFunctionsGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.functions.v1.CloudFunctionsService/SetIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -804,6 +1026,9 @@ func (c *cloudFunctionsGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.functions.v1.CloudFunctionsService/GetIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -822,6 +1047,9 @@ func (c *cloudFunctionsGRPCClient) TestIamPermissions(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.functions.v1.CloudFunctionsService/TestIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -840,9 +1068,12 @@ func (c *cloudFunctionsGRPCClient) ListLocations(ctx context.Context, req *locat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/ListLocations")
+	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -886,6 +1117,9 @@ func (c *cloudFunctionsGRPCClient) GetOperation(ctx context.Context, req *longru
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -901,9 +1135,12 @@ func (c *cloudFunctionsGRPCClient) GetOperation(ctx context.Context, req *longru
 
 func (c *cloudFunctionsGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -945,7 +1182,7 @@ func (c *cloudFunctionsGRPCClient) ListOperations(ctx context.Context, req *long
 // ListFunctions returns a list of functions that belong to the requested project.
 func (c *cloudFunctionsRESTClient) ListFunctions(ctx context.Context, req *functionspb.ListFunctionsRequest, opts ...gax.CallOption) *CloudFunctionIterator {
 	it := &CloudFunctionIterator{}
-	req = proto.Clone(req).(*functionspb.ListFunctionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*functionspb.CloudFunction, string, error) {
 		resp := &functionspb.ListFunctionsResponse{}
@@ -1042,6 +1279,10 @@ func (c *cloudFunctionsRESTClient) GetFunction(ctx context.Context, req *functio
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.functions.v1.CloudFunctionsService/GetFunction")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/functions/*}")
+	}
 	opts = append((*c.CallOptions).GetFunction[0:len((*c.CallOptions).GetFunction):len((*c.CallOptions).GetFunction)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &functionspb.CloudFunction{}
@@ -1101,6 +1342,10 @@ func (c *cloudFunctionsRESTClient) CreateFunction(ctx context.Context, req *func
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.functions.v1.CloudFunctionsService/CreateFunction")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{location=projects/*/locations/*}/functions")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1129,8 +1374,12 @@ func (c *cloudFunctionsRESTClient) CreateFunction(ctx context.Context, req *func
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*functions.CreateFunctionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateFunctionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1168,6 +1417,10 @@ func (c *cloudFunctionsRESTClient) UpdateFunction(ctx context.Context, req *func
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.functions.v1.CloudFunctionsService/UpdateFunction")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{function.name=projects/*/locations/*/functions/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1196,8 +1449,12 @@ func (c *cloudFunctionsRESTClient) UpdateFunction(ctx context.Context, req *func
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*functions.UpdateFunctionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateFunctionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1223,6 +1480,10 @@ func (c *cloudFunctionsRESTClient) DeleteFunction(ctx context.Context, req *func
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.functions.v1.CloudFunctionsService/DeleteFunction")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/functions/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1251,8 +1512,12 @@ func (c *cloudFunctionsRESTClient) DeleteFunction(ctx context.Context, req *func
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*functions.DeleteFunctionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteFunctionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1285,6 +1550,10 @@ func (c *cloudFunctionsRESTClient) CallFunction(ctx context.Context, req *functi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.functions.v1.CloudFunctionsService/CallFunction")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/functions/*}:call")
+	}
 	opts = append((*c.CallOptions).CallFunction[0:len((*c.CallOptions).CallFunction):len((*c.CallOptions).CallFunction)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &functionspb.CallFunctionResponse{}
@@ -1368,6 +1637,10 @@ func (c *cloudFunctionsRESTClient) GenerateUploadUrl(ctx context.Context, req *f
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.functions.v1.CloudFunctionsService/GenerateUploadUrl")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/functions:generateUploadUrl")
+	}
 	opts = append((*c.CallOptions).GenerateUploadUrl[0:len((*c.CallOptions).GenerateUploadUrl):len((*c.CallOptions).GenerateUploadUrl)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &functionspb.GenerateUploadUrlResponse{}
@@ -1428,6 +1701,10 @@ func (c *cloudFunctionsRESTClient) GenerateDownloadUrl(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.functions.v1.CloudFunctionsService/GenerateDownloadUrl")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/functions/*}:generateDownloadUrl")
+	}
 	opts = append((*c.CallOptions).GenerateDownloadUrl[0:len((*c.CallOptions).GenerateDownloadUrl):len((*c.CallOptions).GenerateDownloadUrl)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &functionspb.GenerateDownloadUrlResponse{}
@@ -1485,6 +1762,10 @@ func (c *cloudFunctionsRESTClient) SetIamPolicy(ctx context.Context, req *iampb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.functions.v1.CloudFunctionsService/SetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/functions/*}:setIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -1540,6 +1821,10 @@ func (c *cloudFunctionsRESTClient) GetIamPolicy(ctx context.Context, req *iampb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.functions.v1.CloudFunctionsService/GetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/functions/*}:getIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -1599,6 +1884,10 @@ func (c *cloudFunctionsRESTClient) TestIamPermissions(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.functions.v1.CloudFunctionsService/TestIamPermissions")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/functions/*}:testIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.TestIamPermissionsResponse{}
@@ -1633,7 +1922,7 @@ func (c *cloudFunctionsRESTClient) TestIamPermissions(ctx context.Context, req *
 // ListLocations lists information about the supported locations for this service.
 func (c *cloudFunctionsRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -1730,6 +2019,10 @@ func (c *cloudFunctionsRESTClient) GetOperation(ctx context.Context, req *longru
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -1764,7 +2057,7 @@ func (c *cloudFunctionsRESTClient) GetOperation(ctx context.Context, req *longru
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *cloudFunctionsRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
@@ -1795,6 +2088,9 @@ func (c *cloudFunctionsRESTClient) ListOperations(ctx context.Context, req *long
 		}
 		if req.GetPageToken() != "" {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req.GetReturnPartialSuccess() {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -1849,7 +2145,7 @@ func (c *cloudFunctionsRESTClient) ListOperations(ctx context.Context, req *long
 // The name must be that of a previously created CreateFunctionOperation, possibly from a different process.
 func (c *cloudFunctionsGRPCClient) CreateFunctionOperation(name string) *CreateFunctionOperation {
 	return &CreateFunctionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*functions.CreateFunctionOperation"),
 	}
 }
 
@@ -1858,7 +2154,7 @@ func (c *cloudFunctionsGRPCClient) CreateFunctionOperation(name string) *CreateF
 func (c *cloudFunctionsRESTClient) CreateFunctionOperation(name string) *CreateFunctionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateFunctionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*functions.CreateFunctionOperation"),
 		pollPath: override,
 	}
 }
@@ -1867,7 +2163,7 @@ func (c *cloudFunctionsRESTClient) CreateFunctionOperation(name string) *CreateF
 // The name must be that of a previously created DeleteFunctionOperation, possibly from a different process.
 func (c *cloudFunctionsGRPCClient) DeleteFunctionOperation(name string) *DeleteFunctionOperation {
 	return &DeleteFunctionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*functions.DeleteFunctionOperation"),
 	}
 }
 
@@ -1876,7 +2172,7 @@ func (c *cloudFunctionsGRPCClient) DeleteFunctionOperation(name string) *DeleteF
 func (c *cloudFunctionsRESTClient) DeleteFunctionOperation(name string) *DeleteFunctionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteFunctionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*functions.DeleteFunctionOperation"),
 		pollPath: override,
 	}
 }
@@ -1885,7 +2181,7 @@ func (c *cloudFunctionsRESTClient) DeleteFunctionOperation(name string) *DeleteF
 // The name must be that of a previously created UpdateFunctionOperation, possibly from a different process.
 func (c *cloudFunctionsGRPCClient) UpdateFunctionOperation(name string) *UpdateFunctionOperation {
 	return &UpdateFunctionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*functions.UpdateFunctionOperation"),
 	}
 }
 
@@ -1894,7 +2190,7 @@ func (c *cloudFunctionsGRPCClient) UpdateFunctionOperation(name string) *UpdateF
 func (c *cloudFunctionsRESTClient) UpdateFunctionOperation(name string) *UpdateFunctionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateFunctionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*functions.UpdateFunctionOperation"),
 		pollPath: override,
 	}
 }

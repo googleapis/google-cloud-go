@@ -1,0 +1,10 @@
+{
+    "api_shortname": "ftp",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/ftp/latest/apiv1",
+    "client_library_type": "generated",
+    "description": "Cloud FTP API",
+    "distribution_name": "cloud.google.com/go/ftp/apiv1",
+    "language": "go",
+    "library_type": "GAPIC_AUTO",
+    "release_level": "preview"
+}

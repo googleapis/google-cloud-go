@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import (
 
 	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	httptransport "google.golang.org/api/transport/http"
@@ -49,7 +50,7 @@ func defaultRegionInstancesRESTCallOptions() *RegionInstancesCallOptions {
 	}
 }
 
-// internalRegionInstancesClient is an interface that defines the methods available from Google Compute Engine API.
+// internalRegionInstancesClient is an interface that defines the methods available from Compute Engine API.
 type internalRegionInstancesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -57,10 +58,12 @@ type internalRegionInstancesClient interface {
 	BulkInsert(context.Context, *computepb.BulkInsertRegionInstanceRequest, ...gax.CallOption) (*Operation, error)
 }
 
-// RegionInstancesClient is a client for interacting with Google Compute Engine API.
+// RegionInstancesClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The RegionInstances API.
+//
+// This client uses RegionInstances version 2026-09-01.
 type RegionInstancesClient struct {
 	// The internal transport-dependent client.
 	internalClient internalRegionInstancesClient
@@ -71,7 +74,7 @@ type RegionInstancesClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *RegionInstancesClient) Close() error {
 	return c.internalClient.Close()
@@ -92,7 +95,8 @@ func (c *RegionInstancesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// BulkInsert creates multiple instances in a given region. Count specifies the number of instances to create.
+// BulkInsert creates multiple instances in a given region. Count specifies the number of
+// instances to create.
 func (c *RegionInstancesClient) BulkInsert(ctx context.Context, req *computepb.BulkInsertRegionInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.BulkInsert(ctx, req, opts...)
 }
@@ -122,6 +126,16 @@ type regionInstancesRESTClient struct {
 // The RegionInstances API.
 func NewRegionInstancesRESTClient(ctx context.Context, opts ...option.ClientOption) (*RegionInstancesClient, error) {
 	clientOpts := append(defaultRegionInstancesRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "compute",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/compute/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "compute.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -135,6 +149,48 @@ func NewRegionInstancesRESTClient(ctx context.Context, opts ...option.ClientOpti
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.BulkInsert = append(callOpts.BulkInsert, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.BulkInsert = append(callOpts.BulkInsert, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.BulkInsert = append(callOpts.BulkInsert, gax.WithClientLogging(logging))
+	}
 
 	o := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -169,10 +225,11 @@ func (c *regionInstancesRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
+		"x-goog-api-version", "2026-09-01",
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *regionInstancesRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -190,7 +247,8 @@ func (c *regionInstancesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// BulkInsert creates multiple instances in a given region. Count specifies the number of instances to create.
+// BulkInsert creates multiple instances in a given region. Count specifies the number of
+// instances to create.
 func (c *regionInstancesRESTClient) BulkInsert(ctx context.Context, req *computepb.BulkInsertRegionInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetBulkInsertInstanceResourceResource()
@@ -218,6 +276,10 @@ func (c *regionInstancesRESTClient) BulkInsert(ctx context.Context, req *compute
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionInstances/BulkInsert")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/instances/bulkInsert")
+	}
 	opts = append((*c.CallOptions).BulkInsert[0:len((*c.CallOptions).BulkInsert):len((*c.CallOptions).BulkInsert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}

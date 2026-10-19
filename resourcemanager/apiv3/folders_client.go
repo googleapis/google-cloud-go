@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -32,6 +32,8 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	resourcemanagerpb "cloud.google.com/go/resourcemanager/apiv3/resourcemanagerpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -70,6 +72,7 @@ func defaultFoldersGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://cloudresourcemanager.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.AllowHardBoundTokens("MTLS_S2A"),
 		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -246,7 +249,7 @@ type FoldersClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *FoldersClient) Close() error {
 	return c.internalClient.Close()
@@ -498,6 +501,16 @@ type foldersGRPCClient struct {
 // organization and to control the policies applied to groups of resources.
 func NewFoldersClient(ctx context.Context, opts ...option.ClientOption) (*FoldersClient, error) {
 	clientOpts := defaultFoldersGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "cloudresourcemanager",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/resourcemanager/apiv3",
+			"gcp.client.language": "go",
+			"url.domain":          "cloudresourcemanager.googleapis.com",
+		}))
+	}
 	if newFoldersClientHook != nil {
 		hookOpts, err := newFoldersClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -520,6 +533,80 @@ func NewFoldersClient(ctx context.Context, opts ...option.ClientOption) (*Folder
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "cloudresourcemanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/resourcemanager/apiv3",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudresourcemanager.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetFolder = append(client.CallOptions.GetFolder, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListFolders = append(client.CallOptions.ListFolders, gax.WithClientMetrics(metrics))
+		client.CallOptions.SearchFolders = append(client.CallOptions.SearchFolders, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateFolder = append(client.CallOptions.CreateFolder, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateFolder = append(client.CallOptions.UpdateFolder, gax.WithClientMetrics(metrics))
+		client.CallOptions.MoveFolder = append(client.CallOptions.MoveFolder, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteFolder = append(client.CallOptions.DeleteFolder, gax.WithClientMetrics(metrics))
+		client.CallOptions.UndeleteFolder = append(client.CallOptions.UndeleteFolder, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudresourcemanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/resourcemanager/apiv3",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudresourcemanager.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetFolder = append(client.CallOptions.GetFolder, gax.WithClientTracing(tracing))
+		client.CallOptions.ListFolders = append(client.CallOptions.ListFolders, gax.WithClientTracing(tracing))
+		client.CallOptions.SearchFolders = append(client.CallOptions.SearchFolders, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateFolder = append(client.CallOptions.CreateFolder, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateFolder = append(client.CallOptions.UpdateFolder, gax.WithClientTracing(tracing))
+		client.CallOptions.MoveFolder = append(client.CallOptions.MoveFolder, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteFolder = append(client.CallOptions.DeleteFolder, gax.WithClientTracing(tracing))
+		client.CallOptions.UndeleteFolder = append(client.CallOptions.UndeleteFolder, gax.WithClientTracing(tracing))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudresourcemanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/resourcemanager/apiv3",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudresourcemanager.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetFolder = append(client.CallOptions.GetFolder, gax.WithClientLogging(logging))
+		client.CallOptions.ListFolders = append(client.CallOptions.ListFolders, gax.WithClientLogging(logging))
+		client.CallOptions.SearchFolders = append(client.CallOptions.SearchFolders, gax.WithClientLogging(logging))
+		client.CallOptions.CreateFolder = append(client.CallOptions.CreateFolder, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateFolder = append(client.CallOptions.UpdateFolder, gax.WithClientLogging(logging))
+		client.CallOptions.MoveFolder = append(client.CallOptions.MoveFolder, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteFolder = append(client.CallOptions.DeleteFolder, gax.WithClientLogging(logging))
+		client.CallOptions.UndeleteFolder = append(client.CallOptions.UndeleteFolder, gax.WithClientLogging(logging))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -556,7 +643,7 @@ func (c *foldersGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *foldersGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -591,6 +678,16 @@ type foldersRESTClient struct {
 // organization and to control the policies applied to groups of resources.
 func NewFoldersRESTClient(ctx context.Context, opts ...option.ClientOption) (*FoldersClient, error) {
 	clientOpts := append(defaultFoldersRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "cloudresourcemanager",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/resourcemanager/apiv3",
+			"gcp.client.language": "go",
+			"url.domain":          "cloudresourcemanager.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -604,6 +701,81 @@ func NewFoldersRESTClient(ctx context.Context, opts ...option.ClientOption) (*Fo
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "cloudresourcemanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/resourcemanager/apiv3",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudresourcemanager.googleapis.com",
+			}),
+		)
+
+		callOpts.GetFolder = append(callOpts.GetFolder, gax.WithClientMetrics(metrics))
+		callOpts.ListFolders = append(callOpts.ListFolders, gax.WithClientMetrics(metrics))
+		callOpts.SearchFolders = append(callOpts.SearchFolders, gax.WithClientMetrics(metrics))
+		callOpts.CreateFolder = append(callOpts.CreateFolder, gax.WithClientMetrics(metrics))
+		callOpts.UpdateFolder = append(callOpts.UpdateFolder, gax.WithClientMetrics(metrics))
+		callOpts.MoveFolder = append(callOpts.MoveFolder, gax.WithClientMetrics(metrics))
+		callOpts.DeleteFolder = append(callOpts.DeleteFolder, gax.WithClientMetrics(metrics))
+		callOpts.UndeleteFolder = append(callOpts.UndeleteFolder, gax.WithClientMetrics(metrics))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudresourcemanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/resourcemanager/apiv3",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudresourcemanager.googleapis.com",
+			}),
+		)
+
+		callOpts.GetFolder = append(callOpts.GetFolder, gax.WithClientTracing(tracing))
+		callOpts.ListFolders = append(callOpts.ListFolders, gax.WithClientTracing(tracing))
+		callOpts.SearchFolders = append(callOpts.SearchFolders, gax.WithClientTracing(tracing))
+		callOpts.CreateFolder = append(callOpts.CreateFolder, gax.WithClientTracing(tracing))
+		callOpts.UpdateFolder = append(callOpts.UpdateFolder, gax.WithClientTracing(tracing))
+		callOpts.MoveFolder = append(callOpts.MoveFolder, gax.WithClientTracing(tracing))
+		callOpts.DeleteFolder = append(callOpts.DeleteFolder, gax.WithClientTracing(tracing))
+		callOpts.UndeleteFolder = append(callOpts.UndeleteFolder, gax.WithClientTracing(tracing))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudresourcemanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/resourcemanager/apiv3",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudresourcemanager.googleapis.com",
+			}),
+		)
+
+		callOpts.GetFolder = append(callOpts.GetFolder, gax.WithClientLogging(logging))
+		callOpts.ListFolders = append(callOpts.ListFolders, gax.WithClientLogging(logging))
+		callOpts.SearchFolders = append(callOpts.SearchFolders, gax.WithClientLogging(logging))
+		callOpts.CreateFolder = append(callOpts.CreateFolder, gax.WithClientLogging(logging))
+		callOpts.UpdateFolder = append(callOpts.UpdateFolder, gax.WithClientLogging(logging))
+		callOpts.MoveFolder = append(callOpts.MoveFolder, gax.WithClientLogging(logging))
+		callOpts.DeleteFolder = append(callOpts.DeleteFolder, gax.WithClientLogging(logging))
+		callOpts.UndeleteFolder = append(callOpts.UndeleteFolder, gax.WithClientLogging(logging))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -641,7 +813,7 @@ func (c *foldersRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *foldersRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -660,6 +832,9 @@ func (c *foldersGRPCClient) GetFolder(ctx context.Context, req *resourcemanagerp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.Folders/GetFolder")
+	}
 	opts = append((*c.CallOptions).GetFolder[0:len((*c.CallOptions).GetFolder):len((*c.CallOptions).GetFolder)], opts...)
 	var resp *resourcemanagerpb.Folder
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -675,9 +850,12 @@ func (c *foldersGRPCClient) GetFolder(ctx context.Context, req *resourcemanagerp
 
 func (c *foldersGRPCClient) ListFolders(ctx context.Context, req *resourcemanagerpb.ListFoldersRequest, opts ...gax.CallOption) *FolderIterator {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.Folders/ListFolders")
+	}
 	opts = append((*c.CallOptions).ListFolders[0:len((*c.CallOptions).ListFolders):len((*c.CallOptions).ListFolders)], opts...)
 	it := &FolderIterator{}
-	req = proto.Clone(req).(*resourcemanagerpb.ListFoldersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*resourcemanagerpb.Folder, string, error) {
 		resp := &resourcemanagerpb.ListFoldersResponse{}
 		if pageToken != "" {
@@ -718,9 +896,12 @@ func (c *foldersGRPCClient) ListFolders(ctx context.Context, req *resourcemanage
 
 func (c *foldersGRPCClient) SearchFolders(ctx context.Context, req *resourcemanagerpb.SearchFoldersRequest, opts ...gax.CallOption) *FolderIterator {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.Folders/SearchFolders")
+	}
 	opts = append((*c.CallOptions).SearchFolders[0:len((*c.CallOptions).SearchFolders):len((*c.CallOptions).SearchFolders)], opts...)
 	it := &FolderIterator{}
-	req = proto.Clone(req).(*resourcemanagerpb.SearchFoldersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*resourcemanagerpb.Folder, string, error) {
 		resp := &resourcemanagerpb.SearchFoldersResponse{}
 		if pageToken != "" {
@@ -761,6 +942,9 @@ func (c *foldersGRPCClient) SearchFolders(ctx context.Context, req *resourcemana
 
 func (c *foldersGRPCClient) CreateFolder(ctx context.Context, req *resourcemanagerpb.CreateFolderRequest, opts ...gax.CallOption) (*CreateFolderOperation, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.Folders/CreateFolder")
+	}
 	opts = append((*c.CallOptions).CreateFolder[0:len((*c.CallOptions).CreateFolder):len((*c.CallOptions).CreateFolder)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -771,8 +955,12 @@ func (c *foldersGRPCClient) CreateFolder(ctx context.Context, req *resourcemanag
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*resourcemanager.CreateFolderOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateFolderOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -781,6 +969,9 @@ func (c *foldersGRPCClient) UpdateFolder(ctx context.Context, req *resourcemanag
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.Folders/UpdateFolder")
+	}
 	opts = append((*c.CallOptions).UpdateFolder[0:len((*c.CallOptions).UpdateFolder):len((*c.CallOptions).UpdateFolder)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -791,8 +982,12 @@ func (c *foldersGRPCClient) UpdateFolder(ctx context.Context, req *resourcemanag
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*resourcemanager.UpdateFolderOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateFolderOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -801,6 +996,9 @@ func (c *foldersGRPCClient) MoveFolder(ctx context.Context, req *resourcemanager
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.Folders/MoveFolder")
+	}
 	opts = append((*c.CallOptions).MoveFolder[0:len((*c.CallOptions).MoveFolder):len((*c.CallOptions).MoveFolder)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -811,8 +1009,12 @@ func (c *foldersGRPCClient) MoveFolder(ctx context.Context, req *resourcemanager
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*resourcemanager.MoveFolderOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &MoveFolderOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -821,6 +1023,9 @@ func (c *foldersGRPCClient) DeleteFolder(ctx context.Context, req *resourcemanag
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.Folders/DeleteFolder")
+	}
 	opts = append((*c.CallOptions).DeleteFolder[0:len((*c.CallOptions).DeleteFolder):len((*c.CallOptions).DeleteFolder)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -831,8 +1036,12 @@ func (c *foldersGRPCClient) DeleteFolder(ctx context.Context, req *resourcemanag
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*resourcemanager.DeleteFolderOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteFolderOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -841,6 +1050,9 @@ func (c *foldersGRPCClient) UndeleteFolder(ctx context.Context, req *resourceman
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.Folders/UndeleteFolder")
+	}
 	opts = append((*c.CallOptions).UndeleteFolder[0:len((*c.CallOptions).UndeleteFolder):len((*c.CallOptions).UndeleteFolder)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -851,8 +1063,12 @@ func (c *foldersGRPCClient) UndeleteFolder(ctx context.Context, req *resourceman
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*resourcemanager.UndeleteFolderOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UndeleteFolderOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -861,6 +1077,9 @@ func (c *foldersGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamP
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.Folders/GetIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -879,6 +1098,9 @@ func (c *foldersGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamP
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.Folders/SetIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -897,6 +1119,9 @@ func (c *foldersGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.T
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.Folders/TestIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -915,6 +1140,9 @@ func (c *foldersGRPCClient) GetOperation(ctx context.Context, req *longrunningpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -951,6 +1179,10 @@ func (c *foldersRESTClient) GetFolder(ctx context.Context, req *resourcemanagerp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.Folders/GetFolder")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{name=folders/*}")
+	}
 	opts = append((*c.CallOptions).GetFolder[0:len((*c.CallOptions).GetFolder):len((*c.CallOptions).GetFolder)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &resourcemanagerpb.Folder{}
@@ -991,7 +1223,7 @@ func (c *foldersRESTClient) GetFolder(ctx context.Context, req *resourcemanagerp
 // identified parent.
 func (c *foldersRESTClient) ListFolders(ctx context.Context, req *resourcemanagerpb.ListFoldersRequest, opts ...gax.CallOption) *FolderIterator {
 	it := &FolderIterator{}
-	req = proto.Clone(req).(*resourcemanagerpb.ListFoldersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*resourcemanagerpb.Folder, string, error) {
 		resp := &resourcemanagerpb.ListFoldersResponse{}
@@ -1078,7 +1310,7 @@ func (c *foldersRESTClient) ListFolders(ctx context.Context, req *resourcemanage
 // permission resourcemanager.folders.get.
 func (c *foldersRESTClient) SearchFolders(ctx context.Context, req *resourcemanagerpb.SearchFoldersRequest, opts ...gax.CallOption) *FolderIterator {
 	it := &FolderIterator{}
-	req = proto.Clone(req).(*resourcemanagerpb.SearchFoldersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*resourcemanagerpb.Folder, string, error) {
 		resp := &resourcemanagerpb.SearchFoldersResponse{}
@@ -1207,6 +1439,10 @@ func (c *foldersRESTClient) CreateFolder(ctx context.Context, req *resourcemanag
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.Folders/CreateFolder")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/folders")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1235,8 +1471,12 @@ func (c *foldersRESTClient) CreateFolder(ctx context.Context, req *resourcemanag
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*resourcemanager.CreateFolderOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateFolderOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1290,6 +1530,10 @@ func (c *foldersRESTClient) UpdateFolder(ctx context.Context, req *resourcemanag
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.Folders/UpdateFolder")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{folder.name=folders/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1318,8 +1562,12 @@ func (c *foldersRESTClient) UpdateFolder(ctx context.Context, req *resourcemanag
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*resourcemanager.UpdateFolderOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateFolderOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1365,6 +1613,10 @@ func (c *foldersRESTClient) MoveFolder(ctx context.Context, req *resourcemanager
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.Folders/MoveFolder")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{name=folders/*}:move")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1393,8 +1645,12 @@ func (c *foldersRESTClient) MoveFolder(ctx context.Context, req *resourcemanager
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*resourcemanager.MoveFolderOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &MoveFolderOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1428,6 +1684,10 @@ func (c *foldersRESTClient) DeleteFolder(ctx context.Context, req *resourcemanag
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.Folders/DeleteFolder")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{name=folders/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1456,8 +1716,12 @@ func (c *foldersRESTClient) DeleteFolder(ctx context.Context, req *resourcemanag
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*resourcemanager.DeleteFolderOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteFolderOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1497,6 +1761,10 @@ func (c *foldersRESTClient) UndeleteFolder(ctx context.Context, req *resourceman
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.Folders/UndeleteFolder")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{name=folders/*}:undelete")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1525,8 +1793,12 @@ func (c *foldersRESTClient) UndeleteFolder(ctx context.Context, req *resourceman
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*resourcemanager.UndeleteFolderOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UndeleteFolderOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1560,6 +1832,10 @@ func (c *foldersRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamP
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.Folders/GetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{resource=folders/*}:getIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -1620,6 +1896,10 @@ func (c *foldersRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamP
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.Folders/SetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{resource=folders/*}:setIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -1680,6 +1960,10 @@ func (c *foldersRESTClient) TestIamPermissions(ctx context.Context, req *iampb.T
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.Folders/TestIamPermissions")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{resource=folders/*}:testIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.TestIamPermissionsResponse{}
@@ -1730,6 +2014,10 @@ func (c *foldersRESTClient) GetOperation(ctx context.Context, req *longrunningpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{name=operations/**}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -1765,7 +2053,7 @@ func (c *foldersRESTClient) GetOperation(ctx context.Context, req *longrunningpb
 // The name must be that of a previously created CreateFolderOperation, possibly from a different process.
 func (c *foldersGRPCClient) CreateFolderOperation(name string) *CreateFolderOperation {
 	return &CreateFolderOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*resourcemanager.CreateFolderOperation"),
 	}
 }
 
@@ -1774,7 +2062,7 @@ func (c *foldersGRPCClient) CreateFolderOperation(name string) *CreateFolderOper
 func (c *foldersRESTClient) CreateFolderOperation(name string) *CreateFolderOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &CreateFolderOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*resourcemanager.CreateFolderOperation"),
 		pollPath: override,
 	}
 }
@@ -1783,7 +2071,7 @@ func (c *foldersRESTClient) CreateFolderOperation(name string) *CreateFolderOper
 // The name must be that of a previously created DeleteFolderOperation, possibly from a different process.
 func (c *foldersGRPCClient) DeleteFolderOperation(name string) *DeleteFolderOperation {
 	return &DeleteFolderOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*resourcemanager.DeleteFolderOperation"),
 	}
 }
 
@@ -1792,7 +2080,7 @@ func (c *foldersGRPCClient) DeleteFolderOperation(name string) *DeleteFolderOper
 func (c *foldersRESTClient) DeleteFolderOperation(name string) *DeleteFolderOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &DeleteFolderOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*resourcemanager.DeleteFolderOperation"),
 		pollPath: override,
 	}
 }
@@ -1801,7 +2089,7 @@ func (c *foldersRESTClient) DeleteFolderOperation(name string) *DeleteFolderOper
 // The name must be that of a previously created MoveFolderOperation, possibly from a different process.
 func (c *foldersGRPCClient) MoveFolderOperation(name string) *MoveFolderOperation {
 	return &MoveFolderOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*resourcemanager.MoveFolderOperation"),
 	}
 }
 
@@ -1810,7 +2098,7 @@ func (c *foldersGRPCClient) MoveFolderOperation(name string) *MoveFolderOperatio
 func (c *foldersRESTClient) MoveFolderOperation(name string) *MoveFolderOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &MoveFolderOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*resourcemanager.MoveFolderOperation"),
 		pollPath: override,
 	}
 }
@@ -1819,7 +2107,7 @@ func (c *foldersRESTClient) MoveFolderOperation(name string) *MoveFolderOperatio
 // The name must be that of a previously created UndeleteFolderOperation, possibly from a different process.
 func (c *foldersGRPCClient) UndeleteFolderOperation(name string) *UndeleteFolderOperation {
 	return &UndeleteFolderOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*resourcemanager.UndeleteFolderOperation"),
 	}
 }
 
@@ -1828,7 +2116,7 @@ func (c *foldersGRPCClient) UndeleteFolderOperation(name string) *UndeleteFolder
 func (c *foldersRESTClient) UndeleteFolderOperation(name string) *UndeleteFolderOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &UndeleteFolderOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*resourcemanager.UndeleteFolderOperation"),
 		pollPath: override,
 	}
 }
@@ -1837,7 +2125,7 @@ func (c *foldersRESTClient) UndeleteFolderOperation(name string) *UndeleteFolder
 // The name must be that of a previously created UpdateFolderOperation, possibly from a different process.
 func (c *foldersGRPCClient) UpdateFolderOperation(name string) *UpdateFolderOperation {
 	return &UpdateFolderOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*resourcemanager.UpdateFolderOperation"),
 	}
 }
 
@@ -1846,7 +2134,7 @@ func (c *foldersGRPCClient) UpdateFolderOperation(name string) *UpdateFolderOper
 func (c *foldersRESTClient) UpdateFolderOperation(name string) *UpdateFolderOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &UpdateFolderOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*resourcemanager.UpdateFolderOperation"),
 		pollPath: override,
 	}
 }

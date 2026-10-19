@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import (
 
 	computepb "cloud.google.com/go/compute/apiv1beta/computepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -94,7 +95,7 @@ func defaultFirewallsRESTCallOptions() *FirewallsCallOptions {
 	}
 }
 
-// internalFirewallsClient is an interface that defines the methods available from Google Compute Engine API.
+// internalFirewallsClient is an interface that defines the methods available from Compute Engine API.
 type internalFirewallsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -108,7 +109,7 @@ type internalFirewallsClient interface {
 	Update(context.Context, *computepb.UpdateFirewallRequest, ...gax.CallOption) (*Operation, error)
 }
 
-// FirewallsClient is a client for interacting with Google Compute Engine API.
+// FirewallsClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The Firewalls API.
@@ -122,7 +123,7 @@ type FirewallsClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *FirewallsClient) Close() error {
 	return c.internalClient.Close()
@@ -153,17 +154,22 @@ func (c *FirewallsClient) Get(ctx context.Context, req *computepb.GetFirewallReq
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// Insert creates a firewall rule in the specified project using the data included in the request.
+// Insert creates a firewall rule in the specified project using the data
+// included in the request.
 func (c *FirewallsClient) Insert(ctx context.Context, req *computepb.InsertFirewallRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves the list of firewall rules available to the specified project.
+// List retrieves the list of firewall rules available to the specified
+// project.
 func (c *FirewallsClient) List(ctx context.Context, req *computepb.ListFirewallsRequest, opts ...gax.CallOption) *FirewallIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// Patch updates the specified firewall rule with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+// Patch updates the specified firewall rule with the data included in the
+// request. This method supportsPATCH
+// semantics and uses theJSON merge
+// patch format and processing rules.
 func (c *FirewallsClient) Patch(ctx context.Context, req *computepb.PatchFirewallRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
@@ -173,7 +179,10 @@ func (c *FirewallsClient) TestIamPermissions(ctx context.Context, req *computepb
 	return c.internalClient.TestIamPermissions(ctx, req, opts...)
 }
 
-// Update updates the specified firewall rule with the data included in the request. Note that all fields will be updated if using PUT, even fields that are not specified. To update individual fields, please use PATCH instead.
+// Update updates the specified firewall rule with the data included in the
+// request.
+// Note that all fields will be updated if using PUT, even fields that are not
+// specified. To update individual fields, please use PATCH instead.
 func (c *FirewallsClient) Update(ctx context.Context, req *computepb.UpdateFirewallRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Update(ctx, req, opts...)
 }
@@ -203,6 +212,16 @@ type firewallsRESTClient struct {
 // The Firewalls API.
 func NewFirewallsRESTClient(ctx context.Context, opts ...option.ClientOption) (*FirewallsClient, error) {
 	clientOpts := append(defaultFirewallsRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "compute",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/compute/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "compute.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -216,6 +235,66 @@ func NewFirewallsRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientMetrics(metrics))
+		callOpts.Get = append(callOpts.Get, gax.WithClientMetrics(metrics))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientMetrics(metrics))
+		callOpts.List = append(callOpts.List, gax.WithClientMetrics(metrics))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientMetrics(metrics))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
+		callOpts.Update = append(callOpts.Update, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientTracing(tracing))
+		callOpts.Get = append(callOpts.Get, gax.WithClientTracing(tracing))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientTracing(tracing))
+		callOpts.List = append(callOpts.List, gax.WithClientTracing(tracing))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientTracing(tracing))
+		callOpts.Update = append(callOpts.Update, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientLogging(logging))
+		callOpts.Get = append(callOpts.Get, gax.WithClientLogging(logging))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientLogging(logging))
+		callOpts.List = append(callOpts.List, gax.WithClientLogging(logging))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientLogging(logging))
+		callOpts.Update = append(callOpts.Update, gax.WithClientLogging(logging))
+	}
 
 	o := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -253,7 +332,7 @@ func (c *firewallsRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *firewallsRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -292,6 +371,10 @@ func (c *firewallsRESTClient) Delete(ctx context.Context, req *computepb.DeleteF
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.Firewalls/Delete")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/global/firewalls/{firewall}")
+	}
 	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -344,6 +427,10 @@ func (c *firewallsRESTClient) Get(ctx context.Context, req *computepb.GetFirewal
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.Firewalls/Get")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/global/firewalls/{firewall}")
+	}
 	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Firewall{}
@@ -375,7 +462,8 @@ func (c *firewallsRESTClient) Get(ctx context.Context, req *computepb.GetFirewal
 	return resp, nil
 }
 
-// Insert creates a firewall rule in the specified project using the data included in the request.
+// Insert creates a firewall rule in the specified project using the data
+// included in the request.
 func (c *firewallsRESTClient) Insert(ctx context.Context, req *computepb.InsertFirewallRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetFirewallResource()
@@ -403,6 +491,10 @@ func (c *firewallsRESTClient) Insert(ctx context.Context, req *computepb.InsertF
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.Firewalls/Insert")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/global/firewalls")
+	}
 	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -441,10 +533,11 @@ func (c *firewallsRESTClient) Insert(ctx context.Context, req *computepb.InsertF
 	return op, nil
 }
 
-// List retrieves the list of firewall rules available to the specified project.
+// List retrieves the list of firewall rules available to the specified
+// project.
 func (c *firewallsRESTClient) List(ctx context.Context, req *computepb.ListFirewallsRequest, opts ...gax.CallOption) *FirewallIterator {
 	it := &FirewallIterator{}
-	req = proto.Clone(req).(*computepb.ListFirewallsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.Firewall, string, error) {
 		resp := &computepb.FirewallList{}
@@ -527,7 +620,10 @@ func (c *firewallsRESTClient) List(ctx context.Context, req *computepb.ListFirew
 	return it
 }
 
-// Patch updates the specified firewall rule with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+// Patch updates the specified firewall rule with the data included in the
+// request. This method supportsPATCH
+// semantics and uses theJSON merge
+// patch format and processing rules.
 func (c *firewallsRESTClient) Patch(ctx context.Context, req *computepb.PatchFirewallRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetFirewallResource()
@@ -555,6 +651,10 @@ func (c *firewallsRESTClient) Patch(ctx context.Context, req *computepb.PatchFir
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.Firewalls/Patch")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/global/firewalls/{firewall}")
+	}
 	opts = append((*c.CallOptions).Patch[0:len((*c.CallOptions).Patch):len((*c.CallOptions).Patch)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -614,6 +714,10 @@ func (c *firewallsRESTClient) TestIamPermissions(ctx context.Context, req *compu
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.Firewalls/TestIamPermissions")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/global/firewalls/{resource}/testIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.TestPermissionsResponse{}
@@ -645,7 +749,10 @@ func (c *firewallsRESTClient) TestIamPermissions(ctx context.Context, req *compu
 	return resp, nil
 }
 
-// Update updates the specified firewall rule with the data included in the request. Note that all fields will be updated if using PUT, even fields that are not specified. To update individual fields, please use PATCH instead.
+// Update updates the specified firewall rule with the data included in the
+// request.
+// Note that all fields will be updated if using PUT, even fields that are not
+// specified. To update individual fields, please use PATCH instead.
 func (c *firewallsRESTClient) Update(ctx context.Context, req *computepb.UpdateFirewallRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetFirewallResource()
@@ -673,6 +780,10 @@ func (c *firewallsRESTClient) Update(ctx context.Context, req *computepb.UpdateF
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.Firewalls/Update")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/global/firewalls/{firewall}")
+	}
 	opts = append((*c.CallOptions).Update[0:len((*c.CallOptions).Update):len((*c.CallOptions).Update)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}

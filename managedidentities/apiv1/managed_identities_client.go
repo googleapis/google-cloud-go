@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,6 +29,8 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	managedidentitiespb "cloud.google.com/go/managedidentities/apiv1/managedidentitiespb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -184,7 +186,7 @@ type Client struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *Client) Close() error {
 	return c.internalClient.Close()
@@ -366,6 +368,16 @@ type gRPCClient struct {
 //	Must be unique within the customer project.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "managedidentities",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/managedidentities/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "managedidentities.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -387,6 +399,74 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "managedidentities",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/managedidentities/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "managedidentities.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateMicrosoftAdDomain = append(client.CallOptions.CreateMicrosoftAdDomain, gax.WithClientMetrics(metrics))
+		client.CallOptions.ResetAdminPassword = append(client.CallOptions.ResetAdminPassword, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListDomains = append(client.CallOptions.ListDomains, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetDomain = append(client.CallOptions.GetDomain, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateDomain = append(client.CallOptions.UpdateDomain, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteDomain = append(client.CallOptions.DeleteDomain, gax.WithClientMetrics(metrics))
+		client.CallOptions.AttachTrust = append(client.CallOptions.AttachTrust, gax.WithClientMetrics(metrics))
+		client.CallOptions.ReconfigureTrust = append(client.CallOptions.ReconfigureTrust, gax.WithClientMetrics(metrics))
+		client.CallOptions.DetachTrust = append(client.CallOptions.DetachTrust, gax.WithClientMetrics(metrics))
+		client.CallOptions.ValidateTrust = append(client.CallOptions.ValidateTrust, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "managedidentities",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/managedidentities/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "managedidentities.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateMicrosoftAdDomain = append(client.CallOptions.CreateMicrosoftAdDomain, gax.WithClientTracing(tracing))
+		client.CallOptions.ResetAdminPassword = append(client.CallOptions.ResetAdminPassword, gax.WithClientTracing(tracing))
+		client.CallOptions.ListDomains = append(client.CallOptions.ListDomains, gax.WithClientTracing(tracing))
+		client.CallOptions.GetDomain = append(client.CallOptions.GetDomain, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateDomain = append(client.CallOptions.UpdateDomain, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteDomain = append(client.CallOptions.DeleteDomain, gax.WithClientTracing(tracing))
+		client.CallOptions.AttachTrust = append(client.CallOptions.AttachTrust, gax.WithClientTracing(tracing))
+		client.CallOptions.ReconfigureTrust = append(client.CallOptions.ReconfigureTrust, gax.WithClientTracing(tracing))
+		client.CallOptions.DetachTrust = append(client.CallOptions.DetachTrust, gax.WithClientTracing(tracing))
+		client.CallOptions.ValidateTrust = append(client.CallOptions.ValidateTrust, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "managedidentities",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/managedidentities/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "managedidentities.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateMicrosoftAdDomain = append(client.CallOptions.CreateMicrosoftAdDomain, gax.WithClientLogging(logging))
+		client.CallOptions.ResetAdminPassword = append(client.CallOptions.ResetAdminPassword, gax.WithClientLogging(logging))
+		client.CallOptions.ListDomains = append(client.CallOptions.ListDomains, gax.WithClientLogging(logging))
+		client.CallOptions.GetDomain = append(client.CallOptions.GetDomain, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateDomain = append(client.CallOptions.UpdateDomain, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteDomain = append(client.CallOptions.DeleteDomain, gax.WithClientLogging(logging))
+		client.CallOptions.AttachTrust = append(client.CallOptions.AttachTrust, gax.WithClientLogging(logging))
+		client.CallOptions.ReconfigureTrust = append(client.CallOptions.ReconfigureTrust, gax.WithClientLogging(logging))
+		client.CallOptions.DetachTrust = append(client.CallOptions.DetachTrust, gax.WithClientLogging(logging))
+		client.CallOptions.ValidateTrust = append(client.CallOptions.ValidateTrust, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -423,7 +503,7 @@ func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *gRPCClient) Close() error {
 	return c.connPool.Close()
@@ -434,6 +514,9 @@ func (c *gRPCClient) CreateMicrosoftAdDomain(ctx context.Context, req *managedid
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedidentities.v1.ManagedIdentitiesService/CreateMicrosoftAdDomain")
+	}
 	opts = append((*c.CallOptions).CreateMicrosoftAdDomain[0:len((*c.CallOptions).CreateMicrosoftAdDomain):len((*c.CallOptions).CreateMicrosoftAdDomain)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -444,8 +527,12 @@ func (c *gRPCClient) CreateMicrosoftAdDomain(ctx context.Context, req *managedid
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*managedidentities.CreateMicrosoftAdDomainOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateMicrosoftAdDomainOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -454,6 +541,9 @@ func (c *gRPCClient) ResetAdminPassword(ctx context.Context, req *managedidentit
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedidentities.v1.ManagedIdentitiesService/ResetAdminPassword")
+	}
 	opts = append((*c.CallOptions).ResetAdminPassword[0:len((*c.CallOptions).ResetAdminPassword):len((*c.CallOptions).ResetAdminPassword)], opts...)
 	var resp *managedidentitiespb.ResetAdminPasswordResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -472,9 +562,12 @@ func (c *gRPCClient) ListDomains(ctx context.Context, req *managedidentitiespb.L
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedidentities.v1.ManagedIdentitiesService/ListDomains")
+	}
 	opts = append((*c.CallOptions).ListDomains[0:len((*c.CallOptions).ListDomains):len((*c.CallOptions).ListDomains)], opts...)
 	it := &DomainIterator{}
-	req = proto.Clone(req).(*managedidentitiespb.ListDomainsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*managedidentitiespb.Domain, string, error) {
 		resp := &managedidentitiespb.ListDomainsResponse{}
 		if pageToken != "" {
@@ -518,6 +611,9 @@ func (c *gRPCClient) GetDomain(ctx context.Context, req *managedidentitiespb.Get
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedidentities.v1.ManagedIdentitiesService/GetDomain")
+	}
 	opts = append((*c.CallOptions).GetDomain[0:len((*c.CallOptions).GetDomain):len((*c.CallOptions).GetDomain)], opts...)
 	var resp *managedidentitiespb.Domain
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -536,6 +632,9 @@ func (c *gRPCClient) UpdateDomain(ctx context.Context, req *managedidentitiespb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedidentities.v1.ManagedIdentitiesService/UpdateDomain")
+	}
 	opts = append((*c.CallOptions).UpdateDomain[0:len((*c.CallOptions).UpdateDomain):len((*c.CallOptions).UpdateDomain)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -546,8 +645,12 @@ func (c *gRPCClient) UpdateDomain(ctx context.Context, req *managedidentitiespb.
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*managedidentities.UpdateDomainOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateDomainOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -556,6 +659,9 @@ func (c *gRPCClient) DeleteDomain(ctx context.Context, req *managedidentitiespb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedidentities.v1.ManagedIdentitiesService/DeleteDomain")
+	}
 	opts = append((*c.CallOptions).DeleteDomain[0:len((*c.CallOptions).DeleteDomain):len((*c.CallOptions).DeleteDomain)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -566,8 +672,12 @@ func (c *gRPCClient) DeleteDomain(ctx context.Context, req *managedidentitiespb.
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*managedidentities.DeleteDomainOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteDomainOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -576,6 +686,9 @@ func (c *gRPCClient) AttachTrust(ctx context.Context, req *managedidentitiespb.A
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedidentities.v1.ManagedIdentitiesService/AttachTrust")
+	}
 	opts = append((*c.CallOptions).AttachTrust[0:len((*c.CallOptions).AttachTrust):len((*c.CallOptions).AttachTrust)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -586,8 +699,12 @@ func (c *gRPCClient) AttachTrust(ctx context.Context, req *managedidentitiespb.A
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*managedidentities.AttachTrustOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &AttachTrustOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -596,6 +713,9 @@ func (c *gRPCClient) ReconfigureTrust(ctx context.Context, req *managedidentitie
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedidentities.v1.ManagedIdentitiesService/ReconfigureTrust")
+	}
 	opts = append((*c.CallOptions).ReconfigureTrust[0:len((*c.CallOptions).ReconfigureTrust):len((*c.CallOptions).ReconfigureTrust)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -606,8 +726,12 @@ func (c *gRPCClient) ReconfigureTrust(ctx context.Context, req *managedidentitie
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*managedidentities.ReconfigureTrustOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ReconfigureTrustOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -616,6 +740,9 @@ func (c *gRPCClient) DetachTrust(ctx context.Context, req *managedidentitiespb.D
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedidentities.v1.ManagedIdentitiesService/DetachTrust")
+	}
 	opts = append((*c.CallOptions).DetachTrust[0:len((*c.CallOptions).DetachTrust):len((*c.CallOptions).DetachTrust)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -626,8 +753,12 @@ func (c *gRPCClient) DetachTrust(ctx context.Context, req *managedidentitiespb.D
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*managedidentities.DetachTrustOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DetachTrustOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -636,6 +767,9 @@ func (c *gRPCClient) ValidateTrust(ctx context.Context, req *managedidentitiespb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedidentities.v1.ManagedIdentitiesService/ValidateTrust")
+	}
 	opts = append((*c.CallOptions).ValidateTrust[0:len((*c.CallOptions).ValidateTrust):len((*c.CallOptions).ValidateTrust)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -646,8 +780,12 @@ func (c *gRPCClient) ValidateTrust(ctx context.Context, req *managedidentitiespb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*managedidentities.ValidateTrustOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ValidateTrustOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -655,7 +793,7 @@ func (c *gRPCClient) ValidateTrust(ctx context.Context, req *managedidentitiespb
 // The name must be that of a previously created AttachTrustOperation, possibly from a different process.
 func (c *gRPCClient) AttachTrustOperation(name string) *AttachTrustOperation {
 	return &AttachTrustOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*managedidentities.AttachTrustOperation"),
 	}
 }
 
@@ -663,7 +801,7 @@ func (c *gRPCClient) AttachTrustOperation(name string) *AttachTrustOperation {
 // The name must be that of a previously created CreateMicrosoftAdDomainOperation, possibly from a different process.
 func (c *gRPCClient) CreateMicrosoftAdDomainOperation(name string) *CreateMicrosoftAdDomainOperation {
 	return &CreateMicrosoftAdDomainOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*managedidentities.CreateMicrosoftAdDomainOperation"),
 	}
 }
 
@@ -671,7 +809,7 @@ func (c *gRPCClient) CreateMicrosoftAdDomainOperation(name string) *CreateMicros
 // The name must be that of a previously created DeleteDomainOperation, possibly from a different process.
 func (c *gRPCClient) DeleteDomainOperation(name string) *DeleteDomainOperation {
 	return &DeleteDomainOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*managedidentities.DeleteDomainOperation"),
 	}
 }
 
@@ -679,7 +817,7 @@ func (c *gRPCClient) DeleteDomainOperation(name string) *DeleteDomainOperation {
 // The name must be that of a previously created DetachTrustOperation, possibly from a different process.
 func (c *gRPCClient) DetachTrustOperation(name string) *DetachTrustOperation {
 	return &DetachTrustOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*managedidentities.DetachTrustOperation"),
 	}
 }
 
@@ -687,7 +825,7 @@ func (c *gRPCClient) DetachTrustOperation(name string) *DetachTrustOperation {
 // The name must be that of a previously created ReconfigureTrustOperation, possibly from a different process.
 func (c *gRPCClient) ReconfigureTrustOperation(name string) *ReconfigureTrustOperation {
 	return &ReconfigureTrustOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*managedidentities.ReconfigureTrustOperation"),
 	}
 }
 
@@ -695,7 +833,7 @@ func (c *gRPCClient) ReconfigureTrustOperation(name string) *ReconfigureTrustOpe
 // The name must be that of a previously created UpdateDomainOperation, possibly from a different process.
 func (c *gRPCClient) UpdateDomainOperation(name string) *UpdateDomainOperation {
 	return &UpdateDomainOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*managedidentities.UpdateDomainOperation"),
 	}
 }
 
@@ -703,6 +841,6 @@ func (c *gRPCClient) UpdateDomainOperation(name string) *UpdateDomainOperation {
 // The name must be that of a previously created ValidateTrustOperation, possibly from a different process.
 func (c *gRPCClient) ValidateTrustOperation(name string) *ValidateTrustOperation {
 	return &ValidateTrustOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*managedidentities.ValidateTrustOperation"),
 	}
 }

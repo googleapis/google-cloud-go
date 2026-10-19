@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import (
 
 	computepb "cloud.google.com/go/compute/apiv1beta/computepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -166,7 +167,7 @@ func defaultOrganizationSecurityPoliciesRESTCallOptions() *OrganizationSecurityP
 	}
 }
 
-// internalOrganizationSecurityPoliciesClient is an interface that defines the methods available from Google Compute Engine API.
+// internalOrganizationSecurityPoliciesClient is an interface that defines the methods available from Compute Engine API.
 type internalOrganizationSecurityPoliciesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -189,7 +190,7 @@ type internalOrganizationSecurityPoliciesClient interface {
 	RemoveRule(context.Context, *computepb.RemoveRuleOrganizationSecurityPolicyRequest, ...gax.CallOption) (*Operation, error)
 }
 
-// OrganizationSecurityPoliciesClient is a client for interacting with Google Compute Engine API.
+// OrganizationSecurityPoliciesClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The OrganizationSecurityPolicies API.
@@ -203,7 +204,7 @@ type OrganizationSecurityPoliciesClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *OrganizationSecurityPoliciesClient) Close() error {
 	return c.internalClient.Close()
@@ -224,82 +225,156 @@ func (c *OrganizationSecurityPoliciesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AddAssociation inserts an association for the specified security policy. This has billing implications. Projects in the hierarchy with effective hierarchical security policies will be automatically enrolled into Cloud Armor Enterprise if not already enrolled. Use of this API to modify firewall policies is deprecated. Use firewallPolicies.addAssociation instead if possible.
+// AddAssociation inserts an association for the specified security policy.
+//
+// This has billing implications.  Projects in the hierarchy with effective
+// hierarchical security policies will be automatically enrolled into Cloud
+// Armor Enterprise if not already enrolled.
+//
+// Use this API to modify Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to modify firewall policies. This usage is
+// now disabled for most organizations. Use firewallPolicies.addAssociation
+// instead.
 func (c *OrganizationSecurityPoliciesClient) AddAssociation(ctx context.Context, req *computepb.AddAssociationOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.AddAssociation(ctx, req, opts...)
 }
 
 // AddRule inserts a rule into a security policy.
+//
+// Use this API to modify Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to modify firewall policies. This usage is
+// now disabled for most organizations. Use firewallPolicies.addRule instead.
 func (c *OrganizationSecurityPoliciesClient) AddRule(ctx context.Context, req *computepb.AddRuleOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.AddRule(ctx, req, opts...)
 }
 
-// CopyRules copies rules to the specified security policy. Use of this API to modify firewall policies is deprecated. Use firewallPolicies.copyRules instead.
+// CopyRules copies rules to the specified security policy.
+//
+// Use this API to modify Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to modify firewall policies. This usage is
+// now disabled for most organizations. Use firewallPolicies.cloneRules
+// instead.
 func (c *OrganizationSecurityPoliciesClient) CopyRules(ctx context.Context, req *computepb.CopyRulesOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.CopyRules(ctx, req, opts...)
 }
 
-// Delete deletes the specified policy. Use of this API to remove firewall policies is deprecated. Use firewallPolicies.delete instead.
+// Delete deletes the specified policy.
+//
+// Use this API to remove Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to remove firewall policies. This usage is
+// now disabled for most organizations. Use firewallPolicies.delete instead.
 func (c *OrganizationSecurityPoliciesClient) Delete(ctx context.Context, req *computepb.DeleteOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
-// Get list all of the ordered rules present in a single specified policy. Use of this API to read firewall policies is deprecated. Use firewallPolicies.get instead.
+// Get list all of the ordered rules present in a single specified policy.
+//
+// Use this API to read Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to read firewall policies. This usage is now
+// disabled for most organizations. Use firewallPolicies.get instead.
 func (c *OrganizationSecurityPoliciesClient) Get(ctx context.Context, req *computepb.GetOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*computepb.SecurityPolicy, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// GetAssociation gets an association with the specified name. Use of this API to read firewall policies is deprecated. Use firewallPolicies.getAssociation instead if possible.
+// GetAssociation gets an association with the specified name.
+//
+// Use this API to read Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to read firewall policies. This usage is
+// now disabled for most organizations. Use firewallPolicies.getAssociation
+// instead.
 func (c *OrganizationSecurityPoliciesClient) GetAssociation(ctx context.Context, req *computepb.GetAssociationOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*computepb.SecurityPolicyAssociation, error) {
 	return c.internalClient.GetAssociation(ctx, req, opts...)
 }
 
-// GetRule gets a rule at the specified priority. Use of this API to read firewall policies is deprecated. Use firewallPolicies.getRule instead.
+// GetRule gets a rule at the specified priority.
+//
+// Use this API to read Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to read firewall policies. This usage is now
+// disabled for most organizations. Use firewallPolicies.getRule instead.
 func (c *OrganizationSecurityPoliciesClient) GetRule(ctx context.Context, req *computepb.GetRuleOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*computepb.SecurityPolicyRule, error) {
 	return c.internalClient.GetRule(ctx, req, opts...)
 }
 
-// Insert creates a new policy in the specified project using the data included in the request. Use of this API to insert firewall policies is deprecated. Use firewallPolicies.insert instead.
+// Insert creates a new policy in the specified organization using the data included
+// in the request.
+//
+// Use this API to add Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to add firewall policies. This usage is now
+// disabled for most organizations. Use firewallPolicies.insert instead.
 func (c *OrganizationSecurityPoliciesClient) Insert(ctx context.Context, req *computepb.InsertOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List list all the policies that have been configured for the specified project. Use of this API to read firewall policies is deprecated. Use firewallPolicies.list instead.
+// List list all the policies that have been configured for the specified
+// organization.
+//
+// Use this API to read Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to read firewall policies. This usage is now
+// disabled for most organizations. Use firewallPolicies.list instead.
 func (c *OrganizationSecurityPoliciesClient) List(ctx context.Context, req *computepb.ListOrganizationSecurityPoliciesRequest, opts ...gax.CallOption) *SecurityPolicyIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// ListAssociations lists associations of a specified target, i.e., organization or folder. Use of this API to read firewall policies is deprecated. Use firewallPolicies.listAssociations instead if possible.
+// ListAssociations lists associations of a specified target, i.e., organization or folder.
+//
+// Use this API to read Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to read firewall policies. This usage is
+// now disabled for most organizations. Use firewallPolicies.listAssociations
+// instead.
 func (c *OrganizationSecurityPoliciesClient) ListAssociations(ctx context.Context, req *computepb.ListAssociationsOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*computepb.OrganizationSecurityPoliciesListAssociationsResponse, error) {
 	return c.internalClient.ListAssociations(ctx, req, opts...)
 }
 
-// ListPreconfiguredExpressionSets gets the current list of preconfigured Web Application Firewall (WAF) expressions.
+// ListPreconfiguredExpressionSets gets the current list of preconfigured Web Application Firewall (WAF)
+// expressions.
 func (c *OrganizationSecurityPoliciesClient) ListPreconfiguredExpressionSets(ctx context.Context, req *computepb.ListPreconfiguredExpressionSetsOrganizationSecurityPoliciesRequest, opts ...gax.CallOption) (*computepb.SecurityPoliciesListPreconfiguredExpressionSetsResponse, error) {
 	return c.internalClient.ListPreconfiguredExpressionSets(ctx, req, opts...)
 }
 
-// Move moves the specified security policy. Use of this API to modify firewall policies is deprecated. Use firewallPolicies.move instead.
+// Move moves the specified security policy.
+//
+// Use this API to modify Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to modify firewall policies. This usage is
+// now disabled for most organizations. Use firewallPolicies.move instead.
 func (c *OrganizationSecurityPoliciesClient) Move(ctx context.Context, req *computepb.MoveOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Move(ctx, req, opts...)
 }
 
-// Patch patches the specified policy with the data included in the request. Use of this API to modify firewall policies is deprecated. Use firewallPolicies.patch instead.
+// Patch patches the specified policy with the data included in the request.
+//
+// Use this API to modify Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to modify firewall policies. This usage is
+// now disabled for most organizations. Use firewallPolicies.patch instead.
 func (c *OrganizationSecurityPoliciesClient) Patch(ctx context.Context, req *computepb.PatchOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
 
-// PatchRule patches a rule at the specified priority. Use of this API to modify firewall policies is deprecated. Use firewallPolicies.patchRule instead.
+// PatchRule patches a rule at the specified priority.
+//
+// Use this API to modify Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to modify firewall policies. This usage is
+// now disabled for most organizations. Use firewallPolicies.patchRule
+// instead.
 func (c *OrganizationSecurityPoliciesClient) PatchRule(ctx context.Context, req *computepb.PatchRuleOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.PatchRule(ctx, req, opts...)
 }
 
-// RemoveAssociation removes an association for the specified security policy. Use of this API to modify firewall policies is deprecated. Use firewallPolicies.removeAssociation instead if possible.
+// RemoveAssociation removes an association for the specified security policy.
+//
+// Use this API to modify Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to modify firewall policies. This usage is
+// now disabled for most organizations. Use firewallPolicies.removeAssociation
+// instead.
 func (c *OrganizationSecurityPoliciesClient) RemoveAssociation(ctx context.Context, req *computepb.RemoveAssociationOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.RemoveAssociation(ctx, req, opts...)
 }
 
 // RemoveRule deletes a rule at the specified priority.
+//
+// Use this API to modify Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to modify firewall policies. This usage is
+// now disabled for most organizations. Use firewallPolicies.removeRule
+// instead.
 func (c *OrganizationSecurityPoliciesClient) RemoveRule(ctx context.Context, req *computepb.RemoveRuleOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.RemoveRule(ctx, req, opts...)
 }
@@ -329,6 +404,16 @@ type organizationSecurityPoliciesRESTClient struct {
 // The OrganizationSecurityPolicies API.
 func NewOrganizationSecurityPoliciesRESTClient(ctx context.Context, opts ...option.ClientOption) (*OrganizationSecurityPoliciesClient, error) {
 	clientOpts := append(defaultOrganizationSecurityPoliciesRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "compute",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/compute/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "compute.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -342,6 +427,93 @@ func NewOrganizationSecurityPoliciesRESTClient(ctx context.Context, opts ...opti
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AddAssociation = append(callOpts.AddAssociation, gax.WithClientMetrics(metrics))
+		callOpts.AddRule = append(callOpts.AddRule, gax.WithClientMetrics(metrics))
+		callOpts.CopyRules = append(callOpts.CopyRules, gax.WithClientMetrics(metrics))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientMetrics(metrics))
+		callOpts.Get = append(callOpts.Get, gax.WithClientMetrics(metrics))
+		callOpts.GetAssociation = append(callOpts.GetAssociation, gax.WithClientMetrics(metrics))
+		callOpts.GetRule = append(callOpts.GetRule, gax.WithClientMetrics(metrics))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientMetrics(metrics))
+		callOpts.List = append(callOpts.List, gax.WithClientMetrics(metrics))
+		callOpts.ListAssociations = append(callOpts.ListAssociations, gax.WithClientMetrics(metrics))
+		callOpts.ListPreconfiguredExpressionSets = append(callOpts.ListPreconfiguredExpressionSets, gax.WithClientMetrics(metrics))
+		callOpts.Move = append(callOpts.Move, gax.WithClientMetrics(metrics))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientMetrics(metrics))
+		callOpts.PatchRule = append(callOpts.PatchRule, gax.WithClientMetrics(metrics))
+		callOpts.RemoveAssociation = append(callOpts.RemoveAssociation, gax.WithClientMetrics(metrics))
+		callOpts.RemoveRule = append(callOpts.RemoveRule, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AddAssociation = append(callOpts.AddAssociation, gax.WithClientTracing(tracing))
+		callOpts.AddRule = append(callOpts.AddRule, gax.WithClientTracing(tracing))
+		callOpts.CopyRules = append(callOpts.CopyRules, gax.WithClientTracing(tracing))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientTracing(tracing))
+		callOpts.Get = append(callOpts.Get, gax.WithClientTracing(tracing))
+		callOpts.GetAssociation = append(callOpts.GetAssociation, gax.WithClientTracing(tracing))
+		callOpts.GetRule = append(callOpts.GetRule, gax.WithClientTracing(tracing))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientTracing(tracing))
+		callOpts.List = append(callOpts.List, gax.WithClientTracing(tracing))
+		callOpts.ListAssociations = append(callOpts.ListAssociations, gax.WithClientTracing(tracing))
+		callOpts.ListPreconfiguredExpressionSets = append(callOpts.ListPreconfiguredExpressionSets, gax.WithClientTracing(tracing))
+		callOpts.Move = append(callOpts.Move, gax.WithClientTracing(tracing))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientTracing(tracing))
+		callOpts.PatchRule = append(callOpts.PatchRule, gax.WithClientTracing(tracing))
+		callOpts.RemoveAssociation = append(callOpts.RemoveAssociation, gax.WithClientTracing(tracing))
+		callOpts.RemoveRule = append(callOpts.RemoveRule, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AddAssociation = append(callOpts.AddAssociation, gax.WithClientLogging(logging))
+		callOpts.AddRule = append(callOpts.AddRule, gax.WithClientLogging(logging))
+		callOpts.CopyRules = append(callOpts.CopyRules, gax.WithClientLogging(logging))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientLogging(logging))
+		callOpts.Get = append(callOpts.Get, gax.WithClientLogging(logging))
+		callOpts.GetAssociation = append(callOpts.GetAssociation, gax.WithClientLogging(logging))
+		callOpts.GetRule = append(callOpts.GetRule, gax.WithClientLogging(logging))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientLogging(logging))
+		callOpts.List = append(callOpts.List, gax.WithClientLogging(logging))
+		callOpts.ListAssociations = append(callOpts.ListAssociations, gax.WithClientLogging(logging))
+		callOpts.ListPreconfiguredExpressionSets = append(callOpts.ListPreconfiguredExpressionSets, gax.WithClientLogging(logging))
+		callOpts.Move = append(callOpts.Move, gax.WithClientLogging(logging))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientLogging(logging))
+		callOpts.PatchRule = append(callOpts.PatchRule, gax.WithClientLogging(logging))
+		callOpts.RemoveAssociation = append(callOpts.RemoveAssociation, gax.WithClientLogging(logging))
+		callOpts.RemoveRule = append(callOpts.RemoveRule, gax.WithClientLogging(logging))
+	}
 
 	o := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -379,7 +551,7 @@ func (c *organizationSecurityPoliciesRESTClient) setGoogleClientInfo(keyval ...s
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *organizationSecurityPoliciesRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -397,7 +569,16 @@ func (c *organizationSecurityPoliciesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AddAssociation inserts an association for the specified security policy. This has billing implications. Projects in the hierarchy with effective hierarchical security policies will be automatically enrolled into Cloud Armor Enterprise if not already enrolled. Use of this API to modify firewall policies is deprecated. Use firewallPolicies.addAssociation instead if possible.
+// AddAssociation inserts an association for the specified security policy.
+//
+// This has billing implications.  Projects in the hierarchy with effective
+// hierarchical security policies will be automatically enrolled into Cloud
+// Armor Enterprise if not already enrolled.
+//
+// Use this API to modify Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to modify firewall policies. This usage is
+// now disabled for most organizations. Use firewallPolicies.addAssociation
+// instead.
 func (c *organizationSecurityPoliciesRESTClient) AddAssociation(ctx context.Context, req *computepb.AddAssociationOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSecurityPolicyAssociationResource()
@@ -428,6 +609,10 @@ func (c *organizationSecurityPoliciesRESTClient) AddAssociation(ctx context.Cont
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.OrganizationSecurityPolicies/AddAssociation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/locations/global/securityPolicies/{security_policy}/addAssociation")
+	}
 	opts = append((*c.CallOptions).AddAssociation[0:len((*c.CallOptions).AddAssociation):len((*c.CallOptions).AddAssociation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -466,6 +651,10 @@ func (c *organizationSecurityPoliciesRESTClient) AddAssociation(ctx context.Cont
 }
 
 // AddRule inserts a rule into a security policy.
+//
+// Use this API to modify Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to modify firewall policies. This usage is
+// now disabled for most organizations. Use firewallPolicies.addRule instead.
 func (c *organizationSecurityPoliciesRESTClient) AddRule(ctx context.Context, req *computepb.AddRuleOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSecurityPolicyRuleResource()
@@ -493,6 +682,10 @@ func (c *organizationSecurityPoliciesRESTClient) AddRule(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.OrganizationSecurityPolicies/AddRule")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/locations/global/securityPolicies/{security_policy}/addRule")
+	}
 	opts = append((*c.CallOptions).AddRule[0:len((*c.CallOptions).AddRule):len((*c.CallOptions).AddRule)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -530,7 +723,12 @@ func (c *organizationSecurityPoliciesRESTClient) AddRule(ctx context.Context, re
 	return op, nil
 }
 
-// CopyRules copies rules to the specified security policy. Use of this API to modify firewall policies is deprecated. Use firewallPolicies.copyRules instead.
+// CopyRules copies rules to the specified security policy.
+//
+// Use this API to modify Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to modify firewall policies. This usage is
+// now disabled for most organizations. Use firewallPolicies.cloneRules
+// instead.
 func (c *organizationSecurityPoliciesRESTClient) CopyRules(ctx context.Context, req *computepb.CopyRulesOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -554,6 +752,10 @@ func (c *organizationSecurityPoliciesRESTClient) CopyRules(ctx context.Context, 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.OrganizationSecurityPolicies/CopyRules")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/locations/global/securityPolicies/{security_policy}/copyRules")
+	}
 	opts = append((*c.CallOptions).CopyRules[0:len((*c.CallOptions).CopyRules):len((*c.CallOptions).CopyRules)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -591,7 +793,11 @@ func (c *organizationSecurityPoliciesRESTClient) CopyRules(ctx context.Context, 
 	return op, nil
 }
 
-// Delete deletes the specified policy. Use of this API to remove firewall policies is deprecated. Use firewallPolicies.delete instead.
+// Delete deletes the specified policy.
+//
+// Use this API to remove Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to remove firewall policies. This usage is
+// now disabled for most organizations. Use firewallPolicies.delete instead.
 func (c *organizationSecurityPoliciesRESTClient) Delete(ctx context.Context, req *computepb.DeleteOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -612,6 +818,10 @@ func (c *organizationSecurityPoliciesRESTClient) Delete(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.OrganizationSecurityPolicies/Delete")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/locations/global/securityPolicies/{security_policy}")
+	}
 	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -649,7 +859,11 @@ func (c *organizationSecurityPoliciesRESTClient) Delete(ctx context.Context, req
 	return op, nil
 }
 
-// Get list all of the ordered rules present in a single specified policy. Use of this API to read firewall policies is deprecated. Use firewallPolicies.get instead.
+// Get list all of the ordered rules present in a single specified policy.
+//
+// Use this API to read Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to read firewall policies. This usage is now
+// disabled for most organizations. Use firewallPolicies.get instead.
 func (c *organizationSecurityPoliciesRESTClient) Get(ctx context.Context, req *computepb.GetOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*computepb.SecurityPolicy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -663,6 +877,10 @@ func (c *organizationSecurityPoliciesRESTClient) Get(ctx context.Context, req *c
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.OrganizationSecurityPolicies/Get")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/locations/global/securityPolicies/{security_policy}")
+	}
 	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.SecurityPolicy{}
@@ -694,7 +912,12 @@ func (c *organizationSecurityPoliciesRESTClient) Get(ctx context.Context, req *c
 	return resp, nil
 }
 
-// GetAssociation gets an association with the specified name. Use of this API to read firewall policies is deprecated. Use firewallPolicies.getAssociation instead if possible.
+// GetAssociation gets an association with the specified name.
+//
+// Use this API to read Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to read firewall policies. This usage is
+// now disabled for most organizations. Use firewallPolicies.getAssociation
+// instead.
 func (c *organizationSecurityPoliciesRESTClient) GetAssociation(ctx context.Context, req *computepb.GetAssociationOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*computepb.SecurityPolicyAssociation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -715,6 +938,10 @@ func (c *organizationSecurityPoliciesRESTClient) GetAssociation(ctx context.Cont
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.OrganizationSecurityPolicies/GetAssociation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/locations/global/securityPolicies/{security_policy}/getAssociation")
+	}
 	opts = append((*c.CallOptions).GetAssociation[0:len((*c.CallOptions).GetAssociation):len((*c.CallOptions).GetAssociation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.SecurityPolicyAssociation{}
@@ -746,7 +973,11 @@ func (c *organizationSecurityPoliciesRESTClient) GetAssociation(ctx context.Cont
 	return resp, nil
 }
 
-// GetRule gets a rule at the specified priority. Use of this API to read firewall policies is deprecated. Use firewallPolicies.getRule instead.
+// GetRule gets a rule at the specified priority.
+//
+// Use this API to read Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to read firewall policies. This usage is now
+// disabled for most organizations. Use firewallPolicies.getRule instead.
 func (c *organizationSecurityPoliciesRESTClient) GetRule(ctx context.Context, req *computepb.GetRuleOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*computepb.SecurityPolicyRule, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -767,6 +998,10 @@ func (c *organizationSecurityPoliciesRESTClient) GetRule(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.OrganizationSecurityPolicies/GetRule")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/locations/global/securityPolicies/{security_policy}/getRule")
+	}
 	opts = append((*c.CallOptions).GetRule[0:len((*c.CallOptions).GetRule):len((*c.CallOptions).GetRule)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.SecurityPolicyRule{}
@@ -798,7 +1033,12 @@ func (c *organizationSecurityPoliciesRESTClient) GetRule(ctx context.Context, re
 	return resp, nil
 }
 
-// Insert creates a new policy in the specified project using the data included in the request. Use of this API to insert firewall policies is deprecated. Use firewallPolicies.insert instead.
+// Insert creates a new policy in the specified organization using the data included
+// in the request.
+//
+// Use this API to add Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to add firewall policies. This usage is now
+// disabled for most organizations. Use firewallPolicies.insert instead.
 func (c *organizationSecurityPoliciesRESTClient) Insert(ctx context.Context, req *computepb.InsertOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSecurityPolicyResource()
@@ -826,6 +1066,10 @@ func (c *organizationSecurityPoliciesRESTClient) Insert(ctx context.Context, req
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.OrganizationSecurityPolicies/Insert")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/locations/global/securityPolicies")
+	}
 	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -863,10 +1107,15 @@ func (c *organizationSecurityPoliciesRESTClient) Insert(ctx context.Context, req
 	return op, nil
 }
 
-// List list all the policies that have been configured for the specified project. Use of this API to read firewall policies is deprecated. Use firewallPolicies.list instead.
+// List list all the policies that have been configured for the specified
+// organization.
+//
+// Use this API to read Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to read firewall policies. This usage is now
+// disabled for most organizations. Use firewallPolicies.list instead.
 func (c *organizationSecurityPoliciesRESTClient) List(ctx context.Context, req *computepb.ListOrganizationSecurityPoliciesRequest, opts ...gax.CallOption) *SecurityPolicyIterator {
 	it := &SecurityPolicyIterator{}
-	req = proto.Clone(req).(*computepb.ListOrganizationSecurityPoliciesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.SecurityPolicy, string, error) {
 		resp := &computepb.SecurityPolicyList{}
@@ -952,7 +1201,12 @@ func (c *organizationSecurityPoliciesRESTClient) List(ctx context.Context, req *
 	return it
 }
 
-// ListAssociations lists associations of a specified target, i.e., organization or folder. Use of this API to read firewall policies is deprecated. Use firewallPolicies.listAssociations instead if possible.
+// ListAssociations lists associations of a specified target, i.e., organization or folder.
+//
+// Use this API to read Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to read firewall policies. This usage is
+// now disabled for most organizations. Use firewallPolicies.listAssociations
+// instead.
 func (c *organizationSecurityPoliciesRESTClient) ListAssociations(ctx context.Context, req *computepb.ListAssociationsOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*computepb.OrganizationSecurityPoliciesListAssociationsResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -970,6 +1224,10 @@ func (c *organizationSecurityPoliciesRESTClient) ListAssociations(ctx context.Co
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.OrganizationSecurityPolicies/ListAssociations")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/locations/global/securityPolicies/listAssociations")
+	}
 	opts = append((*c.CallOptions).ListAssociations[0:len((*c.CallOptions).ListAssociations):len((*c.CallOptions).ListAssociations)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.OrganizationSecurityPoliciesListAssociationsResponse{}
@@ -1001,7 +1259,8 @@ func (c *organizationSecurityPoliciesRESTClient) ListAssociations(ctx context.Co
 	return resp, nil
 }
 
-// ListPreconfiguredExpressionSets gets the current list of preconfigured Web Application Firewall (WAF) expressions.
+// ListPreconfiguredExpressionSets gets the current list of preconfigured Web Application Firewall (WAF)
+// expressions.
 func (c *organizationSecurityPoliciesRESTClient) ListPreconfiguredExpressionSets(ctx context.Context, req *computepb.ListPreconfiguredExpressionSetsOrganizationSecurityPoliciesRequest, opts ...gax.CallOption) (*computepb.SecurityPoliciesListPreconfiguredExpressionSetsResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1034,6 +1293,10 @@ func (c *organizationSecurityPoliciesRESTClient) ListPreconfiguredExpressionSets
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.OrganizationSecurityPolicies/ListPreconfiguredExpressionSets")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/locations/global/securityPolicies/listPreconfiguredExpressionSets")
+	}
 	opts = append((*c.CallOptions).ListPreconfiguredExpressionSets[0:len((*c.CallOptions).ListPreconfiguredExpressionSets):len((*c.CallOptions).ListPreconfiguredExpressionSets)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.SecurityPoliciesListPreconfiguredExpressionSetsResponse{}
@@ -1065,7 +1328,11 @@ func (c *organizationSecurityPoliciesRESTClient) ListPreconfiguredExpressionSets
 	return resp, nil
 }
 
-// Move moves the specified security policy. Use of this API to modify firewall policies is deprecated. Use firewallPolicies.move instead.
+// Move moves the specified security policy.
+//
+// Use this API to modify Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to modify firewall policies. This usage is
+// now disabled for most organizations. Use firewallPolicies.move instead.
 func (c *organizationSecurityPoliciesRESTClient) Move(ctx context.Context, req *computepb.MoveOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1089,6 +1356,10 @@ func (c *organizationSecurityPoliciesRESTClient) Move(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.OrganizationSecurityPolicies/Move")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/locations/global/securityPolicies/{security_policy}/move")
+	}
 	opts = append((*c.CallOptions).Move[0:len((*c.CallOptions).Move):len((*c.CallOptions).Move)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -1126,7 +1397,11 @@ func (c *organizationSecurityPoliciesRESTClient) Move(ctx context.Context, req *
 	return op, nil
 }
 
-// Patch patches the specified policy with the data included in the request. Use of this API to modify firewall policies is deprecated. Use firewallPolicies.patch instead.
+// Patch patches the specified policy with the data included in the request.
+//
+// Use this API to modify Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to modify firewall policies. This usage is
+// now disabled for most organizations. Use firewallPolicies.patch instead.
 func (c *organizationSecurityPoliciesRESTClient) Patch(ctx context.Context, req *computepb.PatchOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSecurityPolicyResource()
@@ -1157,6 +1432,10 @@ func (c *organizationSecurityPoliciesRESTClient) Patch(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.OrganizationSecurityPolicies/Patch")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/locations/global/securityPolicies/{security_policy}")
+	}
 	opts = append((*c.CallOptions).Patch[0:len((*c.CallOptions).Patch):len((*c.CallOptions).Patch)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -1194,7 +1473,12 @@ func (c *organizationSecurityPoliciesRESTClient) Patch(ctx context.Context, req 
 	return op, nil
 }
 
-// PatchRule patches a rule at the specified priority. Use of this API to modify firewall policies is deprecated. Use firewallPolicies.patchRule instead.
+// PatchRule patches a rule at the specified priority.
+//
+// Use this API to modify Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to modify firewall policies. This usage is
+// now disabled for most organizations. Use firewallPolicies.patchRule
+// instead.
 func (c *organizationSecurityPoliciesRESTClient) PatchRule(ctx context.Context, req *computepb.PatchRuleOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSecurityPolicyRuleResource()
@@ -1228,6 +1512,10 @@ func (c *organizationSecurityPoliciesRESTClient) PatchRule(ctx context.Context, 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.OrganizationSecurityPolicies/PatchRule")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/locations/global/securityPolicies/{security_policy}/patchRule")
+	}
 	opts = append((*c.CallOptions).PatchRule[0:len((*c.CallOptions).PatchRule):len((*c.CallOptions).PatchRule)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -1265,7 +1553,12 @@ func (c *organizationSecurityPoliciesRESTClient) PatchRule(ctx context.Context, 
 	return op, nil
 }
 
-// RemoveAssociation removes an association for the specified security policy. Use of this API to modify firewall policies is deprecated. Use firewallPolicies.removeAssociation instead if possible.
+// RemoveAssociation removes an association for the specified security policy.
+//
+// Use this API to modify Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to modify firewall policies. This usage is
+// now disabled for most organizations. Use firewallPolicies.removeAssociation
+// instead.
 func (c *organizationSecurityPoliciesRESTClient) RemoveAssociation(ctx context.Context, req *computepb.RemoveAssociationOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1289,6 +1582,10 @@ func (c *organizationSecurityPoliciesRESTClient) RemoveAssociation(ctx context.C
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.OrganizationSecurityPolicies/RemoveAssociation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/locations/global/securityPolicies/{security_policy}/removeAssociation")
+	}
 	opts = append((*c.CallOptions).RemoveAssociation[0:len((*c.CallOptions).RemoveAssociation):len((*c.CallOptions).RemoveAssociation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -1327,6 +1624,11 @@ func (c *organizationSecurityPoliciesRESTClient) RemoveAssociation(ctx context.C
 }
 
 // RemoveRule deletes a rule at the specified priority.
+//
+// Use this API to modify Cloud Armor policies. Previously, alpha and beta
+// versions of this API were used to modify firewall policies. This usage is
+// now disabled for most organizations. Use firewallPolicies.removeRule
+// instead.
 func (c *organizationSecurityPoliciesRESTClient) RemoveRule(ctx context.Context, req *computepb.RemoveRuleOrganizationSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1350,6 +1652,10 @@ func (c *organizationSecurityPoliciesRESTClient) RemoveRule(ctx context.Context,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.OrganizationSecurityPolicies/RemoveRule")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/locations/global/securityPolicies/{security_policy}/removeRule")
+	}
 	opts = append((*c.CallOptions).RemoveRule[0:len((*c.CallOptions).RemoveRule):len((*c.CallOptions).RemoveRule)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}

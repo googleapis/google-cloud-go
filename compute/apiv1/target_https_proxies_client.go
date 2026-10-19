@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import (
 
 	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -120,7 +121,7 @@ func defaultTargetHttpsProxiesRESTCallOptions() *TargetHttpsProxiesCallOptions {
 	}
 }
 
-// internalTargetHttpsProxiesClient is an interface that defines the methods available from Google Compute Engine API.
+// internalTargetHttpsProxiesClient is an interface that defines the methods available from Compute Engine API.
 type internalTargetHttpsProxiesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -138,10 +139,12 @@ type internalTargetHttpsProxiesClient interface {
 	SetUrlMap(context.Context, *computepb.SetUrlMapTargetHttpsProxyRequest, ...gax.CallOption) (*Operation, error)
 }
 
-// TargetHttpsProxiesClient is a client for interacting with Google Compute Engine API.
+// TargetHttpsProxiesClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The TargetHttpsProxies API.
+//
+// This client uses TargetHttpsProxies version 2026-09-01.
 type TargetHttpsProxiesClient struct {
 	// The internal transport-dependent client.
 	internalClient internalTargetHttpsProxiesClient
@@ -152,7 +155,7 @@ type TargetHttpsProxiesClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *TargetHttpsProxiesClient) Close() error {
 	return c.internalClient.Close()
@@ -173,7 +176,11 @@ func (c *TargetHttpsProxiesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves the list of all TargetHttpsProxy resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves the list of all TargetHttpsProxy resources, regional and global,
+// available to the specified project.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *TargetHttpsProxiesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListTargetHttpsProxiesRequest, opts ...gax.CallOption) *TargetHttpsProxiesScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -188,17 +195,22 @@ func (c *TargetHttpsProxiesClient) Get(ctx context.Context, req *computepb.GetTa
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// Insert creates a TargetHttpsProxy resource in the specified project using the data included in the request.
+// Insert creates a TargetHttpsProxy resource in the specified
+// project using the data included in the request.
 func (c *TargetHttpsProxiesClient) Insert(ctx context.Context, req *computepb.InsertTargetHttpsProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves the list of TargetHttpsProxy resources available to the specified project.
+// List retrieves the list of TargetHttpsProxy resources
+// available to the specified project.
 func (c *TargetHttpsProxiesClient) List(ctx context.Context, req *computepb.ListTargetHttpsProxiesRequest, opts ...gax.CallOption) *TargetHttpsProxyIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// Patch patches the specified TargetHttpsProxy resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+// Patch patches the specified TargetHttpsProxy resource with the data included in
+// the request. This method supports PATCH
+// semantics and usesJSON merge
+// patch format and processing rules.
 func (c *TargetHttpsProxiesClient) Patch(ctx context.Context, req *computepb.PatchTargetHttpsProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
@@ -218,7 +230,10 @@ func (c *TargetHttpsProxiesClient) SetSslCertificates(ctx context.Context, req *
 	return c.internalClient.SetSslCertificates(ctx, req, opts...)
 }
 
-// SetSslPolicy sets the SSL policy for TargetHttpsProxy. The SSL policy specifies the server-side support for SSL features. This affects connections between clients and the HTTPS proxy load balancer. They do not affect the connection between the load balancer and the backends.
+// SetSslPolicy sets the SSL policy for TargetHttpsProxy. The SSL policy specifies the
+// server-side support for SSL features. This affects connections between
+// clients and the HTTPS proxy load balancer. They do not affect the
+// connection between the load balancer and the backends.
 func (c *TargetHttpsProxiesClient) SetSslPolicy(ctx context.Context, req *computepb.SetSslPolicyTargetHttpsProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetSslPolicy(ctx, req, opts...)
 }
@@ -253,6 +268,16 @@ type targetHttpsProxiesRESTClient struct {
 // The TargetHttpsProxies API.
 func NewTargetHttpsProxiesRESTClient(ctx context.Context, opts ...option.ClientOption) (*TargetHttpsProxiesClient, error) {
 	clientOpts := append(defaultTargetHttpsProxiesRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "compute",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/compute/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "compute.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -266,6 +291,78 @@ func NewTargetHttpsProxiesRESTClient(ctx context.Context, opts ...option.ClientO
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientMetrics(metrics))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientMetrics(metrics))
+		callOpts.Get = append(callOpts.Get, gax.WithClientMetrics(metrics))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientMetrics(metrics))
+		callOpts.List = append(callOpts.List, gax.WithClientMetrics(metrics))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientMetrics(metrics))
+		callOpts.SetCertificateMap = append(callOpts.SetCertificateMap, gax.WithClientMetrics(metrics))
+		callOpts.SetQuicOverride = append(callOpts.SetQuicOverride, gax.WithClientMetrics(metrics))
+		callOpts.SetSslCertificates = append(callOpts.SetSslCertificates, gax.WithClientMetrics(metrics))
+		callOpts.SetSslPolicy = append(callOpts.SetSslPolicy, gax.WithClientMetrics(metrics))
+		callOpts.SetUrlMap = append(callOpts.SetUrlMap, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientTracing(tracing))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientTracing(tracing))
+		callOpts.Get = append(callOpts.Get, gax.WithClientTracing(tracing))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientTracing(tracing))
+		callOpts.List = append(callOpts.List, gax.WithClientTracing(tracing))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientTracing(tracing))
+		callOpts.SetCertificateMap = append(callOpts.SetCertificateMap, gax.WithClientTracing(tracing))
+		callOpts.SetQuicOverride = append(callOpts.SetQuicOverride, gax.WithClientTracing(tracing))
+		callOpts.SetSslCertificates = append(callOpts.SetSslCertificates, gax.WithClientTracing(tracing))
+		callOpts.SetSslPolicy = append(callOpts.SetSslPolicy, gax.WithClientTracing(tracing))
+		callOpts.SetUrlMap = append(callOpts.SetUrlMap, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientLogging(logging))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientLogging(logging))
+		callOpts.Get = append(callOpts.Get, gax.WithClientLogging(logging))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientLogging(logging))
+		callOpts.List = append(callOpts.List, gax.WithClientLogging(logging))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientLogging(logging))
+		callOpts.SetCertificateMap = append(callOpts.SetCertificateMap, gax.WithClientLogging(logging))
+		callOpts.SetQuicOverride = append(callOpts.SetQuicOverride, gax.WithClientLogging(logging))
+		callOpts.SetSslCertificates = append(callOpts.SetSslCertificates, gax.WithClientLogging(logging))
+		callOpts.SetSslPolicy = append(callOpts.SetSslPolicy, gax.WithClientLogging(logging))
+		callOpts.SetUrlMap = append(callOpts.SetUrlMap, gax.WithClientLogging(logging))
+	}
 
 	o := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -300,10 +397,11 @@ func (c *targetHttpsProxiesRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
+		"x-goog-api-version", "2026-09-01",
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *targetHttpsProxiesRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -321,10 +419,14 @@ func (c *targetHttpsProxiesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves the list of all TargetHttpsProxy resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves the list of all TargetHttpsProxy resources, regional and global,
+// available to the specified project.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *targetHttpsProxiesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListTargetHttpsProxiesRequest, opts ...gax.CallOption) *TargetHttpsProxiesScopedListPairIterator {
 	it := &TargetHttpsProxiesScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListTargetHttpsProxiesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]TargetHttpsProxiesScopedListPair, string, error) {
 		resp := &computepb.TargetHttpsProxyAggregatedList{}
@@ -357,9 +459,6 @@ func (c *targetHttpsProxiesRESTClient) AggregatedList(ctx context.Context, req *
 		}
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 		if req != nil && req.ServiceProjectNumber != nil {
 			params.Add("serviceProjectNumber", fmt.Sprintf("%v", req.GetServiceProjectNumber()))
@@ -441,6 +540,10 @@ func (c *targetHttpsProxiesRESTClient) Delete(ctx context.Context, req *computep
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.TargetHttpsProxies/Delete")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/targetHttpsProxies/{target_https_proxy}")
+	}
 	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -493,6 +596,10 @@ func (c *targetHttpsProxiesRESTClient) Get(ctx context.Context, req *computepb.G
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.TargetHttpsProxies/Get")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/targetHttpsProxies/{target_https_proxy}")
+	}
 	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.TargetHttpsProxy{}
@@ -524,7 +631,8 @@ func (c *targetHttpsProxiesRESTClient) Get(ctx context.Context, req *computepb.G
 	return resp, nil
 }
 
-// Insert creates a TargetHttpsProxy resource in the specified project using the data included in the request.
+// Insert creates a TargetHttpsProxy resource in the specified
+// project using the data included in the request.
 func (c *targetHttpsProxiesRESTClient) Insert(ctx context.Context, req *computepb.InsertTargetHttpsProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetHttpsProxyResource()
@@ -552,6 +660,10 @@ func (c *targetHttpsProxiesRESTClient) Insert(ctx context.Context, req *computep
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.TargetHttpsProxies/Insert")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/targetHttpsProxies")
+	}
 	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -590,10 +702,11 @@ func (c *targetHttpsProxiesRESTClient) Insert(ctx context.Context, req *computep
 	return op, nil
 }
 
-// List retrieves the list of TargetHttpsProxy resources available to the specified project.
+// List retrieves the list of TargetHttpsProxy resources
+// available to the specified project.
 func (c *targetHttpsProxiesRESTClient) List(ctx context.Context, req *computepb.ListTargetHttpsProxiesRequest, opts ...gax.CallOption) *TargetHttpsProxyIterator {
 	it := &TargetHttpsProxyIterator{}
-	req = proto.Clone(req).(*computepb.ListTargetHttpsProxiesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.TargetHttpsProxy, string, error) {
 		resp := &computepb.TargetHttpsProxyList{}
@@ -623,9 +736,6 @@ func (c *targetHttpsProxiesRESTClient) List(ctx context.Context, req *computepb.
 		}
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -676,7 +786,10 @@ func (c *targetHttpsProxiesRESTClient) List(ctx context.Context, req *computepb.
 	return it
 }
 
-// Patch patches the specified TargetHttpsProxy resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+// Patch patches the specified TargetHttpsProxy resource with the data included in
+// the request. This method supports PATCH
+// semantics and usesJSON merge
+// patch format and processing rules.
 func (c *targetHttpsProxiesRESTClient) Patch(ctx context.Context, req *computepb.PatchTargetHttpsProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetHttpsProxyResource()
@@ -704,6 +817,10 @@ func (c *targetHttpsProxiesRESTClient) Patch(ctx context.Context, req *computepb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.TargetHttpsProxies/Patch")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/targetHttpsProxies/{target_https_proxy}")
+	}
 	opts = append((*c.CallOptions).Patch[0:len((*c.CallOptions).Patch):len((*c.CallOptions).Patch)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -770,6 +887,10 @@ func (c *targetHttpsProxiesRESTClient) SetCertificateMap(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.TargetHttpsProxies/SetCertificateMap")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/targetHttpsProxies/{target_https_proxy}/setCertificateMap")
+	}
 	opts = append((*c.CallOptions).SetCertificateMap[0:len((*c.CallOptions).SetCertificateMap):len((*c.CallOptions).SetCertificateMap)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -836,6 +957,10 @@ func (c *targetHttpsProxiesRESTClient) SetQuicOverride(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.TargetHttpsProxies/SetQuicOverride")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/targetHttpsProxies/{target_https_proxy}/setQuicOverride")
+	}
 	opts = append((*c.CallOptions).SetQuicOverride[0:len((*c.CallOptions).SetQuicOverride):len((*c.CallOptions).SetQuicOverride)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -902,6 +1027,10 @@ func (c *targetHttpsProxiesRESTClient) SetSslCertificates(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.TargetHttpsProxies/SetSslCertificates")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/targetHttpsProxies/{target_https_proxy}/setSslCertificates")
+	}
 	opts = append((*c.CallOptions).SetSslCertificates[0:len((*c.CallOptions).SetSslCertificates):len((*c.CallOptions).SetSslCertificates)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -940,7 +1069,10 @@ func (c *targetHttpsProxiesRESTClient) SetSslCertificates(ctx context.Context, r
 	return op, nil
 }
 
-// SetSslPolicy sets the SSL policy for TargetHttpsProxy. The SSL policy specifies the server-side support for SSL features. This affects connections between clients and the HTTPS proxy load balancer. They do not affect the connection between the load balancer and the backends.
+// SetSslPolicy sets the SSL policy for TargetHttpsProxy. The SSL policy specifies the
+// server-side support for SSL features. This affects connections between
+// clients and the HTTPS proxy load balancer. They do not affect the
+// connection between the load balancer and the backends.
 func (c *targetHttpsProxiesRESTClient) SetSslPolicy(ctx context.Context, req *computepb.SetSslPolicyTargetHttpsProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSslPolicyReferenceResource()
@@ -968,6 +1100,10 @@ func (c *targetHttpsProxiesRESTClient) SetSslPolicy(ctx context.Context, req *co
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.TargetHttpsProxies/SetSslPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/targetHttpsProxies/{target_https_proxy}/setSslPolicy")
+	}
 	opts = append((*c.CallOptions).SetSslPolicy[0:len((*c.CallOptions).SetSslPolicy):len((*c.CallOptions).SetSslPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -1034,6 +1170,10 @@ func (c *targetHttpsProxiesRESTClient) SetUrlMap(ctx context.Context, req *compu
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.TargetHttpsProxies/SetUrlMap")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/targetHttpsProxies/{target_https_proxy}/setUrlMap")
+	}
 	opts = append((*c.CallOptions).SetUrlMap[0:len((*c.CallOptions).SetUrlMap):len((*c.CallOptions).SetUrlMap)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}

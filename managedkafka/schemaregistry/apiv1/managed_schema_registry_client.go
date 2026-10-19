@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	schemaregistrypb "cloud.google.com/go/managedkafka/schemaregistry/apiv1/schemaregistrypb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -281,7 +282,7 @@ type ManagedSchemaRegistryClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *ManagedSchemaRegistryClient) Close() error {
 	return c.internalClient.Close()
@@ -566,6 +567,16 @@ type managedSchemaRegistryGRPCClient struct {
 //	operations on the schema for data importing purposes.
 func NewManagedSchemaRegistryClient(ctx context.Context, opts ...option.ClientOption) (*ManagedSchemaRegistryClient, error) {
 	clientOpts := defaultManagedSchemaRegistryGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "managedkafka",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/managedkafka/schemaregistry/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "managedkafka.googleapis.com",
+		}))
+	}
 	if newManagedSchemaRegistryClientHook != nil {
 		hookOpts, err := newManagedSchemaRegistryClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -589,6 +600,143 @@ func NewManagedSchemaRegistryClient(ctx context.Context, opts ...option.ClientOp
 		locationsClient:             locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "managedkafka",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/managedkafka/schemaregistry/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "managedkafka.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetSchemaRegistry = append(client.CallOptions.GetSchemaRegistry, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListSchemaRegistries = append(client.CallOptions.ListSchemaRegistries, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateSchemaRegistry = append(client.CallOptions.CreateSchemaRegistry, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteSchemaRegistry = append(client.CallOptions.DeleteSchemaRegistry, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetContext = append(client.CallOptions.GetContext, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListContexts = append(client.CallOptions.ListContexts, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetSchema = append(client.CallOptions.GetSchema, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetRawSchema = append(client.CallOptions.GetRawSchema, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListSchemaVersions = append(client.CallOptions.ListSchemaVersions, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListSchemaTypes = append(client.CallOptions.ListSchemaTypes, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListSubjects = append(client.CallOptions.ListSubjects, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListSubjectsBySchemaId = append(client.CallOptions.ListSubjectsBySchemaId, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteSubject = append(client.CallOptions.DeleteSubject, gax.WithClientMetrics(metrics))
+		client.CallOptions.LookupVersion = append(client.CallOptions.LookupVersion, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetVersion = append(client.CallOptions.GetVersion, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetRawSchemaVersion = append(client.CallOptions.GetRawSchemaVersion, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListVersions = append(client.CallOptions.ListVersions, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateVersion = append(client.CallOptions.CreateVersion, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteVersion = append(client.CallOptions.DeleteVersion, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListReferencedSchemas = append(client.CallOptions.ListReferencedSchemas, gax.WithClientMetrics(metrics))
+		client.CallOptions.CheckCompatibility = append(client.CallOptions.CheckCompatibility, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetSchemaConfig = append(client.CallOptions.GetSchemaConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateSchemaConfig = append(client.CallOptions.UpdateSchemaConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteSchemaConfig = append(client.CallOptions.DeleteSchemaConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetSchemaMode = append(client.CallOptions.GetSchemaMode, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateSchemaMode = append(client.CallOptions.UpdateSchemaMode, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteSchemaMode = append(client.CallOptions.DeleteSchemaMode, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "managedkafka",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/managedkafka/schemaregistry/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "managedkafka.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetSchemaRegistry = append(client.CallOptions.GetSchemaRegistry, gax.WithClientTracing(tracing))
+		client.CallOptions.ListSchemaRegistries = append(client.CallOptions.ListSchemaRegistries, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateSchemaRegistry = append(client.CallOptions.CreateSchemaRegistry, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteSchemaRegistry = append(client.CallOptions.DeleteSchemaRegistry, gax.WithClientTracing(tracing))
+		client.CallOptions.GetContext = append(client.CallOptions.GetContext, gax.WithClientTracing(tracing))
+		client.CallOptions.ListContexts = append(client.CallOptions.ListContexts, gax.WithClientTracing(tracing))
+		client.CallOptions.GetSchema = append(client.CallOptions.GetSchema, gax.WithClientTracing(tracing))
+		client.CallOptions.GetRawSchema = append(client.CallOptions.GetRawSchema, gax.WithClientTracing(tracing))
+		client.CallOptions.ListSchemaVersions = append(client.CallOptions.ListSchemaVersions, gax.WithClientTracing(tracing))
+		client.CallOptions.ListSchemaTypes = append(client.CallOptions.ListSchemaTypes, gax.WithClientTracing(tracing))
+		client.CallOptions.ListSubjects = append(client.CallOptions.ListSubjects, gax.WithClientTracing(tracing))
+		client.CallOptions.ListSubjectsBySchemaId = append(client.CallOptions.ListSubjectsBySchemaId, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteSubject = append(client.CallOptions.DeleteSubject, gax.WithClientTracing(tracing))
+		client.CallOptions.LookupVersion = append(client.CallOptions.LookupVersion, gax.WithClientTracing(tracing))
+		client.CallOptions.GetVersion = append(client.CallOptions.GetVersion, gax.WithClientTracing(tracing))
+		client.CallOptions.GetRawSchemaVersion = append(client.CallOptions.GetRawSchemaVersion, gax.WithClientTracing(tracing))
+		client.CallOptions.ListVersions = append(client.CallOptions.ListVersions, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateVersion = append(client.CallOptions.CreateVersion, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteVersion = append(client.CallOptions.DeleteVersion, gax.WithClientTracing(tracing))
+		client.CallOptions.ListReferencedSchemas = append(client.CallOptions.ListReferencedSchemas, gax.WithClientTracing(tracing))
+		client.CallOptions.CheckCompatibility = append(client.CallOptions.CheckCompatibility, gax.WithClientTracing(tracing))
+		client.CallOptions.GetSchemaConfig = append(client.CallOptions.GetSchemaConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateSchemaConfig = append(client.CallOptions.UpdateSchemaConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteSchemaConfig = append(client.CallOptions.DeleteSchemaConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.GetSchemaMode = append(client.CallOptions.GetSchemaMode, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateSchemaMode = append(client.CallOptions.UpdateSchemaMode, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteSchemaMode = append(client.CallOptions.DeleteSchemaMode, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "managedkafka",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/managedkafka/schemaregistry/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "managedkafka.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetSchemaRegistry = append(client.CallOptions.GetSchemaRegistry, gax.WithClientLogging(logging))
+		client.CallOptions.ListSchemaRegistries = append(client.CallOptions.ListSchemaRegistries, gax.WithClientLogging(logging))
+		client.CallOptions.CreateSchemaRegistry = append(client.CallOptions.CreateSchemaRegistry, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteSchemaRegistry = append(client.CallOptions.DeleteSchemaRegistry, gax.WithClientLogging(logging))
+		client.CallOptions.GetContext = append(client.CallOptions.GetContext, gax.WithClientLogging(logging))
+		client.CallOptions.ListContexts = append(client.CallOptions.ListContexts, gax.WithClientLogging(logging))
+		client.CallOptions.GetSchema = append(client.CallOptions.GetSchema, gax.WithClientLogging(logging))
+		client.CallOptions.GetRawSchema = append(client.CallOptions.GetRawSchema, gax.WithClientLogging(logging))
+		client.CallOptions.ListSchemaVersions = append(client.CallOptions.ListSchemaVersions, gax.WithClientLogging(logging))
+		client.CallOptions.ListSchemaTypes = append(client.CallOptions.ListSchemaTypes, gax.WithClientLogging(logging))
+		client.CallOptions.ListSubjects = append(client.CallOptions.ListSubjects, gax.WithClientLogging(logging))
+		client.CallOptions.ListSubjectsBySchemaId = append(client.CallOptions.ListSubjectsBySchemaId, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteSubject = append(client.CallOptions.DeleteSubject, gax.WithClientLogging(logging))
+		client.CallOptions.LookupVersion = append(client.CallOptions.LookupVersion, gax.WithClientLogging(logging))
+		client.CallOptions.GetVersion = append(client.CallOptions.GetVersion, gax.WithClientLogging(logging))
+		client.CallOptions.GetRawSchemaVersion = append(client.CallOptions.GetRawSchemaVersion, gax.WithClientLogging(logging))
+		client.CallOptions.ListVersions = append(client.CallOptions.ListVersions, gax.WithClientLogging(logging))
+		client.CallOptions.CreateVersion = append(client.CallOptions.CreateVersion, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteVersion = append(client.CallOptions.DeleteVersion, gax.WithClientLogging(logging))
+		client.CallOptions.ListReferencedSchemas = append(client.CallOptions.ListReferencedSchemas, gax.WithClientLogging(logging))
+		client.CallOptions.CheckCompatibility = append(client.CallOptions.CheckCompatibility, gax.WithClientLogging(logging))
+		client.CallOptions.GetSchemaConfig = append(client.CallOptions.GetSchemaConfig, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateSchemaConfig = append(client.CallOptions.UpdateSchemaConfig, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteSchemaConfig = append(client.CallOptions.DeleteSchemaConfig, gax.WithClientLogging(logging))
+		client.CallOptions.GetSchemaMode = append(client.CallOptions.GetSchemaMode, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateSchemaMode = append(client.CallOptions.UpdateSchemaMode, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteSchemaMode = append(client.CallOptions.DeleteSchemaMode, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -614,7 +762,7 @@ func (c *managedSchemaRegistryGRPCClient) setGoogleClientInfo(keyval ...string) 
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *managedSchemaRegistryGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -699,6 +847,16 @@ type managedSchemaRegistryRESTClient struct {
 //	operations on the schema for data importing purposes.
 func NewManagedSchemaRegistryRESTClient(ctx context.Context, opts ...option.ClientOption) (*ManagedSchemaRegistryClient, error) {
 	clientOpts := append(defaultManagedSchemaRegistryRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "managedkafka",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/managedkafka/schemaregistry/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "managedkafka.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -712,6 +870,144 @@ func NewManagedSchemaRegistryRESTClient(ctx context.Context, opts ...option.Clie
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "managedkafka",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/managedkafka/schemaregistry/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "managedkafka.googleapis.com",
+			}),
+		)
+
+		callOpts.GetSchemaRegistry = append(callOpts.GetSchemaRegistry, gax.WithClientMetrics(metrics))
+		callOpts.ListSchemaRegistries = append(callOpts.ListSchemaRegistries, gax.WithClientMetrics(metrics))
+		callOpts.CreateSchemaRegistry = append(callOpts.CreateSchemaRegistry, gax.WithClientMetrics(metrics))
+		callOpts.DeleteSchemaRegistry = append(callOpts.DeleteSchemaRegistry, gax.WithClientMetrics(metrics))
+		callOpts.GetContext = append(callOpts.GetContext, gax.WithClientMetrics(metrics))
+		callOpts.ListContexts = append(callOpts.ListContexts, gax.WithClientMetrics(metrics))
+		callOpts.GetSchema = append(callOpts.GetSchema, gax.WithClientMetrics(metrics))
+		callOpts.GetRawSchema = append(callOpts.GetRawSchema, gax.WithClientMetrics(metrics))
+		callOpts.ListSchemaVersions = append(callOpts.ListSchemaVersions, gax.WithClientMetrics(metrics))
+		callOpts.ListSchemaTypes = append(callOpts.ListSchemaTypes, gax.WithClientMetrics(metrics))
+		callOpts.ListSubjects = append(callOpts.ListSubjects, gax.WithClientMetrics(metrics))
+		callOpts.ListSubjectsBySchemaId = append(callOpts.ListSubjectsBySchemaId, gax.WithClientMetrics(metrics))
+		callOpts.DeleteSubject = append(callOpts.DeleteSubject, gax.WithClientMetrics(metrics))
+		callOpts.LookupVersion = append(callOpts.LookupVersion, gax.WithClientMetrics(metrics))
+		callOpts.GetVersion = append(callOpts.GetVersion, gax.WithClientMetrics(metrics))
+		callOpts.GetRawSchemaVersion = append(callOpts.GetRawSchemaVersion, gax.WithClientMetrics(metrics))
+		callOpts.ListVersions = append(callOpts.ListVersions, gax.WithClientMetrics(metrics))
+		callOpts.CreateVersion = append(callOpts.CreateVersion, gax.WithClientMetrics(metrics))
+		callOpts.DeleteVersion = append(callOpts.DeleteVersion, gax.WithClientMetrics(metrics))
+		callOpts.ListReferencedSchemas = append(callOpts.ListReferencedSchemas, gax.WithClientMetrics(metrics))
+		callOpts.CheckCompatibility = append(callOpts.CheckCompatibility, gax.WithClientMetrics(metrics))
+		callOpts.GetSchemaConfig = append(callOpts.GetSchemaConfig, gax.WithClientMetrics(metrics))
+		callOpts.UpdateSchemaConfig = append(callOpts.UpdateSchemaConfig, gax.WithClientMetrics(metrics))
+		callOpts.DeleteSchemaConfig = append(callOpts.DeleteSchemaConfig, gax.WithClientMetrics(metrics))
+		callOpts.GetSchemaMode = append(callOpts.GetSchemaMode, gax.WithClientMetrics(metrics))
+		callOpts.UpdateSchemaMode = append(callOpts.UpdateSchemaMode, gax.WithClientMetrics(metrics))
+		callOpts.DeleteSchemaMode = append(callOpts.DeleteSchemaMode, gax.WithClientMetrics(metrics))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "managedkafka",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/managedkafka/schemaregistry/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "managedkafka.googleapis.com",
+			}),
+		)
+
+		callOpts.GetSchemaRegistry = append(callOpts.GetSchemaRegistry, gax.WithClientTracing(tracing))
+		callOpts.ListSchemaRegistries = append(callOpts.ListSchemaRegistries, gax.WithClientTracing(tracing))
+		callOpts.CreateSchemaRegistry = append(callOpts.CreateSchemaRegistry, gax.WithClientTracing(tracing))
+		callOpts.DeleteSchemaRegistry = append(callOpts.DeleteSchemaRegistry, gax.WithClientTracing(tracing))
+		callOpts.GetContext = append(callOpts.GetContext, gax.WithClientTracing(tracing))
+		callOpts.ListContexts = append(callOpts.ListContexts, gax.WithClientTracing(tracing))
+		callOpts.GetSchema = append(callOpts.GetSchema, gax.WithClientTracing(tracing))
+		callOpts.GetRawSchema = append(callOpts.GetRawSchema, gax.WithClientTracing(tracing))
+		callOpts.ListSchemaVersions = append(callOpts.ListSchemaVersions, gax.WithClientTracing(tracing))
+		callOpts.ListSchemaTypes = append(callOpts.ListSchemaTypes, gax.WithClientTracing(tracing))
+		callOpts.ListSubjects = append(callOpts.ListSubjects, gax.WithClientTracing(tracing))
+		callOpts.ListSubjectsBySchemaId = append(callOpts.ListSubjectsBySchemaId, gax.WithClientTracing(tracing))
+		callOpts.DeleteSubject = append(callOpts.DeleteSubject, gax.WithClientTracing(tracing))
+		callOpts.LookupVersion = append(callOpts.LookupVersion, gax.WithClientTracing(tracing))
+		callOpts.GetVersion = append(callOpts.GetVersion, gax.WithClientTracing(tracing))
+		callOpts.GetRawSchemaVersion = append(callOpts.GetRawSchemaVersion, gax.WithClientTracing(tracing))
+		callOpts.ListVersions = append(callOpts.ListVersions, gax.WithClientTracing(tracing))
+		callOpts.CreateVersion = append(callOpts.CreateVersion, gax.WithClientTracing(tracing))
+		callOpts.DeleteVersion = append(callOpts.DeleteVersion, gax.WithClientTracing(tracing))
+		callOpts.ListReferencedSchemas = append(callOpts.ListReferencedSchemas, gax.WithClientTracing(tracing))
+		callOpts.CheckCompatibility = append(callOpts.CheckCompatibility, gax.WithClientTracing(tracing))
+		callOpts.GetSchemaConfig = append(callOpts.GetSchemaConfig, gax.WithClientTracing(tracing))
+		callOpts.UpdateSchemaConfig = append(callOpts.UpdateSchemaConfig, gax.WithClientTracing(tracing))
+		callOpts.DeleteSchemaConfig = append(callOpts.DeleteSchemaConfig, gax.WithClientTracing(tracing))
+		callOpts.GetSchemaMode = append(callOpts.GetSchemaMode, gax.WithClientTracing(tracing))
+		callOpts.UpdateSchemaMode = append(callOpts.UpdateSchemaMode, gax.WithClientTracing(tracing))
+		callOpts.DeleteSchemaMode = append(callOpts.DeleteSchemaMode, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "managedkafka",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/managedkafka/schemaregistry/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "managedkafka.googleapis.com",
+			}),
+		)
+
+		callOpts.GetSchemaRegistry = append(callOpts.GetSchemaRegistry, gax.WithClientLogging(logging))
+		callOpts.ListSchemaRegistries = append(callOpts.ListSchemaRegistries, gax.WithClientLogging(logging))
+		callOpts.CreateSchemaRegistry = append(callOpts.CreateSchemaRegistry, gax.WithClientLogging(logging))
+		callOpts.DeleteSchemaRegistry = append(callOpts.DeleteSchemaRegistry, gax.WithClientLogging(logging))
+		callOpts.GetContext = append(callOpts.GetContext, gax.WithClientLogging(logging))
+		callOpts.ListContexts = append(callOpts.ListContexts, gax.WithClientLogging(logging))
+		callOpts.GetSchema = append(callOpts.GetSchema, gax.WithClientLogging(logging))
+		callOpts.GetRawSchema = append(callOpts.GetRawSchema, gax.WithClientLogging(logging))
+		callOpts.ListSchemaVersions = append(callOpts.ListSchemaVersions, gax.WithClientLogging(logging))
+		callOpts.ListSchemaTypes = append(callOpts.ListSchemaTypes, gax.WithClientLogging(logging))
+		callOpts.ListSubjects = append(callOpts.ListSubjects, gax.WithClientLogging(logging))
+		callOpts.ListSubjectsBySchemaId = append(callOpts.ListSubjectsBySchemaId, gax.WithClientLogging(logging))
+		callOpts.DeleteSubject = append(callOpts.DeleteSubject, gax.WithClientLogging(logging))
+		callOpts.LookupVersion = append(callOpts.LookupVersion, gax.WithClientLogging(logging))
+		callOpts.GetVersion = append(callOpts.GetVersion, gax.WithClientLogging(logging))
+		callOpts.GetRawSchemaVersion = append(callOpts.GetRawSchemaVersion, gax.WithClientLogging(logging))
+		callOpts.ListVersions = append(callOpts.ListVersions, gax.WithClientLogging(logging))
+		callOpts.CreateVersion = append(callOpts.CreateVersion, gax.WithClientLogging(logging))
+		callOpts.DeleteVersion = append(callOpts.DeleteVersion, gax.WithClientLogging(logging))
+		callOpts.ListReferencedSchemas = append(callOpts.ListReferencedSchemas, gax.WithClientLogging(logging))
+		callOpts.CheckCompatibility = append(callOpts.CheckCompatibility, gax.WithClientLogging(logging))
+		callOpts.GetSchemaConfig = append(callOpts.GetSchemaConfig, gax.WithClientLogging(logging))
+		callOpts.UpdateSchemaConfig = append(callOpts.UpdateSchemaConfig, gax.WithClientLogging(logging))
+		callOpts.DeleteSchemaConfig = append(callOpts.DeleteSchemaConfig, gax.WithClientLogging(logging))
+		callOpts.GetSchemaMode = append(callOpts.GetSchemaMode, gax.WithClientLogging(logging))
+		callOpts.UpdateSchemaMode = append(callOpts.UpdateSchemaMode, gax.WithClientLogging(logging))
+		callOpts.DeleteSchemaMode = append(callOpts.DeleteSchemaMode, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	return &ManagedSchemaRegistryClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -739,7 +1035,7 @@ func (c *managedSchemaRegistryRESTClient) setGoogleClientInfo(keyval ...string) 
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *managedSchemaRegistryRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -758,6 +1054,9 @@ func (c *managedSchemaRegistryGRPCClient) GetSchemaRegistry(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry/GetSchemaRegistry")
+	}
 	opts = append((*c.CallOptions).GetSchemaRegistry[0:len((*c.CallOptions).GetSchemaRegistry):len((*c.CallOptions).GetSchemaRegistry)], opts...)
 	var resp *schemaregistrypb.SchemaRegistry
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -776,6 +1075,9 @@ func (c *managedSchemaRegistryGRPCClient) ListSchemaRegistries(ctx context.Conte
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry/ListSchemaRegistries")
+	}
 	opts = append((*c.CallOptions).ListSchemaRegistries[0:len((*c.CallOptions).ListSchemaRegistries):len((*c.CallOptions).ListSchemaRegistries)], opts...)
 	var resp *schemaregistrypb.ListSchemaRegistriesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -794,6 +1096,9 @@ func (c *managedSchemaRegistryGRPCClient) CreateSchemaRegistry(ctx context.Conte
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry/CreateSchemaRegistry")
+	}
 	opts = append((*c.CallOptions).CreateSchemaRegistry[0:len((*c.CallOptions).CreateSchemaRegistry):len((*c.CallOptions).CreateSchemaRegistry)], opts...)
 	var resp *schemaregistrypb.SchemaRegistry
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -812,6 +1117,9 @@ func (c *managedSchemaRegistryGRPCClient) DeleteSchemaRegistry(ctx context.Conte
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry/DeleteSchemaRegistry")
+	}
 	opts = append((*c.CallOptions).DeleteSchemaRegistry[0:len((*c.CallOptions).DeleteSchemaRegistry):len((*c.CallOptions).DeleteSchemaRegistry)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -826,6 +1134,9 @@ func (c *managedSchemaRegistryGRPCClient) GetContext(ctx context.Context, req *s
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry/GetContext")
+	}
 	opts = append((*c.CallOptions).GetContext[0:len((*c.CallOptions).GetContext):len((*c.CallOptions).GetContext)], opts...)
 	var resp *schemaregistrypb.Context
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -844,6 +1155,9 @@ func (c *managedSchemaRegistryGRPCClient) ListContexts(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry/ListContexts")
+	}
 	opts = append((*c.CallOptions).ListContexts[0:len((*c.CallOptions).ListContexts):len((*c.CallOptions).ListContexts)], opts...)
 	var resp *httpbodypb.HttpBody
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -862,6 +1176,9 @@ func (c *managedSchemaRegistryGRPCClient) GetSchema(ctx context.Context, req *sc
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry/GetSchema")
+	}
 	opts = append((*c.CallOptions).GetSchema[0:len((*c.CallOptions).GetSchema):len((*c.CallOptions).GetSchema)], opts...)
 	var resp *schemaregistrypb.Schema
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -880,6 +1197,9 @@ func (c *managedSchemaRegistryGRPCClient) GetRawSchema(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry/GetRawSchema")
+	}
 	opts = append((*c.CallOptions).GetRawSchema[0:len((*c.CallOptions).GetRawSchema):len((*c.CallOptions).GetRawSchema)], opts...)
 	var resp *httpbodypb.HttpBody
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -898,6 +1218,9 @@ func (c *managedSchemaRegistryGRPCClient) ListSchemaVersions(ctx context.Context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry/ListSchemaVersions")
+	}
 	opts = append((*c.CallOptions).ListSchemaVersions[0:len((*c.CallOptions).ListSchemaVersions):len((*c.CallOptions).ListSchemaVersions)], opts...)
 	var resp *httpbodypb.HttpBody
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -916,6 +1239,9 @@ func (c *managedSchemaRegistryGRPCClient) ListSchemaTypes(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry/ListSchemaTypes")
+	}
 	opts = append((*c.CallOptions).ListSchemaTypes[0:len((*c.CallOptions).ListSchemaTypes):len((*c.CallOptions).ListSchemaTypes)], opts...)
 	var resp *httpbodypb.HttpBody
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -934,6 +1260,9 @@ func (c *managedSchemaRegistryGRPCClient) ListSubjects(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry/ListSubjects")
+	}
 	opts = append((*c.CallOptions).ListSubjects[0:len((*c.CallOptions).ListSubjects):len((*c.CallOptions).ListSubjects)], opts...)
 	var resp *httpbodypb.HttpBody
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -952,6 +1281,9 @@ func (c *managedSchemaRegistryGRPCClient) ListSubjectsBySchemaId(ctx context.Con
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry/ListSubjectsBySchemaId")
+	}
 	opts = append((*c.CallOptions).ListSubjectsBySchemaId[0:len((*c.CallOptions).ListSubjectsBySchemaId):len((*c.CallOptions).ListSubjectsBySchemaId)], opts...)
 	var resp *httpbodypb.HttpBody
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -970,6 +1302,9 @@ func (c *managedSchemaRegistryGRPCClient) DeleteSubject(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry/DeleteSubject")
+	}
 	opts = append((*c.CallOptions).DeleteSubject[0:len((*c.CallOptions).DeleteSubject):len((*c.CallOptions).DeleteSubject)], opts...)
 	var resp *httpbodypb.HttpBody
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -988,6 +1323,9 @@ func (c *managedSchemaRegistryGRPCClient) LookupVersion(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry/LookupVersion")
+	}
 	opts = append((*c.CallOptions).LookupVersion[0:len((*c.CallOptions).LookupVersion):len((*c.CallOptions).LookupVersion)], opts...)
 	var resp *schemaregistrypb.SchemaVersion
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1006,6 +1344,9 @@ func (c *managedSchemaRegistryGRPCClient) GetVersion(ctx context.Context, req *s
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry/GetVersion")
+	}
 	opts = append((*c.CallOptions).GetVersion[0:len((*c.CallOptions).GetVersion):len((*c.CallOptions).GetVersion)], opts...)
 	var resp *schemaregistrypb.SchemaVersion
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1024,6 +1365,9 @@ func (c *managedSchemaRegistryGRPCClient) GetRawSchemaVersion(ctx context.Contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry/GetRawSchemaVersion")
+	}
 	opts = append((*c.CallOptions).GetRawSchemaVersion[0:len((*c.CallOptions).GetRawSchemaVersion):len((*c.CallOptions).GetRawSchemaVersion)], opts...)
 	var resp *httpbodypb.HttpBody
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1042,6 +1386,9 @@ func (c *managedSchemaRegistryGRPCClient) ListVersions(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry/ListVersions")
+	}
 	opts = append((*c.CallOptions).ListVersions[0:len((*c.CallOptions).ListVersions):len((*c.CallOptions).ListVersions)], opts...)
 	var resp *httpbodypb.HttpBody
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1060,6 +1407,9 @@ func (c *managedSchemaRegistryGRPCClient) CreateVersion(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry/CreateVersion")
+	}
 	opts = append((*c.CallOptions).CreateVersion[0:len((*c.CallOptions).CreateVersion):len((*c.CallOptions).CreateVersion)], opts...)
 	var resp *schemaregistrypb.CreateVersionResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1078,6 +1428,9 @@ func (c *managedSchemaRegistryGRPCClient) DeleteVersion(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry/DeleteVersion")
+	}
 	opts = append((*c.CallOptions).DeleteVersion[0:len((*c.CallOptions).DeleteVersion):len((*c.CallOptions).DeleteVersion)], opts...)
 	var resp *httpbodypb.HttpBody
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1096,6 +1449,9 @@ func (c *managedSchemaRegistryGRPCClient) ListReferencedSchemas(ctx context.Cont
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry/ListReferencedSchemas")
+	}
 	opts = append((*c.CallOptions).ListReferencedSchemas[0:len((*c.CallOptions).ListReferencedSchemas):len((*c.CallOptions).ListReferencedSchemas)], opts...)
 	var resp *httpbodypb.HttpBody
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1114,6 +1470,9 @@ func (c *managedSchemaRegistryGRPCClient) CheckCompatibility(ctx context.Context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry/CheckCompatibility")
+	}
 	opts = append((*c.CallOptions).CheckCompatibility[0:len((*c.CallOptions).CheckCompatibility):len((*c.CallOptions).CheckCompatibility)], opts...)
 	var resp *schemaregistrypb.CheckCompatibilityResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1132,6 +1491,9 @@ func (c *managedSchemaRegistryGRPCClient) GetSchemaConfig(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry/GetSchemaConfig")
+	}
 	opts = append((*c.CallOptions).GetSchemaConfig[0:len((*c.CallOptions).GetSchemaConfig):len((*c.CallOptions).GetSchemaConfig)], opts...)
 	var resp *schemaregistrypb.SchemaConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1150,6 +1512,9 @@ func (c *managedSchemaRegistryGRPCClient) UpdateSchemaConfig(ctx context.Context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry/UpdateSchemaConfig")
+	}
 	opts = append((*c.CallOptions).UpdateSchemaConfig[0:len((*c.CallOptions).UpdateSchemaConfig):len((*c.CallOptions).UpdateSchemaConfig)], opts...)
 	var resp *schemaregistrypb.SchemaConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1168,6 +1533,9 @@ func (c *managedSchemaRegistryGRPCClient) DeleteSchemaConfig(ctx context.Context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry/DeleteSchemaConfig")
+	}
 	opts = append((*c.CallOptions).DeleteSchemaConfig[0:len((*c.CallOptions).DeleteSchemaConfig):len((*c.CallOptions).DeleteSchemaConfig)], opts...)
 	var resp *schemaregistrypb.SchemaConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1186,6 +1554,9 @@ func (c *managedSchemaRegistryGRPCClient) GetSchemaMode(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry/GetSchemaMode")
+	}
 	opts = append((*c.CallOptions).GetSchemaMode[0:len((*c.CallOptions).GetSchemaMode):len((*c.CallOptions).GetSchemaMode)], opts...)
 	var resp *schemaregistrypb.SchemaMode
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1204,6 +1575,9 @@ func (c *managedSchemaRegistryGRPCClient) UpdateSchemaMode(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry/UpdateSchemaMode")
+	}
 	opts = append((*c.CallOptions).UpdateSchemaMode[0:len((*c.CallOptions).UpdateSchemaMode):len((*c.CallOptions).UpdateSchemaMode)], opts...)
 	var resp *schemaregistrypb.SchemaMode
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1222,6 +1596,9 @@ func (c *managedSchemaRegistryGRPCClient) DeleteSchemaMode(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry/DeleteSchemaMode")
+	}
 	opts = append((*c.CallOptions).DeleteSchemaMode[0:len((*c.CallOptions).DeleteSchemaMode):len((*c.CallOptions).DeleteSchemaMode)], opts...)
 	var resp *schemaregistrypb.SchemaMode
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1240,6 +1617,9 @@ func (c *managedSchemaRegistryGRPCClient) GetLocation(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1258,9 +1638,12 @@ func (c *managedSchemaRegistryGRPCClient) ListLocations(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/ListLocations")
+	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1304,6 +1687,9 @@ func (c *managedSchemaRegistryGRPCClient) CancelOperation(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1318,6 +1704,9 @@ func (c *managedSchemaRegistryGRPCClient) DeleteOperation(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+	}
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1332,6 +1721,9 @@ func (c *managedSchemaRegistryGRPCClient) GetOperation(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1350,9 +1742,12 @@ func (c *managedSchemaRegistryGRPCClient) ListOperations(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1410,6 +1805,10 @@ func (c *managedSchemaRegistryRESTClient) GetSchemaRegistry(ctx context.Context,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry/GetSchemaRegistry")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/schemaRegistries/*}")
+	}
 	opts = append((*c.CallOptions).GetSchemaRegistry[0:len((*c.CallOptions).GetSchemaRegistry):len((*c.CallOptions).GetSchemaRegistry)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &schemaregistrypb.SchemaRegistry{}
@@ -1460,6 +1859,10 @@ func (c *managedSchemaRegistryRESTClient) ListSchemaRegistries(ctx context.Conte
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry/ListSchemaRegistries")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/schemaRegistries")
+	}
 	opts = append((*c.CallOptions).ListSchemaRegistries[0:len((*c.CallOptions).ListSchemaRegistries):len((*c.CallOptions).ListSchemaRegistries)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &schemaregistrypb.ListSchemaRegistriesResponse{}
@@ -1516,6 +1919,10 @@ func (c *managedSchemaRegistryRESTClient) CreateSchemaRegistry(ctx context.Conte
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry/CreateSchemaRegistry")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/schemaRegistries")
+	}
 	opts = append((*c.CallOptions).CreateSchemaRegistry[0:len((*c.CallOptions).CreateSchemaRegistry):len((*c.CallOptions).CreateSchemaRegistry)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &schemaregistrypb.SchemaRegistry{}
@@ -1566,6 +1973,10 @@ func (c *managedSchemaRegistryRESTClient) DeleteSchemaRegistry(ctx context.Conte
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry/DeleteSchemaRegistry")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/schemaRegistries/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1601,6 +2012,10 @@ func (c *managedSchemaRegistryRESTClient) GetContext(ctx context.Context, req *s
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry/GetContext")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/schemaRegistries/*/contexts/*}")
+	}
 	opts = append((*c.CallOptions).GetContext[0:len((*c.CallOptions).GetContext):len((*c.CallOptions).GetContext)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &schemaregistrypb.Context{}
@@ -1651,6 +2066,10 @@ func (c *managedSchemaRegistryRESTClient) ListContexts(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry/ListContexts")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/schemaRegistries/*}/contexts")
+	}
 	opts = append((*c.CallOptions).ListContexts[0:len((*c.CallOptions).ListContexts):len((*c.CallOptions).ListContexts)], opts...)
 	resp := &httpbodypb.HttpBody{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1704,6 +2123,10 @@ func (c *managedSchemaRegistryRESTClient) GetSchema(ctx context.Context, req *sc
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry/GetSchema")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/schemaRegistries/*/schemas/**}")
+	}
 	opts = append((*c.CallOptions).GetSchema[0:len((*c.CallOptions).GetSchema):len((*c.CallOptions).GetSchema)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &schemaregistrypb.Schema{}
@@ -1758,6 +2181,10 @@ func (c *managedSchemaRegistryRESTClient) GetRawSchema(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry/GetRawSchema")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/schemaRegistries/*/schemas/**}/schema")
+	}
 	opts = append((*c.CallOptions).GetRawSchema[0:len((*c.CallOptions).GetRawSchema):len((*c.CallOptions).GetRawSchema)], opts...)
 	resp := &httpbodypb.HttpBody{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1816,6 +2243,10 @@ func (c *managedSchemaRegistryRESTClient) ListSchemaVersions(ctx context.Context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry/ListSchemaVersions")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/schemaRegistries/*/schemas/**}/versions")
+	}
 	opts = append((*c.CallOptions).ListSchemaVersions[0:len((*c.CallOptions).ListSchemaVersions):len((*c.CallOptions).ListSchemaVersions)], opts...)
 	resp := &httpbodypb.HttpBody{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1867,6 +2298,10 @@ func (c *managedSchemaRegistryRESTClient) ListSchemaTypes(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry/ListSchemaTypes")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/schemaRegistries/*}/schemas/types")
+	}
 	opts = append((*c.CallOptions).ListSchemaTypes[0:len((*c.CallOptions).ListSchemaTypes):len((*c.CallOptions).ListSchemaTypes)], opts...)
 	resp := &httpbodypb.HttpBody{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1924,6 +2359,10 @@ func (c *managedSchemaRegistryRESTClient) ListSubjects(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry/ListSubjects")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/schemaRegistries/*}/subjects")
+	}
 	opts = append((*c.CallOptions).ListSubjects[0:len((*c.CallOptions).ListSubjects):len((*c.CallOptions).ListSubjects)], opts...)
 	resp := &httpbodypb.HttpBody{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1981,6 +2420,10 @@ func (c *managedSchemaRegistryRESTClient) ListSubjectsBySchemaId(ctx context.Con
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry/ListSubjectsBySchemaId")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/schemaRegistries/*/schemas/**}/subjects")
+	}
 	opts = append((*c.CallOptions).ListSubjectsBySchemaId[0:len((*c.CallOptions).ListSubjectsBySchemaId):len((*c.CallOptions).ListSubjectsBySchemaId)], opts...)
 	resp := &httpbodypb.HttpBody{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2035,6 +2478,10 @@ func (c *managedSchemaRegistryRESTClient) DeleteSubject(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry/DeleteSubject")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/schemaRegistries/*/subjects/*}")
+	}
 	opts = append((*c.CallOptions).DeleteSubject[0:len((*c.CallOptions).DeleteSubject):len((*c.CallOptions).DeleteSubject)], opts...)
 	resp := &httpbodypb.HttpBody{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2091,6 +2538,10 @@ func (c *managedSchemaRegistryRESTClient) LookupVersion(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry/LookupVersion")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/schemaRegistries/*/subjects/*}")
+	}
 	opts = append((*c.CallOptions).LookupVersion[0:len((*c.CallOptions).LookupVersion):len((*c.CallOptions).LookupVersion)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &schemaregistrypb.SchemaVersion{}
@@ -2144,6 +2595,10 @@ func (c *managedSchemaRegistryRESTClient) GetVersion(ctx context.Context, req *s
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry/GetVersion")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/schemaRegistries/*/subjects/*/versions/*}")
+	}
 	opts = append((*c.CallOptions).GetVersion[0:len((*c.CallOptions).GetVersion):len((*c.CallOptions).GetVersion)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &schemaregistrypb.SchemaVersion{}
@@ -2198,6 +2653,10 @@ func (c *managedSchemaRegistryRESTClient) GetRawSchemaVersion(ctx context.Contex
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry/GetRawSchemaVersion")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/schemaRegistries/*/subjects/*/versions/*}/schema")
+	}
 	opts = append((*c.CallOptions).GetRawSchemaVersion[0:len((*c.CallOptions).GetRawSchemaVersion):len((*c.CallOptions).GetRawSchemaVersion)], opts...)
 	resp := &httpbodypb.HttpBody{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2252,6 +2711,10 @@ func (c *managedSchemaRegistryRESTClient) ListVersions(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry/ListVersions")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/schemaRegistries/*/subjects/*}/versions")
+	}
 	opts = append((*c.CallOptions).ListVersions[0:len((*c.CallOptions).ListVersions):len((*c.CallOptions).ListVersions)], opts...)
 	resp := &httpbodypb.HttpBody{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2308,6 +2771,10 @@ func (c *managedSchemaRegistryRESTClient) CreateVersion(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry/CreateVersion")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/schemaRegistries/*/subjects/*}/versions")
+	}
 	opts = append((*c.CallOptions).CreateVersion[0:len((*c.CallOptions).CreateVersion):len((*c.CallOptions).CreateVersion)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &schemaregistrypb.CreateVersionResponse{}
@@ -2362,6 +2829,10 @@ func (c *managedSchemaRegistryRESTClient) DeleteVersion(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry/DeleteVersion")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/schemaRegistries/*/subjects/*/versions/*}")
+	}
 	opts = append((*c.CallOptions).DeleteVersion[0:len((*c.CallOptions).DeleteVersion):len((*c.CallOptions).DeleteVersion)], opts...)
 	resp := &httpbodypb.HttpBody{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2413,6 +2884,10 @@ func (c *managedSchemaRegistryRESTClient) ListReferencedSchemas(ctx context.Cont
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry/ListReferencedSchemas")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/schemaRegistries/*/subjects/*/versions/*}/referencedby")
+	}
 	opts = append((*c.CallOptions).ListReferencedSchemas[0:len((*c.CallOptions).ListReferencedSchemas):len((*c.CallOptions).ListReferencedSchemas)], opts...)
 	resp := &httpbodypb.HttpBody{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2470,6 +2945,10 @@ func (c *managedSchemaRegistryRESTClient) CheckCompatibility(ctx context.Context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry/CheckCompatibility")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/schemaRegistries/*/compatibility/**}")
+	}
 	opts = append((*c.CallOptions).CheckCompatibility[0:len((*c.CallOptions).CheckCompatibility):len((*c.CallOptions).CheckCompatibility)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &schemaregistrypb.CheckCompatibilityResponse{}
@@ -2523,6 +3002,10 @@ func (c *managedSchemaRegistryRESTClient) GetSchemaConfig(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry/GetSchemaConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/schemaRegistries/*/config/**}")
+	}
 	opts = append((*c.CallOptions).GetSchemaConfig[0:len((*c.CallOptions).GetSchemaConfig):len((*c.CallOptions).GetSchemaConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &schemaregistrypb.SchemaConfig{}
@@ -2580,6 +3063,10 @@ func (c *managedSchemaRegistryRESTClient) UpdateSchemaConfig(ctx context.Context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry/UpdateSchemaConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/schemaRegistries/*/config/**}")
+	}
 	opts = append((*c.CallOptions).UpdateSchemaConfig[0:len((*c.CallOptions).UpdateSchemaConfig):len((*c.CallOptions).UpdateSchemaConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &schemaregistrypb.SchemaConfig{}
@@ -2630,6 +3117,10 @@ func (c *managedSchemaRegistryRESTClient) DeleteSchemaConfig(ctx context.Context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry/DeleteSchemaConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/schemaRegistries/*/config/**}")
+	}
 	opts = append((*c.CallOptions).DeleteSchemaConfig[0:len((*c.CallOptions).DeleteSchemaConfig):len((*c.CallOptions).DeleteSchemaConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &schemaregistrypb.SchemaConfig{}
@@ -2680,6 +3171,10 @@ func (c *managedSchemaRegistryRESTClient) GetSchemaMode(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry/GetSchemaMode")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/schemaRegistries/*/mode/**}")
+	}
 	opts = append((*c.CallOptions).GetSchemaMode[0:len((*c.CallOptions).GetSchemaMode):len((*c.CallOptions).GetSchemaMode)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &schemaregistrypb.SchemaMode{}
@@ -2736,6 +3231,10 @@ func (c *managedSchemaRegistryRESTClient) UpdateSchemaMode(ctx context.Context, 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry/UpdateSchemaMode")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/schemaRegistries/*/mode/**}")
+	}
 	opts = append((*c.CallOptions).UpdateSchemaMode[0:len((*c.CallOptions).UpdateSchemaMode):len((*c.CallOptions).UpdateSchemaMode)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &schemaregistrypb.SchemaMode{}
@@ -2786,6 +3285,10 @@ func (c *managedSchemaRegistryRESTClient) DeleteSchemaMode(ctx context.Context, 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedkafka.schemaregistry.v1.ManagedSchemaRegistry/DeleteSchemaMode")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/schemaRegistries/*/mode/**}")
+	}
 	opts = append((*c.CallOptions).DeleteSchemaMode[0:len((*c.CallOptions).DeleteSchemaMode):len((*c.CallOptions).DeleteSchemaMode)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &schemaregistrypb.SchemaMode{}
@@ -2836,6 +3339,10 @@ func (c *managedSchemaRegistryRESTClient) GetLocation(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*}")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &locationpb.Location{}
@@ -2870,7 +3377,7 @@ func (c *managedSchemaRegistryRESTClient) GetLocation(ctx context.Context, req *
 // ListLocations lists information about the supported locations for this service.
 func (c *managedSchemaRegistryRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -2973,6 +3480,10 @@ func (c *managedSchemaRegistryRESTClient) CancelOperation(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -3008,6 +3519,10 @@ func (c *managedSchemaRegistryRESTClient) DeleteOperation(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -3043,6 +3558,10 @@ func (c *managedSchemaRegistryRESTClient) GetOperation(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -3077,7 +3596,7 @@ func (c *managedSchemaRegistryRESTClient) GetOperation(ctx context.Context, req 
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *managedSchemaRegistryRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
@@ -3105,6 +3624,9 @@ func (c *managedSchemaRegistryRESTClient) ListOperations(ctx context.Context, re
 		}
 		if req.GetPageToken() != "" {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req.GetReturnPartialSuccess() {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()

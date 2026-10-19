@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import (
 
 	computepb "cloud.google.com/go/compute/apiv1beta/computepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -87,7 +88,7 @@ func defaultAcceleratorTypesRESTCallOptions() *AcceleratorTypesCallOptions {
 	}
 }
 
-// internalAcceleratorTypesClient is an interface that defines the methods available from Google Compute Engine API.
+// internalAcceleratorTypesClient is an interface that defines the methods available from Compute Engine API.
 type internalAcceleratorTypesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -97,7 +98,7 @@ type internalAcceleratorTypesClient interface {
 	List(context.Context, *computepb.ListAcceleratorTypesRequest, ...gax.CallOption) *AcceleratorTypeIterator
 }
 
-// AcceleratorTypesClient is a client for interacting with Google Compute Engine API.
+// AcceleratorTypesClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // # Services
@@ -113,7 +114,7 @@ type AcceleratorTypesClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *AcceleratorTypesClient) Close() error {
 	return c.internalClient.Close()
@@ -134,7 +135,10 @@ func (c *AcceleratorTypesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves an aggregated list of accelerator types. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of accelerator types.
+//
+// To prevent failure, it is recommended that you set the
+// returnPartialSuccess parameter to true.
 func (c *AcceleratorTypesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListAcceleratorTypesRequest, opts ...gax.CallOption) *AcceleratorTypesScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -144,7 +148,8 @@ func (c *AcceleratorTypesClient) Get(ctx context.Context, req *computepb.GetAcce
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// List retrieves a list of accelerator types that are available to the specified project.
+// List retrieves a list of accelerator types that are available to the specified
+// project.
 func (c *AcceleratorTypesClient) List(ctx context.Context, req *computepb.ListAcceleratorTypesRequest, opts ...gax.CallOption) *AcceleratorTypeIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
@@ -173,6 +178,16 @@ type acceleratorTypesRESTClient struct {
 // The AcceleratorTypes API.
 func NewAcceleratorTypesRESTClient(ctx context.Context, opts ...option.ClientOption) (*AcceleratorTypesClient, error) {
 	clientOpts := append(defaultAcceleratorTypesRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "compute",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/compute/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "compute.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -186,6 +201,54 @@ func NewAcceleratorTypesRESTClient(ctx context.Context, opts ...option.ClientOpt
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientMetrics(metrics))
+		callOpts.Get = append(callOpts.Get, gax.WithClientMetrics(metrics))
+		callOpts.List = append(callOpts.List, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientTracing(tracing))
+		callOpts.Get = append(callOpts.Get, gax.WithClientTracing(tracing))
+		callOpts.List = append(callOpts.List, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientLogging(logging))
+		callOpts.Get = append(callOpts.Get, gax.WithClientLogging(logging))
+		callOpts.List = append(callOpts.List, gax.WithClientLogging(logging))
+	}
 
 	return &AcceleratorTypesClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -213,7 +276,7 @@ func (c *acceleratorTypesRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *acceleratorTypesRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -228,10 +291,13 @@ func (c *acceleratorTypesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves an aggregated list of accelerator types. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of accelerator types.
+//
+// To prevent failure, it is recommended that you set the
+// returnPartialSuccess parameter to true.
 func (c *acceleratorTypesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListAcceleratorTypesRequest, opts ...gax.CallOption) *AcceleratorTypesScopedListPairIterator {
 	it := &AcceleratorTypesScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListAcceleratorTypesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]AcceleratorTypesScopedListPair, string, error) {
 		resp := &computepb.AcceleratorTypeAggregatedList{}
@@ -341,6 +407,10 @@ func (c *acceleratorTypesRESTClient) Get(ctx context.Context, req *computepb.Get
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.AcceleratorTypes/Get")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/zones/{zone}/acceleratorTypes/{accelerator_type}")
+	}
 	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.AcceleratorType{}
@@ -372,10 +442,11 @@ func (c *acceleratorTypesRESTClient) Get(ctx context.Context, req *computepb.Get
 	return resp, nil
 }
 
-// List retrieves a list of accelerator types that are available to the specified project.
+// List retrieves a list of accelerator types that are available to the specified
+// project.
 func (c *acceleratorTypesRESTClient) List(ctx context.Context, req *computepb.ListAcceleratorTypesRequest, opts ...gax.CallOption) *AcceleratorTypeIterator {
 	it := &AcceleratorTypeIterator{}
-	req = proto.Clone(req).(*computepb.ListAcceleratorTypesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.AcceleratorType, string, error) {
 		resp := &computepb.AcceleratorTypeList{}

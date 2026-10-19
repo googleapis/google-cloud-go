@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import (
 
 	computepb "cloud.google.com/go/compute/apiv1beta/computepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -82,7 +83,7 @@ func defaultRegionInstanceTemplatesRESTCallOptions() *RegionInstanceTemplatesCal
 	}
 }
 
-// internalRegionInstanceTemplatesClient is an interface that defines the methods available from Google Compute Engine API.
+// internalRegionInstanceTemplatesClient is an interface that defines the methods available from Compute Engine API.
 type internalRegionInstanceTemplatesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -93,7 +94,7 @@ type internalRegionInstanceTemplatesClient interface {
 	List(context.Context, *computepb.ListRegionInstanceTemplatesRequest, ...gax.CallOption) *InstanceTemplateIterator
 }
 
-// RegionInstanceTemplatesClient is a client for interacting with Google Compute Engine API.
+// RegionInstanceTemplatesClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The RegionInstanceTemplates API.
@@ -107,7 +108,7 @@ type RegionInstanceTemplatesClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *RegionInstanceTemplatesClient) Close() error {
 	return c.internalClient.Close()
@@ -128,7 +129,8 @@ func (c *RegionInstanceTemplatesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// Delete deletes the specified instance template. Deleting an instance template is permanent and cannot be undone.
+// Delete deletes the specified instance template. Deleting an instance template is
+// permanent and cannot be undone.
 func (c *RegionInstanceTemplatesClient) Delete(ctx context.Context, req *computepb.DeleteRegionInstanceTemplateRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
@@ -138,12 +140,14 @@ func (c *RegionInstanceTemplatesClient) Get(ctx context.Context, req *computepb.
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// Insert creates an instance template in the specified project and region using the global instance template whose URL is included in the request.
+// Insert creates an instance template in the specified project and region using the
+// global instance template whose URL is included in the request.
 func (c *RegionInstanceTemplatesClient) Insert(ctx context.Context, req *computepb.InsertRegionInstanceTemplateRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves a list of instance templates that are contained within the specified project and region.
+// List retrieves a list of instance templates that are contained within the
+// specified project and region.
 func (c *RegionInstanceTemplatesClient) List(ctx context.Context, req *computepb.ListRegionInstanceTemplatesRequest, opts ...gax.CallOption) *InstanceTemplateIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
@@ -173,6 +177,16 @@ type regionInstanceTemplatesRESTClient struct {
 // The RegionInstanceTemplates API.
 func NewRegionInstanceTemplatesRESTClient(ctx context.Context, opts ...option.ClientOption) (*RegionInstanceTemplatesClient, error) {
 	clientOpts := append(defaultRegionInstanceTemplatesRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "compute",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/compute/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "compute.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -186,6 +200,57 @@ func NewRegionInstanceTemplatesRESTClient(ctx context.Context, opts ...option.Cl
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientMetrics(metrics))
+		callOpts.Get = append(callOpts.Get, gax.WithClientMetrics(metrics))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientMetrics(metrics))
+		callOpts.List = append(callOpts.List, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientTracing(tracing))
+		callOpts.Get = append(callOpts.Get, gax.WithClientTracing(tracing))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientTracing(tracing))
+		callOpts.List = append(callOpts.List, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientLogging(logging))
+		callOpts.Get = append(callOpts.Get, gax.WithClientLogging(logging))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientLogging(logging))
+		callOpts.List = append(callOpts.List, gax.WithClientLogging(logging))
+	}
 
 	o := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -223,7 +288,7 @@ func (c *regionInstanceTemplatesRESTClient) setGoogleClientInfo(keyval ...string
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *regionInstanceTemplatesRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -241,7 +306,8 @@ func (c *regionInstanceTemplatesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// Delete deletes the specified instance template. Deleting an instance template is permanent and cannot be undone.
+// Delete deletes the specified instance template. Deleting an instance template is
+// permanent and cannot be undone.
 func (c *regionInstanceTemplatesRESTClient) Delete(ctx context.Context, req *computepb.DeleteRegionInstanceTemplateRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -262,6 +328,10 @@ func (c *regionInstanceTemplatesRESTClient) Delete(ctx context.Context, req *com
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.RegionInstanceTemplates/Delete")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/instanceTemplates/{instance_template}")
+	}
 	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -322,6 +392,10 @@ func (c *regionInstanceTemplatesRESTClient) Get(ctx context.Context, req *comput
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.RegionInstanceTemplates/Get")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/instanceTemplates/{instance_template}")
+	}
 	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.InstanceTemplate{}
@@ -353,7 +427,8 @@ func (c *regionInstanceTemplatesRESTClient) Get(ctx context.Context, req *comput
 	return resp, nil
 }
 
-// Insert creates an instance template in the specified project and region using the global instance template whose URL is included in the request.
+// Insert creates an instance template in the specified project and region using the
+// global instance template whose URL is included in the request.
 func (c *regionInstanceTemplatesRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionInstanceTemplateRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceTemplateResource()
@@ -381,6 +456,10 @@ func (c *regionInstanceTemplatesRESTClient) Insert(ctx context.Context, req *com
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.RegionInstanceTemplates/Insert")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/instanceTemplates")
+	}
 	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -420,10 +499,11 @@ func (c *regionInstanceTemplatesRESTClient) Insert(ctx context.Context, req *com
 	return op, nil
 }
 
-// List retrieves a list of instance templates that are contained within the specified project and region.
+// List retrieves a list of instance templates that are contained within the
+// specified project and region.
 func (c *regionInstanceTemplatesRESTClient) List(ctx context.Context, req *computepb.ListRegionInstanceTemplatesRequest, opts ...gax.CallOption) *InstanceTemplateIterator {
 	it := &InstanceTemplateIterator{}
-	req = proto.Clone(req).(*computepb.ListRegionInstanceTemplatesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.InstanceTemplate, string, error) {
 		resp := &computepb.InstanceTemplateList{}

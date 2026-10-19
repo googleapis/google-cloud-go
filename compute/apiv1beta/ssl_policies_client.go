@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import (
 
 	computepb "cloud.google.com/go/compute/apiv1beta/computepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -45,10 +46,12 @@ type SslPoliciesCallOptions struct {
 	AggregatedList        []gax.CallOption
 	Delete                []gax.CallOption
 	Get                   []gax.CallOption
+	GetIamPolicy          []gax.CallOption
 	Insert                []gax.CallOption
 	List                  []gax.CallOption
 	ListAvailableFeatures []gax.CallOption
 	Patch                 []gax.CallOption
+	SetIamPolicy          []gax.CallOption
 	TestIamPermissions    []gax.CallOption
 }
 
@@ -70,6 +73,18 @@ func defaultSslPoliciesRESTCallOptions() *SslPoliciesCallOptions {
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
 		Get: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetIamPolicy: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
@@ -111,13 +126,16 @@ func defaultSslPoliciesRESTCallOptions() *SslPoliciesCallOptions {
 		Patch: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
+		SetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		TestIamPermissions: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
 	}
 }
 
-// internalSslPoliciesClient is an interface that defines the methods available from Google Compute Engine API.
+// internalSslPoliciesClient is an interface that defines the methods available from Compute Engine API.
 type internalSslPoliciesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -125,14 +143,16 @@ type internalSslPoliciesClient interface {
 	AggregatedList(context.Context, *computepb.AggregatedListSslPoliciesRequest, ...gax.CallOption) *SslPoliciesScopedListPairIterator
 	Delete(context.Context, *computepb.DeleteSslPolicyRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetSslPolicyRequest, ...gax.CallOption) (*computepb.SslPolicy, error)
+	GetIamPolicy(context.Context, *computepb.GetIamPolicySslPolicyRequest, ...gax.CallOption) (*computepb.Policy, error)
 	Insert(context.Context, *computepb.InsertSslPolicyRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListSslPoliciesRequest, ...gax.CallOption) *SslPolicyIterator
 	ListAvailableFeatures(context.Context, *computepb.ListAvailableFeaturesSslPoliciesRequest, ...gax.CallOption) (*computepb.SslPoliciesListAvailableFeaturesResponse, error)
 	Patch(context.Context, *computepb.PatchSslPolicyRequest, ...gax.CallOption) (*Operation, error)
+	SetIamPolicy(context.Context, *computepb.SetIamPolicySslPolicyRequest, ...gax.CallOption) (*computepb.Policy, error)
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsSslPolicyRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 }
 
-// SslPoliciesClient is a client for interacting with Google Compute Engine API.
+// SslPoliciesClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The SslPolicies API.
@@ -146,7 +166,7 @@ type SslPoliciesClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *SslPoliciesClient) Close() error {
 	return c.internalClient.Close()
@@ -167,12 +187,18 @@ func (c *SslPoliciesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves the list of all SslPolicy resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves the list of all SslPolicy resources, regional and global,
+// available to the specified project.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *SslPoliciesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListSslPoliciesRequest, opts ...gax.CallOption) *SslPoliciesScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
 
-// Delete deletes the specified SSL policy. The SSL policy resource can be deleted only if it is not in use by any TargetHttpsProxy or TargetSslProxy resources.
+// Delete deletes the specified SSL policy. The SSL policy resource can be deleted
+// only if it is not in use by any TargetHttpsProxy or TargetSslProxy
+// resources.
 func (c *SslPoliciesClient) Delete(ctx context.Context, req *computepb.DeleteSslPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
@@ -182,17 +208,25 @@ func (c *SslPoliciesClient) Get(ctx context.Context, req *computepb.GetSslPolicy
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such
+// policy or resource exists.
+func (c *SslPoliciesClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicySslPolicyRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
+	return c.internalClient.GetIamPolicy(ctx, req, opts...)
+}
+
 // Insert returns the specified SSL policy resource.
 func (c *SslPoliciesClient) Insert(ctx context.Context, req *computepb.InsertSslPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List lists all the SSL policies that have been configured for the specified project.
+// List lists all the SSL policies that have been configured for the specified
+// project.
 func (c *SslPoliciesClient) List(ctx context.Context, req *computepb.ListSslPoliciesRequest, opts ...gax.CallOption) *SslPolicyIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// ListAvailableFeatures lists all features that can be specified in the SSL policy when using custom profile.
+// ListAvailableFeatures lists all features that can be specified in the SSL policy when using
+// custom profile.
 func (c *SslPoliciesClient) ListAvailableFeatures(ctx context.Context, req *computepb.ListAvailableFeaturesSslPoliciesRequest, opts ...gax.CallOption) (*computepb.SslPoliciesListAvailableFeaturesResponse, error) {
 	return c.internalClient.ListAvailableFeatures(ctx, req, opts...)
 }
@@ -200,6 +234,12 @@ func (c *SslPoliciesClient) ListAvailableFeatures(ctx context.Context, req *comp
 // Patch patches the specified SSL policy with the data included in the request.
 func (c *SslPoliciesClient) Patch(ctx context.Context, req *computepb.PatchSslPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
+}
+
+// SetIamPolicy sets the access control policy on the specified resource.
+// Replaces any existing policy.
+func (c *SslPoliciesClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicySslPolicyRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
+	return c.internalClient.SetIamPolicy(ctx, req, opts...)
 }
 
 // TestIamPermissions returns permissions that a caller has on the specified resource.
@@ -232,6 +272,16 @@ type sslPoliciesRESTClient struct {
 // The SslPolicies API.
 func NewSslPoliciesRESTClient(ctx context.Context, opts ...option.ClientOption) (*SslPoliciesClient, error) {
 	clientOpts := append(defaultSslPoliciesRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "compute",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/compute/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "compute.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -245,6 +295,75 @@ func NewSslPoliciesRESTClient(ctx context.Context, opts ...option.ClientOption) 
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientMetrics(metrics))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientMetrics(metrics))
+		callOpts.Get = append(callOpts.Get, gax.WithClientMetrics(metrics))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientMetrics(metrics))
+		callOpts.List = append(callOpts.List, gax.WithClientMetrics(metrics))
+		callOpts.ListAvailableFeatures = append(callOpts.ListAvailableFeatures, gax.WithClientMetrics(metrics))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientMetrics(metrics))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientTracing(tracing))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientTracing(tracing))
+		callOpts.Get = append(callOpts.Get, gax.WithClientTracing(tracing))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientTracing(tracing))
+		callOpts.List = append(callOpts.List, gax.WithClientTracing(tracing))
+		callOpts.ListAvailableFeatures = append(callOpts.ListAvailableFeatures, gax.WithClientTracing(tracing))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientTracing(tracing))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientLogging(logging))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientLogging(logging))
+		callOpts.Get = append(callOpts.Get, gax.WithClientLogging(logging))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientLogging(logging))
+		callOpts.List = append(callOpts.List, gax.WithClientLogging(logging))
+		callOpts.ListAvailableFeatures = append(callOpts.ListAvailableFeatures, gax.WithClientLogging(logging))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientLogging(logging))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientLogging(logging))
+	}
 
 	o := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -282,7 +401,7 @@ func (c *sslPoliciesRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *sslPoliciesRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -300,10 +419,14 @@ func (c *sslPoliciesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves the list of all SslPolicy resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves the list of all SslPolicy resources, regional and global,
+// available to the specified project.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *sslPoliciesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListSslPoliciesRequest, opts ...gax.CallOption) *SslPoliciesScopedListPairIterator {
 	it := &SslPoliciesScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListSslPoliciesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]SslPoliciesScopedListPair, string, error) {
 		resp := &computepb.SslPoliciesAggregatedList{}
@@ -399,7 +522,9 @@ func (c *sslPoliciesRESTClient) AggregatedList(ctx context.Context, req *compute
 	return it
 }
 
-// Delete deletes the specified SSL policy. The SSL policy resource can be deleted only if it is not in use by any TargetHttpsProxy or TargetSslProxy resources.
+// Delete deletes the specified SSL policy. The SSL policy resource can be deleted
+// only if it is not in use by any TargetHttpsProxy or TargetSslProxy
+// resources.
 func (c *sslPoliciesRESTClient) Delete(ctx context.Context, req *computepb.DeleteSslPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -420,6 +545,10 @@ func (c *sslPoliciesRESTClient) Delete(ctx context.Context, req *computepb.Delet
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.SslPolicies/Delete")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/global/sslPolicies/{ssl_policy}")
+	}
 	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -472,6 +601,10 @@ func (c *sslPoliciesRESTClient) Get(ctx context.Context, req *computepb.GetSslPo
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.SslPolicies/Get")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/global/sslPolicies/{ssl_policy}")
+	}
 	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.SslPolicy{}
@@ -487,6 +620,63 @@ func (c *sslPoliciesRESTClient) Get(ctx context.Context, req *computepb.GetSslPo
 		httpReq.Header = headers
 
 		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "Get")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such
+// policy or resource exists.
+func (c *sslPoliciesRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicySslPolicyRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/sslPolicies/%v/getIamPolicy", req.GetProject(), req.GetResource())
+
+	params := url.Values{}
+	if req != nil && req.OptionsRequestedPolicyVersion != nil {
+		params.Add("optionsRequestedPolicyVersion", fmt.Sprintf("%v", req.GetOptionsRequestedPolicyVersion()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.SslPolicies/GetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/global/sslPolicies/{resource}/getIamPolicy")
+	}
+	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Policy{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetIamPolicy")
 		if err != nil {
 			return err
 		}
@@ -531,6 +721,10 @@ func (c *sslPoliciesRESTClient) Insert(ctx context.Context, req *computepb.Inser
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.SslPolicies/Insert")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/global/sslPolicies")
+	}
 	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -569,10 +763,11 @@ func (c *sslPoliciesRESTClient) Insert(ctx context.Context, req *computepb.Inser
 	return op, nil
 }
 
-// List lists all the SSL policies that have been configured for the specified project.
+// List lists all the SSL policies that have been configured for the specified
+// project.
 func (c *sslPoliciesRESTClient) List(ctx context.Context, req *computepb.ListSslPoliciesRequest, opts ...gax.CallOption) *SslPolicyIterator {
 	it := &SslPolicyIterator{}
-	req = proto.Clone(req).(*computepb.ListSslPoliciesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.SslPolicy, string, error) {
 		resp := &computepb.SslPoliciesList{}
@@ -655,7 +850,8 @@ func (c *sslPoliciesRESTClient) List(ctx context.Context, req *computepb.ListSsl
 	return it
 }
 
-// ListAvailableFeatures lists all features that can be specified in the SSL policy when using custom profile.
+// ListAvailableFeatures lists all features that can be specified in the SSL policy when using
+// custom profile.
 func (c *sslPoliciesRESTClient) ListAvailableFeatures(ctx context.Context, req *computepb.ListAvailableFeaturesSslPoliciesRequest, opts ...gax.CallOption) (*computepb.SslPoliciesListAvailableFeaturesResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -688,6 +884,10 @@ func (c *sslPoliciesRESTClient) ListAvailableFeatures(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.SslPolicies/ListAvailableFeatures")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/global/sslPolicies/listAvailableFeatures")
+	}
 	opts = append((*c.CallOptions).ListAvailableFeatures[0:len((*c.CallOptions).ListAvailableFeatures):len((*c.CallOptions).ListAvailableFeatures)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.SslPoliciesListAvailableFeaturesResponse{}
@@ -747,6 +947,10 @@ func (c *sslPoliciesRESTClient) Patch(ctx context.Context, req *computepb.PatchS
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.SslPolicies/Patch")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/global/sslPolicies/{ssl_policy}")
+	}
 	opts = append((*c.CallOptions).Patch[0:len((*c.CallOptions).Patch):len((*c.CallOptions).Patch)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -785,6 +989,63 @@ func (c *sslPoliciesRESTClient) Patch(ctx context.Context, req *computepb.PatchS
 	return op, nil
 }
 
+// SetIamPolicy sets the access control policy on the specified resource.
+// Replaces any existing policy.
+func (c *sslPoliciesRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicySslPolicyRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetGlobalSetPolicyRequestResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/global/sslPolicies/%v/setIamPolicy", req.GetProject(), req.GetResource())
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.SslPolicies/SetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/global/sslPolicies/{resource}/setIamPolicy")
+	}
+	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Policy{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetIamPolicy")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // TestIamPermissions returns permissions that a caller has on the specified resource.
 func (c *sslPoliciesRESTClient) TestIamPermissions(ctx context.Context, req *computepb.TestIamPermissionsSslPolicyRequest, opts ...gax.CallOption) (*computepb.TestPermissionsResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
@@ -806,6 +1067,10 @@ func (c *sslPoliciesRESTClient) TestIamPermissions(ctx context.Context, req *com
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.SslPolicies/TestIamPermissions")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/global/sslPolicies/{resource}/testIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.TestPermissionsResponse{}

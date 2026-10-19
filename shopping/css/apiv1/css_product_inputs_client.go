@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import (
 
 	csspb "cloud.google.com/go/shopping/css/apiv1/csspb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -113,7 +114,7 @@ type CssProductInputsClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *CssProductInputsClient) Close() error {
 	return c.internalClient.Close()
@@ -186,6 +187,16 @@ type cssProductInputsGRPCClient struct {
 // This service helps to insert/update/delete CSS Products.
 func NewCssProductInputsClient(ctx context.Context, opts ...option.ClientOption) (*CssProductInputsClient, error) {
 	clientOpts := defaultCssProductInputsGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "css",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/css/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "css.googleapis.com",
+		}))
+	}
 	if newCssProductInputsClientHook != nil {
 		hookOpts, err := newCssProductInputsClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -207,6 +218,53 @@ func NewCssProductInputsClient(ctx context.Context, opts ...option.ClientOption)
 		logger:                 internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "css",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/css/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "css.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.InsertCssProductInput = append(client.CallOptions.InsertCssProductInput, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateCssProductInput = append(client.CallOptions.UpdateCssProductInput, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteCssProductInput = append(client.CallOptions.DeleteCssProductInput, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "css",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/css/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "css.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.InsertCssProductInput = append(client.CallOptions.InsertCssProductInput, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateCssProductInput = append(client.CallOptions.UpdateCssProductInput, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteCssProductInput = append(client.CallOptions.DeleteCssProductInput, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "css",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/css/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "css.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.InsertCssProductInput = append(client.CallOptions.InsertCssProductInput, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateCssProductInput = append(client.CallOptions.UpdateCssProductInput, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteCssProductInput = append(client.CallOptions.DeleteCssProductInput, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -232,7 +290,7 @@ func (c *cssProductInputsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *cssProductInputsGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -261,6 +319,16 @@ type cssProductInputsRESTClient struct {
 // This service helps to insert/update/delete CSS Products.
 func NewCssProductInputsRESTClient(ctx context.Context, opts ...option.ClientOption) (*CssProductInputsClient, error) {
 	clientOpts := append(defaultCssProductInputsRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "css",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/css/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "css.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -274,6 +342,54 @@ func NewCssProductInputsRESTClient(ctx context.Context, opts ...option.ClientOpt
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "css",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/css/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "css.googleapis.com",
+			}),
+		)
+
+		callOpts.InsertCssProductInput = append(callOpts.InsertCssProductInput, gax.WithClientMetrics(metrics))
+		callOpts.UpdateCssProductInput = append(callOpts.UpdateCssProductInput, gax.WithClientMetrics(metrics))
+		callOpts.DeleteCssProductInput = append(callOpts.DeleteCssProductInput, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "css",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/css/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "css.googleapis.com",
+			}),
+		)
+
+		callOpts.InsertCssProductInput = append(callOpts.InsertCssProductInput, gax.WithClientTracing(tracing))
+		callOpts.UpdateCssProductInput = append(callOpts.UpdateCssProductInput, gax.WithClientTracing(tracing))
+		callOpts.DeleteCssProductInput = append(callOpts.DeleteCssProductInput, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "css",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/css/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "css.googleapis.com",
+			}),
+		)
+
+		callOpts.InsertCssProductInput = append(callOpts.InsertCssProductInput, gax.WithClientLogging(logging))
+		callOpts.UpdateCssProductInput = append(callOpts.UpdateCssProductInput, gax.WithClientLogging(logging))
+		callOpts.DeleteCssProductInput = append(callOpts.DeleteCssProductInput, gax.WithClientLogging(logging))
+	}
 
 	return &CssProductInputsClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -301,7 +417,7 @@ func (c *cssProductInputsRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *cssProductInputsRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -320,6 +436,9 @@ func (c *cssProductInputsGRPCClient) InsertCssProductInput(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.css.v1.CssProductInputsService/InsertCssProductInput")
+	}
 	opts = append((*c.CallOptions).InsertCssProductInput[0:len((*c.CallOptions).InsertCssProductInput):len((*c.CallOptions).InsertCssProductInput)], opts...)
 	var resp *csspb.CssProductInput
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -338,6 +457,9 @@ func (c *cssProductInputsGRPCClient) UpdateCssProductInput(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.css.v1.CssProductInputsService/UpdateCssProductInput")
+	}
 	opts = append((*c.CallOptions).UpdateCssProductInput[0:len((*c.CallOptions).UpdateCssProductInput):len((*c.CallOptions).UpdateCssProductInput)], opts...)
 	var resp *csspb.CssProductInput
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -356,6 +478,9 @@ func (c *cssProductInputsGRPCClient) DeleteCssProductInput(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.css.v1.CssProductInputsService/DeleteCssProductInput")
+	}
 	opts = append((*c.CallOptions).DeleteCssProductInput[0:len((*c.CallOptions).DeleteCssProductInput):len((*c.CallOptions).DeleteCssProductInput)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -399,6 +524,10 @@ func (c *cssProductInputsRESTClient) InsertCssProductInput(ctx context.Context, 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.css.v1.CssProductInputsService/InsertCssProductInput")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=accounts/*}/cssProductInputs:insert")
+	}
 	opts = append((*c.CallOptions).InsertCssProductInput[0:len((*c.CallOptions).InsertCssProductInput):len((*c.CallOptions).InsertCssProductInput)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &csspb.CssProductInput{}
@@ -466,6 +595,10 @@ func (c *cssProductInputsRESTClient) UpdateCssProductInput(ctx context.Context, 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.css.v1.CssProductInputsService/UpdateCssProductInput")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{css_product_input.name=accounts/*/cssProductInputs/*}")
+	}
 	opts = append((*c.CallOptions).UpdateCssProductInput[0:len((*c.CallOptions).UpdateCssProductInput):len((*c.CallOptions).UpdateCssProductInput)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &csspb.CssProductInput{}
@@ -522,6 +655,10 @@ func (c *cssProductInputsRESTClient) DeleteCssProductInput(ctx context.Context, 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.css.v1.CssProductInputsService/DeleteCssProductInput")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=accounts/*/cssProductInputs/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path

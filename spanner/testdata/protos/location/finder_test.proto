@@ -1,0 +1,56 @@
+// Copyright 2026 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+package spanner.cloud.location;
+
+import "google/spanner/v1/location.proto";
+import "google/spanner/v1/spanner.proto";
+
+option java_multiple_files = true;
+
+message FinderTestCase {
+  string name = 1;
+  message Event {
+    // Name for the event, for diagnostic purposes.
+    string name = 1;
+
+    // A cache update that should be applied to the `Finder` before calling
+    // `FindServer`.
+    google.spanner.v1.CacheUpdate cache_update = 2;
+
+    // During `FindServer`, servers in the `unhealthy_servers` list should
+    // report false to `Server::IsHealthy`.
+    repeated string unhealthy_servers = 3;
+
+    // The argument to pass to `FindServer`
+    oneof request {
+      google.spanner.v1.ReadRequest read = 4;
+      google.spanner.v1.ExecuteSqlRequest sql = 5;
+    }
+
+    // The server that `FindServer` should return. If empty, `FindServer`
+    // should return null.
+    string server = 6;
+
+    // The routing hint that should be filled in by `FindServer`.
+    google.spanner.v1.RoutingHint hint = 7;
+  }
+  repeated Event event = 2;
+}
+
+message FinderTestCases {
+  repeated FinderTestCase test_case = 2;
+}

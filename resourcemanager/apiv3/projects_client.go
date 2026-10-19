@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -32,6 +32,8 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	resourcemanagerpb "cloud.google.com/go/resourcemanager/apiv3/resourcemanagerpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -70,6 +72,7 @@ func defaultProjectsGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://cloudresourcemanager.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.AllowHardBoundTokens("MTLS_S2A"),
 		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -244,7 +247,7 @@ type ProjectsClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *ProjectsClient) Close() error {
 	return c.internalClient.Close()
@@ -510,6 +513,16 @@ type projectsGRPCClient struct {
 // Manages Google Cloud Projects.
 func NewProjectsClient(ctx context.Context, opts ...option.ClientOption) (*ProjectsClient, error) {
 	clientOpts := defaultProjectsGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "cloudresourcemanager",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/resourcemanager/apiv3",
+			"gcp.client.language": "go",
+			"url.domain":          "cloudresourcemanager.googleapis.com",
+		}))
+	}
 	if newProjectsClientHook != nil {
 		hookOpts, err := newProjectsClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -532,6 +545,80 @@ func NewProjectsClient(ctx context.Context, opts ...option.ClientOption) (*Proje
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "cloudresourcemanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/resourcemanager/apiv3",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudresourcemanager.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetProject = append(client.CallOptions.GetProject, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListProjects = append(client.CallOptions.ListProjects, gax.WithClientMetrics(metrics))
+		client.CallOptions.SearchProjects = append(client.CallOptions.SearchProjects, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateProject = append(client.CallOptions.CreateProject, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateProject = append(client.CallOptions.UpdateProject, gax.WithClientMetrics(metrics))
+		client.CallOptions.MoveProject = append(client.CallOptions.MoveProject, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteProject = append(client.CallOptions.DeleteProject, gax.WithClientMetrics(metrics))
+		client.CallOptions.UndeleteProject = append(client.CallOptions.UndeleteProject, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudresourcemanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/resourcemanager/apiv3",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudresourcemanager.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetProject = append(client.CallOptions.GetProject, gax.WithClientTracing(tracing))
+		client.CallOptions.ListProjects = append(client.CallOptions.ListProjects, gax.WithClientTracing(tracing))
+		client.CallOptions.SearchProjects = append(client.CallOptions.SearchProjects, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateProject = append(client.CallOptions.CreateProject, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateProject = append(client.CallOptions.UpdateProject, gax.WithClientTracing(tracing))
+		client.CallOptions.MoveProject = append(client.CallOptions.MoveProject, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteProject = append(client.CallOptions.DeleteProject, gax.WithClientTracing(tracing))
+		client.CallOptions.UndeleteProject = append(client.CallOptions.UndeleteProject, gax.WithClientTracing(tracing))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudresourcemanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/resourcemanager/apiv3",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudresourcemanager.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetProject = append(client.CallOptions.GetProject, gax.WithClientLogging(logging))
+		client.CallOptions.ListProjects = append(client.CallOptions.ListProjects, gax.WithClientLogging(logging))
+		client.CallOptions.SearchProjects = append(client.CallOptions.SearchProjects, gax.WithClientLogging(logging))
+		client.CallOptions.CreateProject = append(client.CallOptions.CreateProject, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateProject = append(client.CallOptions.UpdateProject, gax.WithClientLogging(logging))
+		client.CallOptions.MoveProject = append(client.CallOptions.MoveProject, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteProject = append(client.CallOptions.DeleteProject, gax.WithClientLogging(logging))
+		client.CallOptions.UndeleteProject = append(client.CallOptions.UndeleteProject, gax.WithClientLogging(logging))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -568,7 +655,7 @@ func (c *projectsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *projectsGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -601,6 +688,16 @@ type projectsRESTClient struct {
 // Manages Google Cloud Projects.
 func NewProjectsRESTClient(ctx context.Context, opts ...option.ClientOption) (*ProjectsClient, error) {
 	clientOpts := append(defaultProjectsRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "cloudresourcemanager",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/resourcemanager/apiv3",
+			"gcp.client.language": "go",
+			"url.domain":          "cloudresourcemanager.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -614,6 +711,81 @@ func NewProjectsRESTClient(ctx context.Context, opts ...option.ClientOption) (*P
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "cloudresourcemanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/resourcemanager/apiv3",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudresourcemanager.googleapis.com",
+			}),
+		)
+
+		callOpts.GetProject = append(callOpts.GetProject, gax.WithClientMetrics(metrics))
+		callOpts.ListProjects = append(callOpts.ListProjects, gax.WithClientMetrics(metrics))
+		callOpts.SearchProjects = append(callOpts.SearchProjects, gax.WithClientMetrics(metrics))
+		callOpts.CreateProject = append(callOpts.CreateProject, gax.WithClientMetrics(metrics))
+		callOpts.UpdateProject = append(callOpts.UpdateProject, gax.WithClientMetrics(metrics))
+		callOpts.MoveProject = append(callOpts.MoveProject, gax.WithClientMetrics(metrics))
+		callOpts.DeleteProject = append(callOpts.DeleteProject, gax.WithClientMetrics(metrics))
+		callOpts.UndeleteProject = append(callOpts.UndeleteProject, gax.WithClientMetrics(metrics))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudresourcemanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/resourcemanager/apiv3",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudresourcemanager.googleapis.com",
+			}),
+		)
+
+		callOpts.GetProject = append(callOpts.GetProject, gax.WithClientTracing(tracing))
+		callOpts.ListProjects = append(callOpts.ListProjects, gax.WithClientTracing(tracing))
+		callOpts.SearchProjects = append(callOpts.SearchProjects, gax.WithClientTracing(tracing))
+		callOpts.CreateProject = append(callOpts.CreateProject, gax.WithClientTracing(tracing))
+		callOpts.UpdateProject = append(callOpts.UpdateProject, gax.WithClientTracing(tracing))
+		callOpts.MoveProject = append(callOpts.MoveProject, gax.WithClientTracing(tracing))
+		callOpts.DeleteProject = append(callOpts.DeleteProject, gax.WithClientTracing(tracing))
+		callOpts.UndeleteProject = append(callOpts.UndeleteProject, gax.WithClientTracing(tracing))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudresourcemanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/resourcemanager/apiv3",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudresourcemanager.googleapis.com",
+			}),
+		)
+
+		callOpts.GetProject = append(callOpts.GetProject, gax.WithClientLogging(logging))
+		callOpts.ListProjects = append(callOpts.ListProjects, gax.WithClientLogging(logging))
+		callOpts.SearchProjects = append(callOpts.SearchProjects, gax.WithClientLogging(logging))
+		callOpts.CreateProject = append(callOpts.CreateProject, gax.WithClientLogging(logging))
+		callOpts.UpdateProject = append(callOpts.UpdateProject, gax.WithClientLogging(logging))
+		callOpts.MoveProject = append(callOpts.MoveProject, gax.WithClientLogging(logging))
+		callOpts.DeleteProject = append(callOpts.DeleteProject, gax.WithClientLogging(logging))
+		callOpts.UndeleteProject = append(callOpts.UndeleteProject, gax.WithClientLogging(logging))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -651,7 +823,7 @@ func (c *projectsRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *projectsRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -670,6 +842,9 @@ func (c *projectsGRPCClient) GetProject(ctx context.Context, req *resourcemanage
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.Projects/GetProject")
+	}
 	opts = append((*c.CallOptions).GetProject[0:len((*c.CallOptions).GetProject):len((*c.CallOptions).GetProject)], opts...)
 	var resp *resourcemanagerpb.Project
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -685,9 +860,12 @@ func (c *projectsGRPCClient) GetProject(ctx context.Context, req *resourcemanage
 
 func (c *projectsGRPCClient) ListProjects(ctx context.Context, req *resourcemanagerpb.ListProjectsRequest, opts ...gax.CallOption) *ProjectIterator {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.Projects/ListProjects")
+	}
 	opts = append((*c.CallOptions).ListProjects[0:len((*c.CallOptions).ListProjects):len((*c.CallOptions).ListProjects)], opts...)
 	it := &ProjectIterator{}
-	req = proto.Clone(req).(*resourcemanagerpb.ListProjectsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*resourcemanagerpb.Project, string, error) {
 		resp := &resourcemanagerpb.ListProjectsResponse{}
 		if pageToken != "" {
@@ -728,9 +906,12 @@ func (c *projectsGRPCClient) ListProjects(ctx context.Context, req *resourcemana
 
 func (c *projectsGRPCClient) SearchProjects(ctx context.Context, req *resourcemanagerpb.SearchProjectsRequest, opts ...gax.CallOption) *ProjectIterator {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.Projects/SearchProjects")
+	}
 	opts = append((*c.CallOptions).SearchProjects[0:len((*c.CallOptions).SearchProjects):len((*c.CallOptions).SearchProjects)], opts...)
 	it := &ProjectIterator{}
-	req = proto.Clone(req).(*resourcemanagerpb.SearchProjectsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*resourcemanagerpb.Project, string, error) {
 		resp := &resourcemanagerpb.SearchProjectsResponse{}
 		if pageToken != "" {
@@ -771,6 +952,9 @@ func (c *projectsGRPCClient) SearchProjects(ctx context.Context, req *resourcema
 
 func (c *projectsGRPCClient) CreateProject(ctx context.Context, req *resourcemanagerpb.CreateProjectRequest, opts ...gax.CallOption) (*CreateProjectOperation, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.Projects/CreateProject")
+	}
 	opts = append((*c.CallOptions).CreateProject[0:len((*c.CallOptions).CreateProject):len((*c.CallOptions).CreateProject)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -781,8 +965,12 @@ func (c *projectsGRPCClient) CreateProject(ctx context.Context, req *resourceman
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*resourcemanager.CreateProjectOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateProjectOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -791,6 +979,9 @@ func (c *projectsGRPCClient) UpdateProject(ctx context.Context, req *resourceman
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.Projects/UpdateProject")
+	}
 	opts = append((*c.CallOptions).UpdateProject[0:len((*c.CallOptions).UpdateProject):len((*c.CallOptions).UpdateProject)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -801,8 +992,12 @@ func (c *projectsGRPCClient) UpdateProject(ctx context.Context, req *resourceman
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*resourcemanager.UpdateProjectOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateProjectOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -811,6 +1006,9 @@ func (c *projectsGRPCClient) MoveProject(ctx context.Context, req *resourcemanag
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.Projects/MoveProject")
+	}
 	opts = append((*c.CallOptions).MoveProject[0:len((*c.CallOptions).MoveProject):len((*c.CallOptions).MoveProject)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -821,8 +1019,12 @@ func (c *projectsGRPCClient) MoveProject(ctx context.Context, req *resourcemanag
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*resourcemanager.MoveProjectOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &MoveProjectOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -831,6 +1033,9 @@ func (c *projectsGRPCClient) DeleteProject(ctx context.Context, req *resourceman
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.Projects/DeleteProject")
+	}
 	opts = append((*c.CallOptions).DeleteProject[0:len((*c.CallOptions).DeleteProject):len((*c.CallOptions).DeleteProject)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -841,8 +1046,12 @@ func (c *projectsGRPCClient) DeleteProject(ctx context.Context, req *resourceman
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*resourcemanager.DeleteProjectOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteProjectOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -851,6 +1060,9 @@ func (c *projectsGRPCClient) UndeleteProject(ctx context.Context, req *resourcem
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.Projects/UndeleteProject")
+	}
 	opts = append((*c.CallOptions).UndeleteProject[0:len((*c.CallOptions).UndeleteProject):len((*c.CallOptions).UndeleteProject)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -861,8 +1073,12 @@ func (c *projectsGRPCClient) UndeleteProject(ctx context.Context, req *resourcem
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*resourcemanager.UndeleteProjectOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UndeleteProjectOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -871,6 +1087,9 @@ func (c *projectsGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIam
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.Projects/GetIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -889,6 +1108,9 @@ func (c *projectsGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIam
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.Projects/SetIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -907,6 +1129,9 @@ func (c *projectsGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.Projects/TestIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -925,6 +1150,9 @@ func (c *projectsGRPCClient) GetOperation(ctx context.Context, req *longrunningp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -961,6 +1189,10 @@ func (c *projectsRESTClient) GetProject(ctx context.Context, req *resourcemanage
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.Projects/GetProject")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{name=projects/*}")
+	}
 	opts = append((*c.CallOptions).GetProject[0:len((*c.CallOptions).GetProject):len((*c.CallOptions).GetProject)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &resourcemanagerpb.Project{}
@@ -1000,7 +1232,7 @@ func (c *projectsRESTClient) GetProject(ctx context.Context, req *resourcemanage
 // permission on the identified parent.
 func (c *projectsRESTClient) ListProjects(ctx context.Context, req *resourcemanagerpb.ListProjectsRequest, opts ...gax.CallOption) *ProjectIterator {
 	it := &ProjectIterator{}
-	req = proto.Clone(req).(*resourcemanagerpb.ListProjectsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*resourcemanagerpb.Project, string, error) {
 		resp := &resourcemanagerpb.ListProjectsResponse{}
@@ -1091,7 +1323,7 @@ func (c *projectsRESTClient) ListProjects(ctx context.Context, req *resourcemana
 // GetProject method.
 func (c *projectsRESTClient) SearchProjects(ctx context.Context, req *resourcemanagerpb.SearchProjectsRequest, opts ...gax.CallOption) *ProjectIterator {
 	it := &ProjectIterator{}
-	req = proto.Clone(req).(*resourcemanagerpb.SearchProjectsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*resourcemanagerpb.Project, string, error) {
 		resp := &resourcemanagerpb.SearchProjectsResponse{}
@@ -1196,6 +1428,10 @@ func (c *projectsRESTClient) CreateProject(ctx context.Context, req *resourceman
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.Projects/CreateProject")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/projects")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1224,8 +1460,12 @@ func (c *projectsRESTClient) CreateProject(ctx context.Context, req *resourceman
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*resourcemanager.CreateProjectOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateProjectOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1268,6 +1508,10 @@ func (c *projectsRESTClient) UpdateProject(ctx context.Context, req *resourceman
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.Projects/UpdateProject")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{project.name=projects/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1296,8 +1540,12 @@ func (c *projectsRESTClient) UpdateProject(ctx context.Context, req *resourceman
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*resourcemanager.UpdateProjectOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateProjectOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1340,6 +1588,10 @@ func (c *projectsRESTClient) MoveProject(ctx context.Context, req *resourcemanag
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.Projects/MoveProject")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{name=projects/*}:move")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1368,8 +1620,12 @@ func (c *projectsRESTClient) MoveProject(ctx context.Context, req *resourcemanag
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*resourcemanager.MoveProjectOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &MoveProjectOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1425,6 +1681,10 @@ func (c *projectsRESTClient) DeleteProject(ctx context.Context, req *resourceman
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.Projects/DeleteProject")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{name=projects/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1453,8 +1713,12 @@ func (c *projectsRESTClient) DeleteProject(ctx context.Context, req *resourceman
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*resourcemanager.DeleteProjectOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteProjectOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1492,6 +1756,10 @@ func (c *projectsRESTClient) UndeleteProject(ctx context.Context, req *resourcem
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.Projects/UndeleteProject")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{name=projects/*}:undelete")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1520,8 +1788,12 @@ func (c *projectsRESTClient) UndeleteProject(ctx context.Context, req *resourcem
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*resourcemanager.UndeleteProjectOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UndeleteProjectOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1553,6 +1825,10 @@ func (c *projectsRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIam
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.Projects/GetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{resource=projects/*}:getIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -1649,6 +1925,10 @@ func (c *projectsRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIam
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.Projects/SetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{resource=projects/*}:setIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -1706,6 +1986,10 @@ func (c *projectsRESTClient) TestIamPermissions(ctx context.Context, req *iampb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.Projects/TestIamPermissions")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{resource=projects/*}:testIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.TestIamPermissionsResponse{}
@@ -1756,6 +2040,10 @@ func (c *projectsRESTClient) GetOperation(ctx context.Context, req *longrunningp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{name=operations/**}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -1791,7 +2079,7 @@ func (c *projectsRESTClient) GetOperation(ctx context.Context, req *longrunningp
 // The name must be that of a previously created CreateProjectOperation, possibly from a different process.
 func (c *projectsGRPCClient) CreateProjectOperation(name string) *CreateProjectOperation {
 	return &CreateProjectOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*resourcemanager.CreateProjectOperation"),
 	}
 }
 
@@ -1800,7 +2088,7 @@ func (c *projectsGRPCClient) CreateProjectOperation(name string) *CreateProjectO
 func (c *projectsRESTClient) CreateProjectOperation(name string) *CreateProjectOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &CreateProjectOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*resourcemanager.CreateProjectOperation"),
 		pollPath: override,
 	}
 }
@@ -1809,7 +2097,7 @@ func (c *projectsRESTClient) CreateProjectOperation(name string) *CreateProjectO
 // The name must be that of a previously created DeleteProjectOperation, possibly from a different process.
 func (c *projectsGRPCClient) DeleteProjectOperation(name string) *DeleteProjectOperation {
 	return &DeleteProjectOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*resourcemanager.DeleteProjectOperation"),
 	}
 }
 
@@ -1818,7 +2106,7 @@ func (c *projectsGRPCClient) DeleteProjectOperation(name string) *DeleteProjectO
 func (c *projectsRESTClient) DeleteProjectOperation(name string) *DeleteProjectOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &DeleteProjectOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*resourcemanager.DeleteProjectOperation"),
 		pollPath: override,
 	}
 }
@@ -1827,7 +2115,7 @@ func (c *projectsRESTClient) DeleteProjectOperation(name string) *DeleteProjectO
 // The name must be that of a previously created MoveProjectOperation, possibly from a different process.
 func (c *projectsGRPCClient) MoveProjectOperation(name string) *MoveProjectOperation {
 	return &MoveProjectOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*resourcemanager.MoveProjectOperation"),
 	}
 }
 
@@ -1836,7 +2124,7 @@ func (c *projectsGRPCClient) MoveProjectOperation(name string) *MoveProjectOpera
 func (c *projectsRESTClient) MoveProjectOperation(name string) *MoveProjectOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &MoveProjectOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*resourcemanager.MoveProjectOperation"),
 		pollPath: override,
 	}
 }
@@ -1845,7 +2133,7 @@ func (c *projectsRESTClient) MoveProjectOperation(name string) *MoveProjectOpera
 // The name must be that of a previously created UndeleteProjectOperation, possibly from a different process.
 func (c *projectsGRPCClient) UndeleteProjectOperation(name string) *UndeleteProjectOperation {
 	return &UndeleteProjectOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*resourcemanager.UndeleteProjectOperation"),
 	}
 }
 
@@ -1854,7 +2142,7 @@ func (c *projectsGRPCClient) UndeleteProjectOperation(name string) *UndeleteProj
 func (c *projectsRESTClient) UndeleteProjectOperation(name string) *UndeleteProjectOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &UndeleteProjectOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*resourcemanager.UndeleteProjectOperation"),
 		pollPath: override,
 	}
 }
@@ -1863,7 +2151,7 @@ func (c *projectsRESTClient) UndeleteProjectOperation(name string) *UndeleteProj
 // The name must be that of a previously created UpdateProjectOperation, possibly from a different process.
 func (c *projectsGRPCClient) UpdateProjectOperation(name string) *UpdateProjectOperation {
 	return &UpdateProjectOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*resourcemanager.UpdateProjectOperation"),
 	}
 }
 
@@ -1872,7 +2160,7 @@ func (c *projectsGRPCClient) UpdateProjectOperation(name string) *UpdateProjectO
 func (c *projectsRESTClient) UpdateProjectOperation(name string) *UpdateProjectOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &UpdateProjectOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*resourcemanager.UpdateProjectOperation"),
 		pollPath: override,
 	}
 }

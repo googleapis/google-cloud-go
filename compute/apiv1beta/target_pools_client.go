@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import (
 
 	computepb "cloud.google.com/go/compute/apiv1beta/computepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -128,7 +129,7 @@ func defaultTargetPoolsRESTCallOptions() *TargetPoolsCallOptions {
 	}
 }
 
-// internalTargetPoolsClient is an interface that defines the methods available from Google Compute Engine API.
+// internalTargetPoolsClient is an interface that defines the methods available from Compute Engine API.
 type internalTargetPoolsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -148,7 +149,7 @@ type internalTargetPoolsClient interface {
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsTargetPoolRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 }
 
-// TargetPoolsClient is a client for interacting with Google Compute Engine API.
+// TargetPoolsClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The TargetPools API.
@@ -162,7 +163,7 @@ type TargetPoolsClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *TargetPoolsClient) Close() error {
 	return c.internalClient.Close()
@@ -193,7 +194,10 @@ func (c *TargetPoolsClient) AddInstance(ctx context.Context, req *computepb.AddI
 	return c.internalClient.AddInstance(ctx, req, opts...)
 }
 
-// AggregatedList retrieves an aggregated list of target pools. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of target pools.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *TargetPoolsClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListTargetPoolsRequest, opts ...gax.CallOption) *TargetPoolsScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -208,17 +212,20 @@ func (c *TargetPoolsClient) Get(ctx context.Context, req *computepb.GetTargetPoo
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// GetHealth gets the most recent health check results for each IP for the instance that is referenced by the given target pool.
+// GetHealth gets the most recent health check results for each IP for the
+// instance that is referenced by the given target pool.
 func (c *TargetPoolsClient) GetHealth(ctx context.Context, req *computepb.GetHealthTargetPoolRequest, opts ...gax.CallOption) (*computepb.TargetPoolInstanceHealth, error) {
 	return c.internalClient.GetHealth(ctx, req, opts...)
 }
 
-// Insert creates a target pool in the specified project and region using the data included in the request.
+// Insert creates a target pool in the specified project and region using
+// the data included in the request.
 func (c *TargetPoolsClient) Insert(ctx context.Context, req *computepb.InsertTargetPoolRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves a list of target pools available to the specified project and region.
+// List retrieves a list of target pools available to the specified
+// project and region.
 func (c *TargetPoolsClient) List(ctx context.Context, req *computepb.ListTargetPoolsRequest, opts ...gax.CallOption) *TargetPoolIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
@@ -238,7 +245,9 @@ func (c *TargetPoolsClient) SetBackup(ctx context.Context, req *computepb.SetBac
 	return c.internalClient.SetBackup(ctx, req, opts...)
 }
 
-// SetSecurityPolicy sets the Google Cloud Armor security policy for the specified target pool. For more information, see Google Cloud Armor Overview
+// SetSecurityPolicy sets the Google Cloud Armor security policy for the specified target pool.
+// For more information, seeGoogle
+// Cloud Armor Overview
 func (c *TargetPoolsClient) SetSecurityPolicy(ctx context.Context, req *computepb.SetSecurityPolicyTargetPoolRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetSecurityPolicy(ctx, req, opts...)
 }
@@ -273,6 +282,16 @@ type targetPoolsRESTClient struct {
 // The TargetPools API.
 func NewTargetPoolsRESTClient(ctx context.Context, opts ...option.ClientOption) (*TargetPoolsClient, error) {
 	clientOpts := append(defaultTargetPoolsRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "compute",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/compute/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "compute.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -286,6 +305,84 @@ func NewTargetPoolsRESTClient(ctx context.Context, opts ...option.ClientOption) 
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AddHealthCheck = append(callOpts.AddHealthCheck, gax.WithClientMetrics(metrics))
+		callOpts.AddInstance = append(callOpts.AddInstance, gax.WithClientMetrics(metrics))
+		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientMetrics(metrics))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientMetrics(metrics))
+		callOpts.Get = append(callOpts.Get, gax.WithClientMetrics(metrics))
+		callOpts.GetHealth = append(callOpts.GetHealth, gax.WithClientMetrics(metrics))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientMetrics(metrics))
+		callOpts.List = append(callOpts.List, gax.WithClientMetrics(metrics))
+		callOpts.RemoveHealthCheck = append(callOpts.RemoveHealthCheck, gax.WithClientMetrics(metrics))
+		callOpts.RemoveInstance = append(callOpts.RemoveInstance, gax.WithClientMetrics(metrics))
+		callOpts.SetBackup = append(callOpts.SetBackup, gax.WithClientMetrics(metrics))
+		callOpts.SetSecurityPolicy = append(callOpts.SetSecurityPolicy, gax.WithClientMetrics(metrics))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AddHealthCheck = append(callOpts.AddHealthCheck, gax.WithClientTracing(tracing))
+		callOpts.AddInstance = append(callOpts.AddInstance, gax.WithClientTracing(tracing))
+		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientTracing(tracing))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientTracing(tracing))
+		callOpts.Get = append(callOpts.Get, gax.WithClientTracing(tracing))
+		callOpts.GetHealth = append(callOpts.GetHealth, gax.WithClientTracing(tracing))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientTracing(tracing))
+		callOpts.List = append(callOpts.List, gax.WithClientTracing(tracing))
+		callOpts.RemoveHealthCheck = append(callOpts.RemoveHealthCheck, gax.WithClientTracing(tracing))
+		callOpts.RemoveInstance = append(callOpts.RemoveInstance, gax.WithClientTracing(tracing))
+		callOpts.SetBackup = append(callOpts.SetBackup, gax.WithClientTracing(tracing))
+		callOpts.SetSecurityPolicy = append(callOpts.SetSecurityPolicy, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AddHealthCheck = append(callOpts.AddHealthCheck, gax.WithClientLogging(logging))
+		callOpts.AddInstance = append(callOpts.AddInstance, gax.WithClientLogging(logging))
+		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientLogging(logging))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientLogging(logging))
+		callOpts.Get = append(callOpts.Get, gax.WithClientLogging(logging))
+		callOpts.GetHealth = append(callOpts.GetHealth, gax.WithClientLogging(logging))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientLogging(logging))
+		callOpts.List = append(callOpts.List, gax.WithClientLogging(logging))
+		callOpts.RemoveHealthCheck = append(callOpts.RemoveHealthCheck, gax.WithClientLogging(logging))
+		callOpts.RemoveInstance = append(callOpts.RemoveInstance, gax.WithClientLogging(logging))
+		callOpts.SetBackup = append(callOpts.SetBackup, gax.WithClientLogging(logging))
+		callOpts.SetSecurityPolicy = append(callOpts.SetSecurityPolicy, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientLogging(logging))
+	}
 
 	o := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -323,7 +420,7 @@ func (c *targetPoolsRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *targetPoolsRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -369,6 +466,10 @@ func (c *targetPoolsRESTClient) AddHealthCheck(ctx context.Context, req *compute
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.TargetPools/AddHealthCheck")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/targetPools/{target_pool}/addHealthCheck")
+	}
 	opts = append((*c.CallOptions).AddHealthCheck[0:len((*c.CallOptions).AddHealthCheck):len((*c.CallOptions).AddHealthCheck)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -436,6 +537,10 @@ func (c *targetPoolsRESTClient) AddInstance(ctx context.Context, req *computepb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.TargetPools/AddInstance")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/targetPools/{target_pool}/addInstance")
+	}
 	opts = append((*c.CallOptions).AddInstance[0:len((*c.CallOptions).AddInstance):len((*c.CallOptions).AddInstance)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -475,10 +580,13 @@ func (c *targetPoolsRESTClient) AddInstance(ctx context.Context, req *computepb.
 	return op, nil
 }
 
-// AggregatedList retrieves an aggregated list of target pools. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of target pools.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *targetPoolsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListTargetPoolsRequest, opts ...gax.CallOption) *TargetPoolsScopedListPairIterator {
 	it := &TargetPoolsScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListTargetPoolsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]TargetPoolsScopedListPair, string, error) {
 		resp := &computepb.TargetPoolAggregatedList{}
@@ -595,6 +703,10 @@ func (c *targetPoolsRESTClient) Delete(ctx context.Context, req *computepb.Delet
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.TargetPools/Delete")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/targetPools/{target_pool}")
+	}
 	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -648,6 +760,10 @@ func (c *targetPoolsRESTClient) Get(ctx context.Context, req *computepb.GetTarge
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.TargetPools/Get")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/targetPools/{target_pool}")
+	}
 	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.TargetPool{}
@@ -679,7 +795,8 @@ func (c *targetPoolsRESTClient) Get(ctx context.Context, req *computepb.GetTarge
 	return resp, nil
 }
 
-// GetHealth gets the most recent health check results for each IP for the instance that is referenced by the given target pool.
+// GetHealth gets the most recent health check results for each IP for the
+// instance that is referenced by the given target pool.
 func (c *targetPoolsRESTClient) GetHealth(ctx context.Context, req *computepb.GetHealthTargetPoolRequest, opts ...gax.CallOption) (*computepb.TargetPoolInstanceHealth, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceReferenceResource()
@@ -700,6 +817,10 @@ func (c *targetPoolsRESTClient) GetHealth(ctx context.Context, req *computepb.Ge
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.TargetPools/GetHealth")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/targetPools/{target_pool}/getHealth")
+	}
 	opts = append((*c.CallOptions).GetHealth[0:len((*c.CallOptions).GetHealth):len((*c.CallOptions).GetHealth)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.TargetPoolInstanceHealth{}
@@ -731,7 +852,8 @@ func (c *targetPoolsRESTClient) GetHealth(ctx context.Context, req *computepb.Ge
 	return resp, nil
 }
 
-// Insert creates a target pool in the specified project and region using the data included in the request.
+// Insert creates a target pool in the specified project and region using
+// the data included in the request.
 func (c *targetPoolsRESTClient) Insert(ctx context.Context, req *computepb.InsertTargetPoolRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetPoolResource()
@@ -759,6 +881,10 @@ func (c *targetPoolsRESTClient) Insert(ctx context.Context, req *computepb.Inser
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.TargetPools/Insert")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/targetPools")
+	}
 	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -798,10 +924,11 @@ func (c *targetPoolsRESTClient) Insert(ctx context.Context, req *computepb.Inser
 	return op, nil
 }
 
-// List retrieves a list of target pools available to the specified project and region.
+// List retrieves a list of target pools available to the specified
+// project and region.
 func (c *targetPoolsRESTClient) List(ctx context.Context, req *computepb.ListTargetPoolsRequest, opts ...gax.CallOption) *TargetPoolIterator {
 	it := &TargetPoolIterator{}
-	req = proto.Clone(req).(*computepb.ListTargetPoolsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.TargetPool, string, error) {
 		resp := &computepb.TargetPoolList{}
@@ -912,6 +1039,10 @@ func (c *targetPoolsRESTClient) RemoveHealthCheck(ctx context.Context, req *comp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.TargetPools/RemoveHealthCheck")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/targetPools/{target_pool}/removeHealthCheck")
+	}
 	opts = append((*c.CallOptions).RemoveHealthCheck[0:len((*c.CallOptions).RemoveHealthCheck):len((*c.CallOptions).RemoveHealthCheck)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -979,6 +1110,10 @@ func (c *targetPoolsRESTClient) RemoveInstance(ctx context.Context, req *compute
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.TargetPools/RemoveInstance")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/targetPools/{target_pool}/removeInstance")
+	}
 	opts = append((*c.CallOptions).RemoveInstance[0:len((*c.CallOptions).RemoveInstance):len((*c.CallOptions).RemoveInstance)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -1049,6 +1184,10 @@ func (c *targetPoolsRESTClient) SetBackup(ctx context.Context, req *computepb.Se
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.TargetPools/SetBackup")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/targetPools/{target_pool}/setBackup")
+	}
 	opts = append((*c.CallOptions).SetBackup[0:len((*c.CallOptions).SetBackup):len((*c.CallOptions).SetBackup)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -1088,7 +1227,9 @@ func (c *targetPoolsRESTClient) SetBackup(ctx context.Context, req *computepb.Se
 	return op, nil
 }
 
-// SetSecurityPolicy sets the Google Cloud Armor security policy for the specified target pool. For more information, see Google Cloud Armor Overview
+// SetSecurityPolicy sets the Google Cloud Armor security policy for the specified target pool.
+// For more information, seeGoogle
+// Cloud Armor Overview
 func (c *targetPoolsRESTClient) SetSecurityPolicy(ctx context.Context, req *computepb.SetSecurityPolicyTargetPoolRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSecurityPolicyReferenceResource()
@@ -1116,6 +1257,10 @@ func (c *targetPoolsRESTClient) SetSecurityPolicy(ctx context.Context, req *comp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.TargetPools/SetSecurityPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/targetPools/{target_pool}/setSecurityPolicy")
+	}
 	opts = append((*c.CallOptions).SetSecurityPolicy[0:len((*c.CallOptions).SetSecurityPolicy):len((*c.CallOptions).SetSecurityPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -1176,6 +1321,10 @@ func (c *targetPoolsRESTClient) TestIamPermissions(ctx context.Context, req *com
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.TargetPools/TestIamPermissions")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/targetPools/{resource}/testIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.TestPermissionsResponse{}

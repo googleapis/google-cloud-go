@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import (
 
 	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -86,7 +87,7 @@ func defaultGlobalPublicDelegatedPrefixesRESTCallOptions() *GlobalPublicDelegate
 	}
 }
 
-// internalGlobalPublicDelegatedPrefixesClient is an interface that defines the methods available from Google Compute Engine API.
+// internalGlobalPublicDelegatedPrefixesClient is an interface that defines the methods available from Compute Engine API.
 type internalGlobalPublicDelegatedPrefixesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -98,10 +99,12 @@ type internalGlobalPublicDelegatedPrefixesClient interface {
 	Patch(context.Context, *computepb.PatchGlobalPublicDelegatedPrefixeRequest, ...gax.CallOption) (*Operation, error)
 }
 
-// GlobalPublicDelegatedPrefixesClient is a client for interacting with Google Compute Engine API.
+// GlobalPublicDelegatedPrefixesClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The GlobalPublicDelegatedPrefixes API.
+//
+// This client uses GlobalPublicDelegatedPrefixes version 2026-09-01.
 type GlobalPublicDelegatedPrefixesClient struct {
 	// The internal transport-dependent client.
 	internalClient internalGlobalPublicDelegatedPrefixesClient
@@ -112,7 +115,7 @@ type GlobalPublicDelegatedPrefixesClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *GlobalPublicDelegatedPrefixesClient) Close() error {
 	return c.internalClient.Close()
@@ -143,7 +146,8 @@ func (c *GlobalPublicDelegatedPrefixesClient) Get(ctx context.Context, req *comp
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// Insert creates a global PublicDelegatedPrefix in the specified project using the parameters that are included in the request.
+// Insert creates a global PublicDelegatedPrefix in the specified project using the
+// parameters that are included in the request.
 func (c *GlobalPublicDelegatedPrefixesClient) Insert(ctx context.Context, req *computepb.InsertGlobalPublicDelegatedPrefixeRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
@@ -153,7 +157,10 @@ func (c *GlobalPublicDelegatedPrefixesClient) List(ctx context.Context, req *com
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// Patch patches the specified global PublicDelegatedPrefix resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+// Patch patches the specified global PublicDelegatedPrefix resource with the data
+// included in the request. This method supportsPATCH
+// semantics and usesJSON merge
+// patch format and processing rules.
 func (c *GlobalPublicDelegatedPrefixesClient) Patch(ctx context.Context, req *computepb.PatchGlobalPublicDelegatedPrefixeRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
@@ -183,6 +190,16 @@ type globalPublicDelegatedPrefixesRESTClient struct {
 // The GlobalPublicDelegatedPrefixes API.
 func NewGlobalPublicDelegatedPrefixesRESTClient(ctx context.Context, opts ...option.ClientOption) (*GlobalPublicDelegatedPrefixesClient, error) {
 	clientOpts := append(defaultGlobalPublicDelegatedPrefixesRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "compute",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/compute/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "compute.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -196,6 +213,60 @@ func NewGlobalPublicDelegatedPrefixesRESTClient(ctx context.Context, opts ...opt
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientMetrics(metrics))
+		callOpts.Get = append(callOpts.Get, gax.WithClientMetrics(metrics))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientMetrics(metrics))
+		callOpts.List = append(callOpts.List, gax.WithClientMetrics(metrics))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientTracing(tracing))
+		callOpts.Get = append(callOpts.Get, gax.WithClientTracing(tracing))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientTracing(tracing))
+		callOpts.List = append(callOpts.List, gax.WithClientTracing(tracing))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientLogging(logging))
+		callOpts.Get = append(callOpts.Get, gax.WithClientLogging(logging))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientLogging(logging))
+		callOpts.List = append(callOpts.List, gax.WithClientLogging(logging))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientLogging(logging))
+	}
 
 	o := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -230,10 +301,11 @@ func (c *globalPublicDelegatedPrefixesRESTClient) setGoogleClientInfo(keyval ...
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
+		"x-goog-api-version", "2026-09-01",
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *globalPublicDelegatedPrefixesRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -272,6 +344,10 @@ func (c *globalPublicDelegatedPrefixesRESTClient) Delete(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.GlobalPublicDelegatedPrefixes/Delete")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/publicDelegatedPrefixes/{public_delegated_prefix}")
+	}
 	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -324,6 +400,10 @@ func (c *globalPublicDelegatedPrefixesRESTClient) Get(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.GlobalPublicDelegatedPrefixes/Get")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/publicDelegatedPrefixes/{public_delegated_prefix}")
+	}
 	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.PublicDelegatedPrefix{}
@@ -355,7 +435,8 @@ func (c *globalPublicDelegatedPrefixesRESTClient) Get(ctx context.Context, req *
 	return resp, nil
 }
 
-// Insert creates a global PublicDelegatedPrefix in the specified project using the parameters that are included in the request.
+// Insert creates a global PublicDelegatedPrefix in the specified project using the
+// parameters that are included in the request.
 func (c *globalPublicDelegatedPrefixesRESTClient) Insert(ctx context.Context, req *computepb.InsertGlobalPublicDelegatedPrefixeRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetPublicDelegatedPrefixResource()
@@ -383,6 +464,10 @@ func (c *globalPublicDelegatedPrefixesRESTClient) Insert(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.GlobalPublicDelegatedPrefixes/Insert")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/publicDelegatedPrefixes")
+	}
 	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -424,7 +509,7 @@ func (c *globalPublicDelegatedPrefixesRESTClient) Insert(ctx context.Context, re
 // List lists the global PublicDelegatedPrefixes for a project.
 func (c *globalPublicDelegatedPrefixesRESTClient) List(ctx context.Context, req *computepb.ListGlobalPublicDelegatedPrefixesRequest, opts ...gax.CallOption) *PublicDelegatedPrefixIterator {
 	it := &PublicDelegatedPrefixIterator{}
-	req = proto.Clone(req).(*computepb.ListGlobalPublicDelegatedPrefixesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.PublicDelegatedPrefix, string, error) {
 		resp := &computepb.PublicDelegatedPrefixList{}
@@ -454,9 +539,6 @@ func (c *globalPublicDelegatedPrefixesRESTClient) List(ctx context.Context, req 
 		}
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -507,7 +589,10 @@ func (c *globalPublicDelegatedPrefixesRESTClient) List(ctx context.Context, req 
 	return it
 }
 
-// Patch patches the specified global PublicDelegatedPrefix resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+// Patch patches the specified global PublicDelegatedPrefix resource with the data
+// included in the request. This method supportsPATCH
+// semantics and usesJSON merge
+// patch format and processing rules.
 func (c *globalPublicDelegatedPrefixesRESTClient) Patch(ctx context.Context, req *computepb.PatchGlobalPublicDelegatedPrefixeRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetPublicDelegatedPrefixResource()
@@ -535,6 +620,10 @@ func (c *globalPublicDelegatedPrefixesRESTClient) Patch(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.GlobalPublicDelegatedPrefixes/Patch")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/publicDelegatedPrefixes/{public_delegated_prefix}")
+	}
 	opts = append((*c.CallOptions).Patch[0:len((*c.CallOptions).Patch):len((*c.CallOptions).Patch)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}

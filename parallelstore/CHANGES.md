@@ -1,6 +1,42 @@
 # Changes
 
 
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/parallelstore/v1.1.0...parallelstore/v1.2.0) (2026-09-23)
+
+
+### Features
+
+* **all:** Update supported go versions ([#20520](https://github.com/googleapis/google-cloud-go/issues/20520)) ([90413d3](https://github.com/googleapis/google-cloud-go/commit/90413d3e9d381ef4b92e3c496d98b023c5b2d8cc))
+
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/parallelstore/v1.0.0...parallelstore/v1.1.0) (2026-07-13)
+
+
+### Features
+
+* **o11y:** Regenerate clients for LRO tracing ([#20107](https://github.com/googleapis/google-cloud-go/issues/20107)) ([779074e](https://github.com/googleapis/google-cloud-go/commit/779074edd267a26520bae459307660953129eb07))
+
+## [1.0.0](https://github.com/googleapis/google-cloud-go/releases/tag/parallelstore%2Fv1.0.0) (2026-05-08)
+
+## [0.17.0](https://github.com/googleapis/google-cloud-go/releases/tag/parallelstore%2Fv0.17.0) (2026-05-07)
+
+## [0.16.0](https://github.com/googleapis/google-cloud-go/releases/tag/parallelstore%2Fv0.16.0) (2026-04-30)
+
+## [0.15.0](https://github.com/googleapis/google-cloud-go/releases/tag/parallelstore%2Fv0.15.0) (2026-04-13)
+
+## [0.14.0](https://github.com/googleapis/google-cloud-go/releases/tag/parallelstore%2Fv0.14.0) (2026-04-09)
+
+## [0.13.0](https://github.com/googleapis/google-cloud-go/releases/tag/parallelstore%2Fv0.13.0) (2026-04-02)
+
+## [0.12.0](https://github.com/googleapis/google-cloud-go/releases/tag/parallelstore%2Fv0.12.0) (2025-12-04)
+
+### Features
+
+* add transfer metadata options proto definition ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+
+### Documentation
+
+* update tickets component number ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+
 ## [0.11.4](https://github.com/googleapis/google-cloud-go/compare/parallelstore/v0.11.3...parallelstore/v0.11.4) (2025-09-18)
 
 

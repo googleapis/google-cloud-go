@@ -15,6 +15,8 @@
 package jwt
 
 import (
+	"crypto/ecdsa"
+	"crypto/elliptic"
 	"crypto/rand"
 	"crypto/rsa"
 	"testing"
@@ -36,6 +38,57 @@ func TestSignAndVerifyDecode(t *testing.T) {
 	}
 
 	privateKey, err := rsa.GenerateKey(rand.Reader, 2048)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	token, err := EncodeJWS(header, payload, privateKey)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if err := VerifyJWS(token, &privateKey.PublicKey); err != nil {
+		t.Fatal(err)
+	}
+
+	claims, err := DecodeJWS(token)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if claims.Iss != payload.Iss {
+		t.Errorf("got %q, want %q", claims.Iss, payload.Iss)
+	}
+	if claims.Aud != payload.Aud {
+		t.Errorf("got %q, want %q", claims.Aud, payload.Aud)
+	}
+	if claims.Exp != payload.Exp {
+		t.Errorf("got %d, want %d", claims.Exp, payload.Exp)
+	}
+	if claims.Iat != payload.Iat {
+		t.Errorf("got %d, want %d", claims.Iat, payload.Iat)
+	}
+	if claims.AdditionalClaims["foo"] != payload.AdditionalClaims["foo"] {
+		t.Errorf("got %q, want %q", claims.AdditionalClaims["foo"], payload.AdditionalClaims["foo"])
+	}
+}
+
+func TestSignAndVerifyDecode_ES256(t *testing.T) {
+	header := &Header{
+		Algorithm: HeaderAlgES256,
+		Type:      HeaderType,
+	}
+	payload := &Claims{
+		Iss: "http://google.com/",
+		Aud: "audience",
+		Exp: 3610,
+		Iat: 10,
+		AdditionalClaims: map[string]interface{}{
+			"foo": "bar",
+		},
+	}
+
+	privateKey, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
 	if err != nil {
 		t.Fatal(err)
 	}

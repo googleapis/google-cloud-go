@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import (
 
 	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -131,7 +132,7 @@ func defaultProjectsRESTCallOptions() *ProjectsCallOptions {
 	}
 }
 
-// internalProjectsClient is an interface that defines the methods available from Google Compute Engine API.
+// internalProjectsClient is an interface that defines the methods available from Compute Engine API.
 type internalProjectsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -152,10 +153,12 @@ type internalProjectsClient interface {
 	SetUsageExportBucket(context.Context, *computepb.SetUsageExportBucketProjectRequest, ...gax.CallOption) (*Operation, error)
 }
 
-// ProjectsClient is a client for interacting with Google Compute Engine API.
+// ProjectsClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The Projects API.
+//
+// This client uses Projects version 2026-09-01.
 type ProjectsClient struct {
 	// The internal transport-dependent client.
 	internalClient internalProjectsClient
@@ -166,7 +169,7 @@ type ProjectsClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *ProjectsClient) Close() error {
 	return c.internalClient.Close()
@@ -192,7 +195,8 @@ func (c *ProjectsClient) DisableXpnHost(ctx context.Context, req *computepb.Disa
 	return c.internalClient.DisableXpnHost(ctx, req, opts...)
 }
 
-// DisableXpnResource disable a service resource (also known as service project) associated with this host project.
+// DisableXpnResource disable a service resource (also known as service project) associated with
+// this host project.
 func (c *ProjectsClient) DisableXpnResource(ctx context.Context, req *computepb.DisableXpnResourceProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.DisableXpnResource(ctx, req, opts...)
 }
@@ -202,22 +206,34 @@ func (c *ProjectsClient) EnableXpnHost(ctx context.Context, req *computepb.Enabl
 	return c.internalClient.EnableXpnHost(ctx, req, opts...)
 }
 
-// EnableXpnResource enable service resource (a.k.a service project) for a host project, so that subnets in the host project can be used by instances in the service project.
+// EnableXpnResource enable service resource (a.k.a service project) for a host project, so that
+// subnets in the host project can be used by instances in the service
+// project.
 func (c *ProjectsClient) EnableXpnResource(ctx context.Context, req *computepb.EnableXpnResourceProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.EnableXpnResource(ctx, req, opts...)
 }
 
-// Get returns the specified Project resource. To decrease latency for this method, you can optionally omit any unneeded information from the response by using a field mask. This practice is especially recommended for unused quota information (the quotas field). To exclude one or more fields, set your request’s fields query parameter to only include the fields you need. For example, to only include the id and selfLink fields, add the query parameter ?fields=id,selfLink to your request.
+// Get returns the specified Project resource.
+//
+// To decrease latency for this method, you can optionally omit any unneeded
+// information from the response by using a field mask. This practice is
+// especially recommended for unused quota information (the quotas field).
+// To exclude one or more fields, set your request’s fields query parameter
+// to only include the fields you need. For example, to only include the id
+// and selfLink fields, add the query parameter ?fields=id,selfLink to
+// your request.
 func (c *ProjectsClient) Get(ctx context.Context, req *computepb.GetProjectRequest, opts ...gax.CallOption) (*computepb.Project, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// GetXpnHost gets the shared VPC host project that this project links to. May be empty if no link exists.
+// GetXpnHost gets the shared VPC host project that this project links to. May be empty
+// if no link exists.
 func (c *ProjectsClient) GetXpnHost(ctx context.Context, req *computepb.GetXpnHostProjectRequest, opts ...gax.CallOption) (*computepb.Project, error) {
 	return c.internalClient.GetXpnHost(ctx, req, opts...)
 }
 
-// GetXpnResources gets service resources (a.k.a service project) associated with this host project.
+// GetXpnResources gets service resources (a.k.a service project) associated with this host
+// project.
 func (c *ProjectsClient) GetXpnResources(ctx context.Context, req *computepb.GetXpnResourcesProjectsRequest, opts ...gax.CallOption) *XpnResourceIdIterator {
 	return c.internalClient.GetXpnResources(ctx, req, opts...)
 }
@@ -227,32 +243,59 @@ func (c *ProjectsClient) ListXpnHosts(ctx context.Context, req *computepb.ListXp
 	return c.internalClient.ListXpnHosts(ctx, req, opts...)
 }
 
-// MoveDisk starting September 29, 2025, you can’t use the moveDisk API on new projects. To move a disk to a different region or zone, follow the steps in Change the location of a disk (at https://%7B$universe.dns_names.final_documentation_domain%7D/compute/docs/disks/migrate-to-hyperdisk#migrate-to-hd). Projects that already use the moveDisk API can continue usage until September 29, 2026. Starting November 1, 2025, API responses will include a warning message in the response body about the upcoming deprecation. You can skip the message to continue using the service without interruption.
+// MoveDisk moves a persistent disk from one zone to another.
+// Note: The moveDisk API will be deprecated on September 29, 2026.
+//
+// Starting September 29, 2025, you can’t use the moveDisk API on new
+// projects. To move a disk to a different region or zone, follow the steps in
+// Change the location of a
+// disk (at https://cloud.google.com/compute/docs/disks/migrate-to-hyperdisk#migrate-to-hd).
+//
+// Projects that already use the moveDisk API can continue usage until
+// September 29, 2026.
+//
+// Starting November 1, 2025, API responses will include a warning message in
+// the response body about the upcoming deprecation. You can skip the message
+// to continue using the service without interruption.
 func (c *ProjectsClient) MoveDisk(ctx context.Context, req *computepb.MoveDiskProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.MoveDisk(ctx, req, opts...)
 }
 
-// MoveInstance moves an instance and its attached persistent disks from one zone to another. Note: Moving VMs or disks by using this method might cause unexpected behavior. For more information, see the known issue (at /compute/docs/troubleshooting/known-issues#moving_vms_or_disks_using_the_moveinstance_api_or_the_causes_unexpected_behavior). [Deprecated] This method is deprecated. See moving instance across zones (at /compute/docs/instances/moving-instance-across-zones) instead.
+// MoveInstance moves an instance and its attached persistent disks from one zone to
+// another.
+// Note: Moving VMs or disks by using this method might
+// cause unexpected behavior. For more information, see the known
+// issue (at /compute/docs/troubleshooting/known-issues#moving_vms_or_disks_using_the_moveinstance_api_or_the_causes_unexpected_behavior).
+// [Deprecated] This method is deprecated. See moving instance across
+// zones (at /compute/docs/instances/moving-instance-across-zones) instead.
 func (c *ProjectsClient) MoveInstance(ctx context.Context, req *computepb.MoveInstanceProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.MoveInstance(ctx, req, opts...)
 }
 
-// SetCloudArmorTier sets the Cloud Armor tier of the project. To set ENTERPRISE or above the billing account of the project must be subscribed to Cloud Armor Enterprise. See Subscribing to Cloud Armor Enterprise for more information.
+// SetCloudArmorTier sets the Cloud Armor tier of the project. To set ENTERPRISE or above the
+// billing account of the project must be subscribed to Cloud Armor
+// Enterprise. See Subscribing
+// to Cloud Armor Enterprise for more information.
 func (c *ProjectsClient) SetCloudArmorTier(ctx context.Context, req *computepb.SetCloudArmorTierProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetCloudArmorTier(ctx, req, opts...)
 }
 
-// SetCommonInstanceMetadata sets metadata common to all instances within the specified project using the data included in the request.
+// SetCommonInstanceMetadata sets metadata common to all instances within the specified project using
+// the data included in the request.
 func (c *ProjectsClient) SetCommonInstanceMetadata(ctx context.Context, req *computepb.SetCommonInstanceMetadataProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetCommonInstanceMetadata(ctx, req, opts...)
 }
 
-// SetDefaultNetworkTier sets the default network tier of the project. The default network tier is used when an address/forwardingRule/instance is created without specifying the network tier field.
+// SetDefaultNetworkTier sets the default network tier of the project. The default network tier is
+// used when an address/forwardingRule/instance is created without specifying
+// the network tier field.
 func (c *ProjectsClient) SetDefaultNetworkTier(ctx context.Context, req *computepb.SetDefaultNetworkTierProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetDefaultNetworkTier(ctx, req, opts...)
 }
 
-// SetUsageExportBucket enables the usage export feature and sets the usage export bucket where reports are stored. If you provide an empty request body using this method, the usage export feature will be disabled.
+// SetUsageExportBucket enables the usage export feature and sets theusage export bucket
+// where reports are stored. If you provide an empty request body using this
+// method, the usage export feature will be disabled.
 func (c *ProjectsClient) SetUsageExportBucket(ctx context.Context, req *computepb.SetUsageExportBucketProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetUsageExportBucket(ctx, req, opts...)
 }
@@ -282,6 +325,16 @@ type projectsRESTClient struct {
 // The Projects API.
 func NewProjectsRESTClient(ctx context.Context, opts ...option.ClientOption) (*ProjectsClient, error) {
 	clientOpts := append(defaultProjectsRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "compute",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/compute/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "compute.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -295,6 +348,87 @@ func NewProjectsRESTClient(ctx context.Context, opts ...option.ClientOption) (*P
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.DisableXpnHost = append(callOpts.DisableXpnHost, gax.WithClientMetrics(metrics))
+		callOpts.DisableXpnResource = append(callOpts.DisableXpnResource, gax.WithClientMetrics(metrics))
+		callOpts.EnableXpnHost = append(callOpts.EnableXpnHost, gax.WithClientMetrics(metrics))
+		callOpts.EnableXpnResource = append(callOpts.EnableXpnResource, gax.WithClientMetrics(metrics))
+		callOpts.Get = append(callOpts.Get, gax.WithClientMetrics(metrics))
+		callOpts.GetXpnHost = append(callOpts.GetXpnHost, gax.WithClientMetrics(metrics))
+		callOpts.GetXpnResources = append(callOpts.GetXpnResources, gax.WithClientMetrics(metrics))
+		callOpts.ListXpnHosts = append(callOpts.ListXpnHosts, gax.WithClientMetrics(metrics))
+		callOpts.MoveDisk = append(callOpts.MoveDisk, gax.WithClientMetrics(metrics))
+		callOpts.MoveInstance = append(callOpts.MoveInstance, gax.WithClientMetrics(metrics))
+		callOpts.SetCloudArmorTier = append(callOpts.SetCloudArmorTier, gax.WithClientMetrics(metrics))
+		callOpts.SetCommonInstanceMetadata = append(callOpts.SetCommonInstanceMetadata, gax.WithClientMetrics(metrics))
+		callOpts.SetDefaultNetworkTier = append(callOpts.SetDefaultNetworkTier, gax.WithClientMetrics(metrics))
+		callOpts.SetUsageExportBucket = append(callOpts.SetUsageExportBucket, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.DisableXpnHost = append(callOpts.DisableXpnHost, gax.WithClientTracing(tracing))
+		callOpts.DisableXpnResource = append(callOpts.DisableXpnResource, gax.WithClientTracing(tracing))
+		callOpts.EnableXpnHost = append(callOpts.EnableXpnHost, gax.WithClientTracing(tracing))
+		callOpts.EnableXpnResource = append(callOpts.EnableXpnResource, gax.WithClientTracing(tracing))
+		callOpts.Get = append(callOpts.Get, gax.WithClientTracing(tracing))
+		callOpts.GetXpnHost = append(callOpts.GetXpnHost, gax.WithClientTracing(tracing))
+		callOpts.GetXpnResources = append(callOpts.GetXpnResources, gax.WithClientTracing(tracing))
+		callOpts.ListXpnHosts = append(callOpts.ListXpnHosts, gax.WithClientTracing(tracing))
+		callOpts.MoveDisk = append(callOpts.MoveDisk, gax.WithClientTracing(tracing))
+		callOpts.MoveInstance = append(callOpts.MoveInstance, gax.WithClientTracing(tracing))
+		callOpts.SetCloudArmorTier = append(callOpts.SetCloudArmorTier, gax.WithClientTracing(tracing))
+		callOpts.SetCommonInstanceMetadata = append(callOpts.SetCommonInstanceMetadata, gax.WithClientTracing(tracing))
+		callOpts.SetDefaultNetworkTier = append(callOpts.SetDefaultNetworkTier, gax.WithClientTracing(tracing))
+		callOpts.SetUsageExportBucket = append(callOpts.SetUsageExportBucket, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.DisableXpnHost = append(callOpts.DisableXpnHost, gax.WithClientLogging(logging))
+		callOpts.DisableXpnResource = append(callOpts.DisableXpnResource, gax.WithClientLogging(logging))
+		callOpts.EnableXpnHost = append(callOpts.EnableXpnHost, gax.WithClientLogging(logging))
+		callOpts.EnableXpnResource = append(callOpts.EnableXpnResource, gax.WithClientLogging(logging))
+		callOpts.Get = append(callOpts.Get, gax.WithClientLogging(logging))
+		callOpts.GetXpnHost = append(callOpts.GetXpnHost, gax.WithClientLogging(logging))
+		callOpts.GetXpnResources = append(callOpts.GetXpnResources, gax.WithClientLogging(logging))
+		callOpts.ListXpnHosts = append(callOpts.ListXpnHosts, gax.WithClientLogging(logging))
+		callOpts.MoveDisk = append(callOpts.MoveDisk, gax.WithClientLogging(logging))
+		callOpts.MoveInstance = append(callOpts.MoveInstance, gax.WithClientLogging(logging))
+		callOpts.SetCloudArmorTier = append(callOpts.SetCloudArmorTier, gax.WithClientLogging(logging))
+		callOpts.SetCommonInstanceMetadata = append(callOpts.SetCommonInstanceMetadata, gax.WithClientLogging(logging))
+		callOpts.SetDefaultNetworkTier = append(callOpts.SetDefaultNetworkTier, gax.WithClientLogging(logging))
+		callOpts.SetUsageExportBucket = append(callOpts.SetUsageExportBucket, gax.WithClientLogging(logging))
+	}
 
 	o := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -329,10 +463,11 @@ func (c *projectsRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
+		"x-goog-api-version", "2026-09-01",
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *projectsRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -371,6 +506,10 @@ func (c *projectsRESTClient) DisableXpnHost(ctx context.Context, req *computepb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.Projects/DisableXpnHost")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/disableXpnHost")
+	}
 	opts = append((*c.CallOptions).DisableXpnHost[0:len((*c.CallOptions).DisableXpnHost):len((*c.CallOptions).DisableXpnHost)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -409,7 +548,8 @@ func (c *projectsRESTClient) DisableXpnHost(ctx context.Context, req *computepb.
 	return op, nil
 }
 
-// DisableXpnResource disable a service resource (also known as service project) associated with this host project.
+// DisableXpnResource disable a service resource (also known as service project) associated with
+// this host project.
 func (c *projectsRESTClient) DisableXpnResource(ctx context.Context, req *computepb.DisableXpnResourceProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetProjectsDisableXpnResourceRequestResource()
@@ -437,6 +577,10 @@ func (c *projectsRESTClient) DisableXpnResource(ctx context.Context, req *comput
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.Projects/DisableXpnResource")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/disableXpnResource")
+	}
 	opts = append((*c.CallOptions).DisableXpnResource[0:len((*c.CallOptions).DisableXpnResource):len((*c.CallOptions).DisableXpnResource)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -496,6 +640,10 @@ func (c *projectsRESTClient) EnableXpnHost(ctx context.Context, req *computepb.E
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.Projects/EnableXpnHost")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/enableXpnHost")
+	}
 	opts = append((*c.CallOptions).EnableXpnHost[0:len((*c.CallOptions).EnableXpnHost):len((*c.CallOptions).EnableXpnHost)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -534,7 +682,9 @@ func (c *projectsRESTClient) EnableXpnHost(ctx context.Context, req *computepb.E
 	return op, nil
 }
 
-// EnableXpnResource enable service resource (a.k.a service project) for a host project, so that subnets in the host project can be used by instances in the service project.
+// EnableXpnResource enable service resource (a.k.a service project) for a host project, so that
+// subnets in the host project can be used by instances in the service
+// project.
 func (c *projectsRESTClient) EnableXpnResource(ctx context.Context, req *computepb.EnableXpnResourceProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetProjectsEnableXpnResourceRequestResource()
@@ -562,6 +712,10 @@ func (c *projectsRESTClient) EnableXpnResource(ctx context.Context, req *compute
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.Projects/EnableXpnResource")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/enableXpnResource")
+	}
 	opts = append((*c.CallOptions).EnableXpnResource[0:len((*c.CallOptions).EnableXpnResource):len((*c.CallOptions).EnableXpnResource)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -600,7 +754,15 @@ func (c *projectsRESTClient) EnableXpnResource(ctx context.Context, req *compute
 	return op, nil
 }
 
-// Get returns the specified Project resource. To decrease latency for this method, you can optionally omit any unneeded information from the response by using a field mask. This practice is especially recommended for unused quota information (the quotas field). To exclude one or more fields, set your request’s fields query parameter to only include the fields you need. For example, to only include the id and selfLink fields, add the query parameter ?fields=id,selfLink to your request.
+// Get returns the specified Project resource.
+//
+// To decrease latency for this method, you can optionally omit any unneeded
+// information from the response by using a field mask. This practice is
+// especially recommended for unused quota information (the quotas field).
+// To exclude one or more fields, set your request’s fields query parameter
+// to only include the fields you need. For example, to only include the id
+// and selfLink fields, add the query parameter ?fields=id,selfLink to
+// your request.
 func (c *projectsRESTClient) Get(ctx context.Context, req *computepb.GetProjectRequest, opts ...gax.CallOption) (*computepb.Project, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -614,6 +776,10 @@ func (c *projectsRESTClient) Get(ctx context.Context, req *computepb.GetProjectR
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.Projects/Get")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}")
+	}
 	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Project{}
@@ -645,7 +811,8 @@ func (c *projectsRESTClient) Get(ctx context.Context, req *computepb.GetProjectR
 	return resp, nil
 }
 
-// GetXpnHost gets the shared VPC host project that this project links to. May be empty if no link exists.
+// GetXpnHost gets the shared VPC host project that this project links to. May be empty
+// if no link exists.
 func (c *projectsRESTClient) GetXpnHost(ctx context.Context, req *computepb.GetXpnHostProjectRequest, opts ...gax.CallOption) (*computepb.Project, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -659,6 +826,10 @@ func (c *projectsRESTClient) GetXpnHost(ctx context.Context, req *computepb.GetX
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.Projects/GetXpnHost")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/getXpnHost")
+	}
 	opts = append((*c.CallOptions).GetXpnHost[0:len((*c.CallOptions).GetXpnHost):len((*c.CallOptions).GetXpnHost)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Project{}
@@ -690,10 +861,11 @@ func (c *projectsRESTClient) GetXpnHost(ctx context.Context, req *computepb.GetX
 	return resp, nil
 }
 
-// GetXpnResources gets service resources (a.k.a service project) associated with this host project.
+// GetXpnResources gets service resources (a.k.a service project) associated with this host
+// project.
 func (c *projectsRESTClient) GetXpnResources(ctx context.Context, req *computepb.GetXpnResourcesProjectsRequest, opts ...gax.CallOption) *XpnResourceIdIterator {
 	it := &XpnResourceIdIterator{}
-	req = proto.Clone(req).(*computepb.GetXpnResourcesProjectsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.XpnResourceId, string, error) {
 		resp := &computepb.ProjectsGetXpnResources{}
@@ -723,9 +895,6 @@ func (c *projectsRESTClient) GetXpnResources(ctx context.Context, req *computepb
 		}
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -779,7 +948,7 @@ func (c *projectsRESTClient) GetXpnResources(ctx context.Context, req *computepb
 // ListXpnHosts lists all shared VPC host projects visible to the user in an organization.
 func (c *projectsRESTClient) ListXpnHosts(ctx context.Context, req *computepb.ListXpnHostsProjectsRequest, opts ...gax.CallOption) *ProjectIterator {
 	it := &ProjectIterator{}
-	req = proto.Clone(req).(*computepb.ListXpnHostsProjectsRequest)
+	req = proto.CloneOf(req)
 	m := protojson.MarshalOptions{AllowPartial: true}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.Project, string, error) {
@@ -815,9 +984,6 @@ func (c *projectsRESTClient) ListXpnHosts(ctx context.Context, req *computepb.Li
 		}
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -868,7 +1034,20 @@ func (c *projectsRESTClient) ListXpnHosts(ctx context.Context, req *computepb.Li
 	return it
 }
 
-// MoveDisk starting September 29, 2025, you can’t use the moveDisk API on new projects. To move a disk to a different region or zone, follow the steps in Change the location of a disk (at https://%7B$universe.dns_names.final_documentation_domain%7D/compute/docs/disks/migrate-to-hyperdisk#migrate-to-hd). Projects that already use the moveDisk API can continue usage until September 29, 2026. Starting November 1, 2025, API responses will include a warning message in the response body about the upcoming deprecation. You can skip the message to continue using the service without interruption.
+// MoveDisk moves a persistent disk from one zone to another.
+// Note: The moveDisk API will be deprecated on September 29, 2026.
+//
+// Starting September 29, 2025, you can’t use the moveDisk API on new
+// projects. To move a disk to a different region or zone, follow the steps in
+// Change the location of a
+// disk (at https://cloud.google.com/compute/docs/disks/migrate-to-hyperdisk#migrate-to-hd).
+//
+// Projects that already use the moveDisk API can continue usage until
+// September 29, 2026.
+//
+// Starting November 1, 2025, API responses will include a warning message in
+// the response body about the upcoming deprecation. You can skip the message
+// to continue using the service without interruption.
 func (c *projectsRESTClient) MoveDisk(ctx context.Context, req *computepb.MoveDiskProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetDiskMoveRequestResource()
@@ -896,6 +1075,10 @@ func (c *projectsRESTClient) MoveDisk(ctx context.Context, req *computepb.MoveDi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.Projects/MoveDisk")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/moveDisk")
+	}
 	opts = append((*c.CallOptions).MoveDisk[0:len((*c.CallOptions).MoveDisk):len((*c.CallOptions).MoveDisk)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -934,7 +1117,13 @@ func (c *projectsRESTClient) MoveDisk(ctx context.Context, req *computepb.MoveDi
 	return op, nil
 }
 
-// MoveInstance moves an instance and its attached persistent disks from one zone to another. Note: Moving VMs or disks by using this method might cause unexpected behavior. For more information, see the known issue (at /compute/docs/troubleshooting/known-issues#moving_vms_or_disks_using_the_moveinstance_api_or_the_causes_unexpected_behavior). [Deprecated] This method is deprecated. See moving instance across zones (at /compute/docs/instances/moving-instance-across-zones) instead.
+// MoveInstance moves an instance and its attached persistent disks from one zone to
+// another.
+// Note: Moving VMs or disks by using this method might
+// cause unexpected behavior. For more information, see the known
+// issue (at /compute/docs/troubleshooting/known-issues#moving_vms_or_disks_using_the_moveinstance_api_or_the_causes_unexpected_behavior).
+// [Deprecated] This method is deprecated. See moving instance across
+// zones (at /compute/docs/instances/moving-instance-across-zones) instead.
 func (c *projectsRESTClient) MoveInstance(ctx context.Context, req *computepb.MoveInstanceProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceMoveRequestResource()
@@ -962,6 +1151,10 @@ func (c *projectsRESTClient) MoveInstance(ctx context.Context, req *computepb.Mo
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.Projects/MoveInstance")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/moveInstance")
+	}
 	opts = append((*c.CallOptions).MoveInstance[0:len((*c.CallOptions).MoveInstance):len((*c.CallOptions).MoveInstance)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -1000,7 +1193,10 @@ func (c *projectsRESTClient) MoveInstance(ctx context.Context, req *computepb.Mo
 	return op, nil
 }
 
-// SetCloudArmorTier sets the Cloud Armor tier of the project. To set ENTERPRISE or above the billing account of the project must be subscribed to Cloud Armor Enterprise. See Subscribing to Cloud Armor Enterprise for more information.
+// SetCloudArmorTier sets the Cloud Armor tier of the project. To set ENTERPRISE or above the
+// billing account of the project must be subscribed to Cloud Armor
+// Enterprise. See Subscribing
+// to Cloud Armor Enterprise for more information.
 func (c *projectsRESTClient) SetCloudArmorTier(ctx context.Context, req *computepb.SetCloudArmorTierProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetProjectsSetCloudArmorTierRequestResource()
@@ -1028,6 +1224,10 @@ func (c *projectsRESTClient) SetCloudArmorTier(ctx context.Context, req *compute
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.Projects/SetCloudArmorTier")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/setCloudArmorTier")
+	}
 	opts = append((*c.CallOptions).SetCloudArmorTier[0:len((*c.CallOptions).SetCloudArmorTier):len((*c.CallOptions).SetCloudArmorTier)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -1066,7 +1266,8 @@ func (c *projectsRESTClient) SetCloudArmorTier(ctx context.Context, req *compute
 	return op, nil
 }
 
-// SetCommonInstanceMetadata sets metadata common to all instances within the specified project using the data included in the request.
+// SetCommonInstanceMetadata sets metadata common to all instances within the specified project using
+// the data included in the request.
 func (c *projectsRESTClient) SetCommonInstanceMetadata(ctx context.Context, req *computepb.SetCommonInstanceMetadataProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetMetadataResource()
@@ -1094,6 +1295,10 @@ func (c *projectsRESTClient) SetCommonInstanceMetadata(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.Projects/SetCommonInstanceMetadata")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/setCommonInstanceMetadata")
+	}
 	opts = append((*c.CallOptions).SetCommonInstanceMetadata[0:len((*c.CallOptions).SetCommonInstanceMetadata):len((*c.CallOptions).SetCommonInstanceMetadata)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -1132,7 +1337,9 @@ func (c *projectsRESTClient) SetCommonInstanceMetadata(ctx context.Context, req 
 	return op, nil
 }
 
-// SetDefaultNetworkTier sets the default network tier of the project. The default network tier is used when an address/forwardingRule/instance is created without specifying the network tier field.
+// SetDefaultNetworkTier sets the default network tier of the project. The default network tier is
+// used when an address/forwardingRule/instance is created without specifying
+// the network tier field.
 func (c *projectsRESTClient) SetDefaultNetworkTier(ctx context.Context, req *computepb.SetDefaultNetworkTierProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetProjectsSetDefaultNetworkTierRequestResource()
@@ -1160,6 +1367,10 @@ func (c *projectsRESTClient) SetDefaultNetworkTier(ctx context.Context, req *com
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.Projects/SetDefaultNetworkTier")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/setDefaultNetworkTier")
+	}
 	opts = append((*c.CallOptions).SetDefaultNetworkTier[0:len((*c.CallOptions).SetDefaultNetworkTier):len((*c.CallOptions).SetDefaultNetworkTier)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -1198,7 +1409,9 @@ func (c *projectsRESTClient) SetDefaultNetworkTier(ctx context.Context, req *com
 	return op, nil
 }
 
-// SetUsageExportBucket enables the usage export feature and sets the usage export bucket where reports are stored. If you provide an empty request body using this method, the usage export feature will be disabled.
+// SetUsageExportBucket enables the usage export feature and sets theusage export bucket
+// where reports are stored. If you provide an empty request body using this
+// method, the usage export feature will be disabled.
 func (c *projectsRESTClient) SetUsageExportBucket(ctx context.Context, req *computepb.SetUsageExportBucketProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetUsageExportLocationResource()
@@ -1226,6 +1439,10 @@ func (c *projectsRESTClient) SetUsageExportBucket(ctx context.Context, req *comp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.Projects/SetUsageExportBucket")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/setUsageExportBucket")
+	}
 	opts = append((*c.CallOptions).SetUsageExportBucket[0:len((*c.CallOptions).SetUsageExportBucket):len((*c.CallOptions).SetUsageExportBucket)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}

@@ -90,7 +90,7 @@ func ParseDML(filename, s string) (*DML, error) {
 	return dml, nil
 }
 
-func parseStatements(stmts statements, filename string, s string) error {
+func parseStatements(stmts statements, filename, s string) error {
 	p := newParser(filename, s)
 
 	stmts.setFilename(filename)
@@ -3404,6 +3404,7 @@ var baseTypes = map[string]TypeBase{
 	"PROTO":     Proto, // for use in CAST
 	"ENUM":      Enum,  // for use in CAST
 	"TOKENLIST": Tokenlist,
+	"UUID":      UUID,
 }
 
 func (p *parser) parseBaseType() (Type, *parseError) {
@@ -3554,7 +3555,6 @@ func (p *parser) parseBaseOrParameterizedType(withParam bool) (Type, *parseError
 		}
 		t.ProtoRef = pbTypeName
 		t.Base = Proto
-		return t, nil
 	case quotedID:
 		if !fqProtoMsgName.MatchString(tok.string) {
 			return Type{}, p.errorf("got %q, want fully qualified protobuf type", tok.value)
@@ -3565,7 +3565,6 @@ func (p *parser) parseBaseOrParameterizedType(withParam bool) (Type, *parseError
 		}
 		t.ProtoRef = pbTypeName
 		t.Base = Proto
-		return t, nil
 	default:
 	}
 	if withParam && (t.Base == String || t.Base == Bytes) {
@@ -3683,10 +3682,17 @@ func (p *parser) parseSelect() (Select, *parseError) {
 
 	var sel Select
 
-	if p.eat("ALL") {
-		// Nothing to do; this is the default.
-	} else if p.eat("DISTINCT") {
+	// Handle AS STRUCT, DISTINCT, and ALL, which can appear in flexible order.
+	if p.eat("AS", "STRUCT") {
+		sel.AsStruct = true
+	}
+	if p.eat("DISTINCT") {
 		sel.Distinct = true
+	} else if p.eat("ALL") {
+		// This is the default, just consume the token.
+	}
+	if !sel.AsStruct && p.eat("AS", "STRUCT") {
+		sel.AsStruct = true
 	}
 
 	// Read expressions for the SELECT list.
@@ -4655,8 +4661,26 @@ func (p *parser) parseLit() (Expr, *parseError) {
 		return BytesLiteral(tok.string), nil
 	}
 
-	// Handle parenthesized expressions.
+	// Handle parenthesized expressions and scalar subqueries.
+	// NOTE: The opening "(" has already been consumed by p.next() above (line 4638).
+	// The parser is now positioned right after the "(", ready to parse the contents.
 	if tok.value == "(" {
+		// Look ahead to see if this is a subquery like: (SELECT ...)
+		// p.sniff("SELECT") peeks at the next token without consuming it.
+		if p.sniff("SELECT") {
+			// Parse the subquery starting from the current position (after the "(")
+			q, err := p.parseQuery()
+			if err != nil {
+				return nil, err
+			}
+			if err := p.expect(")"); err != nil {
+				return nil, err
+			}
+			return ScalarSubquery{Query: q}, nil
+		}
+
+		// Regular parenthesized expression like: (1 + 2)
+		// Parse the inner expression starting from the current position (after the "(")
 		e, err := p.parseExpr()
 		if err != nil {
 			return nil, err
@@ -4665,6 +4689,17 @@ func (p *parser) parseLit() (Expr, *parseError) {
 			return nil, err
 		}
 		return Paren{Expr: e}, nil
+	}
+
+	// Handle ARRAY and STRUCT before generic function handling
+	// because they have special syntax (ARRAY can have subqueries, STRUCT can have types)
+	if tok.caseEqual("ARRAY") && (p.sniff("(") || p.sniff("[") || p.sniff("<")) {
+		p.back()
+		return p.parseArrayOrArraySubquery()
+	}
+	if tok.caseEqual("STRUCT") && (p.sniff("(") || p.sniff("<")) {
+		p.back()
+		return p.parseStructLit()
 	}
 
 	// If the literal was an identifier, and there's an open paren next,
@@ -4728,7 +4763,7 @@ func (p *parser) parseLit() (Expr, *parseError) {
 	switch {
 	case tok.caseEqual("ARRAY") || tok.value == "[":
 		p.back()
-		return p.parseArrayLit()
+		return p.parseArrayOrArraySubquery()
 	case tok.caseEqual("DATE"):
 		if p.sniffTokenType(stringToken) {
 			p.back()
@@ -4744,9 +4779,10 @@ func (p *parser) parseLit() (Expr, *parseError) {
 			p.back()
 			return p.parseJSONLit()
 		}
+	case tok.caseEqual("STRUCT"):
+		p.back()
+		return p.parseStructLit()
 	}
-
-	// TODO: struct literals
 
 	// Try a parameter.
 	// TODO: check character sets.
@@ -4923,6 +4959,67 @@ func (p *parser) parseNullIfExpr() (NullIf, *parseError) {
 	return NullIf{Expr: expr, ExprToMatch: exprToMatch}, nil
 }
 
+func (p *parser) parseArrayOrArraySubquery() (Expr, *parseError) {
+	// ARRAY can be followed by:
+	// - [...] for array literals
+	// - (SELECT ...) for array subqueries
+	// - <type>[...] for typed array literals
+
+	if p.sniff("[") {
+		// Handle [...] without ARRAY keyword
+		return p.parseArrayLit()
+	}
+
+	if !p.eat("ARRAY") {
+		return nil, p.errorf("expected ARRAY or [")
+	}
+
+	// After ARRAY, check what follows
+	// Skip any <type> specification if present
+	if p.eat("<") {
+		// This is a typed array literal ARRAY<type>[...]
+		// Skip the type specification
+		depth := 1
+		for depth > 0 && !p.done {
+			tok := p.next()
+			if tok.err != nil {
+				return nil, tok.err
+			}
+			if tok.value == "<" {
+				depth++
+			} else if tok.value == ">" {
+				depth--
+			}
+		}
+	}
+
+	// Now check for [ or (
+	if p.eat("[") {
+		// It's an array literal ARRAY[...] or ARRAY<type>[...]
+		// parseArrayLit expects to be positioned after ARRAY and will consume [...]
+		p.back() // Put [ back so parseArrayLit can consume it
+		return p.parseArrayLit()
+	} else if p.eat("(") {
+		// Check if it's a subquery: ARRAY(SELECT ...)
+		if p.sniff("SELECT") {
+			// It's an ARRAY subquery
+			q, err := p.parseQuery()
+			if err != nil {
+				return nil, err
+			}
+			if err := p.expect(")"); err != nil {
+				return nil, err
+			}
+			return ArraySubquery{Query: q}, nil
+		}
+
+		// Not supported: ARRAY(expr, expr, ...)
+		return nil, p.errorf("ARRAY(...) expression lists are not supported, use ARRAY[...] instead")
+	}
+
+	return nil, p.errorf("expected [ or ( after ARRAY")
+}
+
 func (p *parser) parseArrayLit() (Array, *parseError) {
 	// ARRAY keyword is optional.
 	// TODO: If it is present, consume any <T> after it.
@@ -4939,6 +5036,43 @@ func (p *parser) parseArrayLit() (Array, *parseError) {
 		return nil
 	})
 	return arr, err
+}
+
+func (p *parser) parseStructLit() (StructLiteral, *parseError) {
+	if err := p.expect("STRUCT"); err != nil {
+		return StructLiteral{}, err
+	}
+
+	var sl StructLiteral
+
+	// Check for typed struct: STRUCT<type1, type2, ...>
+	if p.eat("<") {
+		for {
+			typ, err := p.parseType()
+			if err != nil {
+				return StructLiteral{}, err
+			}
+			sl.FieldTypes = append(sl.FieldTypes, typ)
+
+			if !p.eat(",") {
+				break
+			}
+		}
+		if err := p.expect(">"); err != nil {
+			return StructLiteral{}, err
+		}
+	}
+
+	// Parse the field values
+	err := p.parseCommaList("(", ")", func(p *parser) *parseError {
+		e, err := p.parseExpr()
+		if err != nil {
+			return err
+		}
+		sl.Fields = append(sl.Fields, e)
+		return nil
+	})
+	return sl, err
 }
 
 // TODO: There should be exported Parse{Date,Timestamp}Literal package-level funcs

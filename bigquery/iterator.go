@@ -25,6 +25,10 @@ import (
 	"google.golang.org/api/iterator"
 )
 
+const (
+	defaultUseInt64Timestamp = true
+)
+
 // Construct a RowIterator.
 func newRowIterator(ctx context.Context, src *rowSource, pf pageFetcher) *RowIterator {
 	it := &RowIterator{
@@ -35,7 +39,7 @@ func newRowIterator(ctx context.Context, src *rowSource, pf pageFetcher) *RowIte
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(
 		it.fetch,
 		func() int { return len(it.rows) },
-		func() interface{} { r := it.rows; it.rows = nil; return r })
+		func() any { r := it.rows; it.rows = nil; return r })
 	return it
 }
 
@@ -153,7 +157,7 @@ type pageFetcher func(ctx context.Context, _ *rowSource, _ Schema, startIndex ui
 // NullFloat64, NullBool, NullString, NullTimestamp, NullDate, NullTime or
 // NullDateTime. You can also use a *[]Value or *map[string]Value to read from a
 // table with NULLs.
-func (it *RowIterator) Next(dst interface{}) error {
+func (it *RowIterator) Next(dst any) error {
 	var vl ValueLoader
 	switch dst := dst.(type) {
 	case ValueLoader:
@@ -184,9 +188,9 @@ func (it *RowIterator) Next(dst interface{}) error {
 	return vl.Load(row, it.Schema)
 }
 
-func isStructPtr(x interface{}) bool {
+func isStructPtr(x any) bool {
 	t := reflect.TypeOf(x)
-	return t.Kind() == reflect.Ptr && t.Elem().Kind() == reflect.Struct
+	return t.Kind() == reflect.Pointer && t.Elem().Kind() == reflect.Struct
 }
 
 // PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
@@ -269,6 +273,7 @@ func fetchPage(ctx context.Context, src *rowSource, schema Schema, startIndex ui
 }
 
 func fetchTableResultPage(ctx context.Context, src *rowSource, schema Schema, startIndex uint64, pageSize int64, pageToken string) (*fetchPageResult, error) {
+	ctx = setTableItemTraceMetadata(ctx, src.t.ProjectID, src.t.DatasetID, src.t.TableID, "data")
 	// Fetch the table schema in the background, if necessary.
 	errc := make(chan error, 1)
 	if schema != nil {
@@ -290,7 +295,7 @@ func fetchTableResultPage(ctx context.Context, src *rowSource, schema Schema, st
 		}()
 	}
 	call := src.t.c.bqs.Tabledata.List(src.t.ProjectID, src.t.DatasetID, src.t.TableID)
-	call = call.FormatOptionsUseInt64Timestamp(true)
+	call = call.FormatOptionsUseInt64Timestamp(defaultUseInt64Timestamp)
 	setClientHeader(call.Header())
 	if pageToken != "" {
 		call.PageToken(pageToken)
@@ -327,8 +332,9 @@ func fetchTableResultPage(ctx context.Context, src *rowSource, schema Schema, st
 func fetchJobResultPage(ctx context.Context, src *rowSource, schema Schema, startIndex uint64, pageSize int64, pageToken string) (*fetchPageResult, error) {
 	// reduce data transferred by leveraging api projections
 	projectedFields := []googleapi.Field{"rows", "pageToken", "totalRows"}
+	ctx = setJobItemTraceMetadata(ctx, src.j.projectID, src.j.jobID, "getQueryResults")
 	call := src.j.c.bqs.Jobs.GetQueryResults(src.j.projectID, src.j.jobID).Location(src.j.location).Context(ctx)
-	call = call.FormatOptionsUseInt64Timestamp(true)
+	call = call.FormatOptionsUseInt64Timestamp(defaultUseInt64Timestamp)
 	if schema == nil {
 		// only project schema if we weren't supplied one.
 		projectedFields = append(projectedFields, "schema")

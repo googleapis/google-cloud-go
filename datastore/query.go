@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"math"
 	"reflect"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -112,7 +113,7 @@ func (pf PropertyFilter) toProto() (*pb.Filter, error) {
 	if pf.FieldName == "" {
 		return nil, errors.New("datastore: empty query filter field name")
 	}
-	v, err := interfaceToProto(reflect.ValueOf(pf.Value).Interface(), false)
+	v, err := interfaceToProto(pf.Value, false)
 	if err != nil {
 		return nil, fmt.Errorf("datastore: bad query filter value type: %w", err)
 	}
@@ -270,14 +271,8 @@ type Query struct {
 func (q *Query) clone() *Query {
 	x := *q
 	// Copy the contents of the slice-typed fields to a new backing store.
-	if len(q.filter) > 0 {
-		x.filter = make([]EntityFilter, len(q.filter))
-		copy(x.filter, q.filter)
-	}
-	if len(q.order) > 0 {
-		x.order = make([]order, len(q.order))
-		copy(x.order, q.order)
-	}
+	x.filter = slices.Clone(q.filter)
+	x.order = slices.Clone(q.order)
 	return &x
 }
 
@@ -428,7 +423,7 @@ func unquote(s string) (string, error) {
 // cannot be used with KeysOnly.
 func (q *Query) Project(fieldNames ...string) *Query {
 	q = q.clone()
-	q.projection = append([]string(nil), fieldNames...)
+	q.projection = slices.Clone(fieldNames)
 	return q
 }
 
@@ -619,7 +614,7 @@ func (c *Client) Count(ctx context.Context, q *Query) (n int, err error) {
 	// directly.
 	it := c.Run(ctx, newQ)
 	for {
-		err := it.nextBatch()
+		err := it.nextBatch(it.ctx)
 		if err == iterator.Done {
 			return n, nil
 		}
@@ -1085,7 +1080,7 @@ func (t *Iterator) Next(dst interface{}) (k *Key, err error) {
 func (t *Iterator) next() (*Key, *pb.Entity, error) {
 	// Fetch additional batches while there are no more results.
 	for t.err == nil && len(t.results) == 0 {
-		t.err = t.nextBatch()
+		t.err = t.nextBatch(t.ctx)
 	}
 	if t.err != nil {
 		return nil, nil, t.err
@@ -1110,7 +1105,7 @@ func (t *Iterator) next() (*Key, *pb.Entity, error) {
 }
 
 // nextBatch makes a single call to the server for a batch of results.
-func (t *Iterator) nextBatch() error {
+func (t *Iterator) nextBatch(ctx context.Context) error {
 	if t.err != nil {
 		return t.err
 	}
@@ -1138,7 +1133,7 @@ func (t *Iterator) nextBatch() error {
 	}
 
 	// Run the query.
-	resp, err := t.client.client.RunQuery(t.ctx, t.req)
+	resp, err := t.client.client.RunQuery(ctx, t.req)
 	if err != nil {
 		return err
 	}
@@ -1250,12 +1245,12 @@ func fromPbExecutionStats(pbstats *pb.ExecutionStats) *ExecutionStats {
 
 // Cursor returns a cursor for the iterator's current location.
 func (t *Iterator) Cursor() (c Cursor, err error) {
-	t.ctx = trace.StartSpan(t.ctx, "cloud.google.com/go/datastore.Query.Cursor")
-	defer func() { trace.EndSpan(t.ctx, err) }()
+	ctx := trace.StartSpan(t.ctx, "cloud.google.com/go/datastore.Query.Cursor")
+	defer func() { trace.EndSpan(ctx, err) }()
 
 	// If there is still an offset, we need to the skip those results first.
 	for t.err == nil && t.offset > 0 {
-		t.err = t.nextBatch()
+		t.err = t.nextBatch(ctx)
 	}
 
 	if t.err != nil && t.err != iterator.Done {

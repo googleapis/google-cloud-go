@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import (
 	apihubpb "cloud.google.com/go/apihub/apiv1/apihubpb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -409,7 +410,7 @@ type Client struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *Client) Close() error {
 	return c.internalClient.Close()
@@ -891,6 +892,16 @@ type restClient struct {
 // This service provides all methods related to the API hub.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "apihub",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/apihub/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "apihub.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -904,6 +915,177 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "apihub",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/apihub/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "apihub.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateApi = append(callOpts.CreateApi, gax.WithClientMetrics(metrics))
+		callOpts.GetApi = append(callOpts.GetApi, gax.WithClientMetrics(metrics))
+		callOpts.ListApis = append(callOpts.ListApis, gax.WithClientMetrics(metrics))
+		callOpts.UpdateApi = append(callOpts.UpdateApi, gax.WithClientMetrics(metrics))
+		callOpts.DeleteApi = append(callOpts.DeleteApi, gax.WithClientMetrics(metrics))
+		callOpts.CreateVersion = append(callOpts.CreateVersion, gax.WithClientMetrics(metrics))
+		callOpts.GetVersion = append(callOpts.GetVersion, gax.WithClientMetrics(metrics))
+		callOpts.ListVersions = append(callOpts.ListVersions, gax.WithClientMetrics(metrics))
+		callOpts.UpdateVersion = append(callOpts.UpdateVersion, gax.WithClientMetrics(metrics))
+		callOpts.DeleteVersion = append(callOpts.DeleteVersion, gax.WithClientMetrics(metrics))
+		callOpts.CreateSpec = append(callOpts.CreateSpec, gax.WithClientMetrics(metrics))
+		callOpts.GetSpec = append(callOpts.GetSpec, gax.WithClientMetrics(metrics))
+		callOpts.GetSpecContents = append(callOpts.GetSpecContents, gax.WithClientMetrics(metrics))
+		callOpts.ListSpecs = append(callOpts.ListSpecs, gax.WithClientMetrics(metrics))
+		callOpts.UpdateSpec = append(callOpts.UpdateSpec, gax.WithClientMetrics(metrics))
+		callOpts.DeleteSpec = append(callOpts.DeleteSpec, gax.WithClientMetrics(metrics))
+		callOpts.CreateApiOperation = append(callOpts.CreateApiOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetApiOperation = append(callOpts.GetApiOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListApiOperations = append(callOpts.ListApiOperations, gax.WithClientMetrics(metrics))
+		callOpts.UpdateApiOperation = append(callOpts.UpdateApiOperation, gax.WithClientMetrics(metrics))
+		callOpts.DeleteApiOperation = append(callOpts.DeleteApiOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetDefinition = append(callOpts.GetDefinition, gax.WithClientMetrics(metrics))
+		callOpts.CreateDeployment = append(callOpts.CreateDeployment, gax.WithClientMetrics(metrics))
+		callOpts.GetDeployment = append(callOpts.GetDeployment, gax.WithClientMetrics(metrics))
+		callOpts.ListDeployments = append(callOpts.ListDeployments, gax.WithClientMetrics(metrics))
+		callOpts.UpdateDeployment = append(callOpts.UpdateDeployment, gax.WithClientMetrics(metrics))
+		callOpts.DeleteDeployment = append(callOpts.DeleteDeployment, gax.WithClientMetrics(metrics))
+		callOpts.CreateAttribute = append(callOpts.CreateAttribute, gax.WithClientMetrics(metrics))
+		callOpts.GetAttribute = append(callOpts.GetAttribute, gax.WithClientMetrics(metrics))
+		callOpts.UpdateAttribute = append(callOpts.UpdateAttribute, gax.WithClientMetrics(metrics))
+		callOpts.DeleteAttribute = append(callOpts.DeleteAttribute, gax.WithClientMetrics(metrics))
+		callOpts.ListAttributes = append(callOpts.ListAttributes, gax.WithClientMetrics(metrics))
+		callOpts.SearchResources = append(callOpts.SearchResources, gax.WithClientMetrics(metrics))
+		callOpts.CreateExternalApi = append(callOpts.CreateExternalApi, gax.WithClientMetrics(metrics))
+		callOpts.GetExternalApi = append(callOpts.GetExternalApi, gax.WithClientMetrics(metrics))
+		callOpts.UpdateExternalApi = append(callOpts.UpdateExternalApi, gax.WithClientMetrics(metrics))
+		callOpts.DeleteExternalApi = append(callOpts.DeleteExternalApi, gax.WithClientMetrics(metrics))
+		callOpts.ListExternalApis = append(callOpts.ListExternalApis, gax.WithClientMetrics(metrics))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "apihub",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/apihub/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "apihub.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateApi = append(callOpts.CreateApi, gax.WithClientTracing(tracing))
+		callOpts.GetApi = append(callOpts.GetApi, gax.WithClientTracing(tracing))
+		callOpts.ListApis = append(callOpts.ListApis, gax.WithClientTracing(tracing))
+		callOpts.UpdateApi = append(callOpts.UpdateApi, gax.WithClientTracing(tracing))
+		callOpts.DeleteApi = append(callOpts.DeleteApi, gax.WithClientTracing(tracing))
+		callOpts.CreateVersion = append(callOpts.CreateVersion, gax.WithClientTracing(tracing))
+		callOpts.GetVersion = append(callOpts.GetVersion, gax.WithClientTracing(tracing))
+		callOpts.ListVersions = append(callOpts.ListVersions, gax.WithClientTracing(tracing))
+		callOpts.UpdateVersion = append(callOpts.UpdateVersion, gax.WithClientTracing(tracing))
+		callOpts.DeleteVersion = append(callOpts.DeleteVersion, gax.WithClientTracing(tracing))
+		callOpts.CreateSpec = append(callOpts.CreateSpec, gax.WithClientTracing(tracing))
+		callOpts.GetSpec = append(callOpts.GetSpec, gax.WithClientTracing(tracing))
+		callOpts.GetSpecContents = append(callOpts.GetSpecContents, gax.WithClientTracing(tracing))
+		callOpts.ListSpecs = append(callOpts.ListSpecs, gax.WithClientTracing(tracing))
+		callOpts.UpdateSpec = append(callOpts.UpdateSpec, gax.WithClientTracing(tracing))
+		callOpts.DeleteSpec = append(callOpts.DeleteSpec, gax.WithClientTracing(tracing))
+		callOpts.CreateApiOperation = append(callOpts.CreateApiOperation, gax.WithClientTracing(tracing))
+		callOpts.GetApiOperation = append(callOpts.GetApiOperation, gax.WithClientTracing(tracing))
+		callOpts.ListApiOperations = append(callOpts.ListApiOperations, gax.WithClientTracing(tracing))
+		callOpts.UpdateApiOperation = append(callOpts.UpdateApiOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteApiOperation = append(callOpts.DeleteApiOperation, gax.WithClientTracing(tracing))
+		callOpts.GetDefinition = append(callOpts.GetDefinition, gax.WithClientTracing(tracing))
+		callOpts.CreateDeployment = append(callOpts.CreateDeployment, gax.WithClientTracing(tracing))
+		callOpts.GetDeployment = append(callOpts.GetDeployment, gax.WithClientTracing(tracing))
+		callOpts.ListDeployments = append(callOpts.ListDeployments, gax.WithClientTracing(tracing))
+		callOpts.UpdateDeployment = append(callOpts.UpdateDeployment, gax.WithClientTracing(tracing))
+		callOpts.DeleteDeployment = append(callOpts.DeleteDeployment, gax.WithClientTracing(tracing))
+		callOpts.CreateAttribute = append(callOpts.CreateAttribute, gax.WithClientTracing(tracing))
+		callOpts.GetAttribute = append(callOpts.GetAttribute, gax.WithClientTracing(tracing))
+		callOpts.UpdateAttribute = append(callOpts.UpdateAttribute, gax.WithClientTracing(tracing))
+		callOpts.DeleteAttribute = append(callOpts.DeleteAttribute, gax.WithClientTracing(tracing))
+		callOpts.ListAttributes = append(callOpts.ListAttributes, gax.WithClientTracing(tracing))
+		callOpts.SearchResources = append(callOpts.SearchResources, gax.WithClientTracing(tracing))
+		callOpts.CreateExternalApi = append(callOpts.CreateExternalApi, gax.WithClientTracing(tracing))
+		callOpts.GetExternalApi = append(callOpts.GetExternalApi, gax.WithClientTracing(tracing))
+		callOpts.UpdateExternalApi = append(callOpts.UpdateExternalApi, gax.WithClientTracing(tracing))
+		callOpts.DeleteExternalApi = append(callOpts.DeleteExternalApi, gax.WithClientTracing(tracing))
+		callOpts.ListExternalApis = append(callOpts.ListExternalApis, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "apihub",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/apihub/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "apihub.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateApi = append(callOpts.CreateApi, gax.WithClientLogging(logging))
+		callOpts.GetApi = append(callOpts.GetApi, gax.WithClientLogging(logging))
+		callOpts.ListApis = append(callOpts.ListApis, gax.WithClientLogging(logging))
+		callOpts.UpdateApi = append(callOpts.UpdateApi, gax.WithClientLogging(logging))
+		callOpts.DeleteApi = append(callOpts.DeleteApi, gax.WithClientLogging(logging))
+		callOpts.CreateVersion = append(callOpts.CreateVersion, gax.WithClientLogging(logging))
+		callOpts.GetVersion = append(callOpts.GetVersion, gax.WithClientLogging(logging))
+		callOpts.ListVersions = append(callOpts.ListVersions, gax.WithClientLogging(logging))
+		callOpts.UpdateVersion = append(callOpts.UpdateVersion, gax.WithClientLogging(logging))
+		callOpts.DeleteVersion = append(callOpts.DeleteVersion, gax.WithClientLogging(logging))
+		callOpts.CreateSpec = append(callOpts.CreateSpec, gax.WithClientLogging(logging))
+		callOpts.GetSpec = append(callOpts.GetSpec, gax.WithClientLogging(logging))
+		callOpts.GetSpecContents = append(callOpts.GetSpecContents, gax.WithClientLogging(logging))
+		callOpts.ListSpecs = append(callOpts.ListSpecs, gax.WithClientLogging(logging))
+		callOpts.UpdateSpec = append(callOpts.UpdateSpec, gax.WithClientLogging(logging))
+		callOpts.DeleteSpec = append(callOpts.DeleteSpec, gax.WithClientLogging(logging))
+		callOpts.CreateApiOperation = append(callOpts.CreateApiOperation, gax.WithClientLogging(logging))
+		callOpts.GetApiOperation = append(callOpts.GetApiOperation, gax.WithClientLogging(logging))
+		callOpts.ListApiOperations = append(callOpts.ListApiOperations, gax.WithClientLogging(logging))
+		callOpts.UpdateApiOperation = append(callOpts.UpdateApiOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteApiOperation = append(callOpts.DeleteApiOperation, gax.WithClientLogging(logging))
+		callOpts.GetDefinition = append(callOpts.GetDefinition, gax.WithClientLogging(logging))
+		callOpts.CreateDeployment = append(callOpts.CreateDeployment, gax.WithClientLogging(logging))
+		callOpts.GetDeployment = append(callOpts.GetDeployment, gax.WithClientLogging(logging))
+		callOpts.ListDeployments = append(callOpts.ListDeployments, gax.WithClientLogging(logging))
+		callOpts.UpdateDeployment = append(callOpts.UpdateDeployment, gax.WithClientLogging(logging))
+		callOpts.DeleteDeployment = append(callOpts.DeleteDeployment, gax.WithClientLogging(logging))
+		callOpts.CreateAttribute = append(callOpts.CreateAttribute, gax.WithClientLogging(logging))
+		callOpts.GetAttribute = append(callOpts.GetAttribute, gax.WithClientLogging(logging))
+		callOpts.UpdateAttribute = append(callOpts.UpdateAttribute, gax.WithClientLogging(logging))
+		callOpts.DeleteAttribute = append(callOpts.DeleteAttribute, gax.WithClientLogging(logging))
+		callOpts.ListAttributes = append(callOpts.ListAttributes, gax.WithClientLogging(logging))
+		callOpts.SearchResources = append(callOpts.SearchResources, gax.WithClientLogging(logging))
+		callOpts.CreateExternalApi = append(callOpts.CreateExternalApi, gax.WithClientLogging(logging))
+		callOpts.GetExternalApi = append(callOpts.GetExternalApi, gax.WithClientLogging(logging))
+		callOpts.UpdateExternalApi = append(callOpts.UpdateExternalApi, gax.WithClientLogging(logging))
+		callOpts.DeleteExternalApi = append(callOpts.DeleteExternalApi, gax.WithClientLogging(logging))
+		callOpts.ListExternalApis = append(callOpts.ListExternalApis, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -931,7 +1113,7 @@ func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *restClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -976,6 +1158,10 @@ func (c *restClient) CreateApi(ctx context.Context, req *apihubpb.CreateApiReque
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHub/CreateApi")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/apis")
+	}
 	opts = append((*c.CallOptions).CreateApi[0:len((*c.CallOptions).CreateApi):len((*c.CallOptions).CreateApi)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &apihubpb.Api{}
@@ -1026,6 +1212,10 @@ func (c *restClient) GetApi(ctx context.Context, req *apihubpb.GetApiRequest, op
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHub/GetApi")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/apis/*}")
+	}
 	opts = append((*c.CallOptions).GetApi[0:len((*c.CallOptions).GetApi):len((*c.CallOptions).GetApi)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &apihubpb.Api{}
@@ -1060,7 +1250,7 @@ func (c *restClient) GetApi(ctx context.Context, req *apihubpb.GetApiRequest, op
 // ListApis list API resources in the API hub.
 func (c *restClient) ListApis(ctx context.Context, req *apihubpb.ListApisRequest, opts ...gax.CallOption) *ApiIterator {
 	it := &ApiIterator{}
-	req = proto.Clone(req).(*apihubpb.ListApisRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apihubpb.Api, string, error) {
 		resp := &apihubpb.ListApisResponse{}
@@ -1199,6 +1389,10 @@ func (c *restClient) UpdateApi(ctx context.Context, req *apihubpb.UpdateApiReque
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHub/UpdateApi")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{api.name=projects/*/locations/*/apis/*}")
+	}
 	opts = append((*c.CallOptions).UpdateApi[0:len((*c.CallOptions).UpdateApi):len((*c.CallOptions).UpdateApi)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &apihubpb.Api{}
@@ -1253,6 +1447,10 @@ func (c *restClient) DeleteApi(ctx context.Context, req *apihubpb.DeleteApiReque
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHub/DeleteApi")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/apis/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1298,6 +1496,10 @@ func (c *restClient) CreateVersion(ctx context.Context, req *apihubpb.CreateVers
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHub/CreateVersion")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/apis/*}/versions")
+	}
 	opts = append((*c.CallOptions).CreateVersion[0:len((*c.CallOptions).CreateVersion):len((*c.CallOptions).CreateVersion)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &apihubpb.Version{}
@@ -1350,6 +1552,10 @@ func (c *restClient) GetVersion(ctx context.Context, req *apihubpb.GetVersionReq
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHub/GetVersion")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/apis/*/versions/*}")
+	}
 	opts = append((*c.CallOptions).GetVersion[0:len((*c.CallOptions).GetVersion):len((*c.CallOptions).GetVersion)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &apihubpb.Version{}
@@ -1384,7 +1590,7 @@ func (c *restClient) GetVersion(ctx context.Context, req *apihubpb.GetVersionReq
 // ListVersions list API versions of an API resource in the API hub.
 func (c *restClient) ListVersions(ctx context.Context, req *apihubpb.ListVersionsRequest, opts ...gax.CallOption) *VersionIterator {
 	it := &VersionIterator{}
-	req = proto.Clone(req).(*apihubpb.ListVersionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apihubpb.Version, string, error) {
 		resp := &apihubpb.ListVersionsResponse{}
@@ -1516,6 +1722,10 @@ func (c *restClient) UpdateVersion(ctx context.Context, req *apihubpb.UpdateVers
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHub/UpdateVersion")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{version.name=projects/*/locations/*/apis/*/versions/*}")
+	}
 	opts = append((*c.CallOptions).UpdateVersion[0:len((*c.CallOptions).UpdateVersion):len((*c.CallOptions).UpdateVersion)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &apihubpb.Version{}
@@ -1570,6 +1780,10 @@ func (c *restClient) DeleteVersion(ctx context.Context, req *apihubpb.DeleteVers
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHub/DeleteVersion")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/apis/*/versions/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1635,6 +1849,10 @@ func (c *restClient) CreateSpec(ctx context.Context, req *apihubpb.CreateSpecReq
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHub/CreateSpec")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/apis/*/versions/*}/specs")
+	}
 	opts = append((*c.CallOptions).CreateSpec[0:len((*c.CallOptions).CreateSpec):len((*c.CallOptions).CreateSpec)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &apihubpb.Spec{}
@@ -1688,6 +1906,10 @@ func (c *restClient) GetSpec(ctx context.Context, req *apihubpb.GetSpecRequest, 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHub/GetSpec")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/apis/*/versions/*/specs/*}")
+	}
 	opts = append((*c.CallOptions).GetSpec[0:len((*c.CallOptions).GetSpec):len((*c.CallOptions).GetSpec)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &apihubpb.Spec{}
@@ -1738,6 +1960,10 @@ func (c *restClient) GetSpecContents(ctx context.Context, req *apihubpb.GetSpecC
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHub/GetSpecContents")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/apis/*/versions/*/specs/*}:contents")
+	}
 	opts = append((*c.CallOptions).GetSpecContents[0:len((*c.CallOptions).GetSpecContents):len((*c.CallOptions).GetSpecContents)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &apihubpb.SpecContents{}
@@ -1772,7 +1998,7 @@ func (c *restClient) GetSpecContents(ctx context.Context, req *apihubpb.GetSpecC
 // ListSpecs list specs corresponding to a particular API resource.
 func (c *restClient) ListSpecs(ctx context.Context, req *apihubpb.ListSpecsRequest, opts ...gax.CallOption) *SpecIterator {
 	it := &SpecIterator{}
-	req = proto.Clone(req).(*apihubpb.ListSpecsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apihubpb.Spec, string, error) {
 		resp := &apihubpb.ListSpecsResponse{}
@@ -1912,6 +2138,10 @@ func (c *restClient) UpdateSpec(ctx context.Context, req *apihubpb.UpdateSpecReq
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHub/UpdateSpec")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{spec.name=projects/*/locations/*/apis/*/versions/*/specs/*}")
+	}
 	opts = append((*c.CallOptions).UpdateSpec[0:len((*c.CallOptions).UpdateSpec):len((*c.CallOptions).UpdateSpec)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &apihubpb.Spec{}
@@ -1964,6 +2194,10 @@ func (c *restClient) DeleteSpec(ctx context.Context, req *apihubpb.DeleteSpecReq
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHub/DeleteSpec")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/apis/*/versions/*/specs/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2011,6 +2245,10 @@ func (c *restClient) CreateApiOperation(ctx context.Context, req *apihubpb.Creat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHub/CreateApiOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/apis/*/versions/*}/operations")
+	}
 	opts = append((*c.CallOptions).CreateApiOperation[0:len((*c.CallOptions).CreateApiOperation):len((*c.CallOptions).CreateApiOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &apihubpb.ApiOperation{}
@@ -2061,6 +2299,10 @@ func (c *restClient) GetApiOperation(ctx context.Context, req *apihubpb.GetApiOp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHub/GetApiOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/apis/*/versions/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetApiOperation[0:len((*c.CallOptions).GetApiOperation):len((*c.CallOptions).GetApiOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &apihubpb.ApiOperation{}
@@ -2095,7 +2337,7 @@ func (c *restClient) GetApiOperation(ctx context.Context, req *apihubpb.GetApiOp
 // ListApiOperations list operations in an API version.
 func (c *restClient) ListApiOperations(ctx context.Context, req *apihubpb.ListApiOperationsRequest, opts ...gax.CallOption) *ApiOperationIterator {
 	it := &ApiOperationIterator{}
-	req = proto.Clone(req).(*apihubpb.ListApiOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apihubpb.ApiOperation, string, error) {
 		resp := &apihubpb.ListApiOperationsResponse{}
@@ -2229,6 +2471,10 @@ func (c *restClient) UpdateApiOperation(ctx context.Context, req *apihubpb.Updat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHub/UpdateApiOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{api_operation.name=projects/*/locations/*/apis/*/versions/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).UpdateApiOperation[0:len((*c.CallOptions).UpdateApiOperation):len((*c.CallOptions).UpdateApiOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &apihubpb.ApiOperation{}
@@ -2281,6 +2527,10 @@ func (c *restClient) DeleteApiOperation(ctx context.Context, req *apihubpb.Delet
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHub/DeleteApiOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/apis/*/versions/*/operations/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2316,6 +2566,10 @@ func (c *restClient) GetDefinition(ctx context.Context, req *apihubpb.GetDefinit
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHub/GetDefinition")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/apis/*/versions/*/definitions/*}")
+	}
 	opts = append((*c.CallOptions).GetDefinition[0:len((*c.CallOptions).GetDefinition):len((*c.CallOptions).GetDefinition)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &apihubpb.Definition{}
@@ -2378,6 +2632,10 @@ func (c *restClient) CreateDeployment(ctx context.Context, req *apihubpb.CreateD
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHub/CreateDeployment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/deployments")
+	}
 	opts = append((*c.CallOptions).CreateDeployment[0:len((*c.CallOptions).CreateDeployment):len((*c.CallOptions).CreateDeployment)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &apihubpb.Deployment{}
@@ -2428,6 +2686,10 @@ func (c *restClient) GetDeployment(ctx context.Context, req *apihubpb.GetDeploym
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHub/GetDeployment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/deployments/*}")
+	}
 	opts = append((*c.CallOptions).GetDeployment[0:len((*c.CallOptions).GetDeployment):len((*c.CallOptions).GetDeployment)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &apihubpb.Deployment{}
@@ -2462,7 +2724,7 @@ func (c *restClient) GetDeployment(ctx context.Context, req *apihubpb.GetDeploym
 // ListDeployments list deployment resources in the API hub.
 func (c *restClient) ListDeployments(ctx context.Context, req *apihubpb.ListDeploymentsRequest, opts ...gax.CallOption) *DeploymentIterator {
 	it := &DeploymentIterator{}
-	req = proto.Clone(req).(*apihubpb.ListDeploymentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apihubpb.Deployment, string, error) {
 		resp := &apihubpb.ListDeploymentsResponse{}
@@ -2605,6 +2867,10 @@ func (c *restClient) UpdateDeployment(ctx context.Context, req *apihubpb.UpdateD
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHub/UpdateDeployment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{deployment.name=projects/*/locations/*/deployments/*}")
+	}
 	opts = append((*c.CallOptions).UpdateDeployment[0:len((*c.CallOptions).UpdateDeployment):len((*c.CallOptions).UpdateDeployment)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &apihubpb.Deployment{}
@@ -2655,6 +2921,10 @@ func (c *restClient) DeleteDeployment(ctx context.Context, req *apihubpb.DeleteD
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHub/DeleteDeployment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/deployments/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2706,6 +2976,10 @@ func (c *restClient) CreateAttribute(ctx context.Context, req *apihubpb.CreateAt
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHub/CreateAttribute")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/attributes")
+	}
 	opts = append((*c.CallOptions).CreateAttribute[0:len((*c.CallOptions).CreateAttribute):len((*c.CallOptions).CreateAttribute)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &apihubpb.Attribute{}
@@ -2756,6 +3030,10 @@ func (c *restClient) GetAttribute(ctx context.Context, req *apihubpb.GetAttribut
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHub/GetAttribute")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/attributes/*}")
+	}
 	opts = append((*c.CallOptions).GetAttribute[0:len((*c.CallOptions).GetAttribute):len((*c.CallOptions).GetAttribute)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &apihubpb.Attribute{}
@@ -2845,6 +3123,10 @@ func (c *restClient) UpdateAttribute(ctx context.Context, req *apihubpb.UpdateAt
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHub/UpdateAttribute")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{attribute.name=projects/*/locations/*/attributes/*}")
+	}
 	opts = append((*c.CallOptions).UpdateAttribute[0:len((*c.CallOptions).UpdateAttribute):len((*c.CallOptions).UpdateAttribute)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &apihubpb.Attribute{}
@@ -2899,6 +3181,10 @@ func (c *restClient) DeleteAttribute(ctx context.Context, req *apihubpb.DeleteAt
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHub/DeleteAttribute")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/attributes/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2918,7 +3204,7 @@ func (c *restClient) DeleteAttribute(ctx context.Context, req *apihubpb.DeleteAt
 // ListAttributes list all attributes.
 func (c *restClient) ListAttributes(ctx context.Context, req *apihubpb.ListAttributesRequest, opts ...gax.CallOption) *AttributeIterator {
 	it := &AttributeIterator{}
-	req = proto.Clone(req).(*apihubpb.ListAttributesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apihubpb.Attribute, string, error) {
 		resp := &apihubpb.ListAttributesResponse{}
@@ -2999,7 +3285,7 @@ func (c *restClient) ListAttributes(ctx context.Context, req *apihubpb.ListAttri
 // SearchResources search across API-Hub resources.
 func (c *restClient) SearchResources(ctx context.Context, req *apihubpb.SearchResourcesRequest, opts ...gax.CallOption) *SearchResultIterator {
 	it := &SearchResultIterator{}
-	req = proto.Clone(req).(*apihubpb.SearchResourcesRequest)
+	req = proto.CloneOf(req)
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apihubpb.SearchResult, string, error) {
@@ -3103,6 +3389,10 @@ func (c *restClient) CreateExternalApi(ctx context.Context, req *apihubpb.Create
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHub/CreateExternalApi")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/externalApis")
+	}
 	opts = append((*c.CallOptions).CreateExternalApi[0:len((*c.CallOptions).CreateExternalApi):len((*c.CallOptions).CreateExternalApi)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &apihubpb.ExternalApi{}
@@ -3153,6 +3443,10 @@ func (c *restClient) GetExternalApi(ctx context.Context, req *apihubpb.GetExtern
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHub/GetExternalApi")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/externalApis/*}")
+	}
 	opts = append((*c.CallOptions).GetExternalApi[0:len((*c.CallOptions).GetExternalApi):len((*c.CallOptions).GetExternalApi)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &apihubpb.ExternalApi{}
@@ -3232,6 +3526,10 @@ func (c *restClient) UpdateExternalApi(ctx context.Context, req *apihubpb.Update
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHub/UpdateExternalApi")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{external_api.name=projects/*/locations/*/externalApis/*}")
+	}
 	opts = append((*c.CallOptions).UpdateExternalApi[0:len((*c.CallOptions).UpdateExternalApi):len((*c.CallOptions).UpdateExternalApi)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &apihubpb.ExternalApi{}
@@ -3282,6 +3580,10 @@ func (c *restClient) DeleteExternalApi(ctx context.Context, req *apihubpb.Delete
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHub/DeleteExternalApi")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/externalApis/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -3301,7 +3603,7 @@ func (c *restClient) DeleteExternalApi(ctx context.Context, req *apihubpb.Delete
 // ListExternalApis list External API resources in the API hub.
 func (c *restClient) ListExternalApis(ctx context.Context, req *apihubpb.ListExternalApisRequest, opts ...gax.CallOption) *ExternalApiIterator {
 	it := &ExternalApiIterator{}
-	req = proto.Clone(req).(*apihubpb.ListExternalApisRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apihubpb.ExternalApi, string, error) {
 		resp := &apihubpb.ListExternalApisResponse{}
@@ -3395,6 +3697,10 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*}")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &locationpb.Location{}
@@ -3429,7 +3735,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 // ListLocations lists information about the supported locations for this service.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -3532,6 +3838,10 @@ func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -3567,6 +3877,10 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -3602,6 +3916,10 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -3636,7 +3954,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
@@ -3664,6 +3982,9 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 		}
 		if req.GetPageToken() != "" {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req.GetReturnPartialSuccess() {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()

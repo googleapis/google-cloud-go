@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,12 +18,14 @@ package networksecurity
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	networksecuritypb "cloud.google.com/go/networksecurity/apiv1beta1/networksecuritypb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
@@ -571,6 +573,12 @@ func (op *UpdateServerTlsPolicyOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AuthorizationPolicyIterator) All() iter.Seq2[*networksecuritypb.AuthorizationPolicy, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // AuthorizationPolicyIterator manages a stream of *networksecuritypb.AuthorizationPolicy.
 type AuthorizationPolicyIterator struct {
 	items    []*networksecuritypb.AuthorizationPolicy
@@ -616,6 +624,12 @@ func (it *AuthorizationPolicyIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ClientTlsPolicyIterator) All() iter.Seq2[*networksecuritypb.ClientTlsPolicy, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ClientTlsPolicyIterator manages a stream of *networksecuritypb.ClientTlsPolicy.
@@ -665,6 +679,65 @@ func (it *ClientTlsPolicyIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DnsThreatDetectorIterator) All() iter.Seq2[*networksecuritypb.DnsThreatDetector, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
+// DnsThreatDetectorIterator manages a stream of *networksecuritypb.DnsThreatDetector.
+type DnsThreatDetectorIterator struct {
+	items    []*networksecuritypb.DnsThreatDetector
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*networksecuritypb.DnsThreatDetector, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *DnsThreatDetectorIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *DnsThreatDetectorIterator) Next() (*networksecuritypb.DnsThreatDetector, error) {
+	var item *networksecuritypb.DnsThreatDetector
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *DnsThreatDetectorIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *DnsThreatDetectorIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // LocationIterator manages a stream of *locationpb.Location.
 type LocationIterator struct {
 	items    []*locationpb.Location
@@ -712,6 +785,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OperationIterator manages a stream of *longrunningpb.Operation.
 type OperationIterator struct {
 	items    []*longrunningpb.Operation
@@ -757,6 +836,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ServerTlsPolicyIterator) All() iter.Seq2[*networksecuritypb.ServerTlsPolicy, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ServerTlsPolicyIterator manages a stream of *networksecuritypb.ServerTlsPolicy.

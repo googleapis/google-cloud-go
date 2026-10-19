@@ -1,0 +1,38 @@
+{
+  "include-component-in-tag": true,
+  "packages": {
+    "agentplatform": {
+      "component": "agentplatform"
+    },
+    "bigtable": {
+      "component": "bigtable"
+    },
+    "pubsub": {
+      "component": "pubsub",
+      "exclude-paths": [
+        "pubsub/v2"
+      ]
+    },
+    "pubsub/v2": {
+      "component": "pubsub"
+    },
+    "pubsublite": {
+      "component": "pubsublite"
+    },
+    "spanner": {
+      "component": "spanner"
+    },
+    "storage": {
+      "component": "storage"
+    },
+    "vertexai": {
+      "component": "vertexai"
+    }
+  },
+  "plugins": [
+    "sentence-case"
+  ],
+  "release-type": "go-librarian",
+  "separate-pull-requests": true,
+  "tag-separator": "/"
+}

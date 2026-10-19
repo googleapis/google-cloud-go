@@ -1,5 +1,58 @@
 # Changes
 
+## [1.35.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.34.0...cloudbuild/v1.35.0) (2026-10-15)
+
+
+### Features
+
+* Update API sources and regenerate ([#20683](https://github.com/googleapis/google-cloud-go/issues/20683)) ([005d7ce](https://github.com/googleapis/google-cloud-go/commit/005d7ce4872f1cf1ad269cd5d0ce8da7a844d3c8))
+
+## [1.34.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.33.0...cloudbuild/v1.34.0) (2026-09-23)
+
+
+### Features
+
+* **all:** Update supported go versions ([#20520](https://github.com/googleapis/google-cloud-go/issues/20520)) ([90413d3](https://github.com/googleapis/google-cloud-go/commit/90413d3e9d381ef4b92e3c496d98b023c5b2d8cc))
+
+## [1.33.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.32.0...cloudbuild/v1.33.0) (2026-08-20)
+
+
+### Features
+
+* Update sources and regenerate ([#20399](https://github.com/googleapis/google-cloud-go/issues/20399)) ([a6b5cdb](https://github.com/googleapis/google-cloud-go/commit/a6b5cdb4eec5e66fb6bb4a00f9ec89c088826e26))
+
+## [1.32.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.31.0...cloudbuild/v1.32.0) (2026-07-13)
+
+
+### Features
+
+* **o11y:** Regenerate clients for LRO tracing ([#20107](https://github.com/googleapis/google-cloud-go/issues/20107)) ([779074e](https://github.com/googleapis/google-cloud-go/commit/779074edd267a26520bae459307660953129eb07))
+
+## [1.31.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.30.0...cloudbuild/v1.31.0) (2026-06-26)
+
+
+### Features
+
+* Update API sources and regenerate ([#20047](https://github.com/googleapis/google-cloud-go/issues/20047)) ([e10c9bf](https://github.com/googleapis/google-cloud-go/commit/e10c9bf14d4fc23906d0b369e106420d44915660))
+
+## [1.30.0](https://github.com/googleapis/google-cloud-go/releases/tag/cloudbuild%2Fv1.30.0) (2026-05-07)
+
+## [1.29.0](https://github.com/googleapis/google-cloud-go/releases/tag/cloudbuild%2Fv1.29.0) (2026-04-30)
+
+## [1.28.0](https://github.com/googleapis/google-cloud-go/releases/tag/cloudbuild%2Fv1.28.0) (2026-04-13)
+
+## [1.27.0](https://github.com/googleapis/google-cloud-go/releases/tag/cloudbuild%2Fv1.27.0) (2026-04-09)
+
+## [1.26.0](https://github.com/googleapis/google-cloud-go/releases/tag/cloudbuild%2Fv1.26.0) (2026-04-02)
+
+## [1.25.0](https://github.com/googleapis/google-cloud-go/releases/tag/cloudbuild%2Fv1.25.0) (2025-12-18)
+
+## [1.24.0](https://github.com/googleapis/google-cloud-go/releases/tag/cloudbuild%2Fv1.24.0) (2025-12-04)
+
+### Features
+
+* Update GCB with latest proto changes ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+
 ## [1.23.1](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.23.0...cloudbuild/v1.23.1) (2025-10-07)
 
 

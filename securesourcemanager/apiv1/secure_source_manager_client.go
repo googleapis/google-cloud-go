@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -32,6 +32,8 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	securesourcemanagerpb "cloud.google.com/go/securesourcemanager/apiv1/securesourcemanagerpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -80,6 +82,7 @@ type CallOptions struct {
 	ListPullRequestFileDiffs       []gax.CallOption
 	FetchTree                      []gax.CallOption
 	FetchBlob                      []gax.CallOption
+	FetchRefs                      []gax.CallOption
 	CreateIssue                    []gax.CallOption
 	GetIssue                       []gax.CallOption
 	ListIssues                     []gax.CallOption
@@ -215,6 +218,7 @@ func defaultCallOptions() *CallOptions {
 		ListPullRequestFileDiffs:       []gax.CallOption{},
 		FetchTree:                      []gax.CallOption{},
 		FetchBlob:                      []gax.CallOption{},
+		FetchRefs:                      []gax.CallOption{},
 		CreateIssue:                    []gax.CallOption{},
 		GetIssue:                       []gax.CallOption{},
 		ListIssues:                     []gax.CallOption{},
@@ -331,6 +335,7 @@ func defaultRESTCallOptions() *CallOptions {
 		ListPullRequestFileDiffs:       []gax.CallOption{},
 		FetchTree:                      []gax.CallOption{},
 		FetchBlob:                      []gax.CallOption{},
+		FetchRefs:                      []gax.CallOption{},
 		CreateIssue:                    []gax.CallOption{},
 		GetIssue:                       []gax.CallOption{},
 		ListIssues:                     []gax.CallOption{},
@@ -416,6 +421,7 @@ type internalClient interface {
 	ListPullRequestFileDiffs(context.Context, *securesourcemanagerpb.ListPullRequestFileDiffsRequest, ...gax.CallOption) *FileDiffIterator
 	FetchTree(context.Context, *securesourcemanagerpb.FetchTreeRequest, ...gax.CallOption) *TreeEntryIterator
 	FetchBlob(context.Context, *securesourcemanagerpb.FetchBlobRequest, ...gax.CallOption) (*securesourcemanagerpb.FetchBlobResponse, error)
+	FetchRefs(context.Context, *securesourcemanagerpb.FetchRefsRequest, ...gax.CallOption) *RefIterator
 	CreateIssue(context.Context, *securesourcemanagerpb.CreateIssueRequest, ...gax.CallOption) (*CreateIssueOperation, error)
 	CreateIssueOperation(name string) *CreateIssueOperation
 	GetIssue(context.Context, *securesourcemanagerpb.GetIssueRequest, ...gax.CallOption) (*securesourcemanagerpb.Issue, error)
@@ -482,7 +488,7 @@ type Client struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *Client) Close() error {
 	return c.internalClient.Close()
@@ -766,6 +772,11 @@ func (c *Client) FetchBlob(ctx context.Context, req *securesourcemanagerpb.Fetch
 	return c.internalClient.FetchBlob(ctx, req, opts...)
 }
 
+// FetchRefs fetches git references from a repository.
+func (c *Client) FetchRefs(ctx context.Context, req *securesourcemanagerpb.FetchRefsRequest, opts ...gax.CallOption) *RefIterator {
+	return c.internalClient.FetchRefs(ctx, req, opts...)
+}
+
 // CreateIssue creates an issue.
 func (c *Client) CreateIssue(ctx context.Context, req *securesourcemanagerpb.CreateIssueRequest, opts ...gax.CallOption) (*CreateIssueOperation, error) {
 	return c.internalClient.CreateIssue(ctx, req, opts...)
@@ -881,7 +892,7 @@ func (c *Client) DeletePullRequestCommentOperation(name string) *DeletePullReque
 // BatchCreatePullRequestComments batch creates pull request comments. This function is used to create
 // multiple PullRequestComments for code review. There needs to be exactly one
 // PullRequestComment of type Review, and at most 100 PullRequestComments of
-// type Code per request. The Postition of the code comments must be unique
+// type Code per request. The Position of the code comments must be unique
 // within the request.
 func (c *Client) BatchCreatePullRequestComments(ctx context.Context, req *securesourcemanagerpb.BatchCreatePullRequestCommentsRequest, opts ...gax.CallOption) (*BatchCreatePullRequestCommentsOperation, error) {
 	return c.internalClient.BatchCreatePullRequestComments(ctx, req, opts...)
@@ -970,6 +981,21 @@ func (c *Client) GetLocation(ctx context.Context, req *locationpb.GetLocationReq
 }
 
 // ListLocations lists information about the supported locations for this service.
+//
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
+//
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *Client) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	return c.internalClient.ListLocations(ctx, req, opts...)
 }
@@ -1058,6 +1084,16 @@ type gRPCClient struct {
 // Access Secure Source Manager instances, resources, and repositories.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "securesourcemanager",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/securesourcemanager/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "securesourcemanager.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -1082,6 +1118,230 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "securesourcemanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/securesourcemanager/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "securesourcemanager.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListInstances = append(client.CallOptions.ListInstances, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetInstance = append(client.CallOptions.GetInstance, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateInstance = append(client.CallOptions.CreateInstance, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteInstance = append(client.CallOptions.DeleteInstance, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListRepositories = append(client.CallOptions.ListRepositories, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetRepository = append(client.CallOptions.GetRepository, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateRepository = append(client.CallOptions.CreateRepository, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateRepository = append(client.CallOptions.UpdateRepository, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteRepository = append(client.CallOptions.DeleteRepository, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListHooks = append(client.CallOptions.ListHooks, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetHook = append(client.CallOptions.GetHook, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateHook = append(client.CallOptions.CreateHook, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateHook = append(client.CallOptions.UpdateHook, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteHook = append(client.CallOptions.DeleteHook, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetIamPolicyRepo = append(client.CallOptions.GetIamPolicyRepo, gax.WithClientMetrics(metrics))
+		client.CallOptions.SetIamPolicyRepo = append(client.CallOptions.SetIamPolicyRepo, gax.WithClientMetrics(metrics))
+		client.CallOptions.TestIamPermissionsRepo = append(client.CallOptions.TestIamPermissionsRepo, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateBranchRule = append(client.CallOptions.CreateBranchRule, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListBranchRules = append(client.CallOptions.ListBranchRules, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetBranchRule = append(client.CallOptions.GetBranchRule, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateBranchRule = append(client.CallOptions.UpdateBranchRule, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteBranchRule = append(client.CallOptions.DeleteBranchRule, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreatePullRequest = append(client.CallOptions.CreatePullRequest, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetPullRequest = append(client.CallOptions.GetPullRequest, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListPullRequests = append(client.CallOptions.ListPullRequests, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdatePullRequest = append(client.CallOptions.UpdatePullRequest, gax.WithClientMetrics(metrics))
+		client.CallOptions.MergePullRequest = append(client.CallOptions.MergePullRequest, gax.WithClientMetrics(metrics))
+		client.CallOptions.OpenPullRequest = append(client.CallOptions.OpenPullRequest, gax.WithClientMetrics(metrics))
+		client.CallOptions.ClosePullRequest = append(client.CallOptions.ClosePullRequest, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListPullRequestFileDiffs = append(client.CallOptions.ListPullRequestFileDiffs, gax.WithClientMetrics(metrics))
+		client.CallOptions.FetchTree = append(client.CallOptions.FetchTree, gax.WithClientMetrics(metrics))
+		client.CallOptions.FetchBlob = append(client.CallOptions.FetchBlob, gax.WithClientMetrics(metrics))
+		client.CallOptions.FetchRefs = append(client.CallOptions.FetchRefs, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateIssue = append(client.CallOptions.CreateIssue, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetIssue = append(client.CallOptions.GetIssue, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListIssues = append(client.CallOptions.ListIssues, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateIssue = append(client.CallOptions.UpdateIssue, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteIssue = append(client.CallOptions.DeleteIssue, gax.WithClientMetrics(metrics))
+		client.CallOptions.OpenIssue = append(client.CallOptions.OpenIssue, gax.WithClientMetrics(metrics))
+		client.CallOptions.CloseIssue = append(client.CallOptions.CloseIssue, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetPullRequestComment = append(client.CallOptions.GetPullRequestComment, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListPullRequestComments = append(client.CallOptions.ListPullRequestComments, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreatePullRequestComment = append(client.CallOptions.CreatePullRequestComment, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdatePullRequestComment = append(client.CallOptions.UpdatePullRequestComment, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeletePullRequestComment = append(client.CallOptions.DeletePullRequestComment, gax.WithClientMetrics(metrics))
+		client.CallOptions.BatchCreatePullRequestComments = append(client.CallOptions.BatchCreatePullRequestComments, gax.WithClientMetrics(metrics))
+		client.CallOptions.ResolvePullRequestComments = append(client.CallOptions.ResolvePullRequestComments, gax.WithClientMetrics(metrics))
+		client.CallOptions.UnresolvePullRequestComments = append(client.CallOptions.UnresolvePullRequestComments, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateIssueComment = append(client.CallOptions.CreateIssueComment, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetIssueComment = append(client.CallOptions.GetIssueComment, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListIssueComments = append(client.CallOptions.ListIssueComments, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateIssueComment = append(client.CallOptions.UpdateIssueComment, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteIssueComment = append(client.CallOptions.DeleteIssueComment, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "securesourcemanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/securesourcemanager/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "securesourcemanager.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListInstances = append(client.CallOptions.ListInstances, gax.WithClientTracing(tracing))
+		client.CallOptions.GetInstance = append(client.CallOptions.GetInstance, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateInstance = append(client.CallOptions.CreateInstance, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteInstance = append(client.CallOptions.DeleteInstance, gax.WithClientTracing(tracing))
+		client.CallOptions.ListRepositories = append(client.CallOptions.ListRepositories, gax.WithClientTracing(tracing))
+		client.CallOptions.GetRepository = append(client.CallOptions.GetRepository, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateRepository = append(client.CallOptions.CreateRepository, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateRepository = append(client.CallOptions.UpdateRepository, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteRepository = append(client.CallOptions.DeleteRepository, gax.WithClientTracing(tracing))
+		client.CallOptions.ListHooks = append(client.CallOptions.ListHooks, gax.WithClientTracing(tracing))
+		client.CallOptions.GetHook = append(client.CallOptions.GetHook, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateHook = append(client.CallOptions.CreateHook, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateHook = append(client.CallOptions.UpdateHook, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteHook = append(client.CallOptions.DeleteHook, gax.WithClientTracing(tracing))
+		client.CallOptions.GetIamPolicyRepo = append(client.CallOptions.GetIamPolicyRepo, gax.WithClientTracing(tracing))
+		client.CallOptions.SetIamPolicyRepo = append(client.CallOptions.SetIamPolicyRepo, gax.WithClientTracing(tracing))
+		client.CallOptions.TestIamPermissionsRepo = append(client.CallOptions.TestIamPermissionsRepo, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateBranchRule = append(client.CallOptions.CreateBranchRule, gax.WithClientTracing(tracing))
+		client.CallOptions.ListBranchRules = append(client.CallOptions.ListBranchRules, gax.WithClientTracing(tracing))
+		client.CallOptions.GetBranchRule = append(client.CallOptions.GetBranchRule, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateBranchRule = append(client.CallOptions.UpdateBranchRule, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteBranchRule = append(client.CallOptions.DeleteBranchRule, gax.WithClientTracing(tracing))
+		client.CallOptions.CreatePullRequest = append(client.CallOptions.CreatePullRequest, gax.WithClientTracing(tracing))
+		client.CallOptions.GetPullRequest = append(client.CallOptions.GetPullRequest, gax.WithClientTracing(tracing))
+		client.CallOptions.ListPullRequests = append(client.CallOptions.ListPullRequests, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdatePullRequest = append(client.CallOptions.UpdatePullRequest, gax.WithClientTracing(tracing))
+		client.CallOptions.MergePullRequest = append(client.CallOptions.MergePullRequest, gax.WithClientTracing(tracing))
+		client.CallOptions.OpenPullRequest = append(client.CallOptions.OpenPullRequest, gax.WithClientTracing(tracing))
+		client.CallOptions.ClosePullRequest = append(client.CallOptions.ClosePullRequest, gax.WithClientTracing(tracing))
+		client.CallOptions.ListPullRequestFileDiffs = append(client.CallOptions.ListPullRequestFileDiffs, gax.WithClientTracing(tracing))
+		client.CallOptions.FetchTree = append(client.CallOptions.FetchTree, gax.WithClientTracing(tracing))
+		client.CallOptions.FetchBlob = append(client.CallOptions.FetchBlob, gax.WithClientTracing(tracing))
+		client.CallOptions.FetchRefs = append(client.CallOptions.FetchRefs, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateIssue = append(client.CallOptions.CreateIssue, gax.WithClientTracing(tracing))
+		client.CallOptions.GetIssue = append(client.CallOptions.GetIssue, gax.WithClientTracing(tracing))
+		client.CallOptions.ListIssues = append(client.CallOptions.ListIssues, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateIssue = append(client.CallOptions.UpdateIssue, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteIssue = append(client.CallOptions.DeleteIssue, gax.WithClientTracing(tracing))
+		client.CallOptions.OpenIssue = append(client.CallOptions.OpenIssue, gax.WithClientTracing(tracing))
+		client.CallOptions.CloseIssue = append(client.CallOptions.CloseIssue, gax.WithClientTracing(tracing))
+		client.CallOptions.GetPullRequestComment = append(client.CallOptions.GetPullRequestComment, gax.WithClientTracing(tracing))
+		client.CallOptions.ListPullRequestComments = append(client.CallOptions.ListPullRequestComments, gax.WithClientTracing(tracing))
+		client.CallOptions.CreatePullRequestComment = append(client.CallOptions.CreatePullRequestComment, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdatePullRequestComment = append(client.CallOptions.UpdatePullRequestComment, gax.WithClientTracing(tracing))
+		client.CallOptions.DeletePullRequestComment = append(client.CallOptions.DeletePullRequestComment, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchCreatePullRequestComments = append(client.CallOptions.BatchCreatePullRequestComments, gax.WithClientTracing(tracing))
+		client.CallOptions.ResolvePullRequestComments = append(client.CallOptions.ResolvePullRequestComments, gax.WithClientTracing(tracing))
+		client.CallOptions.UnresolvePullRequestComments = append(client.CallOptions.UnresolvePullRequestComments, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateIssueComment = append(client.CallOptions.CreateIssueComment, gax.WithClientTracing(tracing))
+		client.CallOptions.GetIssueComment = append(client.CallOptions.GetIssueComment, gax.WithClientTracing(tracing))
+		client.CallOptions.ListIssueComments = append(client.CallOptions.ListIssueComments, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateIssueComment = append(client.CallOptions.UpdateIssueComment, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteIssueComment = append(client.CallOptions.DeleteIssueComment, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "securesourcemanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/securesourcemanager/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "securesourcemanager.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListInstances = append(client.CallOptions.ListInstances, gax.WithClientLogging(logging))
+		client.CallOptions.GetInstance = append(client.CallOptions.GetInstance, gax.WithClientLogging(logging))
+		client.CallOptions.CreateInstance = append(client.CallOptions.CreateInstance, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteInstance = append(client.CallOptions.DeleteInstance, gax.WithClientLogging(logging))
+		client.CallOptions.ListRepositories = append(client.CallOptions.ListRepositories, gax.WithClientLogging(logging))
+		client.CallOptions.GetRepository = append(client.CallOptions.GetRepository, gax.WithClientLogging(logging))
+		client.CallOptions.CreateRepository = append(client.CallOptions.CreateRepository, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateRepository = append(client.CallOptions.UpdateRepository, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteRepository = append(client.CallOptions.DeleteRepository, gax.WithClientLogging(logging))
+		client.CallOptions.ListHooks = append(client.CallOptions.ListHooks, gax.WithClientLogging(logging))
+		client.CallOptions.GetHook = append(client.CallOptions.GetHook, gax.WithClientLogging(logging))
+		client.CallOptions.CreateHook = append(client.CallOptions.CreateHook, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateHook = append(client.CallOptions.UpdateHook, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteHook = append(client.CallOptions.DeleteHook, gax.WithClientLogging(logging))
+		client.CallOptions.GetIamPolicyRepo = append(client.CallOptions.GetIamPolicyRepo, gax.WithClientLogging(logging))
+		client.CallOptions.SetIamPolicyRepo = append(client.CallOptions.SetIamPolicyRepo, gax.WithClientLogging(logging))
+		client.CallOptions.TestIamPermissionsRepo = append(client.CallOptions.TestIamPermissionsRepo, gax.WithClientLogging(logging))
+		client.CallOptions.CreateBranchRule = append(client.CallOptions.CreateBranchRule, gax.WithClientLogging(logging))
+		client.CallOptions.ListBranchRules = append(client.CallOptions.ListBranchRules, gax.WithClientLogging(logging))
+		client.CallOptions.GetBranchRule = append(client.CallOptions.GetBranchRule, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateBranchRule = append(client.CallOptions.UpdateBranchRule, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteBranchRule = append(client.CallOptions.DeleteBranchRule, gax.WithClientLogging(logging))
+		client.CallOptions.CreatePullRequest = append(client.CallOptions.CreatePullRequest, gax.WithClientLogging(logging))
+		client.CallOptions.GetPullRequest = append(client.CallOptions.GetPullRequest, gax.WithClientLogging(logging))
+		client.CallOptions.ListPullRequests = append(client.CallOptions.ListPullRequests, gax.WithClientLogging(logging))
+		client.CallOptions.UpdatePullRequest = append(client.CallOptions.UpdatePullRequest, gax.WithClientLogging(logging))
+		client.CallOptions.MergePullRequest = append(client.CallOptions.MergePullRequest, gax.WithClientLogging(logging))
+		client.CallOptions.OpenPullRequest = append(client.CallOptions.OpenPullRequest, gax.WithClientLogging(logging))
+		client.CallOptions.ClosePullRequest = append(client.CallOptions.ClosePullRequest, gax.WithClientLogging(logging))
+		client.CallOptions.ListPullRequestFileDiffs = append(client.CallOptions.ListPullRequestFileDiffs, gax.WithClientLogging(logging))
+		client.CallOptions.FetchTree = append(client.CallOptions.FetchTree, gax.WithClientLogging(logging))
+		client.CallOptions.FetchBlob = append(client.CallOptions.FetchBlob, gax.WithClientLogging(logging))
+		client.CallOptions.FetchRefs = append(client.CallOptions.FetchRefs, gax.WithClientLogging(logging))
+		client.CallOptions.CreateIssue = append(client.CallOptions.CreateIssue, gax.WithClientLogging(logging))
+		client.CallOptions.GetIssue = append(client.CallOptions.GetIssue, gax.WithClientLogging(logging))
+		client.CallOptions.ListIssues = append(client.CallOptions.ListIssues, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateIssue = append(client.CallOptions.UpdateIssue, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteIssue = append(client.CallOptions.DeleteIssue, gax.WithClientLogging(logging))
+		client.CallOptions.OpenIssue = append(client.CallOptions.OpenIssue, gax.WithClientLogging(logging))
+		client.CallOptions.CloseIssue = append(client.CallOptions.CloseIssue, gax.WithClientLogging(logging))
+		client.CallOptions.GetPullRequestComment = append(client.CallOptions.GetPullRequestComment, gax.WithClientLogging(logging))
+		client.CallOptions.ListPullRequestComments = append(client.CallOptions.ListPullRequestComments, gax.WithClientLogging(logging))
+		client.CallOptions.CreatePullRequestComment = append(client.CallOptions.CreatePullRequestComment, gax.WithClientLogging(logging))
+		client.CallOptions.UpdatePullRequestComment = append(client.CallOptions.UpdatePullRequestComment, gax.WithClientLogging(logging))
+		client.CallOptions.DeletePullRequestComment = append(client.CallOptions.DeletePullRequestComment, gax.WithClientLogging(logging))
+		client.CallOptions.BatchCreatePullRequestComments = append(client.CallOptions.BatchCreatePullRequestComments, gax.WithClientLogging(logging))
+		client.CallOptions.ResolvePullRequestComments = append(client.CallOptions.ResolvePullRequestComments, gax.WithClientLogging(logging))
+		client.CallOptions.UnresolvePullRequestComments = append(client.CallOptions.UnresolvePullRequestComments, gax.WithClientLogging(logging))
+		client.CallOptions.CreateIssueComment = append(client.CallOptions.CreateIssueComment, gax.WithClientLogging(logging))
+		client.CallOptions.GetIssueComment = append(client.CallOptions.GetIssueComment, gax.WithClientLogging(logging))
+		client.CallOptions.ListIssueComments = append(client.CallOptions.ListIssueComments, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateIssueComment = append(client.CallOptions.UpdateIssueComment, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteIssueComment = append(client.CallOptions.DeleteIssueComment, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -1118,7 +1378,7 @@ func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *gRPCClient) Close() error {
 	return c.connPool.Close()
@@ -1153,6 +1413,16 @@ type restClient struct {
 // Access Secure Source Manager instances, resources, and repositories.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "securesourcemanager",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/securesourcemanager/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "securesourcemanager.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -1166,6 +1436,231 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "securesourcemanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/securesourcemanager/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "securesourcemanager.googleapis.com",
+			}),
+		)
+
+		callOpts.ListInstances = append(callOpts.ListInstances, gax.WithClientMetrics(metrics))
+		callOpts.GetInstance = append(callOpts.GetInstance, gax.WithClientMetrics(metrics))
+		callOpts.CreateInstance = append(callOpts.CreateInstance, gax.WithClientMetrics(metrics))
+		callOpts.DeleteInstance = append(callOpts.DeleteInstance, gax.WithClientMetrics(metrics))
+		callOpts.ListRepositories = append(callOpts.ListRepositories, gax.WithClientMetrics(metrics))
+		callOpts.GetRepository = append(callOpts.GetRepository, gax.WithClientMetrics(metrics))
+		callOpts.CreateRepository = append(callOpts.CreateRepository, gax.WithClientMetrics(metrics))
+		callOpts.UpdateRepository = append(callOpts.UpdateRepository, gax.WithClientMetrics(metrics))
+		callOpts.DeleteRepository = append(callOpts.DeleteRepository, gax.WithClientMetrics(metrics))
+		callOpts.ListHooks = append(callOpts.ListHooks, gax.WithClientMetrics(metrics))
+		callOpts.GetHook = append(callOpts.GetHook, gax.WithClientMetrics(metrics))
+		callOpts.CreateHook = append(callOpts.CreateHook, gax.WithClientMetrics(metrics))
+		callOpts.UpdateHook = append(callOpts.UpdateHook, gax.WithClientMetrics(metrics))
+		callOpts.DeleteHook = append(callOpts.DeleteHook, gax.WithClientMetrics(metrics))
+		callOpts.GetIamPolicyRepo = append(callOpts.GetIamPolicyRepo, gax.WithClientMetrics(metrics))
+		callOpts.SetIamPolicyRepo = append(callOpts.SetIamPolicyRepo, gax.WithClientMetrics(metrics))
+		callOpts.TestIamPermissionsRepo = append(callOpts.TestIamPermissionsRepo, gax.WithClientMetrics(metrics))
+		callOpts.CreateBranchRule = append(callOpts.CreateBranchRule, gax.WithClientMetrics(metrics))
+		callOpts.ListBranchRules = append(callOpts.ListBranchRules, gax.WithClientMetrics(metrics))
+		callOpts.GetBranchRule = append(callOpts.GetBranchRule, gax.WithClientMetrics(metrics))
+		callOpts.UpdateBranchRule = append(callOpts.UpdateBranchRule, gax.WithClientMetrics(metrics))
+		callOpts.DeleteBranchRule = append(callOpts.DeleteBranchRule, gax.WithClientMetrics(metrics))
+		callOpts.CreatePullRequest = append(callOpts.CreatePullRequest, gax.WithClientMetrics(metrics))
+		callOpts.GetPullRequest = append(callOpts.GetPullRequest, gax.WithClientMetrics(metrics))
+		callOpts.ListPullRequests = append(callOpts.ListPullRequests, gax.WithClientMetrics(metrics))
+		callOpts.UpdatePullRequest = append(callOpts.UpdatePullRequest, gax.WithClientMetrics(metrics))
+		callOpts.MergePullRequest = append(callOpts.MergePullRequest, gax.WithClientMetrics(metrics))
+		callOpts.OpenPullRequest = append(callOpts.OpenPullRequest, gax.WithClientMetrics(metrics))
+		callOpts.ClosePullRequest = append(callOpts.ClosePullRequest, gax.WithClientMetrics(metrics))
+		callOpts.ListPullRequestFileDiffs = append(callOpts.ListPullRequestFileDiffs, gax.WithClientMetrics(metrics))
+		callOpts.FetchTree = append(callOpts.FetchTree, gax.WithClientMetrics(metrics))
+		callOpts.FetchBlob = append(callOpts.FetchBlob, gax.WithClientMetrics(metrics))
+		callOpts.FetchRefs = append(callOpts.FetchRefs, gax.WithClientMetrics(metrics))
+		callOpts.CreateIssue = append(callOpts.CreateIssue, gax.WithClientMetrics(metrics))
+		callOpts.GetIssue = append(callOpts.GetIssue, gax.WithClientMetrics(metrics))
+		callOpts.ListIssues = append(callOpts.ListIssues, gax.WithClientMetrics(metrics))
+		callOpts.UpdateIssue = append(callOpts.UpdateIssue, gax.WithClientMetrics(metrics))
+		callOpts.DeleteIssue = append(callOpts.DeleteIssue, gax.WithClientMetrics(metrics))
+		callOpts.OpenIssue = append(callOpts.OpenIssue, gax.WithClientMetrics(metrics))
+		callOpts.CloseIssue = append(callOpts.CloseIssue, gax.WithClientMetrics(metrics))
+		callOpts.GetPullRequestComment = append(callOpts.GetPullRequestComment, gax.WithClientMetrics(metrics))
+		callOpts.ListPullRequestComments = append(callOpts.ListPullRequestComments, gax.WithClientMetrics(metrics))
+		callOpts.CreatePullRequestComment = append(callOpts.CreatePullRequestComment, gax.WithClientMetrics(metrics))
+		callOpts.UpdatePullRequestComment = append(callOpts.UpdatePullRequestComment, gax.WithClientMetrics(metrics))
+		callOpts.DeletePullRequestComment = append(callOpts.DeletePullRequestComment, gax.WithClientMetrics(metrics))
+		callOpts.BatchCreatePullRequestComments = append(callOpts.BatchCreatePullRequestComments, gax.WithClientMetrics(metrics))
+		callOpts.ResolvePullRequestComments = append(callOpts.ResolvePullRequestComments, gax.WithClientMetrics(metrics))
+		callOpts.UnresolvePullRequestComments = append(callOpts.UnresolvePullRequestComments, gax.WithClientMetrics(metrics))
+		callOpts.CreateIssueComment = append(callOpts.CreateIssueComment, gax.WithClientMetrics(metrics))
+		callOpts.GetIssueComment = append(callOpts.GetIssueComment, gax.WithClientMetrics(metrics))
+		callOpts.ListIssueComments = append(callOpts.ListIssueComments, gax.WithClientMetrics(metrics))
+		callOpts.UpdateIssueComment = append(callOpts.UpdateIssueComment, gax.WithClientMetrics(metrics))
+		callOpts.DeleteIssueComment = append(callOpts.DeleteIssueComment, gax.WithClientMetrics(metrics))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "securesourcemanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/securesourcemanager/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "securesourcemanager.googleapis.com",
+			}),
+		)
+
+		callOpts.ListInstances = append(callOpts.ListInstances, gax.WithClientTracing(tracing))
+		callOpts.GetInstance = append(callOpts.GetInstance, gax.WithClientTracing(tracing))
+		callOpts.CreateInstance = append(callOpts.CreateInstance, gax.WithClientTracing(tracing))
+		callOpts.DeleteInstance = append(callOpts.DeleteInstance, gax.WithClientTracing(tracing))
+		callOpts.ListRepositories = append(callOpts.ListRepositories, gax.WithClientTracing(tracing))
+		callOpts.GetRepository = append(callOpts.GetRepository, gax.WithClientTracing(tracing))
+		callOpts.CreateRepository = append(callOpts.CreateRepository, gax.WithClientTracing(tracing))
+		callOpts.UpdateRepository = append(callOpts.UpdateRepository, gax.WithClientTracing(tracing))
+		callOpts.DeleteRepository = append(callOpts.DeleteRepository, gax.WithClientTracing(tracing))
+		callOpts.ListHooks = append(callOpts.ListHooks, gax.WithClientTracing(tracing))
+		callOpts.GetHook = append(callOpts.GetHook, gax.WithClientTracing(tracing))
+		callOpts.CreateHook = append(callOpts.CreateHook, gax.WithClientTracing(tracing))
+		callOpts.UpdateHook = append(callOpts.UpdateHook, gax.WithClientTracing(tracing))
+		callOpts.DeleteHook = append(callOpts.DeleteHook, gax.WithClientTracing(tracing))
+		callOpts.GetIamPolicyRepo = append(callOpts.GetIamPolicyRepo, gax.WithClientTracing(tracing))
+		callOpts.SetIamPolicyRepo = append(callOpts.SetIamPolicyRepo, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissionsRepo = append(callOpts.TestIamPermissionsRepo, gax.WithClientTracing(tracing))
+		callOpts.CreateBranchRule = append(callOpts.CreateBranchRule, gax.WithClientTracing(tracing))
+		callOpts.ListBranchRules = append(callOpts.ListBranchRules, gax.WithClientTracing(tracing))
+		callOpts.GetBranchRule = append(callOpts.GetBranchRule, gax.WithClientTracing(tracing))
+		callOpts.UpdateBranchRule = append(callOpts.UpdateBranchRule, gax.WithClientTracing(tracing))
+		callOpts.DeleteBranchRule = append(callOpts.DeleteBranchRule, gax.WithClientTracing(tracing))
+		callOpts.CreatePullRequest = append(callOpts.CreatePullRequest, gax.WithClientTracing(tracing))
+		callOpts.GetPullRequest = append(callOpts.GetPullRequest, gax.WithClientTracing(tracing))
+		callOpts.ListPullRequests = append(callOpts.ListPullRequests, gax.WithClientTracing(tracing))
+		callOpts.UpdatePullRequest = append(callOpts.UpdatePullRequest, gax.WithClientTracing(tracing))
+		callOpts.MergePullRequest = append(callOpts.MergePullRequest, gax.WithClientTracing(tracing))
+		callOpts.OpenPullRequest = append(callOpts.OpenPullRequest, gax.WithClientTracing(tracing))
+		callOpts.ClosePullRequest = append(callOpts.ClosePullRequest, gax.WithClientTracing(tracing))
+		callOpts.ListPullRequestFileDiffs = append(callOpts.ListPullRequestFileDiffs, gax.WithClientTracing(tracing))
+		callOpts.FetchTree = append(callOpts.FetchTree, gax.WithClientTracing(tracing))
+		callOpts.FetchBlob = append(callOpts.FetchBlob, gax.WithClientTracing(tracing))
+		callOpts.FetchRefs = append(callOpts.FetchRefs, gax.WithClientTracing(tracing))
+		callOpts.CreateIssue = append(callOpts.CreateIssue, gax.WithClientTracing(tracing))
+		callOpts.GetIssue = append(callOpts.GetIssue, gax.WithClientTracing(tracing))
+		callOpts.ListIssues = append(callOpts.ListIssues, gax.WithClientTracing(tracing))
+		callOpts.UpdateIssue = append(callOpts.UpdateIssue, gax.WithClientTracing(tracing))
+		callOpts.DeleteIssue = append(callOpts.DeleteIssue, gax.WithClientTracing(tracing))
+		callOpts.OpenIssue = append(callOpts.OpenIssue, gax.WithClientTracing(tracing))
+		callOpts.CloseIssue = append(callOpts.CloseIssue, gax.WithClientTracing(tracing))
+		callOpts.GetPullRequestComment = append(callOpts.GetPullRequestComment, gax.WithClientTracing(tracing))
+		callOpts.ListPullRequestComments = append(callOpts.ListPullRequestComments, gax.WithClientTracing(tracing))
+		callOpts.CreatePullRequestComment = append(callOpts.CreatePullRequestComment, gax.WithClientTracing(tracing))
+		callOpts.UpdatePullRequestComment = append(callOpts.UpdatePullRequestComment, gax.WithClientTracing(tracing))
+		callOpts.DeletePullRequestComment = append(callOpts.DeletePullRequestComment, gax.WithClientTracing(tracing))
+		callOpts.BatchCreatePullRequestComments = append(callOpts.BatchCreatePullRequestComments, gax.WithClientTracing(tracing))
+		callOpts.ResolvePullRequestComments = append(callOpts.ResolvePullRequestComments, gax.WithClientTracing(tracing))
+		callOpts.UnresolvePullRequestComments = append(callOpts.UnresolvePullRequestComments, gax.WithClientTracing(tracing))
+		callOpts.CreateIssueComment = append(callOpts.CreateIssueComment, gax.WithClientTracing(tracing))
+		callOpts.GetIssueComment = append(callOpts.GetIssueComment, gax.WithClientTracing(tracing))
+		callOpts.ListIssueComments = append(callOpts.ListIssueComments, gax.WithClientTracing(tracing))
+		callOpts.UpdateIssueComment = append(callOpts.UpdateIssueComment, gax.WithClientTracing(tracing))
+		callOpts.DeleteIssueComment = append(callOpts.DeleteIssueComment, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "securesourcemanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/securesourcemanager/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "securesourcemanager.googleapis.com",
+			}),
+		)
+
+		callOpts.ListInstances = append(callOpts.ListInstances, gax.WithClientLogging(logging))
+		callOpts.GetInstance = append(callOpts.GetInstance, gax.WithClientLogging(logging))
+		callOpts.CreateInstance = append(callOpts.CreateInstance, gax.WithClientLogging(logging))
+		callOpts.DeleteInstance = append(callOpts.DeleteInstance, gax.WithClientLogging(logging))
+		callOpts.ListRepositories = append(callOpts.ListRepositories, gax.WithClientLogging(logging))
+		callOpts.GetRepository = append(callOpts.GetRepository, gax.WithClientLogging(logging))
+		callOpts.CreateRepository = append(callOpts.CreateRepository, gax.WithClientLogging(logging))
+		callOpts.UpdateRepository = append(callOpts.UpdateRepository, gax.WithClientLogging(logging))
+		callOpts.DeleteRepository = append(callOpts.DeleteRepository, gax.WithClientLogging(logging))
+		callOpts.ListHooks = append(callOpts.ListHooks, gax.WithClientLogging(logging))
+		callOpts.GetHook = append(callOpts.GetHook, gax.WithClientLogging(logging))
+		callOpts.CreateHook = append(callOpts.CreateHook, gax.WithClientLogging(logging))
+		callOpts.UpdateHook = append(callOpts.UpdateHook, gax.WithClientLogging(logging))
+		callOpts.DeleteHook = append(callOpts.DeleteHook, gax.WithClientLogging(logging))
+		callOpts.GetIamPolicyRepo = append(callOpts.GetIamPolicyRepo, gax.WithClientLogging(logging))
+		callOpts.SetIamPolicyRepo = append(callOpts.SetIamPolicyRepo, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissionsRepo = append(callOpts.TestIamPermissionsRepo, gax.WithClientLogging(logging))
+		callOpts.CreateBranchRule = append(callOpts.CreateBranchRule, gax.WithClientLogging(logging))
+		callOpts.ListBranchRules = append(callOpts.ListBranchRules, gax.WithClientLogging(logging))
+		callOpts.GetBranchRule = append(callOpts.GetBranchRule, gax.WithClientLogging(logging))
+		callOpts.UpdateBranchRule = append(callOpts.UpdateBranchRule, gax.WithClientLogging(logging))
+		callOpts.DeleteBranchRule = append(callOpts.DeleteBranchRule, gax.WithClientLogging(logging))
+		callOpts.CreatePullRequest = append(callOpts.CreatePullRequest, gax.WithClientLogging(logging))
+		callOpts.GetPullRequest = append(callOpts.GetPullRequest, gax.WithClientLogging(logging))
+		callOpts.ListPullRequests = append(callOpts.ListPullRequests, gax.WithClientLogging(logging))
+		callOpts.UpdatePullRequest = append(callOpts.UpdatePullRequest, gax.WithClientLogging(logging))
+		callOpts.MergePullRequest = append(callOpts.MergePullRequest, gax.WithClientLogging(logging))
+		callOpts.OpenPullRequest = append(callOpts.OpenPullRequest, gax.WithClientLogging(logging))
+		callOpts.ClosePullRequest = append(callOpts.ClosePullRequest, gax.WithClientLogging(logging))
+		callOpts.ListPullRequestFileDiffs = append(callOpts.ListPullRequestFileDiffs, gax.WithClientLogging(logging))
+		callOpts.FetchTree = append(callOpts.FetchTree, gax.WithClientLogging(logging))
+		callOpts.FetchBlob = append(callOpts.FetchBlob, gax.WithClientLogging(logging))
+		callOpts.FetchRefs = append(callOpts.FetchRefs, gax.WithClientLogging(logging))
+		callOpts.CreateIssue = append(callOpts.CreateIssue, gax.WithClientLogging(logging))
+		callOpts.GetIssue = append(callOpts.GetIssue, gax.WithClientLogging(logging))
+		callOpts.ListIssues = append(callOpts.ListIssues, gax.WithClientLogging(logging))
+		callOpts.UpdateIssue = append(callOpts.UpdateIssue, gax.WithClientLogging(logging))
+		callOpts.DeleteIssue = append(callOpts.DeleteIssue, gax.WithClientLogging(logging))
+		callOpts.OpenIssue = append(callOpts.OpenIssue, gax.WithClientLogging(logging))
+		callOpts.CloseIssue = append(callOpts.CloseIssue, gax.WithClientLogging(logging))
+		callOpts.GetPullRequestComment = append(callOpts.GetPullRequestComment, gax.WithClientLogging(logging))
+		callOpts.ListPullRequestComments = append(callOpts.ListPullRequestComments, gax.WithClientLogging(logging))
+		callOpts.CreatePullRequestComment = append(callOpts.CreatePullRequestComment, gax.WithClientLogging(logging))
+		callOpts.UpdatePullRequestComment = append(callOpts.UpdatePullRequestComment, gax.WithClientLogging(logging))
+		callOpts.DeletePullRequestComment = append(callOpts.DeletePullRequestComment, gax.WithClientLogging(logging))
+		callOpts.BatchCreatePullRequestComments = append(callOpts.BatchCreatePullRequestComments, gax.WithClientLogging(logging))
+		callOpts.ResolvePullRequestComments = append(callOpts.ResolvePullRequestComments, gax.WithClientLogging(logging))
+		callOpts.UnresolvePullRequestComments = append(callOpts.UnresolvePullRequestComments, gax.WithClientLogging(logging))
+		callOpts.CreateIssueComment = append(callOpts.CreateIssueComment, gax.WithClientLogging(logging))
+		callOpts.GetIssueComment = append(callOpts.GetIssueComment, gax.WithClientLogging(logging))
+		callOpts.ListIssueComments = append(callOpts.ListIssueComments, gax.WithClientLogging(logging))
+		callOpts.UpdateIssueComment = append(callOpts.UpdateIssueComment, gax.WithClientLogging(logging))
+		callOpts.DeleteIssueComment = append(callOpts.DeleteIssueComment, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -1203,7 +1698,7 @@ func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *restClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -1222,9 +1717,12 @@ func (c *gRPCClient) ListInstances(ctx context.Context, req *securesourcemanager
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/ListInstances")
+	}
 	opts = append((*c.CallOptions).ListInstances[0:len((*c.CallOptions).ListInstances):len((*c.CallOptions).ListInstances)], opts...)
 	it := &InstanceIterator{}
-	req = proto.Clone(req).(*securesourcemanagerpb.ListInstancesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.Instance, string, error) {
 		resp := &securesourcemanagerpb.ListInstancesResponse{}
 		if pageToken != "" {
@@ -1268,6 +1766,9 @@ func (c *gRPCClient) GetInstance(ctx context.Context, req *securesourcemanagerpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/GetInstance")
+	}
 	opts = append((*c.CallOptions).GetInstance[0:len((*c.CallOptions).GetInstance):len((*c.CallOptions).GetInstance)], opts...)
 	var resp *securesourcemanagerpb.Instance
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1286,6 +1787,9 @@ func (c *gRPCClient) CreateInstance(ctx context.Context, req *securesourcemanage
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/CreateInstance")
+	}
 	opts = append((*c.CallOptions).CreateInstance[0:len((*c.CallOptions).CreateInstance):len((*c.CallOptions).CreateInstance)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1296,8 +1800,12 @@ func (c *gRPCClient) CreateInstance(ctx context.Context, req *securesourcemanage
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.CreateInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1306,6 +1814,9 @@ func (c *gRPCClient) DeleteInstance(ctx context.Context, req *securesourcemanage
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/DeleteInstance")
+	}
 	opts = append((*c.CallOptions).DeleteInstance[0:len((*c.CallOptions).DeleteInstance):len((*c.CallOptions).DeleteInstance)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1316,8 +1827,12 @@ func (c *gRPCClient) DeleteInstance(ctx context.Context, req *securesourcemanage
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.DeleteInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1326,9 +1841,12 @@ func (c *gRPCClient) ListRepositories(ctx context.Context, req *securesourcemana
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/ListRepositories")
+	}
 	opts = append((*c.CallOptions).ListRepositories[0:len((*c.CallOptions).ListRepositories):len((*c.CallOptions).ListRepositories)], opts...)
 	it := &RepositoryIterator{}
-	req = proto.Clone(req).(*securesourcemanagerpb.ListRepositoriesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.Repository, string, error) {
 		resp := &securesourcemanagerpb.ListRepositoriesResponse{}
 		if pageToken != "" {
@@ -1372,6 +1890,9 @@ func (c *gRPCClient) GetRepository(ctx context.Context, req *securesourcemanager
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/GetRepository")
+	}
 	opts = append((*c.CallOptions).GetRepository[0:len((*c.CallOptions).GetRepository):len((*c.CallOptions).GetRepository)], opts...)
 	var resp *securesourcemanagerpb.Repository
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1390,6 +1911,9 @@ func (c *gRPCClient) CreateRepository(ctx context.Context, req *securesourcemana
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/CreateRepository")
+	}
 	opts = append((*c.CallOptions).CreateRepository[0:len((*c.CallOptions).CreateRepository):len((*c.CallOptions).CreateRepository)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1400,8 +1924,12 @@ func (c *gRPCClient) CreateRepository(ctx context.Context, req *securesourcemana
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.CreateRepositoryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateRepositoryOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1410,6 +1938,9 @@ func (c *gRPCClient) UpdateRepository(ctx context.Context, req *securesourcemana
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/UpdateRepository")
+	}
 	opts = append((*c.CallOptions).UpdateRepository[0:len((*c.CallOptions).UpdateRepository):len((*c.CallOptions).UpdateRepository)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1420,8 +1951,12 @@ func (c *gRPCClient) UpdateRepository(ctx context.Context, req *securesourcemana
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.UpdateRepositoryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateRepositoryOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1430,6 +1965,9 @@ func (c *gRPCClient) DeleteRepository(ctx context.Context, req *securesourcemana
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/DeleteRepository")
+	}
 	opts = append((*c.CallOptions).DeleteRepository[0:len((*c.CallOptions).DeleteRepository):len((*c.CallOptions).DeleteRepository)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1440,8 +1978,12 @@ func (c *gRPCClient) DeleteRepository(ctx context.Context, req *securesourcemana
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.DeleteRepositoryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteRepositoryOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1450,9 +1992,12 @@ func (c *gRPCClient) ListHooks(ctx context.Context, req *securesourcemanagerpb.L
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/ListHooks")
+	}
 	opts = append((*c.CallOptions).ListHooks[0:len((*c.CallOptions).ListHooks):len((*c.CallOptions).ListHooks)], opts...)
 	it := &HookIterator{}
-	req = proto.Clone(req).(*securesourcemanagerpb.ListHooksRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.Hook, string, error) {
 		resp := &securesourcemanagerpb.ListHooksResponse{}
 		if pageToken != "" {
@@ -1496,6 +2041,9 @@ func (c *gRPCClient) GetHook(ctx context.Context, req *securesourcemanagerpb.Get
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/GetHook")
+	}
 	opts = append((*c.CallOptions).GetHook[0:len((*c.CallOptions).GetHook):len((*c.CallOptions).GetHook)], opts...)
 	var resp *securesourcemanagerpb.Hook
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1514,6 +2062,9 @@ func (c *gRPCClient) CreateHook(ctx context.Context, req *securesourcemanagerpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/CreateHook")
+	}
 	opts = append((*c.CallOptions).CreateHook[0:len((*c.CallOptions).CreateHook):len((*c.CallOptions).CreateHook)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1524,8 +2075,12 @@ func (c *gRPCClient) CreateHook(ctx context.Context, req *securesourcemanagerpb.
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.CreateHookOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateHookOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1534,6 +2089,9 @@ func (c *gRPCClient) UpdateHook(ctx context.Context, req *securesourcemanagerpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/UpdateHook")
+	}
 	opts = append((*c.CallOptions).UpdateHook[0:len((*c.CallOptions).UpdateHook):len((*c.CallOptions).UpdateHook)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1544,8 +2102,12 @@ func (c *gRPCClient) UpdateHook(ctx context.Context, req *securesourcemanagerpb.
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.UpdateHookOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateHookOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1554,6 +2116,9 @@ func (c *gRPCClient) DeleteHook(ctx context.Context, req *securesourcemanagerpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/DeleteHook")
+	}
 	opts = append((*c.CallOptions).DeleteHook[0:len((*c.CallOptions).DeleteHook):len((*c.CallOptions).DeleteHook)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1564,8 +2129,12 @@ func (c *gRPCClient) DeleteHook(ctx context.Context, req *securesourcemanagerpb.
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.DeleteHookOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteHookOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1574,6 +2143,9 @@ func (c *gRPCClient) GetIamPolicyRepo(ctx context.Context, req *iampb.GetIamPoli
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/GetIamPolicyRepo")
+	}
 	opts = append((*c.CallOptions).GetIamPolicyRepo[0:len((*c.CallOptions).GetIamPolicyRepo):len((*c.CallOptions).GetIamPolicyRepo)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1592,6 +2164,9 @@ func (c *gRPCClient) SetIamPolicyRepo(ctx context.Context, req *iampb.SetIamPoli
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/SetIamPolicyRepo")
+	}
 	opts = append((*c.CallOptions).SetIamPolicyRepo[0:len((*c.CallOptions).SetIamPolicyRepo):len((*c.CallOptions).SetIamPolicyRepo)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1610,6 +2185,9 @@ func (c *gRPCClient) TestIamPermissionsRepo(ctx context.Context, req *iampb.Test
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/TestIamPermissionsRepo")
+	}
 	opts = append((*c.CallOptions).TestIamPermissionsRepo[0:len((*c.CallOptions).TestIamPermissionsRepo):len((*c.CallOptions).TestIamPermissionsRepo)], opts...)
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1628,6 +2206,9 @@ func (c *gRPCClient) CreateBranchRule(ctx context.Context, req *securesourcemana
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/CreateBranchRule")
+	}
 	opts = append((*c.CallOptions).CreateBranchRule[0:len((*c.CallOptions).CreateBranchRule):len((*c.CallOptions).CreateBranchRule)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1638,8 +2219,12 @@ func (c *gRPCClient) CreateBranchRule(ctx context.Context, req *securesourcemana
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.CreateBranchRuleOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateBranchRuleOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1648,9 +2233,12 @@ func (c *gRPCClient) ListBranchRules(ctx context.Context, req *securesourcemanag
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/ListBranchRules")
+	}
 	opts = append((*c.CallOptions).ListBranchRules[0:len((*c.CallOptions).ListBranchRules):len((*c.CallOptions).ListBranchRules)], opts...)
 	it := &BranchRuleIterator{}
-	req = proto.Clone(req).(*securesourcemanagerpb.ListBranchRulesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.BranchRule, string, error) {
 		resp := &securesourcemanagerpb.ListBranchRulesResponse{}
 		if pageToken != "" {
@@ -1694,6 +2282,9 @@ func (c *gRPCClient) GetBranchRule(ctx context.Context, req *securesourcemanager
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/GetBranchRule")
+	}
 	opts = append((*c.CallOptions).GetBranchRule[0:len((*c.CallOptions).GetBranchRule):len((*c.CallOptions).GetBranchRule)], opts...)
 	var resp *securesourcemanagerpb.BranchRule
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1712,6 +2303,9 @@ func (c *gRPCClient) UpdateBranchRule(ctx context.Context, req *securesourcemana
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/UpdateBranchRule")
+	}
 	opts = append((*c.CallOptions).UpdateBranchRule[0:len((*c.CallOptions).UpdateBranchRule):len((*c.CallOptions).UpdateBranchRule)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1722,8 +2316,12 @@ func (c *gRPCClient) UpdateBranchRule(ctx context.Context, req *securesourcemana
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.UpdateBranchRuleOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateBranchRuleOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1732,6 +2330,9 @@ func (c *gRPCClient) DeleteBranchRule(ctx context.Context, req *securesourcemana
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/DeleteBranchRule")
+	}
 	opts = append((*c.CallOptions).DeleteBranchRule[0:len((*c.CallOptions).DeleteBranchRule):len((*c.CallOptions).DeleteBranchRule)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1742,8 +2343,12 @@ func (c *gRPCClient) DeleteBranchRule(ctx context.Context, req *securesourcemana
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.DeleteBranchRuleOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteBranchRuleOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1752,6 +2357,9 @@ func (c *gRPCClient) CreatePullRequest(ctx context.Context, req *securesourceman
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/CreatePullRequest")
+	}
 	opts = append((*c.CallOptions).CreatePullRequest[0:len((*c.CallOptions).CreatePullRequest):len((*c.CallOptions).CreatePullRequest)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1762,8 +2370,12 @@ func (c *gRPCClient) CreatePullRequest(ctx context.Context, req *securesourceman
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.CreatePullRequestOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreatePullRequestOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1772,6 +2384,9 @@ func (c *gRPCClient) GetPullRequest(ctx context.Context, req *securesourcemanage
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/GetPullRequest")
+	}
 	opts = append((*c.CallOptions).GetPullRequest[0:len((*c.CallOptions).GetPullRequest):len((*c.CallOptions).GetPullRequest)], opts...)
 	var resp *securesourcemanagerpb.PullRequest
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1790,9 +2405,12 @@ func (c *gRPCClient) ListPullRequests(ctx context.Context, req *securesourcemana
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/ListPullRequests")
+	}
 	opts = append((*c.CallOptions).ListPullRequests[0:len((*c.CallOptions).ListPullRequests):len((*c.CallOptions).ListPullRequests)], opts...)
 	it := &PullRequestIterator{}
-	req = proto.Clone(req).(*securesourcemanagerpb.ListPullRequestsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.PullRequest, string, error) {
 		resp := &securesourcemanagerpb.ListPullRequestsResponse{}
 		if pageToken != "" {
@@ -1836,6 +2454,9 @@ func (c *gRPCClient) UpdatePullRequest(ctx context.Context, req *securesourceman
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/UpdatePullRequest")
+	}
 	opts = append((*c.CallOptions).UpdatePullRequest[0:len((*c.CallOptions).UpdatePullRequest):len((*c.CallOptions).UpdatePullRequest)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1846,8 +2467,12 @@ func (c *gRPCClient) UpdatePullRequest(ctx context.Context, req *securesourceman
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.UpdatePullRequestOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdatePullRequestOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1856,6 +2481,9 @@ func (c *gRPCClient) MergePullRequest(ctx context.Context, req *securesourcemana
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/MergePullRequest")
+	}
 	opts = append((*c.CallOptions).MergePullRequest[0:len((*c.CallOptions).MergePullRequest):len((*c.CallOptions).MergePullRequest)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1866,8 +2494,12 @@ func (c *gRPCClient) MergePullRequest(ctx context.Context, req *securesourcemana
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.MergePullRequestOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &MergePullRequestOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1876,6 +2508,9 @@ func (c *gRPCClient) OpenPullRequest(ctx context.Context, req *securesourcemanag
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/OpenPullRequest")
+	}
 	opts = append((*c.CallOptions).OpenPullRequest[0:len((*c.CallOptions).OpenPullRequest):len((*c.CallOptions).OpenPullRequest)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1886,8 +2521,12 @@ func (c *gRPCClient) OpenPullRequest(ctx context.Context, req *securesourcemanag
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.OpenPullRequestOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &OpenPullRequestOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1896,6 +2535,9 @@ func (c *gRPCClient) ClosePullRequest(ctx context.Context, req *securesourcemana
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/ClosePullRequest")
+	}
 	opts = append((*c.CallOptions).ClosePullRequest[0:len((*c.CallOptions).ClosePullRequest):len((*c.CallOptions).ClosePullRequest)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1906,8 +2548,12 @@ func (c *gRPCClient) ClosePullRequest(ctx context.Context, req *securesourcemana
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.ClosePullRequestOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ClosePullRequestOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1916,9 +2562,12 @@ func (c *gRPCClient) ListPullRequestFileDiffs(ctx context.Context, req *secureso
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/ListPullRequestFileDiffs")
+	}
 	opts = append((*c.CallOptions).ListPullRequestFileDiffs[0:len((*c.CallOptions).ListPullRequestFileDiffs):len((*c.CallOptions).ListPullRequestFileDiffs)], opts...)
 	it := &FileDiffIterator{}
-	req = proto.Clone(req).(*securesourcemanagerpb.ListPullRequestFileDiffsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.FileDiff, string, error) {
 		resp := &securesourcemanagerpb.ListPullRequestFileDiffsResponse{}
 		if pageToken != "" {
@@ -1962,9 +2611,12 @@ func (c *gRPCClient) FetchTree(ctx context.Context, req *securesourcemanagerpb.F
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/FetchTree")
+	}
 	opts = append((*c.CallOptions).FetchTree[0:len((*c.CallOptions).FetchTree):len((*c.CallOptions).FetchTree)], opts...)
 	it := &TreeEntryIterator{}
-	req = proto.Clone(req).(*securesourcemanagerpb.FetchTreeRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.TreeEntry, string, error) {
 		resp := &securesourcemanagerpb.FetchTreeResponse{}
 		if pageToken != "" {
@@ -2008,6 +2660,9 @@ func (c *gRPCClient) FetchBlob(ctx context.Context, req *securesourcemanagerpb.F
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/FetchBlob")
+	}
 	opts = append((*c.CallOptions).FetchBlob[0:len((*c.CallOptions).FetchBlob):len((*c.CallOptions).FetchBlob)], opts...)
 	var resp *securesourcemanagerpb.FetchBlobResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2021,11 +2676,63 @@ func (c *gRPCClient) FetchBlob(ctx context.Context, req *securesourcemanagerpb.F
 	return resp, nil
 }
 
+func (c *gRPCClient) FetchRefs(ctx context.Context, req *securesourcemanagerpb.FetchRefsRequest, opts ...gax.CallOption) *RefIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "repository", url.QueryEscape(req.GetRepository()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/FetchRefs")
+	}
+	opts = append((*c.CallOptions).FetchRefs[0:len((*c.CallOptions).FetchRefs):len((*c.CallOptions).FetchRefs)], opts...)
+	it := &RefIterator{}
+	req = proto.CloneOf(req)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.Ref, string, error) {
+		resp := &securesourcemanagerpb.FetchRefsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.FetchRefs, req, settings.GRPC, c.logger, "FetchRefs")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetRefs(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 func (c *gRPCClient) CreateIssue(ctx context.Context, req *securesourcemanagerpb.CreateIssueRequest, opts ...gax.CallOption) (*CreateIssueOperation, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/CreateIssue")
+	}
 	opts = append((*c.CallOptions).CreateIssue[0:len((*c.CallOptions).CreateIssue):len((*c.CallOptions).CreateIssue)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2036,8 +2743,12 @@ func (c *gRPCClient) CreateIssue(ctx context.Context, req *securesourcemanagerpb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.CreateIssueOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateIssueOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2046,6 +2757,9 @@ func (c *gRPCClient) GetIssue(ctx context.Context, req *securesourcemanagerpb.Ge
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/GetIssue")
+	}
 	opts = append((*c.CallOptions).GetIssue[0:len((*c.CallOptions).GetIssue):len((*c.CallOptions).GetIssue)], opts...)
 	var resp *securesourcemanagerpb.Issue
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2064,9 +2778,12 @@ func (c *gRPCClient) ListIssues(ctx context.Context, req *securesourcemanagerpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/ListIssues")
+	}
 	opts = append((*c.CallOptions).ListIssues[0:len((*c.CallOptions).ListIssues):len((*c.CallOptions).ListIssues)], opts...)
 	it := &IssueIterator{}
-	req = proto.Clone(req).(*securesourcemanagerpb.ListIssuesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.Issue, string, error) {
 		resp := &securesourcemanagerpb.ListIssuesResponse{}
 		if pageToken != "" {
@@ -2110,6 +2827,9 @@ func (c *gRPCClient) UpdateIssue(ctx context.Context, req *securesourcemanagerpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/UpdateIssue")
+	}
 	opts = append((*c.CallOptions).UpdateIssue[0:len((*c.CallOptions).UpdateIssue):len((*c.CallOptions).UpdateIssue)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2120,8 +2840,12 @@ func (c *gRPCClient) UpdateIssue(ctx context.Context, req *securesourcemanagerpb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.UpdateIssueOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateIssueOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2130,6 +2854,9 @@ func (c *gRPCClient) DeleteIssue(ctx context.Context, req *securesourcemanagerpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/DeleteIssue")
+	}
 	opts = append((*c.CallOptions).DeleteIssue[0:len((*c.CallOptions).DeleteIssue):len((*c.CallOptions).DeleteIssue)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2140,8 +2867,12 @@ func (c *gRPCClient) DeleteIssue(ctx context.Context, req *securesourcemanagerpb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.DeleteIssueOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteIssueOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2150,6 +2881,9 @@ func (c *gRPCClient) OpenIssue(ctx context.Context, req *securesourcemanagerpb.O
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/OpenIssue")
+	}
 	opts = append((*c.CallOptions).OpenIssue[0:len((*c.CallOptions).OpenIssue):len((*c.CallOptions).OpenIssue)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2160,8 +2894,12 @@ func (c *gRPCClient) OpenIssue(ctx context.Context, req *securesourcemanagerpb.O
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.OpenIssueOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &OpenIssueOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2170,6 +2908,9 @@ func (c *gRPCClient) CloseIssue(ctx context.Context, req *securesourcemanagerpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/CloseIssue")
+	}
 	opts = append((*c.CallOptions).CloseIssue[0:len((*c.CallOptions).CloseIssue):len((*c.CallOptions).CloseIssue)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2180,8 +2921,12 @@ func (c *gRPCClient) CloseIssue(ctx context.Context, req *securesourcemanagerpb.
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.CloseIssueOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CloseIssueOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2190,6 +2935,9 @@ func (c *gRPCClient) GetPullRequestComment(ctx context.Context, req *securesourc
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/GetPullRequestComment")
+	}
 	opts = append((*c.CallOptions).GetPullRequestComment[0:len((*c.CallOptions).GetPullRequestComment):len((*c.CallOptions).GetPullRequestComment)], opts...)
 	var resp *securesourcemanagerpb.PullRequestComment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2208,9 +2956,12 @@ func (c *gRPCClient) ListPullRequestComments(ctx context.Context, req *securesou
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/ListPullRequestComments")
+	}
 	opts = append((*c.CallOptions).ListPullRequestComments[0:len((*c.CallOptions).ListPullRequestComments):len((*c.CallOptions).ListPullRequestComments)], opts...)
 	it := &PullRequestCommentIterator{}
-	req = proto.Clone(req).(*securesourcemanagerpb.ListPullRequestCommentsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.PullRequestComment, string, error) {
 		resp := &securesourcemanagerpb.ListPullRequestCommentsResponse{}
 		if pageToken != "" {
@@ -2254,6 +3005,9 @@ func (c *gRPCClient) CreatePullRequestComment(ctx context.Context, req *secureso
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/CreatePullRequestComment")
+	}
 	opts = append((*c.CallOptions).CreatePullRequestComment[0:len((*c.CallOptions).CreatePullRequestComment):len((*c.CallOptions).CreatePullRequestComment)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2264,8 +3018,12 @@ func (c *gRPCClient) CreatePullRequestComment(ctx context.Context, req *secureso
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.CreatePullRequestCommentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreatePullRequestCommentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2274,6 +3032,9 @@ func (c *gRPCClient) UpdatePullRequestComment(ctx context.Context, req *secureso
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/UpdatePullRequestComment")
+	}
 	opts = append((*c.CallOptions).UpdatePullRequestComment[0:len((*c.CallOptions).UpdatePullRequestComment):len((*c.CallOptions).UpdatePullRequestComment)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2284,8 +3045,12 @@ func (c *gRPCClient) UpdatePullRequestComment(ctx context.Context, req *secureso
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.UpdatePullRequestCommentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdatePullRequestCommentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2294,6 +3059,9 @@ func (c *gRPCClient) DeletePullRequestComment(ctx context.Context, req *secureso
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/DeletePullRequestComment")
+	}
 	opts = append((*c.CallOptions).DeletePullRequestComment[0:len((*c.CallOptions).DeletePullRequestComment):len((*c.CallOptions).DeletePullRequestComment)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2304,8 +3072,12 @@ func (c *gRPCClient) DeletePullRequestComment(ctx context.Context, req *secureso
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.DeletePullRequestCommentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeletePullRequestCommentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2314,6 +3086,9 @@ func (c *gRPCClient) BatchCreatePullRequestComments(ctx context.Context, req *se
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/BatchCreatePullRequestComments")
+	}
 	opts = append((*c.CallOptions).BatchCreatePullRequestComments[0:len((*c.CallOptions).BatchCreatePullRequestComments):len((*c.CallOptions).BatchCreatePullRequestComments)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2324,8 +3099,12 @@ func (c *gRPCClient) BatchCreatePullRequestComments(ctx context.Context, req *se
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.BatchCreatePullRequestCommentsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &BatchCreatePullRequestCommentsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2334,6 +3113,9 @@ func (c *gRPCClient) ResolvePullRequestComments(ctx context.Context, req *secure
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/ResolvePullRequestComments")
+	}
 	opts = append((*c.CallOptions).ResolvePullRequestComments[0:len((*c.CallOptions).ResolvePullRequestComments):len((*c.CallOptions).ResolvePullRequestComments)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2344,8 +3126,12 @@ func (c *gRPCClient) ResolvePullRequestComments(ctx context.Context, req *secure
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.ResolvePullRequestCommentsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ResolvePullRequestCommentsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2354,6 +3140,9 @@ func (c *gRPCClient) UnresolvePullRequestComments(ctx context.Context, req *secu
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/UnresolvePullRequestComments")
+	}
 	opts = append((*c.CallOptions).UnresolvePullRequestComments[0:len((*c.CallOptions).UnresolvePullRequestComments):len((*c.CallOptions).UnresolvePullRequestComments)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2364,8 +3153,12 @@ func (c *gRPCClient) UnresolvePullRequestComments(ctx context.Context, req *secu
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.UnresolvePullRequestCommentsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UnresolvePullRequestCommentsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2374,6 +3167,9 @@ func (c *gRPCClient) CreateIssueComment(ctx context.Context, req *securesourcema
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/CreateIssueComment")
+	}
 	opts = append((*c.CallOptions).CreateIssueComment[0:len((*c.CallOptions).CreateIssueComment):len((*c.CallOptions).CreateIssueComment)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2384,8 +3180,12 @@ func (c *gRPCClient) CreateIssueComment(ctx context.Context, req *securesourcema
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.CreateIssueCommentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateIssueCommentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2394,6 +3194,9 @@ func (c *gRPCClient) GetIssueComment(ctx context.Context, req *securesourcemanag
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/GetIssueComment")
+	}
 	opts = append((*c.CallOptions).GetIssueComment[0:len((*c.CallOptions).GetIssueComment):len((*c.CallOptions).GetIssueComment)], opts...)
 	var resp *securesourcemanagerpb.IssueComment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2412,9 +3215,12 @@ func (c *gRPCClient) ListIssueComments(ctx context.Context, req *securesourceman
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/ListIssueComments")
+	}
 	opts = append((*c.CallOptions).ListIssueComments[0:len((*c.CallOptions).ListIssueComments):len((*c.CallOptions).ListIssueComments)], opts...)
 	it := &IssueCommentIterator{}
-	req = proto.Clone(req).(*securesourcemanagerpb.ListIssueCommentsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.IssueComment, string, error) {
 		resp := &securesourcemanagerpb.ListIssueCommentsResponse{}
 		if pageToken != "" {
@@ -2458,6 +3264,9 @@ func (c *gRPCClient) UpdateIssueComment(ctx context.Context, req *securesourcema
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/UpdateIssueComment")
+	}
 	opts = append((*c.CallOptions).UpdateIssueComment[0:len((*c.CallOptions).UpdateIssueComment):len((*c.CallOptions).UpdateIssueComment)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2468,8 +3277,12 @@ func (c *gRPCClient) UpdateIssueComment(ctx context.Context, req *securesourcema
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.UpdateIssueCommentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateIssueCommentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2478,6 +3291,9 @@ func (c *gRPCClient) DeleteIssueComment(ctx context.Context, req *securesourcema
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/DeleteIssueComment")
+	}
 	opts = append((*c.CallOptions).DeleteIssueComment[0:len((*c.CallOptions).DeleteIssueComment):len((*c.CallOptions).DeleteIssueComment)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2488,8 +3304,12 @@ func (c *gRPCClient) DeleteIssueComment(ctx context.Context, req *securesourcema
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.DeleteIssueCommentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteIssueCommentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2498,6 +3318,9 @@ func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2516,9 +3339,12 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/ListLocations")
+	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -2562,6 +3388,9 @@ func (c *gRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2580,6 +3409,9 @@ func (c *gRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2598,6 +3430,9 @@ func (c *gRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2616,6 +3451,9 @@ func (c *gRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -2630,6 +3468,9 @@ func (c *gRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+	}
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -2644,6 +3485,9 @@ func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2662,9 +3506,12 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -2706,7 +3553,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // ListInstances lists Instances in a given project and location.
 func (c *restClient) ListInstances(ctx context.Context, req *securesourcemanagerpb.ListInstancesRequest, opts ...gax.CallOption) *InstanceIterator {
 	it := &InstanceIterator{}
-	req = proto.Clone(req).(*securesourcemanagerpb.ListInstancesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.Instance, string, error) {
 		resp := &securesourcemanagerpb.ListInstancesResponse{}
@@ -2806,6 +3653,10 @@ func (c *restClient) GetInstance(ctx context.Context, req *securesourcemanagerpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/GetInstance")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*}")
+	}
 	opts = append((*c.CallOptions).GetInstance[0:len((*c.CallOptions).GetInstance):len((*c.CallOptions).GetInstance)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &securesourcemanagerpb.Instance{}
@@ -2867,6 +3718,10 @@ func (c *restClient) CreateInstance(ctx context.Context, req *securesourcemanage
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/CreateInstance")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/instances")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2895,8 +3750,12 @@ func (c *restClient) CreateInstance(ctx context.Context, req *securesourcemanage
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.CreateInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2911,6 +3770,9 @@ func (c *restClient) DeleteInstance(ctx context.Context, req *securesourcemanage
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetForce() {
+		params.Add("force", fmt.Sprintf("%v", req.GetForce()))
+	}
 	if req.GetRequestId() != "" {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -2923,6 +3785,10 @@ func (c *restClient) DeleteInstance(ctx context.Context, req *securesourcemanage
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/DeleteInstance")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2951,8 +3817,12 @@ func (c *restClient) DeleteInstance(ctx context.Context, req *securesourcemanage
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.DeleteInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2963,7 +3833,7 @@ func (c *restClient) DeleteInstance(ctx context.Context, req *securesourcemanage
 // the securesourcemanager.googleapis.com (at http://securesourcemanager.googleapis.com) endpoint.
 func (c *restClient) ListRepositories(ctx context.Context, req *securesourcemanagerpb.ListRepositoriesRequest, opts ...gax.CallOption) *RepositoryIterator {
 	it := &RepositoryIterator{}
-	req = proto.Clone(req).(*securesourcemanagerpb.ListRepositoriesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.Repository, string, error) {
 		resp := &securesourcemanagerpb.ListRepositoriesResponse{}
@@ -3063,6 +3933,10 @@ func (c *restClient) GetRepository(ctx context.Context, req *securesourcemanager
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/GetRepository")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*}")
+	}
 	opts = append((*c.CallOptions).GetRepository[0:len((*c.CallOptions).GetRepository):len((*c.CallOptions).GetRepository)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &securesourcemanagerpb.Repository{}
@@ -3124,6 +3998,10 @@ func (c *restClient) CreateRepository(ctx context.Context, req *securesourcemana
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/CreateRepository")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/repositories")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3152,8 +4030,12 @@ func (c *restClient) CreateRepository(ctx context.Context, req *securesourcemana
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.CreateRepositoryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateRepositoryOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3194,6 +4076,10 @@ func (c *restClient) UpdateRepository(ctx context.Context, req *securesourcemana
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/UpdateRepository")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{repository.name=projects/*/locations/*/repositories/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3222,8 +4108,12 @@ func (c *restClient) UpdateRepository(ctx context.Context, req *securesourcemana
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.UpdateRepositoryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateRepositoryOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3250,6 +4140,10 @@ func (c *restClient) DeleteRepository(ctx context.Context, req *securesourcemana
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/DeleteRepository")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3278,8 +4172,12 @@ func (c *restClient) DeleteRepository(ctx context.Context, req *securesourcemana
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.DeleteRepositoryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteRepositoryOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3287,7 +4185,7 @@ func (c *restClient) DeleteRepository(ctx context.Context, req *securesourcemana
 // ListHooks lists hooks in a given repository.
 func (c *restClient) ListHooks(ctx context.Context, req *securesourcemanagerpb.ListHooksRequest, opts ...gax.CallOption) *HookIterator {
 	it := &HookIterator{}
-	req = proto.Clone(req).(*securesourcemanagerpb.ListHooksRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.Hook, string, error) {
 		resp := &securesourcemanagerpb.ListHooksResponse{}
@@ -3381,6 +4279,10 @@ func (c *restClient) GetHook(ctx context.Context, req *securesourcemanagerpb.Get
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/GetHook")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/hooks/*}")
+	}
 	opts = append((*c.CallOptions).GetHook[0:len((*c.CallOptions).GetHook):len((*c.CallOptions).GetHook)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &securesourcemanagerpb.Hook{}
@@ -3439,6 +4341,10 @@ func (c *restClient) CreateHook(ctx context.Context, req *securesourcemanagerpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/CreateHook")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/repositories/*}/hooks")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3467,8 +4373,12 @@ func (c *restClient) CreateHook(ctx context.Context, req *securesourcemanagerpb.
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.CreateHookOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateHookOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3506,6 +4416,10 @@ func (c *restClient) UpdateHook(ctx context.Context, req *securesourcemanagerpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/UpdateHook")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{hook.name=projects/*/locations/*/repositories/*/hooks/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3534,8 +4448,12 @@ func (c *restClient) UpdateHook(ctx context.Context, req *securesourcemanagerpb.
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.UpdateHookOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateHookOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3559,6 +4477,10 @@ func (c *restClient) DeleteHook(ctx context.Context, req *securesourcemanagerpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/DeleteHook")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/hooks/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3587,8 +4509,12 @@ func (c *restClient) DeleteHook(ctx context.Context, req *securesourcemanagerpb.
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.DeleteHookOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteHookOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3615,6 +4541,10 @@ func (c *restClient) GetIamPolicyRepo(ctx context.Context, req *iampb.GetIamPoli
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/GetIamPolicyRepo")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/repositories/*}:getIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicyRepo[0:len((*c.CallOptions).GetIamPolicyRepo):len((*c.CallOptions).GetIamPolicyRepo)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -3671,6 +4601,10 @@ func (c *restClient) SetIamPolicyRepo(ctx context.Context, req *iampb.SetIamPoli
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/SetIamPolicyRepo")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/repositories/*}:setIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicyRepo[0:len((*c.CallOptions).SetIamPolicyRepo):len((*c.CallOptions).SetIamPolicyRepo)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -3728,6 +4662,10 @@ func (c *restClient) TestIamPermissionsRepo(ctx context.Context, req *iampb.Test
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/TestIamPermissionsRepo")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/repositories/*}:testIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissionsRepo[0:len((*c.CallOptions).TestIamPermissionsRepo):len((*c.CallOptions).TestIamPermissionsRepo)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.TestIamPermissionsResponse{}
@@ -3786,6 +4724,10 @@ func (c *restClient) CreateBranchRule(ctx context.Context, req *securesourcemana
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/CreateBranchRule")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/repositories/*}/branchRules")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3814,8 +4756,12 @@ func (c *restClient) CreateBranchRule(ctx context.Context, req *securesourcemana
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.CreateBranchRuleOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateBranchRuleOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3823,7 +4769,7 @@ func (c *restClient) CreateBranchRule(ctx context.Context, req *securesourcemana
 // ListBranchRules listBranchRules lists branch rules in a given repository.
 func (c *restClient) ListBranchRules(ctx context.Context, req *securesourcemanagerpb.ListBranchRulesRequest, opts ...gax.CallOption) *BranchRuleIterator {
 	it := &BranchRuleIterator{}
-	req = proto.Clone(req).(*securesourcemanagerpb.ListBranchRulesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.BranchRule, string, error) {
 		resp := &securesourcemanagerpb.ListBranchRulesResponse{}
@@ -3917,6 +4863,10 @@ func (c *restClient) GetBranchRule(ctx context.Context, req *securesourcemanager
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/GetBranchRule")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/branchRules/*}")
+	}
 	opts = append((*c.CallOptions).GetBranchRule[0:len((*c.CallOptions).GetBranchRule):len((*c.CallOptions).GetBranchRule)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &securesourcemanagerpb.BranchRule{}
@@ -3984,6 +4934,10 @@ func (c *restClient) UpdateBranchRule(ctx context.Context, req *securesourcemana
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/UpdateBranchRule")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{branch_rule.name=projects/*/locations/*/repositories/*/branchRules/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4012,8 +4966,12 @@ func (c *restClient) UpdateBranchRule(ctx context.Context, req *securesourcemana
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.UpdateBranchRuleOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateBranchRuleOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4040,6 +4998,10 @@ func (c *restClient) DeleteBranchRule(ctx context.Context, req *securesourcemana
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/DeleteBranchRule")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/branchRules/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4068,8 +5030,12 @@ func (c *restClient) DeleteBranchRule(ctx context.Context, req *securesourcemana
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.DeleteBranchRuleOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteBranchRuleOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4100,6 +5066,10 @@ func (c *restClient) CreatePullRequest(ctx context.Context, req *securesourceman
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/CreatePullRequest")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/repositories/*}/pullRequests")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4128,8 +5098,12 @@ func (c *restClient) CreatePullRequest(ctx context.Context, req *securesourceman
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.CreatePullRequestOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreatePullRequestOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4153,6 +5127,10 @@ func (c *restClient) GetPullRequest(ctx context.Context, req *securesourcemanage
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/GetPullRequest")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/pullRequests/*}")
+	}
 	opts = append((*c.CallOptions).GetPullRequest[0:len((*c.CallOptions).GetPullRequest):len((*c.CallOptions).GetPullRequest)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &securesourcemanagerpb.PullRequest{}
@@ -4187,7 +5165,7 @@ func (c *restClient) GetPullRequest(ctx context.Context, req *securesourcemanage
 // ListPullRequests lists pull requests in a repository.
 func (c *restClient) ListPullRequests(ctx context.Context, req *securesourcemanagerpb.ListPullRequestsRequest, opts ...gax.CallOption) *PullRequestIterator {
 	it := &PullRequestIterator{}
-	req = proto.Clone(req).(*securesourcemanagerpb.ListPullRequestsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.PullRequest, string, error) {
 		resp := &securesourcemanagerpb.ListPullRequestsResponse{}
@@ -4295,6 +5273,10 @@ func (c *restClient) UpdatePullRequest(ctx context.Context, req *securesourceman
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/UpdatePullRequest")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{pull_request.name=projects/*/locations/*/repositories/*/pullRequests/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4323,8 +5305,12 @@ func (c *restClient) UpdatePullRequest(ctx context.Context, req *securesourceman
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.UpdatePullRequestOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdatePullRequestOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4354,6 +5340,10 @@ func (c *restClient) MergePullRequest(ctx context.Context, req *securesourcemana
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/MergePullRequest")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/pullRequests/*}:merge")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4382,8 +5372,12 @@ func (c *restClient) MergePullRequest(ctx context.Context, req *securesourcemana
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.MergePullRequestOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &MergePullRequestOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4413,6 +5407,10 @@ func (c *restClient) OpenPullRequest(ctx context.Context, req *securesourcemanag
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/OpenPullRequest")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/pullRequests/*}:open")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4441,8 +5439,12 @@ func (c *restClient) OpenPullRequest(ctx context.Context, req *securesourcemanag
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.OpenPullRequestOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &OpenPullRequestOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4472,6 +5474,10 @@ func (c *restClient) ClosePullRequest(ctx context.Context, req *securesourcemana
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/ClosePullRequest")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/pullRequests/*}:close")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4500,8 +5506,12 @@ func (c *restClient) ClosePullRequest(ctx context.Context, req *securesourcemana
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.ClosePullRequestOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ClosePullRequestOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4509,7 +5519,7 @@ func (c *restClient) ClosePullRequest(ctx context.Context, req *securesourcemana
 // ListPullRequestFileDiffs lists a pull request’s file diffs.
 func (c *restClient) ListPullRequestFileDiffs(ctx context.Context, req *securesourcemanagerpb.ListPullRequestFileDiffsRequest, opts ...gax.CallOption) *FileDiffIterator {
 	it := &FileDiffIterator{}
-	req = proto.Clone(req).(*securesourcemanagerpb.ListPullRequestFileDiffsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.FileDiff, string, error) {
 		resp := &securesourcemanagerpb.ListPullRequestFileDiffsResponse{}
@@ -4587,7 +5597,7 @@ func (c *restClient) ListPullRequestFileDiffs(ctx context.Context, req *secureso
 // FetchTree fetches a tree from a repository.
 func (c *restClient) FetchTree(ctx context.Context, req *securesourcemanagerpb.FetchTreeRequest, opts ...gax.CallOption) *TreeEntryIterator {
 	it := &TreeEntryIterator{}
-	req = proto.Clone(req).(*securesourcemanagerpb.FetchTreeRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.TreeEntry, string, error) {
 		resp := &securesourcemanagerpb.FetchTreeResponse{}
@@ -4688,6 +5698,10 @@ func (c *restClient) FetchBlob(ctx context.Context, req *securesourcemanagerpb.F
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/FetchBlob")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{repository=projects/*/locations/*/repositories/*}:fetchBlob")
+	}
 	opts = append((*c.CallOptions).FetchBlob[0:len((*c.CallOptions).FetchBlob):len((*c.CallOptions).FetchBlob)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &securesourcemanagerpb.FetchBlobResponse{}
@@ -4719,6 +5733,87 @@ func (c *restClient) FetchBlob(ctx context.Context, req *securesourcemanagerpb.F
 	return resp, nil
 }
 
+// FetchRefs fetches git references from a repository.
+func (c *restClient) FetchRefs(ctx context.Context, req *securesourcemanagerpb.FetchRefsRequest, opts ...gax.CallOption) *RefIterator {
+	it := &RefIterator{}
+	req = proto.CloneOf(req)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.Ref, string, error) {
+		resp := &securesourcemanagerpb.FetchRefsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v:fetchRefs", req.GetRepository())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req.GetType() != 0 {
+			params.Add("type", fmt.Sprintf("%v", req.GetType()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "FetchRefs")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetRefs(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 // CreateIssue creates an issue.
 func (c *restClient) CreateIssue(ctx context.Context, req *securesourcemanagerpb.CreateIssueRequest, opts ...gax.CallOption) (*CreateIssueOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -4745,6 +5840,10 @@ func (c *restClient) CreateIssue(ctx context.Context, req *securesourcemanagerpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/CreateIssue")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/repositories/*}/issues")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4773,8 +5872,12 @@ func (c *restClient) CreateIssue(ctx context.Context, req *securesourcemanagerpb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.CreateIssueOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateIssueOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4798,6 +5901,10 @@ func (c *restClient) GetIssue(ctx context.Context, req *securesourcemanagerpb.Ge
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/GetIssue")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/issues/*}")
+	}
 	opts = append((*c.CallOptions).GetIssue[0:len((*c.CallOptions).GetIssue):len((*c.CallOptions).GetIssue)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &securesourcemanagerpb.Issue{}
@@ -4832,7 +5939,7 @@ func (c *restClient) GetIssue(ctx context.Context, req *securesourcemanagerpb.Ge
 // ListIssues lists issues in a repository.
 func (c *restClient) ListIssues(ctx context.Context, req *securesourcemanagerpb.ListIssuesRequest, opts ...gax.CallOption) *IssueIterator {
 	it := &IssueIterator{}
-	req = proto.Clone(req).(*securesourcemanagerpb.ListIssuesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.Issue, string, error) {
 		resp := &securesourcemanagerpb.ListIssuesResponse{}
@@ -4943,6 +6050,10 @@ func (c *restClient) UpdateIssue(ctx context.Context, req *securesourcemanagerpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/UpdateIssue")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{issue.name=projects/*/locations/*/repositories/*/issues/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4971,8 +6082,12 @@ func (c *restClient) UpdateIssue(ctx context.Context, req *securesourcemanagerpb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.UpdateIssueOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateIssueOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4999,6 +6114,10 @@ func (c *restClient) DeleteIssue(ctx context.Context, req *securesourcemanagerpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/DeleteIssue")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/issues/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5027,8 +6146,12 @@ func (c *restClient) DeleteIssue(ctx context.Context, req *securesourcemanagerpb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.DeleteIssueOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteIssueOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5058,6 +6181,10 @@ func (c *restClient) OpenIssue(ctx context.Context, req *securesourcemanagerpb.O
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/OpenIssue")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/issues/*}:open")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5086,8 +6213,12 @@ func (c *restClient) OpenIssue(ctx context.Context, req *securesourcemanagerpb.O
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.OpenIssueOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &OpenIssueOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5117,6 +6248,10 @@ func (c *restClient) CloseIssue(ctx context.Context, req *securesourcemanagerpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/CloseIssue")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/issues/*}:close")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5145,8 +6280,12 @@ func (c *restClient) CloseIssue(ctx context.Context, req *securesourcemanagerpb.
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.CloseIssueOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CloseIssueOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5170,6 +6309,10 @@ func (c *restClient) GetPullRequestComment(ctx context.Context, req *securesourc
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/GetPullRequestComment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/pullRequests/*/pullRequestComments/*}")
+	}
 	opts = append((*c.CallOptions).GetPullRequestComment[0:len((*c.CallOptions).GetPullRequestComment):len((*c.CallOptions).GetPullRequestComment)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &securesourcemanagerpb.PullRequestComment{}
@@ -5204,7 +6347,7 @@ func (c *restClient) GetPullRequestComment(ctx context.Context, req *securesourc
 // ListPullRequestComments lists pull request comments.
 func (c *restClient) ListPullRequestComments(ctx context.Context, req *securesourcemanagerpb.ListPullRequestCommentsRequest, opts ...gax.CallOption) *PullRequestCommentIterator {
 	it := &PullRequestCommentIterator{}
-	req = proto.Clone(req).(*securesourcemanagerpb.ListPullRequestCommentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.PullRequestComment, string, error) {
 		resp := &securesourcemanagerpb.ListPullRequestCommentsResponse{}
@@ -5309,6 +6452,10 @@ func (c *restClient) CreatePullRequestComment(ctx context.Context, req *secureso
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/CreatePullRequestComment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/repositories/*/pullRequests/*}/pullRequestComments")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5337,8 +6484,12 @@ func (c *restClient) CreatePullRequestComment(ctx context.Context, req *secureso
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.CreatePullRequestCommentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreatePullRequestCommentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5376,6 +6527,10 @@ func (c *restClient) UpdatePullRequestComment(ctx context.Context, req *secureso
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/UpdatePullRequestComment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{pull_request_comment.name=projects/*/locations/*/repositories/*/pullRequests/*/pullRequestComments/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5404,8 +6559,12 @@ func (c *restClient) UpdatePullRequestComment(ctx context.Context, req *secureso
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.UpdatePullRequestCommentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdatePullRequestCommentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5429,6 +6588,10 @@ func (c *restClient) DeletePullRequestComment(ctx context.Context, req *secureso
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/DeletePullRequestComment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/pullRequests/*/pullRequestComments/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5457,8 +6620,12 @@ func (c *restClient) DeletePullRequestComment(ctx context.Context, req *secureso
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.DeletePullRequestCommentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeletePullRequestCommentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5466,7 +6633,7 @@ func (c *restClient) DeletePullRequestComment(ctx context.Context, req *secureso
 // BatchCreatePullRequestComments batch creates pull request comments. This function is used to create
 // multiple PullRequestComments for code review. There needs to be exactly one
 // PullRequestComment of type Review, and at most 100 PullRequestComments of
-// type Code per request. The Postition of the code comments must be unique
+// type Code per request. The Position of the code comments must be unique
 // within the request.
 func (c *restClient) BatchCreatePullRequestComments(ctx context.Context, req *securesourcemanagerpb.BatchCreatePullRequestCommentsRequest, opts ...gax.CallOption) (*BatchCreatePullRequestCommentsOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -5492,6 +6659,10 @@ func (c *restClient) BatchCreatePullRequestComments(ctx context.Context, req *se
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/BatchCreatePullRequestComments")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/repositories/*/pullRequests/*}/pullRequestComments:batchCreate")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5520,8 +6691,12 @@ func (c *restClient) BatchCreatePullRequestComments(ctx context.Context, req *se
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.BatchCreatePullRequestCommentsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &BatchCreatePullRequestCommentsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5554,6 +6729,10 @@ func (c *restClient) ResolvePullRequestComments(ctx context.Context, req *secure
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/ResolvePullRequestComments")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/repositories/*/pullRequests/*}/pullRequestComments:resolve")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5582,8 +6761,12 @@ func (c *restClient) ResolvePullRequestComments(ctx context.Context, req *secure
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.ResolvePullRequestCommentsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ResolvePullRequestCommentsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5616,6 +6799,10 @@ func (c *restClient) UnresolvePullRequestComments(ctx context.Context, req *secu
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/UnresolvePullRequestComments")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/repositories/*/pullRequests/*}/pullRequestComments:unresolve")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5644,8 +6831,12 @@ func (c *restClient) UnresolvePullRequestComments(ctx context.Context, req *secu
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.UnresolvePullRequestCommentsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UnresolvePullRequestCommentsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5676,6 +6867,10 @@ func (c *restClient) CreateIssueComment(ctx context.Context, req *securesourcema
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/CreateIssueComment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/repositories/*/issues/*}/issueComments")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5704,8 +6899,12 @@ func (c *restClient) CreateIssueComment(ctx context.Context, req *securesourcema
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.CreateIssueCommentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateIssueCommentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5729,6 +6928,10 @@ func (c *restClient) GetIssueComment(ctx context.Context, req *securesourcemanag
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/GetIssueComment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/issues/*/issueComments/*}")
+	}
 	opts = append((*c.CallOptions).GetIssueComment[0:len((*c.CallOptions).GetIssueComment):len((*c.CallOptions).GetIssueComment)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &securesourcemanagerpb.IssueComment{}
@@ -5763,7 +6966,7 @@ func (c *restClient) GetIssueComment(ctx context.Context, req *securesourcemanag
 // ListIssueComments lists comments in an issue.
 func (c *restClient) ListIssueComments(ctx context.Context, req *securesourcemanagerpb.ListIssueCommentsRequest, opts ...gax.CallOption) *IssueCommentIterator {
 	it := &IssueCommentIterator{}
-	req = proto.Clone(req).(*securesourcemanagerpb.ListIssueCommentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.IssueComment, string, error) {
 		resp := &securesourcemanagerpb.ListIssueCommentsResponse{}
@@ -5871,6 +7074,10 @@ func (c *restClient) UpdateIssueComment(ctx context.Context, req *securesourcema
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/UpdateIssueComment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{issue_comment.name=projects/*/locations/*/repositories/*/issues/*/issueComments/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5899,8 +7106,12 @@ func (c *restClient) UpdateIssueComment(ctx context.Context, req *securesourcema
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.UpdateIssueCommentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateIssueCommentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5924,6 +7135,10 @@ func (c *restClient) DeleteIssueComment(ctx context.Context, req *securesourcema
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/DeleteIssueComment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/issues/*/issueComments/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5952,8 +7167,12 @@ func (c *restClient) DeleteIssueComment(ctx context.Context, req *securesourcema
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*securesourcemanager.DeleteIssueCommentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteIssueCommentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5977,6 +7196,10 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*}")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &locationpb.Location{}
@@ -6009,9 +7232,24 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 }
 
 // ListLocations lists information about the supported locations for this service.
+//
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
+//
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -6112,6 +7350,10 @@ func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/instances/*}:getIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -6172,6 +7414,10 @@ func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/instances/*}:setIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -6234,6 +7480,10 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/instances/*}:testIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.TestIamPermissionsResponse{}
@@ -6290,6 +7540,10 @@ func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -6325,6 +7579,10 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -6360,6 +7618,10 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -6394,7 +7656,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
@@ -6422,6 +7684,9 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 		}
 		if req.GetPageToken() != "" {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req.GetReturnPartialSuccess() {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -6476,7 +7741,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created BatchCreatePullRequestCommentsOperation, possibly from a different process.
 func (c *gRPCClient) BatchCreatePullRequestCommentsOperation(name string) *BatchCreatePullRequestCommentsOperation {
 	return &BatchCreatePullRequestCommentsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.BatchCreatePullRequestCommentsOperation"),
 	}
 }
 
@@ -6485,7 +7750,7 @@ func (c *gRPCClient) BatchCreatePullRequestCommentsOperation(name string) *Batch
 func (c *restClient) BatchCreatePullRequestCommentsOperation(name string) *BatchCreatePullRequestCommentsOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &BatchCreatePullRequestCommentsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.BatchCreatePullRequestCommentsOperation"),
 		pollPath: override,
 	}
 }
@@ -6494,7 +7759,7 @@ func (c *restClient) BatchCreatePullRequestCommentsOperation(name string) *Batch
 // The name must be that of a previously created CloseIssueOperation, possibly from a different process.
 func (c *gRPCClient) CloseIssueOperation(name string) *CloseIssueOperation {
 	return &CloseIssueOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.CloseIssueOperation"),
 	}
 }
 
@@ -6503,7 +7768,7 @@ func (c *gRPCClient) CloseIssueOperation(name string) *CloseIssueOperation {
 func (c *restClient) CloseIssueOperation(name string) *CloseIssueOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CloseIssueOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.CloseIssueOperation"),
 		pollPath: override,
 	}
 }
@@ -6512,7 +7777,7 @@ func (c *restClient) CloseIssueOperation(name string) *CloseIssueOperation {
 // The name must be that of a previously created ClosePullRequestOperation, possibly from a different process.
 func (c *gRPCClient) ClosePullRequestOperation(name string) *ClosePullRequestOperation {
 	return &ClosePullRequestOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.ClosePullRequestOperation"),
 	}
 }
 
@@ -6521,7 +7786,7 @@ func (c *gRPCClient) ClosePullRequestOperation(name string) *ClosePullRequestOpe
 func (c *restClient) ClosePullRequestOperation(name string) *ClosePullRequestOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ClosePullRequestOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.ClosePullRequestOperation"),
 		pollPath: override,
 	}
 }
@@ -6530,7 +7795,7 @@ func (c *restClient) ClosePullRequestOperation(name string) *ClosePullRequestOpe
 // The name must be that of a previously created CreateBranchRuleOperation, possibly from a different process.
 func (c *gRPCClient) CreateBranchRuleOperation(name string) *CreateBranchRuleOperation {
 	return &CreateBranchRuleOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.CreateBranchRuleOperation"),
 	}
 }
 
@@ -6539,7 +7804,7 @@ func (c *gRPCClient) CreateBranchRuleOperation(name string) *CreateBranchRuleOpe
 func (c *restClient) CreateBranchRuleOperation(name string) *CreateBranchRuleOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateBranchRuleOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.CreateBranchRuleOperation"),
 		pollPath: override,
 	}
 }
@@ -6548,7 +7813,7 @@ func (c *restClient) CreateBranchRuleOperation(name string) *CreateBranchRuleOpe
 // The name must be that of a previously created CreateHookOperation, possibly from a different process.
 func (c *gRPCClient) CreateHookOperation(name string) *CreateHookOperation {
 	return &CreateHookOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.CreateHookOperation"),
 	}
 }
 
@@ -6557,7 +7822,7 @@ func (c *gRPCClient) CreateHookOperation(name string) *CreateHookOperation {
 func (c *restClient) CreateHookOperation(name string) *CreateHookOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateHookOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.CreateHookOperation"),
 		pollPath: override,
 	}
 }
@@ -6566,7 +7831,7 @@ func (c *restClient) CreateHookOperation(name string) *CreateHookOperation {
 // The name must be that of a previously created CreateInstanceOperation, possibly from a different process.
 func (c *gRPCClient) CreateInstanceOperation(name string) *CreateInstanceOperation {
 	return &CreateInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.CreateInstanceOperation"),
 	}
 }
 
@@ -6575,7 +7840,7 @@ func (c *gRPCClient) CreateInstanceOperation(name string) *CreateInstanceOperati
 func (c *restClient) CreateInstanceOperation(name string) *CreateInstanceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.CreateInstanceOperation"),
 		pollPath: override,
 	}
 }
@@ -6584,7 +7849,7 @@ func (c *restClient) CreateInstanceOperation(name string) *CreateInstanceOperati
 // The name must be that of a previously created CreateIssueOperation, possibly from a different process.
 func (c *gRPCClient) CreateIssueOperation(name string) *CreateIssueOperation {
 	return &CreateIssueOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.CreateIssueOperation"),
 	}
 }
 
@@ -6593,7 +7858,7 @@ func (c *gRPCClient) CreateIssueOperation(name string) *CreateIssueOperation {
 func (c *restClient) CreateIssueOperation(name string) *CreateIssueOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateIssueOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.CreateIssueOperation"),
 		pollPath: override,
 	}
 }
@@ -6602,7 +7867,7 @@ func (c *restClient) CreateIssueOperation(name string) *CreateIssueOperation {
 // The name must be that of a previously created CreateIssueCommentOperation, possibly from a different process.
 func (c *gRPCClient) CreateIssueCommentOperation(name string) *CreateIssueCommentOperation {
 	return &CreateIssueCommentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.CreateIssueCommentOperation"),
 	}
 }
 
@@ -6611,7 +7876,7 @@ func (c *gRPCClient) CreateIssueCommentOperation(name string) *CreateIssueCommen
 func (c *restClient) CreateIssueCommentOperation(name string) *CreateIssueCommentOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateIssueCommentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.CreateIssueCommentOperation"),
 		pollPath: override,
 	}
 }
@@ -6620,7 +7885,7 @@ func (c *restClient) CreateIssueCommentOperation(name string) *CreateIssueCommen
 // The name must be that of a previously created CreatePullRequestOperation, possibly from a different process.
 func (c *gRPCClient) CreatePullRequestOperation(name string) *CreatePullRequestOperation {
 	return &CreatePullRequestOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.CreatePullRequestOperation"),
 	}
 }
 
@@ -6629,7 +7894,7 @@ func (c *gRPCClient) CreatePullRequestOperation(name string) *CreatePullRequestO
 func (c *restClient) CreatePullRequestOperation(name string) *CreatePullRequestOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreatePullRequestOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.CreatePullRequestOperation"),
 		pollPath: override,
 	}
 }
@@ -6638,7 +7903,7 @@ func (c *restClient) CreatePullRequestOperation(name string) *CreatePullRequestO
 // The name must be that of a previously created CreatePullRequestCommentOperation, possibly from a different process.
 func (c *gRPCClient) CreatePullRequestCommentOperation(name string) *CreatePullRequestCommentOperation {
 	return &CreatePullRequestCommentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.CreatePullRequestCommentOperation"),
 	}
 }
 
@@ -6647,7 +7912,7 @@ func (c *gRPCClient) CreatePullRequestCommentOperation(name string) *CreatePullR
 func (c *restClient) CreatePullRequestCommentOperation(name string) *CreatePullRequestCommentOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreatePullRequestCommentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.CreatePullRequestCommentOperation"),
 		pollPath: override,
 	}
 }
@@ -6656,7 +7921,7 @@ func (c *restClient) CreatePullRequestCommentOperation(name string) *CreatePullR
 // The name must be that of a previously created CreateRepositoryOperation, possibly from a different process.
 func (c *gRPCClient) CreateRepositoryOperation(name string) *CreateRepositoryOperation {
 	return &CreateRepositoryOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.CreateRepositoryOperation"),
 	}
 }
 
@@ -6665,7 +7930,7 @@ func (c *gRPCClient) CreateRepositoryOperation(name string) *CreateRepositoryOpe
 func (c *restClient) CreateRepositoryOperation(name string) *CreateRepositoryOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateRepositoryOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.CreateRepositoryOperation"),
 		pollPath: override,
 	}
 }
@@ -6674,7 +7939,7 @@ func (c *restClient) CreateRepositoryOperation(name string) *CreateRepositoryOpe
 // The name must be that of a previously created DeleteBranchRuleOperation, possibly from a different process.
 func (c *gRPCClient) DeleteBranchRuleOperation(name string) *DeleteBranchRuleOperation {
 	return &DeleteBranchRuleOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.DeleteBranchRuleOperation"),
 	}
 }
 
@@ -6683,7 +7948,7 @@ func (c *gRPCClient) DeleteBranchRuleOperation(name string) *DeleteBranchRuleOpe
 func (c *restClient) DeleteBranchRuleOperation(name string) *DeleteBranchRuleOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteBranchRuleOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.DeleteBranchRuleOperation"),
 		pollPath: override,
 	}
 }
@@ -6692,7 +7957,7 @@ func (c *restClient) DeleteBranchRuleOperation(name string) *DeleteBranchRuleOpe
 // The name must be that of a previously created DeleteHookOperation, possibly from a different process.
 func (c *gRPCClient) DeleteHookOperation(name string) *DeleteHookOperation {
 	return &DeleteHookOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.DeleteHookOperation"),
 	}
 }
 
@@ -6701,7 +7966,7 @@ func (c *gRPCClient) DeleteHookOperation(name string) *DeleteHookOperation {
 func (c *restClient) DeleteHookOperation(name string) *DeleteHookOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteHookOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.DeleteHookOperation"),
 		pollPath: override,
 	}
 }
@@ -6710,7 +7975,7 @@ func (c *restClient) DeleteHookOperation(name string) *DeleteHookOperation {
 // The name must be that of a previously created DeleteInstanceOperation, possibly from a different process.
 func (c *gRPCClient) DeleteInstanceOperation(name string) *DeleteInstanceOperation {
 	return &DeleteInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.DeleteInstanceOperation"),
 	}
 }
 
@@ -6719,7 +7984,7 @@ func (c *gRPCClient) DeleteInstanceOperation(name string) *DeleteInstanceOperati
 func (c *restClient) DeleteInstanceOperation(name string) *DeleteInstanceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.DeleteInstanceOperation"),
 		pollPath: override,
 	}
 }
@@ -6728,7 +7993,7 @@ func (c *restClient) DeleteInstanceOperation(name string) *DeleteInstanceOperati
 // The name must be that of a previously created DeleteIssueOperation, possibly from a different process.
 func (c *gRPCClient) DeleteIssueOperation(name string) *DeleteIssueOperation {
 	return &DeleteIssueOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.DeleteIssueOperation"),
 	}
 }
 
@@ -6737,7 +8002,7 @@ func (c *gRPCClient) DeleteIssueOperation(name string) *DeleteIssueOperation {
 func (c *restClient) DeleteIssueOperation(name string) *DeleteIssueOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteIssueOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.DeleteIssueOperation"),
 		pollPath: override,
 	}
 }
@@ -6746,7 +8011,7 @@ func (c *restClient) DeleteIssueOperation(name string) *DeleteIssueOperation {
 // The name must be that of a previously created DeleteIssueCommentOperation, possibly from a different process.
 func (c *gRPCClient) DeleteIssueCommentOperation(name string) *DeleteIssueCommentOperation {
 	return &DeleteIssueCommentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.DeleteIssueCommentOperation"),
 	}
 }
 
@@ -6755,7 +8020,7 @@ func (c *gRPCClient) DeleteIssueCommentOperation(name string) *DeleteIssueCommen
 func (c *restClient) DeleteIssueCommentOperation(name string) *DeleteIssueCommentOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteIssueCommentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.DeleteIssueCommentOperation"),
 		pollPath: override,
 	}
 }
@@ -6764,7 +8029,7 @@ func (c *restClient) DeleteIssueCommentOperation(name string) *DeleteIssueCommen
 // The name must be that of a previously created DeletePullRequestCommentOperation, possibly from a different process.
 func (c *gRPCClient) DeletePullRequestCommentOperation(name string) *DeletePullRequestCommentOperation {
 	return &DeletePullRequestCommentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.DeletePullRequestCommentOperation"),
 	}
 }
 
@@ -6773,7 +8038,7 @@ func (c *gRPCClient) DeletePullRequestCommentOperation(name string) *DeletePullR
 func (c *restClient) DeletePullRequestCommentOperation(name string) *DeletePullRequestCommentOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeletePullRequestCommentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.DeletePullRequestCommentOperation"),
 		pollPath: override,
 	}
 }
@@ -6782,7 +8047,7 @@ func (c *restClient) DeletePullRequestCommentOperation(name string) *DeletePullR
 // The name must be that of a previously created DeleteRepositoryOperation, possibly from a different process.
 func (c *gRPCClient) DeleteRepositoryOperation(name string) *DeleteRepositoryOperation {
 	return &DeleteRepositoryOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.DeleteRepositoryOperation"),
 	}
 }
 
@@ -6791,7 +8056,7 @@ func (c *gRPCClient) DeleteRepositoryOperation(name string) *DeleteRepositoryOpe
 func (c *restClient) DeleteRepositoryOperation(name string) *DeleteRepositoryOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteRepositoryOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.DeleteRepositoryOperation"),
 		pollPath: override,
 	}
 }
@@ -6800,7 +8065,7 @@ func (c *restClient) DeleteRepositoryOperation(name string) *DeleteRepositoryOpe
 // The name must be that of a previously created MergePullRequestOperation, possibly from a different process.
 func (c *gRPCClient) MergePullRequestOperation(name string) *MergePullRequestOperation {
 	return &MergePullRequestOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.MergePullRequestOperation"),
 	}
 }
 
@@ -6809,7 +8074,7 @@ func (c *gRPCClient) MergePullRequestOperation(name string) *MergePullRequestOpe
 func (c *restClient) MergePullRequestOperation(name string) *MergePullRequestOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &MergePullRequestOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.MergePullRequestOperation"),
 		pollPath: override,
 	}
 }
@@ -6818,7 +8083,7 @@ func (c *restClient) MergePullRequestOperation(name string) *MergePullRequestOpe
 // The name must be that of a previously created OpenIssueOperation, possibly from a different process.
 func (c *gRPCClient) OpenIssueOperation(name string) *OpenIssueOperation {
 	return &OpenIssueOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.OpenIssueOperation"),
 	}
 }
 
@@ -6827,7 +8092,7 @@ func (c *gRPCClient) OpenIssueOperation(name string) *OpenIssueOperation {
 func (c *restClient) OpenIssueOperation(name string) *OpenIssueOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &OpenIssueOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.OpenIssueOperation"),
 		pollPath: override,
 	}
 }
@@ -6836,7 +8101,7 @@ func (c *restClient) OpenIssueOperation(name string) *OpenIssueOperation {
 // The name must be that of a previously created OpenPullRequestOperation, possibly from a different process.
 func (c *gRPCClient) OpenPullRequestOperation(name string) *OpenPullRequestOperation {
 	return &OpenPullRequestOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.OpenPullRequestOperation"),
 	}
 }
 
@@ -6845,7 +8110,7 @@ func (c *gRPCClient) OpenPullRequestOperation(name string) *OpenPullRequestOpera
 func (c *restClient) OpenPullRequestOperation(name string) *OpenPullRequestOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &OpenPullRequestOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.OpenPullRequestOperation"),
 		pollPath: override,
 	}
 }
@@ -6854,7 +8119,7 @@ func (c *restClient) OpenPullRequestOperation(name string) *OpenPullRequestOpera
 // The name must be that of a previously created ResolvePullRequestCommentsOperation, possibly from a different process.
 func (c *gRPCClient) ResolvePullRequestCommentsOperation(name string) *ResolvePullRequestCommentsOperation {
 	return &ResolvePullRequestCommentsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.ResolvePullRequestCommentsOperation"),
 	}
 }
 
@@ -6863,7 +8128,7 @@ func (c *gRPCClient) ResolvePullRequestCommentsOperation(name string) *ResolvePu
 func (c *restClient) ResolvePullRequestCommentsOperation(name string) *ResolvePullRequestCommentsOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ResolvePullRequestCommentsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.ResolvePullRequestCommentsOperation"),
 		pollPath: override,
 	}
 }
@@ -6872,7 +8137,7 @@ func (c *restClient) ResolvePullRequestCommentsOperation(name string) *ResolvePu
 // The name must be that of a previously created UnresolvePullRequestCommentsOperation, possibly from a different process.
 func (c *gRPCClient) UnresolvePullRequestCommentsOperation(name string) *UnresolvePullRequestCommentsOperation {
 	return &UnresolvePullRequestCommentsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.UnresolvePullRequestCommentsOperation"),
 	}
 }
 
@@ -6881,7 +8146,7 @@ func (c *gRPCClient) UnresolvePullRequestCommentsOperation(name string) *Unresol
 func (c *restClient) UnresolvePullRequestCommentsOperation(name string) *UnresolvePullRequestCommentsOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UnresolvePullRequestCommentsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.UnresolvePullRequestCommentsOperation"),
 		pollPath: override,
 	}
 }
@@ -6890,7 +8155,7 @@ func (c *restClient) UnresolvePullRequestCommentsOperation(name string) *Unresol
 // The name must be that of a previously created UpdateBranchRuleOperation, possibly from a different process.
 func (c *gRPCClient) UpdateBranchRuleOperation(name string) *UpdateBranchRuleOperation {
 	return &UpdateBranchRuleOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.UpdateBranchRuleOperation"),
 	}
 }
 
@@ -6899,7 +8164,7 @@ func (c *gRPCClient) UpdateBranchRuleOperation(name string) *UpdateBranchRuleOpe
 func (c *restClient) UpdateBranchRuleOperation(name string) *UpdateBranchRuleOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateBranchRuleOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.UpdateBranchRuleOperation"),
 		pollPath: override,
 	}
 }
@@ -6908,7 +8173,7 @@ func (c *restClient) UpdateBranchRuleOperation(name string) *UpdateBranchRuleOpe
 // The name must be that of a previously created UpdateHookOperation, possibly from a different process.
 func (c *gRPCClient) UpdateHookOperation(name string) *UpdateHookOperation {
 	return &UpdateHookOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.UpdateHookOperation"),
 	}
 }
 
@@ -6917,7 +8182,7 @@ func (c *gRPCClient) UpdateHookOperation(name string) *UpdateHookOperation {
 func (c *restClient) UpdateHookOperation(name string) *UpdateHookOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateHookOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.UpdateHookOperation"),
 		pollPath: override,
 	}
 }
@@ -6926,7 +8191,7 @@ func (c *restClient) UpdateHookOperation(name string) *UpdateHookOperation {
 // The name must be that of a previously created UpdateIssueOperation, possibly from a different process.
 func (c *gRPCClient) UpdateIssueOperation(name string) *UpdateIssueOperation {
 	return &UpdateIssueOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.UpdateIssueOperation"),
 	}
 }
 
@@ -6935,7 +8200,7 @@ func (c *gRPCClient) UpdateIssueOperation(name string) *UpdateIssueOperation {
 func (c *restClient) UpdateIssueOperation(name string) *UpdateIssueOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateIssueOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.UpdateIssueOperation"),
 		pollPath: override,
 	}
 }
@@ -6944,7 +8209,7 @@ func (c *restClient) UpdateIssueOperation(name string) *UpdateIssueOperation {
 // The name must be that of a previously created UpdateIssueCommentOperation, possibly from a different process.
 func (c *gRPCClient) UpdateIssueCommentOperation(name string) *UpdateIssueCommentOperation {
 	return &UpdateIssueCommentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.UpdateIssueCommentOperation"),
 	}
 }
 
@@ -6953,7 +8218,7 @@ func (c *gRPCClient) UpdateIssueCommentOperation(name string) *UpdateIssueCommen
 func (c *restClient) UpdateIssueCommentOperation(name string) *UpdateIssueCommentOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateIssueCommentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.UpdateIssueCommentOperation"),
 		pollPath: override,
 	}
 }
@@ -6962,7 +8227,7 @@ func (c *restClient) UpdateIssueCommentOperation(name string) *UpdateIssueCommen
 // The name must be that of a previously created UpdatePullRequestOperation, possibly from a different process.
 func (c *gRPCClient) UpdatePullRequestOperation(name string) *UpdatePullRequestOperation {
 	return &UpdatePullRequestOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.UpdatePullRequestOperation"),
 	}
 }
 
@@ -6971,7 +8236,7 @@ func (c *gRPCClient) UpdatePullRequestOperation(name string) *UpdatePullRequestO
 func (c *restClient) UpdatePullRequestOperation(name string) *UpdatePullRequestOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdatePullRequestOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.UpdatePullRequestOperation"),
 		pollPath: override,
 	}
 }
@@ -6980,7 +8245,7 @@ func (c *restClient) UpdatePullRequestOperation(name string) *UpdatePullRequestO
 // The name must be that of a previously created UpdatePullRequestCommentOperation, possibly from a different process.
 func (c *gRPCClient) UpdatePullRequestCommentOperation(name string) *UpdatePullRequestCommentOperation {
 	return &UpdatePullRequestCommentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.UpdatePullRequestCommentOperation"),
 	}
 }
 
@@ -6989,7 +8254,7 @@ func (c *gRPCClient) UpdatePullRequestCommentOperation(name string) *UpdatePullR
 func (c *restClient) UpdatePullRequestCommentOperation(name string) *UpdatePullRequestCommentOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdatePullRequestCommentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.UpdatePullRequestCommentOperation"),
 		pollPath: override,
 	}
 }
@@ -6998,7 +8263,7 @@ func (c *restClient) UpdatePullRequestCommentOperation(name string) *UpdatePullR
 // The name must be that of a previously created UpdateRepositoryOperation, possibly from a different process.
 func (c *gRPCClient) UpdateRepositoryOperation(name string) *UpdateRepositoryOperation {
 	return &UpdateRepositoryOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.UpdateRepositoryOperation"),
 	}
 }
 
@@ -7007,7 +8272,7 @@ func (c *gRPCClient) UpdateRepositoryOperation(name string) *UpdateRepositoryOpe
 func (c *restClient) UpdateRepositoryOperation(name string) *UpdateRepositoryOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateRepositoryOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*securesourcemanager.UpdateRepositoryOperation"),
 		pollPath: override,
 	}
 }

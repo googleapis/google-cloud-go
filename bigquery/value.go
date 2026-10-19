@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"math/big"
 	"reflect"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -28,8 +29,13 @@ import (
 	bq "google.golang.org/api/bigquery/v2"
 )
 
+// Utility functions to deal with byproducts of wrapper types in discovery.
+//
+//go:fix inline
+func int64ptr(v int64) *int64 { return new(v) }
+
 // Value stores the contents of a single cell from a BigQuery result.
-type Value interface{}
+type Value any
 
 // ValueLoader stores a slice of Values representing a result row from a Read operation.
 // See RowIterator.Next for more information.
@@ -62,7 +68,7 @@ func (vm *valueMap) Load(v []Value, s Schema) error {
 func loadMap(m map[string]Value, vals []Value, s Schema) {
 	for i, f := range s {
 		val := vals[i]
-		var v interface{}
+		var v any
 		switch {
 		case val == nil:
 			v = val
@@ -100,7 +106,7 @@ type structLoader struct {
 
 // A setFunc is a function that sets a struct field or slice/array
 // element to a value.
-type setFunc func(v reflect.Value, val interface{}) error
+type setFunc func(v reflect.Value, val any) error
 
 // A structLoaderOp instructs the loader to set a struct field to a row value.
 type structLoaderOp struct {
@@ -112,7 +118,7 @@ type structLoaderOp struct {
 
 var errNoNulls = errors.New("bigquery: NULL values cannot be read into structs")
 
-func setAny(v reflect.Value, x interface{}) error {
+func setAny(v reflect.Value, x any) error {
 	if x == nil {
 		return errNoNulls
 	}
@@ -120,7 +126,7 @@ func setAny(v reflect.Value, x interface{}) error {
 	return nil
 }
 
-func setInt(v reflect.Value, x interface{}) error {
+func setInt(v reflect.Value, x any) error {
 	if x == nil {
 		return errNoNulls
 	}
@@ -132,7 +138,7 @@ func setInt(v reflect.Value, x interface{}) error {
 	return nil
 }
 
-func setUint(v reflect.Value, x interface{}) error {
+func setUint(v reflect.Value, x any) error {
 	if x == nil {
 		return errNoNulls
 	}
@@ -144,7 +150,7 @@ func setUint(v reflect.Value, x interface{}) error {
 	return nil
 }
 
-func setFloat(v reflect.Value, x interface{}) error {
+func setFloat(v reflect.Value, x any) error {
 	if x == nil {
 		return errNoNulls
 	}
@@ -156,7 +162,7 @@ func setFloat(v reflect.Value, x interface{}) error {
 	return nil
 }
 
-func setBool(v reflect.Value, x interface{}) error {
+func setBool(v reflect.Value, x any) error {
 	if x == nil {
 		return errNoNulls
 	}
@@ -164,7 +170,7 @@ func setBool(v reflect.Value, x interface{}) error {
 	return nil
 }
 
-func setString(v reflect.Value, x interface{}) error {
+func setString(v reflect.Value, x any) error {
 	if x == nil {
 		return errNoNulls
 	}
@@ -172,7 +178,7 @@ func setString(v reflect.Value, x interface{}) error {
 	return nil
 }
 
-func setGeography(v reflect.Value, x interface{}) error {
+func setGeography(v reflect.Value, x any) error {
 	if x == nil {
 		return errNoNulls
 	}
@@ -180,7 +186,7 @@ func setGeography(v reflect.Value, x interface{}) error {
 	return nil
 }
 
-func setJSON(v reflect.Value, x interface{}) error {
+func setJSON(v reflect.Value, x any) error {
 	if x == nil {
 		return errNoNulls
 	}
@@ -188,7 +194,7 @@ func setJSON(v reflect.Value, x interface{}) error {
 	return nil
 }
 
-func setBytes(v reflect.Value, x interface{}) error {
+func setBytes(v reflect.Value, x any) error {
 	if x == nil {
 		v.SetBytes(nil)
 	} else {
@@ -197,7 +203,7 @@ func setBytes(v reflect.Value, x interface{}) error {
 	return nil
 }
 
-func setNull(v reflect.Value, x interface{}, build func() interface{}) error {
+func setNull(v reflect.Value, x any, build func() any) error {
 	if x == nil {
 		v.Set(reflect.Zero(v.Type()))
 	} else {
@@ -209,7 +215,7 @@ func setNull(v reflect.Value, x interface{}, build func() interface{}) error {
 
 // set remembers a value for the next call to Load. The value must be
 // a pointer to a struct. (This is checked in RowIterator.Next.)
-func (sl *structLoader) set(structp interface{}, schema Schema) error {
+func (sl *structLoader) set(structp any, schema Schema) error {
 	if sl.err != nil {
 		return sl.err
 	}
@@ -262,7 +268,7 @@ func compileToOps(structType reflect.Type, schema Schema) ([]structLoaderOp, err
 		}
 		if schemaField.Type == RecordFieldType {
 			// Field can be a struct or a pointer to a struct.
-			if t.Kind() == reflect.Ptr {
+			if t.Kind() == reflect.Pointer {
 				t = t.Elem()
 			}
 			if t.Kind() != reflect.Struct {
@@ -273,7 +279,7 @@ func compileToOps(structType reflect.Type, schema Schema) ([]structLoaderOp, err
 			if err != nil {
 				return nil, err
 			}
-			op.setFunc = func(v reflect.Value, val interface{}) error {
+			op.setFunc = func(v reflect.Value, val any) error {
 				return setNested(nested, v, val)
 			}
 		} else {
@@ -300,8 +306,8 @@ func determineSetFunc(ftype reflect.Type, stype FieldType) setFunc {
 			return setString
 		}
 		if ftype == typeOfNullString {
-			return func(v reflect.Value, x interface{}) error {
-				return setNull(v, x, func() interface{} {
+			return func(v reflect.Value, x any) error {
+				return setNull(v, x, func() any {
 					return NullString{StringVal: x.(string), Valid: true}
 				})
 			}
@@ -312,8 +318,8 @@ func determineSetFunc(ftype reflect.Type, stype FieldType) setFunc {
 			return setGeography
 		}
 		if ftype == typeOfNullGeography {
-			return func(v reflect.Value, x interface{}) error {
-				return setNull(v, x, func() interface{} {
+			return func(v reflect.Value, x any) error {
+				return setNull(v, x, func() any {
 					return NullGeography{GeographyVal: x.(string), Valid: true}
 				})
 			}
@@ -324,8 +330,8 @@ func determineSetFunc(ftype reflect.Type, stype FieldType) setFunc {
 			return setJSON
 		}
 		if ftype == typeOfNullJSON {
-			return func(v reflect.Value, x interface{}) error {
-				return setNull(v, x, func() interface{} {
+			return func(v reflect.Value, x any) error {
+				return setNull(v, x, func() any {
 					return NullJSON{JSONVal: x.(string), Valid: true}
 				})
 			}
@@ -343,8 +349,8 @@ func determineSetFunc(ftype reflect.Type, stype FieldType) setFunc {
 			return setInt
 		}
 		if ftype == typeOfNullInt64 {
-			return func(v reflect.Value, x interface{}) error {
-				return setNull(v, x, func() interface{} {
+			return func(v reflect.Value, x any) error {
+				return setNull(v, x, func() any {
 					return NullInt64{Int64: x.(int64), Valid: true}
 				})
 			}
@@ -356,8 +362,8 @@ func determineSetFunc(ftype reflect.Type, stype FieldType) setFunc {
 			return setFloat
 		}
 		if ftype == typeOfNullFloat64 {
-			return func(v reflect.Value, x interface{}) error {
-				return setNull(v, x, func() interface{} {
+			return func(v reflect.Value, x any) error {
+				return setNull(v, x, func() any {
 					return NullFloat64{Float64: x.(float64), Valid: true}
 				})
 			}
@@ -368,8 +374,8 @@ func determineSetFunc(ftype reflect.Type, stype FieldType) setFunc {
 			return setBool
 		}
 		if ftype == typeOfNullBool {
-			return func(v reflect.Value, x interface{}) error {
-				return setNull(v, x, func() interface{} {
+			return func(v reflect.Value, x any) error {
+				return setNull(v, x, func() any {
 					return NullBool{Bool: x.(bool), Valid: true}
 				})
 			}
@@ -380,8 +386,8 @@ func determineSetFunc(ftype reflect.Type, stype FieldType) setFunc {
 			return setAny
 		}
 		if ftype == typeOfNullTimestamp {
-			return func(v reflect.Value, x interface{}) error {
-				return setNull(v, x, func() interface{} {
+			return func(v reflect.Value, x any) error {
+				return setNull(v, x, func() any {
 					return NullTimestamp{Timestamp: x.(time.Time), Valid: true}
 				})
 			}
@@ -392,8 +398,8 @@ func determineSetFunc(ftype reflect.Type, stype FieldType) setFunc {
 			return setAny
 		}
 		if ftype == typeOfNullDate {
-			return func(v reflect.Value, x interface{}) error {
-				return setNull(v, x, func() interface{} {
+			return func(v reflect.Value, x any) error {
+				return setNull(v, x, func() any {
 					return NullDate{Date: x.(civil.Date), Valid: true}
 				})
 			}
@@ -404,8 +410,8 @@ func determineSetFunc(ftype reflect.Type, stype FieldType) setFunc {
 			return setAny
 		}
 		if ftype == typeOfNullTime {
-			return func(v reflect.Value, x interface{}) error {
-				return setNull(v, x, func() interface{} {
+			return func(v reflect.Value, x any) error {
+				return setNull(v, x, func() any {
 					return NullTime{Time: x.(civil.Time), Valid: true}
 				})
 			}
@@ -416,8 +422,8 @@ func determineSetFunc(ftype reflect.Type, stype FieldType) setFunc {
 			return setAny
 		}
 		if ftype == typeOfNullDateTime {
-			return func(v reflect.Value, x interface{}) error {
-				return setNull(v, x, func() interface{} {
+			return func(v reflect.Value, x any) error {
+				return setNull(v, x, func() any {
 					return NullDateTime{DateTime: x.(civil.DateTime), Valid: true}
 				})
 			}
@@ -425,22 +431,22 @@ func determineSetFunc(ftype reflect.Type, stype FieldType) setFunc {
 
 	case NumericFieldType:
 		if ftype == typeOfRat {
-			return func(v reflect.Value, x interface{}) error {
-				return setNull(v, x, func() interface{} { return x.(*big.Rat) })
+			return func(v reflect.Value, x any) error {
+				return setNull(v, x, func() any { return x.(*big.Rat) })
 			}
 		}
 
 	case BigNumericFieldType:
 		if ftype == typeOfRat {
-			return func(v reflect.Value, x interface{}) error {
-				return setNull(v, x, func() interface{} { return x.(*big.Rat) })
+			return func(v reflect.Value, x any) error {
+				return setNull(v, x, func() any { return x.(*big.Rat) })
 			}
 		}
 
 	case RangeFieldType:
 		if ftype == typeOfRangeValue {
-			return func(v reflect.Value, x interface{}) error {
-				return setNull(v, x, func() interface{} { return x.(*RangeValue) })
+			return func(v reflect.Value, x any) error {
+				return setNull(v, x, func() any { return x.(*RangeValue) })
 			}
 		}
 
@@ -478,9 +484,9 @@ func runOps(ops []structLoaderOp, vstruct reflect.Value, values []Value) error {
 	return nil
 }
 
-func setNested(ops []structLoaderOp, v reflect.Value, val interface{}) error {
+func setNested(ops []structLoaderOp, v reflect.Value, val any) error {
 	// v is either a struct or a pointer to a struct.
-	if v.Kind() == reflect.Ptr {
+	if v.Kind() == reflect.Pointer {
 		// If the value is nil, set the pointer to nil.
 		if val == nil {
 			v.Set(reflect.Zero(v.Type()))
@@ -645,7 +651,7 @@ type StructSaver struct {
 	InsertID string
 
 	// Struct should be a struct or a pointer to a struct.
-	Struct interface{}
+	Struct any
 }
 
 // Save implements ValueSaver.
@@ -659,7 +665,7 @@ func (ss *StructSaver) Save() (row map[string]Value, insertID string, err error)
 }
 
 func structToMap(vstruct reflect.Value, schema Schema) (map[string]Value, error) {
-	if vstruct.Kind() == reflect.Ptr {
+	if vstruct.Kind() == reflect.Pointer {
 		vstruct = vstruct.Elem()
 	}
 	if !vstruct.IsValid() {
@@ -696,7 +702,7 @@ func structToMap(vstruct reflect.Value, schema Schema) (map[string]Value, error)
 // the schemaField as a guide.
 // structFieldToUploadValue is careful to return a true nil interface{} when needed, so its
 // caller can easily identify a nil value.
-func structFieldToUploadValue(vfield reflect.Value, schemaField *FieldSchema) (interface{}, error) {
+func structFieldToUploadValue(vfield reflect.Value, schemaField *FieldSchema) (any, error) {
 	if schemaField.Repeated && (vfield.Kind() != reflect.Slice && vfield.Kind() != reflect.Array) {
 		return nil, fmt.Errorf("bigquery: repeated schema field %s requires slice or array, but value has type %s",
 			schemaField.Name, vfield.Type())
@@ -733,14 +739,14 @@ func structFieldToUploadValue(vfield reflect.Value, schemaField *FieldSchema) (i
 	return vals, nil
 }
 
-func toUploadValue(val interface{}, fs *FieldSchema) interface{} {
+func toUploadValue(val any, fs *FieldSchema) any {
 	if fs.Type == TimeFieldType || fs.Type == DateTimeFieldType || fs.Type == NumericFieldType || fs.Type == BigNumericFieldType {
 		return toUploadValueReflect(reflect.ValueOf(val), fs)
 	}
 	return val
 }
 
-func toUploadValueReflect(v reflect.Value, fs *FieldSchema) interface{} {
+func toUploadValueReflect(v reflect.Value, fs *FieldSchema) any {
 	switch fs.Type {
 	case TimeFieldType:
 		if v.Type() == typeOfNullTime {
@@ -789,7 +795,7 @@ func toUploadValueReflect(v reflect.Value, fs *FieldSchema) interface{} {
 	}
 }
 
-func formatUploadValue(v reflect.Value, fs *FieldSchema, cvt func(reflect.Value) string) interface{} {
+func formatUploadValue(v reflect.Value, fs *FieldSchema, cvt func(reflect.Value) string) any {
 	if !fs.Repeated {
 		return cvt(v)
 	}
@@ -924,13 +930,13 @@ func convertRow(r *bq.TableRow, schema Schema) ([]Value, error) {
 	return values, nil
 }
 
-func convertValue(val interface{}, typ FieldType, schema Schema) (Value, error) {
+func convertValue(val any, typ FieldType, schema Schema) (Value, error) {
 	switch val := val.(type) {
 	case nil:
 		return nil, nil
-	case []interface{}:
+	case []any:
 		return convertRepeatedRecord(val, typ, schema)
-	case map[string]interface{}:
+	case map[string]any:
 		return convertNestedRecord(val, schema)
 	case string:
 		return convertBasicType(val, typ)
@@ -939,11 +945,11 @@ func convertValue(val interface{}, typ FieldType, schema Schema) (Value, error) 
 	}
 }
 
-func convertRepeatedRecord(vals []interface{}, typ FieldType, schema Schema) (Value, error) {
+func convertRepeatedRecord(vals []any, typ FieldType, schema Schema) (Value, error) {
 	var values []Value
 	for _, cell := range vals {
 		// each cell contains a single entry, keyed by "v"
-		val := cell.(map[string]interface{})["v"]
+		val := cell.(map[string]any)["v"]
 		v, err := convertValue(val, typ, schema)
 		if err != nil {
 			return nil, err
@@ -953,11 +959,11 @@ func convertRepeatedRecord(vals []interface{}, typ FieldType, schema Schema) (Va
 	return values, nil
 }
 
-func convertNestedRecord(val map[string]interface{}, schema Schema) (Value, error) {
+func convertNestedRecord(val map[string]any, schema Schema) (Value, error) {
 	// convertNestedRecord is similar to convertRow, as a record has the same structure as a row.
 
 	// Nested records are wrapped in a map with a single key, "f".
-	record := val["f"].([]interface{})
+	record := val["f"].([]any)
 	if len(record) != len(schema) {
 		return nil, errors.New("schema length does not match record length")
 	}
@@ -965,7 +971,7 @@ func convertNestedRecord(val map[string]interface{}, schema Schema) (Value, erro
 	var values []Value
 	for i, cell := range record {
 		// each cell contains a single entry, keyed by "v"
-		val := cell.(map[string]interface{})["v"]
+		val := cell.(map[string]any)["v"]
 		fs := schema[i]
 		v, err := convertValue(val, fs.Type, fs.Schema)
 		if err != nil {
@@ -1033,18 +1039,12 @@ var unboundedRangeSentinel = "UNBOUNDED"
 
 // convertRangeValue aids in parsing the compound RANGE api data representation.
 // The format for a range value is: "[startval, endval)"
-func convertRangeValue(cellVal interface{}, elementType FieldType) (Value, error) {
+func convertRangeValue(cellVal any, elementType FieldType) (Value, error) {
 	if cellVal == nil {
 		return nil, nil
 	}
 	val := cellVal.(string)
-	supported := false
-	for _, t := range []FieldType{DateFieldType, DateTimeFieldType, TimestampFieldType} {
-		if elementType == t {
-			supported = true
-			break
-		}
-	}
+	supported := slices.Contains([]FieldType{DateFieldType, DateTimeFieldType, TimestampFieldType}, elementType)
 	if !supported {
 		return nil, fmt.Errorf("bigquery: invalid RANGE element type %q", elementType)
 	}
@@ -1080,8 +1080,8 @@ func convertRangeValue(cellVal interface{}, elementType FieldType) (Value, error
 func convertRangeTableCell(cell *bq.TableCell, fs *FieldSchema) (Value, error) {
 	if fs.Repeated {
 		rangeValues := []Value{}
-		for _, val := range cell.V.([]interface{}) {
-			rawRangeValue := val.(map[string]interface{})["v"]
+		for _, val := range cell.V.([]any) {
+			rawRangeValue := val.(map[string]any)["v"]
 			rangeVal, err := convertRangeValue(rawRangeValue, fs.RangeElementType.Type)
 			if err != nil {
 				return nil, err

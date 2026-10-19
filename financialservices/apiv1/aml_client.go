@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -31,6 +31,8 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -448,7 +450,7 @@ type AMLClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *AMLClient) Close() error {
 	return c.internalClient.Close()
@@ -886,6 +888,16 @@ type aMLGRPCClient struct {
 // operations on aml.
 func NewAMLClient(ctx context.Context, opts ...option.ClientOption) (*AMLClient, error) {
 	clientOpts := defaultAMLGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "financialservices",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/financialservices/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "financialservices.googleapis.com",
+		}))
+	}
 	if newAMLClientHook != nil {
 		hookOpts, err := newAMLClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -909,6 +921,176 @@ func NewAMLClient(ctx context.Context, opts ...option.ClientOption) (*AMLClient,
 		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "financialservices",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/financialservices/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "financialservices.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListInstances = append(client.CallOptions.ListInstances, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetInstance = append(client.CallOptions.GetInstance, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateInstance = append(client.CallOptions.CreateInstance, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateInstance = append(client.CallOptions.UpdateInstance, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteInstance = append(client.CallOptions.DeleteInstance, gax.WithClientMetrics(metrics))
+		client.CallOptions.ImportRegisteredParties = append(client.CallOptions.ImportRegisteredParties, gax.WithClientMetrics(metrics))
+		client.CallOptions.ExportRegisteredParties = append(client.CallOptions.ExportRegisteredParties, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListDatasets = append(client.CallOptions.ListDatasets, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetDataset = append(client.CallOptions.GetDataset, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateDataset = append(client.CallOptions.CreateDataset, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateDataset = append(client.CallOptions.UpdateDataset, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteDataset = append(client.CallOptions.DeleteDataset, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListModels = append(client.CallOptions.ListModels, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetModel = append(client.CallOptions.GetModel, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateModel = append(client.CallOptions.CreateModel, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateModel = append(client.CallOptions.UpdateModel, gax.WithClientMetrics(metrics))
+		client.CallOptions.ExportModelMetadata = append(client.CallOptions.ExportModelMetadata, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteModel = append(client.CallOptions.DeleteModel, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListEngineConfigs = append(client.CallOptions.ListEngineConfigs, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetEngineConfig = append(client.CallOptions.GetEngineConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateEngineConfig = append(client.CallOptions.CreateEngineConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateEngineConfig = append(client.CallOptions.UpdateEngineConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.ExportEngineConfigMetadata = append(client.CallOptions.ExportEngineConfigMetadata, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteEngineConfig = append(client.CallOptions.DeleteEngineConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetEngineVersion = append(client.CallOptions.GetEngineVersion, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListEngineVersions = append(client.CallOptions.ListEngineVersions, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListPredictionResults = append(client.CallOptions.ListPredictionResults, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetPredictionResult = append(client.CallOptions.GetPredictionResult, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreatePredictionResult = append(client.CallOptions.CreatePredictionResult, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdatePredictionResult = append(client.CallOptions.UpdatePredictionResult, gax.WithClientMetrics(metrics))
+		client.CallOptions.ExportPredictionResultMetadata = append(client.CallOptions.ExportPredictionResultMetadata, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeletePredictionResult = append(client.CallOptions.DeletePredictionResult, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListBacktestResults = append(client.CallOptions.ListBacktestResults, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetBacktestResult = append(client.CallOptions.GetBacktestResult, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateBacktestResult = append(client.CallOptions.CreateBacktestResult, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateBacktestResult = append(client.CallOptions.UpdateBacktestResult, gax.WithClientMetrics(metrics))
+		client.CallOptions.ExportBacktestResultMetadata = append(client.CallOptions.ExportBacktestResultMetadata, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteBacktestResult = append(client.CallOptions.DeleteBacktestResult, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "financialservices",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/financialservices/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "financialservices.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListInstances = append(client.CallOptions.ListInstances, gax.WithClientTracing(tracing))
+		client.CallOptions.GetInstance = append(client.CallOptions.GetInstance, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateInstance = append(client.CallOptions.CreateInstance, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateInstance = append(client.CallOptions.UpdateInstance, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteInstance = append(client.CallOptions.DeleteInstance, gax.WithClientTracing(tracing))
+		client.CallOptions.ImportRegisteredParties = append(client.CallOptions.ImportRegisteredParties, gax.WithClientTracing(tracing))
+		client.CallOptions.ExportRegisteredParties = append(client.CallOptions.ExportRegisteredParties, gax.WithClientTracing(tracing))
+		client.CallOptions.ListDatasets = append(client.CallOptions.ListDatasets, gax.WithClientTracing(tracing))
+		client.CallOptions.GetDataset = append(client.CallOptions.GetDataset, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateDataset = append(client.CallOptions.CreateDataset, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateDataset = append(client.CallOptions.UpdateDataset, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteDataset = append(client.CallOptions.DeleteDataset, gax.WithClientTracing(tracing))
+		client.CallOptions.ListModels = append(client.CallOptions.ListModels, gax.WithClientTracing(tracing))
+		client.CallOptions.GetModel = append(client.CallOptions.GetModel, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateModel = append(client.CallOptions.CreateModel, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateModel = append(client.CallOptions.UpdateModel, gax.WithClientTracing(tracing))
+		client.CallOptions.ExportModelMetadata = append(client.CallOptions.ExportModelMetadata, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteModel = append(client.CallOptions.DeleteModel, gax.WithClientTracing(tracing))
+		client.CallOptions.ListEngineConfigs = append(client.CallOptions.ListEngineConfigs, gax.WithClientTracing(tracing))
+		client.CallOptions.GetEngineConfig = append(client.CallOptions.GetEngineConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateEngineConfig = append(client.CallOptions.CreateEngineConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateEngineConfig = append(client.CallOptions.UpdateEngineConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.ExportEngineConfigMetadata = append(client.CallOptions.ExportEngineConfigMetadata, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteEngineConfig = append(client.CallOptions.DeleteEngineConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.GetEngineVersion = append(client.CallOptions.GetEngineVersion, gax.WithClientTracing(tracing))
+		client.CallOptions.ListEngineVersions = append(client.CallOptions.ListEngineVersions, gax.WithClientTracing(tracing))
+		client.CallOptions.ListPredictionResults = append(client.CallOptions.ListPredictionResults, gax.WithClientTracing(tracing))
+		client.CallOptions.GetPredictionResult = append(client.CallOptions.GetPredictionResult, gax.WithClientTracing(tracing))
+		client.CallOptions.CreatePredictionResult = append(client.CallOptions.CreatePredictionResult, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdatePredictionResult = append(client.CallOptions.UpdatePredictionResult, gax.WithClientTracing(tracing))
+		client.CallOptions.ExportPredictionResultMetadata = append(client.CallOptions.ExportPredictionResultMetadata, gax.WithClientTracing(tracing))
+		client.CallOptions.DeletePredictionResult = append(client.CallOptions.DeletePredictionResult, gax.WithClientTracing(tracing))
+		client.CallOptions.ListBacktestResults = append(client.CallOptions.ListBacktestResults, gax.WithClientTracing(tracing))
+		client.CallOptions.GetBacktestResult = append(client.CallOptions.GetBacktestResult, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateBacktestResult = append(client.CallOptions.CreateBacktestResult, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateBacktestResult = append(client.CallOptions.UpdateBacktestResult, gax.WithClientTracing(tracing))
+		client.CallOptions.ExportBacktestResultMetadata = append(client.CallOptions.ExportBacktestResultMetadata, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteBacktestResult = append(client.CallOptions.DeleteBacktestResult, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "financialservices",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/financialservices/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "financialservices.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListInstances = append(client.CallOptions.ListInstances, gax.WithClientLogging(logging))
+		client.CallOptions.GetInstance = append(client.CallOptions.GetInstance, gax.WithClientLogging(logging))
+		client.CallOptions.CreateInstance = append(client.CallOptions.CreateInstance, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateInstance = append(client.CallOptions.UpdateInstance, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteInstance = append(client.CallOptions.DeleteInstance, gax.WithClientLogging(logging))
+		client.CallOptions.ImportRegisteredParties = append(client.CallOptions.ImportRegisteredParties, gax.WithClientLogging(logging))
+		client.CallOptions.ExportRegisteredParties = append(client.CallOptions.ExportRegisteredParties, gax.WithClientLogging(logging))
+		client.CallOptions.ListDatasets = append(client.CallOptions.ListDatasets, gax.WithClientLogging(logging))
+		client.CallOptions.GetDataset = append(client.CallOptions.GetDataset, gax.WithClientLogging(logging))
+		client.CallOptions.CreateDataset = append(client.CallOptions.CreateDataset, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateDataset = append(client.CallOptions.UpdateDataset, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteDataset = append(client.CallOptions.DeleteDataset, gax.WithClientLogging(logging))
+		client.CallOptions.ListModels = append(client.CallOptions.ListModels, gax.WithClientLogging(logging))
+		client.CallOptions.GetModel = append(client.CallOptions.GetModel, gax.WithClientLogging(logging))
+		client.CallOptions.CreateModel = append(client.CallOptions.CreateModel, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateModel = append(client.CallOptions.UpdateModel, gax.WithClientLogging(logging))
+		client.CallOptions.ExportModelMetadata = append(client.CallOptions.ExportModelMetadata, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteModel = append(client.CallOptions.DeleteModel, gax.WithClientLogging(logging))
+		client.CallOptions.ListEngineConfigs = append(client.CallOptions.ListEngineConfigs, gax.WithClientLogging(logging))
+		client.CallOptions.GetEngineConfig = append(client.CallOptions.GetEngineConfig, gax.WithClientLogging(logging))
+		client.CallOptions.CreateEngineConfig = append(client.CallOptions.CreateEngineConfig, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateEngineConfig = append(client.CallOptions.UpdateEngineConfig, gax.WithClientLogging(logging))
+		client.CallOptions.ExportEngineConfigMetadata = append(client.CallOptions.ExportEngineConfigMetadata, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteEngineConfig = append(client.CallOptions.DeleteEngineConfig, gax.WithClientLogging(logging))
+		client.CallOptions.GetEngineVersion = append(client.CallOptions.GetEngineVersion, gax.WithClientLogging(logging))
+		client.CallOptions.ListEngineVersions = append(client.CallOptions.ListEngineVersions, gax.WithClientLogging(logging))
+		client.CallOptions.ListPredictionResults = append(client.CallOptions.ListPredictionResults, gax.WithClientLogging(logging))
+		client.CallOptions.GetPredictionResult = append(client.CallOptions.GetPredictionResult, gax.WithClientLogging(logging))
+		client.CallOptions.CreatePredictionResult = append(client.CallOptions.CreatePredictionResult, gax.WithClientLogging(logging))
+		client.CallOptions.UpdatePredictionResult = append(client.CallOptions.UpdatePredictionResult, gax.WithClientLogging(logging))
+		client.CallOptions.ExportPredictionResultMetadata = append(client.CallOptions.ExportPredictionResultMetadata, gax.WithClientLogging(logging))
+		client.CallOptions.DeletePredictionResult = append(client.CallOptions.DeletePredictionResult, gax.WithClientLogging(logging))
+		client.CallOptions.ListBacktestResults = append(client.CallOptions.ListBacktestResults, gax.WithClientLogging(logging))
+		client.CallOptions.GetBacktestResult = append(client.CallOptions.GetBacktestResult, gax.WithClientLogging(logging))
+		client.CallOptions.CreateBacktestResult = append(client.CallOptions.CreateBacktestResult, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateBacktestResult = append(client.CallOptions.UpdateBacktestResult, gax.WithClientLogging(logging))
+		client.CallOptions.ExportBacktestResultMetadata = append(client.CallOptions.ExportBacktestResultMetadata, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteBacktestResult = append(client.CallOptions.DeleteBacktestResult, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -945,7 +1127,7 @@ func (c *aMLGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *aMLGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -979,6 +1161,16 @@ type aMLRESTClient struct {
 // operations on aml.
 func NewAMLRESTClient(ctx context.Context, opts ...option.ClientOption) (*AMLClient, error) {
 	clientOpts := append(defaultAMLRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "financialservices",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/financialservices/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "financialservices.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -992,6 +1184,177 @@ func NewAMLRESTClient(ctx context.Context, opts ...option.ClientOption) (*AMLCli
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "financialservices",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/financialservices/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "financialservices.googleapis.com",
+			}),
+		)
+
+		callOpts.ListInstances = append(callOpts.ListInstances, gax.WithClientMetrics(metrics))
+		callOpts.GetInstance = append(callOpts.GetInstance, gax.WithClientMetrics(metrics))
+		callOpts.CreateInstance = append(callOpts.CreateInstance, gax.WithClientMetrics(metrics))
+		callOpts.UpdateInstance = append(callOpts.UpdateInstance, gax.WithClientMetrics(metrics))
+		callOpts.DeleteInstance = append(callOpts.DeleteInstance, gax.WithClientMetrics(metrics))
+		callOpts.ImportRegisteredParties = append(callOpts.ImportRegisteredParties, gax.WithClientMetrics(metrics))
+		callOpts.ExportRegisteredParties = append(callOpts.ExportRegisteredParties, gax.WithClientMetrics(metrics))
+		callOpts.ListDatasets = append(callOpts.ListDatasets, gax.WithClientMetrics(metrics))
+		callOpts.GetDataset = append(callOpts.GetDataset, gax.WithClientMetrics(metrics))
+		callOpts.CreateDataset = append(callOpts.CreateDataset, gax.WithClientMetrics(metrics))
+		callOpts.UpdateDataset = append(callOpts.UpdateDataset, gax.WithClientMetrics(metrics))
+		callOpts.DeleteDataset = append(callOpts.DeleteDataset, gax.WithClientMetrics(metrics))
+		callOpts.ListModels = append(callOpts.ListModels, gax.WithClientMetrics(metrics))
+		callOpts.GetModel = append(callOpts.GetModel, gax.WithClientMetrics(metrics))
+		callOpts.CreateModel = append(callOpts.CreateModel, gax.WithClientMetrics(metrics))
+		callOpts.UpdateModel = append(callOpts.UpdateModel, gax.WithClientMetrics(metrics))
+		callOpts.ExportModelMetadata = append(callOpts.ExportModelMetadata, gax.WithClientMetrics(metrics))
+		callOpts.DeleteModel = append(callOpts.DeleteModel, gax.WithClientMetrics(metrics))
+		callOpts.ListEngineConfigs = append(callOpts.ListEngineConfigs, gax.WithClientMetrics(metrics))
+		callOpts.GetEngineConfig = append(callOpts.GetEngineConfig, gax.WithClientMetrics(metrics))
+		callOpts.CreateEngineConfig = append(callOpts.CreateEngineConfig, gax.WithClientMetrics(metrics))
+		callOpts.UpdateEngineConfig = append(callOpts.UpdateEngineConfig, gax.WithClientMetrics(metrics))
+		callOpts.ExportEngineConfigMetadata = append(callOpts.ExportEngineConfigMetadata, gax.WithClientMetrics(metrics))
+		callOpts.DeleteEngineConfig = append(callOpts.DeleteEngineConfig, gax.WithClientMetrics(metrics))
+		callOpts.GetEngineVersion = append(callOpts.GetEngineVersion, gax.WithClientMetrics(metrics))
+		callOpts.ListEngineVersions = append(callOpts.ListEngineVersions, gax.WithClientMetrics(metrics))
+		callOpts.ListPredictionResults = append(callOpts.ListPredictionResults, gax.WithClientMetrics(metrics))
+		callOpts.GetPredictionResult = append(callOpts.GetPredictionResult, gax.WithClientMetrics(metrics))
+		callOpts.CreatePredictionResult = append(callOpts.CreatePredictionResult, gax.WithClientMetrics(metrics))
+		callOpts.UpdatePredictionResult = append(callOpts.UpdatePredictionResult, gax.WithClientMetrics(metrics))
+		callOpts.ExportPredictionResultMetadata = append(callOpts.ExportPredictionResultMetadata, gax.WithClientMetrics(metrics))
+		callOpts.DeletePredictionResult = append(callOpts.DeletePredictionResult, gax.WithClientMetrics(metrics))
+		callOpts.ListBacktestResults = append(callOpts.ListBacktestResults, gax.WithClientMetrics(metrics))
+		callOpts.GetBacktestResult = append(callOpts.GetBacktestResult, gax.WithClientMetrics(metrics))
+		callOpts.CreateBacktestResult = append(callOpts.CreateBacktestResult, gax.WithClientMetrics(metrics))
+		callOpts.UpdateBacktestResult = append(callOpts.UpdateBacktestResult, gax.WithClientMetrics(metrics))
+		callOpts.ExportBacktestResultMetadata = append(callOpts.ExportBacktestResultMetadata, gax.WithClientMetrics(metrics))
+		callOpts.DeleteBacktestResult = append(callOpts.DeleteBacktestResult, gax.WithClientMetrics(metrics))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "financialservices",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/financialservices/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "financialservices.googleapis.com",
+			}),
+		)
+
+		callOpts.ListInstances = append(callOpts.ListInstances, gax.WithClientTracing(tracing))
+		callOpts.GetInstance = append(callOpts.GetInstance, gax.WithClientTracing(tracing))
+		callOpts.CreateInstance = append(callOpts.CreateInstance, gax.WithClientTracing(tracing))
+		callOpts.UpdateInstance = append(callOpts.UpdateInstance, gax.WithClientTracing(tracing))
+		callOpts.DeleteInstance = append(callOpts.DeleteInstance, gax.WithClientTracing(tracing))
+		callOpts.ImportRegisteredParties = append(callOpts.ImportRegisteredParties, gax.WithClientTracing(tracing))
+		callOpts.ExportRegisteredParties = append(callOpts.ExportRegisteredParties, gax.WithClientTracing(tracing))
+		callOpts.ListDatasets = append(callOpts.ListDatasets, gax.WithClientTracing(tracing))
+		callOpts.GetDataset = append(callOpts.GetDataset, gax.WithClientTracing(tracing))
+		callOpts.CreateDataset = append(callOpts.CreateDataset, gax.WithClientTracing(tracing))
+		callOpts.UpdateDataset = append(callOpts.UpdateDataset, gax.WithClientTracing(tracing))
+		callOpts.DeleteDataset = append(callOpts.DeleteDataset, gax.WithClientTracing(tracing))
+		callOpts.ListModels = append(callOpts.ListModels, gax.WithClientTracing(tracing))
+		callOpts.GetModel = append(callOpts.GetModel, gax.WithClientTracing(tracing))
+		callOpts.CreateModel = append(callOpts.CreateModel, gax.WithClientTracing(tracing))
+		callOpts.UpdateModel = append(callOpts.UpdateModel, gax.WithClientTracing(tracing))
+		callOpts.ExportModelMetadata = append(callOpts.ExportModelMetadata, gax.WithClientTracing(tracing))
+		callOpts.DeleteModel = append(callOpts.DeleteModel, gax.WithClientTracing(tracing))
+		callOpts.ListEngineConfigs = append(callOpts.ListEngineConfigs, gax.WithClientTracing(tracing))
+		callOpts.GetEngineConfig = append(callOpts.GetEngineConfig, gax.WithClientTracing(tracing))
+		callOpts.CreateEngineConfig = append(callOpts.CreateEngineConfig, gax.WithClientTracing(tracing))
+		callOpts.UpdateEngineConfig = append(callOpts.UpdateEngineConfig, gax.WithClientTracing(tracing))
+		callOpts.ExportEngineConfigMetadata = append(callOpts.ExportEngineConfigMetadata, gax.WithClientTracing(tracing))
+		callOpts.DeleteEngineConfig = append(callOpts.DeleteEngineConfig, gax.WithClientTracing(tracing))
+		callOpts.GetEngineVersion = append(callOpts.GetEngineVersion, gax.WithClientTracing(tracing))
+		callOpts.ListEngineVersions = append(callOpts.ListEngineVersions, gax.WithClientTracing(tracing))
+		callOpts.ListPredictionResults = append(callOpts.ListPredictionResults, gax.WithClientTracing(tracing))
+		callOpts.GetPredictionResult = append(callOpts.GetPredictionResult, gax.WithClientTracing(tracing))
+		callOpts.CreatePredictionResult = append(callOpts.CreatePredictionResult, gax.WithClientTracing(tracing))
+		callOpts.UpdatePredictionResult = append(callOpts.UpdatePredictionResult, gax.WithClientTracing(tracing))
+		callOpts.ExportPredictionResultMetadata = append(callOpts.ExportPredictionResultMetadata, gax.WithClientTracing(tracing))
+		callOpts.DeletePredictionResult = append(callOpts.DeletePredictionResult, gax.WithClientTracing(tracing))
+		callOpts.ListBacktestResults = append(callOpts.ListBacktestResults, gax.WithClientTracing(tracing))
+		callOpts.GetBacktestResult = append(callOpts.GetBacktestResult, gax.WithClientTracing(tracing))
+		callOpts.CreateBacktestResult = append(callOpts.CreateBacktestResult, gax.WithClientTracing(tracing))
+		callOpts.UpdateBacktestResult = append(callOpts.UpdateBacktestResult, gax.WithClientTracing(tracing))
+		callOpts.ExportBacktestResultMetadata = append(callOpts.ExportBacktestResultMetadata, gax.WithClientTracing(tracing))
+		callOpts.DeleteBacktestResult = append(callOpts.DeleteBacktestResult, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "financialservices",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/financialservices/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "financialservices.googleapis.com",
+			}),
+		)
+
+		callOpts.ListInstances = append(callOpts.ListInstances, gax.WithClientLogging(logging))
+		callOpts.GetInstance = append(callOpts.GetInstance, gax.WithClientLogging(logging))
+		callOpts.CreateInstance = append(callOpts.CreateInstance, gax.WithClientLogging(logging))
+		callOpts.UpdateInstance = append(callOpts.UpdateInstance, gax.WithClientLogging(logging))
+		callOpts.DeleteInstance = append(callOpts.DeleteInstance, gax.WithClientLogging(logging))
+		callOpts.ImportRegisteredParties = append(callOpts.ImportRegisteredParties, gax.WithClientLogging(logging))
+		callOpts.ExportRegisteredParties = append(callOpts.ExportRegisteredParties, gax.WithClientLogging(logging))
+		callOpts.ListDatasets = append(callOpts.ListDatasets, gax.WithClientLogging(logging))
+		callOpts.GetDataset = append(callOpts.GetDataset, gax.WithClientLogging(logging))
+		callOpts.CreateDataset = append(callOpts.CreateDataset, gax.WithClientLogging(logging))
+		callOpts.UpdateDataset = append(callOpts.UpdateDataset, gax.WithClientLogging(logging))
+		callOpts.DeleteDataset = append(callOpts.DeleteDataset, gax.WithClientLogging(logging))
+		callOpts.ListModels = append(callOpts.ListModels, gax.WithClientLogging(logging))
+		callOpts.GetModel = append(callOpts.GetModel, gax.WithClientLogging(logging))
+		callOpts.CreateModel = append(callOpts.CreateModel, gax.WithClientLogging(logging))
+		callOpts.UpdateModel = append(callOpts.UpdateModel, gax.WithClientLogging(logging))
+		callOpts.ExportModelMetadata = append(callOpts.ExportModelMetadata, gax.WithClientLogging(logging))
+		callOpts.DeleteModel = append(callOpts.DeleteModel, gax.WithClientLogging(logging))
+		callOpts.ListEngineConfigs = append(callOpts.ListEngineConfigs, gax.WithClientLogging(logging))
+		callOpts.GetEngineConfig = append(callOpts.GetEngineConfig, gax.WithClientLogging(logging))
+		callOpts.CreateEngineConfig = append(callOpts.CreateEngineConfig, gax.WithClientLogging(logging))
+		callOpts.UpdateEngineConfig = append(callOpts.UpdateEngineConfig, gax.WithClientLogging(logging))
+		callOpts.ExportEngineConfigMetadata = append(callOpts.ExportEngineConfigMetadata, gax.WithClientLogging(logging))
+		callOpts.DeleteEngineConfig = append(callOpts.DeleteEngineConfig, gax.WithClientLogging(logging))
+		callOpts.GetEngineVersion = append(callOpts.GetEngineVersion, gax.WithClientLogging(logging))
+		callOpts.ListEngineVersions = append(callOpts.ListEngineVersions, gax.WithClientLogging(logging))
+		callOpts.ListPredictionResults = append(callOpts.ListPredictionResults, gax.WithClientLogging(logging))
+		callOpts.GetPredictionResult = append(callOpts.GetPredictionResult, gax.WithClientLogging(logging))
+		callOpts.CreatePredictionResult = append(callOpts.CreatePredictionResult, gax.WithClientLogging(logging))
+		callOpts.UpdatePredictionResult = append(callOpts.UpdatePredictionResult, gax.WithClientLogging(logging))
+		callOpts.ExportPredictionResultMetadata = append(callOpts.ExportPredictionResultMetadata, gax.WithClientLogging(logging))
+		callOpts.DeletePredictionResult = append(callOpts.DeletePredictionResult, gax.WithClientLogging(logging))
+		callOpts.ListBacktestResults = append(callOpts.ListBacktestResults, gax.WithClientLogging(logging))
+		callOpts.GetBacktestResult = append(callOpts.GetBacktestResult, gax.WithClientLogging(logging))
+		callOpts.CreateBacktestResult = append(callOpts.CreateBacktestResult, gax.WithClientLogging(logging))
+		callOpts.UpdateBacktestResult = append(callOpts.UpdateBacktestResult, gax.WithClientLogging(logging))
+		callOpts.ExportBacktestResultMetadata = append(callOpts.ExportBacktestResultMetadata, gax.WithClientLogging(logging))
+		callOpts.DeleteBacktestResult = append(callOpts.DeleteBacktestResult, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -1029,7 +1392,7 @@ func (c *aMLRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *aMLRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -1048,9 +1411,12 @@ func (c *aMLGRPCClient) ListInstances(ctx context.Context, req *financialservice
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/ListInstances")
+	}
 	opts = append((*c.CallOptions).ListInstances[0:len((*c.CallOptions).ListInstances):len((*c.CallOptions).ListInstances)], opts...)
 	it := &InstanceIterator{}
-	req = proto.Clone(req).(*financialservicespb.ListInstancesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*financialservicespb.Instance, string, error) {
 		resp := &financialservicespb.ListInstancesResponse{}
 		if pageToken != "" {
@@ -1094,6 +1460,9 @@ func (c *aMLGRPCClient) GetInstance(ctx context.Context, req *financialservicesp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/GetInstance")
+	}
 	opts = append((*c.CallOptions).GetInstance[0:len((*c.CallOptions).GetInstance):len((*c.CallOptions).GetInstance)], opts...)
 	var resp *financialservicespb.Instance
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1112,6 +1481,9 @@ func (c *aMLGRPCClient) CreateInstance(ctx context.Context, req *financialservic
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/CreateInstance")
+	}
 	opts = append((*c.CallOptions).CreateInstance[0:len((*c.CallOptions).CreateInstance):len((*c.CallOptions).CreateInstance)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1122,8 +1494,12 @@ func (c *aMLGRPCClient) CreateInstance(ctx context.Context, req *financialservic
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.CreateInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1132,6 +1508,9 @@ func (c *aMLGRPCClient) UpdateInstance(ctx context.Context, req *financialservic
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/UpdateInstance")
+	}
 	opts = append((*c.CallOptions).UpdateInstance[0:len((*c.CallOptions).UpdateInstance):len((*c.CallOptions).UpdateInstance)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1142,8 +1521,12 @@ func (c *aMLGRPCClient) UpdateInstance(ctx context.Context, req *financialservic
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.UpdateInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1152,6 +1535,9 @@ func (c *aMLGRPCClient) DeleteInstance(ctx context.Context, req *financialservic
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/DeleteInstance")
+	}
 	opts = append((*c.CallOptions).DeleteInstance[0:len((*c.CallOptions).DeleteInstance):len((*c.CallOptions).DeleteInstance)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1162,8 +1548,12 @@ func (c *aMLGRPCClient) DeleteInstance(ctx context.Context, req *financialservic
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.DeleteInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1172,6 +1562,9 @@ func (c *aMLGRPCClient) ImportRegisteredParties(ctx context.Context, req *financ
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/ImportRegisteredParties")
+	}
 	opts = append((*c.CallOptions).ImportRegisteredParties[0:len((*c.CallOptions).ImportRegisteredParties):len((*c.CallOptions).ImportRegisteredParties)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1182,8 +1575,12 @@ func (c *aMLGRPCClient) ImportRegisteredParties(ctx context.Context, req *financ
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.ImportRegisteredPartiesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportRegisteredPartiesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1192,6 +1589,9 @@ func (c *aMLGRPCClient) ExportRegisteredParties(ctx context.Context, req *financ
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/ExportRegisteredParties")
+	}
 	opts = append((*c.CallOptions).ExportRegisteredParties[0:len((*c.CallOptions).ExportRegisteredParties):len((*c.CallOptions).ExportRegisteredParties)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1202,8 +1602,12 @@ func (c *aMLGRPCClient) ExportRegisteredParties(ctx context.Context, req *financ
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.ExportRegisteredPartiesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportRegisteredPartiesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1212,9 +1616,12 @@ func (c *aMLGRPCClient) ListDatasets(ctx context.Context, req *financialservices
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/ListDatasets")
+	}
 	opts = append((*c.CallOptions).ListDatasets[0:len((*c.CallOptions).ListDatasets):len((*c.CallOptions).ListDatasets)], opts...)
 	it := &DatasetIterator{}
-	req = proto.Clone(req).(*financialservicespb.ListDatasetsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*financialservicespb.Dataset, string, error) {
 		resp := &financialservicespb.ListDatasetsResponse{}
 		if pageToken != "" {
@@ -1258,6 +1665,9 @@ func (c *aMLGRPCClient) GetDataset(ctx context.Context, req *financialservicespb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/GetDataset")
+	}
 	opts = append((*c.CallOptions).GetDataset[0:len((*c.CallOptions).GetDataset):len((*c.CallOptions).GetDataset)], opts...)
 	var resp *financialservicespb.Dataset
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1276,6 +1686,9 @@ func (c *aMLGRPCClient) CreateDataset(ctx context.Context, req *financialservice
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/CreateDataset")
+	}
 	opts = append((*c.CallOptions).CreateDataset[0:len((*c.CallOptions).CreateDataset):len((*c.CallOptions).CreateDataset)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1286,8 +1699,12 @@ func (c *aMLGRPCClient) CreateDataset(ctx context.Context, req *financialservice
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.CreateDatasetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateDatasetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1296,6 +1713,9 @@ func (c *aMLGRPCClient) UpdateDataset(ctx context.Context, req *financialservice
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/UpdateDataset")
+	}
 	opts = append((*c.CallOptions).UpdateDataset[0:len((*c.CallOptions).UpdateDataset):len((*c.CallOptions).UpdateDataset)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1306,8 +1726,12 @@ func (c *aMLGRPCClient) UpdateDataset(ctx context.Context, req *financialservice
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.UpdateDatasetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateDatasetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1316,6 +1740,9 @@ func (c *aMLGRPCClient) DeleteDataset(ctx context.Context, req *financialservice
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/DeleteDataset")
+	}
 	opts = append((*c.CallOptions).DeleteDataset[0:len((*c.CallOptions).DeleteDataset):len((*c.CallOptions).DeleteDataset)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1326,8 +1753,12 @@ func (c *aMLGRPCClient) DeleteDataset(ctx context.Context, req *financialservice
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.DeleteDatasetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteDatasetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1336,9 +1767,12 @@ func (c *aMLGRPCClient) ListModels(ctx context.Context, req *financialservicespb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/ListModels")
+	}
 	opts = append((*c.CallOptions).ListModels[0:len((*c.CallOptions).ListModels):len((*c.CallOptions).ListModels)], opts...)
 	it := &ModelIterator{}
-	req = proto.Clone(req).(*financialservicespb.ListModelsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*financialservicespb.Model, string, error) {
 		resp := &financialservicespb.ListModelsResponse{}
 		if pageToken != "" {
@@ -1382,6 +1816,9 @@ func (c *aMLGRPCClient) GetModel(ctx context.Context, req *financialservicespb.G
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/GetModel")
+	}
 	opts = append((*c.CallOptions).GetModel[0:len((*c.CallOptions).GetModel):len((*c.CallOptions).GetModel)], opts...)
 	var resp *financialservicespb.Model
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1400,6 +1837,9 @@ func (c *aMLGRPCClient) CreateModel(ctx context.Context, req *financialservicesp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/CreateModel")
+	}
 	opts = append((*c.CallOptions).CreateModel[0:len((*c.CallOptions).CreateModel):len((*c.CallOptions).CreateModel)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1410,8 +1850,12 @@ func (c *aMLGRPCClient) CreateModel(ctx context.Context, req *financialservicesp
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.CreateModelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateModelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1420,6 +1864,9 @@ func (c *aMLGRPCClient) UpdateModel(ctx context.Context, req *financialservicesp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/UpdateModel")
+	}
 	opts = append((*c.CallOptions).UpdateModel[0:len((*c.CallOptions).UpdateModel):len((*c.CallOptions).UpdateModel)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1430,8 +1877,12 @@ func (c *aMLGRPCClient) UpdateModel(ctx context.Context, req *financialservicesp
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.UpdateModelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateModelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1440,6 +1891,9 @@ func (c *aMLGRPCClient) ExportModelMetadata(ctx context.Context, req *financials
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/ExportModelMetadata")
+	}
 	opts = append((*c.CallOptions).ExportModelMetadata[0:len((*c.CallOptions).ExportModelMetadata):len((*c.CallOptions).ExportModelMetadata)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1450,8 +1904,12 @@ func (c *aMLGRPCClient) ExportModelMetadata(ctx context.Context, req *financials
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.ExportModelMetadataOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportModelMetadataOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1460,6 +1918,9 @@ func (c *aMLGRPCClient) DeleteModel(ctx context.Context, req *financialservicesp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/DeleteModel")
+	}
 	opts = append((*c.CallOptions).DeleteModel[0:len((*c.CallOptions).DeleteModel):len((*c.CallOptions).DeleteModel)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1470,8 +1931,12 @@ func (c *aMLGRPCClient) DeleteModel(ctx context.Context, req *financialservicesp
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.DeleteModelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteModelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1480,9 +1945,12 @@ func (c *aMLGRPCClient) ListEngineConfigs(ctx context.Context, req *financialser
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/ListEngineConfigs")
+	}
 	opts = append((*c.CallOptions).ListEngineConfigs[0:len((*c.CallOptions).ListEngineConfigs):len((*c.CallOptions).ListEngineConfigs)], opts...)
 	it := &EngineConfigIterator{}
-	req = proto.Clone(req).(*financialservicespb.ListEngineConfigsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*financialservicespb.EngineConfig, string, error) {
 		resp := &financialservicespb.ListEngineConfigsResponse{}
 		if pageToken != "" {
@@ -1526,6 +1994,9 @@ func (c *aMLGRPCClient) GetEngineConfig(ctx context.Context, req *financialservi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/GetEngineConfig")
+	}
 	opts = append((*c.CallOptions).GetEngineConfig[0:len((*c.CallOptions).GetEngineConfig):len((*c.CallOptions).GetEngineConfig)], opts...)
 	var resp *financialservicespb.EngineConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1544,6 +2015,9 @@ func (c *aMLGRPCClient) CreateEngineConfig(ctx context.Context, req *financialse
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/CreateEngineConfig")
+	}
 	opts = append((*c.CallOptions).CreateEngineConfig[0:len((*c.CallOptions).CreateEngineConfig):len((*c.CallOptions).CreateEngineConfig)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1554,8 +2028,12 @@ func (c *aMLGRPCClient) CreateEngineConfig(ctx context.Context, req *financialse
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.CreateEngineConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateEngineConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1564,6 +2042,9 @@ func (c *aMLGRPCClient) UpdateEngineConfig(ctx context.Context, req *financialse
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/UpdateEngineConfig")
+	}
 	opts = append((*c.CallOptions).UpdateEngineConfig[0:len((*c.CallOptions).UpdateEngineConfig):len((*c.CallOptions).UpdateEngineConfig)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1574,8 +2055,12 @@ func (c *aMLGRPCClient) UpdateEngineConfig(ctx context.Context, req *financialse
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.UpdateEngineConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateEngineConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1584,6 +2069,9 @@ func (c *aMLGRPCClient) ExportEngineConfigMetadata(ctx context.Context, req *fin
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/ExportEngineConfigMetadata")
+	}
 	opts = append((*c.CallOptions).ExportEngineConfigMetadata[0:len((*c.CallOptions).ExportEngineConfigMetadata):len((*c.CallOptions).ExportEngineConfigMetadata)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1594,8 +2082,12 @@ func (c *aMLGRPCClient) ExportEngineConfigMetadata(ctx context.Context, req *fin
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.ExportEngineConfigMetadataOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportEngineConfigMetadataOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1604,6 +2096,9 @@ func (c *aMLGRPCClient) DeleteEngineConfig(ctx context.Context, req *financialse
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/DeleteEngineConfig")
+	}
 	opts = append((*c.CallOptions).DeleteEngineConfig[0:len((*c.CallOptions).DeleteEngineConfig):len((*c.CallOptions).DeleteEngineConfig)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1614,8 +2109,12 @@ func (c *aMLGRPCClient) DeleteEngineConfig(ctx context.Context, req *financialse
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.DeleteEngineConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteEngineConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1624,6 +2123,9 @@ func (c *aMLGRPCClient) GetEngineVersion(ctx context.Context, req *financialserv
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/GetEngineVersion")
+	}
 	opts = append((*c.CallOptions).GetEngineVersion[0:len((*c.CallOptions).GetEngineVersion):len((*c.CallOptions).GetEngineVersion)], opts...)
 	var resp *financialservicespb.EngineVersion
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1642,9 +2144,12 @@ func (c *aMLGRPCClient) ListEngineVersions(ctx context.Context, req *financialse
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/ListEngineVersions")
+	}
 	opts = append((*c.CallOptions).ListEngineVersions[0:len((*c.CallOptions).ListEngineVersions):len((*c.CallOptions).ListEngineVersions)], opts...)
 	it := &EngineVersionIterator{}
-	req = proto.Clone(req).(*financialservicespb.ListEngineVersionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*financialservicespb.EngineVersion, string, error) {
 		resp := &financialservicespb.ListEngineVersionsResponse{}
 		if pageToken != "" {
@@ -1688,9 +2193,12 @@ func (c *aMLGRPCClient) ListPredictionResults(ctx context.Context, req *financia
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/ListPredictionResults")
+	}
 	opts = append((*c.CallOptions).ListPredictionResults[0:len((*c.CallOptions).ListPredictionResults):len((*c.CallOptions).ListPredictionResults)], opts...)
 	it := &PredictionResultIterator{}
-	req = proto.Clone(req).(*financialservicespb.ListPredictionResultsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*financialservicespb.PredictionResult, string, error) {
 		resp := &financialservicespb.ListPredictionResultsResponse{}
 		if pageToken != "" {
@@ -1734,6 +2242,9 @@ func (c *aMLGRPCClient) GetPredictionResult(ctx context.Context, req *financials
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/GetPredictionResult")
+	}
 	opts = append((*c.CallOptions).GetPredictionResult[0:len((*c.CallOptions).GetPredictionResult):len((*c.CallOptions).GetPredictionResult)], opts...)
 	var resp *financialservicespb.PredictionResult
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1752,6 +2263,9 @@ func (c *aMLGRPCClient) CreatePredictionResult(ctx context.Context, req *financi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/CreatePredictionResult")
+	}
 	opts = append((*c.CallOptions).CreatePredictionResult[0:len((*c.CallOptions).CreatePredictionResult):len((*c.CallOptions).CreatePredictionResult)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1762,8 +2276,12 @@ func (c *aMLGRPCClient) CreatePredictionResult(ctx context.Context, req *financi
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.CreatePredictionResultOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreatePredictionResultOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1772,6 +2290,9 @@ func (c *aMLGRPCClient) UpdatePredictionResult(ctx context.Context, req *financi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/UpdatePredictionResult")
+	}
 	opts = append((*c.CallOptions).UpdatePredictionResult[0:len((*c.CallOptions).UpdatePredictionResult):len((*c.CallOptions).UpdatePredictionResult)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1782,8 +2303,12 @@ func (c *aMLGRPCClient) UpdatePredictionResult(ctx context.Context, req *financi
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.UpdatePredictionResultOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdatePredictionResultOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1792,6 +2317,9 @@ func (c *aMLGRPCClient) ExportPredictionResultMetadata(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/ExportPredictionResultMetadata")
+	}
 	opts = append((*c.CallOptions).ExportPredictionResultMetadata[0:len((*c.CallOptions).ExportPredictionResultMetadata):len((*c.CallOptions).ExportPredictionResultMetadata)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1802,8 +2330,12 @@ func (c *aMLGRPCClient) ExportPredictionResultMetadata(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.ExportPredictionResultMetadataOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportPredictionResultMetadataOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1812,6 +2344,9 @@ func (c *aMLGRPCClient) DeletePredictionResult(ctx context.Context, req *financi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/DeletePredictionResult")
+	}
 	opts = append((*c.CallOptions).DeletePredictionResult[0:len((*c.CallOptions).DeletePredictionResult):len((*c.CallOptions).DeletePredictionResult)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1822,8 +2357,12 @@ func (c *aMLGRPCClient) DeletePredictionResult(ctx context.Context, req *financi
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.DeletePredictionResultOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeletePredictionResultOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1832,9 +2371,12 @@ func (c *aMLGRPCClient) ListBacktestResults(ctx context.Context, req *financials
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/ListBacktestResults")
+	}
 	opts = append((*c.CallOptions).ListBacktestResults[0:len((*c.CallOptions).ListBacktestResults):len((*c.CallOptions).ListBacktestResults)], opts...)
 	it := &BacktestResultIterator{}
-	req = proto.Clone(req).(*financialservicespb.ListBacktestResultsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*financialservicespb.BacktestResult, string, error) {
 		resp := &financialservicespb.ListBacktestResultsResponse{}
 		if pageToken != "" {
@@ -1878,6 +2420,9 @@ func (c *aMLGRPCClient) GetBacktestResult(ctx context.Context, req *financialser
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/GetBacktestResult")
+	}
 	opts = append((*c.CallOptions).GetBacktestResult[0:len((*c.CallOptions).GetBacktestResult):len((*c.CallOptions).GetBacktestResult)], opts...)
 	var resp *financialservicespb.BacktestResult
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1896,6 +2441,9 @@ func (c *aMLGRPCClient) CreateBacktestResult(ctx context.Context, req *financial
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/CreateBacktestResult")
+	}
 	opts = append((*c.CallOptions).CreateBacktestResult[0:len((*c.CallOptions).CreateBacktestResult):len((*c.CallOptions).CreateBacktestResult)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1906,8 +2454,12 @@ func (c *aMLGRPCClient) CreateBacktestResult(ctx context.Context, req *financial
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.CreateBacktestResultOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateBacktestResultOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1916,6 +2468,9 @@ func (c *aMLGRPCClient) UpdateBacktestResult(ctx context.Context, req *financial
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/UpdateBacktestResult")
+	}
 	opts = append((*c.CallOptions).UpdateBacktestResult[0:len((*c.CallOptions).UpdateBacktestResult):len((*c.CallOptions).UpdateBacktestResult)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1926,8 +2481,12 @@ func (c *aMLGRPCClient) UpdateBacktestResult(ctx context.Context, req *financial
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.UpdateBacktestResultOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateBacktestResultOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1936,6 +2495,9 @@ func (c *aMLGRPCClient) ExportBacktestResultMetadata(ctx context.Context, req *f
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/ExportBacktestResultMetadata")
+	}
 	opts = append((*c.CallOptions).ExportBacktestResultMetadata[0:len((*c.CallOptions).ExportBacktestResultMetadata):len((*c.CallOptions).ExportBacktestResultMetadata)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1946,8 +2508,12 @@ func (c *aMLGRPCClient) ExportBacktestResultMetadata(ctx context.Context, req *f
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.ExportBacktestResultMetadataOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportBacktestResultMetadataOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1956,6 +2522,9 @@ func (c *aMLGRPCClient) DeleteBacktestResult(ctx context.Context, req *financial
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/DeleteBacktestResult")
+	}
 	opts = append((*c.CallOptions).DeleteBacktestResult[0:len((*c.CallOptions).DeleteBacktestResult):len((*c.CallOptions).DeleteBacktestResult)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1966,8 +2535,12 @@ func (c *aMLGRPCClient) DeleteBacktestResult(ctx context.Context, req *financial
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.DeleteBacktestResultOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteBacktestResultOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1976,6 +2549,9 @@ func (c *aMLGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLoca
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1994,9 +2570,12 @@ func (c *aMLGRPCClient) ListLocations(ctx context.Context, req *locationpb.ListL
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/ListLocations")
+	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -2040,6 +2619,9 @@ func (c *aMLGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -2054,6 +2636,9 @@ func (c *aMLGRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+	}
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -2068,6 +2653,9 @@ func (c *aMLGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.Get
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2086,9 +2674,12 @@ func (c *aMLGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.L
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -2130,7 +2721,7 @@ func (c *aMLGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.L
 // ListInstances lists instances.
 func (c *aMLRESTClient) ListInstances(ctx context.Context, req *financialservicespb.ListInstancesRequest, opts ...gax.CallOption) *InstanceIterator {
 	it := &InstanceIterator{}
-	req = proto.Clone(req).(*financialservicespb.ListInstancesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*financialservicespb.Instance, string, error) {
 		resp := &financialservicespb.ListInstancesResponse{}
@@ -2230,6 +2821,10 @@ func (c *aMLRESTClient) GetInstance(ctx context.Context, req *financialservicesp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/GetInstance")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*}")
+	}
 	opts = append((*c.CallOptions).GetInstance[0:len((*c.CallOptions).GetInstance):len((*c.CallOptions).GetInstance)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &financialservicespb.Instance{}
@@ -2291,6 +2886,10 @@ func (c *aMLRESTClient) CreateInstance(ctx context.Context, req *financialservic
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/CreateInstance")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/instances")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2319,8 +2918,12 @@ func (c *aMLRESTClient) CreateInstance(ctx context.Context, req *financialservic
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.CreateInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2361,6 +2964,10 @@ func (c *aMLRESTClient) UpdateInstance(ctx context.Context, req *financialservic
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/UpdateInstance")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{instance.name=projects/*/locations/*/instances/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2389,8 +2996,12 @@ func (c *aMLRESTClient) UpdateInstance(ctx context.Context, req *financialservic
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.UpdateInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2417,6 +3028,10 @@ func (c *aMLRESTClient) DeleteInstance(ctx context.Context, req *financialservic
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/DeleteInstance")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2445,8 +3060,12 @@ func (c *aMLRESTClient) DeleteInstance(ctx context.Context, req *financialservic
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.DeleteInstanceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2479,6 +3098,10 @@ func (c *aMLRESTClient) ImportRegisteredParties(ctx context.Context, req *financ
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/ImportRegisteredParties")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*}:importRegisteredParties")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2507,8 +3130,12 @@ func (c *aMLRESTClient) ImportRegisteredParties(ctx context.Context, req *financ
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.ImportRegisteredPartiesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportRegisteredPartiesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2541,6 +3168,10 @@ func (c *aMLRESTClient) ExportRegisteredParties(ctx context.Context, req *financ
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/ExportRegisteredParties")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*}:exportRegisteredParties")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2569,8 +3200,12 @@ func (c *aMLRESTClient) ExportRegisteredParties(ctx context.Context, req *financ
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.ExportRegisteredPartiesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportRegisteredPartiesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2578,7 +3213,7 @@ func (c *aMLRESTClient) ExportRegisteredParties(ctx context.Context, req *financ
 // ListDatasets lists datasets.
 func (c *aMLRESTClient) ListDatasets(ctx context.Context, req *financialservicespb.ListDatasetsRequest, opts ...gax.CallOption) *DatasetIterator {
 	it := &DatasetIterator{}
-	req = proto.Clone(req).(*financialservicespb.ListDatasetsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*financialservicespb.Dataset, string, error) {
 		resp := &financialservicespb.ListDatasetsResponse{}
@@ -2678,6 +3313,10 @@ func (c *aMLRESTClient) GetDataset(ctx context.Context, req *financialservicespb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/GetDataset")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/datasets/*}")
+	}
 	opts = append((*c.CallOptions).GetDataset[0:len((*c.CallOptions).GetDataset):len((*c.CallOptions).GetDataset)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &financialservicespb.Dataset{}
@@ -2739,6 +3378,10 @@ func (c *aMLRESTClient) CreateDataset(ctx context.Context, req *financialservice
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/CreateDataset")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/instances/*}/datasets")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2767,8 +3410,12 @@ func (c *aMLRESTClient) CreateDataset(ctx context.Context, req *financialservice
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.CreateDatasetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateDatasetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2809,6 +3456,10 @@ func (c *aMLRESTClient) UpdateDataset(ctx context.Context, req *financialservice
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/UpdateDataset")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{dataset.name=projects/*/locations/*/instances/*/datasets/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2837,8 +3488,12 @@ func (c *aMLRESTClient) UpdateDataset(ctx context.Context, req *financialservice
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.UpdateDatasetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateDatasetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2865,6 +3520,10 @@ func (c *aMLRESTClient) DeleteDataset(ctx context.Context, req *financialservice
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/DeleteDataset")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/datasets/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2893,8 +3552,12 @@ func (c *aMLRESTClient) DeleteDataset(ctx context.Context, req *financialservice
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.DeleteDatasetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteDatasetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2902,7 +3565,7 @@ func (c *aMLRESTClient) DeleteDataset(ctx context.Context, req *financialservice
 // ListModels lists models.
 func (c *aMLRESTClient) ListModels(ctx context.Context, req *financialservicespb.ListModelsRequest, opts ...gax.CallOption) *ModelIterator {
 	it := &ModelIterator{}
-	req = proto.Clone(req).(*financialservicespb.ListModelsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*financialservicespb.Model, string, error) {
 		resp := &financialservicespb.ListModelsResponse{}
@@ -3002,6 +3665,10 @@ func (c *aMLRESTClient) GetModel(ctx context.Context, req *financialservicespb.G
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/GetModel")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/models/*}")
+	}
 	opts = append((*c.CallOptions).GetModel[0:len((*c.CallOptions).GetModel):len((*c.CallOptions).GetModel)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &financialservicespb.Model{}
@@ -3063,6 +3730,10 @@ func (c *aMLRESTClient) CreateModel(ctx context.Context, req *financialservicesp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/CreateModel")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/instances/*}/models")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3091,8 +3762,12 @@ func (c *aMLRESTClient) CreateModel(ctx context.Context, req *financialservicesp
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.CreateModelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateModelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3133,6 +3808,10 @@ func (c *aMLRESTClient) UpdateModel(ctx context.Context, req *financialservicesp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/UpdateModel")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{model.name=projects/*/locations/*/instances/*/models/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3161,8 +3840,12 @@ func (c *aMLRESTClient) UpdateModel(ctx context.Context, req *financialservicesp
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.UpdateModelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateModelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3195,6 +3878,10 @@ func (c *aMLRESTClient) ExportModelMetadata(ctx context.Context, req *financials
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/ExportModelMetadata")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{model=projects/*/locations/*/instances/*/models/*}:exportMetadata")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3223,8 +3910,12 @@ func (c *aMLRESTClient) ExportModelMetadata(ctx context.Context, req *financials
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.ExportModelMetadataOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportModelMetadataOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3251,6 +3942,10 @@ func (c *aMLRESTClient) DeleteModel(ctx context.Context, req *financialservicesp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/DeleteModel")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/models/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3279,8 +3974,12 @@ func (c *aMLRESTClient) DeleteModel(ctx context.Context, req *financialservicesp
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.DeleteModelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteModelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3288,7 +3987,7 @@ func (c *aMLRESTClient) DeleteModel(ctx context.Context, req *financialservicesp
 // ListEngineConfigs lists engine configs.
 func (c *aMLRESTClient) ListEngineConfigs(ctx context.Context, req *financialservicespb.ListEngineConfigsRequest, opts ...gax.CallOption) *EngineConfigIterator {
 	it := &EngineConfigIterator{}
-	req = proto.Clone(req).(*financialservicespb.ListEngineConfigsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*financialservicespb.EngineConfig, string, error) {
 		resp := &financialservicespb.ListEngineConfigsResponse{}
@@ -3388,6 +4087,10 @@ func (c *aMLRESTClient) GetEngineConfig(ctx context.Context, req *financialservi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/GetEngineConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/engineConfigs/*}")
+	}
 	opts = append((*c.CallOptions).GetEngineConfig[0:len((*c.CallOptions).GetEngineConfig):len((*c.CallOptions).GetEngineConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &financialservicespb.EngineConfig{}
@@ -3449,6 +4152,10 @@ func (c *aMLRESTClient) CreateEngineConfig(ctx context.Context, req *financialse
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/CreateEngineConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/instances/*}/engineConfigs")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3477,8 +4184,12 @@ func (c *aMLRESTClient) CreateEngineConfig(ctx context.Context, req *financialse
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.CreateEngineConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateEngineConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3519,6 +4230,10 @@ func (c *aMLRESTClient) UpdateEngineConfig(ctx context.Context, req *financialse
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/UpdateEngineConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{engine_config.name=projects/*/locations/*/instances/*/engineConfigs/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3547,8 +4262,12 @@ func (c *aMLRESTClient) UpdateEngineConfig(ctx context.Context, req *financialse
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.UpdateEngineConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateEngineConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3581,6 +4300,10 @@ func (c *aMLRESTClient) ExportEngineConfigMetadata(ctx context.Context, req *fin
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/ExportEngineConfigMetadata")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{engine_config=projects/*/locations/*/instances/*/engineConfigs/*}:exportMetadata")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3609,8 +4332,12 @@ func (c *aMLRESTClient) ExportEngineConfigMetadata(ctx context.Context, req *fin
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.ExportEngineConfigMetadataOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportEngineConfigMetadataOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3637,6 +4364,10 @@ func (c *aMLRESTClient) DeleteEngineConfig(ctx context.Context, req *financialse
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/DeleteEngineConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/engineConfigs/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3665,8 +4396,12 @@ func (c *aMLRESTClient) DeleteEngineConfig(ctx context.Context, req *financialse
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.DeleteEngineConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteEngineConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3690,6 +4425,10 @@ func (c *aMLRESTClient) GetEngineVersion(ctx context.Context, req *financialserv
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/GetEngineVersion")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/engineVersions/*}")
+	}
 	opts = append((*c.CallOptions).GetEngineVersion[0:len((*c.CallOptions).GetEngineVersion):len((*c.CallOptions).GetEngineVersion)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &financialservicespb.EngineVersion{}
@@ -3724,7 +4463,7 @@ func (c *aMLRESTClient) GetEngineVersion(ctx context.Context, req *financialserv
 // ListEngineVersions lists EngineVersions for given location.
 func (c *aMLRESTClient) ListEngineVersions(ctx context.Context, req *financialservicespb.ListEngineVersionsRequest, opts ...gax.CallOption) *EngineVersionIterator {
 	it := &EngineVersionIterator{}
-	req = proto.Clone(req).(*financialservicespb.ListEngineVersionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*financialservicespb.EngineVersion, string, error) {
 		resp := &financialservicespb.ListEngineVersionsResponse{}
@@ -3808,7 +4547,7 @@ func (c *aMLRESTClient) ListEngineVersions(ctx context.Context, req *financialse
 // ListPredictionResults list PredictionResults.
 func (c *aMLRESTClient) ListPredictionResults(ctx context.Context, req *financialservicespb.ListPredictionResultsRequest, opts ...gax.CallOption) *PredictionResultIterator {
 	it := &PredictionResultIterator{}
-	req = proto.Clone(req).(*financialservicespb.ListPredictionResultsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*financialservicespb.PredictionResult, string, error) {
 		resp := &financialservicespb.ListPredictionResultsResponse{}
@@ -3908,6 +4647,10 @@ func (c *aMLRESTClient) GetPredictionResult(ctx context.Context, req *financials
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/GetPredictionResult")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/predictionResults/*}")
+	}
 	opts = append((*c.CallOptions).GetPredictionResult[0:len((*c.CallOptions).GetPredictionResult):len((*c.CallOptions).GetPredictionResult)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &financialservicespb.PredictionResult{}
@@ -3969,6 +4712,10 @@ func (c *aMLRESTClient) CreatePredictionResult(ctx context.Context, req *financi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/CreatePredictionResult")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/instances/*}/predictionResults")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3997,8 +4744,12 @@ func (c *aMLRESTClient) CreatePredictionResult(ctx context.Context, req *financi
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.CreatePredictionResultOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreatePredictionResultOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4039,6 +4790,10 @@ func (c *aMLRESTClient) UpdatePredictionResult(ctx context.Context, req *financi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/UpdatePredictionResult")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{prediction_result.name=projects/*/locations/*/instances/*/predictionResults/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4067,8 +4822,12 @@ func (c *aMLRESTClient) UpdatePredictionResult(ctx context.Context, req *financi
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.UpdatePredictionResultOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdatePredictionResultOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4101,6 +4860,10 @@ func (c *aMLRESTClient) ExportPredictionResultMetadata(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/ExportPredictionResultMetadata")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{prediction_result=projects/*/locations/*/instances/*/predictionResults/*}:exportMetadata")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4129,8 +4892,12 @@ func (c *aMLRESTClient) ExportPredictionResultMetadata(ctx context.Context, req 
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.ExportPredictionResultMetadataOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportPredictionResultMetadataOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4157,6 +4924,10 @@ func (c *aMLRESTClient) DeletePredictionResult(ctx context.Context, req *financi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/DeletePredictionResult")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/predictionResults/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4185,8 +4956,12 @@ func (c *aMLRESTClient) DeletePredictionResult(ctx context.Context, req *financi
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.DeletePredictionResultOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeletePredictionResultOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4194,7 +4969,7 @@ func (c *aMLRESTClient) DeletePredictionResult(ctx context.Context, req *financi
 // ListBacktestResults list BacktestResults.
 func (c *aMLRESTClient) ListBacktestResults(ctx context.Context, req *financialservicespb.ListBacktestResultsRequest, opts ...gax.CallOption) *BacktestResultIterator {
 	it := &BacktestResultIterator{}
-	req = proto.Clone(req).(*financialservicespb.ListBacktestResultsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*financialservicespb.BacktestResult, string, error) {
 		resp := &financialservicespb.ListBacktestResultsResponse{}
@@ -4294,6 +5069,10 @@ func (c *aMLRESTClient) GetBacktestResult(ctx context.Context, req *financialser
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/GetBacktestResult")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/backtestResults/*}")
+	}
 	opts = append((*c.CallOptions).GetBacktestResult[0:len((*c.CallOptions).GetBacktestResult):len((*c.CallOptions).GetBacktestResult)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &financialservicespb.BacktestResult{}
@@ -4355,6 +5134,10 @@ func (c *aMLRESTClient) CreateBacktestResult(ctx context.Context, req *financial
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/CreateBacktestResult")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/instances/*}/backtestResults")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4383,8 +5166,12 @@ func (c *aMLRESTClient) CreateBacktestResult(ctx context.Context, req *financial
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.CreateBacktestResultOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateBacktestResultOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4425,6 +5212,10 @@ func (c *aMLRESTClient) UpdateBacktestResult(ctx context.Context, req *financial
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/UpdateBacktestResult")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{backtest_result.name=projects/*/locations/*/instances/*/backtestResults/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4453,8 +5244,12 @@ func (c *aMLRESTClient) UpdateBacktestResult(ctx context.Context, req *financial
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.UpdateBacktestResultOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateBacktestResultOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4487,6 +5282,10 @@ func (c *aMLRESTClient) ExportBacktestResultMetadata(ctx context.Context, req *f
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/ExportBacktestResultMetadata")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{backtest_result=projects/*/locations/*/instances/*/backtestResults/*}:exportMetadata")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4515,8 +5314,12 @@ func (c *aMLRESTClient) ExportBacktestResultMetadata(ctx context.Context, req *f
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.ExportBacktestResultMetadataOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportBacktestResultMetadataOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4543,6 +5346,10 @@ func (c *aMLRESTClient) DeleteBacktestResult(ctx context.Context, req *financial
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/DeleteBacktestResult")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/backtestResults/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4571,8 +5378,12 @@ func (c *aMLRESTClient) DeleteBacktestResult(ctx context.Context, req *financial
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*financialservices.DeleteBacktestResultOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteBacktestResultOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4596,6 +5407,10 @@ func (c *aMLRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLoca
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*}")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &locationpb.Location{}
@@ -4630,7 +5445,7 @@ func (c *aMLRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLoca
 // ListLocations lists information about the supported locations for this service.
 func (c *aMLRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -4733,6 +5548,10 @@ func (c *aMLRESTClient) CancelOperation(ctx context.Context, req *longrunningpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -4768,6 +5587,10 @@ func (c *aMLRESTClient) DeleteOperation(ctx context.Context, req *longrunningpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -4803,6 +5626,10 @@ func (c *aMLRESTClient) GetOperation(ctx context.Context, req *longrunningpb.Get
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -4837,7 +5664,7 @@ func (c *aMLRESTClient) GetOperation(ctx context.Context, req *longrunningpb.Get
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *aMLRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
@@ -4865,6 +5692,9 @@ func (c *aMLRESTClient) ListOperations(ctx context.Context, req *longrunningpb.L
 		}
 		if req.GetPageToken() != "" {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req.GetReturnPartialSuccess() {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -4919,7 +5749,7 @@ func (c *aMLRESTClient) ListOperations(ctx context.Context, req *longrunningpb.L
 // The name must be that of a previously created CreateBacktestResultOperation, possibly from a different process.
 func (c *aMLGRPCClient) CreateBacktestResultOperation(name string) *CreateBacktestResultOperation {
 	return &CreateBacktestResultOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.CreateBacktestResultOperation"),
 	}
 }
 
@@ -4928,7 +5758,7 @@ func (c *aMLGRPCClient) CreateBacktestResultOperation(name string) *CreateBackte
 func (c *aMLRESTClient) CreateBacktestResultOperation(name string) *CreateBacktestResultOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateBacktestResultOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.CreateBacktestResultOperation"),
 		pollPath: override,
 	}
 }
@@ -4937,7 +5767,7 @@ func (c *aMLRESTClient) CreateBacktestResultOperation(name string) *CreateBackte
 // The name must be that of a previously created CreateDatasetOperation, possibly from a different process.
 func (c *aMLGRPCClient) CreateDatasetOperation(name string) *CreateDatasetOperation {
 	return &CreateDatasetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.CreateDatasetOperation"),
 	}
 }
 
@@ -4946,7 +5776,7 @@ func (c *aMLGRPCClient) CreateDatasetOperation(name string) *CreateDatasetOperat
 func (c *aMLRESTClient) CreateDatasetOperation(name string) *CreateDatasetOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateDatasetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.CreateDatasetOperation"),
 		pollPath: override,
 	}
 }
@@ -4955,7 +5785,7 @@ func (c *aMLRESTClient) CreateDatasetOperation(name string) *CreateDatasetOperat
 // The name must be that of a previously created CreateEngineConfigOperation, possibly from a different process.
 func (c *aMLGRPCClient) CreateEngineConfigOperation(name string) *CreateEngineConfigOperation {
 	return &CreateEngineConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.CreateEngineConfigOperation"),
 	}
 }
 
@@ -4964,7 +5794,7 @@ func (c *aMLGRPCClient) CreateEngineConfigOperation(name string) *CreateEngineCo
 func (c *aMLRESTClient) CreateEngineConfigOperation(name string) *CreateEngineConfigOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateEngineConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.CreateEngineConfigOperation"),
 		pollPath: override,
 	}
 }
@@ -4973,7 +5803,7 @@ func (c *aMLRESTClient) CreateEngineConfigOperation(name string) *CreateEngineCo
 // The name must be that of a previously created CreateInstanceOperation, possibly from a different process.
 func (c *aMLGRPCClient) CreateInstanceOperation(name string) *CreateInstanceOperation {
 	return &CreateInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.CreateInstanceOperation"),
 	}
 }
 
@@ -4982,7 +5812,7 @@ func (c *aMLGRPCClient) CreateInstanceOperation(name string) *CreateInstanceOper
 func (c *aMLRESTClient) CreateInstanceOperation(name string) *CreateInstanceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.CreateInstanceOperation"),
 		pollPath: override,
 	}
 }
@@ -4991,7 +5821,7 @@ func (c *aMLRESTClient) CreateInstanceOperation(name string) *CreateInstanceOper
 // The name must be that of a previously created CreateModelOperation, possibly from a different process.
 func (c *aMLGRPCClient) CreateModelOperation(name string) *CreateModelOperation {
 	return &CreateModelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.CreateModelOperation"),
 	}
 }
 
@@ -5000,7 +5830,7 @@ func (c *aMLGRPCClient) CreateModelOperation(name string) *CreateModelOperation 
 func (c *aMLRESTClient) CreateModelOperation(name string) *CreateModelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateModelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.CreateModelOperation"),
 		pollPath: override,
 	}
 }
@@ -5009,7 +5839,7 @@ func (c *aMLRESTClient) CreateModelOperation(name string) *CreateModelOperation 
 // The name must be that of a previously created CreatePredictionResultOperation, possibly from a different process.
 func (c *aMLGRPCClient) CreatePredictionResultOperation(name string) *CreatePredictionResultOperation {
 	return &CreatePredictionResultOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.CreatePredictionResultOperation"),
 	}
 }
 
@@ -5018,7 +5848,7 @@ func (c *aMLGRPCClient) CreatePredictionResultOperation(name string) *CreatePred
 func (c *aMLRESTClient) CreatePredictionResultOperation(name string) *CreatePredictionResultOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreatePredictionResultOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.CreatePredictionResultOperation"),
 		pollPath: override,
 	}
 }
@@ -5027,7 +5857,7 @@ func (c *aMLRESTClient) CreatePredictionResultOperation(name string) *CreatePred
 // The name must be that of a previously created DeleteBacktestResultOperation, possibly from a different process.
 func (c *aMLGRPCClient) DeleteBacktestResultOperation(name string) *DeleteBacktestResultOperation {
 	return &DeleteBacktestResultOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.DeleteBacktestResultOperation"),
 	}
 }
 
@@ -5036,7 +5866,7 @@ func (c *aMLGRPCClient) DeleteBacktestResultOperation(name string) *DeleteBackte
 func (c *aMLRESTClient) DeleteBacktestResultOperation(name string) *DeleteBacktestResultOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteBacktestResultOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.DeleteBacktestResultOperation"),
 		pollPath: override,
 	}
 }
@@ -5045,7 +5875,7 @@ func (c *aMLRESTClient) DeleteBacktestResultOperation(name string) *DeleteBackte
 // The name must be that of a previously created DeleteDatasetOperation, possibly from a different process.
 func (c *aMLGRPCClient) DeleteDatasetOperation(name string) *DeleteDatasetOperation {
 	return &DeleteDatasetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.DeleteDatasetOperation"),
 	}
 }
 
@@ -5054,7 +5884,7 @@ func (c *aMLGRPCClient) DeleteDatasetOperation(name string) *DeleteDatasetOperat
 func (c *aMLRESTClient) DeleteDatasetOperation(name string) *DeleteDatasetOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteDatasetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.DeleteDatasetOperation"),
 		pollPath: override,
 	}
 }
@@ -5063,7 +5893,7 @@ func (c *aMLRESTClient) DeleteDatasetOperation(name string) *DeleteDatasetOperat
 // The name must be that of a previously created DeleteEngineConfigOperation, possibly from a different process.
 func (c *aMLGRPCClient) DeleteEngineConfigOperation(name string) *DeleteEngineConfigOperation {
 	return &DeleteEngineConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.DeleteEngineConfigOperation"),
 	}
 }
 
@@ -5072,7 +5902,7 @@ func (c *aMLGRPCClient) DeleteEngineConfigOperation(name string) *DeleteEngineCo
 func (c *aMLRESTClient) DeleteEngineConfigOperation(name string) *DeleteEngineConfigOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteEngineConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.DeleteEngineConfigOperation"),
 		pollPath: override,
 	}
 }
@@ -5081,7 +5911,7 @@ func (c *aMLRESTClient) DeleteEngineConfigOperation(name string) *DeleteEngineCo
 // The name must be that of a previously created DeleteInstanceOperation, possibly from a different process.
 func (c *aMLGRPCClient) DeleteInstanceOperation(name string) *DeleteInstanceOperation {
 	return &DeleteInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.DeleteInstanceOperation"),
 	}
 }
 
@@ -5090,7 +5920,7 @@ func (c *aMLGRPCClient) DeleteInstanceOperation(name string) *DeleteInstanceOper
 func (c *aMLRESTClient) DeleteInstanceOperation(name string) *DeleteInstanceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.DeleteInstanceOperation"),
 		pollPath: override,
 	}
 }
@@ -5099,7 +5929,7 @@ func (c *aMLRESTClient) DeleteInstanceOperation(name string) *DeleteInstanceOper
 // The name must be that of a previously created DeleteModelOperation, possibly from a different process.
 func (c *aMLGRPCClient) DeleteModelOperation(name string) *DeleteModelOperation {
 	return &DeleteModelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.DeleteModelOperation"),
 	}
 }
 
@@ -5108,7 +5938,7 @@ func (c *aMLGRPCClient) DeleteModelOperation(name string) *DeleteModelOperation 
 func (c *aMLRESTClient) DeleteModelOperation(name string) *DeleteModelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteModelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.DeleteModelOperation"),
 		pollPath: override,
 	}
 }
@@ -5117,7 +5947,7 @@ func (c *aMLRESTClient) DeleteModelOperation(name string) *DeleteModelOperation 
 // The name must be that of a previously created DeletePredictionResultOperation, possibly from a different process.
 func (c *aMLGRPCClient) DeletePredictionResultOperation(name string) *DeletePredictionResultOperation {
 	return &DeletePredictionResultOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.DeletePredictionResultOperation"),
 	}
 }
 
@@ -5126,7 +5956,7 @@ func (c *aMLGRPCClient) DeletePredictionResultOperation(name string) *DeletePred
 func (c *aMLRESTClient) DeletePredictionResultOperation(name string) *DeletePredictionResultOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeletePredictionResultOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.DeletePredictionResultOperation"),
 		pollPath: override,
 	}
 }
@@ -5135,7 +5965,7 @@ func (c *aMLRESTClient) DeletePredictionResultOperation(name string) *DeletePred
 // The name must be that of a previously created ExportBacktestResultMetadataOperation, possibly from a different process.
 func (c *aMLGRPCClient) ExportBacktestResultMetadataOperation(name string) *ExportBacktestResultMetadataOperation {
 	return &ExportBacktestResultMetadataOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.ExportBacktestResultMetadataOperation"),
 	}
 }
 
@@ -5144,7 +5974,7 @@ func (c *aMLGRPCClient) ExportBacktestResultMetadataOperation(name string) *Expo
 func (c *aMLRESTClient) ExportBacktestResultMetadataOperation(name string) *ExportBacktestResultMetadataOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ExportBacktestResultMetadataOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.ExportBacktestResultMetadataOperation"),
 		pollPath: override,
 	}
 }
@@ -5153,7 +5983,7 @@ func (c *aMLRESTClient) ExportBacktestResultMetadataOperation(name string) *Expo
 // The name must be that of a previously created ExportEngineConfigMetadataOperation, possibly from a different process.
 func (c *aMLGRPCClient) ExportEngineConfigMetadataOperation(name string) *ExportEngineConfigMetadataOperation {
 	return &ExportEngineConfigMetadataOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.ExportEngineConfigMetadataOperation"),
 	}
 }
 
@@ -5162,7 +5992,7 @@ func (c *aMLGRPCClient) ExportEngineConfigMetadataOperation(name string) *Export
 func (c *aMLRESTClient) ExportEngineConfigMetadataOperation(name string) *ExportEngineConfigMetadataOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ExportEngineConfigMetadataOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.ExportEngineConfigMetadataOperation"),
 		pollPath: override,
 	}
 }
@@ -5171,7 +6001,7 @@ func (c *aMLRESTClient) ExportEngineConfigMetadataOperation(name string) *Export
 // The name must be that of a previously created ExportModelMetadataOperation, possibly from a different process.
 func (c *aMLGRPCClient) ExportModelMetadataOperation(name string) *ExportModelMetadataOperation {
 	return &ExportModelMetadataOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.ExportModelMetadataOperation"),
 	}
 }
 
@@ -5180,7 +6010,7 @@ func (c *aMLGRPCClient) ExportModelMetadataOperation(name string) *ExportModelMe
 func (c *aMLRESTClient) ExportModelMetadataOperation(name string) *ExportModelMetadataOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ExportModelMetadataOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.ExportModelMetadataOperation"),
 		pollPath: override,
 	}
 }
@@ -5189,7 +6019,7 @@ func (c *aMLRESTClient) ExportModelMetadataOperation(name string) *ExportModelMe
 // The name must be that of a previously created ExportPredictionResultMetadataOperation, possibly from a different process.
 func (c *aMLGRPCClient) ExportPredictionResultMetadataOperation(name string) *ExportPredictionResultMetadataOperation {
 	return &ExportPredictionResultMetadataOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.ExportPredictionResultMetadataOperation"),
 	}
 }
 
@@ -5198,7 +6028,7 @@ func (c *aMLGRPCClient) ExportPredictionResultMetadataOperation(name string) *Ex
 func (c *aMLRESTClient) ExportPredictionResultMetadataOperation(name string) *ExportPredictionResultMetadataOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ExportPredictionResultMetadataOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.ExportPredictionResultMetadataOperation"),
 		pollPath: override,
 	}
 }
@@ -5207,7 +6037,7 @@ func (c *aMLRESTClient) ExportPredictionResultMetadataOperation(name string) *Ex
 // The name must be that of a previously created ExportRegisteredPartiesOperation, possibly from a different process.
 func (c *aMLGRPCClient) ExportRegisteredPartiesOperation(name string) *ExportRegisteredPartiesOperation {
 	return &ExportRegisteredPartiesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.ExportRegisteredPartiesOperation"),
 	}
 }
 
@@ -5216,7 +6046,7 @@ func (c *aMLGRPCClient) ExportRegisteredPartiesOperation(name string) *ExportReg
 func (c *aMLRESTClient) ExportRegisteredPartiesOperation(name string) *ExportRegisteredPartiesOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ExportRegisteredPartiesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.ExportRegisteredPartiesOperation"),
 		pollPath: override,
 	}
 }
@@ -5225,7 +6055,7 @@ func (c *aMLRESTClient) ExportRegisteredPartiesOperation(name string) *ExportReg
 // The name must be that of a previously created ImportRegisteredPartiesOperation, possibly from a different process.
 func (c *aMLGRPCClient) ImportRegisteredPartiesOperation(name string) *ImportRegisteredPartiesOperation {
 	return &ImportRegisteredPartiesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.ImportRegisteredPartiesOperation"),
 	}
 }
 
@@ -5234,7 +6064,7 @@ func (c *aMLGRPCClient) ImportRegisteredPartiesOperation(name string) *ImportReg
 func (c *aMLRESTClient) ImportRegisteredPartiesOperation(name string) *ImportRegisteredPartiesOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ImportRegisteredPartiesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.ImportRegisteredPartiesOperation"),
 		pollPath: override,
 	}
 }
@@ -5243,7 +6073,7 @@ func (c *aMLRESTClient) ImportRegisteredPartiesOperation(name string) *ImportReg
 // The name must be that of a previously created UpdateBacktestResultOperation, possibly from a different process.
 func (c *aMLGRPCClient) UpdateBacktestResultOperation(name string) *UpdateBacktestResultOperation {
 	return &UpdateBacktestResultOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.UpdateBacktestResultOperation"),
 	}
 }
 
@@ -5252,7 +6082,7 @@ func (c *aMLGRPCClient) UpdateBacktestResultOperation(name string) *UpdateBackte
 func (c *aMLRESTClient) UpdateBacktestResultOperation(name string) *UpdateBacktestResultOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateBacktestResultOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.UpdateBacktestResultOperation"),
 		pollPath: override,
 	}
 }
@@ -5261,7 +6091,7 @@ func (c *aMLRESTClient) UpdateBacktestResultOperation(name string) *UpdateBackte
 // The name must be that of a previously created UpdateDatasetOperation, possibly from a different process.
 func (c *aMLGRPCClient) UpdateDatasetOperation(name string) *UpdateDatasetOperation {
 	return &UpdateDatasetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.UpdateDatasetOperation"),
 	}
 }
 
@@ -5270,7 +6100,7 @@ func (c *aMLGRPCClient) UpdateDatasetOperation(name string) *UpdateDatasetOperat
 func (c *aMLRESTClient) UpdateDatasetOperation(name string) *UpdateDatasetOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateDatasetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.UpdateDatasetOperation"),
 		pollPath: override,
 	}
 }
@@ -5279,7 +6109,7 @@ func (c *aMLRESTClient) UpdateDatasetOperation(name string) *UpdateDatasetOperat
 // The name must be that of a previously created UpdateEngineConfigOperation, possibly from a different process.
 func (c *aMLGRPCClient) UpdateEngineConfigOperation(name string) *UpdateEngineConfigOperation {
 	return &UpdateEngineConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.UpdateEngineConfigOperation"),
 	}
 }
 
@@ -5288,7 +6118,7 @@ func (c *aMLGRPCClient) UpdateEngineConfigOperation(name string) *UpdateEngineCo
 func (c *aMLRESTClient) UpdateEngineConfigOperation(name string) *UpdateEngineConfigOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateEngineConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.UpdateEngineConfigOperation"),
 		pollPath: override,
 	}
 }
@@ -5297,7 +6127,7 @@ func (c *aMLRESTClient) UpdateEngineConfigOperation(name string) *UpdateEngineCo
 // The name must be that of a previously created UpdateInstanceOperation, possibly from a different process.
 func (c *aMLGRPCClient) UpdateInstanceOperation(name string) *UpdateInstanceOperation {
 	return &UpdateInstanceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.UpdateInstanceOperation"),
 	}
 }
 
@@ -5306,7 +6136,7 @@ func (c *aMLGRPCClient) UpdateInstanceOperation(name string) *UpdateInstanceOper
 func (c *aMLRESTClient) UpdateInstanceOperation(name string) *UpdateInstanceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateInstanceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.UpdateInstanceOperation"),
 		pollPath: override,
 	}
 }
@@ -5315,7 +6145,7 @@ func (c *aMLRESTClient) UpdateInstanceOperation(name string) *UpdateInstanceOper
 // The name must be that of a previously created UpdateModelOperation, possibly from a different process.
 func (c *aMLGRPCClient) UpdateModelOperation(name string) *UpdateModelOperation {
 	return &UpdateModelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.UpdateModelOperation"),
 	}
 }
 
@@ -5324,7 +6154,7 @@ func (c *aMLGRPCClient) UpdateModelOperation(name string) *UpdateModelOperation 
 func (c *aMLRESTClient) UpdateModelOperation(name string) *UpdateModelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateModelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.UpdateModelOperation"),
 		pollPath: override,
 	}
 }
@@ -5333,7 +6163,7 @@ func (c *aMLRESTClient) UpdateModelOperation(name string) *UpdateModelOperation 
 // The name must be that of a previously created UpdatePredictionResultOperation, possibly from a different process.
 func (c *aMLGRPCClient) UpdatePredictionResultOperation(name string) *UpdatePredictionResultOperation {
 	return &UpdatePredictionResultOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.UpdatePredictionResultOperation"),
 	}
 }
 
@@ -5342,7 +6172,7 @@ func (c *aMLGRPCClient) UpdatePredictionResultOperation(name string) *UpdatePred
 func (c *aMLRESTClient) UpdatePredictionResultOperation(name string) *UpdatePredictionResultOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdatePredictionResultOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*financialservices.UpdatePredictionResultOperation"),
 		pollPath: override,
 	}
 }

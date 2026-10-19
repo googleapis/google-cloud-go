@@ -20,6 +20,11 @@
                 "CreateAuthzExtension"
               ]
             },
+            "CreateLbEdgeExtension": {
+              "methods": [
+                "CreateLbEdgeExtension"
+              ]
+            },
             "CreateLbRouteExtension": {
               "methods": [
                 "CreateLbRouteExtension"
@@ -33,6 +38,11 @@
             "DeleteAuthzExtension": {
               "methods": [
                 "DeleteAuthzExtension"
+              ]
+            },
+            "DeleteLbEdgeExtension": {
+              "methods": [
+                "DeleteLbEdgeExtension"
               ]
             },
             "DeleteLbRouteExtension": {
@@ -60,6 +70,11 @@
                 "GetIamPolicy"
               ]
             },
+            "GetLbEdgeExtension": {
+              "methods": [
+                "GetLbEdgeExtension"
+              ]
+            },
             "GetLbRouteExtension": {
               "methods": [
                 "GetLbRouteExtension"
@@ -83,6 +98,11 @@
             "ListAuthzExtensions": {
               "methods": [
                 "ListAuthzExtensions"
+              ]
+            },
+            "ListLbEdgeExtensions": {
+              "methods": [
+                "ListLbEdgeExtensions"
               ]
             },
             "ListLbRouteExtensions": {
@@ -118,6 +138,11 @@
             "UpdateAuthzExtension": {
               "methods": [
                 "UpdateAuthzExtension"
+              ]
+            },
+            "UpdateLbEdgeExtension": {
+              "methods": [
+                "UpdateLbEdgeExtension"
               ]
             },
             "UpdateLbRouteExtension": {
@@ -145,6 +170,11 @@
                 "CreateAuthzExtension"
               ]
             },
+            "CreateLbEdgeExtension": {
+              "methods": [
+                "CreateLbEdgeExtension"
+              ]
+            },
             "CreateLbRouteExtension": {
               "methods": [
                 "CreateLbRouteExtension"
@@ -158,6 +188,11 @@
             "DeleteAuthzExtension": {
               "methods": [
                 "DeleteAuthzExtension"
+              ]
+            },
+            "DeleteLbEdgeExtension": {
+              "methods": [
+                "DeleteLbEdgeExtension"
               ]
             },
             "DeleteLbRouteExtension": {
@@ -185,6 +220,11 @@
                 "GetIamPolicy"
               ]
             },
+            "GetLbEdgeExtension": {
+              "methods": [
+                "GetLbEdgeExtension"
+              ]
+            },
             "GetLbRouteExtension": {
               "methods": [
                 "GetLbRouteExtension"
@@ -208,6 +248,11 @@
             "ListAuthzExtensions": {
               "methods": [
                 "ListAuthzExtensions"
+              ]
+            },
+            "ListLbEdgeExtensions": {
+              "methods": [
+                "ListLbEdgeExtensions"
               ]
             },
             "ListLbRouteExtensions": {
@@ -245,6 +290,11 @@
                 "UpdateAuthzExtension"
               ]
             },
+            "UpdateLbEdgeExtension": {
+              "methods": [
+                "UpdateLbEdgeExtension"
+              ]
+            },
             "UpdateLbRouteExtension": {
               "methods": [
                 "UpdateLbRouteExtension"
@@ -267,6 +317,11 @@
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
+              ]
+            },
+            "CreateAgentGateway": {
+              "methods": [
+                "CreateAgentGateway"
               ]
             },
             "CreateEndpointPolicy": {
@@ -322,6 +377,11 @@
             "CreateWasmPluginVersion": {
               "methods": [
                 "CreateWasmPluginVersion"
+              ]
+            },
+            "DeleteAgentGateway": {
+              "methods": [
+                "DeleteAgentGateway"
               ]
             },
             "DeleteEndpointPolicy": {
@@ -382,6 +442,11 @@
             "DeleteWasmPluginVersion": {
               "methods": [
                 "DeleteWasmPluginVersion"
+              ]
+            },
+            "GetAgentGateway": {
+              "methods": [
+                "GetAgentGateway"
               ]
             },
             "GetEndpointPolicy": {
@@ -462,6 +527,11 @@
             "GetWasmPluginVersion": {
               "methods": [
                 "GetWasmPluginVersion"
+              ]
+            },
+            "ListAgentGateways": {
+              "methods": [
+                "ListAgentGateways"
               ]
             },
             "ListEndpointPolicies": {
@@ -547,6 +617,11 @@
             "TestIamPermissions": {
               "methods": [
                 "TestIamPermissions"
+              ]
+            },
+            "UpdateAgentGateway": {
+              "methods": [
+                "UpdateAgentGateway"
               ]
             },
             "UpdateEndpointPolicy": {
@@ -609,6 +684,11 @@
                 "CancelOperation"
               ]
             },
+            "CreateAgentGateway": {
+              "methods": [
+                "CreateAgentGateway"
+              ]
+            },
             "CreateEndpointPolicy": {
               "methods": [
                 "CreateEndpointPolicy"
@@ -662,6 +742,11 @@
             "CreateWasmPluginVersion": {
               "methods": [
                 "CreateWasmPluginVersion"
+              ]
+            },
+            "DeleteAgentGateway": {
+              "methods": [
+                "DeleteAgentGateway"
               ]
             },
             "DeleteEndpointPolicy": {
@@ -722,6 +807,11 @@
             "DeleteWasmPluginVersion": {
               "methods": [
                 "DeleteWasmPluginVersion"
+              ]
+            },
+            "GetAgentGateway": {
+              "methods": [
+                "GetAgentGateway"
               ]
             },
             "GetEndpointPolicy": {
@@ -802,6 +892,11 @@
             "GetWasmPluginVersion": {
               "methods": [
                 "GetWasmPluginVersion"
+              ]
+            },
+            "ListAgentGateways": {
+              "methods": [
+                "ListAgentGateways"
               ]
             },
             "ListEndpointPolicies": {
@@ -887,6 +982,11 @@
             "TestIamPermissions": {
               "methods": [
                 "TestIamPermissions"
+              ]
+            },
+            "UpdateAgentGateway": {
+              "methods": [
+                "UpdateAgentGateway"
               ]
             },
             "UpdateEndpointPolicy": {

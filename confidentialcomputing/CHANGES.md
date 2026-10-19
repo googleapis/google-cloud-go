@@ -1,6 +1,42 @@
 # Changes
 
 
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v1.18.0...confidentialcomputing/v1.19.0) (2026-09-23)
+
+
+### Features
+
+* **all:** Update supported go versions ([#20520](https://github.com/googleapis/google-cloud-go/issues/20520)) ([90413d3](https://github.com/googleapis/google-cloud-go/commit/90413d3e9d381ef4b92e3c496d98b023c5b2d8cc))
+
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v1.17.0...confidentialcomputing/v1.18.0) (2026-09-02)
+
+
+### Features
+
+* Update API sources and regenerate ([#20459](https://github.com/googleapis/google-cloud-go/issues/20459)) ([5426e32](https://github.com/googleapis/google-cloud-go/commit/5426e32154fdced65087675b6c37aba66436ac47))
+
+## [1.17.0](https://github.com/googleapis/google-cloud-go/releases/tag/confidentialcomputing%2Fv1.17.0) (2026-06-11)
+
+### Features
+
+* update API sources and regenerate (#19950) ([c7607be](https://github.com/googleapis/google-cloud-go/commit/c7607be52757b803df345670b5d0621c2bb9ba30))
+
+## [1.16.0](https://github.com/googleapis/google-cloud-go/releases/tag/confidentialcomputing%2Fv1.16.0) (2026-05-07)
+
+## [1.15.0](https://github.com/googleapis/google-cloud-go/releases/tag/confidentialcomputing%2Fv1.15.0) (2026-04-30)
+
+## [1.14.0](https://github.com/googleapis/google-cloud-go/releases/tag/confidentialcomputing%2Fv1.14.0) (2026-04-13)
+
+## [1.13.0](https://github.com/googleapis/google-cloud-go/releases/tag/confidentialcomputing%2Fv1.13.0) (2026-04-09)
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/releases/tag/confidentialcomputing%2Fv1.12.0) (2026-04-02)
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/releases/tag/confidentialcomputing%2Fv1.11.0) (2026-02-12)
+
+### Features
+
+* add Nvidia Attestation proto message with its relevant fields and ConfidentialGke options ([6f31019](https://github.com/googleapis/google-cloud-go/commit/6f310199e136b133bb4fadaa353e264e809db6d7))
+
 ## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v1.10.0...confidentialcomputing/v1.10.1) (2025-09-16)
 
 

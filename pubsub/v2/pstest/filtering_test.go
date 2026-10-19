@@ -14,7 +14,13 @@
 
 package pstest
 
-import "testing"
+import (
+	"testing"
+
+	filter "cloud.google.com/go/pubsub/v2/pstest/internal"
+)
+
+type messageAttrs map[string]string
 
 // checkKeys returns true if the keys of a and b are equal.
 func checkKeys(a map[int]messageAttrs, b []int) bool {
@@ -87,6 +93,9 @@ func getAttrs() map[int]messageAttrs {
 			"name":               "com",
 			"\u307F\u3093\u306A": "dummy3",
 		},
+		13: {
+			"name": "contains\"quote",
+		},
 	}
 }
 
@@ -102,15 +111,19 @@ func Test_filterByAttrs(t *testing.T) {
 
 		{
 			filter: "attributes.name != \"com\"",
-			want:   []int{2, 3, 5, 6, 7, 8, 10, 11},
+			want:   []int{2, 3, 5, 6, 7, 8, 10, 11, 13},
+		},
+		{
+			filter: "attributes.name = \"contains\\\"quote\"",
+			want:   []int{13},
 		},
 		{
 			filter: "hasPrefix(attributes.name, \"co\")",
-			want:   []int{1, 4, 7, 9, 12},
+			want:   []int{1, 4, 7, 9, 12, 13},
 		},
 		{
 			filter: "attributes:name",
-			want:   []int{1, 2, 3, 4, 5, 6, 7, 9, 12},
+			want:   []int{1, 2, 3, 4, 5, 6, 7, 9, 12, 13},
 		},
 		{
 			filter: "NOT attributes:name",
@@ -135,14 +148,36 @@ func Test_filterByAttrs(t *testing.T) {
 	}
 	for _, tc := range tt {
 		t.Run(tc.filter, func(t *testing.T) {
-			filter, err := parseFilter(tc.filter)
+			f, err := parseFilter(tc.filter)
 			if err != nil {
 				t.Error(err)
 			}
 			attrs := getAttrs()
-			filterByAttrs(attrs, &filter, func(msgAttrs messageAttrs) messageAttrs { return msgAttrs })
+			for id, msgAttrs := range attrs {
+				if !filter.Evaluate(f, msgAttrs) {
+					delete(attrs, id)
+				}
+			}
 			if !checkKeys(attrs, tc.want) {
-				t.Errorf("filterByAttrs(%v, %v) = %v, want keys %v", attrs, tc.filter, attrs, tc.want)
+				t.Errorf("filter(%v) = %v, want keys %v", tc.filter, attrs, tc.want)
+			}
+		})
+	}
+}
+
+func Test_parseFilter_Errors(t *testing.T) {
+	tests := []string{
+		"attributes.name = $",        // invalid char
+		"attributes.name = ",         // unexpected EOF
+		"(attributes.name = \"com\"", // missing closing paren
+		"hasPrefix(attributes.name)", // missing args
+	}
+
+	for _, tc := range tests {
+		t.Run(tc, func(t *testing.T) {
+			_, err := parseFilter(tc)
+			if err == nil {
+				t.Errorf("parseFilter(%q) expected error, got nil", tc)
 			}
 		})
 	}

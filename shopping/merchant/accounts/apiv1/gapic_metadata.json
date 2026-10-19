@@ -147,6 +147,11 @@
                 "CreateAndConfigureAccount"
               ]
             },
+            "CreateTestAccount": {
+              "methods": [
+                "CreateTestAccount"
+              ]
+            },
             "DeleteAccount": {
               "methods": [
                 "DeleteAccount"
@@ -180,6 +185,11 @@
             "CreateAndConfigureAccount": {
               "methods": [
                 "CreateAndConfigureAccount"
+              ]
+            },
+            "CreateTestAccount": {
+              "methods": [
+                "CreateTestAccount"
               ]
             },
             "DeleteAccount": {
@@ -406,6 +416,11 @@
         "grpc": {
           "libraryClient": "DeveloperRegistrationClient",
           "rpcs": {
+            "GetAccountForGcpRegistration": {
+              "methods": [
+                "GetAccountForGcpRegistration"
+              ]
+            },
             "GetDeveloperRegistration": {
               "methods": [
                 "GetDeveloperRegistration"
@@ -426,6 +441,11 @@
         "rest": {
           "libraryClient": "DeveloperRegistrationClient",
           "rpcs": {
+            "GetAccountForGcpRegistration": {
+              "methods": [
+                "GetAccountForGcpRegistration"
+              ]
+            },
             "GetDeveloperRegistration": {
               "methods": [
                 "GetDeveloperRegistration"
@@ -1008,6 +1028,11 @@
               "methods": [
                 "UpdateUser"
               ]
+            },
+            "VerifySelf": {
+              "methods": [
+                "VerifySelf"
+              ]
             }
           }
         },
@@ -1037,6 +1062,11 @@
             "UpdateUser": {
               "methods": [
                 "UpdateUser"
+              ]
+            },
+            "VerifySelf": {
+              "methods": [
+                "VerifySelf"
               ]
             }
           }

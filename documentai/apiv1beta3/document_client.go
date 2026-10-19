@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,6 +30,8 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -149,7 +151,7 @@ type DocumentClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *DocumentClient) Close() error {
 	return c.internalClient.Close()
@@ -234,6 +236,14 @@ func (c *DocumentClient) GetLocation(ctx context.Context, req *locationpb.GetLoc
 }
 
 // ListLocations lists information about the supported locations for this service.
+// This method can be called in two ways:
+//
+//	List all public locations: Use the path GET /v1/locations.
+//
+//	List project-visible locations: Use the path
+//	GET /v1/projects/{project_id}/locations. This may include public
+//	locations as well as private or other locations specifically visible
+//	to the project.
 func (c *DocumentClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	return c.internalClient.ListLocations(ctx, req, opts...)
 }
@@ -287,6 +297,16 @@ type documentGRPCClient struct {
 // Service to call Cloud DocumentAI to manage document collection (dataset).
 func NewDocumentClient(ctx context.Context, opts ...option.ClientOption) (*DocumentClient, error) {
 	clientOpts := defaultDocumentGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "documentai",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/documentai/apiv1beta3",
+			"gcp.client.language": "go",
+			"url.domain":          "documentai.googleapis.com",
+		}))
+	}
 	if newDocumentClientHook != nil {
 		hookOpts, err := newDocumentClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -310,6 +330,80 @@ func NewDocumentClient(ctx context.Context, opts ...option.ClientOption) (*Docum
 		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "documentai",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/documentai/apiv1beta3",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "documentai.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.UpdateDataset = append(client.CallOptions.UpdateDataset, gax.WithClientMetrics(metrics))
+		client.CallOptions.ImportDocuments = append(client.CallOptions.ImportDocuments, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetDocument = append(client.CallOptions.GetDocument, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListDocuments = append(client.CallOptions.ListDocuments, gax.WithClientMetrics(metrics))
+		client.CallOptions.BatchDeleteDocuments = append(client.CallOptions.BatchDeleteDocuments, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetDatasetSchema = append(client.CallOptions.GetDatasetSchema, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateDatasetSchema = append(client.CallOptions.UpdateDatasetSchema, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "documentai",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/documentai/apiv1beta3",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "documentai.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.UpdateDataset = append(client.CallOptions.UpdateDataset, gax.WithClientTracing(tracing))
+		client.CallOptions.ImportDocuments = append(client.CallOptions.ImportDocuments, gax.WithClientTracing(tracing))
+		client.CallOptions.GetDocument = append(client.CallOptions.GetDocument, gax.WithClientTracing(tracing))
+		client.CallOptions.ListDocuments = append(client.CallOptions.ListDocuments, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchDeleteDocuments = append(client.CallOptions.BatchDeleteDocuments, gax.WithClientTracing(tracing))
+		client.CallOptions.GetDatasetSchema = append(client.CallOptions.GetDatasetSchema, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateDatasetSchema = append(client.CallOptions.UpdateDatasetSchema, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "documentai",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/documentai/apiv1beta3",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "documentai.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.UpdateDataset = append(client.CallOptions.UpdateDataset, gax.WithClientLogging(logging))
+		client.CallOptions.ImportDocuments = append(client.CallOptions.ImportDocuments, gax.WithClientLogging(logging))
+		client.CallOptions.GetDocument = append(client.CallOptions.GetDocument, gax.WithClientLogging(logging))
+		client.CallOptions.ListDocuments = append(client.CallOptions.ListDocuments, gax.WithClientLogging(logging))
+		client.CallOptions.BatchDeleteDocuments = append(client.CallOptions.BatchDeleteDocuments, gax.WithClientLogging(logging))
+		client.CallOptions.GetDatasetSchema = append(client.CallOptions.GetDatasetSchema, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateDatasetSchema = append(client.CallOptions.UpdateDatasetSchema, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -346,7 +440,7 @@ func (c *documentGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *documentGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -379,6 +473,16 @@ type documentRESTClient struct {
 // Service to call Cloud DocumentAI to manage document collection (dataset).
 func NewDocumentRESTClient(ctx context.Context, opts ...option.ClientOption) (*DocumentClient, error) {
 	clientOpts := append(defaultDocumentRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "documentai",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/documentai/apiv1beta3",
+			"gcp.client.language": "go",
+			"url.domain":          "documentai.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -392,6 +496,81 @@ func NewDocumentRESTClient(ctx context.Context, opts ...option.ClientOption) (*D
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "documentai",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/documentai/apiv1beta3",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "documentai.googleapis.com",
+			}),
+		)
+
+		callOpts.UpdateDataset = append(callOpts.UpdateDataset, gax.WithClientMetrics(metrics))
+		callOpts.ImportDocuments = append(callOpts.ImportDocuments, gax.WithClientMetrics(metrics))
+		callOpts.GetDocument = append(callOpts.GetDocument, gax.WithClientMetrics(metrics))
+		callOpts.ListDocuments = append(callOpts.ListDocuments, gax.WithClientMetrics(metrics))
+		callOpts.BatchDeleteDocuments = append(callOpts.BatchDeleteDocuments, gax.WithClientMetrics(metrics))
+		callOpts.GetDatasetSchema = append(callOpts.GetDatasetSchema, gax.WithClientMetrics(metrics))
+		callOpts.UpdateDatasetSchema = append(callOpts.UpdateDatasetSchema, gax.WithClientMetrics(metrics))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "documentai",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/documentai/apiv1beta3",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "documentai.googleapis.com",
+			}),
+		)
+
+		callOpts.UpdateDataset = append(callOpts.UpdateDataset, gax.WithClientTracing(tracing))
+		callOpts.ImportDocuments = append(callOpts.ImportDocuments, gax.WithClientTracing(tracing))
+		callOpts.GetDocument = append(callOpts.GetDocument, gax.WithClientTracing(tracing))
+		callOpts.ListDocuments = append(callOpts.ListDocuments, gax.WithClientTracing(tracing))
+		callOpts.BatchDeleteDocuments = append(callOpts.BatchDeleteDocuments, gax.WithClientTracing(tracing))
+		callOpts.GetDatasetSchema = append(callOpts.GetDatasetSchema, gax.WithClientTracing(tracing))
+		callOpts.UpdateDatasetSchema = append(callOpts.UpdateDatasetSchema, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "documentai",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/documentai/apiv1beta3",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "documentai.googleapis.com",
+			}),
+		)
+
+		callOpts.UpdateDataset = append(callOpts.UpdateDataset, gax.WithClientLogging(logging))
+		callOpts.ImportDocuments = append(callOpts.ImportDocuments, gax.WithClientLogging(logging))
+		callOpts.GetDocument = append(callOpts.GetDocument, gax.WithClientLogging(logging))
+		callOpts.ListDocuments = append(callOpts.ListDocuments, gax.WithClientLogging(logging))
+		callOpts.BatchDeleteDocuments = append(callOpts.BatchDeleteDocuments, gax.WithClientLogging(logging))
+		callOpts.GetDatasetSchema = append(callOpts.GetDatasetSchema, gax.WithClientLogging(logging))
+		callOpts.UpdateDatasetSchema = append(callOpts.UpdateDatasetSchema, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -429,7 +608,7 @@ func (c *documentRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *documentRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -448,6 +627,9 @@ func (c *documentGRPCClient) UpdateDataset(ctx context.Context, req *documentaip
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentService/UpdateDataset")
+	}
 	opts = append((*c.CallOptions).UpdateDataset[0:len((*c.CallOptions).UpdateDataset):len((*c.CallOptions).UpdateDataset)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -458,8 +640,12 @@ func (c *documentGRPCClient) UpdateDataset(ctx context.Context, req *documentaip
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.UpdateDatasetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateDatasetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -468,6 +654,9 @@ func (c *documentGRPCClient) ImportDocuments(ctx context.Context, req *documenta
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentService/ImportDocuments")
+	}
 	opts = append((*c.CallOptions).ImportDocuments[0:len((*c.CallOptions).ImportDocuments):len((*c.CallOptions).ImportDocuments)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -478,8 +667,12 @@ func (c *documentGRPCClient) ImportDocuments(ctx context.Context, req *documenta
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.ImportDocumentsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportDocumentsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -488,6 +681,9 @@ func (c *documentGRPCClient) GetDocument(ctx context.Context, req *documentaipb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentService/GetDocument")
+	}
 	opts = append((*c.CallOptions).GetDocument[0:len((*c.CallOptions).GetDocument):len((*c.CallOptions).GetDocument)], opts...)
 	var resp *documentaipb.GetDocumentResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -506,9 +702,12 @@ func (c *documentGRPCClient) ListDocuments(ctx context.Context, req *documentaip
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentService/ListDocuments")
+	}
 	opts = append((*c.CallOptions).ListDocuments[0:len((*c.CallOptions).ListDocuments):len((*c.CallOptions).ListDocuments)], opts...)
 	it := &DocumentMetadataIterator{}
-	req = proto.Clone(req).(*documentaipb.ListDocumentsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*documentaipb.DocumentMetadata, string, error) {
 		resp := &documentaipb.ListDocumentsResponse{}
 		if pageToken != "" {
@@ -552,6 +751,9 @@ func (c *documentGRPCClient) BatchDeleteDocuments(ctx context.Context, req *docu
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentService/BatchDeleteDocuments")
+	}
 	opts = append((*c.CallOptions).BatchDeleteDocuments[0:len((*c.CallOptions).BatchDeleteDocuments):len((*c.CallOptions).BatchDeleteDocuments)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -562,8 +764,12 @@ func (c *documentGRPCClient) BatchDeleteDocuments(ctx context.Context, req *docu
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.BatchDeleteDocumentsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &BatchDeleteDocumentsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -572,6 +778,9 @@ func (c *documentGRPCClient) GetDatasetSchema(ctx context.Context, req *document
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentService/GetDatasetSchema")
+	}
 	opts = append((*c.CallOptions).GetDatasetSchema[0:len((*c.CallOptions).GetDatasetSchema):len((*c.CallOptions).GetDatasetSchema)], opts...)
 	var resp *documentaipb.DatasetSchema
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -590,6 +799,9 @@ func (c *documentGRPCClient) UpdateDatasetSchema(ctx context.Context, req *docum
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentService/UpdateDatasetSchema")
+	}
 	opts = append((*c.CallOptions).UpdateDatasetSchema[0:len((*c.CallOptions).UpdateDatasetSchema):len((*c.CallOptions).UpdateDatasetSchema)], opts...)
 	var resp *documentaipb.DatasetSchema
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -608,6 +820,9 @@ func (c *documentGRPCClient) GetLocation(ctx context.Context, req *locationpb.Ge
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -626,9 +841,12 @@ func (c *documentGRPCClient) ListLocations(ctx context.Context, req *locationpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/ListLocations")
+	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -672,6 +890,9 @@ func (c *documentGRPCClient) CancelOperation(ctx context.Context, req *longrunni
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -686,6 +907,9 @@ func (c *documentGRPCClient) GetOperation(ctx context.Context, req *longrunningp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -704,9 +928,12 @@ func (c *documentGRPCClient) ListOperations(ctx context.Context, req *longrunnin
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -783,6 +1010,10 @@ func (c *documentRESTClient) UpdateDataset(ctx context.Context, req *documentaip
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentService/UpdateDataset")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta3/{dataset.name=projects/*/locations/*/processors/*/dataset}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -811,8 +1042,12 @@ func (c *documentRESTClient) UpdateDataset(ctx context.Context, req *documentaip
 	}
 
 	override := fmt.Sprintf("/v1beta3/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.UpdateDatasetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateDatasetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -842,6 +1077,10 @@ func (c *documentRESTClient) ImportDocuments(ctx context.Context, req *documenta
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentService/ImportDocuments")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta3/{dataset=projects/*/locations/*/processors/*/dataset}:importDocuments")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -870,8 +1109,12 @@ func (c *documentRESTClient) ImportDocuments(ctx context.Context, req *documenta
 	}
 
 	override := fmt.Sprintf("/v1beta3/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.ImportDocumentsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportDocumentsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -922,6 +1165,10 @@ func (c *documentRESTClient) GetDocument(ctx context.Context, req *documentaipb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentService/GetDocument")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta3/{dataset=projects/*/locations/*/processors/*/dataset}:getDocument")
+	}
 	opts = append((*c.CallOptions).GetDocument[0:len((*c.CallOptions).GetDocument):len((*c.CallOptions).GetDocument)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &documentaipb.GetDocumentResponse{}
@@ -956,7 +1203,7 @@ func (c *documentRESTClient) GetDocument(ctx context.Context, req *documentaipb.
 // ListDocuments returns a list of documents present in the dataset.
 func (c *documentRESTClient) ListDocuments(ctx context.Context, req *documentaipb.ListDocumentsRequest, opts ...gax.CallOption) *DocumentMetadataIterator {
 	it := &DocumentMetadataIterator{}
-	req = proto.Clone(req).(*documentaipb.ListDocumentsRequest)
+	req = proto.CloneOf(req)
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*documentaipb.DocumentMetadata, string, error) {
@@ -1056,6 +1303,10 @@ func (c *documentRESTClient) BatchDeleteDocuments(ctx context.Context, req *docu
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentService/BatchDeleteDocuments")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta3/{dataset=projects/*/locations/*/processors/*/dataset}:batchDeleteDocuments")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1084,8 +1335,12 @@ func (c *documentRESTClient) BatchDeleteDocuments(ctx context.Context, req *docu
 	}
 
 	override := fmt.Sprintf("/v1beta3/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*documentai.BatchDeleteDocumentsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &BatchDeleteDocumentsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1112,6 +1367,10 @@ func (c *documentRESTClient) GetDatasetSchema(ctx context.Context, req *document
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentService/GetDatasetSchema")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta3/{name=projects/*/locations/*/processors/*/dataset/datasetSchema}")
+	}
 	opts = append((*c.CallOptions).GetDatasetSchema[0:len((*c.CallOptions).GetDatasetSchema):len((*c.CallOptions).GetDatasetSchema)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &documentaipb.DatasetSchema{}
@@ -1176,6 +1435,10 @@ func (c *documentRESTClient) UpdateDatasetSchema(ctx context.Context, req *docum
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentService/UpdateDatasetSchema")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta3/{dataset_schema.name=projects/*/locations/*/processors/*/dataset/datasetSchema}")
+	}
 	opts = append((*c.CallOptions).UpdateDatasetSchema[0:len((*c.CallOptions).UpdateDatasetSchema):len((*c.CallOptions).UpdateDatasetSchema)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &documentaipb.DatasetSchema{}
@@ -1226,6 +1489,10 @@ func (c *documentRESTClient) GetLocation(ctx context.Context, req *locationpb.Ge
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta3/{name=projects/*/locations/*}")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &locationpb.Location{}
@@ -1258,9 +1525,17 @@ func (c *documentRESTClient) GetLocation(ctx context.Context, req *locationpb.Ge
 }
 
 // ListLocations lists information about the supported locations for this service.
+// This method can be called in two ways:
+//
+//	List all public locations: Use the path GET /v1/locations.
+//
+//	List project-visible locations: Use the path
+//	GET /v1/projects/{project_id}/locations. This may include public
+//	locations as well as private or other locations specifically visible
+//	to the project.
 func (c *documentRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -1357,6 +1632,10 @@ func (c *documentRESTClient) CancelOperation(ctx context.Context, req *longrunni
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta3/{name=projects/*/locations/*/operations/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1392,6 +1671,10 @@ func (c *documentRESTClient) GetOperation(ctx context.Context, req *longrunningp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta3/{name=projects/*/locations/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -1426,7 +1709,7 @@ func (c *documentRESTClient) GetOperation(ctx context.Context, req *longrunningp
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *documentRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
@@ -1454,6 +1737,9 @@ func (c *documentRESTClient) ListOperations(ctx context.Context, req *longrunnin
 		}
 		if req.GetPageToken() != "" {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req.GetReturnPartialSuccess() {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -1508,7 +1794,7 @@ func (c *documentRESTClient) ListOperations(ctx context.Context, req *longrunnin
 // The name must be that of a previously created BatchDeleteDocumentsOperation, possibly from a different process.
 func (c *documentGRPCClient) BatchDeleteDocumentsOperation(name string) *BatchDeleteDocumentsOperation {
 	return &BatchDeleteDocumentsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.BatchDeleteDocumentsOperation"),
 	}
 }
 
@@ -1517,7 +1803,7 @@ func (c *documentGRPCClient) BatchDeleteDocumentsOperation(name string) *BatchDe
 func (c *documentRESTClient) BatchDeleteDocumentsOperation(name string) *BatchDeleteDocumentsOperation {
 	override := fmt.Sprintf("/v1beta3/%s", name)
 	return &BatchDeleteDocumentsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.BatchDeleteDocumentsOperation"),
 		pollPath: override,
 	}
 }
@@ -1526,7 +1812,7 @@ func (c *documentRESTClient) BatchDeleteDocumentsOperation(name string) *BatchDe
 // The name must be that of a previously created ImportDocumentsOperation, possibly from a different process.
 func (c *documentGRPCClient) ImportDocumentsOperation(name string) *ImportDocumentsOperation {
 	return &ImportDocumentsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.ImportDocumentsOperation"),
 	}
 }
 
@@ -1535,7 +1821,7 @@ func (c *documentGRPCClient) ImportDocumentsOperation(name string) *ImportDocume
 func (c *documentRESTClient) ImportDocumentsOperation(name string) *ImportDocumentsOperation {
 	override := fmt.Sprintf("/v1beta3/%s", name)
 	return &ImportDocumentsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.ImportDocumentsOperation"),
 		pollPath: override,
 	}
 }
@@ -1544,7 +1830,7 @@ func (c *documentRESTClient) ImportDocumentsOperation(name string) *ImportDocume
 // The name must be that of a previously created UpdateDatasetOperation, possibly from a different process.
 func (c *documentGRPCClient) UpdateDatasetOperation(name string) *UpdateDatasetOperation {
 	return &UpdateDatasetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.UpdateDatasetOperation"),
 	}
 }
 
@@ -1553,7 +1839,7 @@ func (c *documentGRPCClient) UpdateDatasetOperation(name string) *UpdateDatasetO
 func (c *documentRESTClient) UpdateDatasetOperation(name string) *UpdateDatasetOperation {
 	override := fmt.Sprintf("/v1beta3/%s", name)
 	return &UpdateDatasetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*documentai.UpdateDatasetOperation"),
 		pollPath: override,
 	}
 }

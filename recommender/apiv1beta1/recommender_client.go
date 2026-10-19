@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import (
 
 	recommenderpb "cloud.google.com/go/recommender/apiv1beta1/recommenderpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -68,6 +69,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://recommender.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.AllowHardBoundTokens("MTLS_S2A"),
 		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -258,7 +260,7 @@ type Client struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *Client) Close() error {
 	return c.internalClient.Close()
@@ -421,6 +423,16 @@ type gRPCClient struct {
 // based on analysis of user resources, configuration and monitoring metrics.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "recommender",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/recommender/apiv1beta1",
+			"gcp.client.language": "go",
+			"url.domain":          "recommender.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -442,6 +454,86 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "recommender",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/recommender/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "recommender.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListInsights = append(client.CallOptions.ListInsights, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetInsight = append(client.CallOptions.GetInsight, gax.WithClientMetrics(metrics))
+		client.CallOptions.MarkInsightAccepted = append(client.CallOptions.MarkInsightAccepted, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListRecommendations = append(client.CallOptions.ListRecommendations, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetRecommendation = append(client.CallOptions.GetRecommendation, gax.WithClientMetrics(metrics))
+		client.CallOptions.MarkRecommendationClaimed = append(client.CallOptions.MarkRecommendationClaimed, gax.WithClientMetrics(metrics))
+		client.CallOptions.MarkRecommendationSucceeded = append(client.CallOptions.MarkRecommendationSucceeded, gax.WithClientMetrics(metrics))
+		client.CallOptions.MarkRecommendationFailed = append(client.CallOptions.MarkRecommendationFailed, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetRecommenderConfig = append(client.CallOptions.GetRecommenderConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateRecommenderConfig = append(client.CallOptions.UpdateRecommenderConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetInsightTypeConfig = append(client.CallOptions.GetInsightTypeConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateInsightTypeConfig = append(client.CallOptions.UpdateInsightTypeConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListRecommenders = append(client.CallOptions.ListRecommenders, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListInsightTypes = append(client.CallOptions.ListInsightTypes, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "recommender",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/recommender/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "recommender.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListInsights = append(client.CallOptions.ListInsights, gax.WithClientTracing(tracing))
+		client.CallOptions.GetInsight = append(client.CallOptions.GetInsight, gax.WithClientTracing(tracing))
+		client.CallOptions.MarkInsightAccepted = append(client.CallOptions.MarkInsightAccepted, gax.WithClientTracing(tracing))
+		client.CallOptions.ListRecommendations = append(client.CallOptions.ListRecommendations, gax.WithClientTracing(tracing))
+		client.CallOptions.GetRecommendation = append(client.CallOptions.GetRecommendation, gax.WithClientTracing(tracing))
+		client.CallOptions.MarkRecommendationClaimed = append(client.CallOptions.MarkRecommendationClaimed, gax.WithClientTracing(tracing))
+		client.CallOptions.MarkRecommendationSucceeded = append(client.CallOptions.MarkRecommendationSucceeded, gax.WithClientTracing(tracing))
+		client.CallOptions.MarkRecommendationFailed = append(client.CallOptions.MarkRecommendationFailed, gax.WithClientTracing(tracing))
+		client.CallOptions.GetRecommenderConfig = append(client.CallOptions.GetRecommenderConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateRecommenderConfig = append(client.CallOptions.UpdateRecommenderConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.GetInsightTypeConfig = append(client.CallOptions.GetInsightTypeConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateInsightTypeConfig = append(client.CallOptions.UpdateInsightTypeConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.ListRecommenders = append(client.CallOptions.ListRecommenders, gax.WithClientTracing(tracing))
+		client.CallOptions.ListInsightTypes = append(client.CallOptions.ListInsightTypes, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "recommender",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/recommender/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "recommender.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListInsights = append(client.CallOptions.ListInsights, gax.WithClientLogging(logging))
+		client.CallOptions.GetInsight = append(client.CallOptions.GetInsight, gax.WithClientLogging(logging))
+		client.CallOptions.MarkInsightAccepted = append(client.CallOptions.MarkInsightAccepted, gax.WithClientLogging(logging))
+		client.CallOptions.ListRecommendations = append(client.CallOptions.ListRecommendations, gax.WithClientLogging(logging))
+		client.CallOptions.GetRecommendation = append(client.CallOptions.GetRecommendation, gax.WithClientLogging(logging))
+		client.CallOptions.MarkRecommendationClaimed = append(client.CallOptions.MarkRecommendationClaimed, gax.WithClientLogging(logging))
+		client.CallOptions.MarkRecommendationSucceeded = append(client.CallOptions.MarkRecommendationSucceeded, gax.WithClientLogging(logging))
+		client.CallOptions.MarkRecommendationFailed = append(client.CallOptions.MarkRecommendationFailed, gax.WithClientLogging(logging))
+		client.CallOptions.GetRecommenderConfig = append(client.CallOptions.GetRecommenderConfig, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateRecommenderConfig = append(client.CallOptions.UpdateRecommenderConfig, gax.WithClientLogging(logging))
+		client.CallOptions.GetInsightTypeConfig = append(client.CallOptions.GetInsightTypeConfig, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateInsightTypeConfig = append(client.CallOptions.UpdateInsightTypeConfig, gax.WithClientLogging(logging))
+		client.CallOptions.ListRecommenders = append(client.CallOptions.ListRecommenders, gax.WithClientLogging(logging))
+		client.CallOptions.ListInsightTypes = append(client.CallOptions.ListInsightTypes, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -467,7 +559,7 @@ func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *gRPCClient) Close() error {
 	return c.connPool.Close()
@@ -498,6 +590,16 @@ type restClient struct {
 // based on analysis of user resources, configuration and monitoring metrics.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "recommender",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/recommender/apiv1beta1",
+			"gcp.client.language": "go",
+			"url.domain":          "recommender.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -511,6 +613,87 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "recommender",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/recommender/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "recommender.googleapis.com",
+			}),
+		)
+
+		callOpts.ListInsights = append(callOpts.ListInsights, gax.WithClientMetrics(metrics))
+		callOpts.GetInsight = append(callOpts.GetInsight, gax.WithClientMetrics(metrics))
+		callOpts.MarkInsightAccepted = append(callOpts.MarkInsightAccepted, gax.WithClientMetrics(metrics))
+		callOpts.ListRecommendations = append(callOpts.ListRecommendations, gax.WithClientMetrics(metrics))
+		callOpts.GetRecommendation = append(callOpts.GetRecommendation, gax.WithClientMetrics(metrics))
+		callOpts.MarkRecommendationClaimed = append(callOpts.MarkRecommendationClaimed, gax.WithClientMetrics(metrics))
+		callOpts.MarkRecommendationSucceeded = append(callOpts.MarkRecommendationSucceeded, gax.WithClientMetrics(metrics))
+		callOpts.MarkRecommendationFailed = append(callOpts.MarkRecommendationFailed, gax.WithClientMetrics(metrics))
+		callOpts.GetRecommenderConfig = append(callOpts.GetRecommenderConfig, gax.WithClientMetrics(metrics))
+		callOpts.UpdateRecommenderConfig = append(callOpts.UpdateRecommenderConfig, gax.WithClientMetrics(metrics))
+		callOpts.GetInsightTypeConfig = append(callOpts.GetInsightTypeConfig, gax.WithClientMetrics(metrics))
+		callOpts.UpdateInsightTypeConfig = append(callOpts.UpdateInsightTypeConfig, gax.WithClientMetrics(metrics))
+		callOpts.ListRecommenders = append(callOpts.ListRecommenders, gax.WithClientMetrics(metrics))
+		callOpts.ListInsightTypes = append(callOpts.ListInsightTypes, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "recommender",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/recommender/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "recommender.googleapis.com",
+			}),
+		)
+
+		callOpts.ListInsights = append(callOpts.ListInsights, gax.WithClientTracing(tracing))
+		callOpts.GetInsight = append(callOpts.GetInsight, gax.WithClientTracing(tracing))
+		callOpts.MarkInsightAccepted = append(callOpts.MarkInsightAccepted, gax.WithClientTracing(tracing))
+		callOpts.ListRecommendations = append(callOpts.ListRecommendations, gax.WithClientTracing(tracing))
+		callOpts.GetRecommendation = append(callOpts.GetRecommendation, gax.WithClientTracing(tracing))
+		callOpts.MarkRecommendationClaimed = append(callOpts.MarkRecommendationClaimed, gax.WithClientTracing(tracing))
+		callOpts.MarkRecommendationSucceeded = append(callOpts.MarkRecommendationSucceeded, gax.WithClientTracing(tracing))
+		callOpts.MarkRecommendationFailed = append(callOpts.MarkRecommendationFailed, gax.WithClientTracing(tracing))
+		callOpts.GetRecommenderConfig = append(callOpts.GetRecommenderConfig, gax.WithClientTracing(tracing))
+		callOpts.UpdateRecommenderConfig = append(callOpts.UpdateRecommenderConfig, gax.WithClientTracing(tracing))
+		callOpts.GetInsightTypeConfig = append(callOpts.GetInsightTypeConfig, gax.WithClientTracing(tracing))
+		callOpts.UpdateInsightTypeConfig = append(callOpts.UpdateInsightTypeConfig, gax.WithClientTracing(tracing))
+		callOpts.ListRecommenders = append(callOpts.ListRecommenders, gax.WithClientTracing(tracing))
+		callOpts.ListInsightTypes = append(callOpts.ListInsightTypes, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "recommender",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/recommender/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "recommender.googleapis.com",
+			}),
+		)
+
+		callOpts.ListInsights = append(callOpts.ListInsights, gax.WithClientLogging(logging))
+		callOpts.GetInsight = append(callOpts.GetInsight, gax.WithClientLogging(logging))
+		callOpts.MarkInsightAccepted = append(callOpts.MarkInsightAccepted, gax.WithClientLogging(logging))
+		callOpts.ListRecommendations = append(callOpts.ListRecommendations, gax.WithClientLogging(logging))
+		callOpts.GetRecommendation = append(callOpts.GetRecommendation, gax.WithClientLogging(logging))
+		callOpts.MarkRecommendationClaimed = append(callOpts.MarkRecommendationClaimed, gax.WithClientLogging(logging))
+		callOpts.MarkRecommendationSucceeded = append(callOpts.MarkRecommendationSucceeded, gax.WithClientLogging(logging))
+		callOpts.MarkRecommendationFailed = append(callOpts.MarkRecommendationFailed, gax.WithClientLogging(logging))
+		callOpts.GetRecommenderConfig = append(callOpts.GetRecommenderConfig, gax.WithClientLogging(logging))
+		callOpts.UpdateRecommenderConfig = append(callOpts.UpdateRecommenderConfig, gax.WithClientLogging(logging))
+		callOpts.GetInsightTypeConfig = append(callOpts.GetInsightTypeConfig, gax.WithClientLogging(logging))
+		callOpts.UpdateInsightTypeConfig = append(callOpts.UpdateInsightTypeConfig, gax.WithClientLogging(logging))
+		callOpts.ListRecommenders = append(callOpts.ListRecommenders, gax.WithClientLogging(logging))
+		callOpts.ListInsightTypes = append(callOpts.ListInsightTypes, gax.WithClientLogging(logging))
+	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -538,7 +721,7 @@ func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *restClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -557,9 +740,12 @@ func (c *gRPCClient) ListInsights(ctx context.Context, req *recommenderpb.ListIn
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recommender.v1beta1.Recommender/ListInsights")
+	}
 	opts = append((*c.CallOptions).ListInsights[0:len((*c.CallOptions).ListInsights):len((*c.CallOptions).ListInsights)], opts...)
 	it := &InsightIterator{}
-	req = proto.Clone(req).(*recommenderpb.ListInsightsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*recommenderpb.Insight, string, error) {
 		resp := &recommenderpb.ListInsightsResponse{}
 		if pageToken != "" {
@@ -603,6 +789,9 @@ func (c *gRPCClient) GetInsight(ctx context.Context, req *recommenderpb.GetInsig
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recommender.v1beta1.Recommender/GetInsight")
+	}
 	opts = append((*c.CallOptions).GetInsight[0:len((*c.CallOptions).GetInsight):len((*c.CallOptions).GetInsight)], opts...)
 	var resp *recommenderpb.Insight
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -621,6 +810,9 @@ func (c *gRPCClient) MarkInsightAccepted(ctx context.Context, req *recommenderpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recommender.v1beta1.Recommender/MarkInsightAccepted")
+	}
 	opts = append((*c.CallOptions).MarkInsightAccepted[0:len((*c.CallOptions).MarkInsightAccepted):len((*c.CallOptions).MarkInsightAccepted)], opts...)
 	var resp *recommenderpb.Insight
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -639,9 +831,12 @@ func (c *gRPCClient) ListRecommendations(ctx context.Context, req *recommenderpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recommender.v1beta1.Recommender/ListRecommendations")
+	}
 	opts = append((*c.CallOptions).ListRecommendations[0:len((*c.CallOptions).ListRecommendations):len((*c.CallOptions).ListRecommendations)], opts...)
 	it := &RecommendationIterator{}
-	req = proto.Clone(req).(*recommenderpb.ListRecommendationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*recommenderpb.Recommendation, string, error) {
 		resp := &recommenderpb.ListRecommendationsResponse{}
 		if pageToken != "" {
@@ -685,6 +880,9 @@ func (c *gRPCClient) GetRecommendation(ctx context.Context, req *recommenderpb.G
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recommender.v1beta1.Recommender/GetRecommendation")
+	}
 	opts = append((*c.CallOptions).GetRecommendation[0:len((*c.CallOptions).GetRecommendation):len((*c.CallOptions).GetRecommendation)], opts...)
 	var resp *recommenderpb.Recommendation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -703,6 +901,9 @@ func (c *gRPCClient) MarkRecommendationClaimed(ctx context.Context, req *recomme
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recommender.v1beta1.Recommender/MarkRecommendationClaimed")
+	}
 	opts = append((*c.CallOptions).MarkRecommendationClaimed[0:len((*c.CallOptions).MarkRecommendationClaimed):len((*c.CallOptions).MarkRecommendationClaimed)], opts...)
 	var resp *recommenderpb.Recommendation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -721,6 +922,9 @@ func (c *gRPCClient) MarkRecommendationSucceeded(ctx context.Context, req *recom
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recommender.v1beta1.Recommender/MarkRecommendationSucceeded")
+	}
 	opts = append((*c.CallOptions).MarkRecommendationSucceeded[0:len((*c.CallOptions).MarkRecommendationSucceeded):len((*c.CallOptions).MarkRecommendationSucceeded)], opts...)
 	var resp *recommenderpb.Recommendation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -739,6 +943,9 @@ func (c *gRPCClient) MarkRecommendationFailed(ctx context.Context, req *recommen
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recommender.v1beta1.Recommender/MarkRecommendationFailed")
+	}
 	opts = append((*c.CallOptions).MarkRecommendationFailed[0:len((*c.CallOptions).MarkRecommendationFailed):len((*c.CallOptions).MarkRecommendationFailed)], opts...)
 	var resp *recommenderpb.Recommendation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -757,6 +964,9 @@ func (c *gRPCClient) GetRecommenderConfig(ctx context.Context, req *recommenderp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recommender.v1beta1.Recommender/GetRecommenderConfig")
+	}
 	opts = append((*c.CallOptions).GetRecommenderConfig[0:len((*c.CallOptions).GetRecommenderConfig):len((*c.CallOptions).GetRecommenderConfig)], opts...)
 	var resp *recommenderpb.RecommenderConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -775,6 +985,9 @@ func (c *gRPCClient) UpdateRecommenderConfig(ctx context.Context, req *recommend
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recommender.v1beta1.Recommender/UpdateRecommenderConfig")
+	}
 	opts = append((*c.CallOptions).UpdateRecommenderConfig[0:len((*c.CallOptions).UpdateRecommenderConfig):len((*c.CallOptions).UpdateRecommenderConfig)], opts...)
 	var resp *recommenderpb.RecommenderConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -793,6 +1006,9 @@ func (c *gRPCClient) GetInsightTypeConfig(ctx context.Context, req *recommenderp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recommender.v1beta1.Recommender/GetInsightTypeConfig")
+	}
 	opts = append((*c.CallOptions).GetInsightTypeConfig[0:len((*c.CallOptions).GetInsightTypeConfig):len((*c.CallOptions).GetInsightTypeConfig)], opts...)
 	var resp *recommenderpb.InsightTypeConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -811,6 +1027,9 @@ func (c *gRPCClient) UpdateInsightTypeConfig(ctx context.Context, req *recommend
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recommender.v1beta1.Recommender/UpdateInsightTypeConfig")
+	}
 	opts = append((*c.CallOptions).UpdateInsightTypeConfig[0:len((*c.CallOptions).UpdateInsightTypeConfig):len((*c.CallOptions).UpdateInsightTypeConfig)], opts...)
 	var resp *recommenderpb.InsightTypeConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -826,9 +1045,12 @@ func (c *gRPCClient) UpdateInsightTypeConfig(ctx context.Context, req *recommend
 
 func (c *gRPCClient) ListRecommenders(ctx context.Context, req *recommenderpb.ListRecommendersRequest, opts ...gax.CallOption) *RecommenderTypeIterator {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recommender.v1beta1.Recommender/ListRecommenders")
+	}
 	opts = append((*c.CallOptions).ListRecommenders[0:len((*c.CallOptions).ListRecommenders):len((*c.CallOptions).ListRecommenders)], opts...)
 	it := &RecommenderTypeIterator{}
-	req = proto.Clone(req).(*recommenderpb.ListRecommendersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*recommenderpb.RecommenderType, string, error) {
 		resp := &recommenderpb.ListRecommendersResponse{}
 		if pageToken != "" {
@@ -869,9 +1091,12 @@ func (c *gRPCClient) ListRecommenders(ctx context.Context, req *recommenderpb.Li
 
 func (c *gRPCClient) ListInsightTypes(ctx context.Context, req *recommenderpb.ListInsightTypesRequest, opts ...gax.CallOption) *InsightTypeIterator {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recommender.v1beta1.Recommender/ListInsightTypes")
+	}
 	opts = append((*c.CallOptions).ListInsightTypes[0:len((*c.CallOptions).ListInsightTypes):len((*c.CallOptions).ListInsightTypes)], opts...)
 	it := &InsightTypeIterator{}
-	req = proto.Clone(req).(*recommenderpb.ListInsightTypesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*recommenderpb.InsightType, string, error) {
 		resp := &recommenderpb.ListInsightTypesResponse{}
 		if pageToken != "" {
@@ -914,7 +1139,7 @@ func (c *gRPCClient) ListInsightTypes(ctx context.Context, req *recommenderpb.Li
 // recommender.*.list IAM permission for the specified insight type.
 func (c *restClient) ListInsights(ctx context.Context, req *recommenderpb.ListInsightsRequest, opts ...gax.CallOption) *InsightIterator {
 	it := &InsightIterator{}
-	req = proto.Clone(req).(*recommenderpb.ListInsightsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*recommenderpb.Insight, string, error) {
 		resp := &recommenderpb.ListInsightsResponse{}
@@ -1012,6 +1237,10 @@ func (c *restClient) GetInsight(ctx context.Context, req *recommenderpb.GetInsig
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recommender.v1beta1.Recommender/GetInsight")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/insightTypes/*/insights/*}")
+	}
 	opts = append((*c.CallOptions).GetInsight[0:len((*c.CallOptions).GetInsight):len((*c.CallOptions).GetInsight)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &recommenderpb.Insight{}
@@ -1073,6 +1302,10 @@ func (c *restClient) MarkInsightAccepted(ctx context.Context, req *recommenderpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recommender.v1beta1.Recommender/MarkInsightAccepted")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/insightTypes/*/insights/*}:markAccepted")
+	}
 	opts = append((*c.CallOptions).MarkInsightAccepted[0:len((*c.CallOptions).MarkInsightAccepted):len((*c.CallOptions).MarkInsightAccepted)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &recommenderpb.Insight{}
@@ -1108,7 +1341,7 @@ func (c *restClient) MarkInsightAccepted(ctx context.Context, req *recommenderpb
 // recommender.*.list IAM permission for the specified recommender.
 func (c *restClient) ListRecommendations(ctx context.Context, req *recommenderpb.ListRecommendationsRequest, opts ...gax.CallOption) *RecommendationIterator {
 	it := &RecommendationIterator{}
-	req = proto.Clone(req).(*recommenderpb.ListRecommendationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*recommenderpb.Recommendation, string, error) {
 		resp := &recommenderpb.ListRecommendationsResponse{}
@@ -1206,6 +1439,10 @@ func (c *restClient) GetRecommendation(ctx context.Context, req *recommenderpb.G
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recommender.v1beta1.Recommender/GetRecommendation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/recommenders/*/recommendations/*}")
+	}
 	opts = append((*c.CallOptions).GetRecommendation[0:len((*c.CallOptions).GetRecommendation):len((*c.CallOptions).GetRecommendation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &recommenderpb.Recommendation{}
@@ -1271,6 +1508,10 @@ func (c *restClient) MarkRecommendationClaimed(ctx context.Context, req *recomme
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recommender.v1beta1.Recommender/MarkRecommendationClaimed")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/recommenders/*/recommendations/*}:markClaimed")
+	}
 	opts = append((*c.CallOptions).MarkRecommendationClaimed[0:len((*c.CallOptions).MarkRecommendationClaimed):len((*c.CallOptions).MarkRecommendationClaimed)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &recommenderpb.Recommendation{}
@@ -1337,6 +1578,10 @@ func (c *restClient) MarkRecommendationSucceeded(ctx context.Context, req *recom
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recommender.v1beta1.Recommender/MarkRecommendationSucceeded")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/recommenders/*/recommendations/*}:markSucceeded")
+	}
 	opts = append((*c.CallOptions).MarkRecommendationSucceeded[0:len((*c.CallOptions).MarkRecommendationSucceeded):len((*c.CallOptions).MarkRecommendationSucceeded)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &recommenderpb.Recommendation{}
@@ -1403,6 +1648,10 @@ func (c *restClient) MarkRecommendationFailed(ctx context.Context, req *recommen
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recommender.v1beta1.Recommender/MarkRecommendationFailed")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/recommenders/*/recommendations/*}:markFailed")
+	}
 	opts = append((*c.CallOptions).MarkRecommendationFailed[0:len((*c.CallOptions).MarkRecommendationFailed):len((*c.CallOptions).MarkRecommendationFailed)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &recommenderpb.Recommendation{}
@@ -1454,6 +1703,10 @@ func (c *restClient) GetRecommenderConfig(ctx context.Context, req *recommenderp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recommender.v1beta1.Recommender/GetRecommenderConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/recommenders/*/config}")
+	}
 	opts = append((*c.CallOptions).GetRecommenderConfig[0:len((*c.CallOptions).GetRecommenderConfig):len((*c.CallOptions).GetRecommenderConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &recommenderpb.RecommenderConfig{}
@@ -1522,6 +1775,10 @@ func (c *restClient) UpdateRecommenderConfig(ctx context.Context, req *recommend
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recommender.v1beta1.Recommender/UpdateRecommenderConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{recommender_config.name=projects/*/locations/*/recommenders/*/config}")
+	}
 	opts = append((*c.CallOptions).UpdateRecommenderConfig[0:len((*c.CallOptions).UpdateRecommenderConfig):len((*c.CallOptions).UpdateRecommenderConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &recommenderpb.RecommenderConfig{}
@@ -1573,6 +1830,10 @@ func (c *restClient) GetInsightTypeConfig(ctx context.Context, req *recommenderp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recommender.v1beta1.Recommender/GetInsightTypeConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/insightTypes/*/config}")
+	}
 	opts = append((*c.CallOptions).GetInsightTypeConfig[0:len((*c.CallOptions).GetInsightTypeConfig):len((*c.CallOptions).GetInsightTypeConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &recommenderpb.InsightTypeConfig{}
@@ -1641,6 +1902,10 @@ func (c *restClient) UpdateInsightTypeConfig(ctx context.Context, req *recommend
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.recommender.v1beta1.Recommender/UpdateInsightTypeConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{insight_type_config.name=projects/*/locations/*/insightTypes/*/config}")
+	}
 	opts = append((*c.CallOptions).UpdateInsightTypeConfig[0:len((*c.CallOptions).UpdateInsightTypeConfig):len((*c.CallOptions).UpdateInsightTypeConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &recommenderpb.InsightTypeConfig{}
@@ -1676,7 +1941,7 @@ func (c *restClient) UpdateInsightTypeConfig(ctx context.Context, req *recommend
 // No IAM permissions are required.
 func (c *restClient) ListRecommenders(ctx context.Context, req *recommenderpb.ListRecommendersRequest, opts ...gax.CallOption) *RecommenderTypeIterator {
 	it := &RecommenderTypeIterator{}
-	req = proto.Clone(req).(*recommenderpb.ListRecommendersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*recommenderpb.RecommenderType, string, error) {
 		resp := &recommenderpb.ListRecommendersResponse{}
@@ -1755,7 +2020,7 @@ func (c *restClient) ListRecommenders(ctx context.Context, req *recommenderpb.Li
 // No IAM permissions are required.
 func (c *restClient) ListInsightTypes(ctx context.Context, req *recommenderpb.ListInsightTypesRequest, opts ...gax.CallOption) *InsightTypeIterator {
 	it := &InsightTypeIterator{}
-	req = proto.Clone(req).(*recommenderpb.ListInsightTypesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*recommenderpb.InsightType, string, error) {
 		resp := &recommenderpb.ListInsightTypesResponse{}

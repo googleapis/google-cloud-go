@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import (
 
 	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -95,7 +96,7 @@ func defaultGlobalOperationsRESTCallOptions() *GlobalOperationsCallOptions {
 	}
 }
 
-// internalGlobalOperationsClient is an interface that defines the methods available from Google Compute Engine API.
+// internalGlobalOperationsClient is an interface that defines the methods available from Compute Engine API.
 type internalGlobalOperationsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -107,10 +108,12 @@ type internalGlobalOperationsClient interface {
 	Wait(context.Context, *computepb.WaitGlobalOperationRequest, ...gax.CallOption) (*computepb.Operation, error)
 }
 
-// GlobalOperationsClient is a client for interacting with Google Compute Engine API.
+// GlobalOperationsClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The GlobalOperations API.
+//
+// This client uses GlobalOperations version 2026-09-01.
 type GlobalOperationsClient struct {
 	// The internal transport-dependent client.
 	internalClient internalGlobalOperationsClient
@@ -121,7 +124,7 @@ type GlobalOperationsClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *GlobalOperationsClient) Close() error {
 	return c.internalClient.Close()
@@ -142,7 +145,10 @@ func (c *GlobalOperationsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves an aggregated list of all operations. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of all operations.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *GlobalOperationsClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListGlobalOperationsRequest, opts ...gax.CallOption) *OperationsScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -157,12 +163,20 @@ func (c *GlobalOperationsClient) Get(ctx context.Context, req *computepb.GetGlob
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// List retrieves a list of Operation resources contained within the specified project.
+// List retrieves a list of Operation resources contained within the specified
+// project.
 func (c *GlobalOperationsClient) List(ctx context.Context, req *computepb.ListGlobalOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// Wait waits for the specified Operation resource to return as DONE or for the request to approach the 2 minute deadline, and retrieves the specified Operation resource. This method differs from the GET method in that it waits for no more than the default deadline (2 minutes) and then returns the current state of the operation, which might be DONE or still in progress. This method is called on a best-effort basis. Specifically: - In uncommon cases, when the server is overloaded, the request might return before the default deadline is reached, or might return after zero seconds. - If the default deadline is reached, there is no guarantee that the operation is actually done when the method returns. Be prepared to retry if the operation is not DONE.
+// Wait waits for the specified Operation resource to return as DONE
+// or for the request to approach the 2 minute deadline, and retrieves the
+// specified Operation resource. This method differs from the
+// GET method in that it waits for no more than the default
+// deadline (2 minutes) and then returns the current state of the operation,
+// which might be DONE or still in progress.
+//
+// This method is called on a best-effort basis. Specifically:
 func (c *GlobalOperationsClient) Wait(ctx context.Context, req *computepb.WaitGlobalOperationRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
 	return c.internalClient.Wait(ctx, req, opts...)
 }
@@ -189,6 +203,16 @@ type globalOperationsRESTClient struct {
 // The GlobalOperations API.
 func NewGlobalOperationsRESTClient(ctx context.Context, opts ...option.ClientOption) (*GlobalOperationsClient, error) {
 	clientOpts := append(defaultGlobalOperationsRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "compute",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/compute/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "compute.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -202,6 +226,60 @@ func NewGlobalOperationsRESTClient(ctx context.Context, opts ...option.ClientOpt
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientMetrics(metrics))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientMetrics(metrics))
+		callOpts.Get = append(callOpts.Get, gax.WithClientMetrics(metrics))
+		callOpts.List = append(callOpts.List, gax.WithClientMetrics(metrics))
+		callOpts.Wait = append(callOpts.Wait, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientTracing(tracing))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientTracing(tracing))
+		callOpts.Get = append(callOpts.Get, gax.WithClientTracing(tracing))
+		callOpts.List = append(callOpts.List, gax.WithClientTracing(tracing))
+		callOpts.Wait = append(callOpts.Wait, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientLogging(logging))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientLogging(logging))
+		callOpts.Get = append(callOpts.Get, gax.WithClientLogging(logging))
+		callOpts.List = append(callOpts.List, gax.WithClientLogging(logging))
+		callOpts.Wait = append(callOpts.Wait, gax.WithClientLogging(logging))
+	}
 
 	return &GlobalOperationsClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -226,10 +304,11 @@ func (c *globalOperationsRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
+		"x-goog-api-version", "2026-09-01",
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *globalOperationsRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -244,10 +323,13 @@ func (c *globalOperationsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves an aggregated list of all operations. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of all operations.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *globalOperationsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListGlobalOperationsRequest, opts ...gax.CallOption) *OperationsScopedListPairIterator {
 	it := &OperationsScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListGlobalOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]OperationsScopedListPair, string, error) {
 		resp := &computepb.OperationAggregatedList{}
@@ -280,9 +362,6 @@ func (c *globalOperationsRESTClient) AggregatedList(ctx context.Context, req *co
 		}
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 		if req != nil && req.ServiceProjectNumber != nil {
 			params.Add("serviceProjectNumber", fmt.Sprintf("%v", req.GetServiceProjectNumber()))
@@ -357,6 +436,10 @@ func (c *globalOperationsRESTClient) Delete(ctx context.Context, req *computepb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.GlobalOperations/Delete")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/operations/{operation}")
+	}
 	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.DeleteGlobalOperationResponse{}
@@ -402,6 +485,10 @@ func (c *globalOperationsRESTClient) Get(ctx context.Context, req *computepb.Get
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.GlobalOperations/Get")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/operations/{operation}")
+	}
 	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -433,10 +520,11 @@ func (c *globalOperationsRESTClient) Get(ctx context.Context, req *computepb.Get
 	return resp, nil
 }
 
-// List retrieves a list of Operation resources contained within the specified project.
+// List retrieves a list of Operation resources contained within the specified
+// project.
 func (c *globalOperationsRESTClient) List(ctx context.Context, req *computepb.ListGlobalOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*computepb.ListGlobalOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.Operation, string, error) {
 		resp := &computepb.OperationList{}
@@ -466,9 +554,6 @@ func (c *globalOperationsRESTClient) List(ctx context.Context, req *computepb.Li
 		}
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -519,7 +604,14 @@ func (c *globalOperationsRESTClient) List(ctx context.Context, req *computepb.Li
 	return it
 }
 
-// Wait waits for the specified Operation resource to return as DONE or for the request to approach the 2 minute deadline, and retrieves the specified Operation resource. This method differs from the GET method in that it waits for no more than the default deadline (2 minutes) and then returns the current state of the operation, which might be DONE or still in progress. This method is called on a best-effort basis. Specifically: - In uncommon cases, when the server is overloaded, the request might return before the default deadline is reached, or might return after zero seconds. - If the default deadline is reached, there is no guarantee that the operation is actually done when the method returns. Be prepared to retry if the operation is not DONE.
+// Wait waits for the specified Operation resource to return as DONE
+// or for the request to approach the 2 minute deadline, and retrieves the
+// specified Operation resource. This method differs from the
+// GET method in that it waits for no more than the default
+// deadline (2 minutes) and then returns the current state of the operation,
+// which might be DONE or still in progress.
+//
+// This method is called on a best-effort basis. Specifically:
 func (c *globalOperationsRESTClient) Wait(ctx context.Context, req *computepb.WaitGlobalOperationRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -533,6 +625,10 @@ func (c *globalOperationsRESTClient) Wait(ctx context.Context, req *computepb.Wa
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.GlobalOperations/Wait")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/operations/{operation}/wait")
+	}
 	opts = append((*c.CallOptions).Wait[0:len((*c.CallOptions).Wait):len((*c.CallOptions).Wait)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}

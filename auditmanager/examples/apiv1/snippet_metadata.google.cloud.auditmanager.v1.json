@@ -1,0 +1,841 @@
+{
+  "clientLibrary": {
+    "apis": [
+      {
+        "id": "google.cloud.auditmanager.v1",
+        "version": "v1"
+      }
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/auditmanager/apiv1",
+    "version": "1.5.0"
+  },
+  "snippets": [
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.auditmanager.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.auditmanager.v1.Client.CancelOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "CancelOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.CancelOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CancelOperation"
+      },
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/CancelOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "auditmanager_v1_generated_AuditManager_CancelOperation_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "auditmanager CancelOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.auditmanager.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.auditmanager.v1.Client.CreateAuditSchedule",
+        "method": {
+          "fullName": "google.cloud.auditmanager.v1.AuditManager.CreateAuditSchedule",
+          "service": {
+            "fullName": "google.cloud.auditmanager.v1.AuditManager",
+            "shortName": "AuditManager"
+          },
+          "shortName": "CreateAuditSchedule"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "auditmanagerpb.CreateAuditScheduleRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*auditmanagerpb.AuditSchedule",
+        "shortName": "CreateAuditSchedule"
+      },
+      "description": "CreateAuditSchedule creates a new audit schedule in a given project and location.",
+      "file": "Client/CreateAuditSchedule/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "auditmanager_v1_generated_AuditManager_CreateAuditSchedule_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "auditmanager CreateAuditSchedule Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.auditmanager.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.auditmanager.v1.Client.DeleteOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "DeleteOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.DeleteOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteOperation"
+      },
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/DeleteOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "auditmanager_v1_generated_AuditManager_DeleteOperation_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "auditmanager DeleteOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.auditmanager.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.auditmanager.v1.Client.EnrollResource",
+        "method": {
+          "fullName": "google.cloud.auditmanager.v1.AuditManager.EnrollResource",
+          "service": {
+            "fullName": "google.cloud.auditmanager.v1.AuditManager",
+            "shortName": "AuditManager"
+          },
+          "shortName": "EnrollResource"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "auditmanagerpb.EnrollResourceRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*auditmanagerpb.Enrollment",
+        "shortName": "EnrollResource"
+      },
+      "description": "EnrollResource adds your project, folder, or organization to Audit\nManager. This method creates the Audit Manager service agent in your\nworkload and grants required permissions to the service agent.\nIf you make this request on a workload that's already enrolled,\nthen this method overrides the existing set of destinations.",
+      "file": "Client/EnrollResource/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "auditmanager_v1_generated_AuditManager_EnrollResource_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "auditmanager EnrollResource Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.auditmanager.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.auditmanager.v1.Client.GenerateAuditReport",
+        "method": {
+          "fullName": "google.cloud.auditmanager.v1.AuditManager.GenerateAuditReport",
+          "service": {
+            "fullName": "google.cloud.auditmanager.v1.AuditManager",
+            "shortName": "AuditManager"
+          },
+          "shortName": "GenerateAuditReport"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "auditmanagerpb.GenerateAuditReportRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "GenerateAuditReportOperation",
+        "shortName": "GenerateAuditReport"
+      },
+      "description": "GenerateAuditReport registers audit report generation requests. This method returns the\noperation identifier that you can use to track the report generation\nprogress.",
+      "file": "Client/GenerateAuditReport/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "auditmanager_v1_generated_AuditManager_GenerateAuditReport_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "auditmanager GenerateAuditReport Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.auditmanager.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.auditmanager.v1.Client.GenerateAuditScopeReport",
+        "method": {
+          "fullName": "google.cloud.auditmanager.v1.AuditManager.GenerateAuditScopeReport",
+          "service": {
+            "fullName": "google.cloud.auditmanager.v1.AuditManager",
+            "shortName": "AuditManager"
+          },
+          "shortName": "GenerateAuditScopeReport"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "auditmanagerpb.GenerateAuditScopeReportRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*auditmanagerpb.AuditScopeReport",
+        "shortName": "GenerateAuditScopeReport"
+      },
+      "description": "GenerateAuditScopeReport generates an audit scope report for the given standard.\n\nThe report includes the following: \n\n* The technical attributes and constraints that Audit Manager uses to\nverify your compliance with a framework.\n* A list of Google Cloud services and resources that are within the\nscope of the framework.",
+      "file": "Client/GenerateAuditScopeReport/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "auditmanager_v1_generated_AuditManager_GenerateAuditScopeReport_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "auditmanager GenerateAuditScopeReport Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.auditmanager.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.auditmanager.v1.Client.GetAuditReport",
+        "method": {
+          "fullName": "google.cloud.auditmanager.v1.AuditManager.GetAuditReport",
+          "service": {
+            "fullName": "google.cloud.auditmanager.v1.AuditManager",
+            "shortName": "AuditManager"
+          },
+          "shortName": "GetAuditReport"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "auditmanagerpb.GetAuditReportRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*auditmanagerpb.AuditReport",
+        "shortName": "GetAuditReport"
+      },
+      "description": "GetAuditReport gets the full metadata and findings for an audit report.",
+      "file": "Client/GetAuditReport/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "auditmanager_v1_generated_AuditManager_GetAuditReport_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "auditmanager GetAuditReport Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.auditmanager.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.auditmanager.v1.Client.GetAuditSchedule",
+        "method": {
+          "fullName": "google.cloud.auditmanager.v1.AuditManager.GetAuditSchedule",
+          "service": {
+            "fullName": "google.cloud.auditmanager.v1.AuditManager",
+            "shortName": "AuditManager"
+          },
+          "shortName": "GetAuditSchedule"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "auditmanagerpb.GetAuditScheduleRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*auditmanagerpb.AuditSchedule",
+        "shortName": "GetAuditSchedule"
+      },
+      "description": "GetAuditSchedule gets details of a single audit schedule.",
+      "file": "Client/GetAuditSchedule/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "auditmanager_v1_generated_AuditManager_GetAuditSchedule_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "auditmanager GetAuditSchedule Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.auditmanager.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.auditmanager.v1.Client.GetLocation",
+        "method": {
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "GetLocation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "locationpb.GetLocationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "shortName": "GetLocation"
+      },
+      "description": "GetLocation gets information about a location.",
+      "file": "Client/GetLocation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "auditmanager_v1_generated_AuditManager_GetLocation_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "auditmanager GetLocation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.auditmanager.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.auditmanager.v1.Client.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "shortName": "GetOperation"
+      },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "auditmanager_v1_generated_AuditManager_GetOperation_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "auditmanager GetOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.auditmanager.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.auditmanager.v1.Client.GetResourceEnrollmentStatus",
+        "method": {
+          "fullName": "google.cloud.auditmanager.v1.AuditManager.GetResourceEnrollmentStatus",
+          "service": {
+            "fullName": "google.cloud.auditmanager.v1.AuditManager",
+            "shortName": "AuditManager"
+          },
+          "shortName": "GetResourceEnrollmentStatus"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "auditmanagerpb.GetResourceEnrollmentStatusRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*auditmanagerpb.ResourceEnrollmentStatus",
+        "shortName": "GetResourceEnrollmentStatus"
+      },
+      "description": "GetResourceEnrollmentStatus gets a resource and its enrollment status.",
+      "file": "Client/GetResourceEnrollmentStatus/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "auditmanager_v1_generated_AuditManager_GetResourceEnrollmentStatus_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "auditmanager GetResourceEnrollmentStatus Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.auditmanager.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.auditmanager.v1.Client.ListAuditReports",
+        "method": {
+          "fullName": "google.cloud.auditmanager.v1.AuditManager.ListAuditReports",
+          "service": {
+            "fullName": "google.cloud.auditmanager.v1.AuditManager",
+            "shortName": "AuditManager"
+          },
+          "shortName": "ListAuditReports"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "auditmanagerpb.ListAuditReportsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "AuditReportIterator",
+        "shortName": "ListAuditReports"
+      },
+      "description": "ListAuditReports lists the audit reports for the organization, folder, or project that you\nspecify as the parent scope.",
+      "file": "Client/ListAuditReports/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "auditmanager_v1_generated_AuditManager_ListAuditReports_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "auditmanager ListAuditReports Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.auditmanager.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.auditmanager.v1.Client.ListAuditSchedules",
+        "method": {
+          "fullName": "google.cloud.auditmanager.v1.AuditManager.ListAuditSchedules",
+          "service": {
+            "fullName": "google.cloud.auditmanager.v1.AuditManager",
+            "shortName": "AuditManager"
+          },
+          "shortName": "ListAuditSchedules"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "auditmanagerpb.ListAuditSchedulesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "AuditScheduleIterator",
+        "shortName": "ListAuditSchedules"
+      },
+      "description": "ListAuditSchedules lists audit schedules in a given project and location.",
+      "file": "Client/ListAuditSchedules/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "auditmanager_v1_generated_AuditManager_ListAuditSchedules_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "auditmanager ListAuditSchedules Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.auditmanager.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.auditmanager.v1.Client.ListControls",
+        "method": {
+          "fullName": "google.cloud.auditmanager.v1.AuditManager.ListControls",
+          "service": {
+            "fullName": "google.cloud.auditmanager.v1.AuditManager",
+            "shortName": "AuditManager"
+          },
+          "shortName": "ListControls"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "auditmanagerpb.ListControlsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "ControlIterator",
+        "shortName": "ListControls"
+      },
+      "description": "ListControls lists the controls that you must implement to become compliant to a\nregulatory standard.",
+      "file": "Client/ListControls/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "auditmanager_v1_generated_AuditManager_ListControls_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "auditmanager ListControls Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.auditmanager.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.auditmanager.v1.Client.ListLocations",
+        "method": {
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "ListLocations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "locationpb.ListLocationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "shortName": "ListLocations"
+      },
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name][google.cloud.location.ListLocationsRequest.name] field: *\n**Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
+      "file": "Client/ListLocations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "auditmanager_v1_generated_AuditManager_ListLocations_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "auditmanager ListLocations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.auditmanager.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.auditmanager.v1.Client.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "shortName": "ListOperations"
+      },
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "auditmanager_v1_generated_AuditManager_ListOperations_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "auditmanager ListOperations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.auditmanager.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.auditmanager.v1.Client.ListResourceEnrollmentStatuses",
+        "method": {
+          "fullName": "google.cloud.auditmanager.v1.AuditManager.ListResourceEnrollmentStatuses",
+          "service": {
+            "fullName": "google.cloud.auditmanager.v1.AuditManager",
+            "shortName": "AuditManager"
+          },
+          "shortName": "ListResourceEnrollmentStatuses"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "auditmanagerpb.ListResourceEnrollmentStatusesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "ResourceEnrollmentStatusIterator",
+        "shortName": "ListResourceEnrollmentStatuses"
+      },
+      "description": "ListResourceEnrollmentStatuses lists all the folders and projects in an organization or folder, along with\ntheir enrollments.",
+      "file": "Client/ListResourceEnrollmentStatuses/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "auditmanager_v1_generated_AuditManager_ListResourceEnrollmentStatuses_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "auditmanager ListResourceEnrollmentStatuses Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.auditmanager.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.auditmanager.v1.Client.UpdateAuditSchedule",
+        "method": {
+          "fullName": "google.cloud.auditmanager.v1.AuditManager.UpdateAuditSchedule",
+          "service": {
+            "fullName": "google.cloud.auditmanager.v1.AuditManager",
+            "shortName": "AuditManager"
+          },
+          "shortName": "UpdateAuditSchedule"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "auditmanagerpb.UpdateAuditScheduleRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*auditmanagerpb.AuditSchedule",
+        "shortName": "UpdateAuditSchedule"
+      },
+      "description": "UpdateAuditSchedule updates an existing audit schedule.",
+      "file": "Client/UpdateAuditSchedule/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "auditmanager_v1_generated_AuditManager_UpdateAuditSchedule_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "auditmanager UpdateAuditSchedule Sample"
+    }
+  ]
+}

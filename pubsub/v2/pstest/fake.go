@@ -37,7 +37,7 @@ import (
 
 	"cloud.google.com/go/internal/testutil"
 	pb "cloud.google.com/go/pubsub/v2/apiv1/pubsubpb"
-	"go.einride.tech/aip/filtering"
+	filter "cloud.google.com/go/pubsub/v2/pstest/internal"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -97,7 +97,8 @@ type GServer struct {
 	reactorOptions ReactorOptions
 	// schemas is a map of schemaIDs to a slice of schema revisions.
 	// the last element in the slice is the most recent schema.
-	schemas map[string][]*pb.Schema
+	schemas         map[string][]*pb.Schema
+	protocolVersion int
 
 	// PublishResponses is a channel of responses to use for Publish.
 	publishResponses chan *publishResponse
@@ -577,11 +578,11 @@ func (s *GServer) CreateSubscription(_ context.Context, ps *pb.Subscription) (*p
 
 	sub := newSubscription(top, &s.mu, s.now, deadLetterTopic, ps)
 	if ps.Filter != "" {
-		filter, err := parseFilter(ps.Filter)
+		f, err := parseFilter(ps.Filter)
 		if err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "bad filter: %v", err)
 		}
-		sub.filter = &filter
+		sub.filter = f
 	}
 
 	top.subs[ps.Name] = sub
@@ -746,11 +747,11 @@ func (s *GServer) UpdateSubscription(_ context.Context, req *pb.UpdateSubscripti
 			sub.proto.RetryPolicy = req.Subscription.RetryPolicy
 
 		case "filter":
-			filter, err := parseFilter(req.Subscription.Filter)
+			f, err := parseFilter(req.Subscription.Filter)
 			if err != nil {
 				return nil, status.Errorf(codes.InvalidArgument, "bad filter: %v", err)
 			}
-			sub.filter = &filter
+			sub.filter = f
 			sub.proto.Filter = req.Subscription.Filter
 
 		case "enable_exactly_once_delivery":
@@ -926,7 +927,7 @@ type subscription struct {
 	streams         []*stream
 	done            chan struct{}
 	timeNowFunc     func() time.Time
-	filter          *filtering.Filter
+	filter          filter.ASTNode
 }
 
 func newSubscription(t *topic, mu *sync.Mutex, timeNowFunc func() time.Time, deadLetterTopic *topic, ps *pb.Subscription) *subscription {
@@ -1001,7 +1002,10 @@ func (s *GServer) ModifyAckDeadline(_ context.Context, req *pb.ModifyAckDeadline
 	}
 	now := time.Now()
 	for _, id := range req.AckIds {
-		s.msgsByID[id].modacks = append(s.msgsByID[id].modacks, Modack{AckID: id, AckDeadline: req.AckDeadlineSeconds, ReceivedAt: now})
+		msgID := parseAckID(id)
+		if m := s.msgsByID[msgID]; m != nil {
+			m.modacks = append(m.modacks, Modack{AckID: id, AckDeadline: req.AckDeadlineSeconds, ReceivedAt: now})
+		}
 	}
 	dur := secsToDur(req.AckDeadlineSeconds)
 	for _, id := range req.AckIds {
@@ -1068,7 +1072,7 @@ func (s *GServer) StreamingPull(sps pb.Subscriber_StreamingPullServer) error {
 		return err
 	}
 	// Create a new stream to handle the pull.
-	st := sub.newStream(sps, s.streamTimeout)
+	st := sub.newStream(sps, s.streamTimeout, req.GetProtocolVersion())
 	st.ackTimeout = time.Duration(req.StreamAckDeadlineSeconds) * time.Second
 	err = st.pull(&s.wg)
 	sub.deleteStream(st)
@@ -1162,6 +1166,7 @@ func (s *subscription) pull(max int) []*pb.ReceivedMessage {
 		if s.proto.DeadLetterPolicy != nil {
 			m.proto.DeliveryAttempt = int32(*m.deliveries)
 		}
+		m.proto.AckId = fmt.Sprintf("%s:%d", m.proto.Message.MessageId, *m.deliveries)
 		m.ackDeadline = now.Add(s.ackTimeout)
 		msgs = append(msgs, m.proto)
 		if len(msgs) >= max {
@@ -1197,14 +1202,16 @@ func orderMsgs(msgs map[string]*message, enableMessageOrdering bool) map[string]
 	return result
 }
 
-func filterMsgs(msgs map[string]*message, filter *filtering.Filter) {
-	if filter == nil {
+func filterMsgs(msgs map[string]*message, f filter.ASTNode) {
+	if f == nil {
 		return
 	}
 
-	filterByAttrs(msgs, filter, func(m *message) messageAttrs {
-		return m.proto.Message.Attributes
-	})
+	for id, m := range msgs {
+		if !filter.Evaluate(f, m.proto.Message.Attributes) {
+			delete(msgs, id)
+		}
+	}
 }
 
 func (s *subscription) deliver() {
@@ -1260,6 +1267,13 @@ func (s *subscription) tryDeliverMessage(m *message, start int, now time.Time) (
 	if s.proto.DeadLetterPolicy != nil {
 		m.proto.DeliveryAttempt = int32(*m.deliveries) + 1
 	}
+	var oldAckID string
+	if m.proto != nil {
+		oldAckID = m.proto.AckId
+		if m.proto.Message != nil {
+			m.proto.AckId = fmt.Sprintf("%s:%d", m.proto.Message.MessageId, *m.deliveries+1)
+		}
+	}
 
 	for i := 0; i < len(s.streams); i++ {
 		idx := (i + start) % len(s.streams)
@@ -1282,6 +1296,9 @@ func (s *subscription) tryDeliverMessage(m *message, start int, now time.Time) (
 	if s.proto.DeadLetterPolicy != nil {
 		m.proto.DeliveryAttempt = int32(*m.deliveries)
 	}
+	if m.proto != nil {
+		m.proto.AckId = oldAckID
+	}
 	return 0, false
 }
 
@@ -1302,7 +1319,7 @@ func (s *subscription) maintainMessages(now time.Time) {
 	}
 }
 
-func (s *subscription) newStream(gs pb.Subscriber_StreamingPullServer, timeout time.Duration) *stream {
+func (s *subscription) newStream(gs pb.Subscriber_StreamingPullServer, timeout time.Duration, version int64) *stream {
 	st := &stream{
 		sub:                       s,
 		done:                      make(chan struct{}),
@@ -1312,6 +1329,7 @@ func (s *subscription) newStream(gs pb.Subscriber_StreamingPullServer, timeout t
 		timeout:                   timeout,
 		enableExactlyOnceDelivery: s.proto.EnableExactlyOnceDelivery,
 		enableOrdering:            s.proto.EnableMessageOrdering,
+		protocolVersion:           version,
 	}
 	s.mu.Lock()
 	s.streams = append(s.streams, st)
@@ -1396,6 +1414,7 @@ type stream struct {
 	timeout                   time.Duration
 	enableExactlyOnceDelivery bool
 	enableOrdering            bool
+	protocolVersion           int64
 }
 
 // pull manages the StreamingPull interaction for the life of the stream.
@@ -1433,12 +1452,17 @@ func (st *stream) sendLoop() error {
 		case <-st.done:
 			return nil
 		case rm := <-st.msgc:
-			res := &pb.StreamingPullResponse{
-				ReceivedMessages: []*pb.ReceivedMessage{rm},
-				SubscriptionProperties: &pb.StreamingPullResponse_SubscriptionProperties{
-					ExactlyOnceDeliveryEnabled: st.enableExactlyOnceDelivery,
-					MessageOrderingEnabled:     st.enableOrdering,
-				},
+			var res *pb.StreamingPullResponse
+			if rm == nil {
+				res = &pb.StreamingPullResponse{}
+			} else {
+				res = &pb.StreamingPullResponse{
+					ReceivedMessages: []*pb.ReceivedMessage{rm},
+					SubscriptionProperties: &pb.StreamingPullResponse_SubscriptionProperties{
+						ExactlyOnceDeliveryEnabled: st.enableExactlyOnceDelivery,
+						MessageOrderingEnabled:     st.enableOrdering,
+					},
+				}
 			}
 			if err := st.gstream.Send(res); err != nil {
 				return err
@@ -1457,11 +1481,22 @@ func (st *stream) recvLoop() error {
 	}
 }
 
+func (st *stream) shouldResponseToPing() bool {
+	return st.protocolVersion >= 1
+}
+
 func (s *subscription) handleStreamingPullRequest(st *stream, req *pb.StreamingPullRequest) {
 	// Lock the entire server.
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
+	// response to keep alive ping
+	if len(req.AckIds) == 0 && len(req.ModifyDeadlineAckIds) == 0 {
+		if st.shouldResponseToPing() {
+			st.msgc <- nil
+		}
+		return
+	}
 	for _, ackID := range req.AckIds {
 		s.ack(ackID)
 	}
@@ -1474,22 +1509,31 @@ func (s *subscription) handleStreamingPullRequest(st *stream, req *pb.StreamingP
 }
 
 // Must be called with the lock held.
-func (s *subscription) ack(id string) {
-	m := s.msgs[id]
+func (s *subscription) ack(ackID string) {
+	msgID := parseAckID(ackID)
+	m := s.msgs[msgID]
 	if m != nil {
+		if m.proto.AckId != ackID {
+			return // ignore old ack
+		}
 		(*m.acks)++
-		delete(s.msgs, id)
+		delete(s.msgs, msgID)
 	}
 }
 
 // Must be called with the lock held.
-func (s *subscription) modifyAckDeadline(id string, d time.Duration) {
-	m := s.msgs[id]
+func (s *subscription) modifyAckDeadline(ackID string, d time.Duration) {
+	msgID := parseAckID(ackID)
+	m := s.msgs[msgID]
 	if m == nil { // already acked: ignore.
 		return
 	}
+	if m.proto.AckId != ackID {
+		return // ignore old modack
+	}
 	if d == 0 { // nack
 		m.makeAvailable()
+		m.proto.AckId = "" // Ensure subsequent modacks for this same AckId fail
 	} else { // extend the deadline by d
 		m.ackDeadline = s.timeNowFunc().Add(d)
 	}
@@ -1497,6 +1541,13 @@ func (s *subscription) modifyAckDeadline(id string, d time.Duration) {
 
 func secsToDur(secs int32) time.Duration {
 	return time.Duration(secs) * time.Second
+}
+
+func parseAckID(ackID string) string {
+	if i := strings.LastIndex(ackID, ":"); i >= 0 {
+		return ackID[:i]
+	}
+	return ackID
 }
 
 // runReactor looks up the reactors for a function, then launches them until handled=true

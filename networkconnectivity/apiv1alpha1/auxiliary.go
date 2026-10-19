@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,11 +18,13 @@ package networkconnectivity
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	"cloud.google.com/go/longrunning"
 	networkconnectivitypb "cloud.google.com/go/networkconnectivity/apiv1alpha1/networkconnectivitypb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
 
@@ -388,6 +390,12 @@ func (op *UpdateSpokeOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *HubIterator) All() iter.Seq2[*networkconnectivitypb.Hub, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // HubIterator manages a stream of *networkconnectivitypb.Hub.
 type HubIterator struct {
 	items    []*networkconnectivitypb.Hub
@@ -433,6 +441,12 @@ func (it *HubIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SpokeIterator) All() iter.Seq2[*networkconnectivitypb.Spoke, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // SpokeIterator manages a stream of *networkconnectivitypb.Spoke.

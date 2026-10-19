@@ -1,0 +1,10 @@
+{
+    "api_shortname": "agentidentity",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/agentidentity/latest/apiv1beta",
+    "client_library_type": "generated",
+    "description": "Agent Identity API",
+    "distribution_name": "cloud.google.com/go/agentidentity/apiv1beta",
+    "language": "go",
+    "library_type": "GAPIC_AUTO",
+    "release_level": "preview"
+}

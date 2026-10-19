@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -31,6 +31,8 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -436,7 +438,7 @@ type Client struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *Client) Close() error {
 	return c.internalClient.Close()
@@ -689,6 +691,16 @@ type gRPCClient struct {
 // snake_case or dash-case, either of those cases is accepted.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "automl",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/automl/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "automl.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -710,6 +722,98 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "automl",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/automl/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "automl.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateDataset = append(client.CallOptions.CreateDataset, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetDataset = append(client.CallOptions.GetDataset, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListDatasets = append(client.CallOptions.ListDatasets, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateDataset = append(client.CallOptions.UpdateDataset, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteDataset = append(client.CallOptions.DeleteDataset, gax.WithClientMetrics(metrics))
+		client.CallOptions.ImportData = append(client.CallOptions.ImportData, gax.WithClientMetrics(metrics))
+		client.CallOptions.ExportData = append(client.CallOptions.ExportData, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetAnnotationSpec = append(client.CallOptions.GetAnnotationSpec, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateModel = append(client.CallOptions.CreateModel, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetModel = append(client.CallOptions.GetModel, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListModels = append(client.CallOptions.ListModels, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteModel = append(client.CallOptions.DeleteModel, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateModel = append(client.CallOptions.UpdateModel, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeployModel = append(client.CallOptions.DeployModel, gax.WithClientMetrics(metrics))
+		client.CallOptions.UndeployModel = append(client.CallOptions.UndeployModel, gax.WithClientMetrics(metrics))
+		client.CallOptions.ExportModel = append(client.CallOptions.ExportModel, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetModelEvaluation = append(client.CallOptions.GetModelEvaluation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListModelEvaluations = append(client.CallOptions.ListModelEvaluations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "automl",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/automl/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "automl.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateDataset = append(client.CallOptions.CreateDataset, gax.WithClientTracing(tracing))
+		client.CallOptions.GetDataset = append(client.CallOptions.GetDataset, gax.WithClientTracing(tracing))
+		client.CallOptions.ListDatasets = append(client.CallOptions.ListDatasets, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateDataset = append(client.CallOptions.UpdateDataset, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteDataset = append(client.CallOptions.DeleteDataset, gax.WithClientTracing(tracing))
+		client.CallOptions.ImportData = append(client.CallOptions.ImportData, gax.WithClientTracing(tracing))
+		client.CallOptions.ExportData = append(client.CallOptions.ExportData, gax.WithClientTracing(tracing))
+		client.CallOptions.GetAnnotationSpec = append(client.CallOptions.GetAnnotationSpec, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateModel = append(client.CallOptions.CreateModel, gax.WithClientTracing(tracing))
+		client.CallOptions.GetModel = append(client.CallOptions.GetModel, gax.WithClientTracing(tracing))
+		client.CallOptions.ListModels = append(client.CallOptions.ListModels, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteModel = append(client.CallOptions.DeleteModel, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateModel = append(client.CallOptions.UpdateModel, gax.WithClientTracing(tracing))
+		client.CallOptions.DeployModel = append(client.CallOptions.DeployModel, gax.WithClientTracing(tracing))
+		client.CallOptions.UndeployModel = append(client.CallOptions.UndeployModel, gax.WithClientTracing(tracing))
+		client.CallOptions.ExportModel = append(client.CallOptions.ExportModel, gax.WithClientTracing(tracing))
+		client.CallOptions.GetModelEvaluation = append(client.CallOptions.GetModelEvaluation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListModelEvaluations = append(client.CallOptions.ListModelEvaluations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "automl",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/automl/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "automl.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateDataset = append(client.CallOptions.CreateDataset, gax.WithClientLogging(logging))
+		client.CallOptions.GetDataset = append(client.CallOptions.GetDataset, gax.WithClientLogging(logging))
+		client.CallOptions.ListDatasets = append(client.CallOptions.ListDatasets, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateDataset = append(client.CallOptions.UpdateDataset, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteDataset = append(client.CallOptions.DeleteDataset, gax.WithClientLogging(logging))
+		client.CallOptions.ImportData = append(client.CallOptions.ImportData, gax.WithClientLogging(logging))
+		client.CallOptions.ExportData = append(client.CallOptions.ExportData, gax.WithClientLogging(logging))
+		client.CallOptions.GetAnnotationSpec = append(client.CallOptions.GetAnnotationSpec, gax.WithClientLogging(logging))
+		client.CallOptions.CreateModel = append(client.CallOptions.CreateModel, gax.WithClientLogging(logging))
+		client.CallOptions.GetModel = append(client.CallOptions.GetModel, gax.WithClientLogging(logging))
+		client.CallOptions.ListModels = append(client.CallOptions.ListModels, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteModel = append(client.CallOptions.DeleteModel, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateModel = append(client.CallOptions.UpdateModel, gax.WithClientLogging(logging))
+		client.CallOptions.DeployModel = append(client.CallOptions.DeployModel, gax.WithClientLogging(logging))
+		client.CallOptions.UndeployModel = append(client.CallOptions.UndeployModel, gax.WithClientLogging(logging))
+		client.CallOptions.ExportModel = append(client.CallOptions.ExportModel, gax.WithClientLogging(logging))
+		client.CallOptions.GetModelEvaluation = append(client.CallOptions.GetModelEvaluation, gax.WithClientLogging(logging))
+		client.CallOptions.ListModelEvaluations = append(client.CallOptions.ListModelEvaluations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -746,7 +850,7 @@ func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *gRPCClient) Close() error {
 	return c.connPool.Close()
@@ -792,6 +896,16 @@ type restClient struct {
 // snake_case or dash-case, either of those cases is accepted.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "automl",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/automl/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "automl.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -805,6 +919,99 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "automl",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/automl/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "automl.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateDataset = append(callOpts.CreateDataset, gax.WithClientMetrics(metrics))
+		callOpts.GetDataset = append(callOpts.GetDataset, gax.WithClientMetrics(metrics))
+		callOpts.ListDatasets = append(callOpts.ListDatasets, gax.WithClientMetrics(metrics))
+		callOpts.UpdateDataset = append(callOpts.UpdateDataset, gax.WithClientMetrics(metrics))
+		callOpts.DeleteDataset = append(callOpts.DeleteDataset, gax.WithClientMetrics(metrics))
+		callOpts.ImportData = append(callOpts.ImportData, gax.WithClientMetrics(metrics))
+		callOpts.ExportData = append(callOpts.ExportData, gax.WithClientMetrics(metrics))
+		callOpts.GetAnnotationSpec = append(callOpts.GetAnnotationSpec, gax.WithClientMetrics(metrics))
+		callOpts.CreateModel = append(callOpts.CreateModel, gax.WithClientMetrics(metrics))
+		callOpts.GetModel = append(callOpts.GetModel, gax.WithClientMetrics(metrics))
+		callOpts.ListModels = append(callOpts.ListModels, gax.WithClientMetrics(metrics))
+		callOpts.DeleteModel = append(callOpts.DeleteModel, gax.WithClientMetrics(metrics))
+		callOpts.UpdateModel = append(callOpts.UpdateModel, gax.WithClientMetrics(metrics))
+		callOpts.DeployModel = append(callOpts.DeployModel, gax.WithClientMetrics(metrics))
+		callOpts.UndeployModel = append(callOpts.UndeployModel, gax.WithClientMetrics(metrics))
+		callOpts.ExportModel = append(callOpts.ExportModel, gax.WithClientMetrics(metrics))
+		callOpts.GetModelEvaluation = append(callOpts.GetModelEvaluation, gax.WithClientMetrics(metrics))
+		callOpts.ListModelEvaluations = append(callOpts.ListModelEvaluations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "automl",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/automl/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "automl.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateDataset = append(callOpts.CreateDataset, gax.WithClientTracing(tracing))
+		callOpts.GetDataset = append(callOpts.GetDataset, gax.WithClientTracing(tracing))
+		callOpts.ListDatasets = append(callOpts.ListDatasets, gax.WithClientTracing(tracing))
+		callOpts.UpdateDataset = append(callOpts.UpdateDataset, gax.WithClientTracing(tracing))
+		callOpts.DeleteDataset = append(callOpts.DeleteDataset, gax.WithClientTracing(tracing))
+		callOpts.ImportData = append(callOpts.ImportData, gax.WithClientTracing(tracing))
+		callOpts.ExportData = append(callOpts.ExportData, gax.WithClientTracing(tracing))
+		callOpts.GetAnnotationSpec = append(callOpts.GetAnnotationSpec, gax.WithClientTracing(tracing))
+		callOpts.CreateModel = append(callOpts.CreateModel, gax.WithClientTracing(tracing))
+		callOpts.GetModel = append(callOpts.GetModel, gax.WithClientTracing(tracing))
+		callOpts.ListModels = append(callOpts.ListModels, gax.WithClientTracing(tracing))
+		callOpts.DeleteModel = append(callOpts.DeleteModel, gax.WithClientTracing(tracing))
+		callOpts.UpdateModel = append(callOpts.UpdateModel, gax.WithClientTracing(tracing))
+		callOpts.DeployModel = append(callOpts.DeployModel, gax.WithClientTracing(tracing))
+		callOpts.UndeployModel = append(callOpts.UndeployModel, gax.WithClientTracing(tracing))
+		callOpts.ExportModel = append(callOpts.ExportModel, gax.WithClientTracing(tracing))
+		callOpts.GetModelEvaluation = append(callOpts.GetModelEvaluation, gax.WithClientTracing(tracing))
+		callOpts.ListModelEvaluations = append(callOpts.ListModelEvaluations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "automl",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/automl/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "automl.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateDataset = append(callOpts.CreateDataset, gax.WithClientLogging(logging))
+		callOpts.GetDataset = append(callOpts.GetDataset, gax.WithClientLogging(logging))
+		callOpts.ListDatasets = append(callOpts.ListDatasets, gax.WithClientLogging(logging))
+		callOpts.UpdateDataset = append(callOpts.UpdateDataset, gax.WithClientLogging(logging))
+		callOpts.DeleteDataset = append(callOpts.DeleteDataset, gax.WithClientLogging(logging))
+		callOpts.ImportData = append(callOpts.ImportData, gax.WithClientLogging(logging))
+		callOpts.ExportData = append(callOpts.ExportData, gax.WithClientLogging(logging))
+		callOpts.GetAnnotationSpec = append(callOpts.GetAnnotationSpec, gax.WithClientLogging(logging))
+		callOpts.CreateModel = append(callOpts.CreateModel, gax.WithClientLogging(logging))
+		callOpts.GetModel = append(callOpts.GetModel, gax.WithClientLogging(logging))
+		callOpts.ListModels = append(callOpts.ListModels, gax.WithClientLogging(logging))
+		callOpts.DeleteModel = append(callOpts.DeleteModel, gax.WithClientLogging(logging))
+		callOpts.UpdateModel = append(callOpts.UpdateModel, gax.WithClientLogging(logging))
+		callOpts.DeployModel = append(callOpts.DeployModel, gax.WithClientLogging(logging))
+		callOpts.UndeployModel = append(callOpts.UndeployModel, gax.WithClientLogging(logging))
+		callOpts.ExportModel = append(callOpts.ExportModel, gax.WithClientLogging(logging))
+		callOpts.GetModelEvaluation = append(callOpts.GetModelEvaluation, gax.WithClientLogging(logging))
+		callOpts.ListModelEvaluations = append(callOpts.ListModelEvaluations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -842,7 +1049,7 @@ func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *restClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -861,6 +1068,9 @@ func (c *gRPCClient) CreateDataset(ctx context.Context, req *automlpb.CreateData
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1.AutoMl/CreateDataset")
+	}
 	opts = append((*c.CallOptions).CreateDataset[0:len((*c.CallOptions).CreateDataset):len((*c.CallOptions).CreateDataset)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -871,8 +1081,12 @@ func (c *gRPCClient) CreateDataset(ctx context.Context, req *automlpb.CreateData
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*automl.CreateDatasetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateDatasetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -881,6 +1095,9 @@ func (c *gRPCClient) GetDataset(ctx context.Context, req *automlpb.GetDatasetReq
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1.AutoMl/GetDataset")
+	}
 	opts = append((*c.CallOptions).GetDataset[0:len((*c.CallOptions).GetDataset):len((*c.CallOptions).GetDataset)], opts...)
 	var resp *automlpb.Dataset
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -899,9 +1116,12 @@ func (c *gRPCClient) ListDatasets(ctx context.Context, req *automlpb.ListDataset
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1.AutoMl/ListDatasets")
+	}
 	opts = append((*c.CallOptions).ListDatasets[0:len((*c.CallOptions).ListDatasets):len((*c.CallOptions).ListDatasets)], opts...)
 	it := &DatasetIterator{}
-	req = proto.Clone(req).(*automlpb.ListDatasetsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*automlpb.Dataset, string, error) {
 		resp := &automlpb.ListDatasetsResponse{}
 		if pageToken != "" {
@@ -945,6 +1165,9 @@ func (c *gRPCClient) UpdateDataset(ctx context.Context, req *automlpb.UpdateData
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1.AutoMl/UpdateDataset")
+	}
 	opts = append((*c.CallOptions).UpdateDataset[0:len((*c.CallOptions).UpdateDataset):len((*c.CallOptions).UpdateDataset)], opts...)
 	var resp *automlpb.Dataset
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -963,6 +1186,9 @@ func (c *gRPCClient) DeleteDataset(ctx context.Context, req *automlpb.DeleteData
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1.AutoMl/DeleteDataset")
+	}
 	opts = append((*c.CallOptions).DeleteDataset[0:len((*c.CallOptions).DeleteDataset):len((*c.CallOptions).DeleteDataset)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -973,8 +1199,12 @@ func (c *gRPCClient) DeleteDataset(ctx context.Context, req *automlpb.DeleteData
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*automl.DeleteDatasetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteDatasetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -983,6 +1213,9 @@ func (c *gRPCClient) ImportData(ctx context.Context, req *automlpb.ImportDataReq
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1.AutoMl/ImportData")
+	}
 	opts = append((*c.CallOptions).ImportData[0:len((*c.CallOptions).ImportData):len((*c.CallOptions).ImportData)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -993,8 +1226,12 @@ func (c *gRPCClient) ImportData(ctx context.Context, req *automlpb.ImportDataReq
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*automl.ImportDataOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportDataOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1003,6 +1240,9 @@ func (c *gRPCClient) ExportData(ctx context.Context, req *automlpb.ExportDataReq
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1.AutoMl/ExportData")
+	}
 	opts = append((*c.CallOptions).ExportData[0:len((*c.CallOptions).ExportData):len((*c.CallOptions).ExportData)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1013,8 +1253,12 @@ func (c *gRPCClient) ExportData(ctx context.Context, req *automlpb.ExportDataReq
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*automl.ExportDataOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportDataOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1023,6 +1267,9 @@ func (c *gRPCClient) GetAnnotationSpec(ctx context.Context, req *automlpb.GetAnn
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1.AutoMl/GetAnnotationSpec")
+	}
 	opts = append((*c.CallOptions).GetAnnotationSpec[0:len((*c.CallOptions).GetAnnotationSpec):len((*c.CallOptions).GetAnnotationSpec)], opts...)
 	var resp *automlpb.AnnotationSpec
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1041,6 +1288,9 @@ func (c *gRPCClient) CreateModel(ctx context.Context, req *automlpb.CreateModelR
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1.AutoMl/CreateModel")
+	}
 	opts = append((*c.CallOptions).CreateModel[0:len((*c.CallOptions).CreateModel):len((*c.CallOptions).CreateModel)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1051,8 +1301,12 @@ func (c *gRPCClient) CreateModel(ctx context.Context, req *automlpb.CreateModelR
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*automl.CreateModelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateModelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1061,6 +1315,9 @@ func (c *gRPCClient) GetModel(ctx context.Context, req *automlpb.GetModelRequest
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1.AutoMl/GetModel")
+	}
 	opts = append((*c.CallOptions).GetModel[0:len((*c.CallOptions).GetModel):len((*c.CallOptions).GetModel)], opts...)
 	var resp *automlpb.Model
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1079,9 +1336,12 @@ func (c *gRPCClient) ListModels(ctx context.Context, req *automlpb.ListModelsReq
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1.AutoMl/ListModels")
+	}
 	opts = append((*c.CallOptions).ListModels[0:len((*c.CallOptions).ListModels):len((*c.CallOptions).ListModels)], opts...)
 	it := &ModelIterator{}
-	req = proto.Clone(req).(*automlpb.ListModelsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*automlpb.Model, string, error) {
 		resp := &automlpb.ListModelsResponse{}
 		if pageToken != "" {
@@ -1125,6 +1385,9 @@ func (c *gRPCClient) DeleteModel(ctx context.Context, req *automlpb.DeleteModelR
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1.AutoMl/DeleteModel")
+	}
 	opts = append((*c.CallOptions).DeleteModel[0:len((*c.CallOptions).DeleteModel):len((*c.CallOptions).DeleteModel)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1135,8 +1398,12 @@ func (c *gRPCClient) DeleteModel(ctx context.Context, req *automlpb.DeleteModelR
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*automl.DeleteModelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteModelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1145,6 +1412,9 @@ func (c *gRPCClient) UpdateModel(ctx context.Context, req *automlpb.UpdateModelR
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1.AutoMl/UpdateModel")
+	}
 	opts = append((*c.CallOptions).UpdateModel[0:len((*c.CallOptions).UpdateModel):len((*c.CallOptions).UpdateModel)], opts...)
 	var resp *automlpb.Model
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1163,6 +1433,9 @@ func (c *gRPCClient) DeployModel(ctx context.Context, req *automlpb.DeployModelR
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1.AutoMl/DeployModel")
+	}
 	opts = append((*c.CallOptions).DeployModel[0:len((*c.CallOptions).DeployModel):len((*c.CallOptions).DeployModel)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1173,8 +1446,12 @@ func (c *gRPCClient) DeployModel(ctx context.Context, req *automlpb.DeployModelR
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*automl.DeployModelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeployModelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1183,6 +1460,9 @@ func (c *gRPCClient) UndeployModel(ctx context.Context, req *automlpb.UndeployMo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1.AutoMl/UndeployModel")
+	}
 	opts = append((*c.CallOptions).UndeployModel[0:len((*c.CallOptions).UndeployModel):len((*c.CallOptions).UndeployModel)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1193,8 +1473,12 @@ func (c *gRPCClient) UndeployModel(ctx context.Context, req *automlpb.UndeployMo
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*automl.UndeployModelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UndeployModelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1203,6 +1487,9 @@ func (c *gRPCClient) ExportModel(ctx context.Context, req *automlpb.ExportModelR
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1.AutoMl/ExportModel")
+	}
 	opts = append((*c.CallOptions).ExportModel[0:len((*c.CallOptions).ExportModel):len((*c.CallOptions).ExportModel)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1213,8 +1500,12 @@ func (c *gRPCClient) ExportModel(ctx context.Context, req *automlpb.ExportModelR
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*automl.ExportModelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportModelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1223,6 +1514,9 @@ func (c *gRPCClient) GetModelEvaluation(ctx context.Context, req *automlpb.GetMo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1.AutoMl/GetModelEvaluation")
+	}
 	opts = append((*c.CallOptions).GetModelEvaluation[0:len((*c.CallOptions).GetModelEvaluation):len((*c.CallOptions).GetModelEvaluation)], opts...)
 	var resp *automlpb.ModelEvaluation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1241,9 +1535,12 @@ func (c *gRPCClient) ListModelEvaluations(ctx context.Context, req *automlpb.Lis
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1.AutoMl/ListModelEvaluations")
+	}
 	opts = append((*c.CallOptions).ListModelEvaluations[0:len((*c.CallOptions).ListModelEvaluations):len((*c.CallOptions).ListModelEvaluations)], opts...)
 	it := &ModelEvaluationIterator{}
-	req = proto.Clone(req).(*automlpb.ListModelEvaluationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*automlpb.ModelEvaluation, string, error) {
 		resp := &automlpb.ListModelEvaluationsResponse{}
 		if pageToken != "" {
@@ -1308,6 +1605,10 @@ func (c *restClient) CreateDataset(ctx context.Context, req *automlpb.CreateData
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1.AutoMl/CreateDataset")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/datasets")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1336,8 +1637,12 @@ func (c *restClient) CreateDataset(ctx context.Context, req *automlpb.CreateData
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*automl.CreateDatasetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateDatasetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1361,6 +1666,10 @@ func (c *restClient) GetDataset(ctx context.Context, req *automlpb.GetDatasetReq
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1.AutoMl/GetDataset")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/datasets/*}")
+	}
 	opts = append((*c.CallOptions).GetDataset[0:len((*c.CallOptions).GetDataset):len((*c.CallOptions).GetDataset)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &automlpb.Dataset{}
@@ -1395,7 +1704,7 @@ func (c *restClient) GetDataset(ctx context.Context, req *automlpb.GetDatasetReq
 // ListDatasets lists datasets in a project.
 func (c *restClient) ListDatasets(ctx context.Context, req *automlpb.ListDatasetsRequest, opts ...gax.CallOption) *DatasetIterator {
 	it := &DatasetIterator{}
-	req = proto.Clone(req).(*automlpb.ListDatasetsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*automlpb.Dataset, string, error) {
 		resp := &automlpb.ListDatasetsResponse{}
@@ -1506,6 +1815,10 @@ func (c *restClient) UpdateDataset(ctx context.Context, req *automlpb.UpdateData
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1.AutoMl/UpdateDataset")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{dataset.name=projects/*/locations/*/datasets/*}")
+	}
 	opts = append((*c.CallOptions).UpdateDataset[0:len((*c.CallOptions).UpdateDataset):len((*c.CallOptions).UpdateDataset)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &automlpb.Dataset{}
@@ -1560,6 +1873,10 @@ func (c *restClient) DeleteDataset(ctx context.Context, req *automlpb.DeleteData
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1.AutoMl/DeleteDataset")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/datasets/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1588,8 +1905,12 @@ func (c *restClient) DeleteDataset(ctx context.Context, req *automlpb.DeleteData
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*automl.DeleteDatasetOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteDatasetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1628,6 +1949,10 @@ func (c *restClient) ImportData(ctx context.Context, req *automlpb.ImportDataReq
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1.AutoMl/ImportData")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/datasets/*}:importData")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1656,8 +1981,12 @@ func (c *restClient) ImportData(ctx context.Context, req *automlpb.ImportDataReq
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*automl.ImportDataOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportDataOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1689,6 +2018,10 @@ func (c *restClient) ExportData(ctx context.Context, req *automlpb.ExportDataReq
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1.AutoMl/ExportData")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/datasets/*}:exportData")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1717,8 +2050,12 @@ func (c *restClient) ExportData(ctx context.Context, req *automlpb.ExportDataReq
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*automl.ExportDataOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportDataOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1742,6 +2079,10 @@ func (c *restClient) GetAnnotationSpec(ctx context.Context, req *automlpb.GetAnn
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1.AutoMl/GetAnnotationSpec")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/datasets/*/annotationSpecs/*}")
+	}
 	opts = append((*c.CallOptions).GetAnnotationSpec[0:len((*c.CallOptions).GetAnnotationSpec):len((*c.CallOptions).GetAnnotationSpec)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &automlpb.AnnotationSpec{}
@@ -1803,6 +2144,10 @@ func (c *restClient) CreateModel(ctx context.Context, req *automlpb.CreateModelR
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1.AutoMl/CreateModel")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/models")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1831,8 +2176,12 @@ func (c *restClient) CreateModel(ctx context.Context, req *automlpb.CreateModelR
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*automl.CreateModelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateModelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1856,6 +2205,10 @@ func (c *restClient) GetModel(ctx context.Context, req *automlpb.GetModelRequest
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1.AutoMl/GetModel")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/models/*}")
+	}
 	opts = append((*c.CallOptions).GetModel[0:len((*c.CallOptions).GetModel):len((*c.CallOptions).GetModel)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &automlpb.Model{}
@@ -1890,7 +2243,7 @@ func (c *restClient) GetModel(ctx context.Context, req *automlpb.GetModelRequest
 // ListModels lists models.
 func (c *restClient) ListModels(ctx context.Context, req *automlpb.ListModelsRequest, opts ...gax.CallOption) *ModelIterator {
 	it := &ModelIterator{}
-	req = proto.Clone(req).(*automlpb.ListModelsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*automlpb.Model, string, error) {
 		resp := &automlpb.ListModelsResponse{}
@@ -1991,6 +2344,10 @@ func (c *restClient) DeleteModel(ctx context.Context, req *automlpb.DeleteModelR
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1.AutoMl/DeleteModel")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/models/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2019,8 +2376,12 @@ func (c *restClient) DeleteModel(ctx context.Context, req *automlpb.DeleteModelR
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*automl.DeleteModelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteModelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2058,6 +2419,10 @@ func (c *restClient) UpdateModel(ctx context.Context, req *automlpb.UpdateModelR
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1.AutoMl/UpdateModel")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{model.name=projects/*/locations/*/models/*}")
+	}
 	opts = append((*c.CallOptions).UpdateModel[0:len((*c.CallOptions).UpdateModel):len((*c.CallOptions).UpdateModel)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &automlpb.Model{}
@@ -2124,6 +2489,10 @@ func (c *restClient) DeployModel(ctx context.Context, req *automlpb.DeployModelR
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1.AutoMl/DeployModel")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/models/*}:deploy")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2152,8 +2521,12 @@ func (c *restClient) DeployModel(ctx context.Context, req *automlpb.DeployModelR
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*automl.DeployModelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeployModelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2189,6 +2562,10 @@ func (c *restClient) UndeployModel(ctx context.Context, req *automlpb.UndeployMo
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1.AutoMl/UndeployModel")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/models/*}:undeploy")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2217,8 +2594,12 @@ func (c *restClient) UndeployModel(ctx context.Context, req *automlpb.UndeployMo
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*automl.UndeployModelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UndeployModelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2254,6 +2635,10 @@ func (c *restClient) ExportModel(ctx context.Context, req *automlpb.ExportModelR
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1.AutoMl/ExportModel")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/models/*}:export")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2282,8 +2667,12 @@ func (c *restClient) ExportModel(ctx context.Context, req *automlpb.ExportModelR
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*automl.ExportModelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportModelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2307,6 +2696,10 @@ func (c *restClient) GetModelEvaluation(ctx context.Context, req *automlpb.GetMo
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.automl.v1.AutoMl/GetModelEvaluation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/models/*/modelEvaluations/*}")
+	}
 	opts = append((*c.CallOptions).GetModelEvaluation[0:len((*c.CallOptions).GetModelEvaluation):len((*c.CallOptions).GetModelEvaluation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &automlpb.ModelEvaluation{}
@@ -2341,7 +2734,7 @@ func (c *restClient) GetModelEvaluation(ctx context.Context, req *automlpb.GetMo
 // ListModelEvaluations lists model evaluations.
 func (c *restClient) ListModelEvaluations(ctx context.Context, req *automlpb.ListModelEvaluationsRequest, opts ...gax.CallOption) *ModelEvaluationIterator {
 	it := &ModelEvaluationIterator{}
-	req = proto.Clone(req).(*automlpb.ListModelEvaluationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*automlpb.ModelEvaluation, string, error) {
 		resp := &automlpb.ListModelEvaluationsResponse{}
@@ -2421,7 +2814,7 @@ func (c *restClient) ListModelEvaluations(ctx context.Context, req *automlpb.Lis
 // The name must be that of a previously created CreateDatasetOperation, possibly from a different process.
 func (c *gRPCClient) CreateDatasetOperation(name string) *CreateDatasetOperation {
 	return &CreateDatasetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*automl.CreateDatasetOperation"),
 	}
 }
 
@@ -2430,7 +2823,7 @@ func (c *gRPCClient) CreateDatasetOperation(name string) *CreateDatasetOperation
 func (c *restClient) CreateDatasetOperation(name string) *CreateDatasetOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateDatasetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*automl.CreateDatasetOperation"),
 		pollPath: override,
 	}
 }
@@ -2439,7 +2832,7 @@ func (c *restClient) CreateDatasetOperation(name string) *CreateDatasetOperation
 // The name must be that of a previously created CreateModelOperation, possibly from a different process.
 func (c *gRPCClient) CreateModelOperation(name string) *CreateModelOperation {
 	return &CreateModelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*automl.CreateModelOperation"),
 	}
 }
 
@@ -2448,7 +2841,7 @@ func (c *gRPCClient) CreateModelOperation(name string) *CreateModelOperation {
 func (c *restClient) CreateModelOperation(name string) *CreateModelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateModelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*automl.CreateModelOperation"),
 		pollPath: override,
 	}
 }
@@ -2457,7 +2850,7 @@ func (c *restClient) CreateModelOperation(name string) *CreateModelOperation {
 // The name must be that of a previously created DeleteDatasetOperation, possibly from a different process.
 func (c *gRPCClient) DeleteDatasetOperation(name string) *DeleteDatasetOperation {
 	return &DeleteDatasetOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*automl.DeleteDatasetOperation"),
 	}
 }
 
@@ -2466,7 +2859,7 @@ func (c *gRPCClient) DeleteDatasetOperation(name string) *DeleteDatasetOperation
 func (c *restClient) DeleteDatasetOperation(name string) *DeleteDatasetOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteDatasetOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*automl.DeleteDatasetOperation"),
 		pollPath: override,
 	}
 }
@@ -2475,7 +2868,7 @@ func (c *restClient) DeleteDatasetOperation(name string) *DeleteDatasetOperation
 // The name must be that of a previously created DeleteModelOperation, possibly from a different process.
 func (c *gRPCClient) DeleteModelOperation(name string) *DeleteModelOperation {
 	return &DeleteModelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*automl.DeleteModelOperation"),
 	}
 }
 
@@ -2484,7 +2877,7 @@ func (c *gRPCClient) DeleteModelOperation(name string) *DeleteModelOperation {
 func (c *restClient) DeleteModelOperation(name string) *DeleteModelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteModelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*automl.DeleteModelOperation"),
 		pollPath: override,
 	}
 }
@@ -2493,7 +2886,7 @@ func (c *restClient) DeleteModelOperation(name string) *DeleteModelOperation {
 // The name must be that of a previously created DeployModelOperation, possibly from a different process.
 func (c *gRPCClient) DeployModelOperation(name string) *DeployModelOperation {
 	return &DeployModelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*automl.DeployModelOperation"),
 	}
 }
 
@@ -2502,7 +2895,7 @@ func (c *gRPCClient) DeployModelOperation(name string) *DeployModelOperation {
 func (c *restClient) DeployModelOperation(name string) *DeployModelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeployModelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*automl.DeployModelOperation"),
 		pollPath: override,
 	}
 }
@@ -2511,7 +2904,7 @@ func (c *restClient) DeployModelOperation(name string) *DeployModelOperation {
 // The name must be that of a previously created ExportDataOperation, possibly from a different process.
 func (c *gRPCClient) ExportDataOperation(name string) *ExportDataOperation {
 	return &ExportDataOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*automl.ExportDataOperation"),
 	}
 }
 
@@ -2520,7 +2913,7 @@ func (c *gRPCClient) ExportDataOperation(name string) *ExportDataOperation {
 func (c *restClient) ExportDataOperation(name string) *ExportDataOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ExportDataOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*automl.ExportDataOperation"),
 		pollPath: override,
 	}
 }
@@ -2529,7 +2922,7 @@ func (c *restClient) ExportDataOperation(name string) *ExportDataOperation {
 // The name must be that of a previously created ExportModelOperation, possibly from a different process.
 func (c *gRPCClient) ExportModelOperation(name string) *ExportModelOperation {
 	return &ExportModelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*automl.ExportModelOperation"),
 	}
 }
 
@@ -2538,7 +2931,7 @@ func (c *gRPCClient) ExportModelOperation(name string) *ExportModelOperation {
 func (c *restClient) ExportModelOperation(name string) *ExportModelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ExportModelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*automl.ExportModelOperation"),
 		pollPath: override,
 	}
 }
@@ -2547,7 +2940,7 @@ func (c *restClient) ExportModelOperation(name string) *ExportModelOperation {
 // The name must be that of a previously created ImportDataOperation, possibly from a different process.
 func (c *gRPCClient) ImportDataOperation(name string) *ImportDataOperation {
 	return &ImportDataOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*automl.ImportDataOperation"),
 	}
 }
 
@@ -2556,7 +2949,7 @@ func (c *gRPCClient) ImportDataOperation(name string) *ImportDataOperation {
 func (c *restClient) ImportDataOperation(name string) *ImportDataOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ImportDataOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*automl.ImportDataOperation"),
 		pollPath: override,
 	}
 }
@@ -2565,7 +2958,7 @@ func (c *restClient) ImportDataOperation(name string) *ImportDataOperation {
 // The name must be that of a previously created UndeployModelOperation, possibly from a different process.
 func (c *gRPCClient) UndeployModelOperation(name string) *UndeployModelOperation {
 	return &UndeployModelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*automl.UndeployModelOperation"),
 	}
 }
 
@@ -2574,7 +2967,7 @@ func (c *gRPCClient) UndeployModelOperation(name string) *UndeployModelOperation
 func (c *restClient) UndeployModelOperation(name string) *UndeployModelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UndeployModelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*automl.UndeployModelOperation"),
 		pollPath: override,
 	}
 }

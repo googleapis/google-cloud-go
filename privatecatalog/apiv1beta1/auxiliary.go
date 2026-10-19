@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,9 +17,18 @@
 package privatecatalog
 
 import (
+	"iter"
+
 	privatecatalogpb "cloud.google.com/go/privatecatalog/apiv1beta1/privatecatalogpb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CatalogIterator) All() iter.Seq2[*privatecatalogpb.Catalog, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // CatalogIterator manages a stream of *privatecatalogpb.Catalog.
 type CatalogIterator struct {
@@ -68,6 +77,12 @@ func (it *CatalogIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ProductIterator) All() iter.Seq2[*privatecatalogpb.Product, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ProductIterator manages a stream of *privatecatalogpb.Product.
 type ProductIterator struct {
 	items    []*privatecatalogpb.Product
@@ -113,6 +128,12 @@ func (it *ProductIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *VersionIterator) All() iter.Seq2[*privatecatalogpb.Version, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // VersionIterator manages a stream of *privatecatalogpb.Version.

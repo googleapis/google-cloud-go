@@ -276,11 +276,6 @@
                 "ListRoutines"
               ]
             },
-            "PatchRoutine": {
-              "methods": [
-                "PatchRoutine"
-              ]
-            },
             "UpdateRoutine": {
               "methods": [
                 "UpdateRoutine"
@@ -309,11 +304,6 @@
             "ListRoutines": {
               "methods": [
                 "ListRoutines"
-              ]
-            },
-            "PatchRoutine": {
-              "methods": [
-                "PatchRoutine"
               ]
             },
             "UpdateRoutine": {

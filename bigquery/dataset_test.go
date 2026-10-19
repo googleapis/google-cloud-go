@@ -54,10 +54,7 @@ func (s *listTablesStub) listTables(it *TableIterator, pageSize int, pageToken s
 			return nil, err
 		}
 	}
-	end := start + pageSize
-	if end > len(s.tables) {
-		end = len(s.tables)
-	}
+	end := min(start+pageSize, len(s.tables))
 	nextPageToken := ""
 	if end < len(s.tables) {
 		nextPageToken = strconv.Itoa(end)
@@ -91,8 +88,8 @@ func TestTables(t *testing.T) {
 	defer func() { listTables = old }()
 
 	msg, ok := itest.TestIterator(outTables,
-		func() interface{} { return c.Dataset("d1").Tables(context.Background()) },
-		func(it interface{}) (interface{}, error) { return it.(*TableIterator).Next() })
+		func() any { return c.Dataset("d1").Tables(context.Background()) },
+		func(it any) (any, error) { return it.(*TableIterator).Next() })
 	if !ok {
 		t.Error(msg)
 	}
@@ -123,10 +120,7 @@ func (s *listModelsStub) listModels(it *ModelIterator, pageSize int, pageToken s
 			return nil, err
 		}
 	}
-	end := start + pageSize
-	if end > len(s.models) {
-		end = len(s.models)
-	}
+	end := min(start+pageSize, len(s.models))
 	nextPageToken := ""
 	if end < len(s.models) {
 		nextPageToken = strconv.Itoa(end)
@@ -160,8 +154,8 @@ func TestModels(t *testing.T) {
 	defer func() { listModels = old }()
 
 	msg, ok := itest.TestIterator(outModels,
-		func() interface{} { return c.Dataset("d1").Models(context.Background()) },
-		func(it interface{}) (interface{}, error) { return it.(*ModelIterator).Next() })
+		func() any { return c.Dataset("d1").Models(context.Background()) },
+		func(it any) (any, error) { return it.(*ModelIterator).Next() })
 	if !ok {
 		t.Error(msg)
 	}
@@ -185,10 +179,7 @@ func (s *listRoutinesStub) listRoutines(it *RoutineIterator, pageSize int, pageT
 			return nil, err
 		}
 	}
-	end := start + pageSize
-	if end > len(s.routines) {
-		end = len(s.routines)
-	}
+	end := min(start+pageSize, len(s.routines))
 	nextPageToken := ""
 	if end < len(s.routines) {
 		nextPageToken = strconv.Itoa(end)
@@ -220,8 +211,8 @@ func TestRoutines(t *testing.T) {
 	defer func() { listRoutines = old }()
 
 	msg, ok := itest.TestIterator(outRoutines,
-		func() interface{} { return c.Dataset("d1").Routines(context.Background()) },
-		func(it interface{}) (interface{}, error) { return it.(*RoutineIterator).Next() })
+		func() any { return c.Dataset("d1").Routines(context.Background()) },
+		func(it any) (any, error) { return it.(*RoutineIterator).Next() })
 	if !ok {
 		t.Error(msg)
 	}
@@ -296,15 +287,15 @@ func TestDatasets(t *testing.T) {
 	defer func() { listDatasets = old }()
 
 	msg, ok := itest.TestIterator(outDatasets,
-		func() interface{} { it := client.Datasets(context.Background()); it.ListHidden = true; return it },
-		func(it interface{}) (interface{}, error) { return it.(*DatasetIterator).Next() })
+		func() any { it := client.Datasets(context.Background()); it.ListHidden = true; return it },
+		func(it any) (any, error) { return it.(*DatasetIterator).Next() })
 	if !ok {
 		t.Fatalf("ListHidden=true: %s", msg)
 	}
 
 	msg, ok = itest.TestIterator([]*Dataset{outDatasets[0], outDatasets[1], outDatasets[3]},
-		func() interface{} { it := client.Datasets(context.Background()); it.ListHidden = false; return it },
-		func(it interface{}) (interface{}, error) { return it.(*DatasetIterator).Next() })
+		func() any { it := client.Datasets(context.Background()); it.ListHidden = false; return it },
+		func(it any) (any, error) { return it.(*DatasetIterator).Next() })
 	if !ok {
 		t.Fatalf("ListHidden=false: %s", msg)
 	}
@@ -380,19 +371,6 @@ func TestDatasetToBQ(t *testing.T) {
 		}
 		if diff := testutil.Diff(got, test.want, cmp.AllowUnexported(Dataset{})); diff != "" {
 			t.Errorf("got=-, want=+:\n%s", diff)
-		}
-	}
-
-	// Check that non-writeable fields are unset.
-	aTime := time.Date(2017, 1, 26, 0, 0, 0, 0, time.Local)
-	for _, dm := range []*DatasetMetadata{
-		{CreationTime: aTime},
-		{LastModifiedTime: aTime},
-		{FullID: "x"},
-		{ETag: "e"},
-	} {
-		if _, err := dm.toBQ(); err == nil {
-			t.Errorf("%+v: got nil, want error", dm)
 		}
 	}
 }

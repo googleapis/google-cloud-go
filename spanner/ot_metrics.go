@@ -20,10 +20,12 @@ import (
 	"sync"
 
 	"cloud.google.com/go/spanner/internal"
+	"github.com/googleapis/gax-go/v2"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 	"go.opentelemetry.io/otel/trace"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )
 
@@ -67,6 +69,7 @@ func createOpenTelemetryConfig(ctx context.Context, mp metric.MeterProvider, log
 				attribute.String("gcp.client.version", internal.Version),
 				attribute.String("gcp.client.repo", gcpClientRepo),
 				attribute.String("gcp.client.artifact", gcpClientArtifact),
+				attribute.String("gcp.resource.name", GcpResourceNamePrefix+db),
 			),
 		},
 	}
@@ -86,8 +89,6 @@ func createOpenTelemetryConfig(ctx context.Context, mp metric.MeterProvider, log
 	config.attributeMapWithMultiplexed = append(config.attributeMapWithMultiplexed, attributeMap...)
 	config.attributeMapWithMultiplexed = append(config.attributeMapWithMultiplexed, attributeKeyIsMultiplexed.String("true"))
 
-	config.attributeMapWithoutMultiplexed = append(config.attributeMapWithoutMultiplexed, attributeMap...)
-	config.attributeMapWithoutMultiplexed = append(config.attributeMapWithoutMultiplexed, attributeKeyIsMultiplexed.String("false"))
 	setOpenTelemetryMetricProvider(config, mp, logger)
 	return config, nil
 }
@@ -116,36 +117,6 @@ func initializeMetricInstruments(config *openTelemetryConfig, logger *log.Logger
 		logf(logger, "Error during registering instrument for metric spanner/open_session_count, error: %v", err)
 	}
 	config.openSessionCount = openSessionCountInstrument
-
-	maxAllowedSessionsCountInstrument, err := meter.Int64ObservableGauge(
-		metricsPrefix+"max_allowed_sessions",
-		metric.WithDescription("The maximum number of sessions allowed. Configurable by the user."),
-		metric.WithUnit("1"),
-	)
-	if err != nil {
-		logf(logger, "Error during registering instrument for metric spanner/max_allowed_sessions, error: %v", err)
-	}
-	config.maxAllowedSessionsCount = maxAllowedSessionsCountInstrument
-
-	sessionsCountInstrument, _ := meter.Int64ObservableGauge(
-		metricsPrefix+"num_sessions_in_pool",
-		metric.WithDescription("The number of sessions currently in use."),
-		metric.WithUnit("1"),
-	)
-	if err != nil {
-		logf(logger, "Error during registering instrument for metric spanner/num_sessions_in_pool, error: %v", err)
-	}
-	config.sessionsCount = sessionsCountInstrument
-
-	maxInUseSessionsCountInstrument, err := meter.Int64ObservableGauge(
-		metricsPrefix+"max_in_use_sessions",
-		metric.WithDescription("The maximum number of sessions in use during the last 10 minute interval."),
-		metric.WithUnit("1"),
-	)
-	if err != nil {
-		logf(logger, "Error during registering instrument for metric spanner/max_in_use_sessions, error: %v", err)
-	}
-	config.maxInUseSessionsCount = maxInUseSessionsCountInstrument
 
 	getSessionTimeoutsCountInstrument, err := meter.Int64Counter(
 		metricsPrefix+"get_session_timeouts",
@@ -202,36 +173,25 @@ func initializeMetricInstruments(config *openTelemetryConfig, logger *log.Logger
 	config.gfeHeaderMissingCount = gfeHeaderMissingCountInstrument
 }
 
-func registerSessionPoolOTMetrics(pool *sessionPool) error {
-	otConfig := pool.otConfig
+func registerSessionManagerOTMetrics(sm *sessionManager) error {
+	otConfig := sm.otConfig
 	if otConfig == nil || !otConfig.enabled {
 		return nil
 	}
-
-	attributes := otConfig.attributeMap
-	attributesInUseSessions := append(attributes, attributeNumInUseSessions)
-	attributesAvailableSessions := append(attributes, attributeNumSessions)
-
 	reg, err := otConfig.meterProvider.Meter(OtInstrumentationScope, metric.WithInstrumentationVersion(internal.Version)).RegisterCallback(
 		func(ctx context.Context, o metric.Observer) error {
-			pool.mu.Lock()
-			defer pool.mu.Unlock()
-			if pool.multiplexedSession != nil {
+			sm.mu.Lock()
+			defer sm.mu.Unlock()
+			if sm.multiplexedSession != nil {
 				o.ObserveInt64(otConfig.openSessionCount, int64(1), metric.WithAttributes(otConfig.attributeMapWithMultiplexed...))
+			} else {
+				o.ObserveInt64(otConfig.openSessionCount, int64(0), metric.WithAttributes(otConfig.attributeMapWithMultiplexed...))
 			}
-			o.ObserveInt64(otConfig.openSessionCount, int64(pool.numOpened), metric.WithAttributes(attributes...))
-			o.ObserveInt64(otConfig.maxAllowedSessionsCount, int64(pool.SessionPoolConfig.MaxOpened), metric.WithAttributes(attributes...))
-			o.ObserveInt64(otConfig.sessionsCount, int64(pool.numInUse), metric.WithAttributes(append(attributesInUseSessions, attribute.Key("is_multiplexed").String("false"))...))
-			o.ObserveInt64(otConfig.sessionsCount, int64(pool.numSessions), metric.WithAttributes(attributesAvailableSessions...))
-			o.ObserveInt64(otConfig.maxInUseSessionsCount, int64(pool.maxNumInUse), metric.WithAttributes(append(attributes, attribute.Key("is_multiplexed").String("false"))...))
 			return nil
 		},
 		otConfig.openSessionCount,
-		otConfig.maxAllowedSessionsCount,
-		otConfig.sessionsCount,
-		otConfig.maxInUseSessionsCount,
 	)
-	pool.otConfig.otMetricRegistration = reg
+	sm.otConfig.otMetricRegistration = reg
 	return err
 }
 
@@ -268,4 +228,21 @@ func recordGFELatencyMetricsOT(ctx context.Context, md metadata.MD, keyMethod st
 		otConfig.gfeLatency.Record(ctx, metrics[gfeTimingHeader].Milliseconds(), metric.WithAttributes(attr...))
 	}
 	return nil
+}
+
+// gfeLatencySinksEnabled reports whether any GFE latency sink consumes the
+// response headers of a call, either OpenCensus GFE latency metrics or
+// OpenTelemetry metrics.
+func gfeLatencySinksEnabled(hasOpenCensusContext bool, otConfig *openTelemetryConfig) bool {
+	return (getGFELatencyMetricsFlag() && hasOpenCensusContext) || (otConfig != nil && otConfig.enabled)
+}
+
+// gfeLatencyHeaderOptions returns the call options that capture the response
+// headers of a unary call into md when a GFE latency sink consumes them, and
+// no options otherwise.
+func gfeLatencyHeaderOptions(md *metadata.MD, hasOpenCensusContext bool, otConfig *openTelemetryConfig) []gax.CallOption {
+	if !gfeLatencySinksEnabled(hasOpenCensusContext, otConfig) {
+		return nil
+	}
+	return []gax.CallOption{gax.WithGRPCOptions(grpc.Header(md))}
 }

@@ -15,7 +15,6 @@
 package internal
 
 import (
-	"io/ioutil"
 	"net"
 	"net/http"
 	"os"
@@ -34,6 +33,7 @@ type ResourceAttributesGetter interface {
 
 var getter ResourceAttributesGetter = &defaultResourceGetter{
 	metaClient: metadata.NewClient(&http.Client{
+		Timeout: 15 * time.Second,
 		Transport: &http.Transport{
 			Dial: (&net.Dialer{
 				Timeout:   1 * time.Second,
@@ -67,7 +67,7 @@ func (g *defaultResourceGetter) Metadata(path string) string {
 
 // ReadAll reads all content of the file as a string.
 func (g *defaultResourceGetter) ReadAll(path string) string {
-	bytes, err := ioutil.ReadFile(path)
+	bytes, err := os.ReadFile(path)
 	if err != nil {
 		return ""
 	}

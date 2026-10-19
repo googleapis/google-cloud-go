@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -53,6 +53,8 @@ func getVersionClient() string {
 // DefaultAuthScopes reports the default set of authentication scopes to use with this package.
 func DefaultAuthScopes() []string {
 	return []string{
+		"https://www.googleapis.com/auth/chronicle",
+		"https://www.googleapis.com/auth/chronicle.readonly",
 		"https://www.googleapis.com/auth/cloud-platform",
 	}
 }

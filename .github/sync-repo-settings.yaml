@@ -12,5 +12,5 @@ branchProtectionRules:
   requiresCodeOwnerReviews: true
   requiresStrictStatusChecks: true
 permissionRules:
-  - team: actools
-    permission: admin
+  - team: cloud-sdk-platform-team
+    permission: push

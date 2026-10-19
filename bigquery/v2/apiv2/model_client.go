@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import (
 
 	bigquerypb "cloud.google.com/go/bigquery/v2/apiv2/bigquerypb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -183,7 +184,7 @@ type ModelClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *ModelClient) Close() error {
 	return c.internalClient.Close()
@@ -205,6 +206,8 @@ func (c *ModelClient) Connection() *grpc.ClientConn {
 }
 
 // GetModel gets the specified model resource by model ID.
+//
+// IAM PermissionsRequires the bigquery.models.getMetadata permission on the model.
 func (c *ModelClient) GetModel(ctx context.Context, req *bigquerypb.GetModelRequest, opts ...gax.CallOption) (*bigquerypb.Model, error) {
 	return c.internalClient.GetModel(ctx, req, opts...)
 }
@@ -212,16 +215,22 @@ func (c *ModelClient) GetModel(ctx context.Context, req *bigquerypb.GetModelRequ
 // ListModels lists all models in the specified dataset. Requires the READER dataset
 // role. After retrieving the list of models, you can get information about a
 // particular model by calling the models.get method.
+//
+// IAM PermissionsRequires the bigquery.models.list permission on the dataset.
 func (c *ModelClient) ListModels(ctx context.Context, req *bigquerypb.ListModelsRequest, opts ...gax.CallOption) *ModelIterator {
 	return c.internalClient.ListModels(ctx, req, opts...)
 }
 
 // PatchModel patch specific fields in the specified model.
+//
+// IAM PermissionsRequires the bigquery.models.updateMetadata permission on the model.
 func (c *ModelClient) PatchModel(ctx context.Context, req *bigquerypb.PatchModelRequest, opts ...gax.CallOption) (*bigquerypb.Model, error) {
 	return c.internalClient.PatchModel(ctx, req, opts...)
 }
 
 // DeleteModel deletes the model specified by modelId from the dataset.
+//
+// IAM PermissionsRequires the bigquery.models.delete permission on the model.
 func (c *ModelClient) DeleteModel(ctx context.Context, req *bigquerypb.DeleteModelRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteModel(ctx, req, opts...)
 }
@@ -251,6 +260,16 @@ type modelGRPCClient struct {
 // Model Service for BigQuery ML
 func NewModelClient(ctx context.Context, opts ...option.ClientOption) (*ModelClient, error) {
 	clientOpts := defaultModelGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "bigquery",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/bigquery/v2/apiv2",
+			"gcp.client.language": "go",
+			"url.domain":          "bigquery.googleapis.com",
+		}))
+	}
 	if newModelClientHook != nil {
 		hookOpts, err := newModelClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -272,6 +291,56 @@ func NewModelClient(ctx context.Context, opts ...option.ClientOption) (*ModelCli
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "bigquery",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/v2/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "bigquery.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetModel = append(client.CallOptions.GetModel, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListModels = append(client.CallOptions.ListModels, gax.WithClientMetrics(metrics))
+		client.CallOptions.PatchModel = append(client.CallOptions.PatchModel, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteModel = append(client.CallOptions.DeleteModel, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "bigquery",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/v2/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "bigquery.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetModel = append(client.CallOptions.GetModel, gax.WithClientTracing(tracing))
+		client.CallOptions.ListModels = append(client.CallOptions.ListModels, gax.WithClientTracing(tracing))
+		client.CallOptions.PatchModel = append(client.CallOptions.PatchModel, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteModel = append(client.CallOptions.DeleteModel, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "bigquery",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/v2/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "bigquery.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetModel = append(client.CallOptions.GetModel, gax.WithClientLogging(logging))
+		client.CallOptions.ListModels = append(client.CallOptions.ListModels, gax.WithClientLogging(logging))
+		client.CallOptions.PatchModel = append(client.CallOptions.PatchModel, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteModel = append(client.CallOptions.DeleteModel, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -297,7 +366,7 @@ func (c *modelGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *modelGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -325,6 +394,16 @@ type modelRESTClient struct {
 // Model Service for BigQuery ML
 func NewModelRESTClient(ctx context.Context, opts ...option.ClientOption) (*ModelClient, error) {
 	clientOpts := append(defaultModelRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "bigquery",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/bigquery/v2/apiv2",
+			"gcp.client.language": "go",
+			"url.domain":          "bigquery.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -338,6 +417,57 @@ func NewModelRESTClient(ctx context.Context, opts ...option.ClientOption) (*Mode
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "bigquery",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/v2/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "bigquery.googleapis.com",
+			}),
+		)
+
+		callOpts.GetModel = append(callOpts.GetModel, gax.WithClientMetrics(metrics))
+		callOpts.ListModels = append(callOpts.ListModels, gax.WithClientMetrics(metrics))
+		callOpts.PatchModel = append(callOpts.PatchModel, gax.WithClientMetrics(metrics))
+		callOpts.DeleteModel = append(callOpts.DeleteModel, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "bigquery",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/v2/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "bigquery.googleapis.com",
+			}),
+		)
+
+		callOpts.GetModel = append(callOpts.GetModel, gax.WithClientTracing(tracing))
+		callOpts.ListModels = append(callOpts.ListModels, gax.WithClientTracing(tracing))
+		callOpts.PatchModel = append(callOpts.PatchModel, gax.WithClientTracing(tracing))
+		callOpts.DeleteModel = append(callOpts.DeleteModel, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "bigquery",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/v2/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "bigquery.googleapis.com",
+			}),
+		)
+
+		callOpts.GetModel = append(callOpts.GetModel, gax.WithClientLogging(logging))
+		callOpts.ListModels = append(callOpts.ListModels, gax.WithClientLogging(logging))
+		callOpts.PatchModel = append(callOpts.PatchModel, gax.WithClientLogging(logging))
+		callOpts.DeleteModel = append(callOpts.DeleteModel, gax.WithClientLogging(logging))
+	}
 
 	return &ModelClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -365,7 +495,7 @@ func (c *modelRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *modelRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -384,6 +514,9 @@ func (c *modelGRPCClient) GetModel(ctx context.Context, req *bigquerypb.GetModel
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.ModelService/GetModel")
+	}
 	opts = append((*c.CallOptions).GetModel[0:len((*c.CallOptions).GetModel):len((*c.CallOptions).GetModel)], opts...)
 	var resp *bigquerypb.Model
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -402,9 +535,12 @@ func (c *modelGRPCClient) ListModels(ctx context.Context, req *bigquerypb.ListMo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.ModelService/ListModels")
+	}
 	opts = append((*c.CallOptions).ListModels[0:len((*c.CallOptions).ListModels):len((*c.CallOptions).ListModels)], opts...)
 	it := &ModelIterator{}
-	req = proto.Clone(req).(*bigquerypb.ListModelsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*bigquerypb.Model, string, error) {
 		resp := &bigquerypb.ListModelsResponse{}
 		if pageToken != "" {
@@ -450,6 +586,9 @@ func (c *modelGRPCClient) PatchModel(ctx context.Context, req *bigquerypb.PatchM
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.ModelService/PatchModel")
+	}
 	opts = append((*c.CallOptions).PatchModel[0:len((*c.CallOptions).PatchModel):len((*c.CallOptions).PatchModel)], opts...)
 	var resp *bigquerypb.Model
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -468,6 +607,9 @@ func (c *modelGRPCClient) DeleteModel(ctx context.Context, req *bigquerypb.Delet
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.ModelService/DeleteModel")
+	}
 	opts = append((*c.CallOptions).DeleteModel[0:len((*c.CallOptions).DeleteModel):len((*c.CallOptions).DeleteModel)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -478,6 +620,8 @@ func (c *modelGRPCClient) DeleteModel(ctx context.Context, req *bigquerypb.Delet
 }
 
 // GetModel gets the specified model resource by model ID.
+//
+// IAM PermissionsRequires the bigquery.models.getMetadata permission on the model.
 func (c *modelRESTClient) GetModel(ctx context.Context, req *bigquerypb.GetModelRequest, opts ...gax.CallOption) (*bigquerypb.Model, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -491,6 +635,10 @@ func (c *modelRESTClient) GetModel(ctx context.Context, req *bigquerypb.GetModel
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.ModelService/GetModel")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/bigquery/v2/projects/{project_id=*}/datasets/{dataset_id=*}/models/{model_id=*}")
+	}
 	opts = append((*c.CallOptions).GetModel[0:len((*c.CallOptions).GetModel):len((*c.CallOptions).GetModel)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &bigquerypb.Model{}
@@ -525,9 +673,11 @@ func (c *modelRESTClient) GetModel(ctx context.Context, req *bigquerypb.GetModel
 // ListModels lists all models in the specified dataset. Requires the READER dataset
 // role. After retrieving the list of models, you can get information about a
 // particular model by calling the models.get method.
+//
+// IAM PermissionsRequires the bigquery.models.list permission on the dataset.
 func (c *modelRESTClient) ListModels(ctx context.Context, req *bigquerypb.ListModelsRequest, opts ...gax.CallOption) *ModelIterator {
 	it := &ModelIterator{}
-	req = proto.Clone(req).(*bigquerypb.ListModelsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*bigquerypb.Model, string, error) {
 		resp := &bigquerypb.ListModelsResponse{}
@@ -608,6 +758,8 @@ func (c *modelRESTClient) ListModels(ctx context.Context, req *bigquerypb.ListMo
 }
 
 // PatchModel patch specific fields in the specified model.
+//
+// IAM PermissionsRequires the bigquery.models.updateMetadata permission on the model.
 func (c *modelRESTClient) PatchModel(ctx context.Context, req *bigquerypb.PatchModelRequest, opts ...gax.CallOption) (*bigquerypb.Model, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetModel()
@@ -628,6 +780,10 @@ func (c *modelRESTClient) PatchModel(ctx context.Context, req *bigquerypb.PatchM
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.ModelService/PatchModel")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/bigquery/v2/projects/{project_id=*}/datasets/{dataset_id=*}/models/{model_id=*}")
+	}
 	opts = append((*c.CallOptions).PatchModel[0:len((*c.CallOptions).PatchModel):len((*c.CallOptions).PatchModel)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &bigquerypb.Model{}
@@ -660,6 +816,8 @@ func (c *modelRESTClient) PatchModel(ctx context.Context, req *bigquerypb.PatchM
 }
 
 // DeleteModel deletes the model specified by modelId from the dataset.
+//
+// IAM PermissionsRequires the bigquery.models.delete permission on the model.
 func (c *modelRESTClient) DeleteModel(ctx context.Context, req *bigquerypb.DeleteModelRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -673,6 +831,10 @@ func (c *modelRESTClient) DeleteModel(ctx context.Context, req *bigquerypb.Delet
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.ModelService/DeleteModel")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/bigquery/v2/projects/{project_id=*}/datasets/{dataset_id=*}/models/{model_id=*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path

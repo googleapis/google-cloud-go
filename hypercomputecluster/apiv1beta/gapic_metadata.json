@@ -1,0 +1,133 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.hypercomputecluster.v1beta",
+  "libraryPackage": "cloud.google.com/go/hypercomputecluster/apiv1beta",
+  "services": {
+    "HypercomputeCluster": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateCluster": {
+              "methods": [
+                "CreateCluster"
+              ]
+            },
+            "DeleteCluster": {
+              "methods": [
+                "DeleteCluster"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetCluster": {
+              "methods": [
+                "GetCluster"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListClusters": {
+              "methods": [
+                "ListClusters"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateCluster": {
+              "methods": [
+                "UpdateCluster"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateCluster": {
+              "methods": [
+                "CreateCluster"
+              ]
+            },
+            "DeleteCluster": {
+              "methods": [
+                "DeleteCluster"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetCluster": {
+              "methods": [
+                "GetCluster"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListClusters": {
+              "methods": [
+                "ListClusters"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateCluster": {
+              "methods": [
+                "UpdateCluster"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

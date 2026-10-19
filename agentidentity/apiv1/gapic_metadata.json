@@ -1,0 +1,233 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.agentidentity.v1",
+  "libraryPackage": "cloud.google.com/go/agentidentity/apiv1",
+  "services": {
+    "AuthProviderService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "AuthProviderClient",
+          "rpcs": {
+            "CreateAuthProvider": {
+              "methods": [
+                "CreateAuthProvider"
+              ]
+            },
+            "DeleteAuthProvider": {
+              "methods": [
+                "DeleteAuthProvider"
+              ]
+            },
+            "DeleteAuthorization": {
+              "methods": [
+                "DeleteAuthorization"
+              ]
+            },
+            "DisableAuthProvider": {
+              "methods": [
+                "DisableAuthProvider"
+              ]
+            },
+            "EnableAuthProvider": {
+              "methods": [
+                "EnableAuthProvider"
+              ]
+            },
+            "GetAccessSummary": {
+              "methods": [
+                "GetAccessSummary"
+              ]
+            },
+            "GetAuthProvider": {
+              "methods": [
+                "GetAuthProvider"
+              ]
+            },
+            "GetAuthorization": {
+              "methods": [
+                "GetAuthorization"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "ListAccessSummaries": {
+              "methods": [
+                "ListAccessSummaries"
+              ]
+            },
+            "ListAuthProviders": {
+              "methods": [
+                "ListAuthProviders"
+              ]
+            },
+            "ListAuthorizations": {
+              "methods": [
+                "ListAuthorizations"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "QueryAuthProviders": {
+              "methods": [
+                "QueryAuthProviders"
+              ]
+            },
+            "QueryWorkloads": {
+              "methods": [
+                "QueryWorkloads"
+              ]
+            },
+            "RevokeAuthorization": {
+              "methods": [
+                "RevokeAuthorization"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UndeleteAuthProvider": {
+              "methods": [
+                "UndeleteAuthProvider"
+              ]
+            },
+            "UpdateAuthProvider": {
+              "methods": [
+                "UpdateAuthProvider"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "AuthProviderClient",
+          "rpcs": {
+            "CreateAuthProvider": {
+              "methods": [
+                "CreateAuthProvider"
+              ]
+            },
+            "DeleteAuthProvider": {
+              "methods": [
+                "DeleteAuthProvider"
+              ]
+            },
+            "DeleteAuthorization": {
+              "methods": [
+                "DeleteAuthorization"
+              ]
+            },
+            "DisableAuthProvider": {
+              "methods": [
+                "DisableAuthProvider"
+              ]
+            },
+            "EnableAuthProvider": {
+              "methods": [
+                "EnableAuthProvider"
+              ]
+            },
+            "GetAccessSummary": {
+              "methods": [
+                "GetAccessSummary"
+              ]
+            },
+            "GetAuthProvider": {
+              "methods": [
+                "GetAuthProvider"
+              ]
+            },
+            "GetAuthorization": {
+              "methods": [
+                "GetAuthorization"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "ListAccessSummaries": {
+              "methods": [
+                "ListAccessSummaries"
+              ]
+            },
+            "ListAuthProviders": {
+              "methods": [
+                "ListAuthProviders"
+              ]
+            },
+            "ListAuthorizations": {
+              "methods": [
+                "ListAuthorizations"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "QueryAuthProviders": {
+              "methods": [
+                "QueryAuthProviders"
+              ]
+            },
+            "QueryWorkloads": {
+              "methods": [
+                "QueryWorkloads"
+              ]
+            },
+            "RevokeAuthorization": {
+              "methods": [
+                "RevokeAuthorization"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UndeleteAuthProvider": {
+              "methods": [
+                "UndeleteAuthProvider"
+              ]
+            },
+            "UpdateAuthProvider": {
+              "methods": [
+                "UpdateAuthProvider"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

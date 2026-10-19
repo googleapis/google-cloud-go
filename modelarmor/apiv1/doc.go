@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,8 +20,6 @@
 // Model Armor helps you protect against risks like prompt injection, harmful
 // content, and data leakage in generative AI applications by letting you
 // define policies that filter user prompts and model responses.
-//
-//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
 //
 // # General documentation
 //

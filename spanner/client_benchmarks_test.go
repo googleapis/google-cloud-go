@@ -18,21 +18,18 @@ package spanner
 
 import (
 	"context"
-	"errors"
 	"math/rand"
-	"reflect"
 	"sync"
 	"testing"
 	"time"
 
-	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	. "cloud.google.com/go/spanner/internal/testutil"
 	"google.golang.org/api/iterator"
 )
 
 const networkLatencyTime = 10 * time.Millisecond
-const batchCreateSessionsMinTime = 10 * time.Millisecond
-const batchCreateSessionsRndTime = 10 * time.Millisecond
+const createSessionsMinTime = 10 * time.Millisecond
+const createSessionsRndTime = 10 * time.Millisecond
 const beginTransactionMinTime = 1 * time.Millisecond
 const beginTransactionRndTime = 1 * time.Millisecond
 const commitTransactionMinTime = 5 * time.Millisecond
@@ -48,24 +45,16 @@ const rndWaitTimeBetweenRequests = 10
 var mu sync.Mutex
 var rnd = rand.New(rand.NewSource(time.Now().UnixNano()))
 
-func createBenchmarkServer(incStep uint64) (server *MockedSpannerInMemTestServer, client *Client, teardown func()) {
+func createBenchmarkServer() (server *MockedSpannerInMemTestServer, client *Client, teardown func()) {
 	t := &testing.T{}
 	server, client, teardown = setupMockedTestServerWithConfig(t, ClientConfig{
 		DisableNativeMetrics: true,
-		SessionPoolConfig: SessionPoolConfig{
-			MinOpened:     100,
-			MaxOpened:     400,
-			WriteSessions: 0.2,
-			incStep:       incStep,
-		},
-	})
-	server.TestSpanner.PutExecutionTime(MethodBatchCreateSession, SimulatedExecutionTime{
-		MinimumExecutionTime: networkLatencyTime + batchCreateSessionsMinTime,
-		RandomExecutionTime:  batchCreateSessionsRndTime,
+		// SessionPoolConfig is deprecated but kept for backward compatibility
+		SessionPoolConfig: SessionPoolConfig{},
 	})
 	server.TestSpanner.PutExecutionTime(MethodCreateSession, SimulatedExecutionTime{
-		MinimumExecutionTime: networkLatencyTime + batchCreateSessionsMinTime,
-		RandomExecutionTime:  batchCreateSessionsRndTime,
+		MinimumExecutionTime: networkLatencyTime + createSessionsMinTime,
+		RandomExecutionTime:  createSessionsRndTime,
 	})
 	server.TestSpanner.PutExecutionTime(MethodExecuteStreamingSql, SimulatedExecutionTime{
 		MinimumExecutionTime: networkLatencyTime + executeStreamingSqlMinTime,
@@ -82,13 +71,6 @@ func createBenchmarkServer(incStep uint64) (server *MockedSpannerInMemTestServer
 	server.TestSpanner.PutExecutionTime(MethodExecuteSql, SimulatedExecutionTime{
 		MinimumExecutionTime: networkLatencyTime + executeSqlMinTime,
 		RandomExecutionTime:  executeSqlRndTime,
-	})
-	// Wait until the session pool has been initialized.
-	waitFor(t, func() error {
-		if uint64(client.idleSessions.idleList.Len()) == client.idleSessions.MinOpened {
-			return nil
-		}
-		return errors.New("not yet initialized")
 	})
 	return
 }
@@ -130,13 +112,18 @@ func writeWorker(client *Client, b *testing.B, jobs <-chan int, results chan<- i
 		mu.Unlock()
 		time.Sleep(d)
 		var updateCount int64
-		var err error
-		if _, err = client.ReadWriteTransaction(context.Background(), func(ctx context.Context, transaction *ReadWriteTransaction) error {
-			if updateCount, err = transaction.Update(ctx, NewStatement(UpdateBarSetFoo)); err != nil {
-				return err
+		_, err := client.ReadWriteTransaction(context.Background(), func(ctx context.Context, txn *ReadWriteTransaction) error {
+			stmt := Statement{
+				SQL: UpdateBarSetFoo,
+				Params: map[string]interface{}{
+					"p1": 1,
+				},
 			}
-			return nil
-		}); err != nil {
+			count, err := txn.Update(ctx, stmt)
+			updateCount = count
+			return err
+		})
+		if err != nil {
 			b.Error(err)
 			return
 		}
@@ -144,50 +131,18 @@ func writeWorker(client *Client, b *testing.B, jobs <-chan int, results chan<- i
 	}
 }
 
-func Benchmark_Client_BurstRead_IncStep01(b *testing.B) {
-	benchmarkClientBurstRead(b, 1)
+func Benchmark_Client_BurstRead(b *testing.B) {
+	benchmarkClientBurstRead(b)
 }
 
-func Benchmark_Client_BurstRead_IncStep10(b *testing.B) {
-	benchmarkClientBurstRead(b, 10)
-}
-
-func Benchmark_Client_BurstRead_IncStep20(b *testing.B) {
-	benchmarkClientBurstRead(b, 20)
-}
-
-func Benchmark_Client_BurstRead_IncStep25(b *testing.B) {
-	benchmarkClientBurstRead(b, 25)
-}
-
-func Benchmark_Client_BurstRead_IncStep30(b *testing.B) {
-	benchmarkClientBurstRead(b, 30)
-}
-
-func Benchmark_Client_BurstRead_IncStep40(b *testing.B) {
-	benchmarkClientBurstRead(b, 40)
-}
-
-func Benchmark_Client_BurstRead_IncStep50(b *testing.B) {
-	benchmarkClientBurstRead(b, 50)
-}
-
-func Benchmark_Client_BurstRead_IncStep100(b *testing.B) {
-	benchmarkClientBurstRead(b, 100)
-}
-
-func benchmarkClientBurstRead(b *testing.B, incStep uint64) {
+func benchmarkClientBurstRead(b *testing.B) {
 	for n := 0; n < b.N; n++ {
-		server, client, teardown := createBenchmarkServer(incStep)
-		sp := client.idleSessions
-		if uint64(sp.idleList.Len()) != sp.MinOpened {
-			b.Fatalf("session count mismatch\nGot: %d\nWant: %d", sp.idleList.Len(), sp.MinOpened)
-		}
+		_, client, teardown := createBenchmarkServer()
 
-		totalQueries := int(sp.MaxOpened * 8)
+		totalQueries := 100
 		jobs := make(chan int, totalQueries)
 		results := make(chan int, totalQueries)
-		parallel := int(sp.MaxOpened * 2)
+		parallel := 20
 
 		for w := 0; w < parallel; w++ {
 			go readWorker(client, b, jobs, results)
@@ -200,55 +155,22 @@ func benchmarkClientBurstRead(b *testing.B, incStep uint64) {
 		for a := 0; a < totalQueries; a++ {
 			totalRows = totalRows + <-results
 		}
-		reportBenchmark(b, sp, server)
 		teardown()
 	}
 }
 
-func Benchmark_Client_BurstWrite01(b *testing.B) {
-	benchmarkClientBurstWrite(b, 1)
+func Benchmark_Client_BurstWrite(b *testing.B) {
+	benchmarkClientBurstWrite(b)
 }
 
-func Benchmark_Client_BurstWrite10(b *testing.B) {
-	benchmarkClientBurstWrite(b, 10)
-}
-
-func Benchmark_Client_BurstWrite20(b *testing.B) {
-	benchmarkClientBurstWrite(b, 20)
-}
-
-func Benchmark_Client_BurstWrite25(b *testing.B) {
-	benchmarkClientBurstWrite(b, 25)
-}
-
-func Benchmark_Client_BurstWrite30(b *testing.B) {
-	benchmarkClientBurstWrite(b, 30)
-}
-
-func Benchmark_Client_BurstWrite40(b *testing.B) {
-	benchmarkClientBurstWrite(b, 40)
-}
-
-func Benchmark_Client_BurstWrite50(b *testing.B) {
-	benchmarkClientBurstWrite(b, 50)
-}
-
-func Benchmark_Client_BurstWrite100(b *testing.B) {
-	benchmarkClientBurstWrite(b, 100)
-}
-
-func benchmarkClientBurstWrite(b *testing.B, incStep uint64) {
+func benchmarkClientBurstWrite(b *testing.B) {
 	for n := 0; n < b.N; n++ {
-		server, client, teardown := createBenchmarkServer(incStep)
-		sp := client.idleSessions
-		if uint64(sp.idleList.Len()) != sp.MinOpened {
-			b.Fatalf("session count mismatch\nGot: %d\nWant: %d", sp.idleList.Len(), sp.MinOpened)
-		}
+		_, client, teardown := createBenchmarkServer()
 
-		totalUpdates := int(sp.MaxOpened * 8)
+		totalUpdates := 100
 		jobs := make(chan int, totalUpdates)
 		results := make(chan int64, totalUpdates)
-		parallel := int(sp.MaxOpened * 2)
+		parallel := 20
 
 		for w := 0; w < parallel; w++ {
 			go writeWorker(client, b, jobs, results)
@@ -257,164 +179,105 @@ func benchmarkClientBurstWrite(b *testing.B, incStep uint64) {
 			jobs <- j
 		}
 		close(jobs)
-		totalRows := int64(0)
+		var totalRowCount int64
 		for a := 0; a < totalUpdates; a++ {
-			totalRows = totalRows + <-results
+			totalRowCount = totalRowCount + <-results
 		}
-		reportBenchmark(b, sp, server)
 		teardown()
 	}
 }
 
-func Benchmark_Client_BurstReadAndWrite01(b *testing.B) {
-	benchmarkClientBurstReadAndWrite(b, 1)
+func Benchmark_Client_BurstReadAndWrite(b *testing.B) {
+	benchmarkClientBurstReadAndWrite(b)
 }
 
-func Benchmark_Client_BurstReadAndWrite10(b *testing.B) {
-	benchmarkClientBurstReadAndWrite(b, 10)
-}
+func benchmarkClientBurstReadAndWrite(b *testing.B) {
+	server, client, teardown := createBenchmarkServer()
+	defer teardown()
 
-func Benchmark_Client_BurstReadAndWrite20(b *testing.B) {
-	benchmarkClientBurstReadAndWrite(b, 20)
-}
+	server.TestSpanner.PutStatementResult(UpdateBarSetFoo, &StatementResult{
+		Type:        StatementResultUpdateCount,
+		UpdateCount: 1,
+	})
 
-func Benchmark_Client_BurstReadAndWrite25(b *testing.B) {
-	benchmarkClientBurstReadAndWrite(b, 25)
-}
-
-func Benchmark_Client_BurstReadAndWrite30(b *testing.B) {
-	benchmarkClientBurstReadAndWrite(b, 30)
-}
-
-func Benchmark_Client_BurstReadAndWrite40(b *testing.B) {
-	benchmarkClientBurstReadAndWrite(b, 40)
-}
-
-func Benchmark_Client_BurstReadAndWrite50(b *testing.B) {
-	benchmarkClientBurstReadAndWrite(b, 50)
-}
-
-func Benchmark_Client_BurstReadAndWrite100(b *testing.B) {
-	benchmarkClientBurstReadAndWrite(b, 100)
-}
-
-func benchmarkClientBurstReadAndWrite(b *testing.B, incStep uint64) {
 	for n := 0; n < b.N; n++ {
-		server, client, teardown := createBenchmarkServer(incStep)
-		sp := client.idleSessions
-		if uint64(sp.idleList.Len()) != sp.MinOpened {
-			b.Fatalf("session count mismatch\nGot: %d\nWant: %d", sp.idleList.Len(), sp.MinOpened)
-		}
+		totalQueries := 100
+		jobs := make(chan int, totalQueries)
+		results := make(chan int, totalQueries)
 
-		totalUpdates := int(sp.MaxOpened * 4)
-		writeJobs := make(chan int, totalUpdates)
-		writeResults := make(chan int64, totalUpdates)
-		parallelWrites := int(sp.MaxOpened)
+		parallel := 10
 
-		totalQueries := int(sp.MaxOpened * 4)
-		readJobs := make(chan int, totalQueries)
-		readResults := make(chan int, totalQueries)
-		parallelReads := int(sp.MaxOpened)
-
-		for w := 0; w < parallelWrites; w++ {
-			go writeWorker(client, b, writeJobs, writeResults)
-		}
-		for j := 0; j < totalUpdates; j++ {
-			writeJobs <- j
-		}
-		for w := 0; w < parallelReads; w++ {
-			go readWorker(client, b, readJobs, readResults)
+		for w := 0; w < parallel; w++ {
+			go readWorker(client, b, jobs, results)
 		}
 		for j := 0; j < totalQueries; j++ {
-			readJobs <- j
+			jobs <- j
 		}
-
-		close(writeJobs)
-		close(readJobs)
-
-		totalUpdatedRows := int64(0)
-		for a := 0; a < totalUpdates; a++ {
-			totalUpdatedRows = totalUpdatedRows + <-writeResults
-		}
-		totalReadRows := 0
+		close(jobs)
+		totalRows := 0
 		for a := 0; a < totalQueries; a++ {
-			totalReadRows = totalReadRows + <-readResults
+			totalRows = totalRows + <-results
 		}
-		reportBenchmark(b, sp, server)
-		teardown()
+
+		totalUpdates := 100
+		wjobs := make(chan int, totalUpdates)
+		wresults := make(chan int64, totalUpdates)
+
+		for w := 0; w < parallel; w++ {
+			go writeWorker(client, b, wjobs, wresults)
+		}
+		for j := 0; j < totalUpdates; j++ {
+			wjobs <- j
+		}
+		close(wjobs)
+		var totalRowCount int64
+		for a := 0; a < totalUpdates; a++ {
+			totalRowCount = totalRowCount + <-wresults
+		}
 	}
 }
 
-func Benchmark_Client_SteadyIncrease01(b *testing.B) {
-	benchmarkClientSteadyIncrease(b, 1)
+func Benchmark_Client_BurstReadAndWrite_Parallel(b *testing.B) {
+	benchmarkClientBurstReadAndWriteParallel(b)
 }
 
-func Benchmark_Client_SteadyIncrease10(b *testing.B) {
-	benchmarkClientSteadyIncrease(b, 10)
-}
+func benchmarkClientBurstReadAndWriteParallel(b *testing.B) {
+	server, client, teardown := createBenchmarkServer()
+	defer teardown()
 
-func Benchmark_Client_SteadyIncrease20(b *testing.B) {
-	benchmarkClientSteadyIncrease(b, 20)
-}
+	server.TestSpanner.PutStatementResult(UpdateBarSetFoo, &StatementResult{
+		Type:        StatementResultUpdateCount,
+		UpdateCount: 1,
+	})
 
-func Benchmark_Client_SteadyIncrease25(b *testing.B) {
-	benchmarkClientSteadyIncrease(b, 25)
-}
-
-func Benchmark_Client_SteadyIncrease30(b *testing.B) {
-	benchmarkClientSteadyIncrease(b, 30)
-}
-
-func Benchmark_Client_SteadyIncrease40(b *testing.B) {
-	benchmarkClientSteadyIncrease(b, 40)
-}
-
-func Benchmark_Client_SteadyIncrease50(b *testing.B) {
-	benchmarkClientSteadyIncrease(b, 50)
-}
-
-func Benchmark_Client_SteadyIncrease100(b *testing.B) {
-	benchmarkClientSteadyIncrease(b, 100)
-}
-
-func benchmarkClientSteadyIncrease(b *testing.B, incStep uint64) {
 	for n := 0; n < b.N; n++ {
-		server, client, teardown := createBenchmarkServer(incStep)
-		sp := client.idleSessions
-		if uint64(sp.idleList.Len()) != sp.MinOpened {
-			b.Fatalf("session count mismatch\nGot: %d\nWant: %d", sp.idleList.Len(), sp.MinOpened)
+		totalOps := 100
+		parallel := 10
+
+		jobs := make(chan int, totalOps)
+		results := make(chan int, totalOps)
+		for w := 0; w < parallel; w++ {
+			go readWorker(client, b, jobs, results)
 		}
 
-		transactions := make([]*ReadOnlyTransaction, sp.MaxOpened)
-		for i := uint64(0); i < sp.MaxOpened; i++ {
-			transactions[i] = client.ReadOnlyTransaction()
-			transactions[i].Query(context.Background(), NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
+		wjobs := make(chan int, totalOps)
+		wresults := make(chan int64, totalOps)
+		for w := 0; w < parallel; w++ {
+			go writeWorker(client, b, wjobs, wresults)
 		}
-		for i := uint64(0); i < sp.MaxOpened; i++ {
-			transactions[i].Close()
+
+		for j := 0; j < totalOps; j++ {
+			jobs <- j
+			wjobs <- j
 		}
-		reportBenchmark(b, sp, server)
-		teardown()
-	}
-}
+		close(jobs)
+		close(wjobs)
 
-func reportBenchmark(b *testing.B, sp *sessionPool, server *MockedSpannerInMemTestServer) {
-	sp.mu.Lock()
-	defer sp.mu.Unlock()
-	requests := drainRequestsFromServer(server.TestSpanner)
-	// TODO(loite): Use b.ReportMetric when Go1.13 is the minimum required.
-	b.Logf("BatchCreateSessions: %d\t", countRequests(requests, reflect.TypeOf(&sppb.BatchCreateSessionsRequest{})))
-	b.Logf("CreateSession: %d\t", countRequests(requests, reflect.TypeOf(&sppb.CreateSessionRequest{})))
-	b.Logf("BeginTransaction: %d\t", countRequests(requests, reflect.TypeOf(&sppb.BeginTransactionRequest{})))
-	b.Logf("Commit: %d\t", countRequests(requests, reflect.TypeOf(&sppb.CommitRequest{})))
-	b.Logf("NumSessions: %d\t", sp.idleList.Len())
-}
-
-func countRequests(requests []interface{}, tp reflect.Type) (count int) {
-	for _, req := range requests {
-		if tp == reflect.TypeOf(req) {
-			count++
+		totalRows := 0
+		var totalRowCount int64
+		for a := 0; a < totalOps; a++ {
+			totalRows = totalRows + <-results
+			totalRowCount = totalRowCount + <-wresults
 		}
 	}
-	return count
 }

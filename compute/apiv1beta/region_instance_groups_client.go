@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import (
 
 	computepb "cloud.google.com/go/compute/apiv1beta/computepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -86,7 +87,7 @@ func defaultRegionInstanceGroupsRESTCallOptions() *RegionInstanceGroupsCallOptio
 	}
 }
 
-// internalRegionInstanceGroupsClient is an interface that defines the methods available from Google Compute Engine API.
+// internalRegionInstanceGroupsClient is an interface that defines the methods available from Compute Engine API.
 type internalRegionInstanceGroupsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -98,7 +99,7 @@ type internalRegionInstanceGroupsClient interface {
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsRegionInstanceGroupRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 }
 
-// RegionInstanceGroupsClient is a client for interacting with Google Compute Engine API.
+// RegionInstanceGroupsClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The RegionInstanceGroups API.
@@ -112,7 +113,7 @@ type RegionInstanceGroupsClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *RegionInstanceGroupsClient) Close() error {
 	return c.internalClient.Close()
@@ -138,12 +139,16 @@ func (c *RegionInstanceGroupsClient) Get(ctx context.Context, req *computepb.Get
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// List retrieves the list of instance group resources contained within the specified region.
+// List retrieves the list of instance group resources contained within
+// the specified region.
 func (c *RegionInstanceGroupsClient) List(ctx context.Context, req *computepb.ListRegionInstanceGroupsRequest, opts ...gax.CallOption) *InstanceGroupIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// ListInstances lists the instances in the specified instance group and displays information about the named ports. Depending on the specified options, this method can list all instances or only the instances that are running. The orderBy query parameter is not supported.
+// ListInstances lists the instances in the specified instance group and displays
+// information about the named ports. Depending on the specified options, this
+// method can list all instances or only the instances that are running.
+// The orderBy query parameter is not supported.
 func (c *RegionInstanceGroupsClient) ListInstances(ctx context.Context, req *computepb.ListInstancesRegionInstanceGroupsRequest, opts ...gax.CallOption) *InstanceWithNamedPortsIterator {
 	return c.internalClient.ListInstances(ctx, req, opts...)
 }
@@ -183,6 +188,16 @@ type regionInstanceGroupsRESTClient struct {
 // The RegionInstanceGroups API.
 func NewRegionInstanceGroupsRESTClient(ctx context.Context, opts ...option.ClientOption) (*RegionInstanceGroupsClient, error) {
 	clientOpts := append(defaultRegionInstanceGroupsRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "compute",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/compute/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "compute.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -196,6 +211,60 @@ func NewRegionInstanceGroupsRESTClient(ctx context.Context, opts ...option.Clien
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Get = append(callOpts.Get, gax.WithClientMetrics(metrics))
+		callOpts.List = append(callOpts.List, gax.WithClientMetrics(metrics))
+		callOpts.ListInstances = append(callOpts.ListInstances, gax.WithClientMetrics(metrics))
+		callOpts.SetNamedPorts = append(callOpts.SetNamedPorts, gax.WithClientMetrics(metrics))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Get = append(callOpts.Get, gax.WithClientTracing(tracing))
+		callOpts.List = append(callOpts.List, gax.WithClientTracing(tracing))
+		callOpts.ListInstances = append(callOpts.ListInstances, gax.WithClientTracing(tracing))
+		callOpts.SetNamedPorts = append(callOpts.SetNamedPorts, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Get = append(callOpts.Get, gax.WithClientLogging(logging))
+		callOpts.List = append(callOpts.List, gax.WithClientLogging(logging))
+		callOpts.ListInstances = append(callOpts.ListInstances, gax.WithClientLogging(logging))
+		callOpts.SetNamedPorts = append(callOpts.SetNamedPorts, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientLogging(logging))
+	}
 
 	o := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -233,7 +302,7 @@ func (c *regionInstanceGroupsRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *regionInstanceGroupsRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -265,6 +334,10 @@ func (c *regionInstanceGroupsRESTClient) Get(ctx context.Context, req *computepb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.RegionInstanceGroups/Get")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/instanceGroups/{instance_group}")
+	}
 	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.InstanceGroup{}
@@ -296,10 +369,11 @@ func (c *regionInstanceGroupsRESTClient) Get(ctx context.Context, req *computepb
 	return resp, nil
 }
 
-// List retrieves the list of instance group resources contained within the specified region.
+// List retrieves the list of instance group resources contained within
+// the specified region.
 func (c *regionInstanceGroupsRESTClient) List(ctx context.Context, req *computepb.ListRegionInstanceGroupsRequest, opts ...gax.CallOption) *InstanceGroupIterator {
 	it := &InstanceGroupIterator{}
-	req = proto.Clone(req).(*computepb.ListRegionInstanceGroupsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.InstanceGroup, string, error) {
 		resp := &computepb.RegionInstanceGroupList{}
@@ -382,10 +456,13 @@ func (c *regionInstanceGroupsRESTClient) List(ctx context.Context, req *computep
 	return it
 }
 
-// ListInstances lists the instances in the specified instance group and displays information about the named ports. Depending on the specified options, this method can list all instances or only the instances that are running. The orderBy query parameter is not supported.
+// ListInstances lists the instances in the specified instance group and displays
+// information about the named ports. Depending on the specified options, this
+// method can list all instances or only the instances that are running.
+// The orderBy query parameter is not supported.
 func (c *regionInstanceGroupsRESTClient) ListInstances(ctx context.Context, req *computepb.ListInstancesRegionInstanceGroupsRequest, opts ...gax.CallOption) *InstanceWithNamedPortsIterator {
 	it := &InstanceWithNamedPortsIterator{}
-	req = proto.Clone(req).(*computepb.ListInstancesRegionInstanceGroupsRequest)
+	req = proto.CloneOf(req)
 	m := protojson.MarshalOptions{AllowPartial: true}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.InstanceWithNamedPorts, string, error) {
@@ -502,6 +579,10 @@ func (c *regionInstanceGroupsRESTClient) SetNamedPorts(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.RegionInstanceGroups/SetNamedPorts")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/instanceGroups/{instance_group}/setNamedPorts")
+	}
 	opts = append((*c.CallOptions).SetNamedPorts[0:len((*c.CallOptions).SetNamedPorts):len((*c.CallOptions).SetNamedPorts)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -562,6 +643,10 @@ func (c *regionInstanceGroupsRESTClient) TestIamPermissions(ctx context.Context,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.RegionInstanceGroups/TestIamPermissions")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/instanceGroups/{resource}/testIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.TestPermissionsResponse{}

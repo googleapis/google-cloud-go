@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,9 +17,18 @@
 package support
 
 import (
+	"iter"
+
 	supportpb "cloud.google.com/go/support/apiv2/supportpb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AttachmentIterator) All() iter.Seq2[*supportpb.Attachment, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // AttachmentIterator manages a stream of *supportpb.Attachment.
 type AttachmentIterator struct {
@@ -66,6 +75,12 @@ func (it *AttachmentIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CaseClassificationIterator) All() iter.Seq2[*supportpb.CaseClassification, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // CaseClassificationIterator manages a stream of *supportpb.CaseClassification.
@@ -115,6 +130,12 @@ func (it *CaseClassificationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CaseIterator) All() iter.Seq2[*supportpb.Case, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // CaseIterator manages a stream of *supportpb.Case.
 type CaseIterator struct {
 	items    []*supportpb.Case
@@ -162,6 +183,12 @@ func (it *CaseIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CommentIterator) All() iter.Seq2[*supportpb.Comment, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // CommentIterator manages a stream of *supportpb.Comment.
 type CommentIterator struct {
 	items    []*supportpb.Comment
@@ -204,6 +231,59 @@ func (it *CommentIterator) bufLen() int {
 }
 
 func (it *CommentIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SupportEventSubscriptionIterator) All() iter.Seq2[*supportpb.SupportEventSubscription, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
+// SupportEventSubscriptionIterator manages a stream of *supportpb.SupportEventSubscription.
+type SupportEventSubscriptionIterator struct {
+	items    []*supportpb.SupportEventSubscription
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*supportpb.SupportEventSubscription, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *SupportEventSubscriptionIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *SupportEventSubscriptionIterator) Next() (*supportpb.SupportEventSubscription, error) {
+	var item *supportpb.SupportEventSubscription
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *SupportEventSubscriptionIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *SupportEventSubscriptionIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

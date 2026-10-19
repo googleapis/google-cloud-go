@@ -115,6 +115,11 @@
                 "FetchBlob"
               ]
             },
+            "FetchRefs": {
+              "methods": [
+                "FetchRefs"
+              ]
+            },
             "FetchTree": {
               "methods": [
                 "FetchTree"
@@ -423,6 +428,11 @@
             "FetchBlob": {
               "methods": [
                 "FetchBlob"
+              ]
+            },
+            "FetchRefs": {
+              "methods": [
+                "FetchRefs"
               ]
             },
             "FetchTree": {

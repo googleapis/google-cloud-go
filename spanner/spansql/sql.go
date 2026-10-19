@@ -171,12 +171,18 @@ func (cp CreateProtoBundle) SQL() string {
 }
 
 func (cv CreateView) SQL() string {
-	str := "CREATE"
+	var sb strings.Builder
+	sb.WriteString("CREATE")
 	if cv.OrReplace {
-		str += " OR REPLACE"
+		sb.WriteString(" OR REPLACE")
 	}
-	str += " VIEW " + cv.Name.SQL() + " SQL SECURITY " + cv.SecurityType.SQL() + " AS " + cv.Query.SQL()
-	return str
+	sb.WriteString(" VIEW ")
+	sb.WriteString(cv.Name.SQL())
+	sb.WriteString(" SQL SECURITY ")
+	sb.WriteString(cv.SecurityType.SQL())
+	sb.WriteString(" AS ")
+	cv.Query.addSQL(&sb)
+	return sb.String()
 }
 
 func (st SecurityType) SQL() string {
@@ -763,9 +769,9 @@ func (t Type) SQL() string {
 	// If ProtoRef is empty, and Base is an Enum or Proto, we're probably
 	// in an expression where PROTO or ENUM are valid type names, in which
 	// case we can just fall through.
-	if t.Base == Proto || t.Base == Enum && t.ProtoRef != "" {
-		// If ProtoRef is non-empty, backtick-quote that and declare victory.
-		return "`" + t.ProtoRef + "`"
+	if (t.Base == Proto || t.Base == Enum) && t.ProtoRef != "" {
+		// If ProtoRef is non-empty, backtick-quote that.
+		str = "`" + t.ProtoRef + "`"
 	}
 	if t.Len > 0 && (t.Base == String || t.Base == Bytes) {
 		str += "("
@@ -808,6 +814,8 @@ func (tb TypeBase) SQL() string {
 		return "ENUM"
 	case Tokenlist:
 		return "TOKENLIST"
+	case UUID:
+		return "UUID"
 	}
 
 	panic("unknown TypeBase")
@@ -838,8 +846,10 @@ func (kp KeyPart) SQL() string {
 func (q Query) SQL() string { return buildSQL(q) }
 func (q Query) addSQL(sb *strings.Builder) {
 	q.Select.addSQL(sb)
+
+	// ORDER BY clause
 	if len(q.Order) > 0 {
-		sb.WriteString(" ORDER BY ")
+		sb.WriteString("\nORDER BY ")
 		for i, o := range q.Order {
 			if i > 0 {
 				sb.WriteString(", ")
@@ -847,8 +857,10 @@ func (q Query) addSQL(sb *strings.Builder) {
 			o.addSQL(sb)
 		}
 	}
+
+	// LIMIT/OFFSET clauses
 	if q.Limit != nil {
-		sb.WriteString(" LIMIT ")
+		sb.WriteString("\nLIMIT ")
 		sb.WriteString(q.Limit.SQL())
 		if q.Offset != nil {
 			sb.WriteString(" OFFSET ")
@@ -859,14 +871,20 @@ func (q Query) addSQL(sb *strings.Builder) {
 
 func (sel Select) SQL() string { return buildSQL(sel) }
 func (sel Select) addSQL(sb *strings.Builder) {
-	sb.WriteString("SELECT ")
+	sb.WriteString("SELECT")
 	if sel.Distinct {
-		sb.WriteString("DISTINCT ")
+		sb.WriteString(" DISTINCT")
 	}
+	if sel.AsStruct {
+		sb.WriteString(" AS STRUCT")
+	}
+
+	// SELECT list with aliases
 	for i, e := range sel.List {
-		if i > 0 {
-			sb.WriteString(", ")
+		if i == 0 {
+			sb.WriteString("\n")
 		}
+		sb.WriteString("\t")
 		e.addSQL(sb)
 		if len(sel.ListAliases) > 0 {
 			alias := sel.ListAliases[i]
@@ -875,9 +893,15 @@ func (sel Select) addSQL(sb *strings.Builder) {
 				sb.WriteString(alias.SQL())
 			}
 		}
+		// Add comma and newline, except after last item
+		if i < len(sel.List)-1 {
+			sb.WriteString(",\n")
+		}
 	}
+
+	// FROM clause
 	if len(sel.From) > 0 {
-		sb.WriteString(" FROM ")
+		sb.WriteString("\nFROM ")
 		for i, f := range sel.From {
 			if i > 0 {
 				sb.WriteString(", ")
@@ -885,14 +909,24 @@ func (sel Select) addSQL(sb *strings.Builder) {
 			sb.WriteString(f.SQL())
 		}
 	}
+
+	// WHERE clause
 	if sel.Where != nil {
-		sb.WriteString(" WHERE ")
+		sb.WriteString("\nWHERE ")
 		sel.Where.addSQL(sb)
 	}
+
+	// GROUP BY clause
 	if len(sel.GroupBy) > 0 {
-		sb.WriteString(" GROUP BY ")
+		sb.WriteString("\nGROUP BY ")
 		addExprList(sb, sel.GroupBy, ", ")
 	}
+
+	// TODO: HAVING clause when supported
+	// if sel.Having != nil {
+	// 	sb.WriteString("\nHAVING ")
+	// 	sel.Having.addSQL(sb)
+	// }
 }
 
 func (sft SelectFromTable) SQL() string {
@@ -918,7 +952,7 @@ func (sft SelectFromTable) SQL() string {
 
 func (sfj SelectFromJoin) SQL() string {
 	// TODO: The grammar permits arbitrary nesting. Does this need to add parens?
-	str := sfj.LHS.SQL() + " " + joinTypes[sfj.Type] + " JOIN "
+	str := sfj.LHS.SQL() + "\n" + joinTypes[sfj.Type] + " JOIN "
 	// TODO: hints go here
 	str += sfj.RHS.SQL()
 	if sfj.On != nil {
@@ -1052,6 +1086,20 @@ func (eo ExistsOp) SQL() string { return buildSQL(eo) }
 func (eo ExistsOp) addSQL(sb *strings.Builder) {
 	sb.WriteString("EXISTS (")
 	eo.Subquery.addSQL(sb)
+	sb.WriteString(")")
+}
+
+func (ss ScalarSubquery) SQL() string { return buildSQL(ss) }
+func (ss ScalarSubquery) addSQL(sb *strings.Builder) {
+	sb.WriteString("(")
+	ss.Query.addSQL(sb)
+	sb.WriteString(")")
+}
+
+func (as ArraySubquery) SQL() string { return buildSQL(as) }
+func (as ArraySubquery) addSQL(sb *strings.Builder) {
+	sb.WriteString("ARRAY(")
+	as.Query.addSQL(sb)
 	sb.WriteString(")")
 }
 
@@ -1194,6 +1242,24 @@ func (a Array) addSQL(sb *strings.Builder) {
 	sb.WriteString("[")
 	addExprList(sb, []Expr(a), ", ")
 	sb.WriteString("]")
+}
+
+func (sl StructLiteral) SQL() string { return buildSQL(sl) }
+func (sl StructLiteral) addSQL(sb *strings.Builder) {
+	sb.WriteString("STRUCT")
+	if len(sl.FieldTypes) > 0 {
+		sb.WriteString("<")
+		for i, typ := range sl.FieldTypes {
+			if i > 0 {
+				sb.WriteString(", ")
+			}
+			sb.WriteString(typ.SQL())
+		}
+		sb.WriteString(">")
+	}
+	sb.WriteString("(")
+	addExprList(sb, sl.Fields, ", ")
+	sb.WriteString(")")
 }
 
 func (id ID) SQL() string { return buildSQL(id) }

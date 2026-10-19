@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,9 +17,18 @@
 package promotions
 
 import (
+	"iter"
+
 	promotionspb "cloud.google.com/go/shopping/merchant/promotions/apiv1beta/promotionspb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PromotionIterator) All() iter.Seq2[*promotionspb.Promotion, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // PromotionIterator manages a stream of *promotionspb.Promotion.
 type PromotionIterator struct {

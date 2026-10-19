@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import (
 
 	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -115,7 +116,7 @@ func defaultRegionSecurityPoliciesRESTCallOptions() *RegionSecurityPoliciesCallO
 	}
 }
 
-// internalRegionSecurityPoliciesClient is an interface that defines the methods available from Google Compute Engine API.
+// internalRegionSecurityPoliciesClient is an interface that defines the methods available from Compute Engine API.
 type internalRegionSecurityPoliciesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -132,10 +133,12 @@ type internalRegionSecurityPoliciesClient interface {
 	SetLabels(context.Context, *computepb.SetLabelsRegionSecurityPolicyRequest, ...gax.CallOption) (*Operation, error)
 }
 
-// RegionSecurityPoliciesClient is a client for interacting with Google Compute Engine API.
+// RegionSecurityPoliciesClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The RegionSecurityPolicies API.
+//
+// This client uses RegionSecurityPolicies version 2026-09-01.
 type RegionSecurityPoliciesClient struct {
 	// The internal transport-dependent client.
 	internalClient internalRegionSecurityPoliciesClient
@@ -146,7 +149,7 @@ type RegionSecurityPoliciesClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *RegionSecurityPoliciesClient) Close() error {
 	return c.internalClient.Close()
@@ -187,22 +190,29 @@ func (c *RegionSecurityPoliciesClient) GetRule(ctx context.Context, req *compute
 	return c.internalClient.GetRule(ctx, req, opts...)
 }
 
-// Insert creates a new policy in the specified project using the data included in the request.
+// Insert creates a new policy in the specified project using the data included in
+// the request.
 func (c *RegionSecurityPoliciesClient) Insert(ctx context.Context, req *computepb.InsertRegionSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List list all the policies that have been configured for the specified project and region.
+// List list all the policies that have been configured for the specified project
+// and region.
 func (c *RegionSecurityPoliciesClient) List(ctx context.Context, req *computepb.ListRegionSecurityPoliciesRequest, opts ...gax.CallOption) *SecurityPolicyIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// Patch patches the specified policy with the data included in the request. To clear fields in the policy, leave the fields empty and specify them in the updateMask. This cannot be used to be update the rules in the policy. Please use the per rule methods like addRule, patchRule, and removeRule instead.
+// Patch patches the specified policy with the data included in the request. To
+// clear fields in the policy, leave the fields empty and specify them in the
+// updateMask. This cannot be used to be update the rules in the policy.
+// Please use the per rule methods like addRule, patchRule, and removeRule
+// instead.
 func (c *RegionSecurityPoliciesClient) Patch(ctx context.Context, req *computepb.PatchRegionSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
 
-// PatchRule patches a rule at the specified priority. To clear fields in the rule, leave the fields empty and specify them in the updateMask.
+// PatchRule patches a rule at the specified priority. To clear fields in the rule,
+// leave the fields empty and specify them in the updateMask.
 func (c *RegionSecurityPoliciesClient) PatchRule(ctx context.Context, req *computepb.PatchRuleRegionSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.PatchRule(ctx, req, opts...)
 }
@@ -212,7 +222,9 @@ func (c *RegionSecurityPoliciesClient) RemoveRule(ctx context.Context, req *comp
 	return c.internalClient.RemoveRule(ctx, req, opts...)
 }
 
-// SetLabels sets the labels on a security policy. To learn more about labels, read the Labeling Resources documentation.
+// SetLabels sets the labels on a security policy. To learn more about labels,
+// read the Labeling Resources
+// documentation.
 func (c *RegionSecurityPoliciesClient) SetLabels(ctx context.Context, req *computepb.SetLabelsRegionSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetLabels(ctx, req, opts...)
 }
@@ -242,6 +254,16 @@ type regionSecurityPoliciesRESTClient struct {
 // The RegionSecurityPolicies API.
 func NewRegionSecurityPoliciesRESTClient(ctx context.Context, opts ...option.ClientOption) (*RegionSecurityPoliciesClient, error) {
 	clientOpts := append(defaultRegionSecurityPoliciesRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "compute",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/compute/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "compute.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -255,6 +277,75 @@ func NewRegionSecurityPoliciesRESTClient(ctx context.Context, opts ...option.Cli
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AddRule = append(callOpts.AddRule, gax.WithClientMetrics(metrics))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientMetrics(metrics))
+		callOpts.Get = append(callOpts.Get, gax.WithClientMetrics(metrics))
+		callOpts.GetRule = append(callOpts.GetRule, gax.WithClientMetrics(metrics))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientMetrics(metrics))
+		callOpts.List = append(callOpts.List, gax.WithClientMetrics(metrics))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientMetrics(metrics))
+		callOpts.PatchRule = append(callOpts.PatchRule, gax.WithClientMetrics(metrics))
+		callOpts.RemoveRule = append(callOpts.RemoveRule, gax.WithClientMetrics(metrics))
+		callOpts.SetLabels = append(callOpts.SetLabels, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AddRule = append(callOpts.AddRule, gax.WithClientTracing(tracing))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientTracing(tracing))
+		callOpts.Get = append(callOpts.Get, gax.WithClientTracing(tracing))
+		callOpts.GetRule = append(callOpts.GetRule, gax.WithClientTracing(tracing))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientTracing(tracing))
+		callOpts.List = append(callOpts.List, gax.WithClientTracing(tracing))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientTracing(tracing))
+		callOpts.PatchRule = append(callOpts.PatchRule, gax.WithClientTracing(tracing))
+		callOpts.RemoveRule = append(callOpts.RemoveRule, gax.WithClientTracing(tracing))
+		callOpts.SetLabels = append(callOpts.SetLabels, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AddRule = append(callOpts.AddRule, gax.WithClientLogging(logging))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientLogging(logging))
+		callOpts.Get = append(callOpts.Get, gax.WithClientLogging(logging))
+		callOpts.GetRule = append(callOpts.GetRule, gax.WithClientLogging(logging))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientLogging(logging))
+		callOpts.List = append(callOpts.List, gax.WithClientLogging(logging))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientLogging(logging))
+		callOpts.PatchRule = append(callOpts.PatchRule, gax.WithClientLogging(logging))
+		callOpts.RemoveRule = append(callOpts.RemoveRule, gax.WithClientLogging(logging))
+		callOpts.SetLabels = append(callOpts.SetLabels, gax.WithClientLogging(logging))
+	}
 
 	o := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -289,10 +380,11 @@ func (c *regionSecurityPoliciesRESTClient) setGoogleClientInfo(keyval ...string)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
+		"x-goog-api-version", "2026-09-01",
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *regionSecurityPoliciesRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -338,6 +430,10 @@ func (c *regionSecurityPoliciesRESTClient) AddRule(ctx context.Context, req *com
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionSecurityPolicies/AddRule")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/securityPolicies/{security_policy}/addRule")
+	}
 	opts = append((*c.CallOptions).AddRule[0:len((*c.CallOptions).AddRule):len((*c.CallOptions).AddRule)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -398,6 +494,10 @@ func (c *regionSecurityPoliciesRESTClient) Delete(ctx context.Context, req *comp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionSecurityPolicies/Delete")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/securityPolicies/{security_policy}")
+	}
 	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -451,6 +551,10 @@ func (c *regionSecurityPoliciesRESTClient) Get(ctx context.Context, req *compute
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionSecurityPolicies/Get")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/securityPolicies/{security_policy}")
+	}
 	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.SecurityPolicy{}
@@ -503,6 +607,10 @@ func (c *regionSecurityPoliciesRESTClient) GetRule(ctx context.Context, req *com
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionSecurityPolicies/GetRule")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/securityPolicies/{security_policy}/getRule")
+	}
 	opts = append((*c.CallOptions).GetRule[0:len((*c.CallOptions).GetRule):len((*c.CallOptions).GetRule)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.SecurityPolicyRule{}
@@ -534,7 +642,8 @@ func (c *regionSecurityPoliciesRESTClient) GetRule(ctx context.Context, req *com
 	return resp, nil
 }
 
-// Insert creates a new policy in the specified project using the data included in the request.
+// Insert creates a new policy in the specified project using the data included in
+// the request.
 func (c *regionSecurityPoliciesRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSecurityPolicyResource()
@@ -565,6 +674,10 @@ func (c *regionSecurityPoliciesRESTClient) Insert(ctx context.Context, req *comp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionSecurityPolicies/Insert")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/securityPolicies")
+	}
 	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -604,10 +717,11 @@ func (c *regionSecurityPoliciesRESTClient) Insert(ctx context.Context, req *comp
 	return op, nil
 }
 
-// List list all the policies that have been configured for the specified project and region.
+// List list all the policies that have been configured for the specified project
+// and region.
 func (c *regionSecurityPoliciesRESTClient) List(ctx context.Context, req *computepb.ListRegionSecurityPoliciesRequest, opts ...gax.CallOption) *SecurityPolicyIterator {
 	it := &SecurityPolicyIterator{}
-	req = proto.Clone(req).(*computepb.ListRegionSecurityPoliciesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.SecurityPolicy, string, error) {
 		resp := &computepb.SecurityPolicyList{}
@@ -637,9 +751,6 @@ func (c *regionSecurityPoliciesRESTClient) List(ctx context.Context, req *comput
 		}
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -690,7 +801,11 @@ func (c *regionSecurityPoliciesRESTClient) List(ctx context.Context, req *comput
 	return it
 }
 
-// Patch patches the specified policy with the data included in the request. To clear fields in the policy, leave the fields empty and specify them in the updateMask. This cannot be used to be update the rules in the policy. Please use the per rule methods like addRule, patchRule, and removeRule instead.
+// Patch patches the specified policy with the data included in the request. To
+// clear fields in the policy, leave the fields empty and specify them in the
+// updateMask. This cannot be used to be update the rules in the policy.
+// Please use the per rule methods like addRule, patchRule, and removeRule
+// instead.
 func (c *regionSecurityPoliciesRESTClient) Patch(ctx context.Context, req *computepb.PatchRegionSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSecurityPolicyResource()
@@ -721,6 +836,10 @@ func (c *regionSecurityPoliciesRESTClient) Patch(ctx context.Context, req *compu
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionSecurityPolicies/Patch")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/securityPolicies/{security_policy}")
+	}
 	opts = append((*c.CallOptions).Patch[0:len((*c.CallOptions).Patch):len((*c.CallOptions).Patch)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -760,7 +879,8 @@ func (c *regionSecurityPoliciesRESTClient) Patch(ctx context.Context, req *compu
 	return op, nil
 }
 
-// PatchRule patches a rule at the specified priority. To clear fields in the rule, leave the fields empty and specify them in the updateMask.
+// PatchRule patches a rule at the specified priority. To clear fields in the rule,
+// leave the fields empty and specify them in the updateMask.
 func (c *regionSecurityPoliciesRESTClient) PatchRule(ctx context.Context, req *computepb.PatchRuleRegionSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSecurityPolicyRuleResource()
@@ -794,6 +914,10 @@ func (c *regionSecurityPoliciesRESTClient) PatchRule(ctx context.Context, req *c
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionSecurityPolicies/PatchRule")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/securityPolicies/{security_policy}/patchRule")
+	}
 	opts = append((*c.CallOptions).PatchRule[0:len((*c.CallOptions).PatchRule):len((*c.CallOptions).PatchRule)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -854,6 +978,10 @@ func (c *regionSecurityPoliciesRESTClient) RemoveRule(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionSecurityPolicies/RemoveRule")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/securityPolicies/{security_policy}/removeRule")
+	}
 	opts = append((*c.CallOptions).RemoveRule[0:len((*c.CallOptions).RemoveRule):len((*c.CallOptions).RemoveRule)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -893,7 +1021,9 @@ func (c *regionSecurityPoliciesRESTClient) RemoveRule(ctx context.Context, req *
 	return op, nil
 }
 
-// SetLabels sets the labels on a security policy. To learn more about labels, read the Labeling Resources documentation.
+// SetLabels sets the labels on a security policy. To learn more about labels,
+// read the Labeling Resources
+// documentation.
 func (c *regionSecurityPoliciesRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabelsRegionSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRegionSetLabelsRequestResource()
@@ -921,6 +1051,10 @@ func (c *regionSecurityPoliciesRESTClient) SetLabels(ctx context.Context, req *c
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionSecurityPolicies/SetLabels")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/securityPolicies/{resource}/setLabels")
+	}
 	opts = append((*c.CallOptions).SetLabels[0:len((*c.CallOptions).SetLabels):len((*c.CallOptions).SetLabels)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}

@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,12 +18,14 @@ package netapp
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	netapppb "cloud.google.com/go/netapp/apiv1/netapppb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
@@ -281,6 +283,70 @@ func (op *CreateBackupVaultOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *CreateBackupVaultOperation) Name() string {
+	return op.lro.Name()
+}
+
+// CreateHostGroupOperation manages a long-running operation from CreateHostGroup.
+type CreateHostGroupOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *CreateHostGroupOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*netapppb.HostGroup, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp netapppb.HostGroup
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *CreateHostGroupOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*netapppb.HostGroup, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp netapppb.HostGroup
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *CreateHostGroupOperation) Metadata() (*netapppb.OperationMetadata, error) {
+	var meta netapppb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *CreateHostGroupOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *CreateHostGroupOperation) Name() string {
 	return op.lro.Name()
 }
 
@@ -880,6 +946,59 @@ func (op *DeleteBackupVaultOperation) Name() string {
 	return op.lro.Name()
 }
 
+// DeleteHostGroupOperation manages a long-running operation from DeleteHostGroup.
+type DeleteHostGroupOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *DeleteHostGroupOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *DeleteHostGroupOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	return op.lro.Poll(ctx, nil, opts...)
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *DeleteHostGroupOperation) Metadata() (*netapppb.OperationMetadata, error) {
+	var meta netapppb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *DeleteHostGroupOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *DeleteHostGroupOperation) Name() string {
+	return op.lro.Name()
+}
+
 // DeleteKmsConfigOperation manages a long-running operation from DeleteKmsConfig.
 type DeleteKmsConfigOperation struct {
 	lro      *longrunning.Operation
@@ -1326,6 +1445,198 @@ func (op *EstablishPeeringOperation) Name() string {
 	return op.lro.Name()
 }
 
+// EstablishVolumePeeringOperation manages a long-running operation from EstablishVolumePeering.
+type EstablishVolumePeeringOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *EstablishVolumePeeringOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*netapppb.Volume, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp netapppb.Volume
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *EstablishVolumePeeringOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*netapppb.Volume, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp netapppb.Volume
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *EstablishVolumePeeringOperation) Metadata() (*netapppb.OperationMetadata, error) {
+	var meta netapppb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *EstablishVolumePeeringOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *EstablishVolumePeeringOperation) Name() string {
+	return op.lro.Name()
+}
+
+// RestoreBackupFilesOperation manages a long-running operation from RestoreBackupFiles.
+type RestoreBackupFilesOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *RestoreBackupFilesOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*netapppb.RestoreBackupFilesResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp netapppb.RestoreBackupFilesResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *RestoreBackupFilesOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*netapppb.RestoreBackupFilesResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp netapppb.RestoreBackupFilesResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *RestoreBackupFilesOperation) Metadata() (*netapppb.OperationMetadata, error) {
+	var meta netapppb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *RestoreBackupFilesOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *RestoreBackupFilesOperation) Name() string {
+	return op.lro.Name()
+}
+
+// RestoreVolumeOperation manages a long-running operation from RestoreVolume.
+type RestoreVolumeOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *RestoreVolumeOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*netapppb.RestoreVolumeResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp netapppb.RestoreVolumeResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *RestoreVolumeOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*netapppb.RestoreVolumeResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp netapppb.RestoreVolumeResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *RestoreVolumeOperation) Metadata() (*netapppb.OperationMetadata, error) {
+	var meta netapppb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *RestoreVolumeOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *RestoreVolumeOperation) Name() string {
+	return op.lro.Name()
+}
+
 // ResumeReplicationOperation manages a long-running operation from ResumeReplication.
 type ResumeReplicationOperation struct {
 	lro      *longrunning.Operation
@@ -1515,6 +1826,70 @@ func (op *RevertVolumeOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *RevertVolumeOperation) Name() string {
+	return op.lro.Name()
+}
+
+// StartSplitOperation manages a long-running operation from StartSplit.
+type StartSplitOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *StartSplitOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*netapppb.Volume, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp netapppb.Volume
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *StartSplitOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*netapppb.Volume, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp netapppb.Volume
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *StartSplitOperation) Metadata() (*netapppb.OperationMetadata, error) {
+	var meta netapppb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *StartSplitOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *StartSplitOperation) Name() string {
 	return op.lro.Name()
 }
 
@@ -1774,6 +2149,70 @@ func (op *UpdateActiveDirectoryOperation) Name() string {
 	return op.lro.Name()
 }
 
+// UpdateBackupConfigOperation manages a long-running operation from UpdateBackupConfig.
+type UpdateBackupConfigOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *UpdateBackupConfigOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*netapppb.UpdateBackupConfigResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp netapppb.UpdateBackupConfigResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *UpdateBackupConfigOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*netapppb.UpdateBackupConfigResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp netapppb.UpdateBackupConfigResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *UpdateBackupConfigOperation) Metadata() (*netapppb.OperationMetadata, error) {
+	var meta netapppb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *UpdateBackupConfigOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *UpdateBackupConfigOperation) Name() string {
+	return op.lro.Name()
+}
+
 // UpdateBackupOperation manages a long-running operation from UpdateBackup.
 type UpdateBackupOperation struct {
 	lro      *longrunning.Operation
@@ -1963,6 +2402,70 @@ func (op *UpdateBackupVaultOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *UpdateBackupVaultOperation) Name() string {
+	return op.lro.Name()
+}
+
+// UpdateHostGroupOperation manages a long-running operation from UpdateHostGroup.
+type UpdateHostGroupOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *UpdateHostGroupOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*netapppb.HostGroup, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp netapppb.HostGroup
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *UpdateHostGroupOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*netapppb.HostGroup, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp netapppb.HostGroup
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *UpdateHostGroupOperation) Metadata() (*netapppb.OperationMetadata, error) {
+	var meta netapppb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *UpdateHostGroupOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *UpdateHostGroupOperation) Name() string {
 	return op.lro.Name()
 }
 
@@ -2403,6 +2906,12 @@ func (op *ValidateDirectoryServiceOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ActiveDirectoryIterator) All() iter.Seq2[*netapppb.ActiveDirectory, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ActiveDirectoryIterator manages a stream of *netapppb.ActiveDirectory.
 type ActiveDirectoryIterator struct {
 	items    []*netapppb.ActiveDirectory
@@ -2448,6 +2957,12 @@ func (it *ActiveDirectoryIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *BackupIterator) All() iter.Seq2[*netapppb.Backup, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // BackupIterator manages a stream of *netapppb.Backup.
@@ -2497,6 +3012,12 @@ func (it *BackupIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *BackupPolicyIterator) All() iter.Seq2[*netapppb.BackupPolicy, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // BackupPolicyIterator manages a stream of *netapppb.BackupPolicy.
 type BackupPolicyIterator struct {
 	items    []*netapppb.BackupPolicy
@@ -2542,6 +3063,12 @@ func (it *BackupPolicyIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *BackupVaultIterator) All() iter.Seq2[*netapppb.BackupVault, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // BackupVaultIterator manages a stream of *netapppb.BackupVault.
@@ -2591,6 +3118,65 @@ func (it *BackupVaultIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *HostGroupIterator) All() iter.Seq2[*netapppb.HostGroup, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
+// HostGroupIterator manages a stream of *netapppb.HostGroup.
+type HostGroupIterator struct {
+	items    []*netapppb.HostGroup
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*netapppb.HostGroup, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *HostGroupIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *HostGroupIterator) Next() (*netapppb.HostGroup, error) {
+	var item *netapppb.HostGroup
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *HostGroupIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *HostGroupIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *KmsConfigIterator) All() iter.Seq2[*netapppb.KmsConfig, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // KmsConfigIterator manages a stream of *netapppb.KmsConfig.
 type KmsConfigIterator struct {
 	items    []*netapppb.KmsConfig
@@ -2636,6 +3222,12 @@ func (it *KmsConfigIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // LocationIterator manages a stream of *locationpb.Location.
@@ -2685,6 +3277,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OperationIterator manages a stream of *longrunningpb.Operation.
 type OperationIterator struct {
 	items    []*longrunningpb.Operation
@@ -2730,6 +3328,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *QuotaRuleIterator) All() iter.Seq2[*netapppb.QuotaRule, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // QuotaRuleIterator manages a stream of *netapppb.QuotaRule.
@@ -2779,6 +3383,12 @@ func (it *QuotaRuleIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ReplicationIterator) All() iter.Seq2[*netapppb.Replication, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ReplicationIterator manages a stream of *netapppb.Replication.
 type ReplicationIterator struct {
 	items    []*netapppb.Replication
@@ -2824,6 +3434,12 @@ func (it *ReplicationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SnapshotIterator) All() iter.Seq2[*netapppb.Snapshot, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // SnapshotIterator manages a stream of *netapppb.Snapshot.
@@ -2873,6 +3489,12 @@ func (it *SnapshotIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *StoragePoolIterator) All() iter.Seq2[*netapppb.StoragePool, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // StoragePoolIterator manages a stream of *netapppb.StoragePool.
 type StoragePoolIterator struct {
 	items    []*netapppb.StoragePool
@@ -2918,6 +3540,65 @@ func (it *StoragePoolIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *VolumeBackupConfigIterator) All() iter.Seq2[*netapppb.VolumeBackupConfig, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
+// VolumeBackupConfigIterator manages a stream of *netapppb.VolumeBackupConfig.
+type VolumeBackupConfigIterator struct {
+	items    []*netapppb.VolumeBackupConfig
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*netapppb.VolumeBackupConfig, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *VolumeBackupConfigIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *VolumeBackupConfigIterator) Next() (*netapppb.VolumeBackupConfig, error) {
+	var item *netapppb.VolumeBackupConfig
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *VolumeBackupConfigIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *VolumeBackupConfigIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *VolumeIterator) All() iter.Seq2[*netapppb.Volume, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // VolumeIterator manages a stream of *netapppb.Volume.

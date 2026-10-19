@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import (
 
 	computepb "cloud.google.com/go/compute/apiv1beta/computepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -104,7 +105,7 @@ func defaultTargetInstancesRESTCallOptions() *TargetInstancesCallOptions {
 	}
 }
 
-// internalTargetInstancesClient is an interface that defines the methods available from Google Compute Engine API.
+// internalTargetInstancesClient is an interface that defines the methods available from Compute Engine API.
 type internalTargetInstancesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -118,7 +119,7 @@ type internalTargetInstancesClient interface {
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsTargetInstanceRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 }
 
-// TargetInstancesClient is a client for interacting with Google Compute Engine API.
+// TargetInstancesClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The TargetInstances API.
@@ -132,7 +133,7 @@ type TargetInstancesClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *TargetInstancesClient) Close() error {
 	return c.internalClient.Close()
@@ -153,7 +154,10 @@ func (c *TargetInstancesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves an aggregated list of target instances. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of target instances.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *TargetInstancesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListTargetInstancesRequest, opts ...gax.CallOption) *TargetInstancesScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -168,17 +172,21 @@ func (c *TargetInstancesClient) Get(ctx context.Context, req *computepb.GetTarge
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// Insert creates a TargetInstance resource in the specified project and zone using the data included in the request.
+// Insert creates a TargetInstance resource in the specified project and zone using
+// the data included in the request.
 func (c *TargetInstancesClient) Insert(ctx context.Context, req *computepb.InsertTargetInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves a list of TargetInstance resources available to the specified project and zone.
+// List retrieves a list of TargetInstance resources available to the specified
+// project and zone.
 func (c *TargetInstancesClient) List(ctx context.Context, req *computepb.ListTargetInstancesRequest, opts ...gax.CallOption) *TargetInstanceIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// SetSecurityPolicy sets the Google Cloud Armor security policy for the specified target instance. For more information, see Google Cloud Armor Overview
+// SetSecurityPolicy sets the Google Cloud Armor security policy for the specified target
+// instance. For more information, seeGoogle
+// Cloud Armor Overview
 func (c *TargetInstancesClient) SetSecurityPolicy(ctx context.Context, req *computepb.SetSecurityPolicyTargetInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetSecurityPolicy(ctx, req, opts...)
 }
@@ -213,6 +221,16 @@ type targetInstancesRESTClient struct {
 // The TargetInstances API.
 func NewTargetInstancesRESTClient(ctx context.Context, opts ...option.ClientOption) (*TargetInstancesClient, error) {
 	clientOpts := append(defaultTargetInstancesRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "compute",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/compute/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "compute.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -226,6 +244,66 @@ func NewTargetInstancesRESTClient(ctx context.Context, opts ...option.ClientOpti
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientMetrics(metrics))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientMetrics(metrics))
+		callOpts.Get = append(callOpts.Get, gax.WithClientMetrics(metrics))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientMetrics(metrics))
+		callOpts.List = append(callOpts.List, gax.WithClientMetrics(metrics))
+		callOpts.SetSecurityPolicy = append(callOpts.SetSecurityPolicy, gax.WithClientMetrics(metrics))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientTracing(tracing))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientTracing(tracing))
+		callOpts.Get = append(callOpts.Get, gax.WithClientTracing(tracing))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientTracing(tracing))
+		callOpts.List = append(callOpts.List, gax.WithClientTracing(tracing))
+		callOpts.SetSecurityPolicy = append(callOpts.SetSecurityPolicy, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AggregatedList = append(callOpts.AggregatedList, gax.WithClientLogging(logging))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientLogging(logging))
+		callOpts.Get = append(callOpts.Get, gax.WithClientLogging(logging))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientLogging(logging))
+		callOpts.List = append(callOpts.List, gax.WithClientLogging(logging))
+		callOpts.SetSecurityPolicy = append(callOpts.SetSecurityPolicy, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientLogging(logging))
+	}
 
 	o := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -263,7 +341,7 @@ func (c *targetInstancesRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *targetInstancesRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -281,10 +359,13 @@ func (c *targetInstancesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves an aggregated list of target instances. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
+// AggregatedList retrieves an aggregated list of target instances.
+//
+// To prevent failure, Google recommends that you set the
+// returnPartialSuccess parameter to true.
 func (c *targetInstancesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListTargetInstancesRequest, opts ...gax.CallOption) *TargetInstancesScopedListPairIterator {
 	it := &TargetInstancesScopedListPairIterator{}
-	req = proto.Clone(req).(*computepb.AggregatedListTargetInstancesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]TargetInstancesScopedListPair, string, error) {
 		resp := &computepb.TargetInstanceAggregatedList{}
@@ -401,6 +482,10 @@ func (c *targetInstancesRESTClient) Delete(ctx context.Context, req *computepb.D
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.TargetInstances/Delete")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/zones/{zone}/targetInstances/{target_instance}")
+	}
 	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -454,6 +539,10 @@ func (c *targetInstancesRESTClient) Get(ctx context.Context, req *computepb.GetT
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.TargetInstances/Get")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/zones/{zone}/targetInstances/{target_instance}")
+	}
 	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.TargetInstance{}
@@ -485,7 +574,8 @@ func (c *targetInstancesRESTClient) Get(ctx context.Context, req *computepb.GetT
 	return resp, nil
 }
 
-// Insert creates a TargetInstance resource in the specified project and zone using the data included in the request.
+// Insert creates a TargetInstance resource in the specified project and zone using
+// the data included in the request.
 func (c *targetInstancesRESTClient) Insert(ctx context.Context, req *computepb.InsertTargetInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetInstanceResource()
@@ -513,6 +603,10 @@ func (c *targetInstancesRESTClient) Insert(ctx context.Context, req *computepb.I
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.TargetInstances/Insert")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/zones/{zone}/targetInstances")
+	}
 	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -552,10 +646,11 @@ func (c *targetInstancesRESTClient) Insert(ctx context.Context, req *computepb.I
 	return op, nil
 }
 
-// List retrieves a list of TargetInstance resources available to the specified project and zone.
+// List retrieves a list of TargetInstance resources available to the specified
+// project and zone.
 func (c *targetInstancesRESTClient) List(ctx context.Context, req *computepb.ListTargetInstancesRequest, opts ...gax.CallOption) *TargetInstanceIterator {
 	it := &TargetInstanceIterator{}
-	req = proto.Clone(req).(*computepb.ListTargetInstancesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.TargetInstance, string, error) {
 		resp := &computepb.TargetInstanceList{}
@@ -638,7 +733,9 @@ func (c *targetInstancesRESTClient) List(ctx context.Context, req *computepb.Lis
 	return it
 }
 
-// SetSecurityPolicy sets the Google Cloud Armor security policy for the specified target instance. For more information, see Google Cloud Armor Overview
+// SetSecurityPolicy sets the Google Cloud Armor security policy for the specified target
+// instance. For more information, seeGoogle
+// Cloud Armor Overview
 func (c *targetInstancesRESTClient) SetSecurityPolicy(ctx context.Context, req *computepb.SetSecurityPolicyTargetInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSecurityPolicyReferenceResource()
@@ -666,6 +763,10 @@ func (c *targetInstancesRESTClient) SetSecurityPolicy(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.TargetInstances/SetSecurityPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/zones/{zone}/targetInstances/{target_instance}/setSecurityPolicy")
+	}
 	opts = append((*c.CallOptions).SetSecurityPolicy[0:len((*c.CallOptions).SetSecurityPolicy):len((*c.CallOptions).SetSecurityPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -726,6 +827,10 @@ func (c *targetInstancesRESTClient) TestIamPermissions(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.TargetInstances/TestIamPermissions")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/zones/{zone}/targetInstances/{resource}/testIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.TestPermissionsResponse{}

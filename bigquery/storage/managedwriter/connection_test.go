@@ -24,7 +24,6 @@ import (
 
 	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 	"github.com/googleapis/gax-go/v2"
-	"google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 	statuspb "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -128,7 +127,7 @@ func TestConnection_LockingAppendFlowRelease(t *testing.T) {
 	}
 
 	pw := newPendingWrite(ctx, writer, &storagepb.AppendRowsRequest{WriteStream: "somestream"}, newVersionedTemplate(), "", "")
-	for i := 0; i < 5; i++ {
+	for i := range 5 {
 		conn, err := router.pool.selectConn(pw)
 		if err != nil {
 			t.Errorf("selectConn: %v", err)
@@ -181,7 +180,7 @@ func TestConnection_LeakingReconnect(t *testing.T) {
 
 	var chans []chan *pendingWrite
 
-	for i := 0; i < 10; i++ {
+	for i := range 10 {
 		_, ch, err := router.conn.getStream(nil, true)
 		if err != nil {
 			t.Fatalf("failed getStream(%d): %v", i, err)
@@ -214,7 +213,7 @@ func TestConnectionPool_OpenCallOptionPropagation(t *testing.T) {
 	pool := &connectionPool{
 		ctx:    ctx,
 		cancel: cancel,
-		open: createOpenF(func(ctx context.Context, opts ...gax.CallOption) (storage.BigQueryWrite_AppendRowsClient, error) {
+		open: createOpenF(func(ctx context.Context, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
 			if len(opts) == 0 {
 				t.Fatalf("no options were propagated")
 			}

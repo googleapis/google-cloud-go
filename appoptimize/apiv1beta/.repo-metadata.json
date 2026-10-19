@@ -1,0 +1,10 @@
+{
+    "api_shortname": "appoptimize",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/appoptimize/latest/apiv1beta",
+    "client_library_type": "generated",
+    "description": "App Optimize API",
+    "distribution_name": "cloud.google.com/go/appoptimize/apiv1beta",
+    "language": "go",
+    "library_type": "GAPIC_AUTO",
+    "release_level": "preview"
+}

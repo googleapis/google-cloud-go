@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -32,6 +32,8 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -812,7 +814,7 @@ type Client struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *Client) Close() error {
 	return c.internalClient.Close()
@@ -1243,6 +1245,16 @@ type gRPCClient struct {
 // Google Cloud services and forward them to supported destinations.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "eventarc",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/eventarc/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "eventarc.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -1267,6 +1279,188 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "eventarc",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/eventarc/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "eventarc.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetTrigger = append(client.CallOptions.GetTrigger, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListTriggers = append(client.CallOptions.ListTriggers, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateTrigger = append(client.CallOptions.CreateTrigger, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateTrigger = append(client.CallOptions.UpdateTrigger, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteTrigger = append(client.CallOptions.DeleteTrigger, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetChannel = append(client.CallOptions.GetChannel, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListChannels = append(client.CallOptions.ListChannels, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateChannel = append(client.CallOptions.CreateChannel, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateChannel = append(client.CallOptions.UpdateChannel, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteChannel = append(client.CallOptions.DeleteChannel, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetProvider = append(client.CallOptions.GetProvider, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListProviders = append(client.CallOptions.ListProviders, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetChannelConnection = append(client.CallOptions.GetChannelConnection, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListChannelConnections = append(client.CallOptions.ListChannelConnections, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateChannelConnection = append(client.CallOptions.CreateChannelConnection, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteChannelConnection = append(client.CallOptions.DeleteChannelConnection, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetGoogleChannelConfig = append(client.CallOptions.GetGoogleChannelConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateGoogleChannelConfig = append(client.CallOptions.UpdateGoogleChannelConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetMessageBus = append(client.CallOptions.GetMessageBus, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListMessageBuses = append(client.CallOptions.ListMessageBuses, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListMessageBusEnrollments = append(client.CallOptions.ListMessageBusEnrollments, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateMessageBus = append(client.CallOptions.CreateMessageBus, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateMessageBus = append(client.CallOptions.UpdateMessageBus, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteMessageBus = append(client.CallOptions.DeleteMessageBus, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetEnrollment = append(client.CallOptions.GetEnrollment, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListEnrollments = append(client.CallOptions.ListEnrollments, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateEnrollment = append(client.CallOptions.CreateEnrollment, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateEnrollment = append(client.CallOptions.UpdateEnrollment, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteEnrollment = append(client.CallOptions.DeleteEnrollment, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetPipeline = append(client.CallOptions.GetPipeline, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListPipelines = append(client.CallOptions.ListPipelines, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreatePipeline = append(client.CallOptions.CreatePipeline, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdatePipeline = append(client.CallOptions.UpdatePipeline, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeletePipeline = append(client.CallOptions.DeletePipeline, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetGoogleApiSource = append(client.CallOptions.GetGoogleApiSource, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListGoogleApiSources = append(client.CallOptions.ListGoogleApiSources, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateGoogleApiSource = append(client.CallOptions.CreateGoogleApiSource, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateGoogleApiSource = append(client.CallOptions.UpdateGoogleApiSource, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteGoogleApiSource = append(client.CallOptions.DeleteGoogleApiSource, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "eventarc",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/eventarc/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "eventarc.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetTrigger = append(client.CallOptions.GetTrigger, gax.WithClientTracing(tracing))
+		client.CallOptions.ListTriggers = append(client.CallOptions.ListTriggers, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateTrigger = append(client.CallOptions.CreateTrigger, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateTrigger = append(client.CallOptions.UpdateTrigger, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteTrigger = append(client.CallOptions.DeleteTrigger, gax.WithClientTracing(tracing))
+		client.CallOptions.GetChannel = append(client.CallOptions.GetChannel, gax.WithClientTracing(tracing))
+		client.CallOptions.ListChannels = append(client.CallOptions.ListChannels, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateChannel = append(client.CallOptions.CreateChannel, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateChannel = append(client.CallOptions.UpdateChannel, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteChannel = append(client.CallOptions.DeleteChannel, gax.WithClientTracing(tracing))
+		client.CallOptions.GetProvider = append(client.CallOptions.GetProvider, gax.WithClientTracing(tracing))
+		client.CallOptions.ListProviders = append(client.CallOptions.ListProviders, gax.WithClientTracing(tracing))
+		client.CallOptions.GetChannelConnection = append(client.CallOptions.GetChannelConnection, gax.WithClientTracing(tracing))
+		client.CallOptions.ListChannelConnections = append(client.CallOptions.ListChannelConnections, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateChannelConnection = append(client.CallOptions.CreateChannelConnection, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteChannelConnection = append(client.CallOptions.DeleteChannelConnection, gax.WithClientTracing(tracing))
+		client.CallOptions.GetGoogleChannelConfig = append(client.CallOptions.GetGoogleChannelConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateGoogleChannelConfig = append(client.CallOptions.UpdateGoogleChannelConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.GetMessageBus = append(client.CallOptions.GetMessageBus, gax.WithClientTracing(tracing))
+		client.CallOptions.ListMessageBuses = append(client.CallOptions.ListMessageBuses, gax.WithClientTracing(tracing))
+		client.CallOptions.ListMessageBusEnrollments = append(client.CallOptions.ListMessageBusEnrollments, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateMessageBus = append(client.CallOptions.CreateMessageBus, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateMessageBus = append(client.CallOptions.UpdateMessageBus, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteMessageBus = append(client.CallOptions.DeleteMessageBus, gax.WithClientTracing(tracing))
+		client.CallOptions.GetEnrollment = append(client.CallOptions.GetEnrollment, gax.WithClientTracing(tracing))
+		client.CallOptions.ListEnrollments = append(client.CallOptions.ListEnrollments, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateEnrollment = append(client.CallOptions.CreateEnrollment, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateEnrollment = append(client.CallOptions.UpdateEnrollment, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteEnrollment = append(client.CallOptions.DeleteEnrollment, gax.WithClientTracing(tracing))
+		client.CallOptions.GetPipeline = append(client.CallOptions.GetPipeline, gax.WithClientTracing(tracing))
+		client.CallOptions.ListPipelines = append(client.CallOptions.ListPipelines, gax.WithClientTracing(tracing))
+		client.CallOptions.CreatePipeline = append(client.CallOptions.CreatePipeline, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdatePipeline = append(client.CallOptions.UpdatePipeline, gax.WithClientTracing(tracing))
+		client.CallOptions.DeletePipeline = append(client.CallOptions.DeletePipeline, gax.WithClientTracing(tracing))
+		client.CallOptions.GetGoogleApiSource = append(client.CallOptions.GetGoogleApiSource, gax.WithClientTracing(tracing))
+		client.CallOptions.ListGoogleApiSources = append(client.CallOptions.ListGoogleApiSources, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateGoogleApiSource = append(client.CallOptions.CreateGoogleApiSource, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateGoogleApiSource = append(client.CallOptions.UpdateGoogleApiSource, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteGoogleApiSource = append(client.CallOptions.DeleteGoogleApiSource, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "eventarc",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/eventarc/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "eventarc.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetTrigger = append(client.CallOptions.GetTrigger, gax.WithClientLogging(logging))
+		client.CallOptions.ListTriggers = append(client.CallOptions.ListTriggers, gax.WithClientLogging(logging))
+		client.CallOptions.CreateTrigger = append(client.CallOptions.CreateTrigger, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateTrigger = append(client.CallOptions.UpdateTrigger, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteTrigger = append(client.CallOptions.DeleteTrigger, gax.WithClientLogging(logging))
+		client.CallOptions.GetChannel = append(client.CallOptions.GetChannel, gax.WithClientLogging(logging))
+		client.CallOptions.ListChannels = append(client.CallOptions.ListChannels, gax.WithClientLogging(logging))
+		client.CallOptions.CreateChannel = append(client.CallOptions.CreateChannel, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateChannel = append(client.CallOptions.UpdateChannel, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteChannel = append(client.CallOptions.DeleteChannel, gax.WithClientLogging(logging))
+		client.CallOptions.GetProvider = append(client.CallOptions.GetProvider, gax.WithClientLogging(logging))
+		client.CallOptions.ListProviders = append(client.CallOptions.ListProviders, gax.WithClientLogging(logging))
+		client.CallOptions.GetChannelConnection = append(client.CallOptions.GetChannelConnection, gax.WithClientLogging(logging))
+		client.CallOptions.ListChannelConnections = append(client.CallOptions.ListChannelConnections, gax.WithClientLogging(logging))
+		client.CallOptions.CreateChannelConnection = append(client.CallOptions.CreateChannelConnection, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteChannelConnection = append(client.CallOptions.DeleteChannelConnection, gax.WithClientLogging(logging))
+		client.CallOptions.GetGoogleChannelConfig = append(client.CallOptions.GetGoogleChannelConfig, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateGoogleChannelConfig = append(client.CallOptions.UpdateGoogleChannelConfig, gax.WithClientLogging(logging))
+		client.CallOptions.GetMessageBus = append(client.CallOptions.GetMessageBus, gax.WithClientLogging(logging))
+		client.CallOptions.ListMessageBuses = append(client.CallOptions.ListMessageBuses, gax.WithClientLogging(logging))
+		client.CallOptions.ListMessageBusEnrollments = append(client.CallOptions.ListMessageBusEnrollments, gax.WithClientLogging(logging))
+		client.CallOptions.CreateMessageBus = append(client.CallOptions.CreateMessageBus, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateMessageBus = append(client.CallOptions.UpdateMessageBus, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteMessageBus = append(client.CallOptions.DeleteMessageBus, gax.WithClientLogging(logging))
+		client.CallOptions.GetEnrollment = append(client.CallOptions.GetEnrollment, gax.WithClientLogging(logging))
+		client.CallOptions.ListEnrollments = append(client.CallOptions.ListEnrollments, gax.WithClientLogging(logging))
+		client.CallOptions.CreateEnrollment = append(client.CallOptions.CreateEnrollment, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateEnrollment = append(client.CallOptions.UpdateEnrollment, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteEnrollment = append(client.CallOptions.DeleteEnrollment, gax.WithClientLogging(logging))
+		client.CallOptions.GetPipeline = append(client.CallOptions.GetPipeline, gax.WithClientLogging(logging))
+		client.CallOptions.ListPipelines = append(client.CallOptions.ListPipelines, gax.WithClientLogging(logging))
+		client.CallOptions.CreatePipeline = append(client.CallOptions.CreatePipeline, gax.WithClientLogging(logging))
+		client.CallOptions.UpdatePipeline = append(client.CallOptions.UpdatePipeline, gax.WithClientLogging(logging))
+		client.CallOptions.DeletePipeline = append(client.CallOptions.DeletePipeline, gax.WithClientLogging(logging))
+		client.CallOptions.GetGoogleApiSource = append(client.CallOptions.GetGoogleApiSource, gax.WithClientLogging(logging))
+		client.CallOptions.ListGoogleApiSources = append(client.CallOptions.ListGoogleApiSources, gax.WithClientLogging(logging))
+		client.CallOptions.CreateGoogleApiSource = append(client.CallOptions.CreateGoogleApiSource, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateGoogleApiSource = append(client.CallOptions.UpdateGoogleApiSource, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteGoogleApiSource = append(client.CallOptions.DeleteGoogleApiSource, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -1303,7 +1497,7 @@ func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *gRPCClient) Close() error {
 	return c.connPool.Close()
@@ -1337,6 +1531,16 @@ type restClient struct {
 // Google Cloud services and forward them to supported destinations.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "eventarc",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/eventarc/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "eventarc.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -1350,6 +1554,189 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "eventarc",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/eventarc/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "eventarc.googleapis.com",
+			}),
+		)
+
+		callOpts.GetTrigger = append(callOpts.GetTrigger, gax.WithClientMetrics(metrics))
+		callOpts.ListTriggers = append(callOpts.ListTriggers, gax.WithClientMetrics(metrics))
+		callOpts.CreateTrigger = append(callOpts.CreateTrigger, gax.WithClientMetrics(metrics))
+		callOpts.UpdateTrigger = append(callOpts.UpdateTrigger, gax.WithClientMetrics(metrics))
+		callOpts.DeleteTrigger = append(callOpts.DeleteTrigger, gax.WithClientMetrics(metrics))
+		callOpts.GetChannel = append(callOpts.GetChannel, gax.WithClientMetrics(metrics))
+		callOpts.ListChannels = append(callOpts.ListChannels, gax.WithClientMetrics(metrics))
+		callOpts.CreateChannel = append(callOpts.CreateChannel, gax.WithClientMetrics(metrics))
+		callOpts.UpdateChannel = append(callOpts.UpdateChannel, gax.WithClientMetrics(metrics))
+		callOpts.DeleteChannel = append(callOpts.DeleteChannel, gax.WithClientMetrics(metrics))
+		callOpts.GetProvider = append(callOpts.GetProvider, gax.WithClientMetrics(metrics))
+		callOpts.ListProviders = append(callOpts.ListProviders, gax.WithClientMetrics(metrics))
+		callOpts.GetChannelConnection = append(callOpts.GetChannelConnection, gax.WithClientMetrics(metrics))
+		callOpts.ListChannelConnections = append(callOpts.ListChannelConnections, gax.WithClientMetrics(metrics))
+		callOpts.CreateChannelConnection = append(callOpts.CreateChannelConnection, gax.WithClientMetrics(metrics))
+		callOpts.DeleteChannelConnection = append(callOpts.DeleteChannelConnection, gax.WithClientMetrics(metrics))
+		callOpts.GetGoogleChannelConfig = append(callOpts.GetGoogleChannelConfig, gax.WithClientMetrics(metrics))
+		callOpts.UpdateGoogleChannelConfig = append(callOpts.UpdateGoogleChannelConfig, gax.WithClientMetrics(metrics))
+		callOpts.GetMessageBus = append(callOpts.GetMessageBus, gax.WithClientMetrics(metrics))
+		callOpts.ListMessageBuses = append(callOpts.ListMessageBuses, gax.WithClientMetrics(metrics))
+		callOpts.ListMessageBusEnrollments = append(callOpts.ListMessageBusEnrollments, gax.WithClientMetrics(metrics))
+		callOpts.CreateMessageBus = append(callOpts.CreateMessageBus, gax.WithClientMetrics(metrics))
+		callOpts.UpdateMessageBus = append(callOpts.UpdateMessageBus, gax.WithClientMetrics(metrics))
+		callOpts.DeleteMessageBus = append(callOpts.DeleteMessageBus, gax.WithClientMetrics(metrics))
+		callOpts.GetEnrollment = append(callOpts.GetEnrollment, gax.WithClientMetrics(metrics))
+		callOpts.ListEnrollments = append(callOpts.ListEnrollments, gax.WithClientMetrics(metrics))
+		callOpts.CreateEnrollment = append(callOpts.CreateEnrollment, gax.WithClientMetrics(metrics))
+		callOpts.UpdateEnrollment = append(callOpts.UpdateEnrollment, gax.WithClientMetrics(metrics))
+		callOpts.DeleteEnrollment = append(callOpts.DeleteEnrollment, gax.WithClientMetrics(metrics))
+		callOpts.GetPipeline = append(callOpts.GetPipeline, gax.WithClientMetrics(metrics))
+		callOpts.ListPipelines = append(callOpts.ListPipelines, gax.WithClientMetrics(metrics))
+		callOpts.CreatePipeline = append(callOpts.CreatePipeline, gax.WithClientMetrics(metrics))
+		callOpts.UpdatePipeline = append(callOpts.UpdatePipeline, gax.WithClientMetrics(metrics))
+		callOpts.DeletePipeline = append(callOpts.DeletePipeline, gax.WithClientMetrics(metrics))
+		callOpts.GetGoogleApiSource = append(callOpts.GetGoogleApiSource, gax.WithClientMetrics(metrics))
+		callOpts.ListGoogleApiSources = append(callOpts.ListGoogleApiSources, gax.WithClientMetrics(metrics))
+		callOpts.CreateGoogleApiSource = append(callOpts.CreateGoogleApiSource, gax.WithClientMetrics(metrics))
+		callOpts.UpdateGoogleApiSource = append(callOpts.UpdateGoogleApiSource, gax.WithClientMetrics(metrics))
+		callOpts.DeleteGoogleApiSource = append(callOpts.DeleteGoogleApiSource, gax.WithClientMetrics(metrics))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "eventarc",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/eventarc/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "eventarc.googleapis.com",
+			}),
+		)
+
+		callOpts.GetTrigger = append(callOpts.GetTrigger, gax.WithClientTracing(tracing))
+		callOpts.ListTriggers = append(callOpts.ListTriggers, gax.WithClientTracing(tracing))
+		callOpts.CreateTrigger = append(callOpts.CreateTrigger, gax.WithClientTracing(tracing))
+		callOpts.UpdateTrigger = append(callOpts.UpdateTrigger, gax.WithClientTracing(tracing))
+		callOpts.DeleteTrigger = append(callOpts.DeleteTrigger, gax.WithClientTracing(tracing))
+		callOpts.GetChannel = append(callOpts.GetChannel, gax.WithClientTracing(tracing))
+		callOpts.ListChannels = append(callOpts.ListChannels, gax.WithClientTracing(tracing))
+		callOpts.CreateChannel = append(callOpts.CreateChannel, gax.WithClientTracing(tracing))
+		callOpts.UpdateChannel = append(callOpts.UpdateChannel, gax.WithClientTracing(tracing))
+		callOpts.DeleteChannel = append(callOpts.DeleteChannel, gax.WithClientTracing(tracing))
+		callOpts.GetProvider = append(callOpts.GetProvider, gax.WithClientTracing(tracing))
+		callOpts.ListProviders = append(callOpts.ListProviders, gax.WithClientTracing(tracing))
+		callOpts.GetChannelConnection = append(callOpts.GetChannelConnection, gax.WithClientTracing(tracing))
+		callOpts.ListChannelConnections = append(callOpts.ListChannelConnections, gax.WithClientTracing(tracing))
+		callOpts.CreateChannelConnection = append(callOpts.CreateChannelConnection, gax.WithClientTracing(tracing))
+		callOpts.DeleteChannelConnection = append(callOpts.DeleteChannelConnection, gax.WithClientTracing(tracing))
+		callOpts.GetGoogleChannelConfig = append(callOpts.GetGoogleChannelConfig, gax.WithClientTracing(tracing))
+		callOpts.UpdateGoogleChannelConfig = append(callOpts.UpdateGoogleChannelConfig, gax.WithClientTracing(tracing))
+		callOpts.GetMessageBus = append(callOpts.GetMessageBus, gax.WithClientTracing(tracing))
+		callOpts.ListMessageBuses = append(callOpts.ListMessageBuses, gax.WithClientTracing(tracing))
+		callOpts.ListMessageBusEnrollments = append(callOpts.ListMessageBusEnrollments, gax.WithClientTracing(tracing))
+		callOpts.CreateMessageBus = append(callOpts.CreateMessageBus, gax.WithClientTracing(tracing))
+		callOpts.UpdateMessageBus = append(callOpts.UpdateMessageBus, gax.WithClientTracing(tracing))
+		callOpts.DeleteMessageBus = append(callOpts.DeleteMessageBus, gax.WithClientTracing(tracing))
+		callOpts.GetEnrollment = append(callOpts.GetEnrollment, gax.WithClientTracing(tracing))
+		callOpts.ListEnrollments = append(callOpts.ListEnrollments, gax.WithClientTracing(tracing))
+		callOpts.CreateEnrollment = append(callOpts.CreateEnrollment, gax.WithClientTracing(tracing))
+		callOpts.UpdateEnrollment = append(callOpts.UpdateEnrollment, gax.WithClientTracing(tracing))
+		callOpts.DeleteEnrollment = append(callOpts.DeleteEnrollment, gax.WithClientTracing(tracing))
+		callOpts.GetPipeline = append(callOpts.GetPipeline, gax.WithClientTracing(tracing))
+		callOpts.ListPipelines = append(callOpts.ListPipelines, gax.WithClientTracing(tracing))
+		callOpts.CreatePipeline = append(callOpts.CreatePipeline, gax.WithClientTracing(tracing))
+		callOpts.UpdatePipeline = append(callOpts.UpdatePipeline, gax.WithClientTracing(tracing))
+		callOpts.DeletePipeline = append(callOpts.DeletePipeline, gax.WithClientTracing(tracing))
+		callOpts.GetGoogleApiSource = append(callOpts.GetGoogleApiSource, gax.WithClientTracing(tracing))
+		callOpts.ListGoogleApiSources = append(callOpts.ListGoogleApiSources, gax.WithClientTracing(tracing))
+		callOpts.CreateGoogleApiSource = append(callOpts.CreateGoogleApiSource, gax.WithClientTracing(tracing))
+		callOpts.UpdateGoogleApiSource = append(callOpts.UpdateGoogleApiSource, gax.WithClientTracing(tracing))
+		callOpts.DeleteGoogleApiSource = append(callOpts.DeleteGoogleApiSource, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "eventarc",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/eventarc/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "eventarc.googleapis.com",
+			}),
+		)
+
+		callOpts.GetTrigger = append(callOpts.GetTrigger, gax.WithClientLogging(logging))
+		callOpts.ListTriggers = append(callOpts.ListTriggers, gax.WithClientLogging(logging))
+		callOpts.CreateTrigger = append(callOpts.CreateTrigger, gax.WithClientLogging(logging))
+		callOpts.UpdateTrigger = append(callOpts.UpdateTrigger, gax.WithClientLogging(logging))
+		callOpts.DeleteTrigger = append(callOpts.DeleteTrigger, gax.WithClientLogging(logging))
+		callOpts.GetChannel = append(callOpts.GetChannel, gax.WithClientLogging(logging))
+		callOpts.ListChannels = append(callOpts.ListChannels, gax.WithClientLogging(logging))
+		callOpts.CreateChannel = append(callOpts.CreateChannel, gax.WithClientLogging(logging))
+		callOpts.UpdateChannel = append(callOpts.UpdateChannel, gax.WithClientLogging(logging))
+		callOpts.DeleteChannel = append(callOpts.DeleteChannel, gax.WithClientLogging(logging))
+		callOpts.GetProvider = append(callOpts.GetProvider, gax.WithClientLogging(logging))
+		callOpts.ListProviders = append(callOpts.ListProviders, gax.WithClientLogging(logging))
+		callOpts.GetChannelConnection = append(callOpts.GetChannelConnection, gax.WithClientLogging(logging))
+		callOpts.ListChannelConnections = append(callOpts.ListChannelConnections, gax.WithClientLogging(logging))
+		callOpts.CreateChannelConnection = append(callOpts.CreateChannelConnection, gax.WithClientLogging(logging))
+		callOpts.DeleteChannelConnection = append(callOpts.DeleteChannelConnection, gax.WithClientLogging(logging))
+		callOpts.GetGoogleChannelConfig = append(callOpts.GetGoogleChannelConfig, gax.WithClientLogging(logging))
+		callOpts.UpdateGoogleChannelConfig = append(callOpts.UpdateGoogleChannelConfig, gax.WithClientLogging(logging))
+		callOpts.GetMessageBus = append(callOpts.GetMessageBus, gax.WithClientLogging(logging))
+		callOpts.ListMessageBuses = append(callOpts.ListMessageBuses, gax.WithClientLogging(logging))
+		callOpts.ListMessageBusEnrollments = append(callOpts.ListMessageBusEnrollments, gax.WithClientLogging(logging))
+		callOpts.CreateMessageBus = append(callOpts.CreateMessageBus, gax.WithClientLogging(logging))
+		callOpts.UpdateMessageBus = append(callOpts.UpdateMessageBus, gax.WithClientLogging(logging))
+		callOpts.DeleteMessageBus = append(callOpts.DeleteMessageBus, gax.WithClientLogging(logging))
+		callOpts.GetEnrollment = append(callOpts.GetEnrollment, gax.WithClientLogging(logging))
+		callOpts.ListEnrollments = append(callOpts.ListEnrollments, gax.WithClientLogging(logging))
+		callOpts.CreateEnrollment = append(callOpts.CreateEnrollment, gax.WithClientLogging(logging))
+		callOpts.UpdateEnrollment = append(callOpts.UpdateEnrollment, gax.WithClientLogging(logging))
+		callOpts.DeleteEnrollment = append(callOpts.DeleteEnrollment, gax.WithClientLogging(logging))
+		callOpts.GetPipeline = append(callOpts.GetPipeline, gax.WithClientLogging(logging))
+		callOpts.ListPipelines = append(callOpts.ListPipelines, gax.WithClientLogging(logging))
+		callOpts.CreatePipeline = append(callOpts.CreatePipeline, gax.WithClientLogging(logging))
+		callOpts.UpdatePipeline = append(callOpts.UpdatePipeline, gax.WithClientLogging(logging))
+		callOpts.DeletePipeline = append(callOpts.DeletePipeline, gax.WithClientLogging(logging))
+		callOpts.GetGoogleApiSource = append(callOpts.GetGoogleApiSource, gax.WithClientLogging(logging))
+		callOpts.ListGoogleApiSources = append(callOpts.ListGoogleApiSources, gax.WithClientLogging(logging))
+		callOpts.CreateGoogleApiSource = append(callOpts.CreateGoogleApiSource, gax.WithClientLogging(logging))
+		callOpts.UpdateGoogleApiSource = append(callOpts.UpdateGoogleApiSource, gax.WithClientLogging(logging))
+		callOpts.DeleteGoogleApiSource = append(callOpts.DeleteGoogleApiSource, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -1387,7 +1774,7 @@ func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *restClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -1406,6 +1793,9 @@ func (c *gRPCClient) GetTrigger(ctx context.Context, req *eventarcpb.GetTriggerR
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/GetTrigger")
+	}
 	opts = append((*c.CallOptions).GetTrigger[0:len((*c.CallOptions).GetTrigger):len((*c.CallOptions).GetTrigger)], opts...)
 	var resp *eventarcpb.Trigger
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1424,9 +1814,12 @@ func (c *gRPCClient) ListTriggers(ctx context.Context, req *eventarcpb.ListTrigg
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/ListTriggers")
+	}
 	opts = append((*c.CallOptions).ListTriggers[0:len((*c.CallOptions).ListTriggers):len((*c.CallOptions).ListTriggers)], opts...)
 	it := &TriggerIterator{}
-	req = proto.Clone(req).(*eventarcpb.ListTriggersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*eventarcpb.Trigger, string, error) {
 		resp := &eventarcpb.ListTriggersResponse{}
 		if pageToken != "" {
@@ -1470,6 +1863,9 @@ func (c *gRPCClient) CreateTrigger(ctx context.Context, req *eventarcpb.CreateTr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/CreateTrigger")
+	}
 	opts = append((*c.CallOptions).CreateTrigger[0:len((*c.CallOptions).CreateTrigger):len((*c.CallOptions).CreateTrigger)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1480,8 +1876,12 @@ func (c *gRPCClient) CreateTrigger(ctx context.Context, req *eventarcpb.CreateTr
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.CreateTriggerOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateTriggerOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1490,6 +1890,9 @@ func (c *gRPCClient) UpdateTrigger(ctx context.Context, req *eventarcpb.UpdateTr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/UpdateTrigger")
+	}
 	opts = append((*c.CallOptions).UpdateTrigger[0:len((*c.CallOptions).UpdateTrigger):len((*c.CallOptions).UpdateTrigger)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1500,8 +1903,12 @@ func (c *gRPCClient) UpdateTrigger(ctx context.Context, req *eventarcpb.UpdateTr
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.UpdateTriggerOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateTriggerOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1510,6 +1917,9 @@ func (c *gRPCClient) DeleteTrigger(ctx context.Context, req *eventarcpb.DeleteTr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/DeleteTrigger")
+	}
 	opts = append((*c.CallOptions).DeleteTrigger[0:len((*c.CallOptions).DeleteTrigger):len((*c.CallOptions).DeleteTrigger)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1520,8 +1930,12 @@ func (c *gRPCClient) DeleteTrigger(ctx context.Context, req *eventarcpb.DeleteTr
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.DeleteTriggerOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteTriggerOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1530,6 +1944,9 @@ func (c *gRPCClient) GetChannel(ctx context.Context, req *eventarcpb.GetChannelR
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/GetChannel")
+	}
 	opts = append((*c.CallOptions).GetChannel[0:len((*c.CallOptions).GetChannel):len((*c.CallOptions).GetChannel)], opts...)
 	var resp *eventarcpb.Channel
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1548,9 +1965,12 @@ func (c *gRPCClient) ListChannels(ctx context.Context, req *eventarcpb.ListChann
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/ListChannels")
+	}
 	opts = append((*c.CallOptions).ListChannels[0:len((*c.CallOptions).ListChannels):len((*c.CallOptions).ListChannels)], opts...)
 	it := &ChannelIterator{}
-	req = proto.Clone(req).(*eventarcpb.ListChannelsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*eventarcpb.Channel, string, error) {
 		resp := &eventarcpb.ListChannelsResponse{}
 		if pageToken != "" {
@@ -1594,6 +2014,9 @@ func (c *gRPCClient) CreateChannel(ctx context.Context, req *eventarcpb.CreateCh
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/CreateChannel")
+	}
 	opts = append((*c.CallOptions).CreateChannel[0:len((*c.CallOptions).CreateChannel):len((*c.CallOptions).CreateChannel)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1604,8 +2027,12 @@ func (c *gRPCClient) CreateChannel(ctx context.Context, req *eventarcpb.CreateCh
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.CreateChannelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateChannelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1614,6 +2041,9 @@ func (c *gRPCClient) UpdateChannel(ctx context.Context, req *eventarcpb.UpdateCh
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/UpdateChannel")
+	}
 	opts = append((*c.CallOptions).UpdateChannel[0:len((*c.CallOptions).UpdateChannel):len((*c.CallOptions).UpdateChannel)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1624,8 +2054,12 @@ func (c *gRPCClient) UpdateChannel(ctx context.Context, req *eventarcpb.UpdateCh
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.UpdateChannelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateChannelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1634,6 +2068,9 @@ func (c *gRPCClient) DeleteChannel(ctx context.Context, req *eventarcpb.DeleteCh
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/DeleteChannel")
+	}
 	opts = append((*c.CallOptions).DeleteChannel[0:len((*c.CallOptions).DeleteChannel):len((*c.CallOptions).DeleteChannel)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1644,8 +2081,12 @@ func (c *gRPCClient) DeleteChannel(ctx context.Context, req *eventarcpb.DeleteCh
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.DeleteChannelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteChannelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1654,6 +2095,9 @@ func (c *gRPCClient) GetProvider(ctx context.Context, req *eventarcpb.GetProvide
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/GetProvider")
+	}
 	opts = append((*c.CallOptions).GetProvider[0:len((*c.CallOptions).GetProvider):len((*c.CallOptions).GetProvider)], opts...)
 	var resp *eventarcpb.Provider
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1672,9 +2116,12 @@ func (c *gRPCClient) ListProviders(ctx context.Context, req *eventarcpb.ListProv
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/ListProviders")
+	}
 	opts = append((*c.CallOptions).ListProviders[0:len((*c.CallOptions).ListProviders):len((*c.CallOptions).ListProviders)], opts...)
 	it := &ProviderIterator{}
-	req = proto.Clone(req).(*eventarcpb.ListProvidersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*eventarcpb.Provider, string, error) {
 		resp := &eventarcpb.ListProvidersResponse{}
 		if pageToken != "" {
@@ -1718,6 +2165,9 @@ func (c *gRPCClient) GetChannelConnection(ctx context.Context, req *eventarcpb.G
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/GetChannelConnection")
+	}
 	opts = append((*c.CallOptions).GetChannelConnection[0:len((*c.CallOptions).GetChannelConnection):len((*c.CallOptions).GetChannelConnection)], opts...)
 	var resp *eventarcpb.ChannelConnection
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1736,9 +2186,12 @@ func (c *gRPCClient) ListChannelConnections(ctx context.Context, req *eventarcpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/ListChannelConnections")
+	}
 	opts = append((*c.CallOptions).ListChannelConnections[0:len((*c.CallOptions).ListChannelConnections):len((*c.CallOptions).ListChannelConnections)], opts...)
 	it := &ChannelConnectionIterator{}
-	req = proto.Clone(req).(*eventarcpb.ListChannelConnectionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*eventarcpb.ChannelConnection, string, error) {
 		resp := &eventarcpb.ListChannelConnectionsResponse{}
 		if pageToken != "" {
@@ -1782,6 +2235,9 @@ func (c *gRPCClient) CreateChannelConnection(ctx context.Context, req *eventarcp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/CreateChannelConnection")
+	}
 	opts = append((*c.CallOptions).CreateChannelConnection[0:len((*c.CallOptions).CreateChannelConnection):len((*c.CallOptions).CreateChannelConnection)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1792,8 +2248,12 @@ func (c *gRPCClient) CreateChannelConnection(ctx context.Context, req *eventarcp
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.CreateChannelConnectionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateChannelConnectionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1802,6 +2262,9 @@ func (c *gRPCClient) DeleteChannelConnection(ctx context.Context, req *eventarcp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/DeleteChannelConnection")
+	}
 	opts = append((*c.CallOptions).DeleteChannelConnection[0:len((*c.CallOptions).DeleteChannelConnection):len((*c.CallOptions).DeleteChannelConnection)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1812,8 +2275,12 @@ func (c *gRPCClient) DeleteChannelConnection(ctx context.Context, req *eventarcp
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.DeleteChannelConnectionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteChannelConnectionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1822,6 +2289,9 @@ func (c *gRPCClient) GetGoogleChannelConfig(ctx context.Context, req *eventarcpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/GetGoogleChannelConfig")
+	}
 	opts = append((*c.CallOptions).GetGoogleChannelConfig[0:len((*c.CallOptions).GetGoogleChannelConfig):len((*c.CallOptions).GetGoogleChannelConfig)], opts...)
 	var resp *eventarcpb.GoogleChannelConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1840,6 +2310,9 @@ func (c *gRPCClient) UpdateGoogleChannelConfig(ctx context.Context, req *eventar
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/UpdateGoogleChannelConfig")
+	}
 	opts = append((*c.CallOptions).UpdateGoogleChannelConfig[0:len((*c.CallOptions).UpdateGoogleChannelConfig):len((*c.CallOptions).UpdateGoogleChannelConfig)], opts...)
 	var resp *eventarcpb.GoogleChannelConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1858,6 +2331,9 @@ func (c *gRPCClient) GetMessageBus(ctx context.Context, req *eventarcpb.GetMessa
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/GetMessageBus")
+	}
 	opts = append((*c.CallOptions).GetMessageBus[0:len((*c.CallOptions).GetMessageBus):len((*c.CallOptions).GetMessageBus)], opts...)
 	var resp *eventarcpb.MessageBus
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1876,9 +2352,12 @@ func (c *gRPCClient) ListMessageBuses(ctx context.Context, req *eventarcpb.ListM
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/ListMessageBuses")
+	}
 	opts = append((*c.CallOptions).ListMessageBuses[0:len((*c.CallOptions).ListMessageBuses):len((*c.CallOptions).ListMessageBuses)], opts...)
 	it := &MessageBusIterator{}
-	req = proto.Clone(req).(*eventarcpb.ListMessageBusesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*eventarcpb.MessageBus, string, error) {
 		resp := &eventarcpb.ListMessageBusesResponse{}
 		if pageToken != "" {
@@ -1922,9 +2401,12 @@ func (c *gRPCClient) ListMessageBusEnrollments(ctx context.Context, req *eventar
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/ListMessageBusEnrollments")
+	}
 	opts = append((*c.CallOptions).ListMessageBusEnrollments[0:len((*c.CallOptions).ListMessageBusEnrollments):len((*c.CallOptions).ListMessageBusEnrollments)], opts...)
 	it := &StringIterator{}
-	req = proto.Clone(req).(*eventarcpb.ListMessageBusEnrollmentsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]string, string, error) {
 		resp := &eventarcpb.ListMessageBusEnrollmentsResponse{}
 		if pageToken != "" {
@@ -1968,6 +2450,9 @@ func (c *gRPCClient) CreateMessageBus(ctx context.Context, req *eventarcpb.Creat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/CreateMessageBus")
+	}
 	opts = append((*c.CallOptions).CreateMessageBus[0:len((*c.CallOptions).CreateMessageBus):len((*c.CallOptions).CreateMessageBus)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1978,8 +2463,12 @@ func (c *gRPCClient) CreateMessageBus(ctx context.Context, req *eventarcpb.Creat
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.CreateMessageBusOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateMessageBusOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1988,6 +2477,9 @@ func (c *gRPCClient) UpdateMessageBus(ctx context.Context, req *eventarcpb.Updat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/UpdateMessageBus")
+	}
 	opts = append((*c.CallOptions).UpdateMessageBus[0:len((*c.CallOptions).UpdateMessageBus):len((*c.CallOptions).UpdateMessageBus)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1998,8 +2490,12 @@ func (c *gRPCClient) UpdateMessageBus(ctx context.Context, req *eventarcpb.Updat
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.UpdateMessageBusOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateMessageBusOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2008,6 +2504,9 @@ func (c *gRPCClient) DeleteMessageBus(ctx context.Context, req *eventarcpb.Delet
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/DeleteMessageBus")
+	}
 	opts = append((*c.CallOptions).DeleteMessageBus[0:len((*c.CallOptions).DeleteMessageBus):len((*c.CallOptions).DeleteMessageBus)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2018,8 +2517,12 @@ func (c *gRPCClient) DeleteMessageBus(ctx context.Context, req *eventarcpb.Delet
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.DeleteMessageBusOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteMessageBusOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2028,6 +2531,9 @@ func (c *gRPCClient) GetEnrollment(ctx context.Context, req *eventarcpb.GetEnrol
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/GetEnrollment")
+	}
 	opts = append((*c.CallOptions).GetEnrollment[0:len((*c.CallOptions).GetEnrollment):len((*c.CallOptions).GetEnrollment)], opts...)
 	var resp *eventarcpb.Enrollment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2046,9 +2552,12 @@ func (c *gRPCClient) ListEnrollments(ctx context.Context, req *eventarcpb.ListEn
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/ListEnrollments")
+	}
 	opts = append((*c.CallOptions).ListEnrollments[0:len((*c.CallOptions).ListEnrollments):len((*c.CallOptions).ListEnrollments)], opts...)
 	it := &EnrollmentIterator{}
-	req = proto.Clone(req).(*eventarcpb.ListEnrollmentsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*eventarcpb.Enrollment, string, error) {
 		resp := &eventarcpb.ListEnrollmentsResponse{}
 		if pageToken != "" {
@@ -2092,6 +2601,9 @@ func (c *gRPCClient) CreateEnrollment(ctx context.Context, req *eventarcpb.Creat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/CreateEnrollment")
+	}
 	opts = append((*c.CallOptions).CreateEnrollment[0:len((*c.CallOptions).CreateEnrollment):len((*c.CallOptions).CreateEnrollment)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2102,8 +2614,12 @@ func (c *gRPCClient) CreateEnrollment(ctx context.Context, req *eventarcpb.Creat
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.CreateEnrollmentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateEnrollmentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2112,6 +2628,9 @@ func (c *gRPCClient) UpdateEnrollment(ctx context.Context, req *eventarcpb.Updat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/UpdateEnrollment")
+	}
 	opts = append((*c.CallOptions).UpdateEnrollment[0:len((*c.CallOptions).UpdateEnrollment):len((*c.CallOptions).UpdateEnrollment)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2122,8 +2641,12 @@ func (c *gRPCClient) UpdateEnrollment(ctx context.Context, req *eventarcpb.Updat
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.UpdateEnrollmentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateEnrollmentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2132,6 +2655,9 @@ func (c *gRPCClient) DeleteEnrollment(ctx context.Context, req *eventarcpb.Delet
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/DeleteEnrollment")
+	}
 	opts = append((*c.CallOptions).DeleteEnrollment[0:len((*c.CallOptions).DeleteEnrollment):len((*c.CallOptions).DeleteEnrollment)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2142,8 +2668,12 @@ func (c *gRPCClient) DeleteEnrollment(ctx context.Context, req *eventarcpb.Delet
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.DeleteEnrollmentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteEnrollmentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2152,6 +2682,9 @@ func (c *gRPCClient) GetPipeline(ctx context.Context, req *eventarcpb.GetPipelin
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/GetPipeline")
+	}
 	opts = append((*c.CallOptions).GetPipeline[0:len((*c.CallOptions).GetPipeline):len((*c.CallOptions).GetPipeline)], opts...)
 	var resp *eventarcpb.Pipeline
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2170,9 +2703,12 @@ func (c *gRPCClient) ListPipelines(ctx context.Context, req *eventarcpb.ListPipe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/ListPipelines")
+	}
 	opts = append((*c.CallOptions).ListPipelines[0:len((*c.CallOptions).ListPipelines):len((*c.CallOptions).ListPipelines)], opts...)
 	it := &PipelineIterator{}
-	req = proto.Clone(req).(*eventarcpb.ListPipelinesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*eventarcpb.Pipeline, string, error) {
 		resp := &eventarcpb.ListPipelinesResponse{}
 		if pageToken != "" {
@@ -2216,6 +2752,9 @@ func (c *gRPCClient) CreatePipeline(ctx context.Context, req *eventarcpb.CreateP
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/CreatePipeline")
+	}
 	opts = append((*c.CallOptions).CreatePipeline[0:len((*c.CallOptions).CreatePipeline):len((*c.CallOptions).CreatePipeline)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2226,8 +2765,12 @@ func (c *gRPCClient) CreatePipeline(ctx context.Context, req *eventarcpb.CreateP
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.CreatePipelineOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreatePipelineOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2236,6 +2779,9 @@ func (c *gRPCClient) UpdatePipeline(ctx context.Context, req *eventarcpb.UpdateP
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/UpdatePipeline")
+	}
 	opts = append((*c.CallOptions).UpdatePipeline[0:len((*c.CallOptions).UpdatePipeline):len((*c.CallOptions).UpdatePipeline)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2246,8 +2792,12 @@ func (c *gRPCClient) UpdatePipeline(ctx context.Context, req *eventarcpb.UpdateP
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.UpdatePipelineOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdatePipelineOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2256,6 +2806,9 @@ func (c *gRPCClient) DeletePipeline(ctx context.Context, req *eventarcpb.DeleteP
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/DeletePipeline")
+	}
 	opts = append((*c.CallOptions).DeletePipeline[0:len((*c.CallOptions).DeletePipeline):len((*c.CallOptions).DeletePipeline)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2266,8 +2819,12 @@ func (c *gRPCClient) DeletePipeline(ctx context.Context, req *eventarcpb.DeleteP
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.DeletePipelineOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeletePipelineOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2276,6 +2833,9 @@ func (c *gRPCClient) GetGoogleApiSource(ctx context.Context, req *eventarcpb.Get
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/GetGoogleApiSource")
+	}
 	opts = append((*c.CallOptions).GetGoogleApiSource[0:len((*c.CallOptions).GetGoogleApiSource):len((*c.CallOptions).GetGoogleApiSource)], opts...)
 	var resp *eventarcpb.GoogleApiSource
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2294,9 +2854,12 @@ func (c *gRPCClient) ListGoogleApiSources(ctx context.Context, req *eventarcpb.L
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/ListGoogleApiSources")
+	}
 	opts = append((*c.CallOptions).ListGoogleApiSources[0:len((*c.CallOptions).ListGoogleApiSources):len((*c.CallOptions).ListGoogleApiSources)], opts...)
 	it := &GoogleApiSourceIterator{}
-	req = proto.Clone(req).(*eventarcpb.ListGoogleApiSourcesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*eventarcpb.GoogleApiSource, string, error) {
 		resp := &eventarcpb.ListGoogleApiSourcesResponse{}
 		if pageToken != "" {
@@ -2340,6 +2903,9 @@ func (c *gRPCClient) CreateGoogleApiSource(ctx context.Context, req *eventarcpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/CreateGoogleApiSource")
+	}
 	opts = append((*c.CallOptions).CreateGoogleApiSource[0:len((*c.CallOptions).CreateGoogleApiSource):len((*c.CallOptions).CreateGoogleApiSource)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2350,8 +2916,12 @@ func (c *gRPCClient) CreateGoogleApiSource(ctx context.Context, req *eventarcpb.
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.CreateGoogleApiSourceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateGoogleApiSourceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2360,6 +2930,9 @@ func (c *gRPCClient) UpdateGoogleApiSource(ctx context.Context, req *eventarcpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/UpdateGoogleApiSource")
+	}
 	opts = append((*c.CallOptions).UpdateGoogleApiSource[0:len((*c.CallOptions).UpdateGoogleApiSource):len((*c.CallOptions).UpdateGoogleApiSource)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2370,8 +2943,12 @@ func (c *gRPCClient) UpdateGoogleApiSource(ctx context.Context, req *eventarcpb.
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.UpdateGoogleApiSourceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateGoogleApiSourceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2380,6 +2957,9 @@ func (c *gRPCClient) DeleteGoogleApiSource(ctx context.Context, req *eventarcpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/DeleteGoogleApiSource")
+	}
 	opts = append((*c.CallOptions).DeleteGoogleApiSource[0:len((*c.CallOptions).DeleteGoogleApiSource):len((*c.CallOptions).DeleteGoogleApiSource)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2390,8 +2970,12 @@ func (c *gRPCClient) DeleteGoogleApiSource(ctx context.Context, req *eventarcpb.
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.DeleteGoogleApiSourceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteGoogleApiSourceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2400,6 +2984,9 @@ func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2418,9 +3005,12 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/ListLocations")
+	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -2464,6 +3054,9 @@ func (c *gRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2482,6 +3075,9 @@ func (c *gRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2500,6 +3096,9 @@ func (c *gRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2518,6 +3117,9 @@ func (c *gRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -2532,6 +3134,9 @@ func (c *gRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+	}
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -2546,6 +3151,9 @@ func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2564,9 +3172,12 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -2624,6 +3235,10 @@ func (c *restClient) GetTrigger(ctx context.Context, req *eventarcpb.GetTriggerR
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/GetTrigger")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/triggers/*}")
+	}
 	opts = append((*c.CallOptions).GetTrigger[0:len((*c.CallOptions).GetTrigger):len((*c.CallOptions).GetTrigger)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &eventarcpb.Trigger{}
@@ -2658,7 +3273,7 @@ func (c *restClient) GetTrigger(ctx context.Context, req *eventarcpb.GetTriggerR
 // ListTriggers list triggers.
 func (c *restClient) ListTriggers(ctx context.Context, req *eventarcpb.ListTriggersRequest, opts ...gax.CallOption) *TriggerIterator {
 	it := &TriggerIterator{}
-	req = proto.Clone(req).(*eventarcpb.ListTriggersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*eventarcpb.Trigger, string, error) {
 		resp := &eventarcpb.ListTriggersResponse{}
@@ -2769,6 +3384,10 @@ func (c *restClient) CreateTrigger(ctx context.Context, req *eventarcpb.CreateTr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/CreateTrigger")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/triggers")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2797,8 +3416,12 @@ func (c *restClient) CreateTrigger(ctx context.Context, req *eventarcpb.CreateTr
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.CreateTriggerOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateTriggerOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2842,6 +3465,10 @@ func (c *restClient) UpdateTrigger(ctx context.Context, req *eventarcpb.UpdateTr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/UpdateTrigger")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{trigger.name=projects/*/locations/*/triggers/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2870,8 +3497,12 @@ func (c *restClient) UpdateTrigger(ctx context.Context, req *eventarcpb.UpdateTr
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.UpdateTriggerOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateTriggerOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2904,6 +3535,10 @@ func (c *restClient) DeleteTrigger(ctx context.Context, req *eventarcpb.DeleteTr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/DeleteTrigger")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/triggers/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2932,8 +3567,12 @@ func (c *restClient) DeleteTrigger(ctx context.Context, req *eventarcpb.DeleteTr
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.DeleteTriggerOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteTriggerOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2957,6 +3596,10 @@ func (c *restClient) GetChannel(ctx context.Context, req *eventarcpb.GetChannelR
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/GetChannel")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/channels/*}")
+	}
 	opts = append((*c.CallOptions).GetChannel[0:len((*c.CallOptions).GetChannel):len((*c.CallOptions).GetChannel)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &eventarcpb.Channel{}
@@ -2991,7 +3634,7 @@ func (c *restClient) GetChannel(ctx context.Context, req *eventarcpb.GetChannelR
 // ListChannels list channels.
 func (c *restClient) ListChannels(ctx context.Context, req *eventarcpb.ListChannelsRequest, opts ...gax.CallOption) *ChannelIterator {
 	it := &ChannelIterator{}
-	req = proto.Clone(req).(*eventarcpb.ListChannelsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*eventarcpb.Channel, string, error) {
 		resp := &eventarcpb.ListChannelsResponse{}
@@ -3099,6 +3742,10 @@ func (c *restClient) CreateChannel(ctx context.Context, req *eventarcpb.CreateCh
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/CreateChannel")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/channels")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3127,8 +3774,12 @@ func (c *restClient) CreateChannel(ctx context.Context, req *eventarcpb.CreateCh
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.CreateChannelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateChannelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3169,6 +3820,10 @@ func (c *restClient) UpdateChannel(ctx context.Context, req *eventarcpb.UpdateCh
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/UpdateChannel")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{channel.name=projects/*/locations/*/channels/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3197,8 +3852,12 @@ func (c *restClient) UpdateChannel(ctx context.Context, req *eventarcpb.UpdateCh
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.UpdateChannelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateChannelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3225,6 +3884,10 @@ func (c *restClient) DeleteChannel(ctx context.Context, req *eventarcpb.DeleteCh
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/DeleteChannel")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/channels/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3253,8 +3916,12 @@ func (c *restClient) DeleteChannel(ctx context.Context, req *eventarcpb.DeleteCh
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.DeleteChannelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteChannelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3278,6 +3945,10 @@ func (c *restClient) GetProvider(ctx context.Context, req *eventarcpb.GetProvide
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/GetProvider")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/providers/*}")
+	}
 	opts = append((*c.CallOptions).GetProvider[0:len((*c.CallOptions).GetProvider):len((*c.CallOptions).GetProvider)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &eventarcpb.Provider{}
@@ -3312,7 +3983,7 @@ func (c *restClient) GetProvider(ctx context.Context, req *eventarcpb.GetProvide
 // ListProviders list providers.
 func (c *restClient) ListProviders(ctx context.Context, req *eventarcpb.ListProvidersRequest, opts ...gax.CallOption) *ProviderIterator {
 	it := &ProviderIterator{}
-	req = proto.Clone(req).(*eventarcpb.ListProvidersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*eventarcpb.Provider, string, error) {
 		resp := &eventarcpb.ListProvidersResponse{}
@@ -3412,6 +4083,10 @@ func (c *restClient) GetChannelConnection(ctx context.Context, req *eventarcpb.G
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/GetChannelConnection")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/channelConnections/*}")
+	}
 	opts = append((*c.CallOptions).GetChannelConnection[0:len((*c.CallOptions).GetChannelConnection):len((*c.CallOptions).GetChannelConnection)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &eventarcpb.ChannelConnection{}
@@ -3446,7 +4121,7 @@ func (c *restClient) GetChannelConnection(ctx context.Context, req *eventarcpb.G
 // ListChannelConnections list channel connections.
 func (c *restClient) ListChannelConnections(ctx context.Context, req *eventarcpb.ListChannelConnectionsRequest, opts ...gax.CallOption) *ChannelConnectionIterator {
 	it := &ChannelConnectionIterator{}
-	req = proto.Clone(req).(*eventarcpb.ListChannelConnectionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*eventarcpb.ChannelConnection, string, error) {
 		resp := &eventarcpb.ListChannelConnectionsResponse{}
@@ -3548,6 +4223,10 @@ func (c *restClient) CreateChannelConnection(ctx context.Context, req *eventarcp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/CreateChannelConnection")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/channelConnections")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3576,8 +4255,12 @@ func (c *restClient) CreateChannelConnection(ctx context.Context, req *eventarcp
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.CreateChannelConnectionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateChannelConnectionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3601,6 +4284,10 @@ func (c *restClient) DeleteChannelConnection(ctx context.Context, req *eventarcp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/DeleteChannelConnection")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/channelConnections/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3629,8 +4316,12 @@ func (c *restClient) DeleteChannelConnection(ctx context.Context, req *eventarcp
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.DeleteChannelConnectionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteChannelConnectionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3656,6 +4347,10 @@ func (c *restClient) GetGoogleChannelConfig(ctx context.Context, req *eventarcpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/GetGoogleChannelConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/googleChannelConfig}")
+	}
 	opts = append((*c.CallOptions).GetGoogleChannelConfig[0:len((*c.CallOptions).GetGoogleChannelConfig):len((*c.CallOptions).GetGoogleChannelConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &eventarcpb.GoogleChannelConfig{}
@@ -3720,6 +4415,10 @@ func (c *restClient) UpdateGoogleChannelConfig(ctx context.Context, req *eventar
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/UpdateGoogleChannelConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{google_channel_config.name=projects/*/locations/*/googleChannelConfig}")
+	}
 	opts = append((*c.CallOptions).UpdateGoogleChannelConfig[0:len((*c.CallOptions).UpdateGoogleChannelConfig):len((*c.CallOptions).UpdateGoogleChannelConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &eventarcpb.GoogleChannelConfig{}
@@ -3770,6 +4469,10 @@ func (c *restClient) GetMessageBus(ctx context.Context, req *eventarcpb.GetMessa
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/GetMessageBus")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/messageBuses/*}")
+	}
 	opts = append((*c.CallOptions).GetMessageBus[0:len((*c.CallOptions).GetMessageBus):len((*c.CallOptions).GetMessageBus)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &eventarcpb.MessageBus{}
@@ -3804,7 +4507,7 @@ func (c *restClient) GetMessageBus(ctx context.Context, req *eventarcpb.GetMessa
 // ListMessageBuses list message buses.
 func (c *restClient) ListMessageBuses(ctx context.Context, req *eventarcpb.ListMessageBusesRequest, opts ...gax.CallOption) *MessageBusIterator {
 	it := &MessageBusIterator{}
-	req = proto.Clone(req).(*eventarcpb.ListMessageBusesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*eventarcpb.MessageBus, string, error) {
 		resp := &eventarcpb.ListMessageBusesResponse{}
@@ -3888,7 +4591,7 @@ func (c *restClient) ListMessageBuses(ctx context.Context, req *eventarcpb.ListM
 // ListMessageBusEnrollments list message bus enrollments.
 func (c *restClient) ListMessageBusEnrollments(ctx context.Context, req *eventarcpb.ListMessageBusEnrollmentsRequest, opts ...gax.CallOption) *StringIterator {
 	it := &StringIterator{}
-	req = proto.Clone(req).(*eventarcpb.ListMessageBusEnrollmentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]string, string, error) {
 		resp := &eventarcpb.ListMessageBusEnrollmentsResponse{}
@@ -3993,6 +4696,10 @@ func (c *restClient) CreateMessageBus(ctx context.Context, req *eventarcpb.Creat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/CreateMessageBus")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/messageBuses")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4021,8 +4728,12 @@ func (c *restClient) CreateMessageBus(ctx context.Context, req *eventarcpb.Creat
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.CreateMessageBusOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateMessageBusOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4066,6 +4777,10 @@ func (c *restClient) UpdateMessageBus(ctx context.Context, req *eventarcpb.Updat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/UpdateMessageBus")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{message_bus.name=projects/*/locations/*/messageBuses/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4094,8 +4809,12 @@ func (c *restClient) UpdateMessageBus(ctx context.Context, req *eventarcpb.Updat
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.UpdateMessageBusOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateMessageBusOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4128,6 +4847,10 @@ func (c *restClient) DeleteMessageBus(ctx context.Context, req *eventarcpb.Delet
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/DeleteMessageBus")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/messageBuses/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4156,8 +4879,12 @@ func (c *restClient) DeleteMessageBus(ctx context.Context, req *eventarcpb.Delet
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.DeleteMessageBusOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteMessageBusOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4181,6 +4908,10 @@ func (c *restClient) GetEnrollment(ctx context.Context, req *eventarcpb.GetEnrol
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/GetEnrollment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/enrollments/*}")
+	}
 	opts = append((*c.CallOptions).GetEnrollment[0:len((*c.CallOptions).GetEnrollment):len((*c.CallOptions).GetEnrollment)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &eventarcpb.Enrollment{}
@@ -4215,7 +4946,7 @@ func (c *restClient) GetEnrollment(ctx context.Context, req *eventarcpb.GetEnrol
 // ListEnrollments list Enrollments.
 func (c *restClient) ListEnrollments(ctx context.Context, req *eventarcpb.ListEnrollmentsRequest, opts ...gax.CallOption) *EnrollmentIterator {
 	it := &EnrollmentIterator{}
-	req = proto.Clone(req).(*eventarcpb.ListEnrollmentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*eventarcpb.Enrollment, string, error) {
 		resp := &eventarcpb.ListEnrollmentsResponse{}
@@ -4326,6 +5057,10 @@ func (c *restClient) CreateEnrollment(ctx context.Context, req *eventarcpb.Creat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/CreateEnrollment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/enrollments")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4354,8 +5089,12 @@ func (c *restClient) CreateEnrollment(ctx context.Context, req *eventarcpb.Creat
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.CreateEnrollmentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateEnrollmentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4399,6 +5138,10 @@ func (c *restClient) UpdateEnrollment(ctx context.Context, req *eventarcpb.Updat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/UpdateEnrollment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{enrollment.name=projects/*/locations/*/enrollments/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4427,8 +5170,12 @@ func (c *restClient) UpdateEnrollment(ctx context.Context, req *eventarcpb.Updat
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.UpdateEnrollmentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateEnrollmentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4461,6 +5208,10 @@ func (c *restClient) DeleteEnrollment(ctx context.Context, req *eventarcpb.Delet
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/DeleteEnrollment")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/enrollments/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4489,8 +5240,12 @@ func (c *restClient) DeleteEnrollment(ctx context.Context, req *eventarcpb.Delet
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.DeleteEnrollmentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteEnrollmentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4514,6 +5269,10 @@ func (c *restClient) GetPipeline(ctx context.Context, req *eventarcpb.GetPipelin
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/GetPipeline")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/pipelines/*}")
+	}
 	opts = append((*c.CallOptions).GetPipeline[0:len((*c.CallOptions).GetPipeline):len((*c.CallOptions).GetPipeline)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &eventarcpb.Pipeline{}
@@ -4548,7 +5307,7 @@ func (c *restClient) GetPipeline(ctx context.Context, req *eventarcpb.GetPipelin
 // ListPipelines list pipelines.
 func (c *restClient) ListPipelines(ctx context.Context, req *eventarcpb.ListPipelinesRequest, opts ...gax.CallOption) *PipelineIterator {
 	it := &PipelineIterator{}
-	req = proto.Clone(req).(*eventarcpb.ListPipelinesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*eventarcpb.Pipeline, string, error) {
 		resp := &eventarcpb.ListPipelinesResponse{}
@@ -4659,6 +5418,10 @@ func (c *restClient) CreatePipeline(ctx context.Context, req *eventarcpb.CreateP
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/CreatePipeline")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/pipelines")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4687,8 +5450,12 @@ func (c *restClient) CreatePipeline(ctx context.Context, req *eventarcpb.CreateP
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.CreatePipelineOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreatePipelineOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4732,6 +5499,10 @@ func (c *restClient) UpdatePipeline(ctx context.Context, req *eventarcpb.UpdateP
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/UpdatePipeline")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{pipeline.name=projects/*/locations/*/pipelines/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4760,8 +5531,12 @@ func (c *restClient) UpdatePipeline(ctx context.Context, req *eventarcpb.UpdateP
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.UpdatePipelineOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdatePipelineOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4794,6 +5569,10 @@ func (c *restClient) DeletePipeline(ctx context.Context, req *eventarcpb.DeleteP
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/DeletePipeline")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/pipelines/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4822,8 +5601,12 @@ func (c *restClient) DeletePipeline(ctx context.Context, req *eventarcpb.DeleteP
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.DeletePipelineOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeletePipelineOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4847,6 +5630,10 @@ func (c *restClient) GetGoogleApiSource(ctx context.Context, req *eventarcpb.Get
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/GetGoogleApiSource")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/googleApiSources/*}")
+	}
 	opts = append((*c.CallOptions).GetGoogleApiSource[0:len((*c.CallOptions).GetGoogleApiSource):len((*c.CallOptions).GetGoogleApiSource)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &eventarcpb.GoogleApiSource{}
@@ -4881,7 +5668,7 @@ func (c *restClient) GetGoogleApiSource(ctx context.Context, req *eventarcpb.Get
 // ListGoogleApiSources list GoogleApiSources.
 func (c *restClient) ListGoogleApiSources(ctx context.Context, req *eventarcpb.ListGoogleApiSourcesRequest, opts ...gax.CallOption) *GoogleApiSourceIterator {
 	it := &GoogleApiSourceIterator{}
-	req = proto.Clone(req).(*eventarcpb.ListGoogleApiSourcesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*eventarcpb.GoogleApiSource, string, error) {
 		resp := &eventarcpb.ListGoogleApiSourcesResponse{}
@@ -4992,6 +5779,10 @@ func (c *restClient) CreateGoogleApiSource(ctx context.Context, req *eventarcpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/CreateGoogleApiSource")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/googleApiSources")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5020,8 +5811,12 @@ func (c *restClient) CreateGoogleApiSource(ctx context.Context, req *eventarcpb.
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.CreateGoogleApiSourceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateGoogleApiSourceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5065,6 +5860,10 @@ func (c *restClient) UpdateGoogleApiSource(ctx context.Context, req *eventarcpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/UpdateGoogleApiSource")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{google_api_source.name=projects/*/locations/*/googleApiSources/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5093,8 +5892,12 @@ func (c *restClient) UpdateGoogleApiSource(ctx context.Context, req *eventarcpb.
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.UpdateGoogleApiSourceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateGoogleApiSourceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5127,6 +5930,10 @@ func (c *restClient) DeleteGoogleApiSource(ctx context.Context, req *eventarcpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.eventarc.v1.Eventarc/DeleteGoogleApiSource")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/googleApiSources/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5155,8 +5962,12 @@ func (c *restClient) DeleteGoogleApiSource(ctx context.Context, req *eventarcpb.
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*eventarc.DeleteGoogleApiSourceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteGoogleApiSourceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5180,6 +5991,10 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*}")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &locationpb.Location{}
@@ -5214,7 +6029,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 // ListLocations lists information about the supported locations for this service.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -5315,6 +6130,10 @@ func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/triggers/*}:getIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -5375,6 +6194,10 @@ func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/triggers/*}:setIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -5437,6 +6260,10 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/triggers/*}:testIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.TestIamPermissionsResponse{}
@@ -5493,6 +6320,10 @@ func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -5528,6 +6359,10 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -5563,6 +6398,10 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -5597,7 +6436,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
@@ -5625,6 +6464,9 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 		}
 		if req.GetPageToken() != "" {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req.GetReturnPartialSuccess() {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -5679,7 +6521,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created CreateChannelOperation, possibly from a different process.
 func (c *gRPCClient) CreateChannelOperation(name string) *CreateChannelOperation {
 	return &CreateChannelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.CreateChannelOperation"),
 	}
 }
 
@@ -5688,7 +6530,7 @@ func (c *gRPCClient) CreateChannelOperation(name string) *CreateChannelOperation
 func (c *restClient) CreateChannelOperation(name string) *CreateChannelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateChannelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.CreateChannelOperation"),
 		pollPath: override,
 	}
 }
@@ -5697,7 +6539,7 @@ func (c *restClient) CreateChannelOperation(name string) *CreateChannelOperation
 // The name must be that of a previously created CreateChannelConnectionOperation, possibly from a different process.
 func (c *gRPCClient) CreateChannelConnectionOperation(name string) *CreateChannelConnectionOperation {
 	return &CreateChannelConnectionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.CreateChannelConnectionOperation"),
 	}
 }
 
@@ -5706,7 +6548,7 @@ func (c *gRPCClient) CreateChannelConnectionOperation(name string) *CreateChanne
 func (c *restClient) CreateChannelConnectionOperation(name string) *CreateChannelConnectionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateChannelConnectionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.CreateChannelConnectionOperation"),
 		pollPath: override,
 	}
 }
@@ -5715,7 +6557,7 @@ func (c *restClient) CreateChannelConnectionOperation(name string) *CreateChanne
 // The name must be that of a previously created CreateEnrollmentOperation, possibly from a different process.
 func (c *gRPCClient) CreateEnrollmentOperation(name string) *CreateEnrollmentOperation {
 	return &CreateEnrollmentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.CreateEnrollmentOperation"),
 	}
 }
 
@@ -5724,7 +6566,7 @@ func (c *gRPCClient) CreateEnrollmentOperation(name string) *CreateEnrollmentOpe
 func (c *restClient) CreateEnrollmentOperation(name string) *CreateEnrollmentOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateEnrollmentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.CreateEnrollmentOperation"),
 		pollPath: override,
 	}
 }
@@ -5733,7 +6575,7 @@ func (c *restClient) CreateEnrollmentOperation(name string) *CreateEnrollmentOpe
 // The name must be that of a previously created CreateGoogleApiSourceOperation, possibly from a different process.
 func (c *gRPCClient) CreateGoogleApiSourceOperation(name string) *CreateGoogleApiSourceOperation {
 	return &CreateGoogleApiSourceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.CreateGoogleApiSourceOperation"),
 	}
 }
 
@@ -5742,7 +6584,7 @@ func (c *gRPCClient) CreateGoogleApiSourceOperation(name string) *CreateGoogleAp
 func (c *restClient) CreateGoogleApiSourceOperation(name string) *CreateGoogleApiSourceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateGoogleApiSourceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.CreateGoogleApiSourceOperation"),
 		pollPath: override,
 	}
 }
@@ -5751,7 +6593,7 @@ func (c *restClient) CreateGoogleApiSourceOperation(name string) *CreateGoogleAp
 // The name must be that of a previously created CreateMessageBusOperation, possibly from a different process.
 func (c *gRPCClient) CreateMessageBusOperation(name string) *CreateMessageBusOperation {
 	return &CreateMessageBusOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.CreateMessageBusOperation"),
 	}
 }
 
@@ -5760,7 +6602,7 @@ func (c *gRPCClient) CreateMessageBusOperation(name string) *CreateMessageBusOpe
 func (c *restClient) CreateMessageBusOperation(name string) *CreateMessageBusOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateMessageBusOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.CreateMessageBusOperation"),
 		pollPath: override,
 	}
 }
@@ -5769,7 +6611,7 @@ func (c *restClient) CreateMessageBusOperation(name string) *CreateMessageBusOpe
 // The name must be that of a previously created CreatePipelineOperation, possibly from a different process.
 func (c *gRPCClient) CreatePipelineOperation(name string) *CreatePipelineOperation {
 	return &CreatePipelineOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.CreatePipelineOperation"),
 	}
 }
 
@@ -5778,7 +6620,7 @@ func (c *gRPCClient) CreatePipelineOperation(name string) *CreatePipelineOperati
 func (c *restClient) CreatePipelineOperation(name string) *CreatePipelineOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreatePipelineOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.CreatePipelineOperation"),
 		pollPath: override,
 	}
 }
@@ -5787,7 +6629,7 @@ func (c *restClient) CreatePipelineOperation(name string) *CreatePipelineOperati
 // The name must be that of a previously created CreateTriggerOperation, possibly from a different process.
 func (c *gRPCClient) CreateTriggerOperation(name string) *CreateTriggerOperation {
 	return &CreateTriggerOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.CreateTriggerOperation"),
 	}
 }
 
@@ -5796,7 +6638,7 @@ func (c *gRPCClient) CreateTriggerOperation(name string) *CreateTriggerOperation
 func (c *restClient) CreateTriggerOperation(name string) *CreateTriggerOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateTriggerOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.CreateTriggerOperation"),
 		pollPath: override,
 	}
 }
@@ -5805,7 +6647,7 @@ func (c *restClient) CreateTriggerOperation(name string) *CreateTriggerOperation
 // The name must be that of a previously created DeleteChannelOperation, possibly from a different process.
 func (c *gRPCClient) DeleteChannelOperation(name string) *DeleteChannelOperation {
 	return &DeleteChannelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.DeleteChannelOperation"),
 	}
 }
 
@@ -5814,7 +6656,7 @@ func (c *gRPCClient) DeleteChannelOperation(name string) *DeleteChannelOperation
 func (c *restClient) DeleteChannelOperation(name string) *DeleteChannelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteChannelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.DeleteChannelOperation"),
 		pollPath: override,
 	}
 }
@@ -5823,7 +6665,7 @@ func (c *restClient) DeleteChannelOperation(name string) *DeleteChannelOperation
 // The name must be that of a previously created DeleteChannelConnectionOperation, possibly from a different process.
 func (c *gRPCClient) DeleteChannelConnectionOperation(name string) *DeleteChannelConnectionOperation {
 	return &DeleteChannelConnectionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.DeleteChannelConnectionOperation"),
 	}
 }
 
@@ -5832,7 +6674,7 @@ func (c *gRPCClient) DeleteChannelConnectionOperation(name string) *DeleteChanne
 func (c *restClient) DeleteChannelConnectionOperation(name string) *DeleteChannelConnectionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteChannelConnectionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.DeleteChannelConnectionOperation"),
 		pollPath: override,
 	}
 }
@@ -5841,7 +6683,7 @@ func (c *restClient) DeleteChannelConnectionOperation(name string) *DeleteChanne
 // The name must be that of a previously created DeleteEnrollmentOperation, possibly from a different process.
 func (c *gRPCClient) DeleteEnrollmentOperation(name string) *DeleteEnrollmentOperation {
 	return &DeleteEnrollmentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.DeleteEnrollmentOperation"),
 	}
 }
 
@@ -5850,7 +6692,7 @@ func (c *gRPCClient) DeleteEnrollmentOperation(name string) *DeleteEnrollmentOpe
 func (c *restClient) DeleteEnrollmentOperation(name string) *DeleteEnrollmentOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteEnrollmentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.DeleteEnrollmentOperation"),
 		pollPath: override,
 	}
 }
@@ -5859,7 +6701,7 @@ func (c *restClient) DeleteEnrollmentOperation(name string) *DeleteEnrollmentOpe
 // The name must be that of a previously created DeleteGoogleApiSourceOperation, possibly from a different process.
 func (c *gRPCClient) DeleteGoogleApiSourceOperation(name string) *DeleteGoogleApiSourceOperation {
 	return &DeleteGoogleApiSourceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.DeleteGoogleApiSourceOperation"),
 	}
 }
 
@@ -5868,7 +6710,7 @@ func (c *gRPCClient) DeleteGoogleApiSourceOperation(name string) *DeleteGoogleAp
 func (c *restClient) DeleteGoogleApiSourceOperation(name string) *DeleteGoogleApiSourceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteGoogleApiSourceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.DeleteGoogleApiSourceOperation"),
 		pollPath: override,
 	}
 }
@@ -5877,7 +6719,7 @@ func (c *restClient) DeleteGoogleApiSourceOperation(name string) *DeleteGoogleAp
 // The name must be that of a previously created DeleteMessageBusOperation, possibly from a different process.
 func (c *gRPCClient) DeleteMessageBusOperation(name string) *DeleteMessageBusOperation {
 	return &DeleteMessageBusOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.DeleteMessageBusOperation"),
 	}
 }
 
@@ -5886,7 +6728,7 @@ func (c *gRPCClient) DeleteMessageBusOperation(name string) *DeleteMessageBusOpe
 func (c *restClient) DeleteMessageBusOperation(name string) *DeleteMessageBusOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteMessageBusOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.DeleteMessageBusOperation"),
 		pollPath: override,
 	}
 }
@@ -5895,7 +6737,7 @@ func (c *restClient) DeleteMessageBusOperation(name string) *DeleteMessageBusOpe
 // The name must be that of a previously created DeletePipelineOperation, possibly from a different process.
 func (c *gRPCClient) DeletePipelineOperation(name string) *DeletePipelineOperation {
 	return &DeletePipelineOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.DeletePipelineOperation"),
 	}
 }
 
@@ -5904,7 +6746,7 @@ func (c *gRPCClient) DeletePipelineOperation(name string) *DeletePipelineOperati
 func (c *restClient) DeletePipelineOperation(name string) *DeletePipelineOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeletePipelineOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.DeletePipelineOperation"),
 		pollPath: override,
 	}
 }
@@ -5913,7 +6755,7 @@ func (c *restClient) DeletePipelineOperation(name string) *DeletePipelineOperati
 // The name must be that of a previously created DeleteTriggerOperation, possibly from a different process.
 func (c *gRPCClient) DeleteTriggerOperation(name string) *DeleteTriggerOperation {
 	return &DeleteTriggerOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.DeleteTriggerOperation"),
 	}
 }
 
@@ -5922,7 +6764,7 @@ func (c *gRPCClient) DeleteTriggerOperation(name string) *DeleteTriggerOperation
 func (c *restClient) DeleteTriggerOperation(name string) *DeleteTriggerOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteTriggerOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.DeleteTriggerOperation"),
 		pollPath: override,
 	}
 }
@@ -5931,7 +6773,7 @@ func (c *restClient) DeleteTriggerOperation(name string) *DeleteTriggerOperation
 // The name must be that of a previously created UpdateChannelOperation, possibly from a different process.
 func (c *gRPCClient) UpdateChannelOperation(name string) *UpdateChannelOperation {
 	return &UpdateChannelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.UpdateChannelOperation"),
 	}
 }
 
@@ -5940,7 +6782,7 @@ func (c *gRPCClient) UpdateChannelOperation(name string) *UpdateChannelOperation
 func (c *restClient) UpdateChannelOperation(name string) *UpdateChannelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateChannelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.UpdateChannelOperation"),
 		pollPath: override,
 	}
 }
@@ -5949,7 +6791,7 @@ func (c *restClient) UpdateChannelOperation(name string) *UpdateChannelOperation
 // The name must be that of a previously created UpdateEnrollmentOperation, possibly from a different process.
 func (c *gRPCClient) UpdateEnrollmentOperation(name string) *UpdateEnrollmentOperation {
 	return &UpdateEnrollmentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.UpdateEnrollmentOperation"),
 	}
 }
 
@@ -5958,7 +6800,7 @@ func (c *gRPCClient) UpdateEnrollmentOperation(name string) *UpdateEnrollmentOpe
 func (c *restClient) UpdateEnrollmentOperation(name string) *UpdateEnrollmentOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateEnrollmentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.UpdateEnrollmentOperation"),
 		pollPath: override,
 	}
 }
@@ -5967,7 +6809,7 @@ func (c *restClient) UpdateEnrollmentOperation(name string) *UpdateEnrollmentOpe
 // The name must be that of a previously created UpdateGoogleApiSourceOperation, possibly from a different process.
 func (c *gRPCClient) UpdateGoogleApiSourceOperation(name string) *UpdateGoogleApiSourceOperation {
 	return &UpdateGoogleApiSourceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.UpdateGoogleApiSourceOperation"),
 	}
 }
 
@@ -5976,7 +6818,7 @@ func (c *gRPCClient) UpdateGoogleApiSourceOperation(name string) *UpdateGoogleAp
 func (c *restClient) UpdateGoogleApiSourceOperation(name string) *UpdateGoogleApiSourceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateGoogleApiSourceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.UpdateGoogleApiSourceOperation"),
 		pollPath: override,
 	}
 }
@@ -5985,7 +6827,7 @@ func (c *restClient) UpdateGoogleApiSourceOperation(name string) *UpdateGoogleAp
 // The name must be that of a previously created UpdateMessageBusOperation, possibly from a different process.
 func (c *gRPCClient) UpdateMessageBusOperation(name string) *UpdateMessageBusOperation {
 	return &UpdateMessageBusOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.UpdateMessageBusOperation"),
 	}
 }
 
@@ -5994,7 +6836,7 @@ func (c *gRPCClient) UpdateMessageBusOperation(name string) *UpdateMessageBusOpe
 func (c *restClient) UpdateMessageBusOperation(name string) *UpdateMessageBusOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateMessageBusOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.UpdateMessageBusOperation"),
 		pollPath: override,
 	}
 }
@@ -6003,7 +6845,7 @@ func (c *restClient) UpdateMessageBusOperation(name string) *UpdateMessageBusOpe
 // The name must be that of a previously created UpdatePipelineOperation, possibly from a different process.
 func (c *gRPCClient) UpdatePipelineOperation(name string) *UpdatePipelineOperation {
 	return &UpdatePipelineOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.UpdatePipelineOperation"),
 	}
 }
 
@@ -6012,7 +6854,7 @@ func (c *gRPCClient) UpdatePipelineOperation(name string) *UpdatePipelineOperati
 func (c *restClient) UpdatePipelineOperation(name string) *UpdatePipelineOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdatePipelineOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.UpdatePipelineOperation"),
 		pollPath: override,
 	}
 }
@@ -6021,7 +6863,7 @@ func (c *restClient) UpdatePipelineOperation(name string) *UpdatePipelineOperati
 // The name must be that of a previously created UpdateTriggerOperation, possibly from a different process.
 func (c *gRPCClient) UpdateTriggerOperation(name string) *UpdateTriggerOperation {
 	return &UpdateTriggerOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.UpdateTriggerOperation"),
 	}
 }
 
@@ -6030,7 +6872,7 @@ func (c *gRPCClient) UpdateTriggerOperation(name string) *UpdateTriggerOperation
 func (c *restClient) UpdateTriggerOperation(name string) *UpdateTriggerOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateTriggerOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*eventarc.UpdateTriggerOperation"),
 		pollPath: override,
 	}
 }

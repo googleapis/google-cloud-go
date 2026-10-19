@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import (
 
 	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -53,6 +54,7 @@ type RegionNetworkFirewallPoliciesCallOptions struct {
 	Insert                []gax.CallOption
 	List                  []gax.CallOption
 	Patch                 []gax.CallOption
+	PatchAssociation      []gax.CallOption
 	PatchRule             []gax.CallOption
 	RemoveAssociation     []gax.CallOption
 	RemoveRule            []gax.CallOption
@@ -152,6 +154,9 @@ func defaultRegionNetworkFirewallPoliciesRESTCallOptions() *RegionNetworkFirewal
 		Patch: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
+		PatchAssociation: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		PatchRule: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
@@ -170,7 +175,7 @@ func defaultRegionNetworkFirewallPoliciesRESTCallOptions() *RegionNetworkFirewal
 	}
 }
 
-// internalRegionNetworkFirewallPoliciesClient is an interface that defines the methods available from Google Compute Engine API.
+// internalRegionNetworkFirewallPoliciesClient is an interface that defines the methods available from Compute Engine API.
 type internalRegionNetworkFirewallPoliciesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -187,6 +192,7 @@ type internalRegionNetworkFirewallPoliciesClient interface {
 	Insert(context.Context, *computepb.InsertRegionNetworkFirewallPolicyRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListRegionNetworkFirewallPoliciesRequest, ...gax.CallOption) *FirewallPolicyIterator
 	Patch(context.Context, *computepb.PatchRegionNetworkFirewallPolicyRequest, ...gax.CallOption) (*Operation, error)
+	PatchAssociation(context.Context, *computepb.PatchAssociationRegionNetworkFirewallPolicyRequest, ...gax.CallOption) (*Operation, error)
 	PatchRule(context.Context, *computepb.PatchRuleRegionNetworkFirewallPolicyRequest, ...gax.CallOption) (*Operation, error)
 	RemoveAssociation(context.Context, *computepb.RemoveAssociationRegionNetworkFirewallPolicyRequest, ...gax.CallOption) (*Operation, error)
 	RemoveRule(context.Context, *computepb.RemoveRuleRegionNetworkFirewallPolicyRequest, ...gax.CallOption) (*Operation, error)
@@ -194,10 +200,12 @@ type internalRegionNetworkFirewallPoliciesClient interface {
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsRegionNetworkFirewallPolicyRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 }
 
-// RegionNetworkFirewallPoliciesClient is a client for interacting with Google Compute Engine API.
+// RegionNetworkFirewallPoliciesClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The RegionNetworkFirewallPolicies API.
+//
+// This client uses RegionNetworkFirewallPolicies version 2026-09-01.
 type RegionNetworkFirewallPoliciesClient struct {
 	// The internal transport-dependent client.
 	internalClient internalRegionNetworkFirewallPoliciesClient
@@ -208,7 +216,7 @@ type RegionNetworkFirewallPoliciesClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *RegionNetworkFirewallPoliciesClient) Close() error {
 	return c.internalClient.Close()
@@ -264,7 +272,8 @@ func (c *RegionNetworkFirewallPoliciesClient) GetEffectiveFirewalls(ctx context.
 	return c.internalClient.GetEffectiveFirewalls(ctx, req, opts...)
 }
 
-// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such
+// policy or resource exists.
 func (c *RegionNetworkFirewallPoliciesClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyRegionNetworkFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.GetIamPolicy(ctx, req, opts...)
 }
@@ -279,7 +288,8 @@ func (c *RegionNetworkFirewallPoliciesClient) Insert(ctx context.Context, req *c
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List lists all the network firewall policies that have been configured for the specified project in the given region.
+// List lists all the network firewall policies that have been configured
+// for the specified project in the given region.
 func (c *RegionNetworkFirewallPoliciesClient) List(ctx context.Context, req *computepb.ListRegionNetworkFirewallPoliciesRequest, opts ...gax.CallOption) *FirewallPolicyIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
@@ -287,6 +297,11 @@ func (c *RegionNetworkFirewallPoliciesClient) List(ctx context.Context, req *com
 // Patch patches the specified network firewall policy.
 func (c *RegionNetworkFirewallPoliciesClient) Patch(ctx context.Context, req *computepb.PatchRegionNetworkFirewallPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
+}
+
+// PatchAssociation updates an association for the specified network firewall policy.
+func (c *RegionNetworkFirewallPoliciesClient) PatchAssociation(ctx context.Context, req *computepb.PatchAssociationRegionNetworkFirewallPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.PatchAssociation(ctx, req, opts...)
 }
 
 // PatchRule patches a rule of the specified priority.
@@ -304,7 +319,8 @@ func (c *RegionNetworkFirewallPoliciesClient) RemoveRule(ctx context.Context, re
 	return c.internalClient.RemoveRule(ctx, req, opts...)
 }
 
-// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
+// SetIamPolicy sets the access control policy on the specified resource.
+// Replaces any existing policy.
 func (c *RegionNetworkFirewallPoliciesClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyRegionNetworkFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.SetIamPolicy(ctx, req, opts...)
 }
@@ -339,6 +355,16 @@ type regionNetworkFirewallPoliciesRESTClient struct {
 // The RegionNetworkFirewallPolicies API.
 func NewRegionNetworkFirewallPoliciesRESTClient(ctx context.Context, opts ...option.ClientOption) (*RegionNetworkFirewallPoliciesClient, error) {
 	clientOpts := append(defaultRegionNetworkFirewallPoliciesRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "compute",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/compute/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "compute.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -352,6 +378,99 @@ func NewRegionNetworkFirewallPoliciesRESTClient(ctx context.Context, opts ...opt
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AddAssociation = append(callOpts.AddAssociation, gax.WithClientMetrics(metrics))
+		callOpts.AddRule = append(callOpts.AddRule, gax.WithClientMetrics(metrics))
+		callOpts.CloneRules = append(callOpts.CloneRules, gax.WithClientMetrics(metrics))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientMetrics(metrics))
+		callOpts.Get = append(callOpts.Get, gax.WithClientMetrics(metrics))
+		callOpts.GetAssociation = append(callOpts.GetAssociation, gax.WithClientMetrics(metrics))
+		callOpts.GetEffectiveFirewalls = append(callOpts.GetEffectiveFirewalls, gax.WithClientMetrics(metrics))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.GetRule = append(callOpts.GetRule, gax.WithClientMetrics(metrics))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientMetrics(metrics))
+		callOpts.List = append(callOpts.List, gax.WithClientMetrics(metrics))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientMetrics(metrics))
+		callOpts.PatchAssociation = append(callOpts.PatchAssociation, gax.WithClientMetrics(metrics))
+		callOpts.PatchRule = append(callOpts.PatchRule, gax.WithClientMetrics(metrics))
+		callOpts.RemoveAssociation = append(callOpts.RemoveAssociation, gax.WithClientMetrics(metrics))
+		callOpts.RemoveRule = append(callOpts.RemoveRule, gax.WithClientMetrics(metrics))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AddAssociation = append(callOpts.AddAssociation, gax.WithClientTracing(tracing))
+		callOpts.AddRule = append(callOpts.AddRule, gax.WithClientTracing(tracing))
+		callOpts.CloneRules = append(callOpts.CloneRules, gax.WithClientTracing(tracing))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientTracing(tracing))
+		callOpts.Get = append(callOpts.Get, gax.WithClientTracing(tracing))
+		callOpts.GetAssociation = append(callOpts.GetAssociation, gax.WithClientTracing(tracing))
+		callOpts.GetEffectiveFirewalls = append(callOpts.GetEffectiveFirewalls, gax.WithClientTracing(tracing))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.GetRule = append(callOpts.GetRule, gax.WithClientTracing(tracing))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientTracing(tracing))
+		callOpts.List = append(callOpts.List, gax.WithClientTracing(tracing))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientTracing(tracing))
+		callOpts.PatchAssociation = append(callOpts.PatchAssociation, gax.WithClientTracing(tracing))
+		callOpts.PatchRule = append(callOpts.PatchRule, gax.WithClientTracing(tracing))
+		callOpts.RemoveAssociation = append(callOpts.RemoveAssociation, gax.WithClientTracing(tracing))
+		callOpts.RemoveRule = append(callOpts.RemoveRule, gax.WithClientTracing(tracing))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AddAssociation = append(callOpts.AddAssociation, gax.WithClientLogging(logging))
+		callOpts.AddRule = append(callOpts.AddRule, gax.WithClientLogging(logging))
+		callOpts.CloneRules = append(callOpts.CloneRules, gax.WithClientLogging(logging))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientLogging(logging))
+		callOpts.Get = append(callOpts.Get, gax.WithClientLogging(logging))
+		callOpts.GetAssociation = append(callOpts.GetAssociation, gax.WithClientLogging(logging))
+		callOpts.GetEffectiveFirewalls = append(callOpts.GetEffectiveFirewalls, gax.WithClientLogging(logging))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.GetRule = append(callOpts.GetRule, gax.WithClientLogging(logging))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientLogging(logging))
+		callOpts.List = append(callOpts.List, gax.WithClientLogging(logging))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientLogging(logging))
+		callOpts.PatchAssociation = append(callOpts.PatchAssociation, gax.WithClientLogging(logging))
+		callOpts.PatchRule = append(callOpts.PatchRule, gax.WithClientLogging(logging))
+		callOpts.RemoveAssociation = append(callOpts.RemoveAssociation, gax.WithClientLogging(logging))
+		callOpts.RemoveRule = append(callOpts.RemoveRule, gax.WithClientLogging(logging))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientLogging(logging))
+	}
 
 	o := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -386,10 +505,11 @@ func (c *regionNetworkFirewallPoliciesRESTClient) setGoogleClientInfo(keyval ...
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
+		"x-goog-api-version", "2026-09-01",
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *regionNetworkFirewallPoliciesRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -423,6 +543,9 @@ func (c *regionNetworkFirewallPoliciesRESTClient) AddAssociation(ctx context.Con
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/firewallPolicies/%v/addAssociation", req.GetProject(), req.GetRegion(), req.GetFirewallPolicy())
 
 	params := url.Values{}
+	if req != nil && req.AssociatedPolicyToBeReplaced != nil {
+		params.Add("associatedPolicyToBeReplaced", fmt.Sprintf("%v", req.GetAssociatedPolicyToBeReplaced()))
+	}
 	if req != nil && req.ReplaceExistingAssociation != nil {
 		params.Add("replaceExistingAssociation", fmt.Sprintf("%v", req.GetReplaceExistingAssociation()))
 	}
@@ -438,6 +561,10 @@ func (c *regionNetworkFirewallPoliciesRESTClient) AddAssociation(ctx context.Con
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionNetworkFirewallPolicies/AddAssociation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/firewallPolicies/{firewall_policy}/addAssociation")
+	}
 	opts = append((*c.CallOptions).AddAssociation[0:len((*c.CallOptions).AddAssociation):len((*c.CallOptions).AddAssociation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -511,6 +638,10 @@ func (c *regionNetworkFirewallPoliciesRESTClient) AddRule(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionNetworkFirewallPolicies/AddRule")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/firewallPolicies/{firewall_policy}/addRule")
+	}
 	opts = append((*c.CallOptions).AddRule[0:len((*c.CallOptions).AddRule):len((*c.CallOptions).AddRule)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -574,6 +705,10 @@ func (c *regionNetworkFirewallPoliciesRESTClient) CloneRules(ctx context.Context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionNetworkFirewallPolicies/CloneRules")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/firewallPolicies/{firewall_policy}/cloneRules")
+	}
 	opts = append((*c.CallOptions).CloneRules[0:len((*c.CallOptions).CloneRules):len((*c.CallOptions).CloneRules)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -634,6 +769,10 @@ func (c *regionNetworkFirewallPoliciesRESTClient) Delete(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionNetworkFirewallPolicies/Delete")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/firewallPolicies/{firewall_policy}")
+	}
 	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -687,6 +826,10 @@ func (c *regionNetworkFirewallPoliciesRESTClient) Get(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionNetworkFirewallPolicies/Get")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/firewallPolicies/{firewall_policy}")
+	}
 	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.FirewallPolicy{}
@@ -739,6 +882,10 @@ func (c *regionNetworkFirewallPoliciesRESTClient) GetAssociation(ctx context.Con
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionNetworkFirewallPolicies/GetAssociation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/firewallPolicies/{firewall_policy}/getAssociation")
+	}
 	opts = append((*c.CallOptions).GetAssociation[0:len((*c.CallOptions).GetAssociation):len((*c.CallOptions).GetAssociation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.FirewallPolicyAssociation{}
@@ -789,6 +936,10 @@ func (c *regionNetworkFirewallPoliciesRESTClient) GetEffectiveFirewalls(ctx cont
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionNetworkFirewallPolicies/GetEffectiveFirewalls")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/firewallPolicies/getEffectiveFirewalls")
+	}
 	opts = append((*c.CallOptions).GetEffectiveFirewalls[0:len((*c.CallOptions).GetEffectiveFirewalls):len((*c.CallOptions).GetEffectiveFirewalls)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.RegionNetworkFirewallPoliciesGetEffectiveFirewallsResponse{}
@@ -820,7 +971,8 @@ func (c *regionNetworkFirewallPoliciesRESTClient) GetEffectiveFirewalls(ctx cont
 	return resp, nil
 }
 
-// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such
+// policy or resource exists.
 func (c *regionNetworkFirewallPoliciesRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyRegionNetworkFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -841,6 +993,10 @@ func (c *regionNetworkFirewallPoliciesRESTClient) GetIamPolicy(ctx context.Conte
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionNetworkFirewallPolicies/GetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/firewallPolicies/{resource}/getIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Policy{}
@@ -893,6 +1049,10 @@ func (c *regionNetworkFirewallPoliciesRESTClient) GetRule(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionNetworkFirewallPolicies/GetRule")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/firewallPolicies/{firewall_policy}/getRule")
+	}
 	opts = append((*c.CallOptions).GetRule[0:len((*c.CallOptions).GetRule):len((*c.CallOptions).GetRule)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.FirewallPolicyRule{}
@@ -952,6 +1112,10 @@ func (c *regionNetworkFirewallPoliciesRESTClient) Insert(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionNetworkFirewallPolicies/Insert")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/firewallPolicies")
+	}
 	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -991,10 +1155,11 @@ func (c *regionNetworkFirewallPoliciesRESTClient) Insert(ctx context.Context, re
 	return op, nil
 }
 
-// List lists all the network firewall policies that have been configured for the specified project in the given region.
+// List lists all the network firewall policies that have been configured
+// for the specified project in the given region.
 func (c *regionNetworkFirewallPoliciesRESTClient) List(ctx context.Context, req *computepb.ListRegionNetworkFirewallPoliciesRequest, opts ...gax.CallOption) *FirewallPolicyIterator {
 	it := &FirewallPolicyIterator{}
-	req = proto.Clone(req).(*computepb.ListRegionNetworkFirewallPoliciesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.FirewallPolicy, string, error) {
 		resp := &computepb.FirewallPolicyList{}
@@ -1024,9 +1189,6 @@ func (c *regionNetworkFirewallPoliciesRESTClient) List(ctx context.Context, req 
 		}
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -1105,6 +1267,10 @@ func (c *regionNetworkFirewallPoliciesRESTClient) Patch(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionNetworkFirewallPolicies/Patch")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/firewallPolicies/{firewall_policy}")
+	}
 	opts = append((*c.CallOptions).Patch[0:len((*c.CallOptions).Patch):len((*c.CallOptions).Patch)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -1120,6 +1286,77 @@ func (c *regionNetworkFirewallPoliciesRESTClient) Patch(ctx context.Context, req
 		httpReq.Header = headers
 
 		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "Patch")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&regionOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			region:  req.GetRegion(),
+		},
+	}
+	return op, nil
+}
+
+// PatchAssociation updates an association for the specified network firewall policy.
+func (c *regionNetworkFirewallPoliciesRESTClient) PatchAssociation(ctx context.Context, req *computepb.PatchAssociationRegionNetworkFirewallPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetFirewallPolicyAssociationResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/firewallPolicies/%v/patchAssociation", req.GetProject(), req.GetRegion(), req.GetFirewallPolicy())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "firewall_policy", url.QueryEscape(req.GetFirewallPolicy()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionNetworkFirewallPolicies/PatchAssociation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/firewallPolicies/{firewall_policy}/patchAssociation")
+	}
+	opts = append((*c.CallOptions).PatchAssociation[0:len((*c.CallOptions).PatchAssociation):len((*c.CallOptions).PatchAssociation)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "PatchAssociation")
 		if err != nil {
 			return err
 		}
@@ -1175,6 +1412,10 @@ func (c *regionNetworkFirewallPoliciesRESTClient) PatchRule(ctx context.Context,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionNetworkFirewallPolicies/PatchRule")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/firewallPolicies/{firewall_policy}/patchRule")
+	}
 	opts = append((*c.CallOptions).PatchRule[0:len((*c.CallOptions).PatchRule):len((*c.CallOptions).PatchRule)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -1238,6 +1479,10 @@ func (c *regionNetworkFirewallPoliciesRESTClient) RemoveAssociation(ctx context.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionNetworkFirewallPolicies/RemoveAssociation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/firewallPolicies/{firewall_policy}/removeAssociation")
+	}
 	opts = append((*c.CallOptions).RemoveAssociation[0:len((*c.CallOptions).RemoveAssociation):len((*c.CallOptions).RemoveAssociation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -1301,6 +1546,10 @@ func (c *regionNetworkFirewallPoliciesRESTClient) RemoveRule(ctx context.Context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionNetworkFirewallPolicies/RemoveRule")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/firewallPolicies/{firewall_policy}/removeRule")
+	}
 	opts = append((*c.CallOptions).RemoveRule[0:len((*c.CallOptions).RemoveRule):len((*c.CallOptions).RemoveRule)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -1340,7 +1589,8 @@ func (c *regionNetworkFirewallPoliciesRESTClient) RemoveRule(ctx context.Context
 	return op, nil
 }
 
-// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
+// SetIamPolicy sets the access control policy on the specified resource.
+// Replaces any existing policy.
 func (c *regionNetworkFirewallPoliciesRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyRegionNetworkFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRegionSetPolicyRequestResource()
@@ -1361,6 +1611,10 @@ func (c *regionNetworkFirewallPoliciesRESTClient) SetIamPolicy(ctx context.Conte
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionNetworkFirewallPolicies/SetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/firewallPolicies/{resource}/setIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Policy{}
@@ -1413,6 +1667,10 @@ func (c *regionNetworkFirewallPoliciesRESTClient) TestIamPermissions(ctx context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionNetworkFirewallPolicies/TestIamPermissions")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/firewallPolicies/{resource}/testIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.TestPermissionsResponse{}

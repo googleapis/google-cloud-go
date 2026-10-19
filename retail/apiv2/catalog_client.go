@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	retailpb "cloud.google.com/go/retail/apiv2/retailpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -420,7 +421,7 @@ type CatalogClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *CatalogClient) Close() error {
 	return c.internalClient.Close()
@@ -595,6 +596,16 @@ type catalogGRPCClient struct {
 // Service for managing catalog configuration.
 func NewCatalogClient(ctx context.Context, opts ...option.ClientOption) (*CatalogClient, error) {
 	clientOpts := defaultCatalogGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "retail",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/retail/apiv2",
+			"gcp.client.language": "go",
+			"url.domain":          "retail.googleapis.com",
+		}))
+	}
 	if newCatalogClientHook != nil {
 		hookOpts, err := newCatalogClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -617,6 +628,83 @@ func NewCatalogClient(ctx context.Context, opts ...option.ClientOption) (*Catalo
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "retail",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/retail/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "retail.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListCatalogs = append(client.CallOptions.ListCatalogs, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateCatalog = append(client.CallOptions.UpdateCatalog, gax.WithClientMetrics(metrics))
+		client.CallOptions.SetDefaultBranch = append(client.CallOptions.SetDefaultBranch, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetDefaultBranch = append(client.CallOptions.GetDefaultBranch, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetCompletionConfig = append(client.CallOptions.GetCompletionConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateCompletionConfig = append(client.CallOptions.UpdateCompletionConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetAttributesConfig = append(client.CallOptions.GetAttributesConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateAttributesConfig = append(client.CallOptions.UpdateAttributesConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.AddCatalogAttribute = append(client.CallOptions.AddCatalogAttribute, gax.WithClientMetrics(metrics))
+		client.CallOptions.RemoveCatalogAttribute = append(client.CallOptions.RemoveCatalogAttribute, gax.WithClientMetrics(metrics))
+		client.CallOptions.ReplaceCatalogAttribute = append(client.CallOptions.ReplaceCatalogAttribute, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "retail",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/retail/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "retail.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListCatalogs = append(client.CallOptions.ListCatalogs, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateCatalog = append(client.CallOptions.UpdateCatalog, gax.WithClientTracing(tracing))
+		client.CallOptions.SetDefaultBranch = append(client.CallOptions.SetDefaultBranch, gax.WithClientTracing(tracing))
+		client.CallOptions.GetDefaultBranch = append(client.CallOptions.GetDefaultBranch, gax.WithClientTracing(tracing))
+		client.CallOptions.GetCompletionConfig = append(client.CallOptions.GetCompletionConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateCompletionConfig = append(client.CallOptions.UpdateCompletionConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.GetAttributesConfig = append(client.CallOptions.GetAttributesConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateAttributesConfig = append(client.CallOptions.UpdateAttributesConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.AddCatalogAttribute = append(client.CallOptions.AddCatalogAttribute, gax.WithClientTracing(tracing))
+		client.CallOptions.RemoveCatalogAttribute = append(client.CallOptions.RemoveCatalogAttribute, gax.WithClientTracing(tracing))
+		client.CallOptions.ReplaceCatalogAttribute = append(client.CallOptions.ReplaceCatalogAttribute, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "retail",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/retail/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "retail.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListCatalogs = append(client.CallOptions.ListCatalogs, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateCatalog = append(client.CallOptions.UpdateCatalog, gax.WithClientLogging(logging))
+		client.CallOptions.SetDefaultBranch = append(client.CallOptions.SetDefaultBranch, gax.WithClientLogging(logging))
+		client.CallOptions.GetDefaultBranch = append(client.CallOptions.GetDefaultBranch, gax.WithClientLogging(logging))
+		client.CallOptions.GetCompletionConfig = append(client.CallOptions.GetCompletionConfig, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateCompletionConfig = append(client.CallOptions.UpdateCompletionConfig, gax.WithClientLogging(logging))
+		client.CallOptions.GetAttributesConfig = append(client.CallOptions.GetAttributesConfig, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateAttributesConfig = append(client.CallOptions.UpdateAttributesConfig, gax.WithClientLogging(logging))
+		client.CallOptions.AddCatalogAttribute = append(client.CallOptions.AddCatalogAttribute, gax.WithClientLogging(logging))
+		client.CallOptions.RemoveCatalogAttribute = append(client.CallOptions.RemoveCatalogAttribute, gax.WithClientLogging(logging))
+		client.CallOptions.ReplaceCatalogAttribute = append(client.CallOptions.ReplaceCatalogAttribute, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -642,7 +730,7 @@ func (c *catalogGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *catalogGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -670,6 +758,16 @@ type catalogRESTClient struct {
 // Service for managing catalog configuration.
 func NewCatalogRESTClient(ctx context.Context, opts ...option.ClientOption) (*CatalogClient, error) {
 	clientOpts := append(defaultCatalogRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "retail",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/retail/apiv2",
+			"gcp.client.language": "go",
+			"url.domain":          "retail.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -683,6 +781,84 @@ func NewCatalogRESTClient(ctx context.Context, opts ...option.ClientOption) (*Ca
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "retail",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/retail/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "retail.googleapis.com",
+			}),
+		)
+
+		callOpts.ListCatalogs = append(callOpts.ListCatalogs, gax.WithClientMetrics(metrics))
+		callOpts.UpdateCatalog = append(callOpts.UpdateCatalog, gax.WithClientMetrics(metrics))
+		callOpts.SetDefaultBranch = append(callOpts.SetDefaultBranch, gax.WithClientMetrics(metrics))
+		callOpts.GetDefaultBranch = append(callOpts.GetDefaultBranch, gax.WithClientMetrics(metrics))
+		callOpts.GetCompletionConfig = append(callOpts.GetCompletionConfig, gax.WithClientMetrics(metrics))
+		callOpts.UpdateCompletionConfig = append(callOpts.UpdateCompletionConfig, gax.WithClientMetrics(metrics))
+		callOpts.GetAttributesConfig = append(callOpts.GetAttributesConfig, gax.WithClientMetrics(metrics))
+		callOpts.UpdateAttributesConfig = append(callOpts.UpdateAttributesConfig, gax.WithClientMetrics(metrics))
+		callOpts.AddCatalogAttribute = append(callOpts.AddCatalogAttribute, gax.WithClientMetrics(metrics))
+		callOpts.RemoveCatalogAttribute = append(callOpts.RemoveCatalogAttribute, gax.WithClientMetrics(metrics))
+		callOpts.ReplaceCatalogAttribute = append(callOpts.ReplaceCatalogAttribute, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "retail",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/retail/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "retail.googleapis.com",
+			}),
+		)
+
+		callOpts.ListCatalogs = append(callOpts.ListCatalogs, gax.WithClientTracing(tracing))
+		callOpts.UpdateCatalog = append(callOpts.UpdateCatalog, gax.WithClientTracing(tracing))
+		callOpts.SetDefaultBranch = append(callOpts.SetDefaultBranch, gax.WithClientTracing(tracing))
+		callOpts.GetDefaultBranch = append(callOpts.GetDefaultBranch, gax.WithClientTracing(tracing))
+		callOpts.GetCompletionConfig = append(callOpts.GetCompletionConfig, gax.WithClientTracing(tracing))
+		callOpts.UpdateCompletionConfig = append(callOpts.UpdateCompletionConfig, gax.WithClientTracing(tracing))
+		callOpts.GetAttributesConfig = append(callOpts.GetAttributesConfig, gax.WithClientTracing(tracing))
+		callOpts.UpdateAttributesConfig = append(callOpts.UpdateAttributesConfig, gax.WithClientTracing(tracing))
+		callOpts.AddCatalogAttribute = append(callOpts.AddCatalogAttribute, gax.WithClientTracing(tracing))
+		callOpts.RemoveCatalogAttribute = append(callOpts.RemoveCatalogAttribute, gax.WithClientTracing(tracing))
+		callOpts.ReplaceCatalogAttribute = append(callOpts.ReplaceCatalogAttribute, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "retail",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/retail/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "retail.googleapis.com",
+			}),
+		)
+
+		callOpts.ListCatalogs = append(callOpts.ListCatalogs, gax.WithClientLogging(logging))
+		callOpts.UpdateCatalog = append(callOpts.UpdateCatalog, gax.WithClientLogging(logging))
+		callOpts.SetDefaultBranch = append(callOpts.SetDefaultBranch, gax.WithClientLogging(logging))
+		callOpts.GetDefaultBranch = append(callOpts.GetDefaultBranch, gax.WithClientLogging(logging))
+		callOpts.GetCompletionConfig = append(callOpts.GetCompletionConfig, gax.WithClientLogging(logging))
+		callOpts.UpdateCompletionConfig = append(callOpts.UpdateCompletionConfig, gax.WithClientLogging(logging))
+		callOpts.GetAttributesConfig = append(callOpts.GetAttributesConfig, gax.WithClientLogging(logging))
+		callOpts.UpdateAttributesConfig = append(callOpts.UpdateAttributesConfig, gax.WithClientLogging(logging))
+		callOpts.AddCatalogAttribute = append(callOpts.AddCatalogAttribute, gax.WithClientLogging(logging))
+		callOpts.RemoveCatalogAttribute = append(callOpts.RemoveCatalogAttribute, gax.WithClientLogging(logging))
+		callOpts.ReplaceCatalogAttribute = append(callOpts.ReplaceCatalogAttribute, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	return &CatalogClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -710,7 +886,7 @@ func (c *catalogRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *catalogRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -729,9 +905,12 @@ func (c *catalogGRPCClient) ListCatalogs(ctx context.Context, req *retailpb.List
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2.CatalogService/ListCatalogs")
+	}
 	opts = append((*c.CallOptions).ListCatalogs[0:len((*c.CallOptions).ListCatalogs):len((*c.CallOptions).ListCatalogs)], opts...)
 	it := &CatalogIterator{}
-	req = proto.Clone(req).(*retailpb.ListCatalogsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*retailpb.Catalog, string, error) {
 		resp := &retailpb.ListCatalogsResponse{}
 		if pageToken != "" {
@@ -775,6 +954,9 @@ func (c *catalogGRPCClient) UpdateCatalog(ctx context.Context, req *retailpb.Upd
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2.CatalogService/UpdateCatalog")
+	}
 	opts = append((*c.CallOptions).UpdateCatalog[0:len((*c.CallOptions).UpdateCatalog):len((*c.CallOptions).UpdateCatalog)], opts...)
 	var resp *retailpb.Catalog
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -793,6 +975,9 @@ func (c *catalogGRPCClient) SetDefaultBranch(ctx context.Context, req *retailpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2.CatalogService/SetDefaultBranch")
+	}
 	opts = append((*c.CallOptions).SetDefaultBranch[0:len((*c.CallOptions).SetDefaultBranch):len((*c.CallOptions).SetDefaultBranch)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -807,6 +992,9 @@ func (c *catalogGRPCClient) GetDefaultBranch(ctx context.Context, req *retailpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2.CatalogService/GetDefaultBranch")
+	}
 	opts = append((*c.CallOptions).GetDefaultBranch[0:len((*c.CallOptions).GetDefaultBranch):len((*c.CallOptions).GetDefaultBranch)], opts...)
 	var resp *retailpb.GetDefaultBranchResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -825,6 +1013,9 @@ func (c *catalogGRPCClient) GetCompletionConfig(ctx context.Context, req *retail
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2.CatalogService/GetCompletionConfig")
+	}
 	opts = append((*c.CallOptions).GetCompletionConfig[0:len((*c.CallOptions).GetCompletionConfig):len((*c.CallOptions).GetCompletionConfig)], opts...)
 	var resp *retailpb.CompletionConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -843,6 +1034,9 @@ func (c *catalogGRPCClient) UpdateCompletionConfig(ctx context.Context, req *ret
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2.CatalogService/UpdateCompletionConfig")
+	}
 	opts = append((*c.CallOptions).UpdateCompletionConfig[0:len((*c.CallOptions).UpdateCompletionConfig):len((*c.CallOptions).UpdateCompletionConfig)], opts...)
 	var resp *retailpb.CompletionConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -861,6 +1055,9 @@ func (c *catalogGRPCClient) GetAttributesConfig(ctx context.Context, req *retail
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2.CatalogService/GetAttributesConfig")
+	}
 	opts = append((*c.CallOptions).GetAttributesConfig[0:len((*c.CallOptions).GetAttributesConfig):len((*c.CallOptions).GetAttributesConfig)], opts...)
 	var resp *retailpb.AttributesConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -879,6 +1076,9 @@ func (c *catalogGRPCClient) UpdateAttributesConfig(ctx context.Context, req *ret
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2.CatalogService/UpdateAttributesConfig")
+	}
 	opts = append((*c.CallOptions).UpdateAttributesConfig[0:len((*c.CallOptions).UpdateAttributesConfig):len((*c.CallOptions).UpdateAttributesConfig)], opts...)
 	var resp *retailpb.AttributesConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -897,6 +1097,9 @@ func (c *catalogGRPCClient) AddCatalogAttribute(ctx context.Context, req *retail
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2.CatalogService/AddCatalogAttribute")
+	}
 	opts = append((*c.CallOptions).AddCatalogAttribute[0:len((*c.CallOptions).AddCatalogAttribute):len((*c.CallOptions).AddCatalogAttribute)], opts...)
 	var resp *retailpb.AttributesConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -915,6 +1118,9 @@ func (c *catalogGRPCClient) RemoveCatalogAttribute(ctx context.Context, req *ret
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2.CatalogService/RemoveCatalogAttribute")
+	}
 	opts = append((*c.CallOptions).RemoveCatalogAttribute[0:len((*c.CallOptions).RemoveCatalogAttribute):len((*c.CallOptions).RemoveCatalogAttribute)], opts...)
 	var resp *retailpb.AttributesConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -933,6 +1139,9 @@ func (c *catalogGRPCClient) ReplaceCatalogAttribute(ctx context.Context, req *re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2.CatalogService/ReplaceCatalogAttribute")
+	}
 	opts = append((*c.CallOptions).ReplaceCatalogAttribute[0:len((*c.CallOptions).ReplaceCatalogAttribute):len((*c.CallOptions).ReplaceCatalogAttribute)], opts...)
 	var resp *retailpb.AttributesConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -951,6 +1160,9 @@ func (c *catalogGRPCClient) GetOperation(ctx context.Context, req *longrunningpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -969,9 +1181,12 @@ func (c *catalogGRPCClient) ListOperations(ctx context.Context, req *longrunning
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1014,7 +1229,7 @@ func (c *catalogGRPCClient) ListOperations(ctx context.Context, req *longrunning
 // the project.
 func (c *catalogRESTClient) ListCatalogs(ctx context.Context, req *retailpb.ListCatalogsRequest, opts ...gax.CallOption) *CatalogIterator {
 	it := &CatalogIterator{}
-	req = proto.Clone(req).(*retailpb.ListCatalogsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*retailpb.Catalog, string, error) {
 		resp := &retailpb.ListCatalogsResponse{}
@@ -1122,6 +1337,10 @@ func (c *catalogRESTClient) UpdateCatalog(ctx context.Context, req *retailpb.Upd
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2.CatalogService/UpdateCatalog")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{catalog.name=projects/*/locations/*/catalogs/*}")
+	}
 	opts = append((*c.CallOptions).UpdateCatalog[0:len((*c.CallOptions).UpdateCatalog):len((*c.CallOptions).UpdateCatalog)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &retailpb.Catalog{}
@@ -1213,6 +1432,10 @@ func (c *catalogRESTClient) SetDefaultBranch(ctx context.Context, req *retailpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2.CatalogService/SetDefaultBranch")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{catalog=projects/*/locations/*/catalogs/*}:setDefaultBranch")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1250,6 +1473,10 @@ func (c *catalogRESTClient) GetDefaultBranch(ctx context.Context, req *retailpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2.CatalogService/GetDefaultBranch")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{catalog=projects/*/locations/*/catalogs/*}:getDefaultBranch")
+	}
 	opts = append((*c.CallOptions).GetDefaultBranch[0:len((*c.CallOptions).GetDefaultBranch):len((*c.CallOptions).GetDefaultBranch)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &retailpb.GetDefaultBranchResponse{}
@@ -1300,6 +1527,10 @@ func (c *catalogRESTClient) GetCompletionConfig(ctx context.Context, req *retail
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2.CatalogService/GetCompletionConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/catalogs/*/completionConfig}")
+	}
 	opts = append((*c.CallOptions).GetCompletionConfig[0:len((*c.CallOptions).GetCompletionConfig):len((*c.CallOptions).GetCompletionConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &retailpb.CompletionConfig{}
@@ -1364,6 +1595,10 @@ func (c *catalogRESTClient) UpdateCompletionConfig(ctx context.Context, req *ret
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2.CatalogService/UpdateCompletionConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{completion_config.name=projects/*/locations/*/catalogs/*/completionConfig}")
+	}
 	opts = append((*c.CallOptions).UpdateCompletionConfig[0:len((*c.CallOptions).UpdateCompletionConfig):len((*c.CallOptions).UpdateCompletionConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &retailpb.CompletionConfig{}
@@ -1414,6 +1649,10 @@ func (c *catalogRESTClient) GetAttributesConfig(ctx context.Context, req *retail
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2.CatalogService/GetAttributesConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/catalogs/*/attributesConfig}")
+	}
 	opts = append((*c.CallOptions).GetAttributesConfig[0:len((*c.CallOptions).GetAttributesConfig):len((*c.CallOptions).GetAttributesConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &retailpb.AttributesConfig{}
@@ -1485,6 +1724,10 @@ func (c *catalogRESTClient) UpdateAttributesConfig(ctx context.Context, req *ret
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2.CatalogService/UpdateAttributesConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{attributes_config.name=projects/*/locations/*/catalogs/*/attributesConfig}")
+	}
 	opts = append((*c.CallOptions).UpdateAttributesConfig[0:len((*c.CallOptions).UpdateAttributesConfig):len((*c.CallOptions).UpdateAttributesConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &retailpb.AttributesConfig{}
@@ -1546,6 +1789,10 @@ func (c *catalogRESTClient) AddCatalogAttribute(ctx context.Context, req *retail
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2.CatalogService/AddCatalogAttribute")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{attributes_config=projects/*/locations/*/catalogs/*/attributesConfig}:addCatalogAttribute")
+	}
 	opts = append((*c.CallOptions).AddCatalogAttribute[0:len((*c.CallOptions).AddCatalogAttribute):len((*c.CallOptions).AddCatalogAttribute)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &retailpb.AttributesConfig{}
@@ -1607,6 +1854,10 @@ func (c *catalogRESTClient) RemoveCatalogAttribute(ctx context.Context, req *ret
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2.CatalogService/RemoveCatalogAttribute")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{attributes_config=projects/*/locations/*/catalogs/*/attributesConfig}:removeCatalogAttribute")
+	}
 	opts = append((*c.CallOptions).RemoveCatalogAttribute[0:len((*c.CallOptions).RemoveCatalogAttribute):len((*c.CallOptions).RemoveCatalogAttribute)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &retailpb.AttributesConfig{}
@@ -1670,6 +1921,10 @@ func (c *catalogRESTClient) ReplaceCatalogAttribute(ctx context.Context, req *re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2.CatalogService/ReplaceCatalogAttribute")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{attributes_config=projects/*/locations/*/catalogs/*/attributesConfig}:replaceCatalogAttribute")
+	}
 	opts = append((*c.CallOptions).ReplaceCatalogAttribute[0:len((*c.CallOptions).ReplaceCatalogAttribute):len((*c.CallOptions).ReplaceCatalogAttribute)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &retailpb.AttributesConfig{}
@@ -1720,6 +1975,10 @@ func (c *catalogRESTClient) GetOperation(ctx context.Context, req *longrunningpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -1754,7 +2013,7 @@ func (c *catalogRESTClient) GetOperation(ctx context.Context, req *longrunningpb
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *catalogRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
@@ -1782,6 +2041,9 @@ func (c *catalogRESTClient) ListOperations(ctx context.Context, req *longrunning
 		}
 		if req.GetPageToken() != "" {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req.GetReturnPartialSuccess() {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()

@@ -1,6 +1,48 @@
 # Changes
 
 
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/config/v1.13.0...config/v1.14.0) (2026-09-23)
+
+
+### Features
+
+* **all:** Update supported go versions ([#20520](https://github.com/googleapis/google-cloud-go/issues/20520)) ([90413d3](https://github.com/googleapis/google-cloud-go/commit/90413d3e9d381ef4b92e3c496d98b023c5b2d8cc))
+
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/config/v1.12.0...config/v1.13.0) (2026-08-26)
+
+
+### Features
+
+* Update API sources and regenerate ([#20427](https://github.com/googleapis/google-cloud-go/issues/20427)) ([eb07af9](https://github.com/googleapis/google-cloud-go/commit/eb07af97288cb3446ef50ff1806c7bc12d5c6350))
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/config/v1.11.0...config/v1.12.0) (2026-07-13)
+
+
+### Features
+
+* **o11y:** Regenerate clients for LRO tracing ([#20107](https://github.com/googleapis/google-cloud-go/issues/20107)) ([779074e](https://github.com/googleapis/google-cloud-go/commit/779074edd267a26520bae459307660953129eb07))
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/releases/tag/config%2Fv1.11.0) (2026-05-07)
+
+### Features
+
+* update API sources and regenerate (#14537) ([07fe29b](https://github.com/googleapis/google-cloud-go/commit/07fe29ba4c5069d27d4149d8fa5f8814eb8789d7))
+
+## [1.10.0](https://github.com/googleapis/google-cloud-go/releases/tag/config%2Fv1.10.0) (2026-04-30)
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/releases/tag/config%2Fv1.9.0) (2026-04-13)
+
+## [1.8.0](https://github.com/googleapis/google-cloud-go/releases/tag/config%2Fv1.8.0) (2026-04-09)
+
+## [1.7.0](https://github.com/googleapis/google-cloud-go/releases/tag/config%2Fv1.7.0) (2026-04-02)
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/releases/tag/config%2Fv1.6.0) (2026-01-15)
+
+### Features
+
+* add support for enabling automigration from deprecated Terraform versions ([80379ed](https://github.com/googleapis/google-cloud-go/commit/80379edb1c47cd7c2d928d18762029cfe28420c0))
+* added error code when failing import values from an external source ([80379ed](https://github.com/googleapis/google-cloud-go/commit/80379edb1c47cd7c2d928d18762029cfe28420c0))
+
 ## [1.5.1](https://github.com/googleapis/google-cloud-go/compare/config/v1.5.0...config/v1.5.1) (2025-09-16)
 
 

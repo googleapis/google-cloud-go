@@ -28,6 +28,7 @@ import (
 	"testing"
 
 	"google.golang.org/api/iterator"
+	"google.golang.org/genai"
 )
 
 const defaultModel = "gemini-1.0-pro"
@@ -738,4 +739,53 @@ func printResponse(resp *GenerateContentResponse) {
 		}
 	}
 	fmt.Println("---")
+}
+
+func TestNewGenAIClient(t *testing.T) {
+	ctx := context.Background()
+	projectKey := "GOOGLE_CLOUD_PROJECT"
+	locationKey := "GOOGLE_CLOUD_LOCATION"
+	originalProjectValue, _ := os.LookupEnv(projectKey)
+	originalLocationValue, _ := os.LookupEnv(locationKey)
+	os.Setenv(projectKey, "test-gcp-project")
+	os.Setenv(locationKey, "us-central1")
+
+	t.Cleanup(func() {
+		os.Setenv(locationKey, originalLocationValue)
+		os.Setenv(projectKey, originalProjectValue)
+	})
+
+	for _, test := range []struct {
+		name string
+		cc   *genai.ClientConfig
+	}{
+		{name: "nil config", cc: nil},
+		{name: "empty config", cc: &genai.ClientConfig{}},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			client, err := NewGenAIClient(ctx, test.cc)
+			if err != nil {
+				t.Fatalf("NewGenAIClient() failed unexpectedly, err: %v", err)
+			}
+			if client == nil {
+				t.Error("client must not be nil")
+			}
+		})
+	}
+}
+
+func TestNewGenAIClientErrors(t *testing.T) {
+	ctx := context.Background()
+	for _, test := range []struct {
+		name string
+		cc   *genai.ClientConfig
+	}{
+		{name: "gemini backend", cc: &genai.ClientConfig{Backend: genai.BackendGeminiAPI}},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			if _, err := NewGenAIClient(ctx, test.cc); err == nil {
+				t.Error("wants error, but got nil")
+			}
+		})
+	}
 }

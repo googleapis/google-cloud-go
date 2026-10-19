@@ -458,9 +458,10 @@ func TestProbeFastPath(t *testing.T) {
 	}
 	pfalse := false
 	testCases := []struct {
-		inCfg   QueryConfig
-		wantReq *bq.QueryRequest
-		wantErr bool
+		inClient *Client
+		inCfg    QueryConfig
+		wantReq  *bq.QueryRequest
+		wantErr  bool
 	}{
 		{
 			inCfg: QueryConfig{
@@ -470,7 +471,7 @@ func TestProbeFastPath(t *testing.T) {
 				Query:        "foo",
 				UseLegacySql: &pfalse,
 				FormatOptions: &bq.DataFormatOptions{
-					UseInt64Timestamp: true,
+					UseInt64Timestamp: defaultUseInt64Timestamp,
 				},
 			},
 		},
@@ -509,10 +510,61 @@ func TestProbeFastPath(t *testing.T) {
 				},
 				UseQueryCache: &pfalse,
 				FormatOptions: &bq.DataFormatOptions{
-					UseInt64Timestamp: true,
+					UseInt64Timestamp: defaultUseInt64Timestamp,
 				},
 				Reservation: "reservation/1",
 				MaxSlots:    222,
+			},
+		},
+		{
+			// Client default JobCreationMode is used when not set on query
+			inClient: &Client{
+				projectID:    "client-project-id",
+				customConfig: &customClientConfig{jobCreationMode: JobCreationModeOptional},
+			},
+			inCfg: QueryConfig{
+				Q: "foo",
+			},
+			wantReq: &bq.QueryRequest{
+				Query:           "foo",
+				UseLegacySql:    &pfalse,
+				JobCreationMode: string(JobCreationModeOptional),
+				FormatOptions: &bq.DataFormatOptions{
+					UseInt64Timestamp: defaultUseInt64Timestamp,
+				},
+			},
+		},
+		{
+			inCfg: QueryConfig{
+				Q:               "foo",
+				JobCreationMode: JobCreationModeOptional,
+			},
+			wantReq: &bq.QueryRequest{
+				Query:           "foo",
+				UseLegacySql:    &pfalse,
+				JobCreationMode: string(JobCreationModeOptional),
+				FormatOptions: &bq.DataFormatOptions{
+					UseInt64Timestamp: defaultUseInt64Timestamp,
+				},
+			},
+		},
+		{
+			// Query-level JobCreationMode overrides client default
+			inClient: &Client{
+				projectID:    "client-project-id",
+				customConfig: &customClientConfig{jobCreationMode: JobCreationModeRequired},
+			},
+			inCfg: QueryConfig{
+				Q:               "foo",
+				JobCreationMode: JobCreationModeOptional,
+			},
+			wantReq: &bq.QueryRequest{
+				Query:           "foo",
+				UseLegacySql:    &pfalse,
+				JobCreationMode: string(JobCreationModeOptional),
+				FormatOptions: &bq.DataFormatOptions{
+					UseInt64Timestamp: defaultUseInt64Timestamp,
+				},
 			},
 		},
 		{
@@ -550,9 +602,13 @@ func TestProbeFastPath(t *testing.T) {
 		},
 	}
 	for i, tc := range testCases {
+		client := c
+		if tc.inClient != nil {
+			client = tc.inClient
+		}
 		in := &Query{
 			QueryConfig: tc.inCfg,
-			client:      c,
+			client:      client,
 		}
 		gotReq, err := in.probeFastPath()
 		if tc.wantErr && err == nil {

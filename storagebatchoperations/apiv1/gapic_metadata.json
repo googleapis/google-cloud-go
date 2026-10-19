@@ -35,6 +35,11 @@
                 "DeleteOperation"
               ]
             },
+            "GetBucketOperation": {
+              "methods": [
+                "GetBucketOperation"
+              ]
+            },
             "GetJob": {
               "methods": [
                 "GetJob"
@@ -48,6 +53,11 @@
             "GetOperation": {
               "methods": [
                 "GetOperation"
+              ]
+            },
+            "ListBucketOperations": {
+              "methods": [
+                "ListBucketOperations"
               ]
             },
             "ListJobs": {
@@ -95,6 +105,11 @@
                 "DeleteOperation"
               ]
             },
+            "GetBucketOperation": {
+              "methods": [
+                "GetBucketOperation"
+              ]
+            },
             "GetJob": {
               "methods": [
                 "GetJob"
@@ -108,6 +123,11 @@
             "GetOperation": {
               "methods": [
                 "GetOperation"
+              ]
+            },
+            "ListBucketOperations": {
+              "methods": [
+                "ListBucketOperations"
               ]
             },
             "ListJobs": {

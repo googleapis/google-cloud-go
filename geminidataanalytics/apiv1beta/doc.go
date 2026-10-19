@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,6 +16,10 @@
 
 // Package geminidataanalytics is an auto-generated package for the
 // Data Analytics API with Gemini.
+//
+// The Gemini Data Analytics API enables developers to build intelligent data
+// analytics applications. Leverage AI-powered chat interfaces to allow users
+// to interact with and analyze structured data using natural language.
 //
 //	NOTE: This package is in beta. It is not stable, and may be subject to changes.
 //
@@ -42,7 +46,7 @@
 //	// - It may require correct/in-range values for request initialization.
 //	// - It may require specifying regional endpoints when creating the service client as shown in:
 //	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-//	c, err := geminidataanalytics.NewDataAgentClient(ctx)
+//	c, err := geminidataanalytics.NewDataA2AClient(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
@@ -56,16 +60,11 @@
 //
 // The following is an example of making an API call with the newly created client, mentioned above.
 //
-//	req := &geminidataanalyticspb.CreateDataAgentRequest{
+//	req := &geminidataanalyticspb.GetAgentCardRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/geminidataanalytics/apiv1beta/geminidataanalyticspb#CreateDataAgentRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/geminidataanalytics/apiv1beta/geminidataanalyticspb#GetAgentCardRequest.
 //	}
-//	op, err := c.CreateDataAgent(ctx, req)
-//	if err != nil {
-//		// TODO: Handle error.
-//	}
-//
-//	resp, err := op.Wait(ctx)
+//	resp, err := c.GetAgentCard(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
@@ -74,7 +73,7 @@
 //
 // # Use of Context
 //
-// The ctx passed to NewDataAgentClient is used for authentication requests and
+// The ctx passed to NewDataA2AClient is used for authentication requests and
 // for creating the underlying connection, but is not used for subsequent calls.
 // Individual methods on the client use the ctx given to them.
 //

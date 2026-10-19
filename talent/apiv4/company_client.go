@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	talentpb "cloud.google.com/go/talent/apiv4/talentpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -193,7 +194,7 @@ type CompanyClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *CompanyClient) Close() error {
 	return c.internalClient.Close()
@@ -272,6 +273,16 @@ type companyGRPCClient struct {
 // A service that handles company management, including CRUD and enumeration.
 func NewCompanyClient(ctx context.Context, opts ...option.ClientOption) (*CompanyClient, error) {
 	clientOpts := defaultCompanyGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "jobs",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/talent/apiv4",
+			"gcp.client.language": "go",
+			"url.domain":          "jobs.googleapis.com",
+		}))
+	}
 	if newCompanyClientHook != nil {
 		hookOpts, err := newCompanyClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -294,6 +305,62 @@ func NewCompanyClient(ctx context.Context, opts ...option.ClientOption) (*Compan
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "jobs",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/talent/apiv4",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "jobs.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateCompany = append(client.CallOptions.CreateCompany, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetCompany = append(client.CallOptions.GetCompany, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateCompany = append(client.CallOptions.UpdateCompany, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteCompany = append(client.CallOptions.DeleteCompany, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListCompanies = append(client.CallOptions.ListCompanies, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "jobs",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/talent/apiv4",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "jobs.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateCompany = append(client.CallOptions.CreateCompany, gax.WithClientTracing(tracing))
+		client.CallOptions.GetCompany = append(client.CallOptions.GetCompany, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateCompany = append(client.CallOptions.UpdateCompany, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteCompany = append(client.CallOptions.DeleteCompany, gax.WithClientTracing(tracing))
+		client.CallOptions.ListCompanies = append(client.CallOptions.ListCompanies, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "jobs",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/talent/apiv4",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "jobs.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateCompany = append(client.CallOptions.CreateCompany, gax.WithClientLogging(logging))
+		client.CallOptions.GetCompany = append(client.CallOptions.GetCompany, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateCompany = append(client.CallOptions.UpdateCompany, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteCompany = append(client.CallOptions.DeleteCompany, gax.WithClientLogging(logging))
+		client.CallOptions.ListCompanies = append(client.CallOptions.ListCompanies, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -319,7 +386,7 @@ func (c *companyGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *companyGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -347,6 +414,16 @@ type companyRESTClient struct {
 // A service that handles company management, including CRUD and enumeration.
 func NewCompanyRESTClient(ctx context.Context, opts ...option.ClientOption) (*CompanyClient, error) {
 	clientOpts := append(defaultCompanyRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "jobs",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/talent/apiv4",
+			"gcp.client.language": "go",
+			"url.domain":          "jobs.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -360,6 +437,63 @@ func NewCompanyRESTClient(ctx context.Context, opts ...option.ClientOption) (*Co
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "jobs",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/talent/apiv4",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "jobs.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateCompany = append(callOpts.CreateCompany, gax.WithClientMetrics(metrics))
+		callOpts.GetCompany = append(callOpts.GetCompany, gax.WithClientMetrics(metrics))
+		callOpts.UpdateCompany = append(callOpts.UpdateCompany, gax.WithClientMetrics(metrics))
+		callOpts.DeleteCompany = append(callOpts.DeleteCompany, gax.WithClientMetrics(metrics))
+		callOpts.ListCompanies = append(callOpts.ListCompanies, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "jobs",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/talent/apiv4",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "jobs.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateCompany = append(callOpts.CreateCompany, gax.WithClientTracing(tracing))
+		callOpts.GetCompany = append(callOpts.GetCompany, gax.WithClientTracing(tracing))
+		callOpts.UpdateCompany = append(callOpts.UpdateCompany, gax.WithClientTracing(tracing))
+		callOpts.DeleteCompany = append(callOpts.DeleteCompany, gax.WithClientTracing(tracing))
+		callOpts.ListCompanies = append(callOpts.ListCompanies, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "jobs",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/talent/apiv4",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "jobs.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateCompany = append(callOpts.CreateCompany, gax.WithClientLogging(logging))
+		callOpts.GetCompany = append(callOpts.GetCompany, gax.WithClientLogging(logging))
+		callOpts.UpdateCompany = append(callOpts.UpdateCompany, gax.WithClientLogging(logging))
+		callOpts.DeleteCompany = append(callOpts.DeleteCompany, gax.WithClientLogging(logging))
+		callOpts.ListCompanies = append(callOpts.ListCompanies, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+	}
 
 	return &CompanyClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -387,7 +521,7 @@ func (c *companyRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *companyRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -406,6 +540,9 @@ func (c *companyGRPCClient) CreateCompany(ctx context.Context, req *talentpb.Cre
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.talent.v4.CompanyService/CreateCompany")
+	}
 	opts = append((*c.CallOptions).CreateCompany[0:len((*c.CallOptions).CreateCompany):len((*c.CallOptions).CreateCompany)], opts...)
 	var resp *talentpb.Company
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -424,6 +561,9 @@ func (c *companyGRPCClient) GetCompany(ctx context.Context, req *talentpb.GetCom
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.talent.v4.CompanyService/GetCompany")
+	}
 	opts = append((*c.CallOptions).GetCompany[0:len((*c.CallOptions).GetCompany):len((*c.CallOptions).GetCompany)], opts...)
 	var resp *talentpb.Company
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -442,6 +582,9 @@ func (c *companyGRPCClient) UpdateCompany(ctx context.Context, req *talentpb.Upd
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.talent.v4.CompanyService/UpdateCompany")
+	}
 	opts = append((*c.CallOptions).UpdateCompany[0:len((*c.CallOptions).UpdateCompany):len((*c.CallOptions).UpdateCompany)], opts...)
 	var resp *talentpb.Company
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -460,6 +603,9 @@ func (c *companyGRPCClient) DeleteCompany(ctx context.Context, req *talentpb.Del
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.talent.v4.CompanyService/DeleteCompany")
+	}
 	opts = append((*c.CallOptions).DeleteCompany[0:len((*c.CallOptions).DeleteCompany):len((*c.CallOptions).DeleteCompany)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -474,9 +620,12 @@ func (c *companyGRPCClient) ListCompanies(ctx context.Context, req *talentpb.Lis
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.talent.v4.CompanyService/ListCompanies")
+	}
 	opts = append((*c.CallOptions).ListCompanies[0:len((*c.CallOptions).ListCompanies):len((*c.CallOptions).ListCompanies)], opts...)
 	it := &CompanyIterator{}
-	req = proto.Clone(req).(*talentpb.ListCompaniesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*talentpb.Company, string, error) {
 		resp := &talentpb.ListCompaniesResponse{}
 		if pageToken != "" {
@@ -520,6 +669,9 @@ func (c *companyGRPCClient) GetOperation(ctx context.Context, req *longrunningpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -559,6 +711,10 @@ func (c *companyRESTClient) CreateCompany(ctx context.Context, req *talentpb.Cre
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.talent.v4.CompanyService/CreateCompany")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v4/{parent=projects/*/tenants/*}/companies")
+	}
 	opts = append((*c.CallOptions).CreateCompany[0:len((*c.CallOptions).CreateCompany):len((*c.CallOptions).CreateCompany)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &talentpb.Company{}
@@ -609,6 +765,10 @@ func (c *companyRESTClient) GetCompany(ctx context.Context, req *talentpb.GetCom
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.talent.v4.CompanyService/GetCompany")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v4/{name=projects/*/tenants/*/companies/*}")
+	}
 	opts = append((*c.CallOptions).GetCompany[0:len((*c.CallOptions).GetCompany):len((*c.CallOptions).GetCompany)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &talentpb.Company{}
@@ -673,6 +833,10 @@ func (c *companyRESTClient) UpdateCompany(ctx context.Context, req *talentpb.Upd
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.talent.v4.CompanyService/UpdateCompany")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v4/{company.name=projects/*/tenants/*/companies/*}")
+	}
 	opts = append((*c.CallOptions).UpdateCompany[0:len((*c.CallOptions).UpdateCompany):len((*c.CallOptions).UpdateCompany)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &talentpb.Company{}
@@ -724,6 +888,10 @@ func (c *companyRESTClient) DeleteCompany(ctx context.Context, req *talentpb.Del
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.talent.v4.CompanyService/DeleteCompany")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v4/{name=projects/*/tenants/*/companies/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -743,7 +911,7 @@ func (c *companyRESTClient) DeleteCompany(ctx context.Context, req *talentpb.Del
 // ListCompanies lists all companies associated with the project.
 func (c *companyRESTClient) ListCompanies(ctx context.Context, req *talentpb.ListCompaniesRequest, opts ...gax.CallOption) *CompanyIterator {
 	it := &CompanyIterator{}
-	req = proto.Clone(req).(*talentpb.ListCompaniesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*talentpb.Company, string, error) {
 		resp := &talentpb.ListCompaniesResponse{}
@@ -840,6 +1008,10 @@ func (c *companyRESTClient) GetOperation(ctx context.Context, req *longrunningpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v4/{name=projects/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}

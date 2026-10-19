@@ -1,0 +1,33 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.maps.isochrones.v1",
+  "libraryPackage": "cloud.google.com/go/maps/isochrones/apiv1",
+  "services": {
+    "IsochroneService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "IsochroneClient",
+          "rpcs": {
+            "GenerateIsochrone": {
+              "methods": [
+                "GenerateIsochrone"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "IsochroneClient",
+          "rpcs": {
+            "GenerateIsochrone": {
+              "methods": [
+                "GenerateIsochrone"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

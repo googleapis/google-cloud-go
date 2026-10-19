@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import (
 	generativelanguagepb "cloud.google.com/go/ai/generativelanguage/apiv1alpha/generativelanguagepb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -121,7 +122,7 @@ type CacheClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *CacheClient) Close() error {
 	return c.internalClient.Close()
@@ -207,6 +208,16 @@ type cacheGRPCClient struct {
 // computational cost. It is intended to be used with large contexts.
 func NewCacheClient(ctx context.Context, opts ...option.ClientOption) (*CacheClient, error) {
 	clientOpts := defaultCacheGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "generativelanguage",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/ai/generativelanguage/apiv1alpha",
+			"gcp.client.language": "go",
+			"url.domain":          "generativelanguage.googleapis.com",
+		}))
+	}
 	if newCacheClientHook != nil {
 		hookOpts, err := newCacheClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -229,6 +240,65 @@ func NewCacheClient(ctx context.Context, opts ...option.ClientOption) (*CacheCli
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "generativelanguage",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/ai/generativelanguage/apiv1alpha",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "generativelanguage.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListCachedContents = append(client.CallOptions.ListCachedContents, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateCachedContent = append(client.CallOptions.CreateCachedContent, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetCachedContent = append(client.CallOptions.GetCachedContent, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateCachedContent = append(client.CallOptions.UpdateCachedContent, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteCachedContent = append(client.CallOptions.DeleteCachedContent, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "generativelanguage",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/ai/generativelanguage/apiv1alpha",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "generativelanguage.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListCachedContents = append(client.CallOptions.ListCachedContents, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateCachedContent = append(client.CallOptions.CreateCachedContent, gax.WithClientTracing(tracing))
+		client.CallOptions.GetCachedContent = append(client.CallOptions.GetCachedContent, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateCachedContent = append(client.CallOptions.UpdateCachedContent, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteCachedContent = append(client.CallOptions.DeleteCachedContent, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "generativelanguage",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/ai/generativelanguage/apiv1alpha",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "generativelanguage.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListCachedContents = append(client.CallOptions.ListCachedContents, gax.WithClientLogging(logging))
+		client.CallOptions.CreateCachedContent = append(client.CallOptions.CreateCachedContent, gax.WithClientLogging(logging))
+		client.CallOptions.GetCachedContent = append(client.CallOptions.GetCachedContent, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateCachedContent = append(client.CallOptions.UpdateCachedContent, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteCachedContent = append(client.CallOptions.DeleteCachedContent, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -254,7 +324,7 @@ func (c *cacheGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *cacheGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -285,6 +355,16 @@ type cacheRESTClient struct {
 // computational cost. It is intended to be used with large contexts.
 func NewCacheRESTClient(ctx context.Context, opts ...option.ClientOption) (*CacheClient, error) {
 	clientOpts := append(defaultCacheRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "generativelanguage",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/ai/generativelanguage/apiv1alpha",
+			"gcp.client.language": "go",
+			"url.domain":          "generativelanguage.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -298,6 +378,66 @@ func NewCacheRESTClient(ctx context.Context, opts ...option.ClientOption) (*Cach
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "generativelanguage",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/ai/generativelanguage/apiv1alpha",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "generativelanguage.googleapis.com",
+			}),
+		)
+
+		callOpts.ListCachedContents = append(callOpts.ListCachedContents, gax.WithClientMetrics(metrics))
+		callOpts.CreateCachedContent = append(callOpts.CreateCachedContent, gax.WithClientMetrics(metrics))
+		callOpts.GetCachedContent = append(callOpts.GetCachedContent, gax.WithClientMetrics(metrics))
+		callOpts.UpdateCachedContent = append(callOpts.UpdateCachedContent, gax.WithClientMetrics(metrics))
+		callOpts.DeleteCachedContent = append(callOpts.DeleteCachedContent, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "generativelanguage",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/ai/generativelanguage/apiv1alpha",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "generativelanguage.googleapis.com",
+			}),
+		)
+
+		callOpts.ListCachedContents = append(callOpts.ListCachedContents, gax.WithClientTracing(tracing))
+		callOpts.CreateCachedContent = append(callOpts.CreateCachedContent, gax.WithClientTracing(tracing))
+		callOpts.GetCachedContent = append(callOpts.GetCachedContent, gax.WithClientTracing(tracing))
+		callOpts.UpdateCachedContent = append(callOpts.UpdateCachedContent, gax.WithClientTracing(tracing))
+		callOpts.DeleteCachedContent = append(callOpts.DeleteCachedContent, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "generativelanguage",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/ai/generativelanguage/apiv1alpha",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "generativelanguage.googleapis.com",
+			}),
+		)
+
+		callOpts.ListCachedContents = append(callOpts.ListCachedContents, gax.WithClientLogging(logging))
+		callOpts.CreateCachedContent = append(callOpts.CreateCachedContent, gax.WithClientLogging(logging))
+		callOpts.GetCachedContent = append(callOpts.GetCachedContent, gax.WithClientLogging(logging))
+		callOpts.UpdateCachedContent = append(callOpts.UpdateCachedContent, gax.WithClientLogging(logging))
+		callOpts.DeleteCachedContent = append(callOpts.DeleteCachedContent, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	return &CacheClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -325,7 +465,7 @@ func (c *cacheRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *cacheRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -341,9 +481,12 @@ func (c *cacheRESTClient) Connection() *grpc.ClientConn {
 }
 func (c *cacheGRPCClient) ListCachedContents(ctx context.Context, req *generativelanguagepb.ListCachedContentsRequest, opts ...gax.CallOption) *CachedContentIterator {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.CacheService/ListCachedContents")
+	}
 	opts = append((*c.CallOptions).ListCachedContents[0:len((*c.CallOptions).ListCachedContents):len((*c.CallOptions).ListCachedContents)], opts...)
 	it := &CachedContentIterator{}
-	req = proto.Clone(req).(*generativelanguagepb.ListCachedContentsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*generativelanguagepb.CachedContent, string, error) {
 		resp := &generativelanguagepb.ListCachedContentsResponse{}
 		if pageToken != "" {
@@ -384,6 +527,9 @@ func (c *cacheGRPCClient) ListCachedContents(ctx context.Context, req *generativ
 
 func (c *cacheGRPCClient) CreateCachedContent(ctx context.Context, req *generativelanguagepb.CreateCachedContentRequest, opts ...gax.CallOption) (*generativelanguagepb.CachedContent, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.CacheService/CreateCachedContent")
+	}
 	opts = append((*c.CallOptions).CreateCachedContent[0:len((*c.CallOptions).CreateCachedContent):len((*c.CallOptions).CreateCachedContent)], opts...)
 	var resp *generativelanguagepb.CachedContent
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -402,6 +548,9 @@ func (c *cacheGRPCClient) GetCachedContent(ctx context.Context, req *generativel
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.CacheService/GetCachedContent")
+	}
 	opts = append((*c.CallOptions).GetCachedContent[0:len((*c.CallOptions).GetCachedContent):len((*c.CallOptions).GetCachedContent)], opts...)
 	var resp *generativelanguagepb.CachedContent
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -420,6 +569,9 @@ func (c *cacheGRPCClient) UpdateCachedContent(ctx context.Context, req *generati
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.CacheService/UpdateCachedContent")
+	}
 	opts = append((*c.CallOptions).UpdateCachedContent[0:len((*c.CallOptions).UpdateCachedContent):len((*c.CallOptions).UpdateCachedContent)], opts...)
 	var resp *generativelanguagepb.CachedContent
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -438,6 +590,9 @@ func (c *cacheGRPCClient) DeleteCachedContent(ctx context.Context, req *generati
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.CacheService/DeleteCachedContent")
+	}
 	opts = append((*c.CallOptions).DeleteCachedContent[0:len((*c.CallOptions).DeleteCachedContent):len((*c.CallOptions).DeleteCachedContent)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -452,6 +607,9 @@ func (c *cacheGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.G
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -470,9 +628,12 @@ func (c *cacheGRPCClient) ListOperations(ctx context.Context, req *longrunningpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -514,7 +675,7 @@ func (c *cacheGRPCClient) ListOperations(ctx context.Context, req *longrunningpb
 // ListCachedContents lists CachedContents.
 func (c *cacheRESTClient) ListCachedContents(ctx context.Context, req *generativelanguagepb.ListCachedContentsRequest, opts ...gax.CallOption) *CachedContentIterator {
 	it := &CachedContentIterator{}
-	req = proto.Clone(req).(*generativelanguagepb.ListCachedContentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*generativelanguagepb.CachedContent, string, error) {
 		resp := &generativelanguagepb.ListCachedContentsResponse{}
@@ -612,6 +773,10 @@ func (c *cacheRESTClient) CreateCachedContent(ctx context.Context, req *generati
 	// Build HTTP headers from client and context metadata.
 	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.CacheService/CreateCachedContent")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/cachedContents")
+	}
 	opts = append((*c.CallOptions).CreateCachedContent[0:len((*c.CallOptions).CreateCachedContent):len((*c.CallOptions).CreateCachedContent)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &generativelanguagepb.CachedContent{}
@@ -662,6 +827,10 @@ func (c *cacheRESTClient) GetCachedContent(ctx context.Context, req *generativel
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.CacheService/GetCachedContent")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=cachedContents/*}")
+	}
 	opts = append((*c.CallOptions).GetCachedContent[0:len((*c.CallOptions).GetCachedContent):len((*c.CallOptions).GetCachedContent)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &generativelanguagepb.CachedContent{}
@@ -726,6 +895,10 @@ func (c *cacheRESTClient) UpdateCachedContent(ctx context.Context, req *generati
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.CacheService/UpdateCachedContent")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{cached_content.name=cachedContents/*}")
+	}
 	opts = append((*c.CallOptions).UpdateCachedContent[0:len((*c.CallOptions).UpdateCachedContent):len((*c.CallOptions).UpdateCachedContent)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &generativelanguagepb.CachedContent{}
@@ -776,6 +949,10 @@ func (c *cacheRESTClient) DeleteCachedContent(ctx context.Context, req *generati
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ai.generativelanguage.v1alpha.CacheService/DeleteCachedContent")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=cachedContents/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -811,6 +988,10 @@ func (c *cacheRESTClient) GetOperation(ctx context.Context, req *longrunningpb.G
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{name=tunedModels/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -845,7 +1026,7 @@ func (c *cacheRESTClient) GetOperation(ctx context.Context, req *longrunningpb.G
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *cacheRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
@@ -873,6 +1054,9 @@ func (c *cacheRESTClient) ListOperations(ctx context.Context, req *longrunningpb
 		}
 		if req.GetPageToken() != "" {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req.GetReturnPartialSuccess() {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()

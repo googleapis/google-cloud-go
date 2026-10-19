@@ -1,5 +1,56 @@
 # Changes
 
+## [1.28.0](https://github.com/googleapis/google-cloud-go/compare/channel/v1.27.0...channel/v1.28.0) (2026-09-23)
+
+
+### Features
+
+* **all:** Update supported go versions ([#20520](https://github.com/googleapis/google-cloud-go/issues/20520)) ([90413d3](https://github.com/googleapis/google-cloud-go/commit/90413d3e9d381ef4b92e3c496d98b023c5b2d8cc))
+
+## [1.27.0](https://github.com/googleapis/google-cloud-go/compare/channel/v1.26.0...channel/v1.27.0) (2026-07-13)
+
+
+### Features
+
+* **o11y:** Regenerate clients for LRO tracing ([#20107](https://github.com/googleapis/google-cloud-go/issues/20107)) ([779074e](https://github.com/googleapis/google-cloud-go/commit/779074edd267a26520bae459307660953129eb07))
+
+## [1.26.0](https://github.com/googleapis/google-cloud-go/releases/tag/channel%2Fv1.26.0) (2026-05-07)
+
+## [1.25.0](https://github.com/googleapis/google-cloud-go/releases/tag/channel%2Fv1.25.0) (2026-04-30)
+
+## [1.24.0](https://github.com/googleapis/google-cloud-go/releases/tag/channel%2Fv1.24.0) (2026-04-13)
+
+## [1.23.0](https://github.com/googleapis/google-cloud-go/releases/tag/channel%2Fv1.23.0) (2026-04-09)
+
+## [1.22.0](https://github.com/googleapis/google-cloud-go/releases/tag/channel%2Fv1.22.0) (2026-04-02)
+
+## [1.21.0](https://github.com/googleapis/google-cloud-go/releases/tag/channel%2Fv1.21.0) (2025-12-04)
+
+### Bug Fixes
+
+* Changed field behavior for an existing field `entitlement_granularity` in message `.google.cloud.channel.v1.RepricingConfig` ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+
+### Documentation
+
+* A comment for enum `CustomerAttestationState` is changed ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A comment for field `account` in message `.google.cloud.channel.v1.ListSubscribersRequest` is changed ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A comment for field `account` in message `.google.cloud.channel.v1.RegisterSubscriberRequest` is changed ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A comment for field `account` in message `.google.cloud.channel.v1.UnregisterSubscriberRequest` is changed ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A comment for field `customer_attestation_state` in message `.google.cloud.channel.v1.Customer` is changed ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A comment for field `entitlement_granularity` in message `.google.cloud.channel.v1.RepricingConfig` is changed ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A comment for field `event_type` in message `.google.cloud.channel.v1.CustomerEvent` is changed ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A comment for field `event_type` in message `.google.cloud.channel.v1.EntitlementEvent` is changed ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A comment for field `next_page_token` in message `.google.cloud.channel.v1.ListSkuGroupBillableSkusResponse` is changed ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A comment for field `next_page_token` in message `.google.cloud.channel.v1.ListSkuGroupsResponse` is changed ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A comment for field `offers` in message `.google.cloud.channel.v1.ListOffersResponse` is changed ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A comment for field `owned` in message `.google.cloud.channel.v1.CloudIdentityCustomerAccount` is changed ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A comment for field `page_token` in message `.google.cloud.channel.v1.ListSkuGroupBillableSkusRequest` is changed ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A comment for field `page_token` in message `.google.cloud.channel.v1.ListSkuGroupsRequest` is changed ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A comment for message `ChangeParametersRequest` is changed ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A comment for method `ListSubscribers` in service `CloudChannelService` is changed ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A comment for method `RegisterSubscriber` in service `CloudChannelService` is changed ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A comment for method `UnregisterSubscriber` in service `CloudChannelService` is changed ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+
 ## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/channel/v1.19.5...channel/v1.20.0) (2025-06-17)
 
 

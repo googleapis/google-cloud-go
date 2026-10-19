@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import (
 	apihubpb "cloud.google.com/go/apihub/apiv1/apihubpb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -101,7 +102,7 @@ type ApiHubDiscoveryClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *ApiHubDiscoveryClient) Close() error {
 	return c.internalClient.Close()
@@ -198,6 +199,16 @@ type apiHubDiscoveryRESTClient struct {
 // and DiscoveredApiOperations.
 func NewApiHubDiscoveryRESTClient(ctx context.Context, opts ...option.ClientOption) (*ApiHubDiscoveryClient, error) {
 	clientOpts := append(defaultApiHubDiscoveryRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "apihub",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/apihub/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "apihub.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -211,6 +222,75 @@ func NewApiHubDiscoveryRESTClient(ctx context.Context, opts ...option.ClientOpti
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "apihub",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/apihub/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "apihub.googleapis.com",
+			}),
+		)
+
+		callOpts.ListDiscoveredApiObservations = append(callOpts.ListDiscoveredApiObservations, gax.WithClientMetrics(metrics))
+		callOpts.GetDiscoveredApiObservation = append(callOpts.GetDiscoveredApiObservation, gax.WithClientMetrics(metrics))
+		callOpts.ListDiscoveredApiOperations = append(callOpts.ListDiscoveredApiOperations, gax.WithClientMetrics(metrics))
+		callOpts.GetDiscoveredApiOperation = append(callOpts.GetDiscoveredApiOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "apihub",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/apihub/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "apihub.googleapis.com",
+			}),
+		)
+
+		callOpts.ListDiscoveredApiObservations = append(callOpts.ListDiscoveredApiObservations, gax.WithClientTracing(tracing))
+		callOpts.GetDiscoveredApiObservation = append(callOpts.GetDiscoveredApiObservation, gax.WithClientTracing(tracing))
+		callOpts.ListDiscoveredApiOperations = append(callOpts.ListDiscoveredApiOperations, gax.WithClientTracing(tracing))
+		callOpts.GetDiscoveredApiOperation = append(callOpts.GetDiscoveredApiOperation, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "apihub",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/apihub/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "apihub.googleapis.com",
+			}),
+		)
+
+		callOpts.ListDiscoveredApiObservations = append(callOpts.ListDiscoveredApiObservations, gax.WithClientLogging(logging))
+		callOpts.GetDiscoveredApiObservation = append(callOpts.GetDiscoveredApiObservation, gax.WithClientLogging(logging))
+		callOpts.ListDiscoveredApiOperations = append(callOpts.ListDiscoveredApiOperations, gax.WithClientLogging(logging))
+		callOpts.GetDiscoveredApiOperation = append(callOpts.GetDiscoveredApiOperation, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	return &ApiHubDiscoveryClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -238,7 +318,7 @@ func (c *apiHubDiscoveryRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *apiHubDiscoveryRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -256,7 +336,7 @@ func (c *apiHubDiscoveryRESTClient) Connection() *grpc.ClientConn {
 // ListDiscoveredApiObservations lists all the DiscoveredAPIObservations in a given project and location.
 func (c *apiHubDiscoveryRESTClient) ListDiscoveredApiObservations(ctx context.Context, req *apihubpb.ListDiscoveredApiObservationsRequest, opts ...gax.CallOption) *DiscoveredApiObservationIterator {
 	it := &DiscoveredApiObservationIterator{}
-	req = proto.Clone(req).(*apihubpb.ListDiscoveredApiObservationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apihubpb.DiscoveredApiObservation, string, error) {
 		resp := &apihubpb.ListDiscoveredApiObservationsResponse{}
@@ -351,6 +431,10 @@ func (c *apiHubDiscoveryRESTClient) GetDiscoveredApiObservation(ctx context.Cont
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHubDiscovery/GetDiscoveredApiObservation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/discoveredApiObservations/*}")
+	}
 	opts = append((*c.CallOptions).GetDiscoveredApiObservation[0:len((*c.CallOptions).GetDiscoveredApiObservation):len((*c.CallOptions).GetDiscoveredApiObservation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &apihubpb.DiscoveredApiObservation{}
@@ -386,7 +470,7 @@ func (c *apiHubDiscoveryRESTClient) GetDiscoveredApiObservation(ctx context.Cont
 // ApiObservation.
 func (c *apiHubDiscoveryRESTClient) ListDiscoveredApiOperations(ctx context.Context, req *apihubpb.ListDiscoveredApiOperationsRequest, opts ...gax.CallOption) *DiscoveredApiOperationIterator {
 	it := &DiscoveredApiOperationIterator{}
-	req = proto.Clone(req).(*apihubpb.ListDiscoveredApiOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apihubpb.DiscoveredApiOperation, string, error) {
 		resp := &apihubpb.ListDiscoveredApiOperationsResponse{}
@@ -481,6 +565,10 @@ func (c *apiHubDiscoveryRESTClient) GetDiscoveredApiOperation(ctx context.Contex
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.ApiHubDiscovery/GetDiscoveredApiOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/discoveredApiObservations/*/discoveredApiOperations/*}")
+	}
 	opts = append((*c.CallOptions).GetDiscoveredApiOperation[0:len((*c.CallOptions).GetDiscoveredApiOperation):len((*c.CallOptions).GetDiscoveredApiOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &apihubpb.DiscoveredApiOperation{}
@@ -531,6 +619,10 @@ func (c *apiHubDiscoveryRESTClient) GetLocation(ctx context.Context, req *locati
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*}")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &locationpb.Location{}
@@ -565,7 +657,7 @@ func (c *apiHubDiscoveryRESTClient) GetLocation(ctx context.Context, req *locati
 // ListLocations lists information about the supported locations for this service.
 func (c *apiHubDiscoveryRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -668,6 +760,10 @@ func (c *apiHubDiscoveryRESTClient) CancelOperation(ctx context.Context, req *lo
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -703,6 +799,10 @@ func (c *apiHubDiscoveryRESTClient) DeleteOperation(ctx context.Context, req *lo
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -738,6 +838,10 @@ func (c *apiHubDiscoveryRESTClient) GetOperation(ctx context.Context, req *longr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -772,7 +876,7 @@ func (c *apiHubDiscoveryRESTClient) GetOperation(ctx context.Context, req *longr
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *apiHubDiscoveryRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
@@ -800,6 +904,9 @@ func (c *apiHubDiscoveryRESTClient) ListOperations(ctx context.Context, req *lon
 		}
 		if req.GetPageToken() != "" {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req.GetReturnPartialSuccess() {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()

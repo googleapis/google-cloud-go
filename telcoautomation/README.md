@@ -21,12 +21,12 @@ However, a `v1+` module may have breaking changes in two scenarios:
 
 ### Which package to use?
 
-Generated client library surfaces can be found in packages who's import path
+Generated client library surfaces can be found in packages whose import path
 ends in `.../apivXXX`. The `XXX` could be something like `1` or `2` in the case
 of a stable service backend or may be like `1beta2` or `2beta` in the case of a
 more experimental service backend. Because of this fact, a given module can have
 multiple clients for different service backends. In these cases it is generally
-recommend to use clients with stable service backends, with import suffixes like
+recommended to use clients with stable service backends, with import suffixes like
 `apiv1`, unless you need to use features that are only present in a beta backend
 or there is not yet a stable backend available.
 

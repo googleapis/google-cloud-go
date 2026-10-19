@@ -104,7 +104,7 @@ func TestShouldRetry(t *testing.T) {
 func TestRetryer_Retry(t *testing.T) {
 	t.Run("stops after max attempts", func(t *testing.T) {
 		r := New()
-		for i := 0; i < maxRetryAttempts; i++ {
+		for i := 0; i < r.maxAttempts; i++ {
 			if _, ok := r.Retry(500, nil); !ok {
 				t.Errorf("Retry() should have returned true on attempt %d", i)
 			}
@@ -151,4 +151,63 @@ func TestDefaultBackoff_Pause(t *testing.T) {
 	if b.cur > 1*time.Second {
 		t.Errorf("b.cur got %v, want <= 1s", b.cur)
 	}
+}
+
+func TestNewWithOptions(t *testing.T) {
+	t.Run("Full options", func(t *testing.T) {
+		opts := &Options{
+			Initial:     200 * time.Millisecond,
+			Max:         500 * time.Millisecond,
+			Multiplier:  1.5,
+			MaxAttempts: 3,
+		}
+		r := NewWithOptions(opts)
+
+		if r.maxAttempts != 3 {
+			t.Errorf("maxAttempts = %d, want 3", r.maxAttempts)
+		}
+
+		b, ok := r.bo.(*defaultBackoff)
+		if !ok {
+			t.Fatalf("backoff is not defaultBackoff")
+		}
+		if b.cur != 200*time.Millisecond {
+			t.Errorf("Initial = %v, want 200ms", b.cur)
+		}
+		if b.max != 500*time.Millisecond {
+			t.Errorf("Max = %v, want 500ms", b.max)
+		}
+		if b.mul != 1.5 {
+			t.Errorf("Multiplier = %v, want 1.5", b.mul)
+		}
+	})
+
+	t.Run("Partial options (defaults)", func(t *testing.T) {
+		// Provide only partial options, zeros should become defaults.
+		opts := &Options{
+			Initial: 0, // Should default to 100ms
+			Max:     0, // Should default to 30s
+			// Multiplier 0 -> Should default to 2.0
+			// MaxAttempts 0 -> Should default to 5
+		}
+		r := NewWithOptions(opts)
+
+		if r.maxAttempts != 5 {
+			t.Errorf("maxAttempts = %d, want 5 (default)", r.maxAttempts)
+		}
+
+		b, ok := r.bo.(*defaultBackoff)
+		if !ok {
+			t.Fatalf("backoff is not defaultBackoff")
+		}
+		if b.cur != 100*time.Millisecond {
+			t.Errorf("Initial = %v, want 100ms (default)", b.cur)
+		}
+		if b.max != 30*time.Second {
+			t.Errorf("Max = %v, want 30s (default)", b.max)
+		}
+		if b.mul != 2.0 {
+			t.Errorf("Multiplier = %v, want 2.0 (default)", b.mul)
+		}
+	})
 }

@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import (
 
 	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -120,7 +121,7 @@ func defaultInterconnectAttachmentGroupsRESTCallOptions() *InterconnectAttachmen
 	}
 }
 
-// internalInterconnectAttachmentGroupsClient is an interface that defines the methods available from Google Compute Engine API.
+// internalInterconnectAttachmentGroupsClient is an interface that defines the methods available from Compute Engine API.
 type internalInterconnectAttachmentGroupsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -136,10 +137,12 @@ type internalInterconnectAttachmentGroupsClient interface {
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsInterconnectAttachmentGroupRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 }
 
-// InterconnectAttachmentGroupsClient is a client for interacting with Google Compute Engine API.
+// InterconnectAttachmentGroupsClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The InterconnectAttachmentGroups API.
+//
+// This client uses InterconnectAttachmentGroups version 2026-09-01.
 type InterconnectAttachmentGroupsClient struct {
 	// The internal transport-dependent client.
 	internalClient internalInterconnectAttachmentGroupsClient
@@ -150,7 +153,7 @@ type InterconnectAttachmentGroupsClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *InterconnectAttachmentGroupsClient) Close() error {
 	return c.internalClient.Close()
@@ -176,22 +179,26 @@ func (c *InterconnectAttachmentGroupsClient) Delete(ctx context.Context, req *co
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
-// Get returns the specified InterconnectAttachmentGroup resource in the given scope.
+// Get returns the specified InterconnectAttachmentGroup resource in the given
+// scope.
 func (c *InterconnectAttachmentGroupsClient) Get(ctx context.Context, req *computepb.GetInterconnectAttachmentGroupRequest, opts ...gax.CallOption) (*computepb.InterconnectAttachmentGroup, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such
+// policy or resource exists.
 func (c *InterconnectAttachmentGroupsClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyInterconnectAttachmentGroupRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.GetIamPolicy(ctx, req, opts...)
 }
 
-// GetOperationalStatus returns the InterconnectAttachmentStatuses for the specified InterconnectAttachmentGroup resource.
+// GetOperationalStatus returns the InterconnectAttachmentStatuses for the specified
+// InterconnectAttachmentGroup resource.
 func (c *InterconnectAttachmentGroupsClient) GetOperationalStatus(ctx context.Context, req *computepb.GetOperationalStatusInterconnectAttachmentGroupRequest, opts ...gax.CallOption) (*computepb.InterconnectAttachmentGroupsGetOperationalStatusResponse, error) {
 	return c.internalClient.GetOperationalStatus(ctx, req, opts...)
 }
 
-// Insert creates a InterconnectAttachmentGroup in the specified project in the given scope using the parameters that are included in the request.
+// Insert creates a InterconnectAttachmentGroup in the specified project in the given
+// scope using the parameters that are included in the request.
 func (c *InterconnectAttachmentGroupsClient) Insert(ctx context.Context, req *computepb.InsertInterconnectAttachmentGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
@@ -201,12 +208,16 @@ func (c *InterconnectAttachmentGroupsClient) List(ctx context.Context, req *comp
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// Patch patches the specified InterconnectAttachmentGroup resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+// Patch patches the specified InterconnectAttachmentGroup resource with the data
+// included in the request. This method supports PATCH
+// semantics and usesJSON merge
+// patch format and processing rules.
 func (c *InterconnectAttachmentGroupsClient) Patch(ctx context.Context, req *computepb.PatchInterconnectAttachmentGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
 
-// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
+// SetIamPolicy sets the access control policy on the specified resource.
+// Replaces any existing policy.
 func (c *InterconnectAttachmentGroupsClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyInterconnectAttachmentGroupRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.SetIamPolicy(ctx, req, opts...)
 }
@@ -241,6 +252,16 @@ type interconnectAttachmentGroupsRESTClient struct {
 // The InterconnectAttachmentGroups API.
 func NewInterconnectAttachmentGroupsRESTClient(ctx context.Context, opts ...option.ClientOption) (*InterconnectAttachmentGroupsClient, error) {
 	clientOpts := append(defaultInterconnectAttachmentGroupsRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "compute",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/compute/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "compute.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -254,6 +275,72 @@ func NewInterconnectAttachmentGroupsRESTClient(ctx context.Context, opts ...opti
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientMetrics(metrics))
+		callOpts.Get = append(callOpts.Get, gax.WithClientMetrics(metrics))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.GetOperationalStatus = append(callOpts.GetOperationalStatus, gax.WithClientMetrics(metrics))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientMetrics(metrics))
+		callOpts.List = append(callOpts.List, gax.WithClientMetrics(metrics))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientMetrics(metrics))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientTracing(tracing))
+		callOpts.Get = append(callOpts.Get, gax.WithClientTracing(tracing))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.GetOperationalStatus = append(callOpts.GetOperationalStatus, gax.WithClientTracing(tracing))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientTracing(tracing))
+		callOpts.List = append(callOpts.List, gax.WithClientTracing(tracing))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientTracing(tracing))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientLogging(logging))
+		callOpts.Get = append(callOpts.Get, gax.WithClientLogging(logging))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.GetOperationalStatus = append(callOpts.GetOperationalStatus, gax.WithClientLogging(logging))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientLogging(logging))
+		callOpts.List = append(callOpts.List, gax.WithClientLogging(logging))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientLogging(logging))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientLogging(logging))
+	}
 
 	o := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -288,10 +375,11 @@ func (c *interconnectAttachmentGroupsRESTClient) setGoogleClientInfo(keyval ...s
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
+		"x-goog-api-version", "2026-09-01",
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *interconnectAttachmentGroupsRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -330,6 +418,10 @@ func (c *interconnectAttachmentGroupsRESTClient) Delete(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.InterconnectAttachmentGroups/Delete")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/interconnectAttachmentGroups/{interconnect_attachment_group}")
+	}
 	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -368,7 +460,8 @@ func (c *interconnectAttachmentGroupsRESTClient) Delete(ctx context.Context, req
 	return op, nil
 }
 
-// Get returns the specified InterconnectAttachmentGroup resource in the given scope.
+// Get returns the specified InterconnectAttachmentGroup resource in the given
+// scope.
 func (c *interconnectAttachmentGroupsRESTClient) Get(ctx context.Context, req *computepb.GetInterconnectAttachmentGroupRequest, opts ...gax.CallOption) (*computepb.InterconnectAttachmentGroup, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -382,6 +475,10 @@ func (c *interconnectAttachmentGroupsRESTClient) Get(ctx context.Context, req *c
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.InterconnectAttachmentGroups/Get")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/interconnectAttachmentGroups/{interconnect_attachment_group}")
+	}
 	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.InterconnectAttachmentGroup{}
@@ -413,7 +510,8 @@ func (c *interconnectAttachmentGroupsRESTClient) Get(ctx context.Context, req *c
 	return resp, nil
 }
 
-// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such
+// policy or resource exists.
 func (c *interconnectAttachmentGroupsRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyInterconnectAttachmentGroupRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -434,6 +532,10 @@ func (c *interconnectAttachmentGroupsRESTClient) GetIamPolicy(ctx context.Contex
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.InterconnectAttachmentGroups/GetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/interconnectAttachmentGroups/{resource}/getIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Policy{}
@@ -465,7 +567,8 @@ func (c *interconnectAttachmentGroupsRESTClient) GetIamPolicy(ctx context.Contex
 	return resp, nil
 }
 
-// GetOperationalStatus returns the InterconnectAttachmentStatuses for the specified InterconnectAttachmentGroup resource.
+// GetOperationalStatus returns the InterconnectAttachmentStatuses for the specified
+// InterconnectAttachmentGroup resource.
 func (c *interconnectAttachmentGroupsRESTClient) GetOperationalStatus(ctx context.Context, req *computepb.GetOperationalStatusInterconnectAttachmentGroupRequest, opts ...gax.CallOption) (*computepb.InterconnectAttachmentGroupsGetOperationalStatusResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -479,6 +582,10 @@ func (c *interconnectAttachmentGroupsRESTClient) GetOperationalStatus(ctx contex
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.InterconnectAttachmentGroups/GetOperationalStatus")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/interconnectAttachmentGroups/{interconnect_attachment_group}/getOperationalStatus")
+	}
 	opts = append((*c.CallOptions).GetOperationalStatus[0:len((*c.CallOptions).GetOperationalStatus):len((*c.CallOptions).GetOperationalStatus)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.InterconnectAttachmentGroupsGetOperationalStatusResponse{}
@@ -510,7 +617,8 @@ func (c *interconnectAttachmentGroupsRESTClient) GetOperationalStatus(ctx contex
 	return resp, nil
 }
 
-// Insert creates a InterconnectAttachmentGroup in the specified project in the given scope using the parameters that are included in the request.
+// Insert creates a InterconnectAttachmentGroup in the specified project in the given
+// scope using the parameters that are included in the request.
 func (c *interconnectAttachmentGroupsRESTClient) Insert(ctx context.Context, req *computepb.InsertInterconnectAttachmentGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInterconnectAttachmentGroupResource()
@@ -538,6 +646,10 @@ func (c *interconnectAttachmentGroupsRESTClient) Insert(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.InterconnectAttachmentGroups/Insert")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/interconnectAttachmentGroups")
+	}
 	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -579,7 +691,7 @@ func (c *interconnectAttachmentGroupsRESTClient) Insert(ctx context.Context, req
 // List lists the InterconnectAttachmentGroups for a project in the given scope.
 func (c *interconnectAttachmentGroupsRESTClient) List(ctx context.Context, req *computepb.ListInterconnectAttachmentGroupsRequest, opts ...gax.CallOption) *InterconnectAttachmentGroupIterator {
 	it := &InterconnectAttachmentGroupIterator{}
-	req = proto.Clone(req).(*computepb.ListInterconnectAttachmentGroupsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.InterconnectAttachmentGroup, string, error) {
 		resp := &computepb.InterconnectAttachmentGroupsListResponse{}
@@ -609,9 +721,6 @@ func (c *interconnectAttachmentGroupsRESTClient) List(ctx context.Context, req *
 		}
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -662,7 +771,10 @@ func (c *interconnectAttachmentGroupsRESTClient) List(ctx context.Context, req *
 	return it
 }
 
-// Patch patches the specified InterconnectAttachmentGroup resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+// Patch patches the specified InterconnectAttachmentGroup resource with the data
+// included in the request. This method supports PATCH
+// semantics and usesJSON merge
+// patch format and processing rules.
 func (c *interconnectAttachmentGroupsRESTClient) Patch(ctx context.Context, req *computepb.PatchInterconnectAttachmentGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInterconnectAttachmentGroupResource()
@@ -693,6 +805,10 @@ func (c *interconnectAttachmentGroupsRESTClient) Patch(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.InterconnectAttachmentGroups/Patch")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/interconnectAttachmentGroups/{interconnect_attachment_group}")
+	}
 	opts = append((*c.CallOptions).Patch[0:len((*c.CallOptions).Patch):len((*c.CallOptions).Patch)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -731,7 +847,8 @@ func (c *interconnectAttachmentGroupsRESTClient) Patch(ctx context.Context, req 
 	return op, nil
 }
 
-// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
+// SetIamPolicy sets the access control policy on the specified resource.
+// Replaces any existing policy.
 func (c *interconnectAttachmentGroupsRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyInterconnectAttachmentGroupRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetGlobalSetPolicyRequestResource()
@@ -752,6 +869,10 @@ func (c *interconnectAttachmentGroupsRESTClient) SetIamPolicy(ctx context.Contex
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.InterconnectAttachmentGroups/SetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/interconnectAttachmentGroups/{resource}/setIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Policy{}
@@ -804,6 +925,10 @@ func (c *interconnectAttachmentGroupsRESTClient) TestIamPermissions(ctx context.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.InterconnectAttachmentGroups/TestIamPermissions")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/interconnectAttachmentGroups/{resource}/testIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.TestPermissionsResponse{}

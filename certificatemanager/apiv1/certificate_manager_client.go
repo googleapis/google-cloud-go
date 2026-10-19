@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -31,6 +31,8 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -916,7 +918,7 @@ type Client struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *Client) Close() error {
 	return c.internalClient.Close()
@@ -1279,6 +1281,16 @@ type gRPCClient struct {
 // Provides methods to manage Cloud Certificate Manager entities.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "certificatemanager",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/certificatemanager/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "certificatemanager.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -1302,6 +1314,149 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "certificatemanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/certificatemanager/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "certificatemanager.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListCertificates = append(client.CallOptions.ListCertificates, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetCertificate = append(client.CallOptions.GetCertificate, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateCertificate = append(client.CallOptions.CreateCertificate, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateCertificate = append(client.CallOptions.UpdateCertificate, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteCertificate = append(client.CallOptions.DeleteCertificate, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListCertificateMaps = append(client.CallOptions.ListCertificateMaps, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetCertificateMap = append(client.CallOptions.GetCertificateMap, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateCertificateMap = append(client.CallOptions.CreateCertificateMap, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateCertificateMap = append(client.CallOptions.UpdateCertificateMap, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteCertificateMap = append(client.CallOptions.DeleteCertificateMap, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListCertificateMapEntries = append(client.CallOptions.ListCertificateMapEntries, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetCertificateMapEntry = append(client.CallOptions.GetCertificateMapEntry, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateCertificateMapEntry = append(client.CallOptions.CreateCertificateMapEntry, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateCertificateMapEntry = append(client.CallOptions.UpdateCertificateMapEntry, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteCertificateMapEntry = append(client.CallOptions.DeleteCertificateMapEntry, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListDnsAuthorizations = append(client.CallOptions.ListDnsAuthorizations, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetDnsAuthorization = append(client.CallOptions.GetDnsAuthorization, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateDnsAuthorization = append(client.CallOptions.CreateDnsAuthorization, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateDnsAuthorization = append(client.CallOptions.UpdateDnsAuthorization, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteDnsAuthorization = append(client.CallOptions.DeleteDnsAuthorization, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListCertificateIssuanceConfigs = append(client.CallOptions.ListCertificateIssuanceConfigs, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetCertificateIssuanceConfig = append(client.CallOptions.GetCertificateIssuanceConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateCertificateIssuanceConfig = append(client.CallOptions.CreateCertificateIssuanceConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteCertificateIssuanceConfig = append(client.CallOptions.DeleteCertificateIssuanceConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListTrustConfigs = append(client.CallOptions.ListTrustConfigs, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetTrustConfig = append(client.CallOptions.GetTrustConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateTrustConfig = append(client.CallOptions.CreateTrustConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateTrustConfig = append(client.CallOptions.UpdateTrustConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteTrustConfig = append(client.CallOptions.DeleteTrustConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "certificatemanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/certificatemanager/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "certificatemanager.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListCertificates = append(client.CallOptions.ListCertificates, gax.WithClientTracing(tracing))
+		client.CallOptions.GetCertificate = append(client.CallOptions.GetCertificate, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateCertificate = append(client.CallOptions.CreateCertificate, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateCertificate = append(client.CallOptions.UpdateCertificate, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteCertificate = append(client.CallOptions.DeleteCertificate, gax.WithClientTracing(tracing))
+		client.CallOptions.ListCertificateMaps = append(client.CallOptions.ListCertificateMaps, gax.WithClientTracing(tracing))
+		client.CallOptions.GetCertificateMap = append(client.CallOptions.GetCertificateMap, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateCertificateMap = append(client.CallOptions.CreateCertificateMap, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateCertificateMap = append(client.CallOptions.UpdateCertificateMap, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteCertificateMap = append(client.CallOptions.DeleteCertificateMap, gax.WithClientTracing(tracing))
+		client.CallOptions.ListCertificateMapEntries = append(client.CallOptions.ListCertificateMapEntries, gax.WithClientTracing(tracing))
+		client.CallOptions.GetCertificateMapEntry = append(client.CallOptions.GetCertificateMapEntry, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateCertificateMapEntry = append(client.CallOptions.CreateCertificateMapEntry, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateCertificateMapEntry = append(client.CallOptions.UpdateCertificateMapEntry, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteCertificateMapEntry = append(client.CallOptions.DeleteCertificateMapEntry, gax.WithClientTracing(tracing))
+		client.CallOptions.ListDnsAuthorizations = append(client.CallOptions.ListDnsAuthorizations, gax.WithClientTracing(tracing))
+		client.CallOptions.GetDnsAuthorization = append(client.CallOptions.GetDnsAuthorization, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateDnsAuthorization = append(client.CallOptions.CreateDnsAuthorization, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateDnsAuthorization = append(client.CallOptions.UpdateDnsAuthorization, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteDnsAuthorization = append(client.CallOptions.DeleteDnsAuthorization, gax.WithClientTracing(tracing))
+		client.CallOptions.ListCertificateIssuanceConfigs = append(client.CallOptions.ListCertificateIssuanceConfigs, gax.WithClientTracing(tracing))
+		client.CallOptions.GetCertificateIssuanceConfig = append(client.CallOptions.GetCertificateIssuanceConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateCertificateIssuanceConfig = append(client.CallOptions.CreateCertificateIssuanceConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteCertificateIssuanceConfig = append(client.CallOptions.DeleteCertificateIssuanceConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.ListTrustConfigs = append(client.CallOptions.ListTrustConfigs, gax.WithClientTracing(tracing))
+		client.CallOptions.GetTrustConfig = append(client.CallOptions.GetTrustConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateTrustConfig = append(client.CallOptions.CreateTrustConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateTrustConfig = append(client.CallOptions.UpdateTrustConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteTrustConfig = append(client.CallOptions.DeleteTrustConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "certificatemanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/certificatemanager/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "certificatemanager.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListCertificates = append(client.CallOptions.ListCertificates, gax.WithClientLogging(logging))
+		client.CallOptions.GetCertificate = append(client.CallOptions.GetCertificate, gax.WithClientLogging(logging))
+		client.CallOptions.CreateCertificate = append(client.CallOptions.CreateCertificate, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateCertificate = append(client.CallOptions.UpdateCertificate, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteCertificate = append(client.CallOptions.DeleteCertificate, gax.WithClientLogging(logging))
+		client.CallOptions.ListCertificateMaps = append(client.CallOptions.ListCertificateMaps, gax.WithClientLogging(logging))
+		client.CallOptions.GetCertificateMap = append(client.CallOptions.GetCertificateMap, gax.WithClientLogging(logging))
+		client.CallOptions.CreateCertificateMap = append(client.CallOptions.CreateCertificateMap, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateCertificateMap = append(client.CallOptions.UpdateCertificateMap, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteCertificateMap = append(client.CallOptions.DeleteCertificateMap, gax.WithClientLogging(logging))
+		client.CallOptions.ListCertificateMapEntries = append(client.CallOptions.ListCertificateMapEntries, gax.WithClientLogging(logging))
+		client.CallOptions.GetCertificateMapEntry = append(client.CallOptions.GetCertificateMapEntry, gax.WithClientLogging(logging))
+		client.CallOptions.CreateCertificateMapEntry = append(client.CallOptions.CreateCertificateMapEntry, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateCertificateMapEntry = append(client.CallOptions.UpdateCertificateMapEntry, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteCertificateMapEntry = append(client.CallOptions.DeleteCertificateMapEntry, gax.WithClientLogging(logging))
+		client.CallOptions.ListDnsAuthorizations = append(client.CallOptions.ListDnsAuthorizations, gax.WithClientLogging(logging))
+		client.CallOptions.GetDnsAuthorization = append(client.CallOptions.GetDnsAuthorization, gax.WithClientLogging(logging))
+		client.CallOptions.CreateDnsAuthorization = append(client.CallOptions.CreateDnsAuthorization, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateDnsAuthorization = append(client.CallOptions.UpdateDnsAuthorization, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteDnsAuthorization = append(client.CallOptions.DeleteDnsAuthorization, gax.WithClientLogging(logging))
+		client.CallOptions.ListCertificateIssuanceConfigs = append(client.CallOptions.ListCertificateIssuanceConfigs, gax.WithClientLogging(logging))
+		client.CallOptions.GetCertificateIssuanceConfig = append(client.CallOptions.GetCertificateIssuanceConfig, gax.WithClientLogging(logging))
+		client.CallOptions.CreateCertificateIssuanceConfig = append(client.CallOptions.CreateCertificateIssuanceConfig, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteCertificateIssuanceConfig = append(client.CallOptions.DeleteCertificateIssuanceConfig, gax.WithClientLogging(logging))
+		client.CallOptions.ListTrustConfigs = append(client.CallOptions.ListTrustConfigs, gax.WithClientLogging(logging))
+		client.CallOptions.GetTrustConfig = append(client.CallOptions.GetTrustConfig, gax.WithClientLogging(logging))
+		client.CallOptions.CreateTrustConfig = append(client.CallOptions.CreateTrustConfig, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateTrustConfig = append(client.CallOptions.UpdateTrustConfig, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteTrustConfig = append(client.CallOptions.DeleteTrustConfig, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -1338,7 +1493,7 @@ func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *gRPCClient) Close() error {
 	return c.connPool.Close()
@@ -1400,6 +1555,16 @@ type restClient struct {
 // Provides methods to manage Cloud Certificate Manager entities.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "certificatemanager",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/certificatemanager/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "certificatemanager.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -1413,6 +1578,150 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "certificatemanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/certificatemanager/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "certificatemanager.googleapis.com",
+			}),
+		)
+
+		callOpts.ListCertificates = append(callOpts.ListCertificates, gax.WithClientMetrics(metrics))
+		callOpts.GetCertificate = append(callOpts.GetCertificate, gax.WithClientMetrics(metrics))
+		callOpts.CreateCertificate = append(callOpts.CreateCertificate, gax.WithClientMetrics(metrics))
+		callOpts.UpdateCertificate = append(callOpts.UpdateCertificate, gax.WithClientMetrics(metrics))
+		callOpts.DeleteCertificate = append(callOpts.DeleteCertificate, gax.WithClientMetrics(metrics))
+		callOpts.ListCertificateMaps = append(callOpts.ListCertificateMaps, gax.WithClientMetrics(metrics))
+		callOpts.GetCertificateMap = append(callOpts.GetCertificateMap, gax.WithClientMetrics(metrics))
+		callOpts.CreateCertificateMap = append(callOpts.CreateCertificateMap, gax.WithClientMetrics(metrics))
+		callOpts.UpdateCertificateMap = append(callOpts.UpdateCertificateMap, gax.WithClientMetrics(metrics))
+		callOpts.DeleteCertificateMap = append(callOpts.DeleteCertificateMap, gax.WithClientMetrics(metrics))
+		callOpts.ListCertificateMapEntries = append(callOpts.ListCertificateMapEntries, gax.WithClientMetrics(metrics))
+		callOpts.GetCertificateMapEntry = append(callOpts.GetCertificateMapEntry, gax.WithClientMetrics(metrics))
+		callOpts.CreateCertificateMapEntry = append(callOpts.CreateCertificateMapEntry, gax.WithClientMetrics(metrics))
+		callOpts.UpdateCertificateMapEntry = append(callOpts.UpdateCertificateMapEntry, gax.WithClientMetrics(metrics))
+		callOpts.DeleteCertificateMapEntry = append(callOpts.DeleteCertificateMapEntry, gax.WithClientMetrics(metrics))
+		callOpts.ListDnsAuthorizations = append(callOpts.ListDnsAuthorizations, gax.WithClientMetrics(metrics))
+		callOpts.GetDnsAuthorization = append(callOpts.GetDnsAuthorization, gax.WithClientMetrics(metrics))
+		callOpts.CreateDnsAuthorization = append(callOpts.CreateDnsAuthorization, gax.WithClientMetrics(metrics))
+		callOpts.UpdateDnsAuthorization = append(callOpts.UpdateDnsAuthorization, gax.WithClientMetrics(metrics))
+		callOpts.DeleteDnsAuthorization = append(callOpts.DeleteDnsAuthorization, gax.WithClientMetrics(metrics))
+		callOpts.ListCertificateIssuanceConfigs = append(callOpts.ListCertificateIssuanceConfigs, gax.WithClientMetrics(metrics))
+		callOpts.GetCertificateIssuanceConfig = append(callOpts.GetCertificateIssuanceConfig, gax.WithClientMetrics(metrics))
+		callOpts.CreateCertificateIssuanceConfig = append(callOpts.CreateCertificateIssuanceConfig, gax.WithClientMetrics(metrics))
+		callOpts.DeleteCertificateIssuanceConfig = append(callOpts.DeleteCertificateIssuanceConfig, gax.WithClientMetrics(metrics))
+		callOpts.ListTrustConfigs = append(callOpts.ListTrustConfigs, gax.WithClientMetrics(metrics))
+		callOpts.GetTrustConfig = append(callOpts.GetTrustConfig, gax.WithClientMetrics(metrics))
+		callOpts.CreateTrustConfig = append(callOpts.CreateTrustConfig, gax.WithClientMetrics(metrics))
+		callOpts.UpdateTrustConfig = append(callOpts.UpdateTrustConfig, gax.WithClientMetrics(metrics))
+		callOpts.DeleteTrustConfig = append(callOpts.DeleteTrustConfig, gax.WithClientMetrics(metrics))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "certificatemanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/certificatemanager/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "certificatemanager.googleapis.com",
+			}),
+		)
+
+		callOpts.ListCertificates = append(callOpts.ListCertificates, gax.WithClientTracing(tracing))
+		callOpts.GetCertificate = append(callOpts.GetCertificate, gax.WithClientTracing(tracing))
+		callOpts.CreateCertificate = append(callOpts.CreateCertificate, gax.WithClientTracing(tracing))
+		callOpts.UpdateCertificate = append(callOpts.UpdateCertificate, gax.WithClientTracing(tracing))
+		callOpts.DeleteCertificate = append(callOpts.DeleteCertificate, gax.WithClientTracing(tracing))
+		callOpts.ListCertificateMaps = append(callOpts.ListCertificateMaps, gax.WithClientTracing(tracing))
+		callOpts.GetCertificateMap = append(callOpts.GetCertificateMap, gax.WithClientTracing(tracing))
+		callOpts.CreateCertificateMap = append(callOpts.CreateCertificateMap, gax.WithClientTracing(tracing))
+		callOpts.UpdateCertificateMap = append(callOpts.UpdateCertificateMap, gax.WithClientTracing(tracing))
+		callOpts.DeleteCertificateMap = append(callOpts.DeleteCertificateMap, gax.WithClientTracing(tracing))
+		callOpts.ListCertificateMapEntries = append(callOpts.ListCertificateMapEntries, gax.WithClientTracing(tracing))
+		callOpts.GetCertificateMapEntry = append(callOpts.GetCertificateMapEntry, gax.WithClientTracing(tracing))
+		callOpts.CreateCertificateMapEntry = append(callOpts.CreateCertificateMapEntry, gax.WithClientTracing(tracing))
+		callOpts.UpdateCertificateMapEntry = append(callOpts.UpdateCertificateMapEntry, gax.WithClientTracing(tracing))
+		callOpts.DeleteCertificateMapEntry = append(callOpts.DeleteCertificateMapEntry, gax.WithClientTracing(tracing))
+		callOpts.ListDnsAuthorizations = append(callOpts.ListDnsAuthorizations, gax.WithClientTracing(tracing))
+		callOpts.GetDnsAuthorization = append(callOpts.GetDnsAuthorization, gax.WithClientTracing(tracing))
+		callOpts.CreateDnsAuthorization = append(callOpts.CreateDnsAuthorization, gax.WithClientTracing(tracing))
+		callOpts.UpdateDnsAuthorization = append(callOpts.UpdateDnsAuthorization, gax.WithClientTracing(tracing))
+		callOpts.DeleteDnsAuthorization = append(callOpts.DeleteDnsAuthorization, gax.WithClientTracing(tracing))
+		callOpts.ListCertificateIssuanceConfigs = append(callOpts.ListCertificateIssuanceConfigs, gax.WithClientTracing(tracing))
+		callOpts.GetCertificateIssuanceConfig = append(callOpts.GetCertificateIssuanceConfig, gax.WithClientTracing(tracing))
+		callOpts.CreateCertificateIssuanceConfig = append(callOpts.CreateCertificateIssuanceConfig, gax.WithClientTracing(tracing))
+		callOpts.DeleteCertificateIssuanceConfig = append(callOpts.DeleteCertificateIssuanceConfig, gax.WithClientTracing(tracing))
+		callOpts.ListTrustConfigs = append(callOpts.ListTrustConfigs, gax.WithClientTracing(tracing))
+		callOpts.GetTrustConfig = append(callOpts.GetTrustConfig, gax.WithClientTracing(tracing))
+		callOpts.CreateTrustConfig = append(callOpts.CreateTrustConfig, gax.WithClientTracing(tracing))
+		callOpts.UpdateTrustConfig = append(callOpts.UpdateTrustConfig, gax.WithClientTracing(tracing))
+		callOpts.DeleteTrustConfig = append(callOpts.DeleteTrustConfig, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "certificatemanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/certificatemanager/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "certificatemanager.googleapis.com",
+			}),
+		)
+
+		callOpts.ListCertificates = append(callOpts.ListCertificates, gax.WithClientLogging(logging))
+		callOpts.GetCertificate = append(callOpts.GetCertificate, gax.WithClientLogging(logging))
+		callOpts.CreateCertificate = append(callOpts.CreateCertificate, gax.WithClientLogging(logging))
+		callOpts.UpdateCertificate = append(callOpts.UpdateCertificate, gax.WithClientLogging(logging))
+		callOpts.DeleteCertificate = append(callOpts.DeleteCertificate, gax.WithClientLogging(logging))
+		callOpts.ListCertificateMaps = append(callOpts.ListCertificateMaps, gax.WithClientLogging(logging))
+		callOpts.GetCertificateMap = append(callOpts.GetCertificateMap, gax.WithClientLogging(logging))
+		callOpts.CreateCertificateMap = append(callOpts.CreateCertificateMap, gax.WithClientLogging(logging))
+		callOpts.UpdateCertificateMap = append(callOpts.UpdateCertificateMap, gax.WithClientLogging(logging))
+		callOpts.DeleteCertificateMap = append(callOpts.DeleteCertificateMap, gax.WithClientLogging(logging))
+		callOpts.ListCertificateMapEntries = append(callOpts.ListCertificateMapEntries, gax.WithClientLogging(logging))
+		callOpts.GetCertificateMapEntry = append(callOpts.GetCertificateMapEntry, gax.WithClientLogging(logging))
+		callOpts.CreateCertificateMapEntry = append(callOpts.CreateCertificateMapEntry, gax.WithClientLogging(logging))
+		callOpts.UpdateCertificateMapEntry = append(callOpts.UpdateCertificateMapEntry, gax.WithClientLogging(logging))
+		callOpts.DeleteCertificateMapEntry = append(callOpts.DeleteCertificateMapEntry, gax.WithClientLogging(logging))
+		callOpts.ListDnsAuthorizations = append(callOpts.ListDnsAuthorizations, gax.WithClientLogging(logging))
+		callOpts.GetDnsAuthorization = append(callOpts.GetDnsAuthorization, gax.WithClientLogging(logging))
+		callOpts.CreateDnsAuthorization = append(callOpts.CreateDnsAuthorization, gax.WithClientLogging(logging))
+		callOpts.UpdateDnsAuthorization = append(callOpts.UpdateDnsAuthorization, gax.WithClientLogging(logging))
+		callOpts.DeleteDnsAuthorization = append(callOpts.DeleteDnsAuthorization, gax.WithClientLogging(logging))
+		callOpts.ListCertificateIssuanceConfigs = append(callOpts.ListCertificateIssuanceConfigs, gax.WithClientLogging(logging))
+		callOpts.GetCertificateIssuanceConfig = append(callOpts.GetCertificateIssuanceConfig, gax.WithClientLogging(logging))
+		callOpts.CreateCertificateIssuanceConfig = append(callOpts.CreateCertificateIssuanceConfig, gax.WithClientLogging(logging))
+		callOpts.DeleteCertificateIssuanceConfig = append(callOpts.DeleteCertificateIssuanceConfig, gax.WithClientLogging(logging))
+		callOpts.ListTrustConfigs = append(callOpts.ListTrustConfigs, gax.WithClientLogging(logging))
+		callOpts.GetTrustConfig = append(callOpts.GetTrustConfig, gax.WithClientLogging(logging))
+		callOpts.CreateTrustConfig = append(callOpts.CreateTrustConfig, gax.WithClientLogging(logging))
+		callOpts.UpdateTrustConfig = append(callOpts.UpdateTrustConfig, gax.WithClientLogging(logging))
+		callOpts.DeleteTrustConfig = append(callOpts.DeleteTrustConfig, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -1450,7 +1759,7 @@ func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *restClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -1469,9 +1778,12 @@ func (c *gRPCClient) ListCertificates(ctx context.Context, req *certificatemanag
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.certificatemanager.v1.CertificateManager/ListCertificates")
+	}
 	opts = append((*c.CallOptions).ListCertificates[0:len((*c.CallOptions).ListCertificates):len((*c.CallOptions).ListCertificates)], opts...)
 	it := &CertificateIterator{}
-	req = proto.Clone(req).(*certificatemanagerpb.ListCertificatesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*certificatemanagerpb.Certificate, string, error) {
 		resp := &certificatemanagerpb.ListCertificatesResponse{}
 		if pageToken != "" {
@@ -1515,6 +1827,9 @@ func (c *gRPCClient) GetCertificate(ctx context.Context, req *certificatemanager
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.certificatemanager.v1.CertificateManager/GetCertificate")
+	}
 	opts = append((*c.CallOptions).GetCertificate[0:len((*c.CallOptions).GetCertificate):len((*c.CallOptions).GetCertificate)], opts...)
 	var resp *certificatemanagerpb.Certificate
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1533,6 +1848,9 @@ func (c *gRPCClient) CreateCertificate(ctx context.Context, req *certificatemana
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.certificatemanager.v1.CertificateManager/CreateCertificate")
+	}
 	opts = append((*c.CallOptions).CreateCertificate[0:len((*c.CallOptions).CreateCertificate):len((*c.CallOptions).CreateCertificate)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1543,8 +1861,12 @@ func (c *gRPCClient) CreateCertificate(ctx context.Context, req *certificatemana
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.CreateCertificateOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateCertificateOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1553,6 +1875,9 @@ func (c *gRPCClient) UpdateCertificate(ctx context.Context, req *certificatemana
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.certificatemanager.v1.CertificateManager/UpdateCertificate")
+	}
 	opts = append((*c.CallOptions).UpdateCertificate[0:len((*c.CallOptions).UpdateCertificate):len((*c.CallOptions).UpdateCertificate)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1563,8 +1888,12 @@ func (c *gRPCClient) UpdateCertificate(ctx context.Context, req *certificatemana
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.UpdateCertificateOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateCertificateOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1573,6 +1902,9 @@ func (c *gRPCClient) DeleteCertificate(ctx context.Context, req *certificatemana
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.certificatemanager.v1.CertificateManager/DeleteCertificate")
+	}
 	opts = append((*c.CallOptions).DeleteCertificate[0:len((*c.CallOptions).DeleteCertificate):len((*c.CallOptions).DeleteCertificate)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1583,8 +1915,12 @@ func (c *gRPCClient) DeleteCertificate(ctx context.Context, req *certificatemana
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.DeleteCertificateOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteCertificateOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1593,9 +1929,12 @@ func (c *gRPCClient) ListCertificateMaps(ctx context.Context, req *certificatema
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.certificatemanager.v1.CertificateManager/ListCertificateMaps")
+	}
 	opts = append((*c.CallOptions).ListCertificateMaps[0:len((*c.CallOptions).ListCertificateMaps):len((*c.CallOptions).ListCertificateMaps)], opts...)
 	it := &CertificateMapIterator{}
-	req = proto.Clone(req).(*certificatemanagerpb.ListCertificateMapsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*certificatemanagerpb.CertificateMap, string, error) {
 		resp := &certificatemanagerpb.ListCertificateMapsResponse{}
 		if pageToken != "" {
@@ -1639,6 +1978,9 @@ func (c *gRPCClient) GetCertificateMap(ctx context.Context, req *certificatemana
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.certificatemanager.v1.CertificateManager/GetCertificateMap")
+	}
 	opts = append((*c.CallOptions).GetCertificateMap[0:len((*c.CallOptions).GetCertificateMap):len((*c.CallOptions).GetCertificateMap)], opts...)
 	var resp *certificatemanagerpb.CertificateMap
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1657,6 +1999,9 @@ func (c *gRPCClient) CreateCertificateMap(ctx context.Context, req *certificatem
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.certificatemanager.v1.CertificateManager/CreateCertificateMap")
+	}
 	opts = append((*c.CallOptions).CreateCertificateMap[0:len((*c.CallOptions).CreateCertificateMap):len((*c.CallOptions).CreateCertificateMap)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1667,8 +2012,12 @@ func (c *gRPCClient) CreateCertificateMap(ctx context.Context, req *certificatem
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.CreateCertificateMapOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateCertificateMapOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1677,6 +2026,9 @@ func (c *gRPCClient) UpdateCertificateMap(ctx context.Context, req *certificatem
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.certificatemanager.v1.CertificateManager/UpdateCertificateMap")
+	}
 	opts = append((*c.CallOptions).UpdateCertificateMap[0:len((*c.CallOptions).UpdateCertificateMap):len((*c.CallOptions).UpdateCertificateMap)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1687,8 +2039,12 @@ func (c *gRPCClient) UpdateCertificateMap(ctx context.Context, req *certificatem
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.UpdateCertificateMapOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateCertificateMapOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1697,6 +2053,9 @@ func (c *gRPCClient) DeleteCertificateMap(ctx context.Context, req *certificatem
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.certificatemanager.v1.CertificateManager/DeleteCertificateMap")
+	}
 	opts = append((*c.CallOptions).DeleteCertificateMap[0:len((*c.CallOptions).DeleteCertificateMap):len((*c.CallOptions).DeleteCertificateMap)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1707,8 +2066,12 @@ func (c *gRPCClient) DeleteCertificateMap(ctx context.Context, req *certificatem
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.DeleteCertificateMapOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteCertificateMapOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1717,9 +2080,12 @@ func (c *gRPCClient) ListCertificateMapEntries(ctx context.Context, req *certifi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.certificatemanager.v1.CertificateManager/ListCertificateMapEntries")
+	}
 	opts = append((*c.CallOptions).ListCertificateMapEntries[0:len((*c.CallOptions).ListCertificateMapEntries):len((*c.CallOptions).ListCertificateMapEntries)], opts...)
 	it := &CertificateMapEntryIterator{}
-	req = proto.Clone(req).(*certificatemanagerpb.ListCertificateMapEntriesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*certificatemanagerpb.CertificateMapEntry, string, error) {
 		resp := &certificatemanagerpb.ListCertificateMapEntriesResponse{}
 		if pageToken != "" {
@@ -1763,6 +2129,9 @@ func (c *gRPCClient) GetCertificateMapEntry(ctx context.Context, req *certificat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.certificatemanager.v1.CertificateManager/GetCertificateMapEntry")
+	}
 	opts = append((*c.CallOptions).GetCertificateMapEntry[0:len((*c.CallOptions).GetCertificateMapEntry):len((*c.CallOptions).GetCertificateMapEntry)], opts...)
 	var resp *certificatemanagerpb.CertificateMapEntry
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1781,6 +2150,9 @@ func (c *gRPCClient) CreateCertificateMapEntry(ctx context.Context, req *certifi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.certificatemanager.v1.CertificateManager/CreateCertificateMapEntry")
+	}
 	opts = append((*c.CallOptions).CreateCertificateMapEntry[0:len((*c.CallOptions).CreateCertificateMapEntry):len((*c.CallOptions).CreateCertificateMapEntry)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1791,8 +2163,12 @@ func (c *gRPCClient) CreateCertificateMapEntry(ctx context.Context, req *certifi
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.CreateCertificateMapEntryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateCertificateMapEntryOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1801,6 +2177,9 @@ func (c *gRPCClient) UpdateCertificateMapEntry(ctx context.Context, req *certifi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.certificatemanager.v1.CertificateManager/UpdateCertificateMapEntry")
+	}
 	opts = append((*c.CallOptions).UpdateCertificateMapEntry[0:len((*c.CallOptions).UpdateCertificateMapEntry):len((*c.CallOptions).UpdateCertificateMapEntry)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1811,8 +2190,12 @@ func (c *gRPCClient) UpdateCertificateMapEntry(ctx context.Context, req *certifi
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.UpdateCertificateMapEntryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateCertificateMapEntryOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1821,6 +2204,9 @@ func (c *gRPCClient) DeleteCertificateMapEntry(ctx context.Context, req *certifi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.certificatemanager.v1.CertificateManager/DeleteCertificateMapEntry")
+	}
 	opts = append((*c.CallOptions).DeleteCertificateMapEntry[0:len((*c.CallOptions).DeleteCertificateMapEntry):len((*c.CallOptions).DeleteCertificateMapEntry)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1831,8 +2217,12 @@ func (c *gRPCClient) DeleteCertificateMapEntry(ctx context.Context, req *certifi
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.DeleteCertificateMapEntryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteCertificateMapEntryOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1841,9 +2231,12 @@ func (c *gRPCClient) ListDnsAuthorizations(ctx context.Context, req *certificate
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.certificatemanager.v1.CertificateManager/ListDnsAuthorizations")
+	}
 	opts = append((*c.CallOptions).ListDnsAuthorizations[0:len((*c.CallOptions).ListDnsAuthorizations):len((*c.CallOptions).ListDnsAuthorizations)], opts...)
 	it := &DnsAuthorizationIterator{}
-	req = proto.Clone(req).(*certificatemanagerpb.ListDnsAuthorizationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*certificatemanagerpb.DnsAuthorization, string, error) {
 		resp := &certificatemanagerpb.ListDnsAuthorizationsResponse{}
 		if pageToken != "" {
@@ -1887,6 +2280,9 @@ func (c *gRPCClient) GetDnsAuthorization(ctx context.Context, req *certificatema
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.certificatemanager.v1.CertificateManager/GetDnsAuthorization")
+	}
 	opts = append((*c.CallOptions).GetDnsAuthorization[0:len((*c.CallOptions).GetDnsAuthorization):len((*c.CallOptions).GetDnsAuthorization)], opts...)
 	var resp *certificatemanagerpb.DnsAuthorization
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1905,6 +2301,9 @@ func (c *gRPCClient) CreateDnsAuthorization(ctx context.Context, req *certificat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.certificatemanager.v1.CertificateManager/CreateDnsAuthorization")
+	}
 	opts = append((*c.CallOptions).CreateDnsAuthorization[0:len((*c.CallOptions).CreateDnsAuthorization):len((*c.CallOptions).CreateDnsAuthorization)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1915,8 +2314,12 @@ func (c *gRPCClient) CreateDnsAuthorization(ctx context.Context, req *certificat
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.CreateDnsAuthorizationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateDnsAuthorizationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1925,6 +2328,9 @@ func (c *gRPCClient) UpdateDnsAuthorization(ctx context.Context, req *certificat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.certificatemanager.v1.CertificateManager/UpdateDnsAuthorization")
+	}
 	opts = append((*c.CallOptions).UpdateDnsAuthorization[0:len((*c.CallOptions).UpdateDnsAuthorization):len((*c.CallOptions).UpdateDnsAuthorization)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1935,8 +2341,12 @@ func (c *gRPCClient) UpdateDnsAuthorization(ctx context.Context, req *certificat
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.UpdateDnsAuthorizationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateDnsAuthorizationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1945,6 +2355,9 @@ func (c *gRPCClient) DeleteDnsAuthorization(ctx context.Context, req *certificat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.certificatemanager.v1.CertificateManager/DeleteDnsAuthorization")
+	}
 	opts = append((*c.CallOptions).DeleteDnsAuthorization[0:len((*c.CallOptions).DeleteDnsAuthorization):len((*c.CallOptions).DeleteDnsAuthorization)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1955,8 +2368,12 @@ func (c *gRPCClient) DeleteDnsAuthorization(ctx context.Context, req *certificat
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.DeleteDnsAuthorizationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteDnsAuthorizationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1965,9 +2382,12 @@ func (c *gRPCClient) ListCertificateIssuanceConfigs(ctx context.Context, req *ce
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.certificatemanager.v1.CertificateManager/ListCertificateIssuanceConfigs")
+	}
 	opts = append((*c.CallOptions).ListCertificateIssuanceConfigs[0:len((*c.CallOptions).ListCertificateIssuanceConfigs):len((*c.CallOptions).ListCertificateIssuanceConfigs)], opts...)
 	it := &CertificateIssuanceConfigIterator{}
-	req = proto.Clone(req).(*certificatemanagerpb.ListCertificateIssuanceConfigsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*certificatemanagerpb.CertificateIssuanceConfig, string, error) {
 		resp := &certificatemanagerpb.ListCertificateIssuanceConfigsResponse{}
 		if pageToken != "" {
@@ -2011,6 +2431,9 @@ func (c *gRPCClient) GetCertificateIssuanceConfig(ctx context.Context, req *cert
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.certificatemanager.v1.CertificateManager/GetCertificateIssuanceConfig")
+	}
 	opts = append((*c.CallOptions).GetCertificateIssuanceConfig[0:len((*c.CallOptions).GetCertificateIssuanceConfig):len((*c.CallOptions).GetCertificateIssuanceConfig)], opts...)
 	var resp *certificatemanagerpb.CertificateIssuanceConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2029,6 +2452,9 @@ func (c *gRPCClient) CreateCertificateIssuanceConfig(ctx context.Context, req *c
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.certificatemanager.v1.CertificateManager/CreateCertificateIssuanceConfig")
+	}
 	opts = append((*c.CallOptions).CreateCertificateIssuanceConfig[0:len((*c.CallOptions).CreateCertificateIssuanceConfig):len((*c.CallOptions).CreateCertificateIssuanceConfig)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2039,8 +2465,12 @@ func (c *gRPCClient) CreateCertificateIssuanceConfig(ctx context.Context, req *c
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.CreateCertificateIssuanceConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateCertificateIssuanceConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2049,6 +2479,9 @@ func (c *gRPCClient) DeleteCertificateIssuanceConfig(ctx context.Context, req *c
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.certificatemanager.v1.CertificateManager/DeleteCertificateIssuanceConfig")
+	}
 	opts = append((*c.CallOptions).DeleteCertificateIssuanceConfig[0:len((*c.CallOptions).DeleteCertificateIssuanceConfig):len((*c.CallOptions).DeleteCertificateIssuanceConfig)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2059,8 +2492,12 @@ func (c *gRPCClient) DeleteCertificateIssuanceConfig(ctx context.Context, req *c
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.DeleteCertificateIssuanceConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteCertificateIssuanceConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2069,9 +2506,12 @@ func (c *gRPCClient) ListTrustConfigs(ctx context.Context, req *certificatemanag
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.certificatemanager.v1.CertificateManager/ListTrustConfigs")
+	}
 	opts = append((*c.CallOptions).ListTrustConfigs[0:len((*c.CallOptions).ListTrustConfigs):len((*c.CallOptions).ListTrustConfigs)], opts...)
 	it := &TrustConfigIterator{}
-	req = proto.Clone(req).(*certificatemanagerpb.ListTrustConfigsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*certificatemanagerpb.TrustConfig, string, error) {
 		resp := &certificatemanagerpb.ListTrustConfigsResponse{}
 		if pageToken != "" {
@@ -2115,6 +2555,9 @@ func (c *gRPCClient) GetTrustConfig(ctx context.Context, req *certificatemanager
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.certificatemanager.v1.CertificateManager/GetTrustConfig")
+	}
 	opts = append((*c.CallOptions).GetTrustConfig[0:len((*c.CallOptions).GetTrustConfig):len((*c.CallOptions).GetTrustConfig)], opts...)
 	var resp *certificatemanagerpb.TrustConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2133,6 +2576,9 @@ func (c *gRPCClient) CreateTrustConfig(ctx context.Context, req *certificatemana
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.certificatemanager.v1.CertificateManager/CreateTrustConfig")
+	}
 	opts = append((*c.CallOptions).CreateTrustConfig[0:len((*c.CallOptions).CreateTrustConfig):len((*c.CallOptions).CreateTrustConfig)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2143,8 +2589,12 @@ func (c *gRPCClient) CreateTrustConfig(ctx context.Context, req *certificatemana
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.CreateTrustConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateTrustConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2153,6 +2603,9 @@ func (c *gRPCClient) UpdateTrustConfig(ctx context.Context, req *certificatemana
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.certificatemanager.v1.CertificateManager/UpdateTrustConfig")
+	}
 	opts = append((*c.CallOptions).UpdateTrustConfig[0:len((*c.CallOptions).UpdateTrustConfig):len((*c.CallOptions).UpdateTrustConfig)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2163,8 +2616,12 @@ func (c *gRPCClient) UpdateTrustConfig(ctx context.Context, req *certificatemana
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.UpdateTrustConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateTrustConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2173,6 +2630,9 @@ func (c *gRPCClient) DeleteTrustConfig(ctx context.Context, req *certificatemana
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.certificatemanager.v1.CertificateManager/DeleteTrustConfig")
+	}
 	opts = append((*c.CallOptions).DeleteTrustConfig[0:len((*c.CallOptions).DeleteTrustConfig):len((*c.CallOptions).DeleteTrustConfig)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2183,8 +2643,12 @@ func (c *gRPCClient) DeleteTrustConfig(ctx context.Context, req *certificatemana
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.DeleteTrustConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteTrustConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2193,6 +2657,9 @@ func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2211,9 +2678,12 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/ListLocations")
+	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -2257,6 +2727,9 @@ func (c *gRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -2271,6 +2744,9 @@ func (c *gRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+	}
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -2285,6 +2761,9 @@ func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2303,9 +2782,12 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -2347,7 +2829,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // ListCertificates lists Certificates in a given project and location.
 func (c *restClient) ListCertificates(ctx context.Context, req *certificatemanagerpb.ListCertificatesRequest, opts ...gax.CallOption) *CertificateIterator {
 	it := &CertificateIterator{}
-	req = proto.Clone(req).(*certificatemanagerpb.ListCertificatesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*certificatemanagerpb.Certificate, string, error) {
 		resp := &certificatemanagerpb.ListCertificatesResponse{}
@@ -2447,6 +2929,10 @@ func (c *restClient) GetCertificate(ctx context.Context, req *certificatemanager
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.certificatemanager.v1.CertificateManager/GetCertificate")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/certificates/*}")
+	}
 	opts = append((*c.CallOptions).GetCertificate[0:len((*c.CallOptions).GetCertificate):len((*c.CallOptions).GetCertificate)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &certificatemanagerpb.Certificate{}
@@ -2505,6 +2991,10 @@ func (c *restClient) CreateCertificate(ctx context.Context, req *certificatemana
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.certificatemanager.v1.CertificateManager/CreateCertificate")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/certificates")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2533,8 +3023,12 @@ func (c *restClient) CreateCertificate(ctx context.Context, req *certificatemana
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.CreateCertificateOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateCertificateOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2572,6 +3066,10 @@ func (c *restClient) UpdateCertificate(ctx context.Context, req *certificatemana
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.certificatemanager.v1.CertificateManager/UpdateCertificate")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{certificate.name=projects/*/locations/*/certificates/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2600,8 +3098,12 @@ func (c *restClient) UpdateCertificate(ctx context.Context, req *certificatemana
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.UpdateCertificateOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateCertificateOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2625,6 +3127,10 @@ func (c *restClient) DeleteCertificate(ctx context.Context, req *certificatemana
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.certificatemanager.v1.CertificateManager/DeleteCertificate")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/certificates/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2653,8 +3159,12 @@ func (c *restClient) DeleteCertificate(ctx context.Context, req *certificatemana
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.DeleteCertificateOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteCertificateOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2662,7 +3172,7 @@ func (c *restClient) DeleteCertificate(ctx context.Context, req *certificatemana
 // ListCertificateMaps lists CertificateMaps in a given project and location.
 func (c *restClient) ListCertificateMaps(ctx context.Context, req *certificatemanagerpb.ListCertificateMapsRequest, opts ...gax.CallOption) *CertificateMapIterator {
 	it := &CertificateMapIterator{}
-	req = proto.Clone(req).(*certificatemanagerpb.ListCertificateMapsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*certificatemanagerpb.CertificateMap, string, error) {
 		resp := &certificatemanagerpb.ListCertificateMapsResponse{}
@@ -2762,6 +3272,10 @@ func (c *restClient) GetCertificateMap(ctx context.Context, req *certificatemana
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.certificatemanager.v1.CertificateManager/GetCertificateMap")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/certificateMaps/*}")
+	}
 	opts = append((*c.CallOptions).GetCertificateMap[0:len((*c.CallOptions).GetCertificateMap):len((*c.CallOptions).GetCertificateMap)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &certificatemanagerpb.CertificateMap{}
@@ -2820,6 +3334,10 @@ func (c *restClient) CreateCertificateMap(ctx context.Context, req *certificatem
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.certificatemanager.v1.CertificateManager/CreateCertificateMap")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/certificateMaps")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2848,8 +3366,12 @@ func (c *restClient) CreateCertificateMap(ctx context.Context, req *certificatem
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.CreateCertificateMapOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateCertificateMapOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2887,6 +3409,10 @@ func (c *restClient) UpdateCertificateMap(ctx context.Context, req *certificatem
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.certificatemanager.v1.CertificateManager/UpdateCertificateMap")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{certificate_map.name=projects/*/locations/*/certificateMaps/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2915,8 +3441,12 @@ func (c *restClient) UpdateCertificateMap(ctx context.Context, req *certificatem
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.UpdateCertificateMapOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateCertificateMapOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2942,6 +3472,10 @@ func (c *restClient) DeleteCertificateMap(ctx context.Context, req *certificatem
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.certificatemanager.v1.CertificateManager/DeleteCertificateMap")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/certificateMaps/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2970,8 +3504,12 @@ func (c *restClient) DeleteCertificateMap(ctx context.Context, req *certificatem
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.DeleteCertificateMapOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteCertificateMapOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2979,7 +3517,7 @@ func (c *restClient) DeleteCertificateMap(ctx context.Context, req *certificatem
 // ListCertificateMapEntries lists CertificateMapEntries in a given project and location.
 func (c *restClient) ListCertificateMapEntries(ctx context.Context, req *certificatemanagerpb.ListCertificateMapEntriesRequest, opts ...gax.CallOption) *CertificateMapEntryIterator {
 	it := &CertificateMapEntryIterator{}
-	req = proto.Clone(req).(*certificatemanagerpb.ListCertificateMapEntriesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*certificatemanagerpb.CertificateMapEntry, string, error) {
 		resp := &certificatemanagerpb.ListCertificateMapEntriesResponse{}
@@ -3079,6 +3617,10 @@ func (c *restClient) GetCertificateMapEntry(ctx context.Context, req *certificat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.certificatemanager.v1.CertificateManager/GetCertificateMapEntry")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/certificateMaps/*/certificateMapEntries/*}")
+	}
 	opts = append((*c.CallOptions).GetCertificateMapEntry[0:len((*c.CallOptions).GetCertificateMapEntry):len((*c.CallOptions).GetCertificateMapEntry)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &certificatemanagerpb.CertificateMapEntry{}
@@ -3137,6 +3679,10 @@ func (c *restClient) CreateCertificateMapEntry(ctx context.Context, req *certifi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.certificatemanager.v1.CertificateManager/CreateCertificateMapEntry")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/certificateMaps/*}/certificateMapEntries")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3165,8 +3711,12 @@ func (c *restClient) CreateCertificateMapEntry(ctx context.Context, req *certifi
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.CreateCertificateMapEntryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateCertificateMapEntryOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3204,6 +3754,10 @@ func (c *restClient) UpdateCertificateMapEntry(ctx context.Context, req *certifi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.certificatemanager.v1.CertificateManager/UpdateCertificateMapEntry")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{certificate_map_entry.name=projects/*/locations/*/certificateMaps/*/certificateMapEntries/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3232,8 +3786,12 @@ func (c *restClient) UpdateCertificateMapEntry(ctx context.Context, req *certifi
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.UpdateCertificateMapEntryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateCertificateMapEntryOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3257,6 +3815,10 @@ func (c *restClient) DeleteCertificateMapEntry(ctx context.Context, req *certifi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.certificatemanager.v1.CertificateManager/DeleteCertificateMapEntry")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/certificateMaps/*/certificateMapEntries/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3285,8 +3847,12 @@ func (c *restClient) DeleteCertificateMapEntry(ctx context.Context, req *certifi
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.DeleteCertificateMapEntryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteCertificateMapEntryOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3294,7 +3860,7 @@ func (c *restClient) DeleteCertificateMapEntry(ctx context.Context, req *certifi
 // ListDnsAuthorizations lists DnsAuthorizations in a given project and location.
 func (c *restClient) ListDnsAuthorizations(ctx context.Context, req *certificatemanagerpb.ListDnsAuthorizationsRequest, opts ...gax.CallOption) *DnsAuthorizationIterator {
 	it := &DnsAuthorizationIterator{}
-	req = proto.Clone(req).(*certificatemanagerpb.ListDnsAuthorizationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*certificatemanagerpb.DnsAuthorization, string, error) {
 		resp := &certificatemanagerpb.ListDnsAuthorizationsResponse{}
@@ -3394,6 +3960,10 @@ func (c *restClient) GetDnsAuthorization(ctx context.Context, req *certificatema
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.certificatemanager.v1.CertificateManager/GetDnsAuthorization")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/dnsAuthorizations/*}")
+	}
 	opts = append((*c.CallOptions).GetDnsAuthorization[0:len((*c.CallOptions).GetDnsAuthorization):len((*c.CallOptions).GetDnsAuthorization)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &certificatemanagerpb.DnsAuthorization{}
@@ -3452,6 +4022,10 @@ func (c *restClient) CreateDnsAuthorization(ctx context.Context, req *certificat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.certificatemanager.v1.CertificateManager/CreateDnsAuthorization")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/dnsAuthorizations")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3480,8 +4054,12 @@ func (c *restClient) CreateDnsAuthorization(ctx context.Context, req *certificat
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.CreateDnsAuthorizationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateDnsAuthorizationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3519,6 +4097,10 @@ func (c *restClient) UpdateDnsAuthorization(ctx context.Context, req *certificat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.certificatemanager.v1.CertificateManager/UpdateDnsAuthorization")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{dns_authorization.name=projects/*/locations/*/dnsAuthorizations/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3547,8 +4129,12 @@ func (c *restClient) UpdateDnsAuthorization(ctx context.Context, req *certificat
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.UpdateDnsAuthorizationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateDnsAuthorizationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3572,6 +4158,10 @@ func (c *restClient) DeleteDnsAuthorization(ctx context.Context, req *certificat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.certificatemanager.v1.CertificateManager/DeleteDnsAuthorization")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/dnsAuthorizations/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3600,8 +4190,12 @@ func (c *restClient) DeleteDnsAuthorization(ctx context.Context, req *certificat
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.DeleteDnsAuthorizationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteDnsAuthorizationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3609,7 +4203,7 @@ func (c *restClient) DeleteDnsAuthorization(ctx context.Context, req *certificat
 // ListCertificateIssuanceConfigs lists CertificateIssuanceConfigs in a given project and location.
 func (c *restClient) ListCertificateIssuanceConfigs(ctx context.Context, req *certificatemanagerpb.ListCertificateIssuanceConfigsRequest, opts ...gax.CallOption) *CertificateIssuanceConfigIterator {
 	it := &CertificateIssuanceConfigIterator{}
-	req = proto.Clone(req).(*certificatemanagerpb.ListCertificateIssuanceConfigsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*certificatemanagerpb.CertificateIssuanceConfig, string, error) {
 		resp := &certificatemanagerpb.ListCertificateIssuanceConfigsResponse{}
@@ -3709,6 +4303,10 @@ func (c *restClient) GetCertificateIssuanceConfig(ctx context.Context, req *cert
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.certificatemanager.v1.CertificateManager/GetCertificateIssuanceConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/certificateIssuanceConfigs/*}")
+	}
 	opts = append((*c.CallOptions).GetCertificateIssuanceConfig[0:len((*c.CallOptions).GetCertificateIssuanceConfig):len((*c.CallOptions).GetCertificateIssuanceConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &certificatemanagerpb.CertificateIssuanceConfig{}
@@ -3767,6 +4365,10 @@ func (c *restClient) CreateCertificateIssuanceConfig(ctx context.Context, req *c
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.certificatemanager.v1.CertificateManager/CreateCertificateIssuanceConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/certificateIssuanceConfigs")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3795,8 +4397,12 @@ func (c *restClient) CreateCertificateIssuanceConfig(ctx context.Context, req *c
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.CreateCertificateIssuanceConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateCertificateIssuanceConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3820,6 +4426,10 @@ func (c *restClient) DeleteCertificateIssuanceConfig(ctx context.Context, req *c
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.certificatemanager.v1.CertificateManager/DeleteCertificateIssuanceConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/certificateIssuanceConfigs/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3848,8 +4458,12 @@ func (c *restClient) DeleteCertificateIssuanceConfig(ctx context.Context, req *c
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.DeleteCertificateIssuanceConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteCertificateIssuanceConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3857,7 +4471,7 @@ func (c *restClient) DeleteCertificateIssuanceConfig(ctx context.Context, req *c
 // ListTrustConfigs lists TrustConfigs in a given project and location.
 func (c *restClient) ListTrustConfigs(ctx context.Context, req *certificatemanagerpb.ListTrustConfigsRequest, opts ...gax.CallOption) *TrustConfigIterator {
 	it := &TrustConfigIterator{}
-	req = proto.Clone(req).(*certificatemanagerpb.ListTrustConfigsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*certificatemanagerpb.TrustConfig, string, error) {
 		resp := &certificatemanagerpb.ListTrustConfigsResponse{}
@@ -3957,6 +4571,10 @@ func (c *restClient) GetTrustConfig(ctx context.Context, req *certificatemanager
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.certificatemanager.v1.CertificateManager/GetTrustConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/trustConfigs/*}")
+	}
 	opts = append((*c.CallOptions).GetTrustConfig[0:len((*c.CallOptions).GetTrustConfig):len((*c.CallOptions).GetTrustConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &certificatemanagerpb.TrustConfig{}
@@ -4015,6 +4633,10 @@ func (c *restClient) CreateTrustConfig(ctx context.Context, req *certificatemana
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.certificatemanager.v1.CertificateManager/CreateTrustConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/trustConfigs")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4043,8 +4665,12 @@ func (c *restClient) CreateTrustConfig(ctx context.Context, req *certificatemana
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.CreateTrustConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateTrustConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4082,6 +4708,10 @@ func (c *restClient) UpdateTrustConfig(ctx context.Context, req *certificatemana
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.certificatemanager.v1.CertificateManager/UpdateTrustConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{trust_config.name=projects/*/locations/*/trustConfigs/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4110,8 +4740,12 @@ func (c *restClient) UpdateTrustConfig(ctx context.Context, req *certificatemana
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.UpdateTrustConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateTrustConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4138,6 +4772,10 @@ func (c *restClient) DeleteTrustConfig(ctx context.Context, req *certificatemana
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.certificatemanager.v1.CertificateManager/DeleteTrustConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/trustConfigs/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4166,8 +4804,12 @@ func (c *restClient) DeleteTrustConfig(ctx context.Context, req *certificatemana
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*certificatemanager.DeleteTrustConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteTrustConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4191,6 +4833,10 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*}")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &locationpb.Location{}
@@ -4225,7 +4871,7 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 // ListLocations lists information about the supported locations for this service.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -4328,6 +4974,10 @@ func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -4363,6 +5013,10 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -4398,6 +5052,10 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -4432,7 +5090,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
@@ -4460,6 +5118,9 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 		}
 		if req.GetPageToken() != "" {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req.GetReturnPartialSuccess() {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -4514,7 +5175,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created CreateCertificateOperation, possibly from a different process.
 func (c *gRPCClient) CreateCertificateOperation(name string) *CreateCertificateOperation {
 	return &CreateCertificateOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.CreateCertificateOperation"),
 	}
 }
 
@@ -4523,7 +5184,7 @@ func (c *gRPCClient) CreateCertificateOperation(name string) *CreateCertificateO
 func (c *restClient) CreateCertificateOperation(name string) *CreateCertificateOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateCertificateOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.CreateCertificateOperation"),
 		pollPath: override,
 	}
 }
@@ -4532,7 +5193,7 @@ func (c *restClient) CreateCertificateOperation(name string) *CreateCertificateO
 // The name must be that of a previously created CreateCertificateIssuanceConfigOperation, possibly from a different process.
 func (c *gRPCClient) CreateCertificateIssuanceConfigOperation(name string) *CreateCertificateIssuanceConfigOperation {
 	return &CreateCertificateIssuanceConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.CreateCertificateIssuanceConfigOperation"),
 	}
 }
 
@@ -4541,7 +5202,7 @@ func (c *gRPCClient) CreateCertificateIssuanceConfigOperation(name string) *Crea
 func (c *restClient) CreateCertificateIssuanceConfigOperation(name string) *CreateCertificateIssuanceConfigOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateCertificateIssuanceConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.CreateCertificateIssuanceConfigOperation"),
 		pollPath: override,
 	}
 }
@@ -4550,7 +5211,7 @@ func (c *restClient) CreateCertificateIssuanceConfigOperation(name string) *Crea
 // The name must be that of a previously created CreateCertificateMapOperation, possibly from a different process.
 func (c *gRPCClient) CreateCertificateMapOperation(name string) *CreateCertificateMapOperation {
 	return &CreateCertificateMapOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.CreateCertificateMapOperation"),
 	}
 }
 
@@ -4559,7 +5220,7 @@ func (c *gRPCClient) CreateCertificateMapOperation(name string) *CreateCertifica
 func (c *restClient) CreateCertificateMapOperation(name string) *CreateCertificateMapOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateCertificateMapOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.CreateCertificateMapOperation"),
 		pollPath: override,
 	}
 }
@@ -4568,7 +5229,7 @@ func (c *restClient) CreateCertificateMapOperation(name string) *CreateCertifica
 // The name must be that of a previously created CreateCertificateMapEntryOperation, possibly from a different process.
 func (c *gRPCClient) CreateCertificateMapEntryOperation(name string) *CreateCertificateMapEntryOperation {
 	return &CreateCertificateMapEntryOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.CreateCertificateMapEntryOperation"),
 	}
 }
 
@@ -4577,7 +5238,7 @@ func (c *gRPCClient) CreateCertificateMapEntryOperation(name string) *CreateCert
 func (c *restClient) CreateCertificateMapEntryOperation(name string) *CreateCertificateMapEntryOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateCertificateMapEntryOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.CreateCertificateMapEntryOperation"),
 		pollPath: override,
 	}
 }
@@ -4586,7 +5247,7 @@ func (c *restClient) CreateCertificateMapEntryOperation(name string) *CreateCert
 // The name must be that of a previously created CreateDnsAuthorizationOperation, possibly from a different process.
 func (c *gRPCClient) CreateDnsAuthorizationOperation(name string) *CreateDnsAuthorizationOperation {
 	return &CreateDnsAuthorizationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.CreateDnsAuthorizationOperation"),
 	}
 }
 
@@ -4595,7 +5256,7 @@ func (c *gRPCClient) CreateDnsAuthorizationOperation(name string) *CreateDnsAuth
 func (c *restClient) CreateDnsAuthorizationOperation(name string) *CreateDnsAuthorizationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateDnsAuthorizationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.CreateDnsAuthorizationOperation"),
 		pollPath: override,
 	}
 }
@@ -4604,7 +5265,7 @@ func (c *restClient) CreateDnsAuthorizationOperation(name string) *CreateDnsAuth
 // The name must be that of a previously created CreateTrustConfigOperation, possibly from a different process.
 func (c *gRPCClient) CreateTrustConfigOperation(name string) *CreateTrustConfigOperation {
 	return &CreateTrustConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.CreateTrustConfigOperation"),
 	}
 }
 
@@ -4613,7 +5274,7 @@ func (c *gRPCClient) CreateTrustConfigOperation(name string) *CreateTrustConfigO
 func (c *restClient) CreateTrustConfigOperation(name string) *CreateTrustConfigOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateTrustConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.CreateTrustConfigOperation"),
 		pollPath: override,
 	}
 }
@@ -4622,7 +5283,7 @@ func (c *restClient) CreateTrustConfigOperation(name string) *CreateTrustConfigO
 // The name must be that of a previously created DeleteCertificateOperation, possibly from a different process.
 func (c *gRPCClient) DeleteCertificateOperation(name string) *DeleteCertificateOperation {
 	return &DeleteCertificateOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.DeleteCertificateOperation"),
 	}
 }
 
@@ -4631,7 +5292,7 @@ func (c *gRPCClient) DeleteCertificateOperation(name string) *DeleteCertificateO
 func (c *restClient) DeleteCertificateOperation(name string) *DeleteCertificateOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteCertificateOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.DeleteCertificateOperation"),
 		pollPath: override,
 	}
 }
@@ -4640,7 +5301,7 @@ func (c *restClient) DeleteCertificateOperation(name string) *DeleteCertificateO
 // The name must be that of a previously created DeleteCertificateIssuanceConfigOperation, possibly from a different process.
 func (c *gRPCClient) DeleteCertificateIssuanceConfigOperation(name string) *DeleteCertificateIssuanceConfigOperation {
 	return &DeleteCertificateIssuanceConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.DeleteCertificateIssuanceConfigOperation"),
 	}
 }
 
@@ -4649,7 +5310,7 @@ func (c *gRPCClient) DeleteCertificateIssuanceConfigOperation(name string) *Dele
 func (c *restClient) DeleteCertificateIssuanceConfigOperation(name string) *DeleteCertificateIssuanceConfigOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteCertificateIssuanceConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.DeleteCertificateIssuanceConfigOperation"),
 		pollPath: override,
 	}
 }
@@ -4658,7 +5319,7 @@ func (c *restClient) DeleteCertificateIssuanceConfigOperation(name string) *Dele
 // The name must be that of a previously created DeleteCertificateMapOperation, possibly from a different process.
 func (c *gRPCClient) DeleteCertificateMapOperation(name string) *DeleteCertificateMapOperation {
 	return &DeleteCertificateMapOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.DeleteCertificateMapOperation"),
 	}
 }
 
@@ -4667,7 +5328,7 @@ func (c *gRPCClient) DeleteCertificateMapOperation(name string) *DeleteCertifica
 func (c *restClient) DeleteCertificateMapOperation(name string) *DeleteCertificateMapOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteCertificateMapOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.DeleteCertificateMapOperation"),
 		pollPath: override,
 	}
 }
@@ -4676,7 +5337,7 @@ func (c *restClient) DeleteCertificateMapOperation(name string) *DeleteCertifica
 // The name must be that of a previously created DeleteCertificateMapEntryOperation, possibly from a different process.
 func (c *gRPCClient) DeleteCertificateMapEntryOperation(name string) *DeleteCertificateMapEntryOperation {
 	return &DeleteCertificateMapEntryOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.DeleteCertificateMapEntryOperation"),
 	}
 }
 
@@ -4685,7 +5346,7 @@ func (c *gRPCClient) DeleteCertificateMapEntryOperation(name string) *DeleteCert
 func (c *restClient) DeleteCertificateMapEntryOperation(name string) *DeleteCertificateMapEntryOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteCertificateMapEntryOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.DeleteCertificateMapEntryOperation"),
 		pollPath: override,
 	}
 }
@@ -4694,7 +5355,7 @@ func (c *restClient) DeleteCertificateMapEntryOperation(name string) *DeleteCert
 // The name must be that of a previously created DeleteDnsAuthorizationOperation, possibly from a different process.
 func (c *gRPCClient) DeleteDnsAuthorizationOperation(name string) *DeleteDnsAuthorizationOperation {
 	return &DeleteDnsAuthorizationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.DeleteDnsAuthorizationOperation"),
 	}
 }
 
@@ -4703,7 +5364,7 @@ func (c *gRPCClient) DeleteDnsAuthorizationOperation(name string) *DeleteDnsAuth
 func (c *restClient) DeleteDnsAuthorizationOperation(name string) *DeleteDnsAuthorizationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteDnsAuthorizationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.DeleteDnsAuthorizationOperation"),
 		pollPath: override,
 	}
 }
@@ -4712,7 +5373,7 @@ func (c *restClient) DeleteDnsAuthorizationOperation(name string) *DeleteDnsAuth
 // The name must be that of a previously created DeleteTrustConfigOperation, possibly from a different process.
 func (c *gRPCClient) DeleteTrustConfigOperation(name string) *DeleteTrustConfigOperation {
 	return &DeleteTrustConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.DeleteTrustConfigOperation"),
 	}
 }
 
@@ -4721,7 +5382,7 @@ func (c *gRPCClient) DeleteTrustConfigOperation(name string) *DeleteTrustConfigO
 func (c *restClient) DeleteTrustConfigOperation(name string) *DeleteTrustConfigOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteTrustConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.DeleteTrustConfigOperation"),
 		pollPath: override,
 	}
 }
@@ -4730,7 +5391,7 @@ func (c *restClient) DeleteTrustConfigOperation(name string) *DeleteTrustConfigO
 // The name must be that of a previously created UpdateCertificateOperation, possibly from a different process.
 func (c *gRPCClient) UpdateCertificateOperation(name string) *UpdateCertificateOperation {
 	return &UpdateCertificateOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.UpdateCertificateOperation"),
 	}
 }
 
@@ -4739,7 +5400,7 @@ func (c *gRPCClient) UpdateCertificateOperation(name string) *UpdateCertificateO
 func (c *restClient) UpdateCertificateOperation(name string) *UpdateCertificateOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateCertificateOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.UpdateCertificateOperation"),
 		pollPath: override,
 	}
 }
@@ -4748,7 +5409,7 @@ func (c *restClient) UpdateCertificateOperation(name string) *UpdateCertificateO
 // The name must be that of a previously created UpdateCertificateMapOperation, possibly from a different process.
 func (c *gRPCClient) UpdateCertificateMapOperation(name string) *UpdateCertificateMapOperation {
 	return &UpdateCertificateMapOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.UpdateCertificateMapOperation"),
 	}
 }
 
@@ -4757,7 +5418,7 @@ func (c *gRPCClient) UpdateCertificateMapOperation(name string) *UpdateCertifica
 func (c *restClient) UpdateCertificateMapOperation(name string) *UpdateCertificateMapOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateCertificateMapOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.UpdateCertificateMapOperation"),
 		pollPath: override,
 	}
 }
@@ -4766,7 +5427,7 @@ func (c *restClient) UpdateCertificateMapOperation(name string) *UpdateCertifica
 // The name must be that of a previously created UpdateCertificateMapEntryOperation, possibly from a different process.
 func (c *gRPCClient) UpdateCertificateMapEntryOperation(name string) *UpdateCertificateMapEntryOperation {
 	return &UpdateCertificateMapEntryOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.UpdateCertificateMapEntryOperation"),
 	}
 }
 
@@ -4775,7 +5436,7 @@ func (c *gRPCClient) UpdateCertificateMapEntryOperation(name string) *UpdateCert
 func (c *restClient) UpdateCertificateMapEntryOperation(name string) *UpdateCertificateMapEntryOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateCertificateMapEntryOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.UpdateCertificateMapEntryOperation"),
 		pollPath: override,
 	}
 }
@@ -4784,7 +5445,7 @@ func (c *restClient) UpdateCertificateMapEntryOperation(name string) *UpdateCert
 // The name must be that of a previously created UpdateDnsAuthorizationOperation, possibly from a different process.
 func (c *gRPCClient) UpdateDnsAuthorizationOperation(name string) *UpdateDnsAuthorizationOperation {
 	return &UpdateDnsAuthorizationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.UpdateDnsAuthorizationOperation"),
 	}
 }
 
@@ -4793,7 +5454,7 @@ func (c *gRPCClient) UpdateDnsAuthorizationOperation(name string) *UpdateDnsAuth
 func (c *restClient) UpdateDnsAuthorizationOperation(name string) *UpdateDnsAuthorizationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateDnsAuthorizationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.UpdateDnsAuthorizationOperation"),
 		pollPath: override,
 	}
 }
@@ -4802,7 +5463,7 @@ func (c *restClient) UpdateDnsAuthorizationOperation(name string) *UpdateDnsAuth
 // The name must be that of a previously created UpdateTrustConfigOperation, possibly from a different process.
 func (c *gRPCClient) UpdateTrustConfigOperation(name string) *UpdateTrustConfigOperation {
 	return &UpdateTrustConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.UpdateTrustConfigOperation"),
 	}
 }
 
@@ -4811,7 +5472,7 @@ func (c *gRPCClient) UpdateTrustConfigOperation(name string) *UpdateTrustConfigO
 func (c *restClient) UpdateTrustConfigOperation(name string) *UpdateTrustConfigOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateTrustConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*certificatemanager.UpdateTrustConfigOperation"),
 		pollPath: override,
 	}
 }

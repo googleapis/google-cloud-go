@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -31,6 +31,8 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -274,7 +276,7 @@ type UsageClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *UsageClient) Close() error {
 	return c.internalClient.Close()
@@ -379,6 +381,16 @@ type usageGRPCClient struct {
 // Provides access to historical and forecasted usage data.
 func NewUsageClient(ctx context.Context, opts ...option.ClientOption) (*UsageClient, error) {
 	clientOpts := defaultUsageGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "capacityplanner",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/capacityplanner/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "capacityplanner.googleapis.com",
+		}))
+	}
 	if newUsageClientHook != nil {
 		hookOpts, err := newUsageClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -400,6 +412,62 @@ func NewUsageClient(ctx context.Context, opts ...option.ClientOption) (*UsageCli
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "capacityplanner",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/capacityplanner/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "capacityplanner.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.QueryUsageHistories = append(client.CallOptions.QueryUsageHistories, gax.WithClientMetrics(metrics))
+		client.CallOptions.QueryForecasts = append(client.CallOptions.QueryForecasts, gax.WithClientMetrics(metrics))
+		client.CallOptions.QueryReservations = append(client.CallOptions.QueryReservations, gax.WithClientMetrics(metrics))
+		client.CallOptions.ExportUsageHistories = append(client.CallOptions.ExportUsageHistories, gax.WithClientMetrics(metrics))
+		client.CallOptions.ExportForecasts = append(client.CallOptions.ExportForecasts, gax.WithClientMetrics(metrics))
+		client.CallOptions.ExportReservationsUsage = append(client.CallOptions.ExportReservationsUsage, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "capacityplanner",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/capacityplanner/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "capacityplanner.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.QueryUsageHistories = append(client.CallOptions.QueryUsageHistories, gax.WithClientTracing(tracing))
+		client.CallOptions.QueryForecasts = append(client.CallOptions.QueryForecasts, gax.WithClientTracing(tracing))
+		client.CallOptions.QueryReservations = append(client.CallOptions.QueryReservations, gax.WithClientTracing(tracing))
+		client.CallOptions.ExportUsageHistories = append(client.CallOptions.ExportUsageHistories, gax.WithClientTracing(tracing))
+		client.CallOptions.ExportForecasts = append(client.CallOptions.ExportForecasts, gax.WithClientTracing(tracing))
+		client.CallOptions.ExportReservationsUsage = append(client.CallOptions.ExportReservationsUsage, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "capacityplanner",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/capacityplanner/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "capacityplanner.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.QueryUsageHistories = append(client.CallOptions.QueryUsageHistories, gax.WithClientLogging(logging))
+		client.CallOptions.QueryForecasts = append(client.CallOptions.QueryForecasts, gax.WithClientLogging(logging))
+		client.CallOptions.QueryReservations = append(client.CallOptions.QueryReservations, gax.WithClientLogging(logging))
+		client.CallOptions.ExportUsageHistories = append(client.CallOptions.ExportUsageHistories, gax.WithClientLogging(logging))
+		client.CallOptions.ExportForecasts = append(client.CallOptions.ExportForecasts, gax.WithClientLogging(logging))
+		client.CallOptions.ExportReservationsUsage = append(client.CallOptions.ExportReservationsUsage, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -436,7 +504,7 @@ func (c *usageGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *usageGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -469,6 +537,16 @@ type usageRESTClient struct {
 // Provides access to historical and forecasted usage data.
 func NewUsageRESTClient(ctx context.Context, opts ...option.ClientOption) (*UsageClient, error) {
 	clientOpts := append(defaultUsageRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "capacityplanner",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/capacityplanner/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "capacityplanner.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -482,6 +560,63 @@ func NewUsageRESTClient(ctx context.Context, opts ...option.ClientOption) (*Usag
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "capacityplanner",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/capacityplanner/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "capacityplanner.googleapis.com",
+			}),
+		)
+
+		callOpts.QueryUsageHistories = append(callOpts.QueryUsageHistories, gax.WithClientMetrics(metrics))
+		callOpts.QueryForecasts = append(callOpts.QueryForecasts, gax.WithClientMetrics(metrics))
+		callOpts.QueryReservations = append(callOpts.QueryReservations, gax.WithClientMetrics(metrics))
+		callOpts.ExportUsageHistories = append(callOpts.ExportUsageHistories, gax.WithClientMetrics(metrics))
+		callOpts.ExportForecasts = append(callOpts.ExportForecasts, gax.WithClientMetrics(metrics))
+		callOpts.ExportReservationsUsage = append(callOpts.ExportReservationsUsage, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "capacityplanner",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/capacityplanner/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "capacityplanner.googleapis.com",
+			}),
+		)
+
+		callOpts.QueryUsageHistories = append(callOpts.QueryUsageHistories, gax.WithClientTracing(tracing))
+		callOpts.QueryForecasts = append(callOpts.QueryForecasts, gax.WithClientTracing(tracing))
+		callOpts.QueryReservations = append(callOpts.QueryReservations, gax.WithClientTracing(tracing))
+		callOpts.ExportUsageHistories = append(callOpts.ExportUsageHistories, gax.WithClientTracing(tracing))
+		callOpts.ExportForecasts = append(callOpts.ExportForecasts, gax.WithClientTracing(tracing))
+		callOpts.ExportReservationsUsage = append(callOpts.ExportReservationsUsage, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "capacityplanner",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/capacityplanner/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "capacityplanner.googleapis.com",
+			}),
+		)
+
+		callOpts.QueryUsageHistories = append(callOpts.QueryUsageHistories, gax.WithClientLogging(logging))
+		callOpts.QueryForecasts = append(callOpts.QueryForecasts, gax.WithClientLogging(logging))
+		callOpts.QueryReservations = append(callOpts.QueryReservations, gax.WithClientLogging(logging))
+		callOpts.ExportUsageHistories = append(callOpts.ExportUsageHistories, gax.WithClientLogging(logging))
+		callOpts.ExportForecasts = append(callOpts.ExportForecasts, gax.WithClientLogging(logging))
+		callOpts.ExportReservationsUsage = append(callOpts.ExportReservationsUsage, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -519,7 +654,7 @@ func (c *usageRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *usageRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -538,6 +673,9 @@ func (c *usageGRPCClient) QueryUsageHistories(ctx context.Context, req *capacity
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.capacityplanner.v1beta.UsageService/QueryUsageHistories")
+	}
 	opts = append((*c.CallOptions).QueryUsageHistories[0:len((*c.CallOptions).QueryUsageHistories):len((*c.CallOptions).QueryUsageHistories)], opts...)
 	var resp *capacityplannerpb.QueryUsageHistoriesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -556,6 +694,9 @@ func (c *usageGRPCClient) QueryForecasts(ctx context.Context, req *capacityplann
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.capacityplanner.v1beta.UsageService/QueryForecasts")
+	}
 	opts = append((*c.CallOptions).QueryForecasts[0:len((*c.CallOptions).QueryForecasts):len((*c.CallOptions).QueryForecasts)], opts...)
 	var resp *capacityplannerpb.QueryForecastsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -574,6 +715,9 @@ func (c *usageGRPCClient) QueryReservations(ctx context.Context, req *capacitypl
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.capacityplanner.v1beta.UsageService/QueryReservations")
+	}
 	opts = append((*c.CallOptions).QueryReservations[0:len((*c.CallOptions).QueryReservations):len((*c.CallOptions).QueryReservations)], opts...)
 	var resp *capacityplannerpb.QueryReservationsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -592,6 +736,9 @@ func (c *usageGRPCClient) ExportUsageHistories(ctx context.Context, req *capacit
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.capacityplanner.v1beta.UsageService/ExportUsageHistories")
+	}
 	opts = append((*c.CallOptions).ExportUsageHistories[0:len((*c.CallOptions).ExportUsageHistories):len((*c.CallOptions).ExportUsageHistories)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -602,8 +749,12 @@ func (c *usageGRPCClient) ExportUsageHistories(ctx context.Context, req *capacit
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*capacityplanner.ExportUsageHistoriesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportUsageHistoriesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -612,6 +763,9 @@ func (c *usageGRPCClient) ExportForecasts(ctx context.Context, req *capacityplan
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.capacityplanner.v1beta.UsageService/ExportForecasts")
+	}
 	opts = append((*c.CallOptions).ExportForecasts[0:len((*c.CallOptions).ExportForecasts):len((*c.CallOptions).ExportForecasts)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -622,8 +776,12 @@ func (c *usageGRPCClient) ExportForecasts(ctx context.Context, req *capacityplan
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*capacityplanner.ExportForecastsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportForecastsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -632,6 +790,9 @@ func (c *usageGRPCClient) ExportReservationsUsage(ctx context.Context, req *capa
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.capacityplanner.v1beta.UsageService/ExportReservationsUsage")
+	}
 	opts = append((*c.CallOptions).ExportReservationsUsage[0:len((*c.CallOptions).ExportReservationsUsage):len((*c.CallOptions).ExportReservationsUsage)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -642,8 +803,12 @@ func (c *usageGRPCClient) ExportReservationsUsage(ctx context.Context, req *capa
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*capacityplanner.ExportReservationsUsageOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportReservationsUsageOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -673,6 +838,10 @@ func (c *usageRESTClient) QueryUsageHistories(ctx context.Context, req *capacity
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.capacityplanner.v1beta.UsageService/QueryUsageHistories")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*}/usageHistories:query")
+	}
 	opts = append((*c.CallOptions).QueryUsageHistories[0:len((*c.CallOptions).QueryUsageHistories):len((*c.CallOptions).QueryUsageHistories)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &capacityplannerpb.QueryUsageHistoriesResponse{}
@@ -730,6 +899,10 @@ func (c *usageRESTClient) QueryForecasts(ctx context.Context, req *capacityplann
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.capacityplanner.v1beta.UsageService/QueryForecasts")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*}/forecasts:query")
+	}
 	opts = append((*c.CallOptions).QueryForecasts[0:len((*c.CallOptions).QueryForecasts):len((*c.CallOptions).QueryForecasts)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &capacityplannerpb.QueryForecastsResponse{}
@@ -859,6 +1032,10 @@ func (c *usageRESTClient) QueryReservations(ctx context.Context, req *capacitypl
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.capacityplanner.v1beta.UsageService/QueryReservations")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*}/reservations:query")
+	}
 	opts = append((*c.CallOptions).QueryReservations[0:len((*c.CallOptions).QueryReservations):len((*c.CallOptions).QueryReservations)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &capacityplannerpb.QueryReservationsResponse{}
@@ -916,6 +1093,10 @@ func (c *usageRESTClient) ExportUsageHistories(ctx context.Context, req *capacit
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.capacityplanner.v1beta.UsageService/ExportUsageHistories")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*}/usageHistories:export")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -944,8 +1125,12 @@ func (c *usageRESTClient) ExportUsageHistories(ctx context.Context, req *capacit
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*capacityplanner.ExportUsageHistoriesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportUsageHistoriesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -976,6 +1161,10 @@ func (c *usageRESTClient) ExportForecasts(ctx context.Context, req *capacityplan
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.capacityplanner.v1beta.UsageService/ExportForecasts")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*}/forecasts:export")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1004,8 +1193,12 @@ func (c *usageRESTClient) ExportForecasts(ctx context.Context, req *capacityplan
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*capacityplanner.ExportForecastsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportForecastsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1036,6 +1229,10 @@ func (c *usageRESTClient) ExportReservationsUsage(ctx context.Context, req *capa
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.capacityplanner.v1beta.UsageService/ExportReservationsUsage")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*}/reservationsUsage:export")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1064,8 +1261,12 @@ func (c *usageRESTClient) ExportReservationsUsage(ctx context.Context, req *capa
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*capacityplanner.ExportReservationsUsageOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportReservationsUsageOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1074,7 +1275,7 @@ func (c *usageRESTClient) ExportReservationsUsage(ctx context.Context, req *capa
 // The name must be that of a previously created ExportForecastsOperation, possibly from a different process.
 func (c *usageGRPCClient) ExportForecastsOperation(name string) *ExportForecastsOperation {
 	return &ExportForecastsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*capacityplanner.ExportForecastsOperation"),
 	}
 }
 
@@ -1083,7 +1284,7 @@ func (c *usageGRPCClient) ExportForecastsOperation(name string) *ExportForecasts
 func (c *usageRESTClient) ExportForecastsOperation(name string) *ExportForecastsOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &ExportForecastsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*capacityplanner.ExportForecastsOperation"),
 		pollPath: override,
 	}
 }
@@ -1092,7 +1293,7 @@ func (c *usageRESTClient) ExportForecastsOperation(name string) *ExportForecasts
 // The name must be that of a previously created ExportReservationsUsageOperation, possibly from a different process.
 func (c *usageGRPCClient) ExportReservationsUsageOperation(name string) *ExportReservationsUsageOperation {
 	return &ExportReservationsUsageOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*capacityplanner.ExportReservationsUsageOperation"),
 	}
 }
 
@@ -1101,7 +1302,7 @@ func (c *usageGRPCClient) ExportReservationsUsageOperation(name string) *ExportR
 func (c *usageRESTClient) ExportReservationsUsageOperation(name string) *ExportReservationsUsageOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &ExportReservationsUsageOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*capacityplanner.ExportReservationsUsageOperation"),
 		pollPath: override,
 	}
 }
@@ -1110,7 +1311,7 @@ func (c *usageRESTClient) ExportReservationsUsageOperation(name string) *ExportR
 // The name must be that of a previously created ExportUsageHistoriesOperation, possibly from a different process.
 func (c *usageGRPCClient) ExportUsageHistoriesOperation(name string) *ExportUsageHistoriesOperation {
 	return &ExportUsageHistoriesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*capacityplanner.ExportUsageHistoriesOperation"),
 	}
 }
 
@@ -1119,7 +1320,7 @@ func (c *usageGRPCClient) ExportUsageHistoriesOperation(name string) *ExportUsag
 func (c *usageRESTClient) ExportUsageHistoriesOperation(name string) *ExportUsageHistoriesOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &ExportUsageHistoriesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*capacityplanner.ExportUsageHistoriesOperation"),
 		pollPath: override,
 	}
 }

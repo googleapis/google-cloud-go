@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,6 +30,8 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	resourcemanagerpb "cloud.google.com/go/resourcemanager/apiv3/resourcemanagerpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -59,6 +61,7 @@ func defaultTagHoldsGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://cloudresourcemanager.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.AllowHardBoundTokens("MTLS_S2A"),
 		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -119,7 +122,7 @@ type TagHoldsClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *TagHoldsClient) Close() error {
 	return c.internalClient.Close()
@@ -209,6 +212,16 @@ type tagHoldsGRPCClient struct {
 // so that TagHolds can be managed in the same location as their usage.
 func NewTagHoldsClient(ctx context.Context, opts ...option.ClientOption) (*TagHoldsClient, error) {
 	clientOpts := defaultTagHoldsGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "cloudresourcemanager",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/resourcemanager/apiv3",
+			"gcp.client.language": "go",
+			"url.domain":          "cloudresourcemanager.googleapis.com",
+		}))
+	}
 	if newTagHoldsClientHook != nil {
 		hookOpts, err := newTagHoldsClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -231,6 +244,56 @@ func NewTagHoldsClient(ctx context.Context, opts ...option.ClientOption) (*TagHo
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "cloudresourcemanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/resourcemanager/apiv3",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudresourcemanager.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateTagHold = append(client.CallOptions.CreateTagHold, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteTagHold = append(client.CallOptions.DeleteTagHold, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListTagHolds = append(client.CallOptions.ListTagHolds, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudresourcemanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/resourcemanager/apiv3",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudresourcemanager.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateTagHold = append(client.CallOptions.CreateTagHold, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteTagHold = append(client.CallOptions.DeleteTagHold, gax.WithClientTracing(tracing))
+		client.CallOptions.ListTagHolds = append(client.CallOptions.ListTagHolds, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudresourcemanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/resourcemanager/apiv3",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudresourcemanager.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateTagHold = append(client.CallOptions.CreateTagHold, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteTagHold = append(client.CallOptions.DeleteTagHold, gax.WithClientLogging(logging))
+		client.CallOptions.ListTagHolds = append(client.CallOptions.ListTagHolds, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -267,7 +330,7 @@ func (c *tagHoldsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *tagHoldsGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -304,6 +367,16 @@ type tagHoldsRESTClient struct {
 // so that TagHolds can be managed in the same location as their usage.
 func NewTagHoldsRESTClient(ctx context.Context, opts ...option.ClientOption) (*TagHoldsClient, error) {
 	clientOpts := append(defaultTagHoldsRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "cloudresourcemanager",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/resourcemanager/apiv3",
+			"gcp.client.language": "go",
+			"url.domain":          "cloudresourcemanager.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -317,6 +390,57 @@ func NewTagHoldsRESTClient(ctx context.Context, opts ...option.ClientOption) (*T
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "cloudresourcemanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/resourcemanager/apiv3",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudresourcemanager.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateTagHold = append(callOpts.CreateTagHold, gax.WithClientMetrics(metrics))
+		callOpts.DeleteTagHold = append(callOpts.DeleteTagHold, gax.WithClientMetrics(metrics))
+		callOpts.ListTagHolds = append(callOpts.ListTagHolds, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudresourcemanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/resourcemanager/apiv3",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudresourcemanager.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateTagHold = append(callOpts.CreateTagHold, gax.WithClientTracing(tracing))
+		callOpts.DeleteTagHold = append(callOpts.DeleteTagHold, gax.WithClientTracing(tracing))
+		callOpts.ListTagHolds = append(callOpts.ListTagHolds, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudresourcemanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/resourcemanager/apiv3",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudresourcemanager.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateTagHold = append(callOpts.CreateTagHold, gax.WithClientLogging(logging))
+		callOpts.DeleteTagHold = append(callOpts.DeleteTagHold, gax.WithClientLogging(logging))
+		callOpts.ListTagHolds = append(callOpts.ListTagHolds, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -354,7 +478,7 @@ func (c *tagHoldsRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *tagHoldsRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -373,6 +497,9 @@ func (c *tagHoldsGRPCClient) CreateTagHold(ctx context.Context, req *resourceman
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.TagHolds/CreateTagHold")
+	}
 	opts = append((*c.CallOptions).CreateTagHold[0:len((*c.CallOptions).CreateTagHold):len((*c.CallOptions).CreateTagHold)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -383,8 +510,12 @@ func (c *tagHoldsGRPCClient) CreateTagHold(ctx context.Context, req *resourceman
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*resourcemanager.CreateTagHoldOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateTagHoldOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -393,6 +524,9 @@ func (c *tagHoldsGRPCClient) DeleteTagHold(ctx context.Context, req *resourceman
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.TagHolds/DeleteTagHold")
+	}
 	opts = append((*c.CallOptions).DeleteTagHold[0:len((*c.CallOptions).DeleteTagHold):len((*c.CallOptions).DeleteTagHold)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -403,8 +537,12 @@ func (c *tagHoldsGRPCClient) DeleteTagHold(ctx context.Context, req *resourceman
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*resourcemanager.DeleteTagHoldOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteTagHoldOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -413,9 +551,12 @@ func (c *tagHoldsGRPCClient) ListTagHolds(ctx context.Context, req *resourcemana
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.TagHolds/ListTagHolds")
+	}
 	opts = append((*c.CallOptions).ListTagHolds[0:len((*c.CallOptions).ListTagHolds):len((*c.CallOptions).ListTagHolds)], opts...)
 	it := &TagHoldIterator{}
-	req = proto.Clone(req).(*resourcemanagerpb.ListTagHoldsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*resourcemanagerpb.TagHold, string, error) {
 		resp := &resourcemanagerpb.ListTagHoldsResponse{}
 		if pageToken != "" {
@@ -459,6 +600,9 @@ func (c *tagHoldsGRPCClient) GetOperation(ctx context.Context, req *longrunningp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -502,6 +646,10 @@ func (c *tagHoldsRESTClient) CreateTagHold(ctx context.Context, req *resourceman
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.TagHolds/CreateTagHold")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{parent=tagValues/*}/tagHolds")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -530,8 +678,12 @@ func (c *tagHoldsRESTClient) CreateTagHold(ctx context.Context, req *resourceman
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*resourcemanager.CreateTagHoldOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateTagHoldOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -558,6 +710,10 @@ func (c *tagHoldsRESTClient) DeleteTagHold(ctx context.Context, req *resourceman
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.resourcemanager.v3.TagHolds/DeleteTagHold")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{name=tagValues/*/tagHolds/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -586,8 +742,12 @@ func (c *tagHoldsRESTClient) DeleteTagHold(ctx context.Context, req *resourceman
 	}
 
 	override := fmt.Sprintf("/v3/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*resourcemanager.DeleteTagHoldOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteTagHoldOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -595,7 +755,7 @@ func (c *tagHoldsRESTClient) DeleteTagHold(ctx context.Context, req *resourceman
 // ListTagHolds lists TagHolds under a TagValue.
 func (c *tagHoldsRESTClient) ListTagHolds(ctx context.Context, req *resourcemanagerpb.ListTagHoldsRequest, opts ...gax.CallOption) *TagHoldIterator {
 	it := &TagHoldIterator{}
-	req = proto.Clone(req).(*resourcemanagerpb.ListTagHoldsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*resourcemanagerpb.TagHold, string, error) {
 		resp := &resourcemanagerpb.ListTagHoldsResponse{}
@@ -692,6 +852,10 @@ func (c *tagHoldsRESTClient) GetOperation(ctx context.Context, req *longrunningp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{name=operations/**}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -727,7 +891,7 @@ func (c *tagHoldsRESTClient) GetOperation(ctx context.Context, req *longrunningp
 // The name must be that of a previously created CreateTagHoldOperation, possibly from a different process.
 func (c *tagHoldsGRPCClient) CreateTagHoldOperation(name string) *CreateTagHoldOperation {
 	return &CreateTagHoldOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*resourcemanager.CreateTagHoldOperation"),
 	}
 }
 
@@ -736,7 +900,7 @@ func (c *tagHoldsGRPCClient) CreateTagHoldOperation(name string) *CreateTagHoldO
 func (c *tagHoldsRESTClient) CreateTagHoldOperation(name string) *CreateTagHoldOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &CreateTagHoldOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*resourcemanager.CreateTagHoldOperation"),
 		pollPath: override,
 	}
 }
@@ -745,7 +909,7 @@ func (c *tagHoldsRESTClient) CreateTagHoldOperation(name string) *CreateTagHoldO
 // The name must be that of a previously created DeleteTagHoldOperation, possibly from a different process.
 func (c *tagHoldsGRPCClient) DeleteTagHoldOperation(name string) *DeleteTagHoldOperation {
 	return &DeleteTagHoldOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*resourcemanager.DeleteTagHoldOperation"),
 	}
 }
 
@@ -754,7 +918,7 @@ func (c *tagHoldsGRPCClient) DeleteTagHoldOperation(name string) *DeleteTagHoldO
 func (c *tagHoldsRESTClient) DeleteTagHoldOperation(name string) *DeleteTagHoldOperation {
 	override := fmt.Sprintf("/v3/%s", name)
 	return &DeleteTagHoldOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*resourcemanager.DeleteTagHoldOperation"),
 		pollPath: override,
 	}
 }

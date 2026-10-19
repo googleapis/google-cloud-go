@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import (
 	assetpb "cloud.google.com/go/asset/apiv1p2beta1/assetpb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -59,6 +60,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://cloudasset.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.AllowHardBoundTokens("MTLS_S2A"),
 		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -191,7 +193,7 @@ type Client struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *Client) Close() error {
 	return c.internalClient.Close()
@@ -270,6 +272,16 @@ type gRPCClient struct {
 // Asset service definition.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "cloudasset",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/asset/apiv1p2beta1",
+			"gcp.client.language": "go",
+			"url.domain":          "cloudasset.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -292,6 +304,62 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "cloudasset",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/asset/apiv1p2beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudasset.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateFeed = append(client.CallOptions.CreateFeed, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetFeed = append(client.CallOptions.GetFeed, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListFeeds = append(client.CallOptions.ListFeeds, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateFeed = append(client.CallOptions.UpdateFeed, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteFeed = append(client.CallOptions.DeleteFeed, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudasset",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/asset/apiv1p2beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudasset.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateFeed = append(client.CallOptions.CreateFeed, gax.WithClientTracing(tracing))
+		client.CallOptions.GetFeed = append(client.CallOptions.GetFeed, gax.WithClientTracing(tracing))
+		client.CallOptions.ListFeeds = append(client.CallOptions.ListFeeds, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateFeed = append(client.CallOptions.UpdateFeed, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteFeed = append(client.CallOptions.DeleteFeed, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudasset",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/asset/apiv1p2beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudasset.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateFeed = append(client.CallOptions.CreateFeed, gax.WithClientLogging(logging))
+		client.CallOptions.GetFeed = append(client.CallOptions.GetFeed, gax.WithClientLogging(logging))
+		client.CallOptions.ListFeeds = append(client.CallOptions.ListFeeds, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateFeed = append(client.CallOptions.UpdateFeed, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteFeed = append(client.CallOptions.DeleteFeed, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -317,7 +385,7 @@ func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *gRPCClient) Close() error {
 	return c.connPool.Close()
@@ -345,6 +413,16 @@ type restClient struct {
 // Asset service definition.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "cloudasset",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/asset/apiv1p2beta1",
+			"gcp.client.language": "go",
+			"url.domain":          "cloudasset.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -358,6 +436,63 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "cloudasset",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/asset/apiv1p2beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudasset.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateFeed = append(callOpts.CreateFeed, gax.WithClientMetrics(metrics))
+		callOpts.GetFeed = append(callOpts.GetFeed, gax.WithClientMetrics(metrics))
+		callOpts.ListFeeds = append(callOpts.ListFeeds, gax.WithClientMetrics(metrics))
+		callOpts.UpdateFeed = append(callOpts.UpdateFeed, gax.WithClientMetrics(metrics))
+		callOpts.DeleteFeed = append(callOpts.DeleteFeed, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudasset",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/asset/apiv1p2beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudasset.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateFeed = append(callOpts.CreateFeed, gax.WithClientTracing(tracing))
+		callOpts.GetFeed = append(callOpts.GetFeed, gax.WithClientTracing(tracing))
+		callOpts.ListFeeds = append(callOpts.ListFeeds, gax.WithClientTracing(tracing))
+		callOpts.UpdateFeed = append(callOpts.UpdateFeed, gax.WithClientTracing(tracing))
+		callOpts.DeleteFeed = append(callOpts.DeleteFeed, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudasset",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/asset/apiv1p2beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudasset.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateFeed = append(callOpts.CreateFeed, gax.WithClientLogging(logging))
+		callOpts.GetFeed = append(callOpts.GetFeed, gax.WithClientLogging(logging))
+		callOpts.ListFeeds = append(callOpts.ListFeeds, gax.WithClientLogging(logging))
+		callOpts.UpdateFeed = append(callOpts.UpdateFeed, gax.WithClientLogging(logging))
+		callOpts.DeleteFeed = append(callOpts.DeleteFeed, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -385,7 +520,7 @@ func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *restClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -404,6 +539,9 @@ func (c *gRPCClient) CreateFeed(ctx context.Context, req *assetpb.CreateFeedRequ
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.asset.v1p2beta1.AssetService/CreateFeed")
+	}
 	opts = append((*c.CallOptions).CreateFeed[0:len((*c.CallOptions).CreateFeed):len((*c.CallOptions).CreateFeed)], opts...)
 	var resp *assetpb.Feed
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -422,6 +560,9 @@ func (c *gRPCClient) GetFeed(ctx context.Context, req *assetpb.GetFeedRequest, o
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.asset.v1p2beta1.AssetService/GetFeed")
+	}
 	opts = append((*c.CallOptions).GetFeed[0:len((*c.CallOptions).GetFeed):len((*c.CallOptions).GetFeed)], opts...)
 	var resp *assetpb.Feed
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -440,6 +581,9 @@ func (c *gRPCClient) ListFeeds(ctx context.Context, req *assetpb.ListFeedsReques
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.asset.v1p2beta1.AssetService/ListFeeds")
+	}
 	opts = append((*c.CallOptions).ListFeeds[0:len((*c.CallOptions).ListFeeds):len((*c.CallOptions).ListFeeds)], opts...)
 	var resp *assetpb.ListFeedsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -458,6 +602,9 @@ func (c *gRPCClient) UpdateFeed(ctx context.Context, req *assetpb.UpdateFeedRequ
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.asset.v1p2beta1.AssetService/UpdateFeed")
+	}
 	opts = append((*c.CallOptions).UpdateFeed[0:len((*c.CallOptions).UpdateFeed):len((*c.CallOptions).UpdateFeed)], opts...)
 	var resp *assetpb.Feed
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -476,6 +623,9 @@ func (c *gRPCClient) DeleteFeed(ctx context.Context, req *assetpb.DeleteFeedRequ
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.asset.v1p2beta1.AssetService/DeleteFeed")
+	}
 	opts = append((*c.CallOptions).DeleteFeed[0:len((*c.CallOptions).DeleteFeed):len((*c.CallOptions).DeleteFeed)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -490,6 +640,9 @@ func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -529,6 +682,10 @@ func (c *restClient) CreateFeed(ctx context.Context, req *assetpb.CreateFeedRequ
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.asset.v1p2beta1.AssetService/CreateFeed")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1p2beta1/{parent=*/*}/feeds")
+	}
 	opts = append((*c.CallOptions).CreateFeed[0:len((*c.CallOptions).CreateFeed):len((*c.CallOptions).CreateFeed)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &assetpb.Feed{}
@@ -579,6 +736,10 @@ func (c *restClient) GetFeed(ctx context.Context, req *assetpb.GetFeedRequest, o
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.asset.v1p2beta1.AssetService/GetFeed")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1p2beta1/{name=*/*/feeds/*}")
+	}
 	opts = append((*c.CallOptions).GetFeed[0:len((*c.CallOptions).GetFeed):len((*c.CallOptions).GetFeed)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &assetpb.Feed{}
@@ -629,6 +790,10 @@ func (c *restClient) ListFeeds(ctx context.Context, req *assetpb.ListFeedsReques
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.asset.v1p2beta1.AssetService/ListFeeds")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1p2beta1/{parent=*/*}/feeds")
+	}
 	opts = append((*c.CallOptions).ListFeeds[0:len((*c.CallOptions).ListFeeds):len((*c.CallOptions).ListFeeds)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &assetpb.ListFeedsResponse{}
@@ -685,6 +850,10 @@ func (c *restClient) UpdateFeed(ctx context.Context, req *assetpb.UpdateFeedRequ
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.asset.v1p2beta1.AssetService/UpdateFeed")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1p2beta1/{feed.name=*/*/feeds/*}")
+	}
 	opts = append((*c.CallOptions).UpdateFeed[0:len((*c.CallOptions).UpdateFeed):len((*c.CallOptions).UpdateFeed)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &assetpb.Feed{}
@@ -735,6 +904,10 @@ func (c *restClient) DeleteFeed(ctx context.Context, req *assetpb.DeleteFeedRequ
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.asset.v1p2beta1.AssetService/DeleteFeed")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1p2beta1/{name=*/*/feeds/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -770,6 +943,10 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1p2beta1/{name=*/*/operations/*/**}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}

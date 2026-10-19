@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,8 +25,11 @@ import (
 
 	aiplatformpb "cloud.google.com/go/aiplatform/apiv1/aiplatformpb"
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	"cloud.google.com/go/longrunning"
+	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -40,19 +43,21 @@ var newVertexRagClientHook clientHook
 
 // VertexRagCallOptions contains the retry settings for each method of VertexRagClient.
 type VertexRagCallOptions struct {
-	RetrieveContexts   []gax.CallOption
-	AugmentPrompt      []gax.CallOption
-	CorroborateContent []gax.CallOption
-	GetLocation        []gax.CallOption
-	ListLocations      []gax.CallOption
-	GetIamPolicy       []gax.CallOption
-	SetIamPolicy       []gax.CallOption
-	TestIamPermissions []gax.CallOption
-	CancelOperation    []gax.CallOption
-	DeleteOperation    []gax.CallOption
-	GetOperation       []gax.CallOption
-	ListOperations     []gax.CallOption
-	WaitOperation      []gax.CallOption
+	RetrieveContexts      []gax.CallOption
+	AugmentPrompt         []gax.CallOption
+	CorroborateContent    []gax.CallOption
+	AskContexts           []gax.CallOption
+	AsyncRetrieveContexts []gax.CallOption
+	GetLocation           []gax.CallOption
+	ListLocations         []gax.CallOption
+	GetIamPolicy          []gax.CallOption
+	SetIamPolicy          []gax.CallOption
+	TestIamPermissions    []gax.CallOption
+	CancelOperation       []gax.CallOption
+	DeleteOperation       []gax.CallOption
+	GetOperation          []gax.CallOption
+	ListOperations        []gax.CallOption
+	WaitOperation         []gax.CallOption
 }
 
 func defaultVertexRagGRPCClientOptions() []option.ClientOption {
@@ -72,19 +77,21 @@ func defaultVertexRagGRPCClientOptions() []option.ClientOption {
 
 func defaultVertexRagCallOptions() *VertexRagCallOptions {
 	return &VertexRagCallOptions{
-		RetrieveContexts:   []gax.CallOption{},
-		AugmentPrompt:      []gax.CallOption{},
-		CorroborateContent: []gax.CallOption{},
-		GetLocation:        []gax.CallOption{},
-		ListLocations:      []gax.CallOption{},
-		GetIamPolicy:       []gax.CallOption{},
-		SetIamPolicy:       []gax.CallOption{},
-		TestIamPermissions: []gax.CallOption{},
-		CancelOperation:    []gax.CallOption{},
-		DeleteOperation:    []gax.CallOption{},
-		GetOperation:       []gax.CallOption{},
-		ListOperations:     []gax.CallOption{},
-		WaitOperation:      []gax.CallOption{},
+		RetrieveContexts:      []gax.CallOption{},
+		AugmentPrompt:         []gax.CallOption{},
+		CorroborateContent:    []gax.CallOption{},
+		AskContexts:           []gax.CallOption{},
+		AsyncRetrieveContexts: []gax.CallOption{},
+		GetLocation:           []gax.CallOption{},
+		ListLocations:         []gax.CallOption{},
+		GetIamPolicy:          []gax.CallOption{},
+		SetIamPolicy:          []gax.CallOption{},
+		TestIamPermissions:    []gax.CallOption{},
+		CancelOperation:       []gax.CallOption{},
+		DeleteOperation:       []gax.CallOption{},
+		GetOperation:          []gax.CallOption{},
+		ListOperations:        []gax.CallOption{},
+		WaitOperation:         []gax.CallOption{},
 	}
 }
 
@@ -96,6 +103,9 @@ type internalVertexRagClient interface {
 	RetrieveContexts(context.Context, *aiplatformpb.RetrieveContextsRequest, ...gax.CallOption) (*aiplatformpb.RetrieveContextsResponse, error)
 	AugmentPrompt(context.Context, *aiplatformpb.AugmentPromptRequest, ...gax.CallOption) (*aiplatformpb.AugmentPromptResponse, error)
 	CorroborateContent(context.Context, *aiplatformpb.CorroborateContentRequest, ...gax.CallOption) (*aiplatformpb.CorroborateContentResponse, error)
+	AskContexts(context.Context, *aiplatformpb.AskContextsRequest, ...gax.CallOption) (*aiplatformpb.AskContextsResponse, error)
+	AsyncRetrieveContexts(context.Context, *aiplatformpb.AsyncRetrieveContextsRequest, ...gax.CallOption) (*AsyncRetrieveContextsOperation, error)
+	AsyncRetrieveContextsOperation(name string) *AsyncRetrieveContextsOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -118,6 +128,11 @@ type VertexRagClient struct {
 
 	// The call options for this service.
 	CallOptions *VertexRagCallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
 }
 
 // Wrapper methods routed to the internal client.
@@ -159,6 +174,22 @@ func (c *VertexRagClient) AugmentPrompt(ctx context.Context, req *aiplatformpb.A
 // supporting facts.
 func (c *VertexRagClient) CorroborateContent(ctx context.Context, req *aiplatformpb.CorroborateContentRequest, opts ...gax.CallOption) (*aiplatformpb.CorroborateContentResponse, error) {
 	return c.internalClient.CorroborateContent(ctx, req, opts...)
+}
+
+// AskContexts agentic Retrieval Ask API for RAG.
+func (c *VertexRagClient) AskContexts(ctx context.Context, req *aiplatformpb.AskContextsRequest, opts ...gax.CallOption) (*aiplatformpb.AskContextsResponse, error) {
+	return c.internalClient.AskContexts(ctx, req, opts...)
+}
+
+// AsyncRetrieveContexts asynchronous API to retrieves relevant contexts for a query.
+func (c *VertexRagClient) AsyncRetrieveContexts(ctx context.Context, req *aiplatformpb.AsyncRetrieveContextsRequest, opts ...gax.CallOption) (*AsyncRetrieveContextsOperation, error) {
+	return c.internalClient.AsyncRetrieveContexts(ctx, req, opts...)
+}
+
+// AsyncRetrieveContextsOperation returns a new AsyncRetrieveContextsOperation from a given name.
+// The name must be that of a previously created AsyncRetrieveContextsOperation, possibly from a different process.
+func (c *VertexRagClient) AsyncRetrieveContextsOperation(name string) *AsyncRetrieveContextsOperation {
+	return c.internalClient.AsyncRetrieveContextsOperation(name)
 }
 
 // GetLocation gets information about a location.
@@ -235,6 +266,11 @@ type vertexRagGRPCClient struct {
 	// The gRPC API client.
 	vertexRagClient aiplatformpb.VertexRagServiceClient
 
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient **lroauto.OperationsClient
+
 	operationsClient longrunningpb.OperationsClient
 
 	iamPolicyClient iampb.IAMPolicyClient
@@ -253,6 +289,16 @@ type vertexRagGRPCClient struct {
 // A service for retrieving relevant contexts.
 func NewVertexRagClient(ctx context.Context, opts ...option.ClientOption) (*VertexRagClient, error) {
 	clientOpts := defaultVertexRagGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "aiplatform",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/aiplatform/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "aiplatform.googleapis.com",
+		}))
+	}
 	if newVertexRagClientHook != nil {
 		hookOpts, err := newVertexRagClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -277,9 +323,48 @@ func NewVertexRagClient(ctx context.Context, opts ...option.ClientOption) (*Vert
 		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "aiplatform",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/aiplatform/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "aiplatform.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.RetrieveContexts = append(client.CallOptions.RetrieveContexts, gax.WithClientMetrics(metrics))
+		client.CallOptions.AugmentPrompt = append(client.CallOptions.AugmentPrompt, gax.WithClientMetrics(metrics))
+		client.CallOptions.CorroborateContent = append(client.CallOptions.CorroborateContent, gax.WithClientMetrics(metrics))
+		client.CallOptions.AskContexts = append(client.CallOptions.AskContexts, gax.WithClientMetrics(metrics))
+		client.CallOptions.AsyncRetrieveContexts = append(client.CallOptions.AsyncRetrieveContexts, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+		client.CallOptions.WaitOperation = append(client.CallOptions.WaitOperation, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	if err != nil {
+		// This error "should not happen", since we are just reusing old connection pool
+		// and never actually need to dial.
+		// If this does happen, we could leak connp. However, we cannot close conn:
+		// If the user invoked the constructor with option.WithGRPCConn,
+		// we would close a connection that's still in use.
+		// TODO: investigate error conditions.
+		return nil, err
+	}
+	c.LROClient = &client.LROClient
 	return &client, nil
 }
 
@@ -313,6 +398,12 @@ func (c *vertexRagGRPCClient) RetrieveContexts(ctx context.Context, req *aiplatf
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.VertexRagService/RetrieveContexts")
+	}
 	opts = append((*c.CallOptions).RetrieveContexts[0:len((*c.CallOptions).RetrieveContexts):len((*c.CallOptions).RetrieveContexts)], opts...)
 	var resp *aiplatformpb.RetrieveContextsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -331,6 +422,12 @@ func (c *vertexRagGRPCClient) AugmentPrompt(ctx context.Context, req *aiplatform
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.VertexRagService/AugmentPrompt")
+	}
 	opts = append((*c.CallOptions).AugmentPrompt[0:len((*c.CallOptions).AugmentPrompt):len((*c.CallOptions).AugmentPrompt)], opts...)
 	var resp *aiplatformpb.AugmentPromptResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -349,6 +446,12 @@ func (c *vertexRagGRPCClient) CorroborateContent(ctx context.Context, req *aipla
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.VertexRagService/CorroborateContent")
+	}
 	opts = append((*c.CallOptions).CorroborateContent[0:len((*c.CallOptions).CorroborateContent):len((*c.CallOptions).CorroborateContent)], opts...)
 	var resp *aiplatformpb.CorroborateContentResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -362,11 +465,64 @@ func (c *vertexRagGRPCClient) CorroborateContent(ctx context.Context, req *aipla
 	return resp, nil
 }
 
+func (c *vertexRagGRPCClient) AskContexts(ctx context.Context, req *aiplatformpb.AskContextsRequest, opts ...gax.CallOption) (*aiplatformpb.AskContextsResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.VertexRagService/AskContexts")
+	}
+	opts = append((*c.CallOptions).AskContexts[0:len((*c.CallOptions).AskContexts):len((*c.CallOptions).AskContexts)], opts...)
+	var resp *aiplatformpb.AskContextsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.vertexRagClient.AskContexts, req, settings.GRPC, c.logger, "AskContexts")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *vertexRagGRPCClient) AsyncRetrieveContexts(ctx context.Context, req *aiplatformpb.AsyncRetrieveContextsRequest, opts ...gax.CallOption) (*AsyncRetrieveContextsOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1.VertexRagService/AsyncRetrieveContexts")
+	}
+	opts = append((*c.CallOptions).AsyncRetrieveContexts[0:len((*c.CallOptions).AsyncRetrieveContexts):len((*c.CallOptions).AsyncRetrieveContexts)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.vertexRagClient.AsyncRetrieveContexts, req, settings.GRPC, c.logger, "AsyncRetrieveContexts")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &AsyncRetrieveContextsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
 func (c *vertexRagGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -385,6 +541,9 @@ func (c *vertexRagGRPCClient) ListLocations(ctx context.Context, req *locationpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/ListLocations")
+	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
 	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
@@ -431,6 +590,12 @@ func (c *vertexRagGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIa
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -449,6 +614,12 @@ func (c *vertexRagGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIa
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -467,6 +638,12 @@ func (c *vertexRagGRPCClient) TestIamPermissions(ctx context.Context, req *iampb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -485,6 +662,9 @@ func (c *vertexRagGRPCClient) CancelOperation(ctx context.Context, req *longrunn
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -499,6 +679,9 @@ func (c *vertexRagGRPCClient) DeleteOperation(ctx context.Context, req *longrunn
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+	}
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -513,6 +696,9 @@ func (c *vertexRagGRPCClient) GetOperation(ctx context.Context, req *longrunning
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -531,6 +717,9 @@ func (c *vertexRagGRPCClient) ListOperations(ctx context.Context, req *longrunni
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
@@ -577,6 +766,9 @@ func (c *vertexRagGRPCClient) WaitOperation(ctx context.Context, req *longrunnin
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/WaitOperation")
+	}
 	opts = append((*c.CallOptions).WaitOperation[0:len((*c.CallOptions).WaitOperation):len((*c.CallOptions).WaitOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -588,4 +780,12 @@ func (c *vertexRagGRPCClient) WaitOperation(ctx context.Context, req *longrunnin
 		return nil, err
 	}
 	return resp, nil
+}
+
+// AsyncRetrieveContextsOperation returns a new AsyncRetrieveContextsOperation from a given name.
+// The name must be that of a previously created AsyncRetrieveContextsOperation, possibly from a different process.
+func (c *vertexRagGRPCClient) AsyncRetrieveContextsOperation(name string) *AsyncRetrieveContextsOperation {
+	return &AsyncRetrieveContextsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
 }

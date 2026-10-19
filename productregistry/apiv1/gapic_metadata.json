@@ -1,0 +1,93 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.productregistry.v1",
+  "libraryPackage": "cloud.google.com/go/productregistry/apiv1",
+  "services": {
+    "CloudProductRegistryReadService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "CloudProductRegistryReadClient",
+          "rpcs": {
+            "GetLogicalProduct": {
+              "methods": [
+                "GetLogicalProduct"
+              ]
+            },
+            "GetLogicalProductVariant": {
+              "methods": [
+                "GetLogicalProductVariant"
+              ]
+            },
+            "GetProductSuite": {
+              "methods": [
+                "GetProductSuite"
+              ]
+            },
+            "ListLogicalProductVariants": {
+              "methods": [
+                "ListLogicalProductVariants"
+              ]
+            },
+            "ListLogicalProducts": {
+              "methods": [
+                "ListLogicalProducts"
+              ]
+            },
+            "ListProductSuites": {
+              "methods": [
+                "ListProductSuites"
+              ]
+            },
+            "LookupEntity": {
+              "methods": [
+                "LookupEntity"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "CloudProductRegistryReadClient",
+          "rpcs": {
+            "GetLogicalProduct": {
+              "methods": [
+                "GetLogicalProduct"
+              ]
+            },
+            "GetLogicalProductVariant": {
+              "methods": [
+                "GetLogicalProductVariant"
+              ]
+            },
+            "GetProductSuite": {
+              "methods": [
+                "GetProductSuite"
+              ]
+            },
+            "ListLogicalProductVariants": {
+              "methods": [
+                "ListLogicalProductVariants"
+              ]
+            },
+            "ListLogicalProducts": {
+              "methods": [
+                "ListLogicalProducts"
+              ]
+            },
+            "ListProductSuites": {
+              "methods": [
+                "ListProductSuites"
+              ]
+            },
+            "LookupEntity": {
+              "methods": [
+                "LookupEntity"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

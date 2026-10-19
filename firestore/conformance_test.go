@@ -21,7 +21,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"math"
 	"os"
 	"path"
@@ -42,7 +41,7 @@ import (
 
 func TestConformance(t *testing.T) {
 	dir := "internal/conformance/testdata"
-	files, err := ioutil.ReadDir(dir)
+	files, err := os.ReadDir(dir)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -230,7 +229,7 @@ func runTest(test *pb.Test, c *Client, srv *mockServer) error {
 
 func nSnapshots(iter *QuerySnapshotIterator, n int) ([]*pb.Snapshot, error) {
 	var snaps []*pb.Snapshot
-	for i := 0; i < n; i++ {
+	for range n {
 		qsnap, err := iter.Next()
 		if err != nil {
 			return snaps, err

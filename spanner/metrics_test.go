@@ -31,7 +31,9 @@ import (
 	"google.golang.org/genproto/googleapis/api/metric"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials/alts"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/status"
 )
 
@@ -181,10 +183,11 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 			}
 
 			// Check instruments
-			gotNonNilInstruments := client.metricsTracerFactory.operationLatencies != nil &&
-				client.metricsTracerFactory.operationCount != nil &&
-				client.metricsTracerFactory.attemptLatencies != nil &&
-				client.metricsTracerFactory.attemptCount != nil
+			gotNonNilInstruments := len(client.metricsTracerFactory.sinks) > 0 &&
+				client.metricsTracerFactory.sinks[0].operationLatencies != nil &&
+				client.metricsTracerFactory.sinks[0].operationCount != nil &&
+				client.metricsTracerFactory.sinks[0].attemptLatencies != nil &&
+				client.metricsTracerFactory.sinks[0].attemptCount != nil
 			if test.wantBuiltinEnabled != gotNonNilInstruments {
 				t.Errorf("NonNilInstruments: got: %v, want: %v", gotNonNilInstruments, test.wantBuiltinEnabled)
 			}
@@ -207,21 +210,29 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 			for _, gotCreateTSCall := range gotCreateTSCalls {
 				gotMetricTypesPerMethod := make(map[string][]string)
 				for _, ts := range gotCreateTSCall.TimeSeries {
-					gotMetricTypesPerMethod[ts.Metric.GetLabels()["method"]] = append(gotMetricTypesPerMethod[ts.Metric.GetLabels()["method"]], ts.Metric.Type)
-					if _, ok := gotOTELCountValues[ts.Metric.GetLabels()["method"]]; !ok {
-						gotOTELCountValues[ts.Metric.GetLabels()["method"]] = make(map[string]int64)
-						gotOTELLatencyValues[ts.Metric.GetLabels()["method"]] = make(map[string]float64)
-						gotExpectedMethods = append(gotExpectedMethods, ts.Metric.GetLabels()["method"])
+					method := ts.Metric.GetLabels()["method"]
+					if method == "" {
+						continue
 					}
-					if ts.MetricKind == metric.MetricDescriptor_CUMULATIVE && ts.GetValueType() == metric.MetricDescriptor_INT64 {
-						gotOTELCountValues[ts.Metric.GetLabels()["method"]][ts.Metric.Type] = ts.Points[0].Value.GetInt64Value()
+					gotMetricTypesPerMethod[method] = append(gotMetricTypesPerMethod[method], ts.Metric.Type)
+					if _, ok := gotOTELCountValues[method]; !ok {
+						gotOTELCountValues[method] = make(map[string]int64)
+						gotOTELLatencyValues[method] = make(map[string]float64)
+						gotExpectedMethods = append(gotExpectedMethods, method)
+					}
+					if ts.MetricKind == metric.MetricDescriptor_CUMULATIVE && ts.GetValueType() == metric.MetricDescriptor_INT64 && len(ts.Points) > 0 {
+						gotOTELCountValues[method][ts.Metric.Type] = ts.Points[0].GetValue().GetInt64Value()
 					} else {
 						for _, p := range ts.Points {
-							if _, ok := gotOTELCountValues[ts.Metric.GetLabels()["method"]][ts.Metric.Type]; !ok {
-								gotOTELLatencyValues[ts.Metric.GetLabels()["method"]][ts.Metric.Type] = p.Value.GetDistributionValue().Mean
+							if _, ok := gotOTELLatencyValues[method][ts.Metric.Type]; !ok {
+								if dist := p.GetValue().GetDistributionValue(); dist != nil {
+									gotOTELLatencyValues[method][ts.Metric.Type] = dist.Mean
+								}
 							} else {
 								// sum up all attempt latencies
-								gotOTELLatencyValues[ts.Metric.GetLabels()["method"]][ts.Metric.Type] += p.Value.GetDistributionValue().Mean
+								if dist := p.GetValue().GetDistributionValue(); dist != nil {
+									gotOTELLatencyValues[method][ts.Metric.Type] += dist.Mean
+								}
 							}
 						}
 					}
@@ -313,4 +324,61 @@ func parseHex(hexStr string) (int64, error) {
 	var value int64
 	_, err := fmt.Sscanf(hexStr, "%x", &value)
 	return value, err
+}
+
+type mockALTSAuthInfo struct {
+	alts.AuthInfo
+}
+
+func (m mockALTSAuthInfo) AuthType() string { return "alts" }
+
+type mockOtherAuthInfo struct{}
+
+func (m mockOtherAuthInfo) AuthType() string { return "other" }
+
+func TestSetDirectPathUsed(t *testing.T) {
+	tests := []struct {
+		name string
+		peer *peer.Peer
+		want bool
+	}{
+		{
+			name: "ALTS AuthInfo",
+			peer: &peer.Peer{
+				AuthInfo: mockALTSAuthInfo{},
+			},
+			want: true,
+		},
+		{
+			name: "Other AuthInfo",
+			peer: &peer.Peer{
+				AuthInfo: mockOtherAuthInfo{},
+			},
+			want: false,
+		},
+		{
+			name: "No AuthInfo",
+			peer: &peer.Peer{},
+			want: false,
+		},
+		{
+			name: "No Peer",
+			peer: nil,
+			want: false,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			tracer := &attemptTracer{}
+			ctx := context.Background()
+			if tc.peer != nil {
+				ctx = peer.NewContext(ctx, tc.peer)
+			}
+			tracer.setDirectPathUsed(ctx)
+			if tracer.directPathUsed != tc.want {
+				t.Errorf("setDirectPathUsed() = %v, want %v", tracer.directPathUsed, tc.want)
+			}
+		})
+	}
 }

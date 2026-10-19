@@ -119,6 +119,25 @@ func TestToProtoValue_Conversions(t *testing.T) {
 			want: nullValue,
 		},
 		{
+			desc: "nil AggregateFunction",
+			in:   AggregateFunction(nil),
+			want: nullValue,
+		},
+		{
+			desc: "nil pointer to AggregateFunction",
+			in:   (*baseAggregateFunction)(nil),
+			want: nullValue,
+		},
+		{
+			desc: "AggregateFunction",
+			in:   CountAll(),
+			want: &pb.Value{ValueType: &pb.Value_FunctionValue{
+				FunctionValue: &pb.Function{
+					Name: "count",
+				},
+			}},
+		},
+		{
 			desc: "bool",
 			in:   true,
 			want: boolval(true),

@@ -1,6 +1,49 @@
 # Changes
 
 
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.19.0...netapp/v1.20.0) (2026-10-08)
+
+
+### Features
+
+* Update API sources and regenerate ([#20646](https://github.com/googleapis/google-cloud-go/issues/20646)) ([4ad5d50](https://github.com/googleapis/google-cloud-go/commit/4ad5d50aaf4392d19fd391ee71eec1c5029ecd1d))
+
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.18.0...netapp/v1.19.0) (2026-09-23)
+
+
+### Features
+
+* **all:** Update supported go versions ([#20520](https://github.com/googleapis/google-cloud-go/issues/20520)) ([90413d3](https://github.com/googleapis/google-cloud-go/commit/90413d3e9d381ef4b92e3c496d98b023c5b2d8cc))
+
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.17.0...netapp/v1.18.0) (2026-07-13)
+
+
+### Features
+
+* **o11y:** Regenerate clients for LRO tracing ([#20107](https://github.com/googleapis/google-cloud-go/issues/20107)) ([779074e](https://github.com/googleapis/google-cloud-go/commit/779074edd267a26520bae459307660953129eb07))
+
+## [1.17.0](https://github.com/googleapis/google-cloud-go/releases/tag/netapp%2Fv1.17.0) (2026-05-07)
+
+## [1.16.0](https://github.com/googleapis/google-cloud-go/releases/tag/netapp%2Fv1.16.0) (2026-04-30)
+
+## [1.15.0](https://github.com/googleapis/google-cloud-go/releases/tag/netapp%2Fv1.15.0) (2026-04-13)
+
+## [1.14.0](https://github.com/googleapis/google-cloud-go/releases/tag/netapp%2Fv1.14.0) (2026-04-09)
+
+## [1.13.0](https://github.com/googleapis/google-cloud-go/releases/tag/netapp%2Fv1.13.0) (2026-04-02)
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/releases/tag/netapp%2Fv1.12.0) (2026-01-15)
+
+### Features
+
+* Update NetApp v1 API with Host Groups, Block Volumes, Cache Volumes, and Backup Restore This CL introduces several new features and enhancements to the NetApp API: - **Host Groups:** Added a new `HostGroup` resource to manage collections of hosts for Block Volume access. Includes full CRUD operations. - **Block Volumes:** Enhanced the `Volume` resource to support `ISCSI` protocol and `BlockDevice` configurations. - **Cache Volumes:** Added `CacheParameters` to the `Volume` resource to support FlexCache volumes. - **Backup Restore:** Introduced a new `RestoreBackupFiles` RPC to restore individual files from a backup. - **CMEK for Backup Vaults:** Added fields to `BackupVault` to support Customer Managed Encryption Keys (CMEK). - **Storage Pool Type:** Added a `type` field to `StoragePool` to specify support for FILE, UNIFIED, or UNIFIED_LARGE_CAPACITY volumes. -   **Location Metadata:** Added `has_ontap_proxy` flag. -   Updated copyright year to 2026. ([80379ed](https://github.com/googleapis/google-cloud-go/commit/80379edb1c47cd7c2d928d18762029cfe28420c0))
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/releases/tag/netapp%2Fv1.11.0) (2025-12-04)
+
+### Features
+
+* Add Squash Mode to Export Policy This change introduces squash mode options to the export policy rules. Squash mode determines how user and group IDs are mapped for NFS volume access. The following squash modes are added: *   **NO_ROOT_SQUASH** Root user retains full access. *   **ROOT_SQUASH** Root user is mapped to the anonymous user ID. *   **ALL_SQUASH** All users are mapped to the anonymous user ID. A new field anon_uid is also added to specify the anonymous user ID when ALL_SQUASH is used. The squash_mode field takes precedence over the existing has_root_access field, which will be deprecated in the future. ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+
 ## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.10.0...netapp/v1.10.1) (2025-09-18)
 
 

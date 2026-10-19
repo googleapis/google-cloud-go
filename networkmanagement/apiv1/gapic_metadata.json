@@ -5,6 +5,160 @@
   "protoPackage": "google.cloud.networkmanagement.v1",
   "libraryPackage": "cloud.google.com/go/networkmanagement/apiv1",
   "services": {
+    "OrganizationVpcFlowLogsService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "OrganizationVpcFlowLogsClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateVpcFlowLogsConfig": {
+              "methods": [
+                "CreateVpcFlowLogsConfig"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteVpcFlowLogsConfig": {
+              "methods": [
+                "DeleteVpcFlowLogsConfig"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetVpcFlowLogsConfig": {
+              "methods": [
+                "GetVpcFlowLogsConfig"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListVpcFlowLogsConfigs": {
+              "methods": [
+                "ListVpcFlowLogsConfigs"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateVpcFlowLogsConfig": {
+              "methods": [
+                "UpdateVpcFlowLogsConfig"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "OrganizationVpcFlowLogsClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateVpcFlowLogsConfig": {
+              "methods": [
+                "CreateVpcFlowLogsConfig"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteVpcFlowLogsConfig": {
+              "methods": [
+                "DeleteVpcFlowLogsConfig"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetVpcFlowLogsConfig": {
+              "methods": [
+                "GetVpcFlowLogsConfig"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListVpcFlowLogsConfigs": {
+              "methods": [
+                "ListVpcFlowLogsConfigs"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateVpcFlowLogsConfig": {
+              "methods": [
+                "UpdateVpcFlowLogsConfig"
+              ]
+            }
+          }
+        }
+      }
+    },
     "ReachabilityService": {
       "clients": {
         "grpc": {
@@ -229,9 +383,19 @@
                 "ListVpcFlowLogsConfigs"
               ]
             },
+            "QueryOrgVpcFlowLogsConfigs": {
+              "methods": [
+                "QueryOrgVpcFlowLogsConfigs"
+              ]
+            },
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
+              ]
+            },
+            "ShowEffectiveFlowLogsConfigs": {
+              "methods": [
+                "ShowEffectiveFlowLogsConfigs"
               ]
             },
             "TestIamPermissions": {
@@ -304,9 +468,19 @@
                 "ListVpcFlowLogsConfigs"
               ]
             },
+            "QueryOrgVpcFlowLogsConfigs": {
+              "methods": [
+                "QueryOrgVpcFlowLogsConfigs"
+              ]
+            },
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
+              ]
+            },
+            "ShowEffectiveFlowLogsConfigs": {
+              "methods": [
+                "ShowEffectiveFlowLogsConfigs"
               ]
             },
             "TestIamPermissions": {

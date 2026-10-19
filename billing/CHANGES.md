@@ -1,5 +1,22 @@
 # Changes
 
+## [1.27.0](https://github.com/googleapis/google-cloud-go/compare/billing/v1.26.0...billing/v1.27.0) (2026-09-23)
+
+
+### Features
+
+* **all:** Update supported go versions ([#20520](https://github.com/googleapis/google-cloud-go/issues/20520)) ([90413d3](https://github.com/googleapis/google-cloud-go/commit/90413d3e9d381ef4b92e3c496d98b023c5b2d8cc))
+
+## [1.26.0](https://github.com/googleapis/google-cloud-go/releases/tag/billing%2Fv1.26.0) (2026-05-07)
+
+## [1.25.0](https://github.com/googleapis/google-cloud-go/releases/tag/billing%2Fv1.25.0) (2026-04-30)
+
+## [1.24.0](https://github.com/googleapis/google-cloud-go/releases/tag/billing%2Fv1.24.0) (2026-04-13)
+
+## [1.23.0](https://github.com/googleapis/google-cloud-go/releases/tag/billing%2Fv1.23.0) (2026-04-09)
+
+## [1.22.0](https://github.com/googleapis/google-cloud-go/releases/tag/billing%2Fv1.22.0) (2026-04-02)
+
 ## [1.21.0](https://github.com/googleapis/google-cloud-go/releases/tag/billing%2Fv1.21.0) (2025-10-10)
 
 ### Features

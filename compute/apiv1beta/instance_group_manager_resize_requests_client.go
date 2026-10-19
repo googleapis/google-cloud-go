@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import (
 
 	computepb "cloud.google.com/go/compute/apiv1beta/computepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -86,7 +87,7 @@ func defaultInstanceGroupManagerResizeRequestsRESTCallOptions() *InstanceGroupMa
 	}
 }
 
-// internalInstanceGroupManagerResizeRequestsClient is an interface that defines the methods available from Google Compute Engine API.
+// internalInstanceGroupManagerResizeRequestsClient is an interface that defines the methods available from Compute Engine API.
 type internalInstanceGroupManagerResizeRequestsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -98,7 +99,7 @@ type internalInstanceGroupManagerResizeRequestsClient interface {
 	List(context.Context, *computepb.ListInstanceGroupManagerResizeRequestsRequest, ...gax.CallOption) *InstanceGroupManagerResizeRequestIterator
 }
 
-// InstanceGroupManagerResizeRequestsClient is a client for interacting with Google Compute Engine API.
+// InstanceGroupManagerResizeRequestsClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The InstanceGroupManagerResizeRequests API.
@@ -112,7 +113,7 @@ type InstanceGroupManagerResizeRequestsClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *InstanceGroupManagerResizeRequestsClient) Close() error {
 	return c.internalClient.Close()
@@ -133,12 +134,17 @@ func (c *InstanceGroupManagerResizeRequestsClient) Connection() *grpc.ClientConn
 	return c.internalClient.Connection()
 }
 
-// Cancel cancels the specified resize request and removes it from the queue. Cancelled resize request does no longer wait for the resources to be provisioned. Cancel is only possible for requests that are accepted in the queue.
+// Cancel cancels the specified resize request and removes it from the queue.
+// Cancelled resize request does no longer wait for the resources to be
+// provisioned. Cancel is only possible for requests that are accepted in the
+// queue.
 func (c *InstanceGroupManagerResizeRequestsClient) Cancel(ctx context.Context, req *computepb.CancelInstanceGroupManagerResizeRequestRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Cancel(ctx, req, opts...)
 }
 
-// Delete deletes the specified, inactive resize request. Requests that are still active cannot be deleted. Deleting request does not delete instances that were provisioned previously.
+// Delete deletes the specified, inactive resize request. Requests that are still
+// active cannot be deleted. Deleting request does not delete instances that
+// were provisioned previously.
 func (c *InstanceGroupManagerResizeRequestsClient) Delete(ctx context.Context, req *computepb.DeleteInstanceGroupManagerResizeRequestRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
@@ -148,12 +154,14 @@ func (c *InstanceGroupManagerResizeRequestsClient) Get(ctx context.Context, req 
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// Insert creates a new resize request that starts provisioning VMs immediately or queues VM creation.
+// Insert creates a new resize request that starts provisioning VMs immediately
+// or queues VM creation.
 func (c *InstanceGroupManagerResizeRequestsClient) Insert(ctx context.Context, req *computepb.InsertInstanceGroupManagerResizeRequestRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves a list of resize requests that are contained in the managed instance group.
+// List retrieves a list of resize requests that are contained in the
+// managed instance group.
 func (c *InstanceGroupManagerResizeRequestsClient) List(ctx context.Context, req *computepb.ListInstanceGroupManagerResizeRequestsRequest, opts ...gax.CallOption) *InstanceGroupManagerResizeRequestIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
@@ -183,6 +191,16 @@ type instanceGroupManagerResizeRequestsRESTClient struct {
 // The InstanceGroupManagerResizeRequests API.
 func NewInstanceGroupManagerResizeRequestsRESTClient(ctx context.Context, opts ...option.ClientOption) (*InstanceGroupManagerResizeRequestsClient, error) {
 	clientOpts := append(defaultInstanceGroupManagerResizeRequestsRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "compute",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/compute/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "compute.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -196,6 +214,60 @@ func NewInstanceGroupManagerResizeRequestsRESTClient(ctx context.Context, opts .
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Cancel = append(callOpts.Cancel, gax.WithClientMetrics(metrics))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientMetrics(metrics))
+		callOpts.Get = append(callOpts.Get, gax.WithClientMetrics(metrics))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientMetrics(metrics))
+		callOpts.List = append(callOpts.List, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Cancel = append(callOpts.Cancel, gax.WithClientTracing(tracing))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientTracing(tracing))
+		callOpts.Get = append(callOpts.Get, gax.WithClientTracing(tracing))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientTracing(tracing))
+		callOpts.List = append(callOpts.List, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Cancel = append(callOpts.Cancel, gax.WithClientLogging(logging))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientLogging(logging))
+		callOpts.Get = append(callOpts.Get, gax.WithClientLogging(logging))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientLogging(logging))
+		callOpts.List = append(callOpts.List, gax.WithClientLogging(logging))
+	}
 
 	o := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -233,7 +305,7 @@ func (c *instanceGroupManagerResizeRequestsRESTClient) setGoogleClientInfo(keyva
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *instanceGroupManagerResizeRequestsRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -251,7 +323,10 @@ func (c *instanceGroupManagerResizeRequestsRESTClient) Connection() *grpc.Client
 	return nil
 }
 
-// Cancel cancels the specified resize request and removes it from the queue. Cancelled resize request does no longer wait for the resources to be provisioned. Cancel is only possible for requests that are accepted in the queue.
+// Cancel cancels the specified resize request and removes it from the queue.
+// Cancelled resize request does no longer wait for the resources to be
+// provisioned. Cancel is only possible for requests that are accepted in the
+// queue.
 func (c *instanceGroupManagerResizeRequestsRESTClient) Cancel(ctx context.Context, req *computepb.CancelInstanceGroupManagerResizeRequestRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -272,6 +347,10 @@ func (c *instanceGroupManagerResizeRequestsRESTClient) Cancel(ctx context.Contex
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.InstanceGroupManagerResizeRequests/Cancel")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/zones/{zone}/instanceGroupManagers/{instance_group_manager}/resizeRequests/{resize_request}/cancel")
+	}
 	opts = append((*c.CallOptions).Cancel[0:len((*c.CallOptions).Cancel):len((*c.CallOptions).Cancel)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -311,7 +390,9 @@ func (c *instanceGroupManagerResizeRequestsRESTClient) Cancel(ctx context.Contex
 	return op, nil
 }
 
-// Delete deletes the specified, inactive resize request. Requests that are still active cannot be deleted. Deleting request does not delete instances that were provisioned previously.
+// Delete deletes the specified, inactive resize request. Requests that are still
+// active cannot be deleted. Deleting request does not delete instances that
+// were provisioned previously.
 func (c *instanceGroupManagerResizeRequestsRESTClient) Delete(ctx context.Context, req *computepb.DeleteInstanceGroupManagerResizeRequestRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -332,6 +413,10 @@ func (c *instanceGroupManagerResizeRequestsRESTClient) Delete(ctx context.Contex
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.InstanceGroupManagerResizeRequests/Delete")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/zones/{zone}/instanceGroupManagers/{instance_group_manager}/resizeRequests/{resize_request}")
+	}
 	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -385,6 +470,10 @@ func (c *instanceGroupManagerResizeRequestsRESTClient) Get(ctx context.Context, 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.InstanceGroupManagerResizeRequests/Get")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/zones/{zone}/instanceGroupManagers/{instance_group_manager}/resizeRequests/{resize_request}")
+	}
 	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.InstanceGroupManagerResizeRequest{}
@@ -416,7 +505,8 @@ func (c *instanceGroupManagerResizeRequestsRESTClient) Get(ctx context.Context, 
 	return resp, nil
 }
 
-// Insert creates a new resize request that starts provisioning VMs immediately or queues VM creation.
+// Insert creates a new resize request that starts provisioning VMs immediately
+// or queues VM creation.
 func (c *instanceGroupManagerResizeRequestsRESTClient) Insert(ctx context.Context, req *computepb.InsertInstanceGroupManagerResizeRequestRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceGroupManagerResizeRequestResource()
@@ -444,6 +534,10 @@ func (c *instanceGroupManagerResizeRequestsRESTClient) Insert(ctx context.Contex
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.InstanceGroupManagerResizeRequests/Insert")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/zones/{zone}/instanceGroupManagers/{instance_group_manager}/resizeRequests")
+	}
 	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -483,10 +577,11 @@ func (c *instanceGroupManagerResizeRequestsRESTClient) Insert(ctx context.Contex
 	return op, nil
 }
 
-// List retrieves a list of resize requests that are contained in the managed instance group.
+// List retrieves a list of resize requests that are contained in the
+// managed instance group.
 func (c *instanceGroupManagerResizeRequestsRESTClient) List(ctx context.Context, req *computepb.ListInstanceGroupManagerResizeRequestsRequest, opts ...gax.CallOption) *InstanceGroupManagerResizeRequestIterator {
 	it := &InstanceGroupManagerResizeRequestIterator{}
-	req = proto.Clone(req).(*computepb.ListInstanceGroupManagerResizeRequestsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.InstanceGroupManagerResizeRequest, string, error) {
 		resp := &computepb.InstanceGroupManagerResizeRequestsListResponse{}

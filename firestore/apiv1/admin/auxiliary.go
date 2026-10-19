@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,12 +18,14 @@ package apiv1
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	adminpb "cloud.google.com/go/firestore/apiv1/admin/adminpb"
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
 
@@ -656,6 +658,12 @@ func (op *UpdateFieldOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *FieldIterator) All() iter.Seq2[*adminpb.Field, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // FieldIterator manages a stream of *adminpb.Field.
 type FieldIterator struct {
 	items    []*adminpb.Field
@@ -703,6 +711,12 @@ func (it *FieldIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *IndexIterator) All() iter.Seq2[*adminpb.Index, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // IndexIterator manages a stream of *adminpb.Index.
 type IndexIterator struct {
 	items    []*adminpb.Index
@@ -748,6 +762,12 @@ func (it *IndexIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // OperationIterator manages a stream of *longrunningpb.Operation.

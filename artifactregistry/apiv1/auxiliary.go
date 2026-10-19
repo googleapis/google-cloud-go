@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,11 +18,13 @@ package artifactregistry
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	artifactregistrypb "cloud.google.com/go/artifactregistry/apiv1/artifactregistrypb"
 	"cloud.google.com/go/longrunning"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
@@ -473,6 +475,70 @@ func (op *DeleteVersionOperation) Name() string {
 	return op.lro.Name()
 }
 
+// ExportArtifactOperation manages a long-running operation from ExportArtifact.
+type ExportArtifactOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *ExportArtifactOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*artifactregistrypb.ExportArtifactResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp artifactregistrypb.ExportArtifactResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *ExportArtifactOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*artifactregistrypb.ExportArtifactResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp artifactregistrypb.ExportArtifactResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *ExportArtifactOperation) Metadata() (*artifactregistrypb.ExportArtifactMetadata, error) {
+	var meta artifactregistrypb.ExportArtifactMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *ExportArtifactOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *ExportArtifactOperation) Name() string {
+	return op.lro.Name()
+}
+
 // ImportAptArtifactsOperation manages a long-running operation from ImportAptArtifacts.
 type ImportAptArtifactsOperation struct {
 	lro      *longrunning.Operation
@@ -601,6 +667,12 @@ func (op *ImportYumArtifactsOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AttachmentIterator) All() iter.Seq2[*artifactregistrypb.Attachment, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // AttachmentIterator manages a stream of *artifactregistrypb.Attachment.
 type AttachmentIterator struct {
 	items    []*artifactregistrypb.Attachment
@@ -646,6 +718,12 @@ func (it *AttachmentIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DockerImageIterator) All() iter.Seq2[*artifactregistrypb.DockerImage, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // DockerImageIterator manages a stream of *artifactregistrypb.DockerImage.
@@ -695,6 +773,12 @@ func (it *DockerImageIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *FileIterator) All() iter.Seq2[*artifactregistrypb.File, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // FileIterator manages a stream of *artifactregistrypb.File.
 type FileIterator struct {
 	items    []*artifactregistrypb.File
@@ -740,6 +824,12 @@ func (it *FileIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // LocationIterator manages a stream of *locationpb.Location.
@@ -789,6 +879,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *MavenArtifactIterator) All() iter.Seq2[*artifactregistrypb.MavenArtifact, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // MavenArtifactIterator manages a stream of *artifactregistrypb.MavenArtifact.
 type MavenArtifactIterator struct {
 	items    []*artifactregistrypb.MavenArtifact
@@ -834,6 +930,12 @@ func (it *MavenArtifactIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *NpmPackageIterator) All() iter.Seq2[*artifactregistrypb.NpmPackage, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // NpmPackageIterator manages a stream of *artifactregistrypb.NpmPackage.
@@ -883,6 +985,12 @@ func (it *NpmPackageIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PackageIterator) All() iter.Seq2[*artifactregistrypb.Package, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // PackageIterator manages a stream of *artifactregistrypb.Package.
 type PackageIterator struct {
 	items    []*artifactregistrypb.Package
@@ -928,6 +1036,12 @@ func (it *PackageIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PythonPackageIterator) All() iter.Seq2[*artifactregistrypb.PythonPackage, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // PythonPackageIterator manages a stream of *artifactregistrypb.PythonPackage.
@@ -977,6 +1091,12 @@ func (it *PythonPackageIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RepositoryIterator) All() iter.Seq2[*artifactregistrypb.Repository, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // RepositoryIterator manages a stream of *artifactregistrypb.Repository.
 type RepositoryIterator struct {
 	items    []*artifactregistrypb.Repository
@@ -1022,6 +1142,12 @@ func (it *RepositoryIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RuleIterator) All() iter.Seq2[*artifactregistrypb.Rule, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // RuleIterator manages a stream of *artifactregistrypb.Rule.
@@ -1071,6 +1197,12 @@ func (it *RuleIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TagIterator) All() iter.Seq2[*artifactregistrypb.Tag, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // TagIterator manages a stream of *artifactregistrypb.Tag.
 type TagIterator struct {
 	items    []*artifactregistrypb.Tag
@@ -1116,6 +1248,12 @@ func (it *TagIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *VersionIterator) All() iter.Seq2[*artifactregistrypb.Version, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // VersionIterator manages a stream of *artifactregistrypb.Version.

@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -31,6 +31,8 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -465,7 +467,7 @@ type Client struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *Client) Close() error {
 	return c.internalClient.Close()
@@ -696,6 +698,16 @@ type gRPCClient struct {
 // Datastream service
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "datastream",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/datastream/apiv1alpha1",
+			"gcp.client.language": "go",
+			"url.domain":          "datastream.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -717,6 +729,107 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "datastream",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datastream/apiv1alpha1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "datastream.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListConnectionProfiles = append(client.CallOptions.ListConnectionProfiles, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetConnectionProfile = append(client.CallOptions.GetConnectionProfile, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateConnectionProfile = append(client.CallOptions.CreateConnectionProfile, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateConnectionProfile = append(client.CallOptions.UpdateConnectionProfile, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteConnectionProfile = append(client.CallOptions.DeleteConnectionProfile, gax.WithClientMetrics(metrics))
+		client.CallOptions.DiscoverConnectionProfile = append(client.CallOptions.DiscoverConnectionProfile, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListStreams = append(client.CallOptions.ListStreams, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetStream = append(client.CallOptions.GetStream, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateStream = append(client.CallOptions.CreateStream, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateStream = append(client.CallOptions.UpdateStream, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteStream = append(client.CallOptions.DeleteStream, gax.WithClientMetrics(metrics))
+		client.CallOptions.FetchErrors = append(client.CallOptions.FetchErrors, gax.WithClientMetrics(metrics))
+		client.CallOptions.FetchStaticIps = append(client.CallOptions.FetchStaticIps, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreatePrivateConnection = append(client.CallOptions.CreatePrivateConnection, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetPrivateConnection = append(client.CallOptions.GetPrivateConnection, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListPrivateConnections = append(client.CallOptions.ListPrivateConnections, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeletePrivateConnection = append(client.CallOptions.DeletePrivateConnection, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateRoute = append(client.CallOptions.CreateRoute, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetRoute = append(client.CallOptions.GetRoute, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListRoutes = append(client.CallOptions.ListRoutes, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteRoute = append(client.CallOptions.DeleteRoute, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "datastream",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datastream/apiv1alpha1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "datastream.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListConnectionProfiles = append(client.CallOptions.ListConnectionProfiles, gax.WithClientTracing(tracing))
+		client.CallOptions.GetConnectionProfile = append(client.CallOptions.GetConnectionProfile, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateConnectionProfile = append(client.CallOptions.CreateConnectionProfile, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateConnectionProfile = append(client.CallOptions.UpdateConnectionProfile, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteConnectionProfile = append(client.CallOptions.DeleteConnectionProfile, gax.WithClientTracing(tracing))
+		client.CallOptions.DiscoverConnectionProfile = append(client.CallOptions.DiscoverConnectionProfile, gax.WithClientTracing(tracing))
+		client.CallOptions.ListStreams = append(client.CallOptions.ListStreams, gax.WithClientTracing(tracing))
+		client.CallOptions.GetStream = append(client.CallOptions.GetStream, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateStream = append(client.CallOptions.CreateStream, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateStream = append(client.CallOptions.UpdateStream, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteStream = append(client.CallOptions.DeleteStream, gax.WithClientTracing(tracing))
+		client.CallOptions.FetchErrors = append(client.CallOptions.FetchErrors, gax.WithClientTracing(tracing))
+		client.CallOptions.FetchStaticIps = append(client.CallOptions.FetchStaticIps, gax.WithClientTracing(tracing))
+		client.CallOptions.CreatePrivateConnection = append(client.CallOptions.CreatePrivateConnection, gax.WithClientTracing(tracing))
+		client.CallOptions.GetPrivateConnection = append(client.CallOptions.GetPrivateConnection, gax.WithClientTracing(tracing))
+		client.CallOptions.ListPrivateConnections = append(client.CallOptions.ListPrivateConnections, gax.WithClientTracing(tracing))
+		client.CallOptions.DeletePrivateConnection = append(client.CallOptions.DeletePrivateConnection, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateRoute = append(client.CallOptions.CreateRoute, gax.WithClientTracing(tracing))
+		client.CallOptions.GetRoute = append(client.CallOptions.GetRoute, gax.WithClientTracing(tracing))
+		client.CallOptions.ListRoutes = append(client.CallOptions.ListRoutes, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteRoute = append(client.CallOptions.DeleteRoute, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "datastream",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datastream/apiv1alpha1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "datastream.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListConnectionProfiles = append(client.CallOptions.ListConnectionProfiles, gax.WithClientLogging(logging))
+		client.CallOptions.GetConnectionProfile = append(client.CallOptions.GetConnectionProfile, gax.WithClientLogging(logging))
+		client.CallOptions.CreateConnectionProfile = append(client.CallOptions.CreateConnectionProfile, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateConnectionProfile = append(client.CallOptions.UpdateConnectionProfile, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteConnectionProfile = append(client.CallOptions.DeleteConnectionProfile, gax.WithClientLogging(logging))
+		client.CallOptions.DiscoverConnectionProfile = append(client.CallOptions.DiscoverConnectionProfile, gax.WithClientLogging(logging))
+		client.CallOptions.ListStreams = append(client.CallOptions.ListStreams, gax.WithClientLogging(logging))
+		client.CallOptions.GetStream = append(client.CallOptions.GetStream, gax.WithClientLogging(logging))
+		client.CallOptions.CreateStream = append(client.CallOptions.CreateStream, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateStream = append(client.CallOptions.UpdateStream, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteStream = append(client.CallOptions.DeleteStream, gax.WithClientLogging(logging))
+		client.CallOptions.FetchErrors = append(client.CallOptions.FetchErrors, gax.WithClientLogging(logging))
+		client.CallOptions.FetchStaticIps = append(client.CallOptions.FetchStaticIps, gax.WithClientLogging(logging))
+		client.CallOptions.CreatePrivateConnection = append(client.CallOptions.CreatePrivateConnection, gax.WithClientLogging(logging))
+		client.CallOptions.GetPrivateConnection = append(client.CallOptions.GetPrivateConnection, gax.WithClientLogging(logging))
+		client.CallOptions.ListPrivateConnections = append(client.CallOptions.ListPrivateConnections, gax.WithClientLogging(logging))
+		client.CallOptions.DeletePrivateConnection = append(client.CallOptions.DeletePrivateConnection, gax.WithClientLogging(logging))
+		client.CallOptions.CreateRoute = append(client.CallOptions.CreateRoute, gax.WithClientLogging(logging))
+		client.CallOptions.GetRoute = append(client.CallOptions.GetRoute, gax.WithClientLogging(logging))
+		client.CallOptions.ListRoutes = append(client.CallOptions.ListRoutes, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteRoute = append(client.CallOptions.DeleteRoute, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -753,7 +866,7 @@ func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *gRPCClient) Close() error {
 	return c.connPool.Close()
@@ -786,6 +899,16 @@ type restClient struct {
 // Datastream service
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "datastream",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/datastream/apiv1alpha1",
+			"gcp.client.language": "go",
+			"url.domain":          "datastream.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -799,6 +922,108 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "datastream",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datastream/apiv1alpha1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "datastream.googleapis.com",
+			}),
+		)
+
+		callOpts.ListConnectionProfiles = append(callOpts.ListConnectionProfiles, gax.WithClientMetrics(metrics))
+		callOpts.GetConnectionProfile = append(callOpts.GetConnectionProfile, gax.WithClientMetrics(metrics))
+		callOpts.CreateConnectionProfile = append(callOpts.CreateConnectionProfile, gax.WithClientMetrics(metrics))
+		callOpts.UpdateConnectionProfile = append(callOpts.UpdateConnectionProfile, gax.WithClientMetrics(metrics))
+		callOpts.DeleteConnectionProfile = append(callOpts.DeleteConnectionProfile, gax.WithClientMetrics(metrics))
+		callOpts.DiscoverConnectionProfile = append(callOpts.DiscoverConnectionProfile, gax.WithClientMetrics(metrics))
+		callOpts.ListStreams = append(callOpts.ListStreams, gax.WithClientMetrics(metrics))
+		callOpts.GetStream = append(callOpts.GetStream, gax.WithClientMetrics(metrics))
+		callOpts.CreateStream = append(callOpts.CreateStream, gax.WithClientMetrics(metrics))
+		callOpts.UpdateStream = append(callOpts.UpdateStream, gax.WithClientMetrics(metrics))
+		callOpts.DeleteStream = append(callOpts.DeleteStream, gax.WithClientMetrics(metrics))
+		callOpts.FetchErrors = append(callOpts.FetchErrors, gax.WithClientMetrics(metrics))
+		callOpts.FetchStaticIps = append(callOpts.FetchStaticIps, gax.WithClientMetrics(metrics))
+		callOpts.CreatePrivateConnection = append(callOpts.CreatePrivateConnection, gax.WithClientMetrics(metrics))
+		callOpts.GetPrivateConnection = append(callOpts.GetPrivateConnection, gax.WithClientMetrics(metrics))
+		callOpts.ListPrivateConnections = append(callOpts.ListPrivateConnections, gax.WithClientMetrics(metrics))
+		callOpts.DeletePrivateConnection = append(callOpts.DeletePrivateConnection, gax.WithClientMetrics(metrics))
+		callOpts.CreateRoute = append(callOpts.CreateRoute, gax.WithClientMetrics(metrics))
+		callOpts.GetRoute = append(callOpts.GetRoute, gax.WithClientMetrics(metrics))
+		callOpts.ListRoutes = append(callOpts.ListRoutes, gax.WithClientMetrics(metrics))
+		callOpts.DeleteRoute = append(callOpts.DeleteRoute, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "datastream",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datastream/apiv1alpha1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "datastream.googleapis.com",
+			}),
+		)
+
+		callOpts.ListConnectionProfiles = append(callOpts.ListConnectionProfiles, gax.WithClientTracing(tracing))
+		callOpts.GetConnectionProfile = append(callOpts.GetConnectionProfile, gax.WithClientTracing(tracing))
+		callOpts.CreateConnectionProfile = append(callOpts.CreateConnectionProfile, gax.WithClientTracing(tracing))
+		callOpts.UpdateConnectionProfile = append(callOpts.UpdateConnectionProfile, gax.WithClientTracing(tracing))
+		callOpts.DeleteConnectionProfile = append(callOpts.DeleteConnectionProfile, gax.WithClientTracing(tracing))
+		callOpts.DiscoverConnectionProfile = append(callOpts.DiscoverConnectionProfile, gax.WithClientTracing(tracing))
+		callOpts.ListStreams = append(callOpts.ListStreams, gax.WithClientTracing(tracing))
+		callOpts.GetStream = append(callOpts.GetStream, gax.WithClientTracing(tracing))
+		callOpts.CreateStream = append(callOpts.CreateStream, gax.WithClientTracing(tracing))
+		callOpts.UpdateStream = append(callOpts.UpdateStream, gax.WithClientTracing(tracing))
+		callOpts.DeleteStream = append(callOpts.DeleteStream, gax.WithClientTracing(tracing))
+		callOpts.FetchErrors = append(callOpts.FetchErrors, gax.WithClientTracing(tracing))
+		callOpts.FetchStaticIps = append(callOpts.FetchStaticIps, gax.WithClientTracing(tracing))
+		callOpts.CreatePrivateConnection = append(callOpts.CreatePrivateConnection, gax.WithClientTracing(tracing))
+		callOpts.GetPrivateConnection = append(callOpts.GetPrivateConnection, gax.WithClientTracing(tracing))
+		callOpts.ListPrivateConnections = append(callOpts.ListPrivateConnections, gax.WithClientTracing(tracing))
+		callOpts.DeletePrivateConnection = append(callOpts.DeletePrivateConnection, gax.WithClientTracing(tracing))
+		callOpts.CreateRoute = append(callOpts.CreateRoute, gax.WithClientTracing(tracing))
+		callOpts.GetRoute = append(callOpts.GetRoute, gax.WithClientTracing(tracing))
+		callOpts.ListRoutes = append(callOpts.ListRoutes, gax.WithClientTracing(tracing))
+		callOpts.DeleteRoute = append(callOpts.DeleteRoute, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "datastream",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datastream/apiv1alpha1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "datastream.googleapis.com",
+			}),
+		)
+
+		callOpts.ListConnectionProfiles = append(callOpts.ListConnectionProfiles, gax.WithClientLogging(logging))
+		callOpts.GetConnectionProfile = append(callOpts.GetConnectionProfile, gax.WithClientLogging(logging))
+		callOpts.CreateConnectionProfile = append(callOpts.CreateConnectionProfile, gax.WithClientLogging(logging))
+		callOpts.UpdateConnectionProfile = append(callOpts.UpdateConnectionProfile, gax.WithClientLogging(logging))
+		callOpts.DeleteConnectionProfile = append(callOpts.DeleteConnectionProfile, gax.WithClientLogging(logging))
+		callOpts.DiscoverConnectionProfile = append(callOpts.DiscoverConnectionProfile, gax.WithClientLogging(logging))
+		callOpts.ListStreams = append(callOpts.ListStreams, gax.WithClientLogging(logging))
+		callOpts.GetStream = append(callOpts.GetStream, gax.WithClientLogging(logging))
+		callOpts.CreateStream = append(callOpts.CreateStream, gax.WithClientLogging(logging))
+		callOpts.UpdateStream = append(callOpts.UpdateStream, gax.WithClientLogging(logging))
+		callOpts.DeleteStream = append(callOpts.DeleteStream, gax.WithClientLogging(logging))
+		callOpts.FetchErrors = append(callOpts.FetchErrors, gax.WithClientLogging(logging))
+		callOpts.FetchStaticIps = append(callOpts.FetchStaticIps, gax.WithClientLogging(logging))
+		callOpts.CreatePrivateConnection = append(callOpts.CreatePrivateConnection, gax.WithClientLogging(logging))
+		callOpts.GetPrivateConnection = append(callOpts.GetPrivateConnection, gax.WithClientLogging(logging))
+		callOpts.ListPrivateConnections = append(callOpts.ListPrivateConnections, gax.WithClientLogging(logging))
+		callOpts.DeletePrivateConnection = append(callOpts.DeletePrivateConnection, gax.WithClientLogging(logging))
+		callOpts.CreateRoute = append(callOpts.CreateRoute, gax.WithClientLogging(logging))
+		callOpts.GetRoute = append(callOpts.GetRoute, gax.WithClientLogging(logging))
+		callOpts.ListRoutes = append(callOpts.ListRoutes, gax.WithClientLogging(logging))
+		callOpts.DeleteRoute = append(callOpts.DeleteRoute, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -836,7 +1061,7 @@ func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *restClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -855,9 +1080,12 @@ func (c *gRPCClient) ListConnectionProfiles(ctx context.Context, req *datastream
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datastream.v1alpha1.Datastream/ListConnectionProfiles")
+	}
 	opts = append((*c.CallOptions).ListConnectionProfiles[0:len((*c.CallOptions).ListConnectionProfiles):len((*c.CallOptions).ListConnectionProfiles)], opts...)
 	it := &ConnectionProfileIterator{}
-	req = proto.Clone(req).(*datastreampb.ListConnectionProfilesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datastreampb.ConnectionProfile, string, error) {
 		resp := &datastreampb.ListConnectionProfilesResponse{}
 		if pageToken != "" {
@@ -901,6 +1129,9 @@ func (c *gRPCClient) GetConnectionProfile(ctx context.Context, req *datastreampb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datastream.v1alpha1.Datastream/GetConnectionProfile")
+	}
 	opts = append((*c.CallOptions).GetConnectionProfile[0:len((*c.CallOptions).GetConnectionProfile):len((*c.CallOptions).GetConnectionProfile)], opts...)
 	var resp *datastreampb.ConnectionProfile
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -919,6 +1150,9 @@ func (c *gRPCClient) CreateConnectionProfile(ctx context.Context, req *datastrea
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datastream.v1alpha1.Datastream/CreateConnectionProfile")
+	}
 	opts = append((*c.CallOptions).CreateConnectionProfile[0:len((*c.CallOptions).CreateConnectionProfile):len((*c.CallOptions).CreateConnectionProfile)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -929,8 +1163,12 @@ func (c *gRPCClient) CreateConnectionProfile(ctx context.Context, req *datastrea
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datastream.CreateConnectionProfileOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateConnectionProfileOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -939,6 +1177,9 @@ func (c *gRPCClient) UpdateConnectionProfile(ctx context.Context, req *datastrea
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datastream.v1alpha1.Datastream/UpdateConnectionProfile")
+	}
 	opts = append((*c.CallOptions).UpdateConnectionProfile[0:len((*c.CallOptions).UpdateConnectionProfile):len((*c.CallOptions).UpdateConnectionProfile)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -949,8 +1190,12 @@ func (c *gRPCClient) UpdateConnectionProfile(ctx context.Context, req *datastrea
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datastream.UpdateConnectionProfileOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateConnectionProfileOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -959,6 +1204,9 @@ func (c *gRPCClient) DeleteConnectionProfile(ctx context.Context, req *datastrea
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datastream.v1alpha1.Datastream/DeleteConnectionProfile")
+	}
 	opts = append((*c.CallOptions).DeleteConnectionProfile[0:len((*c.CallOptions).DeleteConnectionProfile):len((*c.CallOptions).DeleteConnectionProfile)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -969,8 +1217,12 @@ func (c *gRPCClient) DeleteConnectionProfile(ctx context.Context, req *datastrea
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datastream.DeleteConnectionProfileOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteConnectionProfileOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -979,6 +1231,9 @@ func (c *gRPCClient) DiscoverConnectionProfile(ctx context.Context, req *datastr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datastream.v1alpha1.Datastream/DiscoverConnectionProfile")
+	}
 	opts = append((*c.CallOptions).DiscoverConnectionProfile[0:len((*c.CallOptions).DiscoverConnectionProfile):len((*c.CallOptions).DiscoverConnectionProfile)], opts...)
 	var resp *datastreampb.DiscoverConnectionProfileResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -997,9 +1252,12 @@ func (c *gRPCClient) ListStreams(ctx context.Context, req *datastreampb.ListStre
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datastream.v1alpha1.Datastream/ListStreams")
+	}
 	opts = append((*c.CallOptions).ListStreams[0:len((*c.CallOptions).ListStreams):len((*c.CallOptions).ListStreams)], opts...)
 	it := &StreamIterator{}
-	req = proto.Clone(req).(*datastreampb.ListStreamsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datastreampb.Stream, string, error) {
 		resp := &datastreampb.ListStreamsResponse{}
 		if pageToken != "" {
@@ -1043,6 +1301,9 @@ func (c *gRPCClient) GetStream(ctx context.Context, req *datastreampb.GetStreamR
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datastream.v1alpha1.Datastream/GetStream")
+	}
 	opts = append((*c.CallOptions).GetStream[0:len((*c.CallOptions).GetStream):len((*c.CallOptions).GetStream)], opts...)
 	var resp *datastreampb.Stream
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1061,6 +1322,9 @@ func (c *gRPCClient) CreateStream(ctx context.Context, req *datastreampb.CreateS
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datastream.v1alpha1.Datastream/CreateStream")
+	}
 	opts = append((*c.CallOptions).CreateStream[0:len((*c.CallOptions).CreateStream):len((*c.CallOptions).CreateStream)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1071,8 +1335,12 @@ func (c *gRPCClient) CreateStream(ctx context.Context, req *datastreampb.CreateS
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datastream.CreateStreamOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateStreamOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1081,6 +1349,9 @@ func (c *gRPCClient) UpdateStream(ctx context.Context, req *datastreampb.UpdateS
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datastream.v1alpha1.Datastream/UpdateStream")
+	}
 	opts = append((*c.CallOptions).UpdateStream[0:len((*c.CallOptions).UpdateStream):len((*c.CallOptions).UpdateStream)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1091,8 +1362,12 @@ func (c *gRPCClient) UpdateStream(ctx context.Context, req *datastreampb.UpdateS
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datastream.UpdateStreamOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateStreamOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1101,6 +1376,9 @@ func (c *gRPCClient) DeleteStream(ctx context.Context, req *datastreampb.DeleteS
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datastream.v1alpha1.Datastream/DeleteStream")
+	}
 	opts = append((*c.CallOptions).DeleteStream[0:len((*c.CallOptions).DeleteStream):len((*c.CallOptions).DeleteStream)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1111,8 +1389,12 @@ func (c *gRPCClient) DeleteStream(ctx context.Context, req *datastreampb.DeleteS
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datastream.DeleteStreamOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteStreamOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1121,6 +1403,9 @@ func (c *gRPCClient) FetchErrors(ctx context.Context, req *datastreampb.FetchErr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datastream.v1alpha1.Datastream/FetchErrors")
+	}
 	opts = append((*c.CallOptions).FetchErrors[0:len((*c.CallOptions).FetchErrors):len((*c.CallOptions).FetchErrors)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1131,8 +1416,12 @@ func (c *gRPCClient) FetchErrors(ctx context.Context, req *datastreampb.FetchErr
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datastream.FetchErrorsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &FetchErrorsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1141,9 +1430,12 @@ func (c *gRPCClient) FetchStaticIps(ctx context.Context, req *datastreampb.Fetch
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datastream.v1alpha1.Datastream/FetchStaticIps")
+	}
 	opts = append((*c.CallOptions).FetchStaticIps[0:len((*c.CallOptions).FetchStaticIps):len((*c.CallOptions).FetchStaticIps)], opts...)
 	it := &StringIterator{}
-	req = proto.Clone(req).(*datastreampb.FetchStaticIpsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]string, string, error) {
 		resp := &datastreampb.FetchStaticIpsResponse{}
 		if pageToken != "" {
@@ -1187,6 +1479,9 @@ func (c *gRPCClient) CreatePrivateConnection(ctx context.Context, req *datastrea
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datastream.v1alpha1.Datastream/CreatePrivateConnection")
+	}
 	opts = append((*c.CallOptions).CreatePrivateConnection[0:len((*c.CallOptions).CreatePrivateConnection):len((*c.CallOptions).CreatePrivateConnection)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1197,8 +1492,12 @@ func (c *gRPCClient) CreatePrivateConnection(ctx context.Context, req *datastrea
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datastream.CreatePrivateConnectionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreatePrivateConnectionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1207,6 +1506,9 @@ func (c *gRPCClient) GetPrivateConnection(ctx context.Context, req *datastreampb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datastream.v1alpha1.Datastream/GetPrivateConnection")
+	}
 	opts = append((*c.CallOptions).GetPrivateConnection[0:len((*c.CallOptions).GetPrivateConnection):len((*c.CallOptions).GetPrivateConnection)], opts...)
 	var resp *datastreampb.PrivateConnection
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1225,9 +1527,12 @@ func (c *gRPCClient) ListPrivateConnections(ctx context.Context, req *datastream
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datastream.v1alpha1.Datastream/ListPrivateConnections")
+	}
 	opts = append((*c.CallOptions).ListPrivateConnections[0:len((*c.CallOptions).ListPrivateConnections):len((*c.CallOptions).ListPrivateConnections)], opts...)
 	it := &PrivateConnectionIterator{}
-	req = proto.Clone(req).(*datastreampb.ListPrivateConnectionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datastreampb.PrivateConnection, string, error) {
 		resp := &datastreampb.ListPrivateConnectionsResponse{}
 		if pageToken != "" {
@@ -1271,6 +1576,9 @@ func (c *gRPCClient) DeletePrivateConnection(ctx context.Context, req *datastrea
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datastream.v1alpha1.Datastream/DeletePrivateConnection")
+	}
 	opts = append((*c.CallOptions).DeletePrivateConnection[0:len((*c.CallOptions).DeletePrivateConnection):len((*c.CallOptions).DeletePrivateConnection)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1281,8 +1589,12 @@ func (c *gRPCClient) DeletePrivateConnection(ctx context.Context, req *datastrea
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datastream.DeletePrivateConnectionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeletePrivateConnectionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1291,6 +1603,9 @@ func (c *gRPCClient) CreateRoute(ctx context.Context, req *datastreampb.CreateRo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datastream.v1alpha1.Datastream/CreateRoute")
+	}
 	opts = append((*c.CallOptions).CreateRoute[0:len((*c.CallOptions).CreateRoute):len((*c.CallOptions).CreateRoute)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1301,8 +1616,12 @@ func (c *gRPCClient) CreateRoute(ctx context.Context, req *datastreampb.CreateRo
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datastream.CreateRouteOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateRouteOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1311,6 +1630,9 @@ func (c *gRPCClient) GetRoute(ctx context.Context, req *datastreampb.GetRouteReq
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datastream.v1alpha1.Datastream/GetRoute")
+	}
 	opts = append((*c.CallOptions).GetRoute[0:len((*c.CallOptions).GetRoute):len((*c.CallOptions).GetRoute)], opts...)
 	var resp *datastreampb.Route
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1329,9 +1651,12 @@ func (c *gRPCClient) ListRoutes(ctx context.Context, req *datastreampb.ListRoute
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datastream.v1alpha1.Datastream/ListRoutes")
+	}
 	opts = append((*c.CallOptions).ListRoutes[0:len((*c.CallOptions).ListRoutes):len((*c.CallOptions).ListRoutes)], opts...)
 	it := &RouteIterator{}
-	req = proto.Clone(req).(*datastreampb.ListRoutesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datastreampb.Route, string, error) {
 		resp := &datastreampb.ListRoutesResponse{}
 		if pageToken != "" {
@@ -1375,6 +1700,9 @@ func (c *gRPCClient) DeleteRoute(ctx context.Context, req *datastreampb.DeleteRo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datastream.v1alpha1.Datastream/DeleteRoute")
+	}
 	opts = append((*c.CallOptions).DeleteRoute[0:len((*c.CallOptions).DeleteRoute):len((*c.CallOptions).DeleteRoute)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1385,8 +1713,12 @@ func (c *gRPCClient) DeleteRoute(ctx context.Context, req *datastreampb.DeleteRo
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datastream.DeleteRouteOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteRouteOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1394,7 +1726,7 @@ func (c *gRPCClient) DeleteRoute(ctx context.Context, req *datastreampb.DeleteRo
 // location.
 func (c *restClient) ListConnectionProfiles(ctx context.Context, req *datastreampb.ListConnectionProfilesRequest, opts ...gax.CallOption) *ConnectionProfileIterator {
 	it := &ConnectionProfileIterator{}
-	req = proto.Clone(req).(*datastreampb.ListConnectionProfilesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datastreampb.ConnectionProfile, string, error) {
 		resp := &datastreampb.ListConnectionProfilesResponse{}
@@ -1494,6 +1826,10 @@ func (c *restClient) GetConnectionProfile(ctx context.Context, req *datastreampb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datastream.v1alpha1.Datastream/GetConnectionProfile")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha1/{name=projects/*/locations/*/connectionProfiles/*}")
+	}
 	opts = append((*c.CallOptions).GetConnectionProfile[0:len((*c.CallOptions).GetConnectionProfile):len((*c.CallOptions).GetConnectionProfile)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &datastreampb.ConnectionProfile{}
@@ -1555,6 +1891,10 @@ func (c *restClient) CreateConnectionProfile(ctx context.Context, req *datastrea
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datastream.v1alpha1.Datastream/CreateConnectionProfile")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha1/{parent=projects/*/locations/*}/connectionProfiles")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1583,8 +1923,12 @@ func (c *restClient) CreateConnectionProfile(ctx context.Context, req *datastrea
 	}
 
 	override := fmt.Sprintf("/v1alpha1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datastream.CreateConnectionProfileOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateConnectionProfileOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1625,6 +1969,10 @@ func (c *restClient) UpdateConnectionProfile(ctx context.Context, req *datastrea
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datastream.v1alpha1.Datastream/UpdateConnectionProfile")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha1/{connection_profile.name=projects/*/locations/*/connectionProfiles/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1653,8 +2001,12 @@ func (c *restClient) UpdateConnectionProfile(ctx context.Context, req *datastrea
 	}
 
 	override := fmt.Sprintf("/v1alpha1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datastream.UpdateConnectionProfileOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateConnectionProfileOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1681,6 +2033,10 @@ func (c *restClient) DeleteConnectionProfile(ctx context.Context, req *datastrea
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datastream.v1alpha1.Datastream/DeleteConnectionProfile")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha1/{name=projects/*/locations/*/connectionProfiles/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1709,8 +2065,12 @@ func (c *restClient) DeleteConnectionProfile(ctx context.Context, req *datastrea
 	}
 
 	override := fmt.Sprintf("/v1alpha1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datastream.DeleteConnectionProfileOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteConnectionProfileOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1743,6 +2103,10 @@ func (c *restClient) DiscoverConnectionProfile(ctx context.Context, req *datastr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datastream.v1alpha1.Datastream/DiscoverConnectionProfile")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha1/{parent=projects/*/locations/*}/connectionProfiles:discover")
+	}
 	opts = append((*c.CallOptions).DiscoverConnectionProfile[0:len((*c.CallOptions).DiscoverConnectionProfile):len((*c.CallOptions).DiscoverConnectionProfile)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &datastreampb.DiscoverConnectionProfileResponse{}
@@ -1777,7 +2141,7 @@ func (c *restClient) DiscoverConnectionProfile(ctx context.Context, req *datastr
 // ListStreams use this method to list streams in a project and location.
 func (c *restClient) ListStreams(ctx context.Context, req *datastreampb.ListStreamsRequest, opts ...gax.CallOption) *StreamIterator {
 	it := &StreamIterator{}
-	req = proto.Clone(req).(*datastreampb.ListStreamsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datastreampb.Stream, string, error) {
 		resp := &datastreampb.ListStreamsResponse{}
@@ -1877,6 +2241,10 @@ func (c *restClient) GetStream(ctx context.Context, req *datastreampb.GetStreamR
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datastream.v1alpha1.Datastream/GetStream")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha1/{name=projects/*/locations/*/streams/*}")
+	}
 	opts = append((*c.CallOptions).GetStream[0:len((*c.CallOptions).GetStream):len((*c.CallOptions).GetStream)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &datastreampb.Stream{}
@@ -1944,6 +2312,10 @@ func (c *restClient) CreateStream(ctx context.Context, req *datastreampb.CreateS
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datastream.v1alpha1.Datastream/CreateStream")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha1/{parent=projects/*/locations/*}/streams")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1972,8 +2344,12 @@ func (c *restClient) CreateStream(ctx context.Context, req *datastreampb.CreateS
 	}
 
 	override := fmt.Sprintf("/v1alpha1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datastream.CreateStreamOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateStreamOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2020,6 +2396,10 @@ func (c *restClient) UpdateStream(ctx context.Context, req *datastreampb.UpdateS
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datastream.v1alpha1.Datastream/UpdateStream")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha1/{stream.name=projects/*/locations/*/streams/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2048,8 +2428,12 @@ func (c *restClient) UpdateStream(ctx context.Context, req *datastreampb.UpdateS
 	}
 
 	override := fmt.Sprintf("/v1alpha1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datastream.UpdateStreamOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateStreamOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2076,6 +2460,10 @@ func (c *restClient) DeleteStream(ctx context.Context, req *datastreampb.DeleteS
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datastream.v1alpha1.Datastream/DeleteStream")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha1/{name=projects/*/locations/*/streams/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2104,8 +2492,12 @@ func (c *restClient) DeleteStream(ctx context.Context, req *datastreampb.DeleteS
 	}
 
 	override := fmt.Sprintf("/v1alpha1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datastream.DeleteStreamOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteStreamOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2135,6 +2527,10 @@ func (c *restClient) FetchErrors(ctx context.Context, req *datastreampb.FetchErr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datastream.v1alpha1.Datastream/FetchErrors")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha1/{stream=projects/*/locations/*/streams/*}:fetchErrors")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2163,8 +2559,12 @@ func (c *restClient) FetchErrors(ctx context.Context, req *datastreampb.FetchErr
 	}
 
 	override := fmt.Sprintf("/v1alpha1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datastream.FetchErrorsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &FetchErrorsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2174,7 +2574,7 @@ func (c *restClient) FetchErrors(ctx context.Context, req *datastreampb.FetchErr
 // a parent data object that’s optionally supplied in the request.
 func (c *restClient) FetchStaticIps(ctx context.Context, req *datastreampb.FetchStaticIpsRequest, opts ...gax.CallOption) *StringIterator {
 	it := &StringIterator{}
-	req = proto.Clone(req).(*datastreampb.FetchStaticIpsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]string, string, error) {
 		resp := &datastreampb.FetchStaticIpsResponse{}
@@ -2279,6 +2679,10 @@ func (c *restClient) CreatePrivateConnection(ctx context.Context, req *datastrea
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datastream.v1alpha1.Datastream/CreatePrivateConnection")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha1/{parent=projects/*/locations/*}/privateConnections")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2307,8 +2711,12 @@ func (c *restClient) CreatePrivateConnection(ctx context.Context, req *datastrea
 	}
 
 	override := fmt.Sprintf("/v1alpha1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datastream.CreatePrivateConnectionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreatePrivateConnectionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2332,6 +2740,10 @@ func (c *restClient) GetPrivateConnection(ctx context.Context, req *datastreampb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datastream.v1alpha1.Datastream/GetPrivateConnection")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha1/{name=projects/*/locations/*/privateConnections/*}")
+	}
 	opts = append((*c.CallOptions).GetPrivateConnection[0:len((*c.CallOptions).GetPrivateConnection):len((*c.CallOptions).GetPrivateConnection)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &datastreampb.PrivateConnection{}
@@ -2367,7 +2779,7 @@ func (c *restClient) GetPrivateConnection(ctx context.Context, req *datastreampb
 // and location.
 func (c *restClient) ListPrivateConnections(ctx context.Context, req *datastreampb.ListPrivateConnectionsRequest, opts ...gax.CallOption) *PrivateConnectionIterator {
 	it := &PrivateConnectionIterator{}
-	req = proto.Clone(req).(*datastreampb.ListPrivateConnectionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datastreampb.PrivateConnection, string, error) {
 		resp := &datastreampb.ListPrivateConnectionsResponse{}
@@ -2473,6 +2885,10 @@ func (c *restClient) DeletePrivateConnection(ctx context.Context, req *datastrea
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datastream.v1alpha1.Datastream/DeletePrivateConnection")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha1/{name=projects/*/locations/*/privateConnections/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2501,8 +2917,12 @@ func (c *restClient) DeletePrivateConnection(ctx context.Context, req *datastrea
 	}
 
 	override := fmt.Sprintf("/v1alpha1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datastream.DeletePrivateConnectionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeletePrivateConnectionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2538,6 +2958,10 @@ func (c *restClient) CreateRoute(ctx context.Context, req *datastreampb.CreateRo
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datastream.v1alpha1.Datastream/CreateRoute")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha1/{parent=projects/*/locations/*/privateConnections/*}/routes")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2566,8 +2990,12 @@ func (c *restClient) CreateRoute(ctx context.Context, req *datastreampb.CreateRo
 	}
 
 	override := fmt.Sprintf("/v1alpha1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datastream.CreateRouteOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateRouteOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2591,6 +3019,10 @@ func (c *restClient) GetRoute(ctx context.Context, req *datastreampb.GetRouteReq
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datastream.v1alpha1.Datastream/GetRoute")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha1/{name=projects/*/locations/*/privateConnections/*/routes/*}")
+	}
 	opts = append((*c.CallOptions).GetRoute[0:len((*c.CallOptions).GetRoute):len((*c.CallOptions).GetRoute)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &datastreampb.Route{}
@@ -2626,7 +3058,7 @@ func (c *restClient) GetRoute(ctx context.Context, req *datastreampb.GetRouteReq
 // project and location.
 func (c *restClient) ListRoutes(ctx context.Context, req *datastreampb.ListRoutesRequest, opts ...gax.CallOption) *RouteIterator {
 	it := &RouteIterator{}
-	req = proto.Clone(req).(*datastreampb.ListRoutesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datastreampb.Route, string, error) {
 		resp := &datastreampb.ListRoutesResponse{}
@@ -2729,6 +3161,10 @@ func (c *restClient) DeleteRoute(ctx context.Context, req *datastreampb.DeleteRo
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.datastream.v1alpha1.Datastream/DeleteRoute")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha1/{name=projects/*/locations/*/privateConnections/*/routes/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2757,8 +3193,12 @@ func (c *restClient) DeleteRoute(ctx context.Context, req *datastreampb.DeleteRo
 	}
 
 	override := fmt.Sprintf("/v1alpha1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*datastream.DeleteRouteOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteRouteOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2767,7 +3207,7 @@ func (c *restClient) DeleteRoute(ctx context.Context, req *datastreampb.DeleteRo
 // The name must be that of a previously created CreateConnectionProfileOperation, possibly from a different process.
 func (c *gRPCClient) CreateConnectionProfileOperation(name string) *CreateConnectionProfileOperation {
 	return &CreateConnectionProfileOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datastream.CreateConnectionProfileOperation"),
 	}
 }
 
@@ -2776,7 +3216,7 @@ func (c *gRPCClient) CreateConnectionProfileOperation(name string) *CreateConnec
 func (c *restClient) CreateConnectionProfileOperation(name string) *CreateConnectionProfileOperation {
 	override := fmt.Sprintf("/v1alpha1/%s", name)
 	return &CreateConnectionProfileOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datastream.CreateConnectionProfileOperation"),
 		pollPath: override,
 	}
 }
@@ -2785,7 +3225,7 @@ func (c *restClient) CreateConnectionProfileOperation(name string) *CreateConnec
 // The name must be that of a previously created CreatePrivateConnectionOperation, possibly from a different process.
 func (c *gRPCClient) CreatePrivateConnectionOperation(name string) *CreatePrivateConnectionOperation {
 	return &CreatePrivateConnectionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datastream.CreatePrivateConnectionOperation"),
 	}
 }
 
@@ -2794,7 +3234,7 @@ func (c *gRPCClient) CreatePrivateConnectionOperation(name string) *CreatePrivat
 func (c *restClient) CreatePrivateConnectionOperation(name string) *CreatePrivateConnectionOperation {
 	override := fmt.Sprintf("/v1alpha1/%s", name)
 	return &CreatePrivateConnectionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datastream.CreatePrivateConnectionOperation"),
 		pollPath: override,
 	}
 }
@@ -2803,7 +3243,7 @@ func (c *restClient) CreatePrivateConnectionOperation(name string) *CreatePrivat
 // The name must be that of a previously created CreateRouteOperation, possibly from a different process.
 func (c *gRPCClient) CreateRouteOperation(name string) *CreateRouteOperation {
 	return &CreateRouteOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datastream.CreateRouteOperation"),
 	}
 }
 
@@ -2812,7 +3252,7 @@ func (c *gRPCClient) CreateRouteOperation(name string) *CreateRouteOperation {
 func (c *restClient) CreateRouteOperation(name string) *CreateRouteOperation {
 	override := fmt.Sprintf("/v1alpha1/%s", name)
 	return &CreateRouteOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datastream.CreateRouteOperation"),
 		pollPath: override,
 	}
 }
@@ -2821,7 +3261,7 @@ func (c *restClient) CreateRouteOperation(name string) *CreateRouteOperation {
 // The name must be that of a previously created CreateStreamOperation, possibly from a different process.
 func (c *gRPCClient) CreateStreamOperation(name string) *CreateStreamOperation {
 	return &CreateStreamOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datastream.CreateStreamOperation"),
 	}
 }
 
@@ -2830,7 +3270,7 @@ func (c *gRPCClient) CreateStreamOperation(name string) *CreateStreamOperation {
 func (c *restClient) CreateStreamOperation(name string) *CreateStreamOperation {
 	override := fmt.Sprintf("/v1alpha1/%s", name)
 	return &CreateStreamOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datastream.CreateStreamOperation"),
 		pollPath: override,
 	}
 }
@@ -2839,7 +3279,7 @@ func (c *restClient) CreateStreamOperation(name string) *CreateStreamOperation {
 // The name must be that of a previously created DeleteConnectionProfileOperation, possibly from a different process.
 func (c *gRPCClient) DeleteConnectionProfileOperation(name string) *DeleteConnectionProfileOperation {
 	return &DeleteConnectionProfileOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datastream.DeleteConnectionProfileOperation"),
 	}
 }
 
@@ -2848,7 +3288,7 @@ func (c *gRPCClient) DeleteConnectionProfileOperation(name string) *DeleteConnec
 func (c *restClient) DeleteConnectionProfileOperation(name string) *DeleteConnectionProfileOperation {
 	override := fmt.Sprintf("/v1alpha1/%s", name)
 	return &DeleteConnectionProfileOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datastream.DeleteConnectionProfileOperation"),
 		pollPath: override,
 	}
 }
@@ -2857,7 +3297,7 @@ func (c *restClient) DeleteConnectionProfileOperation(name string) *DeleteConnec
 // The name must be that of a previously created DeletePrivateConnectionOperation, possibly from a different process.
 func (c *gRPCClient) DeletePrivateConnectionOperation(name string) *DeletePrivateConnectionOperation {
 	return &DeletePrivateConnectionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datastream.DeletePrivateConnectionOperation"),
 	}
 }
 
@@ -2866,7 +3306,7 @@ func (c *gRPCClient) DeletePrivateConnectionOperation(name string) *DeletePrivat
 func (c *restClient) DeletePrivateConnectionOperation(name string) *DeletePrivateConnectionOperation {
 	override := fmt.Sprintf("/v1alpha1/%s", name)
 	return &DeletePrivateConnectionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datastream.DeletePrivateConnectionOperation"),
 		pollPath: override,
 	}
 }
@@ -2875,7 +3315,7 @@ func (c *restClient) DeletePrivateConnectionOperation(name string) *DeletePrivat
 // The name must be that of a previously created DeleteRouteOperation, possibly from a different process.
 func (c *gRPCClient) DeleteRouteOperation(name string) *DeleteRouteOperation {
 	return &DeleteRouteOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datastream.DeleteRouteOperation"),
 	}
 }
 
@@ -2884,7 +3324,7 @@ func (c *gRPCClient) DeleteRouteOperation(name string) *DeleteRouteOperation {
 func (c *restClient) DeleteRouteOperation(name string) *DeleteRouteOperation {
 	override := fmt.Sprintf("/v1alpha1/%s", name)
 	return &DeleteRouteOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datastream.DeleteRouteOperation"),
 		pollPath: override,
 	}
 }
@@ -2893,7 +3333,7 @@ func (c *restClient) DeleteRouteOperation(name string) *DeleteRouteOperation {
 // The name must be that of a previously created DeleteStreamOperation, possibly from a different process.
 func (c *gRPCClient) DeleteStreamOperation(name string) *DeleteStreamOperation {
 	return &DeleteStreamOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datastream.DeleteStreamOperation"),
 	}
 }
 
@@ -2902,7 +3342,7 @@ func (c *gRPCClient) DeleteStreamOperation(name string) *DeleteStreamOperation {
 func (c *restClient) DeleteStreamOperation(name string) *DeleteStreamOperation {
 	override := fmt.Sprintf("/v1alpha1/%s", name)
 	return &DeleteStreamOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datastream.DeleteStreamOperation"),
 		pollPath: override,
 	}
 }
@@ -2911,7 +3351,7 @@ func (c *restClient) DeleteStreamOperation(name string) *DeleteStreamOperation {
 // The name must be that of a previously created FetchErrorsOperation, possibly from a different process.
 func (c *gRPCClient) FetchErrorsOperation(name string) *FetchErrorsOperation {
 	return &FetchErrorsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datastream.FetchErrorsOperation"),
 	}
 }
 
@@ -2920,7 +3360,7 @@ func (c *gRPCClient) FetchErrorsOperation(name string) *FetchErrorsOperation {
 func (c *restClient) FetchErrorsOperation(name string) *FetchErrorsOperation {
 	override := fmt.Sprintf("/v1alpha1/%s", name)
 	return &FetchErrorsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datastream.FetchErrorsOperation"),
 		pollPath: override,
 	}
 }
@@ -2929,7 +3369,7 @@ func (c *restClient) FetchErrorsOperation(name string) *FetchErrorsOperation {
 // The name must be that of a previously created UpdateConnectionProfileOperation, possibly from a different process.
 func (c *gRPCClient) UpdateConnectionProfileOperation(name string) *UpdateConnectionProfileOperation {
 	return &UpdateConnectionProfileOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datastream.UpdateConnectionProfileOperation"),
 	}
 }
 
@@ -2938,7 +3378,7 @@ func (c *gRPCClient) UpdateConnectionProfileOperation(name string) *UpdateConnec
 func (c *restClient) UpdateConnectionProfileOperation(name string) *UpdateConnectionProfileOperation {
 	override := fmt.Sprintf("/v1alpha1/%s", name)
 	return &UpdateConnectionProfileOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datastream.UpdateConnectionProfileOperation"),
 		pollPath: override,
 	}
 }
@@ -2947,7 +3387,7 @@ func (c *restClient) UpdateConnectionProfileOperation(name string) *UpdateConnec
 // The name must be that of a previously created UpdateStreamOperation, possibly from a different process.
 func (c *gRPCClient) UpdateStreamOperation(name string) *UpdateStreamOperation {
 	return &UpdateStreamOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datastream.UpdateStreamOperation"),
 	}
 }
 
@@ -2956,7 +3396,7 @@ func (c *gRPCClient) UpdateStreamOperation(name string) *UpdateStreamOperation {
 func (c *restClient) UpdateStreamOperation(name string) *UpdateStreamOperation {
 	override := fmt.Sprintf("/v1alpha1/%s", name)
 	return &UpdateStreamOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*datastream.UpdateStreamOperation"),
 		pollPath: override,
 	}
 }

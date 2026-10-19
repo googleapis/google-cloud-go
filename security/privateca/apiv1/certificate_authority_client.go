@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -32,6 +32,8 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	privatecapb "cloud.google.com/go/security/privateca/apiv1/privatecapb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -994,7 +996,7 @@ type CertificateAuthorityClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *CertificateAuthorityClient) Close() error {
 	return c.internalClient.Close()
@@ -1295,6 +1297,21 @@ func (c *CertificateAuthorityClient) GetLocation(ctx context.Context, req *locat
 }
 
 // ListLocations lists information about the supported locations for this service.
+//
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
+//
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *CertificateAuthorityClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	return c.internalClient.ListLocations(ctx, req, opts...)
 }
@@ -1383,6 +1400,16 @@ type certificateAuthorityGRPCClient struct {
 // manages private certificate authorities and issued certificates.
 func NewCertificateAuthorityClient(ctx context.Context, opts ...option.ClientOption) (*CertificateAuthorityClient, error) {
 	clientOpts := defaultCertificateAuthorityGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "privateca",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/security/privateca/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "privateca.googleapis.com",
+		}))
+	}
 	if newCertificateAuthorityClientHook != nil {
 		hookOpts, err := newCertificateAuthorityClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -1407,6 +1434,158 @@ func NewCertificateAuthorityClient(ctx context.Context, opts ...option.ClientOpt
 		locationsClient:            locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "privateca",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/security/privateca/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "privateca.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateCertificate = append(client.CallOptions.CreateCertificate, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetCertificate = append(client.CallOptions.GetCertificate, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListCertificates = append(client.CallOptions.ListCertificates, gax.WithClientMetrics(metrics))
+		client.CallOptions.RevokeCertificate = append(client.CallOptions.RevokeCertificate, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateCertificate = append(client.CallOptions.UpdateCertificate, gax.WithClientMetrics(metrics))
+		client.CallOptions.ActivateCertificateAuthority = append(client.CallOptions.ActivateCertificateAuthority, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateCertificateAuthority = append(client.CallOptions.CreateCertificateAuthority, gax.WithClientMetrics(metrics))
+		client.CallOptions.DisableCertificateAuthority = append(client.CallOptions.DisableCertificateAuthority, gax.WithClientMetrics(metrics))
+		client.CallOptions.EnableCertificateAuthority = append(client.CallOptions.EnableCertificateAuthority, gax.WithClientMetrics(metrics))
+		client.CallOptions.FetchCertificateAuthorityCsr = append(client.CallOptions.FetchCertificateAuthorityCsr, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetCertificateAuthority = append(client.CallOptions.GetCertificateAuthority, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListCertificateAuthorities = append(client.CallOptions.ListCertificateAuthorities, gax.WithClientMetrics(metrics))
+		client.CallOptions.UndeleteCertificateAuthority = append(client.CallOptions.UndeleteCertificateAuthority, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteCertificateAuthority = append(client.CallOptions.DeleteCertificateAuthority, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateCertificateAuthority = append(client.CallOptions.UpdateCertificateAuthority, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateCaPool = append(client.CallOptions.CreateCaPool, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateCaPool = append(client.CallOptions.UpdateCaPool, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetCaPool = append(client.CallOptions.GetCaPool, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListCaPools = append(client.CallOptions.ListCaPools, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteCaPool = append(client.CallOptions.DeleteCaPool, gax.WithClientMetrics(metrics))
+		client.CallOptions.FetchCaCerts = append(client.CallOptions.FetchCaCerts, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetCertificateRevocationList = append(client.CallOptions.GetCertificateRevocationList, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListCertificateRevocationLists = append(client.CallOptions.ListCertificateRevocationLists, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateCertificateRevocationList = append(client.CallOptions.UpdateCertificateRevocationList, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateCertificateTemplate = append(client.CallOptions.CreateCertificateTemplate, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteCertificateTemplate = append(client.CallOptions.DeleteCertificateTemplate, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetCertificateTemplate = append(client.CallOptions.GetCertificateTemplate, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListCertificateTemplates = append(client.CallOptions.ListCertificateTemplates, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateCertificateTemplate = append(client.CallOptions.UpdateCertificateTemplate, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "privateca",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/security/privateca/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "privateca.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateCertificate = append(client.CallOptions.CreateCertificate, gax.WithClientTracing(tracing))
+		client.CallOptions.GetCertificate = append(client.CallOptions.GetCertificate, gax.WithClientTracing(tracing))
+		client.CallOptions.ListCertificates = append(client.CallOptions.ListCertificates, gax.WithClientTracing(tracing))
+		client.CallOptions.RevokeCertificate = append(client.CallOptions.RevokeCertificate, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateCertificate = append(client.CallOptions.UpdateCertificate, gax.WithClientTracing(tracing))
+		client.CallOptions.ActivateCertificateAuthority = append(client.CallOptions.ActivateCertificateAuthority, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateCertificateAuthority = append(client.CallOptions.CreateCertificateAuthority, gax.WithClientTracing(tracing))
+		client.CallOptions.DisableCertificateAuthority = append(client.CallOptions.DisableCertificateAuthority, gax.WithClientTracing(tracing))
+		client.CallOptions.EnableCertificateAuthority = append(client.CallOptions.EnableCertificateAuthority, gax.WithClientTracing(tracing))
+		client.CallOptions.FetchCertificateAuthorityCsr = append(client.CallOptions.FetchCertificateAuthorityCsr, gax.WithClientTracing(tracing))
+		client.CallOptions.GetCertificateAuthority = append(client.CallOptions.GetCertificateAuthority, gax.WithClientTracing(tracing))
+		client.CallOptions.ListCertificateAuthorities = append(client.CallOptions.ListCertificateAuthorities, gax.WithClientTracing(tracing))
+		client.CallOptions.UndeleteCertificateAuthority = append(client.CallOptions.UndeleteCertificateAuthority, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteCertificateAuthority = append(client.CallOptions.DeleteCertificateAuthority, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateCertificateAuthority = append(client.CallOptions.UpdateCertificateAuthority, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateCaPool = append(client.CallOptions.CreateCaPool, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateCaPool = append(client.CallOptions.UpdateCaPool, gax.WithClientTracing(tracing))
+		client.CallOptions.GetCaPool = append(client.CallOptions.GetCaPool, gax.WithClientTracing(tracing))
+		client.CallOptions.ListCaPools = append(client.CallOptions.ListCaPools, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteCaPool = append(client.CallOptions.DeleteCaPool, gax.WithClientTracing(tracing))
+		client.CallOptions.FetchCaCerts = append(client.CallOptions.FetchCaCerts, gax.WithClientTracing(tracing))
+		client.CallOptions.GetCertificateRevocationList = append(client.CallOptions.GetCertificateRevocationList, gax.WithClientTracing(tracing))
+		client.CallOptions.ListCertificateRevocationLists = append(client.CallOptions.ListCertificateRevocationLists, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateCertificateRevocationList = append(client.CallOptions.UpdateCertificateRevocationList, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateCertificateTemplate = append(client.CallOptions.CreateCertificateTemplate, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteCertificateTemplate = append(client.CallOptions.DeleteCertificateTemplate, gax.WithClientTracing(tracing))
+		client.CallOptions.GetCertificateTemplate = append(client.CallOptions.GetCertificateTemplate, gax.WithClientTracing(tracing))
+		client.CallOptions.ListCertificateTemplates = append(client.CallOptions.ListCertificateTemplates, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateCertificateTemplate = append(client.CallOptions.UpdateCertificateTemplate, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "privateca",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/security/privateca/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "privateca.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateCertificate = append(client.CallOptions.CreateCertificate, gax.WithClientLogging(logging))
+		client.CallOptions.GetCertificate = append(client.CallOptions.GetCertificate, gax.WithClientLogging(logging))
+		client.CallOptions.ListCertificates = append(client.CallOptions.ListCertificates, gax.WithClientLogging(logging))
+		client.CallOptions.RevokeCertificate = append(client.CallOptions.RevokeCertificate, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateCertificate = append(client.CallOptions.UpdateCertificate, gax.WithClientLogging(logging))
+		client.CallOptions.ActivateCertificateAuthority = append(client.CallOptions.ActivateCertificateAuthority, gax.WithClientLogging(logging))
+		client.CallOptions.CreateCertificateAuthority = append(client.CallOptions.CreateCertificateAuthority, gax.WithClientLogging(logging))
+		client.CallOptions.DisableCertificateAuthority = append(client.CallOptions.DisableCertificateAuthority, gax.WithClientLogging(logging))
+		client.CallOptions.EnableCertificateAuthority = append(client.CallOptions.EnableCertificateAuthority, gax.WithClientLogging(logging))
+		client.CallOptions.FetchCertificateAuthorityCsr = append(client.CallOptions.FetchCertificateAuthorityCsr, gax.WithClientLogging(logging))
+		client.CallOptions.GetCertificateAuthority = append(client.CallOptions.GetCertificateAuthority, gax.WithClientLogging(logging))
+		client.CallOptions.ListCertificateAuthorities = append(client.CallOptions.ListCertificateAuthorities, gax.WithClientLogging(logging))
+		client.CallOptions.UndeleteCertificateAuthority = append(client.CallOptions.UndeleteCertificateAuthority, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteCertificateAuthority = append(client.CallOptions.DeleteCertificateAuthority, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateCertificateAuthority = append(client.CallOptions.UpdateCertificateAuthority, gax.WithClientLogging(logging))
+		client.CallOptions.CreateCaPool = append(client.CallOptions.CreateCaPool, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateCaPool = append(client.CallOptions.UpdateCaPool, gax.WithClientLogging(logging))
+		client.CallOptions.GetCaPool = append(client.CallOptions.GetCaPool, gax.WithClientLogging(logging))
+		client.CallOptions.ListCaPools = append(client.CallOptions.ListCaPools, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteCaPool = append(client.CallOptions.DeleteCaPool, gax.WithClientLogging(logging))
+		client.CallOptions.FetchCaCerts = append(client.CallOptions.FetchCaCerts, gax.WithClientLogging(logging))
+		client.CallOptions.GetCertificateRevocationList = append(client.CallOptions.GetCertificateRevocationList, gax.WithClientLogging(logging))
+		client.CallOptions.ListCertificateRevocationLists = append(client.CallOptions.ListCertificateRevocationLists, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateCertificateRevocationList = append(client.CallOptions.UpdateCertificateRevocationList, gax.WithClientLogging(logging))
+		client.CallOptions.CreateCertificateTemplate = append(client.CallOptions.CreateCertificateTemplate, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteCertificateTemplate = append(client.CallOptions.DeleteCertificateTemplate, gax.WithClientLogging(logging))
+		client.CallOptions.GetCertificateTemplate = append(client.CallOptions.GetCertificateTemplate, gax.WithClientLogging(logging))
+		client.CallOptions.ListCertificateTemplates = append(client.CallOptions.ListCertificateTemplates, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateCertificateTemplate = append(client.CallOptions.UpdateCertificateTemplate, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -1443,7 +1622,7 @@ func (c *certificateAuthorityGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *certificateAuthorityGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -1478,6 +1657,16 @@ type certificateAuthorityRESTClient struct {
 // manages private certificate authorities and issued certificates.
 func NewCertificateAuthorityRESTClient(ctx context.Context, opts ...option.ClientOption) (*CertificateAuthorityClient, error) {
 	clientOpts := append(defaultCertificateAuthorityRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "privateca",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/security/privateca/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "privateca.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -1491,6 +1680,159 @@ func NewCertificateAuthorityRESTClient(ctx context.Context, opts ...option.Clien
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "privateca",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/security/privateca/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "privateca.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateCertificate = append(callOpts.CreateCertificate, gax.WithClientMetrics(metrics))
+		callOpts.GetCertificate = append(callOpts.GetCertificate, gax.WithClientMetrics(metrics))
+		callOpts.ListCertificates = append(callOpts.ListCertificates, gax.WithClientMetrics(metrics))
+		callOpts.RevokeCertificate = append(callOpts.RevokeCertificate, gax.WithClientMetrics(metrics))
+		callOpts.UpdateCertificate = append(callOpts.UpdateCertificate, gax.WithClientMetrics(metrics))
+		callOpts.ActivateCertificateAuthority = append(callOpts.ActivateCertificateAuthority, gax.WithClientMetrics(metrics))
+		callOpts.CreateCertificateAuthority = append(callOpts.CreateCertificateAuthority, gax.WithClientMetrics(metrics))
+		callOpts.DisableCertificateAuthority = append(callOpts.DisableCertificateAuthority, gax.WithClientMetrics(metrics))
+		callOpts.EnableCertificateAuthority = append(callOpts.EnableCertificateAuthority, gax.WithClientMetrics(metrics))
+		callOpts.FetchCertificateAuthorityCsr = append(callOpts.FetchCertificateAuthorityCsr, gax.WithClientMetrics(metrics))
+		callOpts.GetCertificateAuthority = append(callOpts.GetCertificateAuthority, gax.WithClientMetrics(metrics))
+		callOpts.ListCertificateAuthorities = append(callOpts.ListCertificateAuthorities, gax.WithClientMetrics(metrics))
+		callOpts.UndeleteCertificateAuthority = append(callOpts.UndeleteCertificateAuthority, gax.WithClientMetrics(metrics))
+		callOpts.DeleteCertificateAuthority = append(callOpts.DeleteCertificateAuthority, gax.WithClientMetrics(metrics))
+		callOpts.UpdateCertificateAuthority = append(callOpts.UpdateCertificateAuthority, gax.WithClientMetrics(metrics))
+		callOpts.CreateCaPool = append(callOpts.CreateCaPool, gax.WithClientMetrics(metrics))
+		callOpts.UpdateCaPool = append(callOpts.UpdateCaPool, gax.WithClientMetrics(metrics))
+		callOpts.GetCaPool = append(callOpts.GetCaPool, gax.WithClientMetrics(metrics))
+		callOpts.ListCaPools = append(callOpts.ListCaPools, gax.WithClientMetrics(metrics))
+		callOpts.DeleteCaPool = append(callOpts.DeleteCaPool, gax.WithClientMetrics(metrics))
+		callOpts.FetchCaCerts = append(callOpts.FetchCaCerts, gax.WithClientMetrics(metrics))
+		callOpts.GetCertificateRevocationList = append(callOpts.GetCertificateRevocationList, gax.WithClientMetrics(metrics))
+		callOpts.ListCertificateRevocationLists = append(callOpts.ListCertificateRevocationLists, gax.WithClientMetrics(metrics))
+		callOpts.UpdateCertificateRevocationList = append(callOpts.UpdateCertificateRevocationList, gax.WithClientMetrics(metrics))
+		callOpts.CreateCertificateTemplate = append(callOpts.CreateCertificateTemplate, gax.WithClientMetrics(metrics))
+		callOpts.DeleteCertificateTemplate = append(callOpts.DeleteCertificateTemplate, gax.WithClientMetrics(metrics))
+		callOpts.GetCertificateTemplate = append(callOpts.GetCertificateTemplate, gax.WithClientMetrics(metrics))
+		callOpts.ListCertificateTemplates = append(callOpts.ListCertificateTemplates, gax.WithClientMetrics(metrics))
+		callOpts.UpdateCertificateTemplate = append(callOpts.UpdateCertificateTemplate, gax.WithClientMetrics(metrics))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "privateca",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/security/privateca/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "privateca.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateCertificate = append(callOpts.CreateCertificate, gax.WithClientTracing(tracing))
+		callOpts.GetCertificate = append(callOpts.GetCertificate, gax.WithClientTracing(tracing))
+		callOpts.ListCertificates = append(callOpts.ListCertificates, gax.WithClientTracing(tracing))
+		callOpts.RevokeCertificate = append(callOpts.RevokeCertificate, gax.WithClientTracing(tracing))
+		callOpts.UpdateCertificate = append(callOpts.UpdateCertificate, gax.WithClientTracing(tracing))
+		callOpts.ActivateCertificateAuthority = append(callOpts.ActivateCertificateAuthority, gax.WithClientTracing(tracing))
+		callOpts.CreateCertificateAuthority = append(callOpts.CreateCertificateAuthority, gax.WithClientTracing(tracing))
+		callOpts.DisableCertificateAuthority = append(callOpts.DisableCertificateAuthority, gax.WithClientTracing(tracing))
+		callOpts.EnableCertificateAuthority = append(callOpts.EnableCertificateAuthority, gax.WithClientTracing(tracing))
+		callOpts.FetchCertificateAuthorityCsr = append(callOpts.FetchCertificateAuthorityCsr, gax.WithClientTracing(tracing))
+		callOpts.GetCertificateAuthority = append(callOpts.GetCertificateAuthority, gax.WithClientTracing(tracing))
+		callOpts.ListCertificateAuthorities = append(callOpts.ListCertificateAuthorities, gax.WithClientTracing(tracing))
+		callOpts.UndeleteCertificateAuthority = append(callOpts.UndeleteCertificateAuthority, gax.WithClientTracing(tracing))
+		callOpts.DeleteCertificateAuthority = append(callOpts.DeleteCertificateAuthority, gax.WithClientTracing(tracing))
+		callOpts.UpdateCertificateAuthority = append(callOpts.UpdateCertificateAuthority, gax.WithClientTracing(tracing))
+		callOpts.CreateCaPool = append(callOpts.CreateCaPool, gax.WithClientTracing(tracing))
+		callOpts.UpdateCaPool = append(callOpts.UpdateCaPool, gax.WithClientTracing(tracing))
+		callOpts.GetCaPool = append(callOpts.GetCaPool, gax.WithClientTracing(tracing))
+		callOpts.ListCaPools = append(callOpts.ListCaPools, gax.WithClientTracing(tracing))
+		callOpts.DeleteCaPool = append(callOpts.DeleteCaPool, gax.WithClientTracing(tracing))
+		callOpts.FetchCaCerts = append(callOpts.FetchCaCerts, gax.WithClientTracing(tracing))
+		callOpts.GetCertificateRevocationList = append(callOpts.GetCertificateRevocationList, gax.WithClientTracing(tracing))
+		callOpts.ListCertificateRevocationLists = append(callOpts.ListCertificateRevocationLists, gax.WithClientTracing(tracing))
+		callOpts.UpdateCertificateRevocationList = append(callOpts.UpdateCertificateRevocationList, gax.WithClientTracing(tracing))
+		callOpts.CreateCertificateTemplate = append(callOpts.CreateCertificateTemplate, gax.WithClientTracing(tracing))
+		callOpts.DeleteCertificateTemplate = append(callOpts.DeleteCertificateTemplate, gax.WithClientTracing(tracing))
+		callOpts.GetCertificateTemplate = append(callOpts.GetCertificateTemplate, gax.WithClientTracing(tracing))
+		callOpts.ListCertificateTemplates = append(callOpts.ListCertificateTemplates, gax.WithClientTracing(tracing))
+		callOpts.UpdateCertificateTemplate = append(callOpts.UpdateCertificateTemplate, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "privateca",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/security/privateca/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "privateca.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateCertificate = append(callOpts.CreateCertificate, gax.WithClientLogging(logging))
+		callOpts.GetCertificate = append(callOpts.GetCertificate, gax.WithClientLogging(logging))
+		callOpts.ListCertificates = append(callOpts.ListCertificates, gax.WithClientLogging(logging))
+		callOpts.RevokeCertificate = append(callOpts.RevokeCertificate, gax.WithClientLogging(logging))
+		callOpts.UpdateCertificate = append(callOpts.UpdateCertificate, gax.WithClientLogging(logging))
+		callOpts.ActivateCertificateAuthority = append(callOpts.ActivateCertificateAuthority, gax.WithClientLogging(logging))
+		callOpts.CreateCertificateAuthority = append(callOpts.CreateCertificateAuthority, gax.WithClientLogging(logging))
+		callOpts.DisableCertificateAuthority = append(callOpts.DisableCertificateAuthority, gax.WithClientLogging(logging))
+		callOpts.EnableCertificateAuthority = append(callOpts.EnableCertificateAuthority, gax.WithClientLogging(logging))
+		callOpts.FetchCertificateAuthorityCsr = append(callOpts.FetchCertificateAuthorityCsr, gax.WithClientLogging(logging))
+		callOpts.GetCertificateAuthority = append(callOpts.GetCertificateAuthority, gax.WithClientLogging(logging))
+		callOpts.ListCertificateAuthorities = append(callOpts.ListCertificateAuthorities, gax.WithClientLogging(logging))
+		callOpts.UndeleteCertificateAuthority = append(callOpts.UndeleteCertificateAuthority, gax.WithClientLogging(logging))
+		callOpts.DeleteCertificateAuthority = append(callOpts.DeleteCertificateAuthority, gax.WithClientLogging(logging))
+		callOpts.UpdateCertificateAuthority = append(callOpts.UpdateCertificateAuthority, gax.WithClientLogging(logging))
+		callOpts.CreateCaPool = append(callOpts.CreateCaPool, gax.WithClientLogging(logging))
+		callOpts.UpdateCaPool = append(callOpts.UpdateCaPool, gax.WithClientLogging(logging))
+		callOpts.GetCaPool = append(callOpts.GetCaPool, gax.WithClientLogging(logging))
+		callOpts.ListCaPools = append(callOpts.ListCaPools, gax.WithClientLogging(logging))
+		callOpts.DeleteCaPool = append(callOpts.DeleteCaPool, gax.WithClientLogging(logging))
+		callOpts.FetchCaCerts = append(callOpts.FetchCaCerts, gax.WithClientLogging(logging))
+		callOpts.GetCertificateRevocationList = append(callOpts.GetCertificateRevocationList, gax.WithClientLogging(logging))
+		callOpts.ListCertificateRevocationLists = append(callOpts.ListCertificateRevocationLists, gax.WithClientLogging(logging))
+		callOpts.UpdateCertificateRevocationList = append(callOpts.UpdateCertificateRevocationList, gax.WithClientLogging(logging))
+		callOpts.CreateCertificateTemplate = append(callOpts.CreateCertificateTemplate, gax.WithClientLogging(logging))
+		callOpts.DeleteCertificateTemplate = append(callOpts.DeleteCertificateTemplate, gax.WithClientLogging(logging))
+		callOpts.GetCertificateTemplate = append(callOpts.GetCertificateTemplate, gax.WithClientLogging(logging))
+		callOpts.ListCertificateTemplates = append(callOpts.ListCertificateTemplates, gax.WithClientLogging(logging))
+		callOpts.UpdateCertificateTemplate = append(callOpts.UpdateCertificateTemplate, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -1528,7 +1870,7 @@ func (c *certificateAuthorityRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *certificateAuthorityRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -1547,6 +1889,9 @@ func (c *certificateAuthorityGRPCClient) CreateCertificate(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/CreateCertificate")
+	}
 	opts = append((*c.CallOptions).CreateCertificate[0:len((*c.CallOptions).CreateCertificate):len((*c.CallOptions).CreateCertificate)], opts...)
 	var resp *privatecapb.Certificate
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1565,6 +1910,9 @@ func (c *certificateAuthorityGRPCClient) GetCertificate(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/GetCertificate")
+	}
 	opts = append((*c.CallOptions).GetCertificate[0:len((*c.CallOptions).GetCertificate):len((*c.CallOptions).GetCertificate)], opts...)
 	var resp *privatecapb.Certificate
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1583,9 +1931,12 @@ func (c *certificateAuthorityGRPCClient) ListCertificates(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/ListCertificates")
+	}
 	opts = append((*c.CallOptions).ListCertificates[0:len((*c.CallOptions).ListCertificates):len((*c.CallOptions).ListCertificates)], opts...)
 	it := &CertificateIterator{}
-	req = proto.Clone(req).(*privatecapb.ListCertificatesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*privatecapb.Certificate, string, error) {
 		resp := &privatecapb.ListCertificatesResponse{}
 		if pageToken != "" {
@@ -1629,6 +1980,9 @@ func (c *certificateAuthorityGRPCClient) RevokeCertificate(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/RevokeCertificate")
+	}
 	opts = append((*c.CallOptions).RevokeCertificate[0:len((*c.CallOptions).RevokeCertificate):len((*c.CallOptions).RevokeCertificate)], opts...)
 	var resp *privatecapb.Certificate
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1647,6 +2001,9 @@ func (c *certificateAuthorityGRPCClient) UpdateCertificate(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/UpdateCertificate")
+	}
 	opts = append((*c.CallOptions).UpdateCertificate[0:len((*c.CallOptions).UpdateCertificate):len((*c.CallOptions).UpdateCertificate)], opts...)
 	var resp *privatecapb.Certificate
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1665,6 +2022,9 @@ func (c *certificateAuthorityGRPCClient) ActivateCertificateAuthority(ctx contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/ActivateCertificateAuthority")
+	}
 	opts = append((*c.CallOptions).ActivateCertificateAuthority[0:len((*c.CallOptions).ActivateCertificateAuthority):len((*c.CallOptions).ActivateCertificateAuthority)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1675,8 +2035,12 @@ func (c *certificateAuthorityGRPCClient) ActivateCertificateAuthority(ctx contex
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*privateca.ActivateCertificateAuthorityOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ActivateCertificateAuthorityOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1685,6 +2049,9 @@ func (c *certificateAuthorityGRPCClient) CreateCertificateAuthority(ctx context.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/CreateCertificateAuthority")
+	}
 	opts = append((*c.CallOptions).CreateCertificateAuthority[0:len((*c.CallOptions).CreateCertificateAuthority):len((*c.CallOptions).CreateCertificateAuthority)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1695,8 +2062,12 @@ func (c *certificateAuthorityGRPCClient) CreateCertificateAuthority(ctx context.
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*privateca.CreateCertificateAuthorityOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateCertificateAuthorityOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1705,6 +2076,9 @@ func (c *certificateAuthorityGRPCClient) DisableCertificateAuthority(ctx context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/DisableCertificateAuthority")
+	}
 	opts = append((*c.CallOptions).DisableCertificateAuthority[0:len((*c.CallOptions).DisableCertificateAuthority):len((*c.CallOptions).DisableCertificateAuthority)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1715,8 +2089,12 @@ func (c *certificateAuthorityGRPCClient) DisableCertificateAuthority(ctx context
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*privateca.DisableCertificateAuthorityOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DisableCertificateAuthorityOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1725,6 +2103,9 @@ func (c *certificateAuthorityGRPCClient) EnableCertificateAuthority(ctx context.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/EnableCertificateAuthority")
+	}
 	opts = append((*c.CallOptions).EnableCertificateAuthority[0:len((*c.CallOptions).EnableCertificateAuthority):len((*c.CallOptions).EnableCertificateAuthority)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1735,8 +2116,12 @@ func (c *certificateAuthorityGRPCClient) EnableCertificateAuthority(ctx context.
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*privateca.EnableCertificateAuthorityOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &EnableCertificateAuthorityOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1745,6 +2130,9 @@ func (c *certificateAuthorityGRPCClient) FetchCertificateAuthorityCsr(ctx contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/FetchCertificateAuthorityCsr")
+	}
 	opts = append((*c.CallOptions).FetchCertificateAuthorityCsr[0:len((*c.CallOptions).FetchCertificateAuthorityCsr):len((*c.CallOptions).FetchCertificateAuthorityCsr)], opts...)
 	var resp *privatecapb.FetchCertificateAuthorityCsrResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1763,6 +2151,9 @@ func (c *certificateAuthorityGRPCClient) GetCertificateAuthority(ctx context.Con
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/GetCertificateAuthority")
+	}
 	opts = append((*c.CallOptions).GetCertificateAuthority[0:len((*c.CallOptions).GetCertificateAuthority):len((*c.CallOptions).GetCertificateAuthority)], opts...)
 	var resp *privatecapb.CertificateAuthority
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1781,9 +2172,12 @@ func (c *certificateAuthorityGRPCClient) ListCertificateAuthorities(ctx context.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/ListCertificateAuthorities")
+	}
 	opts = append((*c.CallOptions).ListCertificateAuthorities[0:len((*c.CallOptions).ListCertificateAuthorities):len((*c.CallOptions).ListCertificateAuthorities)], opts...)
 	it := &CertificateAuthorityIterator{}
-	req = proto.Clone(req).(*privatecapb.ListCertificateAuthoritiesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*privatecapb.CertificateAuthority, string, error) {
 		resp := &privatecapb.ListCertificateAuthoritiesResponse{}
 		if pageToken != "" {
@@ -1827,6 +2221,9 @@ func (c *certificateAuthorityGRPCClient) UndeleteCertificateAuthority(ctx contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/UndeleteCertificateAuthority")
+	}
 	opts = append((*c.CallOptions).UndeleteCertificateAuthority[0:len((*c.CallOptions).UndeleteCertificateAuthority):len((*c.CallOptions).UndeleteCertificateAuthority)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1837,8 +2234,12 @@ func (c *certificateAuthorityGRPCClient) UndeleteCertificateAuthority(ctx contex
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*privateca.UndeleteCertificateAuthorityOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UndeleteCertificateAuthorityOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1847,6 +2248,9 @@ func (c *certificateAuthorityGRPCClient) DeleteCertificateAuthority(ctx context.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/DeleteCertificateAuthority")
+	}
 	opts = append((*c.CallOptions).DeleteCertificateAuthority[0:len((*c.CallOptions).DeleteCertificateAuthority):len((*c.CallOptions).DeleteCertificateAuthority)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1857,8 +2261,12 @@ func (c *certificateAuthorityGRPCClient) DeleteCertificateAuthority(ctx context.
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*privateca.DeleteCertificateAuthorityOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteCertificateAuthorityOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1867,6 +2275,9 @@ func (c *certificateAuthorityGRPCClient) UpdateCertificateAuthority(ctx context.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/UpdateCertificateAuthority")
+	}
 	opts = append((*c.CallOptions).UpdateCertificateAuthority[0:len((*c.CallOptions).UpdateCertificateAuthority):len((*c.CallOptions).UpdateCertificateAuthority)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1877,8 +2288,12 @@ func (c *certificateAuthorityGRPCClient) UpdateCertificateAuthority(ctx context.
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*privateca.UpdateCertificateAuthorityOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateCertificateAuthorityOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1887,6 +2302,9 @@ func (c *certificateAuthorityGRPCClient) CreateCaPool(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/CreateCaPool")
+	}
 	opts = append((*c.CallOptions).CreateCaPool[0:len((*c.CallOptions).CreateCaPool):len((*c.CallOptions).CreateCaPool)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1897,8 +2315,12 @@ func (c *certificateAuthorityGRPCClient) CreateCaPool(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*privateca.CreateCaPoolOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateCaPoolOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1907,6 +2329,9 @@ func (c *certificateAuthorityGRPCClient) UpdateCaPool(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/UpdateCaPool")
+	}
 	opts = append((*c.CallOptions).UpdateCaPool[0:len((*c.CallOptions).UpdateCaPool):len((*c.CallOptions).UpdateCaPool)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1917,8 +2342,12 @@ func (c *certificateAuthorityGRPCClient) UpdateCaPool(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*privateca.UpdateCaPoolOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateCaPoolOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1927,6 +2356,9 @@ func (c *certificateAuthorityGRPCClient) GetCaPool(ctx context.Context, req *pri
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/GetCaPool")
+	}
 	opts = append((*c.CallOptions).GetCaPool[0:len((*c.CallOptions).GetCaPool):len((*c.CallOptions).GetCaPool)], opts...)
 	var resp *privatecapb.CaPool
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1945,9 +2377,12 @@ func (c *certificateAuthorityGRPCClient) ListCaPools(ctx context.Context, req *p
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/ListCaPools")
+	}
 	opts = append((*c.CallOptions).ListCaPools[0:len((*c.CallOptions).ListCaPools):len((*c.CallOptions).ListCaPools)], opts...)
 	it := &CaPoolIterator{}
-	req = proto.Clone(req).(*privatecapb.ListCaPoolsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*privatecapb.CaPool, string, error) {
 		resp := &privatecapb.ListCaPoolsResponse{}
 		if pageToken != "" {
@@ -1991,6 +2426,9 @@ func (c *certificateAuthorityGRPCClient) DeleteCaPool(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/DeleteCaPool")
+	}
 	opts = append((*c.CallOptions).DeleteCaPool[0:len((*c.CallOptions).DeleteCaPool):len((*c.CallOptions).DeleteCaPool)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2001,8 +2439,12 @@ func (c *certificateAuthorityGRPCClient) DeleteCaPool(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*privateca.DeleteCaPoolOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteCaPoolOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2011,6 +2453,9 @@ func (c *certificateAuthorityGRPCClient) FetchCaCerts(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/FetchCaCerts")
+	}
 	opts = append((*c.CallOptions).FetchCaCerts[0:len((*c.CallOptions).FetchCaCerts):len((*c.CallOptions).FetchCaCerts)], opts...)
 	var resp *privatecapb.FetchCaCertsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2029,6 +2474,9 @@ func (c *certificateAuthorityGRPCClient) GetCertificateRevocationList(ctx contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/GetCertificateRevocationList")
+	}
 	opts = append((*c.CallOptions).GetCertificateRevocationList[0:len((*c.CallOptions).GetCertificateRevocationList):len((*c.CallOptions).GetCertificateRevocationList)], opts...)
 	var resp *privatecapb.CertificateRevocationList
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2047,9 +2495,12 @@ func (c *certificateAuthorityGRPCClient) ListCertificateRevocationLists(ctx cont
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/ListCertificateRevocationLists")
+	}
 	opts = append((*c.CallOptions).ListCertificateRevocationLists[0:len((*c.CallOptions).ListCertificateRevocationLists):len((*c.CallOptions).ListCertificateRevocationLists)], opts...)
 	it := &CertificateRevocationListIterator{}
-	req = proto.Clone(req).(*privatecapb.ListCertificateRevocationListsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*privatecapb.CertificateRevocationList, string, error) {
 		resp := &privatecapb.ListCertificateRevocationListsResponse{}
 		if pageToken != "" {
@@ -2093,6 +2544,9 @@ func (c *certificateAuthorityGRPCClient) UpdateCertificateRevocationList(ctx con
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/UpdateCertificateRevocationList")
+	}
 	opts = append((*c.CallOptions).UpdateCertificateRevocationList[0:len((*c.CallOptions).UpdateCertificateRevocationList):len((*c.CallOptions).UpdateCertificateRevocationList)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2103,8 +2557,12 @@ func (c *certificateAuthorityGRPCClient) UpdateCertificateRevocationList(ctx con
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*privateca.UpdateCertificateRevocationListOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateCertificateRevocationListOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2113,6 +2571,9 @@ func (c *certificateAuthorityGRPCClient) CreateCertificateTemplate(ctx context.C
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/CreateCertificateTemplate")
+	}
 	opts = append((*c.CallOptions).CreateCertificateTemplate[0:len((*c.CallOptions).CreateCertificateTemplate):len((*c.CallOptions).CreateCertificateTemplate)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2123,8 +2584,12 @@ func (c *certificateAuthorityGRPCClient) CreateCertificateTemplate(ctx context.C
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*privateca.CreateCertificateTemplateOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateCertificateTemplateOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2133,6 +2598,9 @@ func (c *certificateAuthorityGRPCClient) DeleteCertificateTemplate(ctx context.C
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/DeleteCertificateTemplate")
+	}
 	opts = append((*c.CallOptions).DeleteCertificateTemplate[0:len((*c.CallOptions).DeleteCertificateTemplate):len((*c.CallOptions).DeleteCertificateTemplate)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2143,8 +2611,12 @@ func (c *certificateAuthorityGRPCClient) DeleteCertificateTemplate(ctx context.C
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*privateca.DeleteCertificateTemplateOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteCertificateTemplateOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2153,6 +2625,9 @@ func (c *certificateAuthorityGRPCClient) GetCertificateTemplate(ctx context.Cont
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/GetCertificateTemplate")
+	}
 	opts = append((*c.CallOptions).GetCertificateTemplate[0:len((*c.CallOptions).GetCertificateTemplate):len((*c.CallOptions).GetCertificateTemplate)], opts...)
 	var resp *privatecapb.CertificateTemplate
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2171,9 +2646,12 @@ func (c *certificateAuthorityGRPCClient) ListCertificateTemplates(ctx context.Co
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/ListCertificateTemplates")
+	}
 	opts = append((*c.CallOptions).ListCertificateTemplates[0:len((*c.CallOptions).ListCertificateTemplates):len((*c.CallOptions).ListCertificateTemplates)], opts...)
 	it := &CertificateTemplateIterator{}
-	req = proto.Clone(req).(*privatecapb.ListCertificateTemplatesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*privatecapb.CertificateTemplate, string, error) {
 		resp := &privatecapb.ListCertificateTemplatesResponse{}
 		if pageToken != "" {
@@ -2217,6 +2695,9 @@ func (c *certificateAuthorityGRPCClient) UpdateCertificateTemplate(ctx context.C
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/UpdateCertificateTemplate")
+	}
 	opts = append((*c.CallOptions).UpdateCertificateTemplate[0:len((*c.CallOptions).UpdateCertificateTemplate):len((*c.CallOptions).UpdateCertificateTemplate)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2227,8 +2708,12 @@ func (c *certificateAuthorityGRPCClient) UpdateCertificateTemplate(ctx context.C
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*privateca.UpdateCertificateTemplateOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateCertificateTemplateOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2237,6 +2722,9 @@ func (c *certificateAuthorityGRPCClient) GetLocation(ctx context.Context, req *l
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2255,9 +2743,12 @@ func (c *certificateAuthorityGRPCClient) ListLocations(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/ListLocations")
+	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -2301,6 +2792,9 @@ func (c *certificateAuthorityGRPCClient) GetIamPolicy(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2319,6 +2813,9 @@ func (c *certificateAuthorityGRPCClient) SetIamPolicy(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2337,6 +2834,9 @@ func (c *certificateAuthorityGRPCClient) TestIamPermissions(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2355,6 +2855,9 @@ func (c *certificateAuthorityGRPCClient) CancelOperation(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -2369,6 +2872,9 @@ func (c *certificateAuthorityGRPCClient) DeleteOperation(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+	}
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -2383,6 +2889,9 @@ func (c *certificateAuthorityGRPCClient) GetOperation(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2401,9 +2910,12 @@ func (c *certificateAuthorityGRPCClient) ListOperations(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -2482,6 +2994,10 @@ func (c *certificateAuthorityRESTClient) CreateCertificate(ctx context.Context, 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/CreateCertificate")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/caPools/*}/certificates")
+	}
 	opts = append((*c.CallOptions).CreateCertificate[0:len((*c.CallOptions).CreateCertificate):len((*c.CallOptions).CreateCertificate)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &privatecapb.Certificate{}
@@ -2532,6 +3048,10 @@ func (c *certificateAuthorityRESTClient) GetCertificate(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/GetCertificate")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/caPools/*/certificates/*}")
+	}
 	opts = append((*c.CallOptions).GetCertificate[0:len((*c.CallOptions).GetCertificate):len((*c.CallOptions).GetCertificate)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &privatecapb.Certificate{}
@@ -2566,7 +3086,7 @@ func (c *certificateAuthorityRESTClient) GetCertificate(ctx context.Context, req
 // ListCertificates lists Certificates.
 func (c *certificateAuthorityRESTClient) ListCertificates(ctx context.Context, req *privatecapb.ListCertificatesRequest, opts ...gax.CallOption) *CertificateIterator {
 	it := &CertificateIterator{}
-	req = proto.Clone(req).(*privatecapb.ListCertificatesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*privatecapb.Certificate, string, error) {
 		resp := &privatecapb.ListCertificatesResponse{}
@@ -2672,6 +3192,10 @@ func (c *certificateAuthorityRESTClient) RevokeCertificate(ctx context.Context, 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/RevokeCertificate")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/caPools/*/certificates/*}:revoke")
+	}
 	opts = append((*c.CallOptions).RevokeCertificate[0:len((*c.CallOptions).RevokeCertificate):len((*c.CallOptions).RevokeCertificate)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &privatecapb.Certificate{}
@@ -2741,6 +3265,10 @@ func (c *certificateAuthorityRESTClient) UpdateCertificate(ctx context.Context, 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/UpdateCertificate")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{certificate.name=projects/*/locations/*/caPools/*/certificates/*}")
+	}
 	opts = append((*c.CallOptions).UpdateCertificate[0:len((*c.CallOptions).UpdateCertificate):len((*c.CallOptions).UpdateCertificate)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &privatecapb.Certificate{}
@@ -2806,6 +3334,10 @@ func (c *certificateAuthorityRESTClient) ActivateCertificateAuthority(ctx contex
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/ActivateCertificateAuthority")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/caPools/*/certificateAuthorities/*}:activate")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2834,8 +3366,12 @@ func (c *certificateAuthorityRESTClient) ActivateCertificateAuthority(ctx contex
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*privateca.ActivateCertificateAuthorityOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ActivateCertificateAuthorityOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2872,6 +3408,10 @@ func (c *certificateAuthorityRESTClient) CreateCertificateAuthority(ctx context.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/CreateCertificateAuthority")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/caPools/*}/certificateAuthorities")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2900,8 +3440,12 @@ func (c *certificateAuthorityRESTClient) CreateCertificateAuthority(ctx context.
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*privateca.CreateCertificateAuthorityOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateCertificateAuthorityOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2932,6 +3476,10 @@ func (c *certificateAuthorityRESTClient) DisableCertificateAuthority(ctx context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/DisableCertificateAuthority")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/caPools/*/certificateAuthorities/*}:disable")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2960,8 +3508,12 @@ func (c *certificateAuthorityRESTClient) DisableCertificateAuthority(ctx context
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*privateca.DisableCertificateAuthorityOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DisableCertificateAuthorityOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2992,6 +3544,10 @@ func (c *certificateAuthorityRESTClient) EnableCertificateAuthority(ctx context.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/EnableCertificateAuthority")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/caPools/*/certificateAuthorities/*}:enable")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3020,8 +3576,12 @@ func (c *certificateAuthorityRESTClient) EnableCertificateAuthority(ctx context.
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*privateca.EnableCertificateAuthorityOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &EnableCertificateAuthorityOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3055,6 +3615,10 @@ func (c *certificateAuthorityRESTClient) FetchCertificateAuthorityCsr(ctx contex
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/FetchCertificateAuthorityCsr")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/caPools/*/certificateAuthorities/*}:fetch")
+	}
 	opts = append((*c.CallOptions).FetchCertificateAuthorityCsr[0:len((*c.CallOptions).FetchCertificateAuthorityCsr):len((*c.CallOptions).FetchCertificateAuthorityCsr)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &privatecapb.FetchCertificateAuthorityCsrResponse{}
@@ -3106,6 +3670,10 @@ func (c *certificateAuthorityRESTClient) GetCertificateAuthority(ctx context.Con
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/GetCertificateAuthority")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/caPools/*/certificateAuthorities/*}")
+	}
 	opts = append((*c.CallOptions).GetCertificateAuthority[0:len((*c.CallOptions).GetCertificateAuthority):len((*c.CallOptions).GetCertificateAuthority)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &privatecapb.CertificateAuthority{}
@@ -3141,7 +3709,7 @@ func (c *certificateAuthorityRESTClient) GetCertificateAuthority(ctx context.Con
 // CertificateAuthorities.
 func (c *certificateAuthorityRESTClient) ListCertificateAuthorities(ctx context.Context, req *privatecapb.ListCertificateAuthoritiesRequest, opts ...gax.CallOption) *CertificateAuthorityIterator {
 	it := &CertificateAuthorityIterator{}
-	req = proto.Clone(req).(*privatecapb.ListCertificateAuthoritiesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*privatecapb.CertificateAuthority, string, error) {
 		resp := &privatecapb.ListCertificateAuthoritiesResponse{}
@@ -3249,6 +3817,10 @@ func (c *certificateAuthorityRESTClient) UndeleteCertificateAuthority(ctx contex
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/UndeleteCertificateAuthority")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/caPools/*/certificateAuthorities/*}:undelete")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3277,8 +3849,12 @@ func (c *certificateAuthorityRESTClient) UndeleteCertificateAuthority(ctx contex
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*privateca.UndeleteCertificateAuthorityOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UndeleteCertificateAuthorityOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3315,6 +3891,10 @@ func (c *certificateAuthorityRESTClient) DeleteCertificateAuthority(ctx context.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/DeleteCertificateAuthority")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/caPools/*/certificateAuthorities/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3343,8 +3923,12 @@ func (c *certificateAuthorityRESTClient) DeleteCertificateAuthority(ctx context.
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*privateca.DeleteCertificateAuthorityOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteCertificateAuthorityOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3386,6 +3970,10 @@ func (c *certificateAuthorityRESTClient) UpdateCertificateAuthority(ctx context.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/UpdateCertificateAuthority")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{certificate_authority.name=projects/*/locations/*/caPools/*/certificateAuthorities/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3414,8 +4002,12 @@ func (c *certificateAuthorityRESTClient) UpdateCertificateAuthority(ctx context.
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*privateca.UpdateCertificateAuthorityOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateCertificateAuthorityOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3450,6 +4042,10 @@ func (c *certificateAuthorityRESTClient) CreateCaPool(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/CreateCaPool")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/caPools")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3478,8 +4074,12 @@ func (c *certificateAuthorityRESTClient) CreateCaPool(ctx context.Context, req *
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*privateca.CreateCaPoolOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateCaPoolOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3520,6 +4120,10 @@ func (c *certificateAuthorityRESTClient) UpdateCaPool(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/UpdateCaPool")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{ca_pool.name=projects/*/locations/*/caPools/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3548,8 +4152,12 @@ func (c *certificateAuthorityRESTClient) UpdateCaPool(ctx context.Context, req *
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*privateca.UpdateCaPoolOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateCaPoolOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3573,6 +4181,10 @@ func (c *certificateAuthorityRESTClient) GetCaPool(ctx context.Context, req *pri
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/GetCaPool")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/caPools/*}")
+	}
 	opts = append((*c.CallOptions).GetCaPool[0:len((*c.CallOptions).GetCaPool):len((*c.CallOptions).GetCaPool)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &privatecapb.CaPool{}
@@ -3607,7 +4219,7 @@ func (c *certificateAuthorityRESTClient) GetCaPool(ctx context.Context, req *pri
 // ListCaPools lists CaPools.
 func (c *certificateAuthorityRESTClient) ListCaPools(ctx context.Context, req *privatecapb.ListCaPoolsRequest, opts ...gax.CallOption) *CaPoolIterator {
 	it := &CaPoolIterator{}
-	req = proto.Clone(req).(*privatecapb.ListCaPoolsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*privatecapb.CaPool, string, error) {
 		resp := &privatecapb.ListCaPoolsResponse{}
@@ -3713,6 +4325,10 @@ func (c *certificateAuthorityRESTClient) DeleteCaPool(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/DeleteCaPool")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/caPools/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3741,8 +4357,12 @@ func (c *certificateAuthorityRESTClient) DeleteCaPool(ctx context.Context, req *
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*privateca.DeleteCaPoolOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteCaPoolOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3775,6 +4395,10 @@ func (c *certificateAuthorityRESTClient) FetchCaCerts(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/FetchCaCerts")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{ca_pool=projects/*/locations/*/caPools/*}:fetchCaCerts")
+	}
 	opts = append((*c.CallOptions).FetchCaCerts[0:len((*c.CallOptions).FetchCaCerts):len((*c.CallOptions).FetchCaCerts)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &privatecapb.FetchCaCertsResponse{}
@@ -3826,6 +4450,10 @@ func (c *certificateAuthorityRESTClient) GetCertificateRevocationList(ctx contex
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/GetCertificateRevocationList")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/caPools/*/certificateAuthorities/*/certificateRevocationLists/*}")
+	}
 	opts = append((*c.CallOptions).GetCertificateRevocationList[0:len((*c.CallOptions).GetCertificateRevocationList):len((*c.CallOptions).GetCertificateRevocationList)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &privatecapb.CertificateRevocationList{}
@@ -3861,7 +4489,7 @@ func (c *certificateAuthorityRESTClient) GetCertificateRevocationList(ctx contex
 // CertificateRevocationLists.
 func (c *certificateAuthorityRESTClient) ListCertificateRevocationLists(ctx context.Context, req *privatecapb.ListCertificateRevocationListsRequest, opts ...gax.CallOption) *CertificateRevocationListIterator {
 	it := &CertificateRevocationListIterator{}
-	req = proto.Clone(req).(*privatecapb.ListCertificateRevocationListsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*privatecapb.CertificateRevocationList, string, error) {
 		resp := &privatecapb.ListCertificateRevocationListsResponse{}
@@ -3979,6 +4607,10 @@ func (c *certificateAuthorityRESTClient) UpdateCertificateRevocationList(ctx con
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/UpdateCertificateRevocationList")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{certificate_revocation_list.name=projects/*/locations/*/caPools/*/certificateAuthorities/*/certificateRevocationLists/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4007,8 +4639,12 @@ func (c *certificateAuthorityRESTClient) UpdateCertificateRevocationList(ctx con
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*privateca.UpdateCertificateRevocationListOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateCertificateRevocationListOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4045,6 +4681,10 @@ func (c *certificateAuthorityRESTClient) CreateCertificateTemplate(ctx context.C
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/CreateCertificateTemplate")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/certificateTemplates")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4073,8 +4713,12 @@ func (c *certificateAuthorityRESTClient) CreateCertificateTemplate(ctx context.C
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*privateca.CreateCertificateTemplateOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateCertificateTemplateOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4102,6 +4746,10 @@ func (c *certificateAuthorityRESTClient) DeleteCertificateTemplate(ctx context.C
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/DeleteCertificateTemplate")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/certificateTemplates/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4130,8 +4778,12 @@ func (c *certificateAuthorityRESTClient) DeleteCertificateTemplate(ctx context.C
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*privateca.DeleteCertificateTemplateOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteCertificateTemplateOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4156,6 +4808,10 @@ func (c *certificateAuthorityRESTClient) GetCertificateTemplate(ctx context.Cont
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/GetCertificateTemplate")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/certificateTemplates/*}")
+	}
 	opts = append((*c.CallOptions).GetCertificateTemplate[0:len((*c.CallOptions).GetCertificateTemplate):len((*c.CallOptions).GetCertificateTemplate)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &privatecapb.CertificateTemplate{}
@@ -4191,7 +4847,7 @@ func (c *certificateAuthorityRESTClient) GetCertificateTemplate(ctx context.Cont
 // CertificateTemplates.
 func (c *certificateAuthorityRESTClient) ListCertificateTemplates(ctx context.Context, req *privatecapb.ListCertificateTemplatesRequest, opts ...gax.CallOption) *CertificateTemplateIterator {
 	it := &CertificateTemplateIterator{}
-	req = proto.Clone(req).(*privatecapb.ListCertificateTemplatesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*privatecapb.CertificateTemplate, string, error) {
 		resp := &privatecapb.ListCertificateTemplatesResponse{}
@@ -4309,6 +4965,10 @@ func (c *certificateAuthorityRESTClient) UpdateCertificateTemplate(ctx context.C
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.security.privateca.v1.CertificateAuthorityService/UpdateCertificateTemplate")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{certificate_template.name=projects/*/locations/*/certificateTemplates/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4337,8 +4997,12 @@ func (c *certificateAuthorityRESTClient) UpdateCertificateTemplate(ctx context.C
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*privateca.UpdateCertificateTemplateOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateCertificateTemplateOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4362,6 +5026,10 @@ func (c *certificateAuthorityRESTClient) GetLocation(ctx context.Context, req *l
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*}")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &locationpb.Location{}
@@ -4394,9 +5062,24 @@ func (c *certificateAuthorityRESTClient) GetLocation(ctx context.Context, req *l
 }
 
 // ListLocations lists information about the supported locations for this service.
+//
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
+//
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *certificateAuthorityRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -4497,6 +5180,10 @@ func (c *certificateAuthorityRESTClient) GetIamPolicy(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/caPools/*}:getIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -4557,6 +5244,10 @@ func (c *certificateAuthorityRESTClient) SetIamPolicy(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/caPools/*}:setIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -4619,6 +5310,10 @@ func (c *certificateAuthorityRESTClient) TestIamPermissions(ctx context.Context,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/caPools/*}:testIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.TestIamPermissionsResponse{}
@@ -4675,6 +5370,10 @@ func (c *certificateAuthorityRESTClient) CancelOperation(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -4710,6 +5409,10 @@ func (c *certificateAuthorityRESTClient) DeleteOperation(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -4745,6 +5448,10 @@ func (c *certificateAuthorityRESTClient) GetOperation(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -4779,7 +5486,7 @@ func (c *certificateAuthorityRESTClient) GetOperation(ctx context.Context, req *
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *certificateAuthorityRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
@@ -4807,6 +5514,9 @@ func (c *certificateAuthorityRESTClient) ListOperations(ctx context.Context, req
 		}
 		if req.GetPageToken() != "" {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req.GetReturnPartialSuccess() {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -4861,7 +5571,7 @@ func (c *certificateAuthorityRESTClient) ListOperations(ctx context.Context, req
 // The name must be that of a previously created ActivateCertificateAuthorityOperation, possibly from a different process.
 func (c *certificateAuthorityGRPCClient) ActivateCertificateAuthorityOperation(name string) *ActivateCertificateAuthorityOperation {
 	return &ActivateCertificateAuthorityOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*privateca.ActivateCertificateAuthorityOperation"),
 	}
 }
 
@@ -4870,7 +5580,7 @@ func (c *certificateAuthorityGRPCClient) ActivateCertificateAuthorityOperation(n
 func (c *certificateAuthorityRESTClient) ActivateCertificateAuthorityOperation(name string) *ActivateCertificateAuthorityOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ActivateCertificateAuthorityOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*privateca.ActivateCertificateAuthorityOperation"),
 		pollPath: override,
 	}
 }
@@ -4879,7 +5589,7 @@ func (c *certificateAuthorityRESTClient) ActivateCertificateAuthorityOperation(n
 // The name must be that of a previously created CreateCaPoolOperation, possibly from a different process.
 func (c *certificateAuthorityGRPCClient) CreateCaPoolOperation(name string) *CreateCaPoolOperation {
 	return &CreateCaPoolOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*privateca.CreateCaPoolOperation"),
 	}
 }
 
@@ -4888,7 +5598,7 @@ func (c *certificateAuthorityGRPCClient) CreateCaPoolOperation(name string) *Cre
 func (c *certificateAuthorityRESTClient) CreateCaPoolOperation(name string) *CreateCaPoolOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateCaPoolOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*privateca.CreateCaPoolOperation"),
 		pollPath: override,
 	}
 }
@@ -4897,7 +5607,7 @@ func (c *certificateAuthorityRESTClient) CreateCaPoolOperation(name string) *Cre
 // The name must be that of a previously created CreateCertificateAuthorityOperation, possibly from a different process.
 func (c *certificateAuthorityGRPCClient) CreateCertificateAuthorityOperation(name string) *CreateCertificateAuthorityOperation {
 	return &CreateCertificateAuthorityOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*privateca.CreateCertificateAuthorityOperation"),
 	}
 }
 
@@ -4906,7 +5616,7 @@ func (c *certificateAuthorityGRPCClient) CreateCertificateAuthorityOperation(nam
 func (c *certificateAuthorityRESTClient) CreateCertificateAuthorityOperation(name string) *CreateCertificateAuthorityOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateCertificateAuthorityOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*privateca.CreateCertificateAuthorityOperation"),
 		pollPath: override,
 	}
 }
@@ -4915,7 +5625,7 @@ func (c *certificateAuthorityRESTClient) CreateCertificateAuthorityOperation(nam
 // The name must be that of a previously created CreateCertificateTemplateOperation, possibly from a different process.
 func (c *certificateAuthorityGRPCClient) CreateCertificateTemplateOperation(name string) *CreateCertificateTemplateOperation {
 	return &CreateCertificateTemplateOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*privateca.CreateCertificateTemplateOperation"),
 	}
 }
 
@@ -4924,7 +5634,7 @@ func (c *certificateAuthorityGRPCClient) CreateCertificateTemplateOperation(name
 func (c *certificateAuthorityRESTClient) CreateCertificateTemplateOperation(name string) *CreateCertificateTemplateOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateCertificateTemplateOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*privateca.CreateCertificateTemplateOperation"),
 		pollPath: override,
 	}
 }
@@ -4933,7 +5643,7 @@ func (c *certificateAuthorityRESTClient) CreateCertificateTemplateOperation(name
 // The name must be that of a previously created DeleteCaPoolOperation, possibly from a different process.
 func (c *certificateAuthorityGRPCClient) DeleteCaPoolOperation(name string) *DeleteCaPoolOperation {
 	return &DeleteCaPoolOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*privateca.DeleteCaPoolOperation"),
 	}
 }
 
@@ -4942,7 +5652,7 @@ func (c *certificateAuthorityGRPCClient) DeleteCaPoolOperation(name string) *Del
 func (c *certificateAuthorityRESTClient) DeleteCaPoolOperation(name string) *DeleteCaPoolOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteCaPoolOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*privateca.DeleteCaPoolOperation"),
 		pollPath: override,
 	}
 }
@@ -4951,7 +5661,7 @@ func (c *certificateAuthorityRESTClient) DeleteCaPoolOperation(name string) *Del
 // The name must be that of a previously created DeleteCertificateAuthorityOperation, possibly from a different process.
 func (c *certificateAuthorityGRPCClient) DeleteCertificateAuthorityOperation(name string) *DeleteCertificateAuthorityOperation {
 	return &DeleteCertificateAuthorityOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*privateca.DeleteCertificateAuthorityOperation"),
 	}
 }
 
@@ -4960,7 +5670,7 @@ func (c *certificateAuthorityGRPCClient) DeleteCertificateAuthorityOperation(nam
 func (c *certificateAuthorityRESTClient) DeleteCertificateAuthorityOperation(name string) *DeleteCertificateAuthorityOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteCertificateAuthorityOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*privateca.DeleteCertificateAuthorityOperation"),
 		pollPath: override,
 	}
 }
@@ -4969,7 +5679,7 @@ func (c *certificateAuthorityRESTClient) DeleteCertificateAuthorityOperation(nam
 // The name must be that of a previously created DeleteCertificateTemplateOperation, possibly from a different process.
 func (c *certificateAuthorityGRPCClient) DeleteCertificateTemplateOperation(name string) *DeleteCertificateTemplateOperation {
 	return &DeleteCertificateTemplateOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*privateca.DeleteCertificateTemplateOperation"),
 	}
 }
 
@@ -4978,7 +5688,7 @@ func (c *certificateAuthorityGRPCClient) DeleteCertificateTemplateOperation(name
 func (c *certificateAuthorityRESTClient) DeleteCertificateTemplateOperation(name string) *DeleteCertificateTemplateOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteCertificateTemplateOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*privateca.DeleteCertificateTemplateOperation"),
 		pollPath: override,
 	}
 }
@@ -4987,7 +5697,7 @@ func (c *certificateAuthorityRESTClient) DeleteCertificateTemplateOperation(name
 // The name must be that of a previously created DisableCertificateAuthorityOperation, possibly from a different process.
 func (c *certificateAuthorityGRPCClient) DisableCertificateAuthorityOperation(name string) *DisableCertificateAuthorityOperation {
 	return &DisableCertificateAuthorityOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*privateca.DisableCertificateAuthorityOperation"),
 	}
 }
 
@@ -4996,7 +5706,7 @@ func (c *certificateAuthorityGRPCClient) DisableCertificateAuthorityOperation(na
 func (c *certificateAuthorityRESTClient) DisableCertificateAuthorityOperation(name string) *DisableCertificateAuthorityOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DisableCertificateAuthorityOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*privateca.DisableCertificateAuthorityOperation"),
 		pollPath: override,
 	}
 }
@@ -5005,7 +5715,7 @@ func (c *certificateAuthorityRESTClient) DisableCertificateAuthorityOperation(na
 // The name must be that of a previously created EnableCertificateAuthorityOperation, possibly from a different process.
 func (c *certificateAuthorityGRPCClient) EnableCertificateAuthorityOperation(name string) *EnableCertificateAuthorityOperation {
 	return &EnableCertificateAuthorityOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*privateca.EnableCertificateAuthorityOperation"),
 	}
 }
 
@@ -5014,7 +5724,7 @@ func (c *certificateAuthorityGRPCClient) EnableCertificateAuthorityOperation(nam
 func (c *certificateAuthorityRESTClient) EnableCertificateAuthorityOperation(name string) *EnableCertificateAuthorityOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &EnableCertificateAuthorityOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*privateca.EnableCertificateAuthorityOperation"),
 		pollPath: override,
 	}
 }
@@ -5023,7 +5733,7 @@ func (c *certificateAuthorityRESTClient) EnableCertificateAuthorityOperation(nam
 // The name must be that of a previously created UndeleteCertificateAuthorityOperation, possibly from a different process.
 func (c *certificateAuthorityGRPCClient) UndeleteCertificateAuthorityOperation(name string) *UndeleteCertificateAuthorityOperation {
 	return &UndeleteCertificateAuthorityOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*privateca.UndeleteCertificateAuthorityOperation"),
 	}
 }
 
@@ -5032,7 +5742,7 @@ func (c *certificateAuthorityGRPCClient) UndeleteCertificateAuthorityOperation(n
 func (c *certificateAuthorityRESTClient) UndeleteCertificateAuthorityOperation(name string) *UndeleteCertificateAuthorityOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UndeleteCertificateAuthorityOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*privateca.UndeleteCertificateAuthorityOperation"),
 		pollPath: override,
 	}
 }
@@ -5041,7 +5751,7 @@ func (c *certificateAuthorityRESTClient) UndeleteCertificateAuthorityOperation(n
 // The name must be that of a previously created UpdateCaPoolOperation, possibly from a different process.
 func (c *certificateAuthorityGRPCClient) UpdateCaPoolOperation(name string) *UpdateCaPoolOperation {
 	return &UpdateCaPoolOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*privateca.UpdateCaPoolOperation"),
 	}
 }
 
@@ -5050,7 +5760,7 @@ func (c *certificateAuthorityGRPCClient) UpdateCaPoolOperation(name string) *Upd
 func (c *certificateAuthorityRESTClient) UpdateCaPoolOperation(name string) *UpdateCaPoolOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateCaPoolOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*privateca.UpdateCaPoolOperation"),
 		pollPath: override,
 	}
 }
@@ -5059,7 +5769,7 @@ func (c *certificateAuthorityRESTClient) UpdateCaPoolOperation(name string) *Upd
 // The name must be that of a previously created UpdateCertificateAuthorityOperation, possibly from a different process.
 func (c *certificateAuthorityGRPCClient) UpdateCertificateAuthorityOperation(name string) *UpdateCertificateAuthorityOperation {
 	return &UpdateCertificateAuthorityOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*privateca.UpdateCertificateAuthorityOperation"),
 	}
 }
 
@@ -5068,7 +5778,7 @@ func (c *certificateAuthorityGRPCClient) UpdateCertificateAuthorityOperation(nam
 func (c *certificateAuthorityRESTClient) UpdateCertificateAuthorityOperation(name string) *UpdateCertificateAuthorityOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateCertificateAuthorityOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*privateca.UpdateCertificateAuthorityOperation"),
 		pollPath: override,
 	}
 }
@@ -5077,7 +5787,7 @@ func (c *certificateAuthorityRESTClient) UpdateCertificateAuthorityOperation(nam
 // The name must be that of a previously created UpdateCertificateRevocationListOperation, possibly from a different process.
 func (c *certificateAuthorityGRPCClient) UpdateCertificateRevocationListOperation(name string) *UpdateCertificateRevocationListOperation {
 	return &UpdateCertificateRevocationListOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*privateca.UpdateCertificateRevocationListOperation"),
 	}
 }
 
@@ -5086,7 +5796,7 @@ func (c *certificateAuthorityGRPCClient) UpdateCertificateRevocationListOperatio
 func (c *certificateAuthorityRESTClient) UpdateCertificateRevocationListOperation(name string) *UpdateCertificateRevocationListOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateCertificateRevocationListOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*privateca.UpdateCertificateRevocationListOperation"),
 		pollPath: override,
 	}
 }
@@ -5095,7 +5805,7 @@ func (c *certificateAuthorityRESTClient) UpdateCertificateRevocationListOperatio
 // The name must be that of a previously created UpdateCertificateTemplateOperation, possibly from a different process.
 func (c *certificateAuthorityGRPCClient) UpdateCertificateTemplateOperation(name string) *UpdateCertificateTemplateOperation {
 	return &UpdateCertificateTemplateOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*privateca.UpdateCertificateTemplateOperation"),
 	}
 }
 
@@ -5104,7 +5814,7 @@ func (c *certificateAuthorityGRPCClient) UpdateCertificateTemplateOperation(name
 func (c *certificateAuthorityRESTClient) UpdateCertificateTemplateOperation(name string) *UpdateCertificateTemplateOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateCertificateTemplateOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*privateca.UpdateCertificateTemplateOperation"),
 		pollPath: override,
 	}
 }

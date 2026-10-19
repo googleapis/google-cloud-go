@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import (
 
 	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -94,7 +95,7 @@ func defaultPublicAdvertisedPrefixesRESTCallOptions() *PublicAdvertisedPrefixesC
 	}
 }
 
-// internalPublicAdvertisedPrefixesClient is an interface that defines the methods available from Google Compute Engine API.
+// internalPublicAdvertisedPrefixesClient is an interface that defines the methods available from Compute Engine API.
 type internalPublicAdvertisedPrefixesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -108,10 +109,12 @@ type internalPublicAdvertisedPrefixesClient interface {
 	Withdraw(context.Context, *computepb.WithdrawPublicAdvertisedPrefixeRequest, ...gax.CallOption) (*Operation, error)
 }
 
-// PublicAdvertisedPrefixesClient is a client for interacting with Google Compute Engine API.
+// PublicAdvertisedPrefixesClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The PublicAdvertisedPrefixes API.
+//
+// This client uses PublicAdvertisedPrefixes version 2026-09-01.
 type PublicAdvertisedPrefixesClient struct {
 	// The internal transport-dependent client.
 	internalClient internalPublicAdvertisedPrefixesClient
@@ -122,7 +125,7 @@ type PublicAdvertisedPrefixesClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *PublicAdvertisedPrefixesClient) Close() error {
 	return c.internalClient.Close()
@@ -158,7 +161,8 @@ func (c *PublicAdvertisedPrefixesClient) Get(ctx context.Context, req *computepb
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// Insert creates a PublicAdvertisedPrefix in the specified project using the parameters that are included in the request.
+// Insert creates a PublicAdvertisedPrefix in the specified project
+// using the parameters that are included in the request.
 func (c *PublicAdvertisedPrefixesClient) Insert(ctx context.Context, req *computepb.InsertPublicAdvertisedPrefixeRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
@@ -168,7 +172,10 @@ func (c *PublicAdvertisedPrefixesClient) List(ctx context.Context, req *computep
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// Patch patches the specified Router resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+// Patch patches the specified Router resource with the data included in the
+// request. This method supportsPATCH
+// semantics and usesJSON merge
+// patch format and processing rules.
 func (c *PublicAdvertisedPrefixesClient) Patch(ctx context.Context, req *computepb.PatchPublicAdvertisedPrefixeRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
@@ -203,6 +210,16 @@ type publicAdvertisedPrefixesRESTClient struct {
 // The PublicAdvertisedPrefixes API.
 func NewPublicAdvertisedPrefixesRESTClient(ctx context.Context, opts ...option.ClientOption) (*PublicAdvertisedPrefixesClient, error) {
 	clientOpts := append(defaultPublicAdvertisedPrefixesRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "compute",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/compute/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "compute.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -216,6 +233,66 @@ func NewPublicAdvertisedPrefixesRESTClient(ctx context.Context, opts ...option.C
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Announce = append(callOpts.Announce, gax.WithClientMetrics(metrics))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientMetrics(metrics))
+		callOpts.Get = append(callOpts.Get, gax.WithClientMetrics(metrics))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientMetrics(metrics))
+		callOpts.List = append(callOpts.List, gax.WithClientMetrics(metrics))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientMetrics(metrics))
+		callOpts.Withdraw = append(callOpts.Withdraw, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Announce = append(callOpts.Announce, gax.WithClientTracing(tracing))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientTracing(tracing))
+		callOpts.Get = append(callOpts.Get, gax.WithClientTracing(tracing))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientTracing(tracing))
+		callOpts.List = append(callOpts.List, gax.WithClientTracing(tracing))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientTracing(tracing))
+		callOpts.Withdraw = append(callOpts.Withdraw, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Announce = append(callOpts.Announce, gax.WithClientLogging(logging))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientLogging(logging))
+		callOpts.Get = append(callOpts.Get, gax.WithClientLogging(logging))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientLogging(logging))
+		callOpts.List = append(callOpts.List, gax.WithClientLogging(logging))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientLogging(logging))
+		callOpts.Withdraw = append(callOpts.Withdraw, gax.WithClientLogging(logging))
+	}
 
 	o := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -250,10 +327,11 @@ func (c *publicAdvertisedPrefixesRESTClient) setGoogleClientInfo(keyval ...strin
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
+		"x-goog-api-version", "2026-09-01",
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *publicAdvertisedPrefixesRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -292,6 +370,10 @@ func (c *publicAdvertisedPrefixesRESTClient) Announce(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.PublicAdvertisedPrefixes/Announce")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/publicAdvertisedPrefixes/{public_advertised_prefix}/announce")
+	}
 	opts = append((*c.CallOptions).Announce[0:len((*c.CallOptions).Announce):len((*c.CallOptions).Announce)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -351,6 +433,10 @@ func (c *publicAdvertisedPrefixesRESTClient) Delete(ctx context.Context, req *co
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.PublicAdvertisedPrefixes/Delete")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/publicAdvertisedPrefixes/{public_advertised_prefix}")
+	}
 	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -403,6 +489,10 @@ func (c *publicAdvertisedPrefixesRESTClient) Get(ctx context.Context, req *compu
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.PublicAdvertisedPrefixes/Get")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/publicAdvertisedPrefixes/{public_advertised_prefix}")
+	}
 	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.PublicAdvertisedPrefix{}
@@ -434,7 +524,8 @@ func (c *publicAdvertisedPrefixesRESTClient) Get(ctx context.Context, req *compu
 	return resp, nil
 }
 
-// Insert creates a PublicAdvertisedPrefix in the specified project using the parameters that are included in the request.
+// Insert creates a PublicAdvertisedPrefix in the specified project
+// using the parameters that are included in the request.
 func (c *publicAdvertisedPrefixesRESTClient) Insert(ctx context.Context, req *computepb.InsertPublicAdvertisedPrefixeRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetPublicAdvertisedPrefixResource()
@@ -462,6 +553,10 @@ func (c *publicAdvertisedPrefixesRESTClient) Insert(ctx context.Context, req *co
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.PublicAdvertisedPrefixes/Insert")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/publicAdvertisedPrefixes")
+	}
 	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -503,7 +598,7 @@ func (c *publicAdvertisedPrefixesRESTClient) Insert(ctx context.Context, req *co
 // List lists the PublicAdvertisedPrefixes for a project.
 func (c *publicAdvertisedPrefixesRESTClient) List(ctx context.Context, req *computepb.ListPublicAdvertisedPrefixesRequest, opts ...gax.CallOption) *PublicAdvertisedPrefixIterator {
 	it := &PublicAdvertisedPrefixIterator{}
-	req = proto.Clone(req).(*computepb.ListPublicAdvertisedPrefixesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.PublicAdvertisedPrefix, string, error) {
 		resp := &computepb.PublicAdvertisedPrefixList{}
@@ -533,9 +628,6 @@ func (c *publicAdvertisedPrefixesRESTClient) List(ctx context.Context, req *comp
 		}
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -586,7 +678,10 @@ func (c *publicAdvertisedPrefixesRESTClient) List(ctx context.Context, req *comp
 	return it
 }
 
-// Patch patches the specified Router resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+// Patch patches the specified Router resource with the data included in the
+// request. This method supportsPATCH
+// semantics and usesJSON merge
+// patch format and processing rules.
 func (c *publicAdvertisedPrefixesRESTClient) Patch(ctx context.Context, req *computepb.PatchPublicAdvertisedPrefixeRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetPublicAdvertisedPrefixResource()
@@ -614,6 +709,10 @@ func (c *publicAdvertisedPrefixesRESTClient) Patch(ctx context.Context, req *com
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.PublicAdvertisedPrefixes/Patch")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/publicAdvertisedPrefixes/{public_advertised_prefix}")
+	}
 	opts = append((*c.CallOptions).Patch[0:len((*c.CallOptions).Patch):len((*c.CallOptions).Patch)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -673,6 +772,10 @@ func (c *publicAdvertisedPrefixesRESTClient) Withdraw(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.PublicAdvertisedPrefixes/Withdraw")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/publicAdvertisedPrefixes/{public_advertised_prefix}/withdraw")
+	}
 	opts = append((*c.CallOptions).Withdraw[0:len((*c.CallOptions).Withdraw):len((*c.CallOptions).Withdraw)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}

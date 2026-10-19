@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import (
 
 	bigquerypb "cloud.google.com/go/bigquery/v2/apiv2/bigquerypb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -267,7 +268,7 @@ type TableClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *TableClient) Close() error {
 	return c.internalClient.Close()
@@ -291,11 +292,15 @@ func (c *TableClient) Connection() *grpc.ClientConn {
 // GetTable gets the specified table resource by table ID.
 // This method does not return the data in the table, it only returns the
 // table resource, which describes the structure of this table.
+//
+// IAM PermissionsRequires the bigquery.tables.get permission on the table.
 func (c *TableClient) GetTable(ctx context.Context, req *bigquerypb.GetTableRequest, opts ...gax.CallOption) (*bigquerypb.Table, error) {
 	return c.internalClient.GetTable(ctx, req, opts...)
 }
 
 // InsertTable creates a new, empty table in the dataset.
+//
+// IAM PermissionsRequires the bigquery.tables.create permission on the dataset.
 func (c *TableClient) InsertTable(ctx context.Context, req *bigquerypb.InsertTableRequest, opts ...gax.CallOption) (*bigquerypb.Table, error) {
 	return c.internalClient.InsertTable(ctx, req, opts...)
 }
@@ -304,6 +309,12 @@ func (c *TableClient) InsertTable(ctx context.Context, req *bigquerypb.InsertTab
 // entire table resource, whereas the patch method only replaces fields that
 // are provided in the submitted table resource.
 // This method supports RFC5789 patch semantics.
+//
+// IAM PermissionsRequires the following IAM permission(s) on the table:
+//
+//	bigquery.tables.update
+//
+//	bigquery.tables.get
 func (c *TableClient) PatchTable(ctx context.Context, req *bigquerypb.UpdateOrPatchTableRequest, opts ...gax.CallOption) (*bigquerypb.Table, error) {
 	return c.internalClient.PatchTable(ctx, req, opts...)
 }
@@ -311,18 +322,24 @@ func (c *TableClient) PatchTable(ctx context.Context, req *bigquerypb.UpdateOrPa
 // UpdateTable updates information in an existing table. The update method replaces the
 // entire Table resource, whereas the patch method only replaces fields that
 // are provided in the submitted Table resource.
+//
+// IAM PermissionsRequires the bigquery.tables.update permission on the table.
 func (c *TableClient) UpdateTable(ctx context.Context, req *bigquerypb.UpdateOrPatchTableRequest, opts ...gax.CallOption) (*bigquerypb.Table, error) {
 	return c.internalClient.UpdateTable(ctx, req, opts...)
 }
 
 // DeleteTable deletes the table specified by tableId from the dataset.
 // If the table contains data, all the data will be deleted.
+//
+// IAM PermissionsRequires the bigquery.tables.delete permission on the table.
 func (c *TableClient) DeleteTable(ctx context.Context, req *bigquerypb.DeleteTableRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteTable(ctx, req, opts...)
 }
 
 // ListTables lists all tables in the specified dataset. Requires the READER dataset
 // role.
+//
+// IAM PermissionsRequires the bigquery.tables.list permission on the dataset.
 func (c *TableClient) ListTables(ctx context.Context, req *bigquerypb.ListTablesRequest, opts ...gax.CallOption) *ListFormatTableIterator {
 	return c.internalClient.ListTables(ctx, req, opts...)
 }
@@ -353,6 +370,16 @@ type tableGRPCClient struct {
 // entities such as views and snapshots.
 func NewTableClient(ctx context.Context, opts ...option.ClientOption) (*TableClient, error) {
 	clientOpts := defaultTableGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "bigquery",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/bigquery/v2/apiv2",
+			"gcp.client.language": "go",
+			"url.domain":          "bigquery.googleapis.com",
+		}))
+	}
 	if newTableClientHook != nil {
 		hookOpts, err := newTableClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -374,6 +401,62 @@ func NewTableClient(ctx context.Context, opts ...option.ClientOption) (*TableCli
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "bigquery",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/v2/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "bigquery.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetTable = append(client.CallOptions.GetTable, gax.WithClientMetrics(metrics))
+		client.CallOptions.InsertTable = append(client.CallOptions.InsertTable, gax.WithClientMetrics(metrics))
+		client.CallOptions.PatchTable = append(client.CallOptions.PatchTable, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateTable = append(client.CallOptions.UpdateTable, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteTable = append(client.CallOptions.DeleteTable, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListTables = append(client.CallOptions.ListTables, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "bigquery",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/v2/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "bigquery.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetTable = append(client.CallOptions.GetTable, gax.WithClientTracing(tracing))
+		client.CallOptions.InsertTable = append(client.CallOptions.InsertTable, gax.WithClientTracing(tracing))
+		client.CallOptions.PatchTable = append(client.CallOptions.PatchTable, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateTable = append(client.CallOptions.UpdateTable, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteTable = append(client.CallOptions.DeleteTable, gax.WithClientTracing(tracing))
+		client.CallOptions.ListTables = append(client.CallOptions.ListTables, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "bigquery",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/v2/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "bigquery.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetTable = append(client.CallOptions.GetTable, gax.WithClientLogging(logging))
+		client.CallOptions.InsertTable = append(client.CallOptions.InsertTable, gax.WithClientLogging(logging))
+		client.CallOptions.PatchTable = append(client.CallOptions.PatchTable, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateTable = append(client.CallOptions.UpdateTable, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteTable = append(client.CallOptions.DeleteTable, gax.WithClientLogging(logging))
+		client.CallOptions.ListTables = append(client.CallOptions.ListTables, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -399,7 +482,7 @@ func (c *tableGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *tableGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -428,6 +511,16 @@ type tableRESTClient struct {
 // entities such as views and snapshots.
 func NewTableRESTClient(ctx context.Context, opts ...option.ClientOption) (*TableClient, error) {
 	clientOpts := append(defaultTableRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "bigquery",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/bigquery/v2/apiv2",
+			"gcp.client.language": "go",
+			"url.domain":          "bigquery.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -441,6 +534,63 @@ func NewTableRESTClient(ctx context.Context, opts ...option.ClientOption) (*Tabl
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "bigquery",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/v2/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "bigquery.googleapis.com",
+			}),
+		)
+
+		callOpts.GetTable = append(callOpts.GetTable, gax.WithClientMetrics(metrics))
+		callOpts.InsertTable = append(callOpts.InsertTable, gax.WithClientMetrics(metrics))
+		callOpts.PatchTable = append(callOpts.PatchTable, gax.WithClientMetrics(metrics))
+		callOpts.UpdateTable = append(callOpts.UpdateTable, gax.WithClientMetrics(metrics))
+		callOpts.DeleteTable = append(callOpts.DeleteTable, gax.WithClientMetrics(metrics))
+		callOpts.ListTables = append(callOpts.ListTables, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "bigquery",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/v2/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "bigquery.googleapis.com",
+			}),
+		)
+
+		callOpts.GetTable = append(callOpts.GetTable, gax.WithClientTracing(tracing))
+		callOpts.InsertTable = append(callOpts.InsertTable, gax.WithClientTracing(tracing))
+		callOpts.PatchTable = append(callOpts.PatchTable, gax.WithClientTracing(tracing))
+		callOpts.UpdateTable = append(callOpts.UpdateTable, gax.WithClientTracing(tracing))
+		callOpts.DeleteTable = append(callOpts.DeleteTable, gax.WithClientTracing(tracing))
+		callOpts.ListTables = append(callOpts.ListTables, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "bigquery",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/v2/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "bigquery.googleapis.com",
+			}),
+		)
+
+		callOpts.GetTable = append(callOpts.GetTable, gax.WithClientLogging(logging))
+		callOpts.InsertTable = append(callOpts.InsertTable, gax.WithClientLogging(logging))
+		callOpts.PatchTable = append(callOpts.PatchTable, gax.WithClientLogging(logging))
+		callOpts.UpdateTable = append(callOpts.UpdateTable, gax.WithClientLogging(logging))
+		callOpts.DeleteTable = append(callOpts.DeleteTable, gax.WithClientLogging(logging))
+		callOpts.ListTables = append(callOpts.ListTables, gax.WithClientLogging(logging))
+	}
 
 	return &TableClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -468,7 +618,7 @@ func (c *tableRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *tableRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -487,6 +637,9 @@ func (c *tableGRPCClient) GetTable(ctx context.Context, req *bigquerypb.GetTable
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.TableService/GetTable")
+	}
 	opts = append((*c.CallOptions).GetTable[0:len((*c.CallOptions).GetTable):len((*c.CallOptions).GetTable)], opts...)
 	var resp *bigquerypb.Table
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -505,6 +658,9 @@ func (c *tableGRPCClient) InsertTable(ctx context.Context, req *bigquerypb.Inser
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.TableService/InsertTable")
+	}
 	opts = append((*c.CallOptions).InsertTable[0:len((*c.CallOptions).InsertTable):len((*c.CallOptions).InsertTable)], opts...)
 	var resp *bigquerypb.Table
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -523,6 +679,9 @@ func (c *tableGRPCClient) PatchTable(ctx context.Context, req *bigquerypb.Update
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.TableService/PatchTable")
+	}
 	opts = append((*c.CallOptions).PatchTable[0:len((*c.CallOptions).PatchTable):len((*c.CallOptions).PatchTable)], opts...)
 	var resp *bigquerypb.Table
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -541,6 +700,9 @@ func (c *tableGRPCClient) UpdateTable(ctx context.Context, req *bigquerypb.Updat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.TableService/UpdateTable")
+	}
 	opts = append((*c.CallOptions).UpdateTable[0:len((*c.CallOptions).UpdateTable):len((*c.CallOptions).UpdateTable)], opts...)
 	var resp *bigquerypb.Table
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -559,6 +721,9 @@ func (c *tableGRPCClient) DeleteTable(ctx context.Context, req *bigquerypb.Delet
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.TableService/DeleteTable")
+	}
 	opts = append((*c.CallOptions).DeleteTable[0:len((*c.CallOptions).DeleteTable):len((*c.CallOptions).DeleteTable)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -573,9 +738,12 @@ func (c *tableGRPCClient) ListTables(ctx context.Context, req *bigquerypb.ListTa
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.TableService/ListTables")
+	}
 	opts = append((*c.CallOptions).ListTables[0:len((*c.CallOptions).ListTables):len((*c.CallOptions).ListTables)], opts...)
 	it := &ListFormatTableIterator{}
-	req = proto.Clone(req).(*bigquerypb.ListTablesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*bigquerypb.ListFormatTable, string, error) {
 		resp := &bigquerypb.TableList{}
 		if pageToken != "" {
@@ -619,6 +787,8 @@ func (c *tableGRPCClient) ListTables(ctx context.Context, req *bigquerypb.ListTa
 // GetTable gets the specified table resource by table ID.
 // This method does not return the data in the table, it only returns the
 // table resource, which describes the structure of this table.
+//
+// IAM PermissionsRequires the bigquery.tables.get permission on the table.
 func (c *tableRESTClient) GetTable(ctx context.Context, req *bigquerypb.GetTableRequest, opts ...gax.CallOption) (*bigquerypb.Table, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -642,6 +812,10 @@ func (c *tableRESTClient) GetTable(ctx context.Context, req *bigquerypb.GetTable
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.TableService/GetTable")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/bigquery/v2/projects/{project_id=*}/datasets/{dataset_id=*}/tables/{table_id=*}")
+	}
 	opts = append((*c.CallOptions).GetTable[0:len((*c.CallOptions).GetTable):len((*c.CallOptions).GetTable)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &bigquerypb.Table{}
@@ -674,6 +848,8 @@ func (c *tableRESTClient) GetTable(ctx context.Context, req *bigquerypb.GetTable
 }
 
 // InsertTable creates a new, empty table in the dataset.
+//
+// IAM PermissionsRequires the bigquery.tables.create permission on the dataset.
 func (c *tableRESTClient) InsertTable(ctx context.Context, req *bigquerypb.InsertTableRequest, opts ...gax.CallOption) (*bigquerypb.Table, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetTable()
@@ -694,6 +870,10 @@ func (c *tableRESTClient) InsertTable(ctx context.Context, req *bigquerypb.Inser
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.TableService/InsertTable")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/bigquery/v2/projects/{project_id=*}/datasets/{dataset_id=*}/tables")
+	}
 	opts = append((*c.CallOptions).InsertTable[0:len((*c.CallOptions).InsertTable):len((*c.CallOptions).InsertTable)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &bigquerypb.Table{}
@@ -729,6 +909,12 @@ func (c *tableRESTClient) InsertTable(ctx context.Context, req *bigquerypb.Inser
 // entire table resource, whereas the patch method only replaces fields that
 // are provided in the submitted table resource.
 // This method supports RFC5789 patch semantics.
+//
+// IAM PermissionsRequires the following IAM permission(s) on the table:
+//
+//	bigquery.tables.update
+//
+//	bigquery.tables.get
 func (c *tableRESTClient) PatchTable(ctx context.Context, req *bigquerypb.UpdateOrPatchTableRequest, opts ...gax.CallOption) (*bigquerypb.Table, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetTable()
@@ -756,6 +942,10 @@ func (c *tableRESTClient) PatchTable(ctx context.Context, req *bigquerypb.Update
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.TableService/PatchTable")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/bigquery/v2/projects/{project_id=*}/datasets/{dataset_id=*}/tables/{table_id=*}")
+	}
 	opts = append((*c.CallOptions).PatchTable[0:len((*c.CallOptions).PatchTable):len((*c.CallOptions).PatchTable)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &bigquerypb.Table{}
@@ -790,6 +980,8 @@ func (c *tableRESTClient) PatchTable(ctx context.Context, req *bigquerypb.Update
 // UpdateTable updates information in an existing table. The update method replaces the
 // entire Table resource, whereas the patch method only replaces fields that
 // are provided in the submitted Table resource.
+//
+// IAM PermissionsRequires the bigquery.tables.update permission on the table.
 func (c *tableRESTClient) UpdateTable(ctx context.Context, req *bigquerypb.UpdateOrPatchTableRequest, opts ...gax.CallOption) (*bigquerypb.Table, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetTable()
@@ -817,6 +1009,10 @@ func (c *tableRESTClient) UpdateTable(ctx context.Context, req *bigquerypb.Updat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.TableService/UpdateTable")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/bigquery/v2/projects/{project_id=*}/datasets/{dataset_id=*}/tables/{table_id=*}")
+	}
 	opts = append((*c.CallOptions).UpdateTable[0:len((*c.CallOptions).UpdateTable):len((*c.CallOptions).UpdateTable)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &bigquerypb.Table{}
@@ -850,6 +1046,8 @@ func (c *tableRESTClient) UpdateTable(ctx context.Context, req *bigquerypb.Updat
 
 // DeleteTable deletes the table specified by tableId from the dataset.
 // If the table contains data, all the data will be deleted.
+//
+// IAM PermissionsRequires the bigquery.tables.delete permission on the table.
 func (c *tableRESTClient) DeleteTable(ctx context.Context, req *bigquerypb.DeleteTableRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -863,6 +1061,10 @@ func (c *tableRESTClient) DeleteTable(ctx context.Context, req *bigquerypb.Delet
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.TableService/DeleteTable")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/bigquery/v2/projects/{project_id=*}/datasets/{dataset_id=*}/tables/{table_id=*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -881,9 +1083,11 @@ func (c *tableRESTClient) DeleteTable(ctx context.Context, req *bigquerypb.Delet
 
 // ListTables lists all tables in the specified dataset. Requires the READER dataset
 // role.
+//
+// IAM PermissionsRequires the bigquery.tables.list permission on the dataset.
 func (c *tableRESTClient) ListTables(ctx context.Context, req *bigquerypb.ListTablesRequest, opts ...gax.CallOption) *ListFormatTableIterator {
 	it := &ListFormatTableIterator{}
-	req = proto.Clone(req).(*bigquerypb.ListTablesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*bigquerypb.ListFormatTable, string, error) {
 		resp := &bigquerypb.TableList{}

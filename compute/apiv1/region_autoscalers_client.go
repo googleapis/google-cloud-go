@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import (
 
 	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -41,12 +42,13 @@ var newRegionAutoscalersClientHook clientHook
 
 // RegionAutoscalersCallOptions contains the retry settings for each method of RegionAutoscalersClient.
 type RegionAutoscalersCallOptions struct {
-	Delete []gax.CallOption
-	Get    []gax.CallOption
-	Insert []gax.CallOption
-	List   []gax.CallOption
-	Patch  []gax.CallOption
-	Update []gax.CallOption
+	Delete             []gax.CallOption
+	Get                []gax.CallOption
+	Insert             []gax.CallOption
+	List               []gax.CallOption
+	Patch              []gax.CallOption
+	TestIamPermissions []gax.CallOption
+	Update             []gax.CallOption
 }
 
 func defaultRegionAutoscalersRESTCallOptions() *RegionAutoscalersCallOptions {
@@ -84,13 +86,16 @@ func defaultRegionAutoscalersRESTCallOptions() *RegionAutoscalersCallOptions {
 		Patch: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
+		TestIamPermissions: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		Update: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
 	}
 }
 
-// internalRegionAutoscalersClient is an interface that defines the methods available from Google Compute Engine API.
+// internalRegionAutoscalersClient is an interface that defines the methods available from Compute Engine API.
 type internalRegionAutoscalersClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -100,13 +105,16 @@ type internalRegionAutoscalersClient interface {
 	Insert(context.Context, *computepb.InsertRegionAutoscalerRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListRegionAutoscalersRequest, ...gax.CallOption) *AutoscalerIterator
 	Patch(context.Context, *computepb.PatchRegionAutoscalerRequest, ...gax.CallOption) (*Operation, error)
+	TestIamPermissions(context.Context, *computepb.TestIamPermissionsRegionAutoscalerRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 	Update(context.Context, *computepb.UpdateRegionAutoscalerRequest, ...gax.CallOption) (*Operation, error)
 }
 
-// RegionAutoscalersClient is a client for interacting with Google Compute Engine API.
+// RegionAutoscalersClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The RegionAutoscalers API.
+//
+// This client uses RegionAutoscalers version 2026-09-01.
 type RegionAutoscalersClient struct {
 	// The internal transport-dependent client.
 	internalClient internalRegionAutoscalersClient
@@ -117,7 +125,7 @@ type RegionAutoscalersClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *RegionAutoscalersClient) Close() error {
 	return c.internalClient.Close()
@@ -148,22 +156,33 @@ func (c *RegionAutoscalersClient) Get(ctx context.Context, req *computepb.GetReg
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// Insert creates an autoscaler in the specified project using the data included in the request.
+// Insert creates an autoscaler in the specified project using
+// the data included in the request.
 func (c *RegionAutoscalersClient) Insert(ctx context.Context, req *computepb.InsertRegionAutoscalerRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves a list of autoscalers contained within the specified region.
+// List retrieves a list of autoscalers contained within
+// the specified region.
 func (c *RegionAutoscalersClient) List(ctx context.Context, req *computepb.ListRegionAutoscalersRequest, opts ...gax.CallOption) *AutoscalerIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// Patch updates an autoscaler in the specified project using the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+// Patch updates an autoscaler in the specified project using
+// the data included in the request. This method supportsPATCH
+// semantics and uses theJSON merge
+// patch format and processing rules.
 func (c *RegionAutoscalersClient) Patch(ctx context.Context, req *computepb.PatchRegionAutoscalerRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
 
-// Update updates an autoscaler in the specified project using the data included in the request.
+// TestIamPermissions returns permissions that a caller has on the specified resource.
+func (c *RegionAutoscalersClient) TestIamPermissions(ctx context.Context, req *computepb.TestIamPermissionsRegionAutoscalerRequest, opts ...gax.CallOption) (*computepb.TestPermissionsResponse, error) {
+	return c.internalClient.TestIamPermissions(ctx, req, opts...)
+}
+
+// Update updates an autoscaler in the specified project using
+// the data included in the request.
 func (c *RegionAutoscalersClient) Update(ctx context.Context, req *computepb.UpdateRegionAutoscalerRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Update(ctx, req, opts...)
 }
@@ -193,6 +212,16 @@ type regionAutoscalersRESTClient struct {
 // The RegionAutoscalers API.
 func NewRegionAutoscalersRESTClient(ctx context.Context, opts ...option.ClientOption) (*RegionAutoscalersClient, error) {
 	clientOpts := append(defaultRegionAutoscalersRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "compute",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/compute/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "compute.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -206,6 +235,66 @@ func NewRegionAutoscalersRESTClient(ctx context.Context, opts ...option.ClientOp
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientMetrics(metrics))
+		callOpts.Get = append(callOpts.Get, gax.WithClientMetrics(metrics))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientMetrics(metrics))
+		callOpts.List = append(callOpts.List, gax.WithClientMetrics(metrics))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientMetrics(metrics))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
+		callOpts.Update = append(callOpts.Update, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientTracing(tracing))
+		callOpts.Get = append(callOpts.Get, gax.WithClientTracing(tracing))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientTracing(tracing))
+		callOpts.List = append(callOpts.List, gax.WithClientTracing(tracing))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientTracing(tracing))
+		callOpts.Update = append(callOpts.Update, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientLogging(logging))
+		callOpts.Get = append(callOpts.Get, gax.WithClientLogging(logging))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientLogging(logging))
+		callOpts.List = append(callOpts.List, gax.WithClientLogging(logging))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientLogging(logging))
+		callOpts.Update = append(callOpts.Update, gax.WithClientLogging(logging))
+	}
 
 	o := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -240,10 +329,11 @@ func (c *regionAutoscalersRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
+		"x-goog-api-version", "2026-09-01",
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *regionAutoscalersRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -282,6 +372,10 @@ func (c *regionAutoscalersRESTClient) Delete(ctx context.Context, req *computepb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionAutoscalers/Delete")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/autoscalers/{autoscaler}")
+	}
 	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -335,6 +429,10 @@ func (c *regionAutoscalersRESTClient) Get(ctx context.Context, req *computepb.Ge
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionAutoscalers/Get")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/autoscalers/{autoscaler}")
+	}
 	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Autoscaler{}
@@ -366,7 +464,8 @@ func (c *regionAutoscalersRESTClient) Get(ctx context.Context, req *computepb.Ge
 	return resp, nil
 }
 
-// Insert creates an autoscaler in the specified project using the data included in the request.
+// Insert creates an autoscaler in the specified project using
+// the data included in the request.
 func (c *regionAutoscalersRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionAutoscalerRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetAutoscalerResource()
@@ -394,6 +493,10 @@ func (c *regionAutoscalersRESTClient) Insert(ctx context.Context, req *computepb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionAutoscalers/Insert")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/autoscalers")
+	}
 	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -433,10 +536,11 @@ func (c *regionAutoscalersRESTClient) Insert(ctx context.Context, req *computepb
 	return op, nil
 }
 
-// List retrieves a list of autoscalers contained within the specified region.
+// List retrieves a list of autoscalers contained within
+// the specified region.
 func (c *regionAutoscalersRESTClient) List(ctx context.Context, req *computepb.ListRegionAutoscalersRequest, opts ...gax.CallOption) *AutoscalerIterator {
 	it := &AutoscalerIterator{}
-	req = proto.Clone(req).(*computepb.ListRegionAutoscalersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.Autoscaler, string, error) {
 		resp := &computepb.RegionAutoscalerList{}
@@ -466,9 +570,6 @@ func (c *regionAutoscalersRESTClient) List(ctx context.Context, req *computepb.L
 		}
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -519,7 +620,10 @@ func (c *regionAutoscalersRESTClient) List(ctx context.Context, req *computepb.L
 	return it
 }
 
-// Patch updates an autoscaler in the specified project using the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+// Patch updates an autoscaler in the specified project using
+// the data included in the request. This method supportsPATCH
+// semantics and uses theJSON merge
+// patch format and processing rules.
 func (c *regionAutoscalersRESTClient) Patch(ctx context.Context, req *computepb.PatchRegionAutoscalerRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetAutoscalerResource()
@@ -550,6 +654,10 @@ func (c *regionAutoscalersRESTClient) Patch(ctx context.Context, req *computepb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionAutoscalers/Patch")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/autoscalers")
+	}
 	opts = append((*c.CallOptions).Patch[0:len((*c.CallOptions).Patch):len((*c.CallOptions).Patch)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -589,7 +697,64 @@ func (c *regionAutoscalersRESTClient) Patch(ctx context.Context, req *computepb.
 	return op, nil
 }
 
-// Update updates an autoscaler in the specified project using the data included in the request.
+// TestIamPermissions returns permissions that a caller has on the specified resource.
+func (c *regionAutoscalersRESTClient) TestIamPermissions(ctx context.Context, req *computepb.TestIamPermissionsRegionAutoscalerRequest, opts ...gax.CallOption) (*computepb.TestPermissionsResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetTestPermissionsRequestResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/autoscalers/%v/testIamPermissions", req.GetProject(), req.GetRegion(), req.GetResource())
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionAutoscalers/TestIamPermissions")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/autoscalers/{resource}/testIamPermissions")
+	}
+	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.TestPermissionsResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TestIamPermissions")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// Update updates an autoscaler in the specified project using
+// the data included in the request.
 func (c *regionAutoscalersRESTClient) Update(ctx context.Context, req *computepb.UpdateRegionAutoscalerRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetAutoscalerResource()
@@ -620,6 +785,10 @@ func (c *regionAutoscalersRESTClient) Update(ctx context.Context, req *computepb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionAutoscalers/Update")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/autoscalers")
+	}
 	opts = append((*c.CallOptions).Update[0:len((*c.CallOptions).Update):len((*c.CallOptions).Update)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}

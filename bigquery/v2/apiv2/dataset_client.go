@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import (
 
 	bigquerypb "cloud.google.com/go/bigquery/v2/apiv2/bigquerypb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -295,7 +296,7 @@ type DatasetClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *DatasetClient) Close() error {
 	return c.internalClient.Close()
@@ -317,11 +318,15 @@ func (c *DatasetClient) Connection() *grpc.ClientConn {
 }
 
 // GetDataset returns the dataset specified by datasetID.
+//
+// IAM PermissionsRequires the bigquery.datasets.get permission on the dataset.
 func (c *DatasetClient) GetDataset(ctx context.Context, req *bigquerypb.GetDatasetRequest, opts ...gax.CallOption) (*bigquerypb.Dataset, error) {
 	return c.internalClient.GetDataset(ctx, req, opts...)
 }
 
 // InsertDataset creates a new empty dataset.
+//
+// IAM PermissionsRequires the bigquery.datasets.create permission on the project.
 func (c *DatasetClient) InsertDataset(ctx context.Context, req *bigquerypb.InsertDatasetRequest, opts ...gax.CallOption) (*bigquerypb.Dataset, error) {
 	return c.internalClient.InsertDataset(ctx, req, opts...)
 }
@@ -330,6 +335,12 @@ func (c *DatasetClient) InsertDataset(ctx context.Context, req *bigquerypb.Inser
 // entire dataset resource, whereas the patch method only replaces fields that
 // are provided in the submitted dataset resource.
 // This method supports RFC5789 patch semantics.
+//
+// IAM PermissionsRequires the following IAM permission(s) to use this method:
+//
+//	bigquery.datasets.update on the dataset.
+//
+//	bigquery.datasets.get on the dataset.
 func (c *DatasetClient) PatchDataset(ctx context.Context, req *bigquerypb.UpdateOrPatchDatasetRequest, opts ...gax.CallOption) (*bigquerypb.Dataset, error) {
 	return c.internalClient.PatchDataset(ctx, req, opts...)
 }
@@ -337,6 +348,8 @@ func (c *DatasetClient) PatchDataset(ctx context.Context, req *bigquerypb.Update
 // UpdateDataset updates information in an existing dataset. The update method replaces the
 // entire dataset resource, whereas the patch method only replaces fields that
 // are provided in the submitted dataset resource.
+//
+// IAM PermissionsRequires the bigquery.datasets.update permission on the dataset.
 func (c *DatasetClient) UpdateDataset(ctx context.Context, req *bigquerypb.UpdateOrPatchDatasetRequest, opts ...gax.CallOption) (*bigquerypb.Dataset, error) {
 	return c.internalClient.UpdateDataset(ctx, req, opts...)
 }
@@ -345,12 +358,18 @@ func (c *DatasetClient) UpdateDataset(ctx context.Context, req *bigquerypb.Updat
 // a dataset, you must delete all its tables, either manually or by specifying
 // deleteContents. Immediately after deletion, you can create another dataset
 // with the same name.
+//
+// IAM PermissionsRequires the bigquery.datasets.delete permission on the dataset.
 func (c *DatasetClient) DeleteDataset(ctx context.Context, req *bigquerypb.DeleteDatasetRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteDataset(ctx, req, opts...)
 }
 
 // ListDatasets lists all datasets in the specified project to which the user has been
 // granted the READER dataset role.
+//
+// IAM PermissionsRequires no specific IAM permission(s) to use this method.
+// Results are filtered to only include datasets on which the caller has the
+// bigquery.datasets.get permission.
 func (c *DatasetClient) ListDatasets(ctx context.Context, req *bigquerypb.ListDatasetsRequest, opts ...gax.CallOption) *ListFormatDatasetIterator {
 	return c.internalClient.ListDatasets(ctx, req, opts...)
 }
@@ -358,6 +377,12 @@ func (c *DatasetClient) ListDatasets(ctx context.Context, req *bigquerypb.ListDa
 // UndeleteDataset undeletes a dataset which is within time travel window based on datasetId.
 // If a time is specified, the dataset version deleted at that time is
 // undeleted, else the last live version is undeleted.
+//
+// IAM PermissionsRequires the following IAM permission(s) to use this method:
+//
+//	bigquery.datasets.create on the project.
+//
+//	bigquery.datasets.get on the dataset.
 func (c *DatasetClient) UndeleteDataset(ctx context.Context, req *bigquerypb.UndeleteDatasetRequest, opts ...gax.CallOption) (*bigquerypb.Dataset, error) {
 	return c.internalClient.UndeleteDataset(ctx, req, opts...)
 }
@@ -387,6 +412,16 @@ type datasetGRPCClient struct {
 // DatasetService provides methods for managing BigQuery datasets.
 func NewDatasetClient(ctx context.Context, opts ...option.ClientOption) (*DatasetClient, error) {
 	clientOpts := defaultDatasetGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "bigquery",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/bigquery/v2/apiv2",
+			"gcp.client.language": "go",
+			"url.domain":          "bigquery.googleapis.com",
+		}))
+	}
 	if newDatasetClientHook != nil {
 		hookOpts, err := newDatasetClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -408,6 +443,65 @@ func NewDatasetClient(ctx context.Context, opts ...option.ClientOption) (*Datase
 		logger:        internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "bigquery",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/v2/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "bigquery.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetDataset = append(client.CallOptions.GetDataset, gax.WithClientMetrics(metrics))
+		client.CallOptions.InsertDataset = append(client.CallOptions.InsertDataset, gax.WithClientMetrics(metrics))
+		client.CallOptions.PatchDataset = append(client.CallOptions.PatchDataset, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateDataset = append(client.CallOptions.UpdateDataset, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteDataset = append(client.CallOptions.DeleteDataset, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListDatasets = append(client.CallOptions.ListDatasets, gax.WithClientMetrics(metrics))
+		client.CallOptions.UndeleteDataset = append(client.CallOptions.UndeleteDataset, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "bigquery",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/v2/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "bigquery.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetDataset = append(client.CallOptions.GetDataset, gax.WithClientTracing(tracing))
+		client.CallOptions.InsertDataset = append(client.CallOptions.InsertDataset, gax.WithClientTracing(tracing))
+		client.CallOptions.PatchDataset = append(client.CallOptions.PatchDataset, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateDataset = append(client.CallOptions.UpdateDataset, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteDataset = append(client.CallOptions.DeleteDataset, gax.WithClientTracing(tracing))
+		client.CallOptions.ListDatasets = append(client.CallOptions.ListDatasets, gax.WithClientTracing(tracing))
+		client.CallOptions.UndeleteDataset = append(client.CallOptions.UndeleteDataset, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "bigquery",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/v2/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "bigquery.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetDataset = append(client.CallOptions.GetDataset, gax.WithClientLogging(logging))
+		client.CallOptions.InsertDataset = append(client.CallOptions.InsertDataset, gax.WithClientLogging(logging))
+		client.CallOptions.PatchDataset = append(client.CallOptions.PatchDataset, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateDataset = append(client.CallOptions.UpdateDataset, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteDataset = append(client.CallOptions.DeleteDataset, gax.WithClientLogging(logging))
+		client.CallOptions.ListDatasets = append(client.CallOptions.ListDatasets, gax.WithClientLogging(logging))
+		client.CallOptions.UndeleteDataset = append(client.CallOptions.UndeleteDataset, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -433,7 +527,7 @@ func (c *datasetGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *datasetGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -461,6 +555,16 @@ type datasetRESTClient struct {
 // DatasetService provides methods for managing BigQuery datasets.
 func NewDatasetRESTClient(ctx context.Context, opts ...option.ClientOption) (*DatasetClient, error) {
 	clientOpts := append(defaultDatasetRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "bigquery",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/bigquery/v2/apiv2",
+			"gcp.client.language": "go",
+			"url.domain":          "bigquery.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -474,6 +578,66 @@ func NewDatasetRESTClient(ctx context.Context, opts ...option.ClientOption) (*Da
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "bigquery",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/v2/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "bigquery.googleapis.com",
+			}),
+		)
+
+		callOpts.GetDataset = append(callOpts.GetDataset, gax.WithClientMetrics(metrics))
+		callOpts.InsertDataset = append(callOpts.InsertDataset, gax.WithClientMetrics(metrics))
+		callOpts.PatchDataset = append(callOpts.PatchDataset, gax.WithClientMetrics(metrics))
+		callOpts.UpdateDataset = append(callOpts.UpdateDataset, gax.WithClientMetrics(metrics))
+		callOpts.DeleteDataset = append(callOpts.DeleteDataset, gax.WithClientMetrics(metrics))
+		callOpts.ListDatasets = append(callOpts.ListDatasets, gax.WithClientMetrics(metrics))
+		callOpts.UndeleteDataset = append(callOpts.UndeleteDataset, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "bigquery",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/v2/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "bigquery.googleapis.com",
+			}),
+		)
+
+		callOpts.GetDataset = append(callOpts.GetDataset, gax.WithClientTracing(tracing))
+		callOpts.InsertDataset = append(callOpts.InsertDataset, gax.WithClientTracing(tracing))
+		callOpts.PatchDataset = append(callOpts.PatchDataset, gax.WithClientTracing(tracing))
+		callOpts.UpdateDataset = append(callOpts.UpdateDataset, gax.WithClientTracing(tracing))
+		callOpts.DeleteDataset = append(callOpts.DeleteDataset, gax.WithClientTracing(tracing))
+		callOpts.ListDatasets = append(callOpts.ListDatasets, gax.WithClientTracing(tracing))
+		callOpts.UndeleteDataset = append(callOpts.UndeleteDataset, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "bigquery",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/v2/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "bigquery.googleapis.com",
+			}),
+		)
+
+		callOpts.GetDataset = append(callOpts.GetDataset, gax.WithClientLogging(logging))
+		callOpts.InsertDataset = append(callOpts.InsertDataset, gax.WithClientLogging(logging))
+		callOpts.PatchDataset = append(callOpts.PatchDataset, gax.WithClientLogging(logging))
+		callOpts.UpdateDataset = append(callOpts.UpdateDataset, gax.WithClientLogging(logging))
+		callOpts.DeleteDataset = append(callOpts.DeleteDataset, gax.WithClientLogging(logging))
+		callOpts.ListDatasets = append(callOpts.ListDatasets, gax.WithClientLogging(logging))
+		callOpts.UndeleteDataset = append(callOpts.UndeleteDataset, gax.WithClientLogging(logging))
+	}
 
 	return &DatasetClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -501,7 +665,7 @@ func (c *datasetRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *datasetRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -520,6 +684,9 @@ func (c *datasetGRPCClient) GetDataset(ctx context.Context, req *bigquerypb.GetD
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.DatasetService/GetDataset")
+	}
 	opts = append((*c.CallOptions).GetDataset[0:len((*c.CallOptions).GetDataset):len((*c.CallOptions).GetDataset)], opts...)
 	var resp *bigquerypb.Dataset
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -538,6 +705,9 @@ func (c *datasetGRPCClient) InsertDataset(ctx context.Context, req *bigquerypb.I
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.DatasetService/InsertDataset")
+	}
 	opts = append((*c.CallOptions).InsertDataset[0:len((*c.CallOptions).InsertDataset):len((*c.CallOptions).InsertDataset)], opts...)
 	var resp *bigquerypb.Dataset
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -556,6 +726,9 @@ func (c *datasetGRPCClient) PatchDataset(ctx context.Context, req *bigquerypb.Up
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.DatasetService/PatchDataset")
+	}
 	opts = append((*c.CallOptions).PatchDataset[0:len((*c.CallOptions).PatchDataset):len((*c.CallOptions).PatchDataset)], opts...)
 	var resp *bigquerypb.Dataset
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -574,6 +747,9 @@ func (c *datasetGRPCClient) UpdateDataset(ctx context.Context, req *bigquerypb.U
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.DatasetService/UpdateDataset")
+	}
 	opts = append((*c.CallOptions).UpdateDataset[0:len((*c.CallOptions).UpdateDataset):len((*c.CallOptions).UpdateDataset)], opts...)
 	var resp *bigquerypb.Dataset
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -592,6 +768,9 @@ func (c *datasetGRPCClient) DeleteDataset(ctx context.Context, req *bigquerypb.D
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.DatasetService/DeleteDataset")
+	}
 	opts = append((*c.CallOptions).DeleteDataset[0:len((*c.CallOptions).DeleteDataset):len((*c.CallOptions).DeleteDataset)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -606,9 +785,12 @@ func (c *datasetGRPCClient) ListDatasets(ctx context.Context, req *bigquerypb.Li
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.DatasetService/ListDatasets")
+	}
 	opts = append((*c.CallOptions).ListDatasets[0:len((*c.CallOptions).ListDatasets):len((*c.CallOptions).ListDatasets)], opts...)
 	it := &ListFormatDatasetIterator{}
-	req = proto.Clone(req).(*bigquerypb.ListDatasetsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*bigquerypb.ListFormatDataset, string, error) {
 		resp := &bigquerypb.DatasetList{}
 		if pageToken != "" {
@@ -654,6 +836,9 @@ func (c *datasetGRPCClient) UndeleteDataset(ctx context.Context, req *bigquerypb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.DatasetService/UndeleteDataset")
+	}
 	opts = append((*c.CallOptions).UndeleteDataset[0:len((*c.CallOptions).UndeleteDataset):len((*c.CallOptions).UndeleteDataset)], opts...)
 	var resp *bigquerypb.Dataset
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -668,6 +853,8 @@ func (c *datasetGRPCClient) UndeleteDataset(ctx context.Context, req *bigquerypb
 }
 
 // GetDataset returns the dataset specified by datasetID.
+//
+// IAM PermissionsRequires the bigquery.datasets.get permission on the dataset.
 func (c *datasetRESTClient) GetDataset(ctx context.Context, req *bigquerypb.GetDatasetRequest, opts ...gax.CallOption) (*bigquerypb.Dataset, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -691,6 +878,10 @@ func (c *datasetRESTClient) GetDataset(ctx context.Context, req *bigquerypb.GetD
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.DatasetService/GetDataset")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/bigquery/v2/projects/{project_id=*}/datasets/{dataset_id=*}")
+	}
 	opts = append((*c.CallOptions).GetDataset[0:len((*c.CallOptions).GetDataset):len((*c.CallOptions).GetDataset)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &bigquerypb.Dataset{}
@@ -723,6 +914,8 @@ func (c *datasetRESTClient) GetDataset(ctx context.Context, req *bigquerypb.GetD
 }
 
 // InsertDataset creates a new empty dataset.
+//
+// IAM PermissionsRequires the bigquery.datasets.create permission on the project.
 func (c *datasetRESTClient) InsertDataset(ctx context.Context, req *bigquerypb.InsertDatasetRequest, opts ...gax.CallOption) (*bigquerypb.Dataset, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetDataset()
@@ -750,6 +943,10 @@ func (c *datasetRESTClient) InsertDataset(ctx context.Context, req *bigquerypb.I
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.DatasetService/InsertDataset")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/bigquery/v2/projects/{project_id=*}/datasets")
+	}
 	opts = append((*c.CallOptions).InsertDataset[0:len((*c.CallOptions).InsertDataset):len((*c.CallOptions).InsertDataset)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &bigquerypb.Dataset{}
@@ -785,6 +982,12 @@ func (c *datasetRESTClient) InsertDataset(ctx context.Context, req *bigquerypb.I
 // entire dataset resource, whereas the patch method only replaces fields that
 // are provided in the submitted dataset resource.
 // This method supports RFC5789 patch semantics.
+//
+// IAM PermissionsRequires the following IAM permission(s) to use this method:
+//
+//	bigquery.datasets.update on the dataset.
+//
+//	bigquery.datasets.get on the dataset.
 func (c *datasetRESTClient) PatchDataset(ctx context.Context, req *bigquerypb.UpdateOrPatchDatasetRequest, opts ...gax.CallOption) (*bigquerypb.Dataset, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetDataset()
@@ -815,6 +1018,10 @@ func (c *datasetRESTClient) PatchDataset(ctx context.Context, req *bigquerypb.Up
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.DatasetService/PatchDataset")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/bigquery/v2/projects/{project_id=*}/datasets/{dataset_id=*}")
+	}
 	opts = append((*c.CallOptions).PatchDataset[0:len((*c.CallOptions).PatchDataset):len((*c.CallOptions).PatchDataset)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &bigquerypb.Dataset{}
@@ -849,6 +1056,8 @@ func (c *datasetRESTClient) PatchDataset(ctx context.Context, req *bigquerypb.Up
 // UpdateDataset updates information in an existing dataset. The update method replaces the
 // entire dataset resource, whereas the patch method only replaces fields that
 // are provided in the submitted dataset resource.
+//
+// IAM PermissionsRequires the bigquery.datasets.update permission on the dataset.
 func (c *datasetRESTClient) UpdateDataset(ctx context.Context, req *bigquerypb.UpdateOrPatchDatasetRequest, opts ...gax.CallOption) (*bigquerypb.Dataset, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetDataset()
@@ -879,6 +1088,10 @@ func (c *datasetRESTClient) UpdateDataset(ctx context.Context, req *bigquerypb.U
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.DatasetService/UpdateDataset")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/bigquery/v2/projects/{project_id=*}/datasets/{dataset_id=*}")
+	}
 	opts = append((*c.CallOptions).UpdateDataset[0:len((*c.CallOptions).UpdateDataset):len((*c.CallOptions).UpdateDataset)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &bigquerypb.Dataset{}
@@ -914,6 +1127,8 @@ func (c *datasetRESTClient) UpdateDataset(ctx context.Context, req *bigquerypb.U
 // a dataset, you must delete all its tables, either manually or by specifying
 // deleteContents. Immediately after deletion, you can create another dataset
 // with the same name.
+//
+// IAM PermissionsRequires the bigquery.datasets.delete permission on the dataset.
 func (c *datasetRESTClient) DeleteDataset(ctx context.Context, req *bigquerypb.DeleteDatasetRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -934,6 +1149,10 @@ func (c *datasetRESTClient) DeleteDataset(ctx context.Context, req *bigquerypb.D
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.DatasetService/DeleteDataset")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/bigquery/v2/projects/{project_id=*}/datasets/{dataset_id=*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -952,9 +1171,13 @@ func (c *datasetRESTClient) DeleteDataset(ctx context.Context, req *bigquerypb.D
 
 // ListDatasets lists all datasets in the specified project to which the user has been
 // granted the READER dataset role.
+//
+// IAM PermissionsRequires no specific IAM permission(s) to use this method.
+// Results are filtered to only include datasets on which the caller has the
+// bigquery.datasets.get permission.
 func (c *datasetRESTClient) ListDatasets(ctx context.Context, req *bigquerypb.ListDatasetsRequest, opts ...gax.CallOption) *ListFormatDatasetIterator {
 	it := &ListFormatDatasetIterator{}
-	req = proto.Clone(req).(*bigquerypb.ListDatasetsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*bigquerypb.ListFormatDataset, string, error) {
 		resp := &bigquerypb.DatasetList{}
@@ -1043,6 +1266,12 @@ func (c *datasetRESTClient) ListDatasets(ctx context.Context, req *bigquerypb.Li
 // UndeleteDataset undeletes a dataset which is within time travel window based on datasetId.
 // If a time is specified, the dataset version deleted at that time is
 // undeleted, else the last live version is undeleted.
+//
+// IAM PermissionsRequires the following IAM permission(s) to use this method:
+//
+//	bigquery.datasets.create on the project.
+//
+//	bigquery.datasets.get on the dataset.
 func (c *datasetRESTClient) UndeleteDataset(ctx context.Context, req *bigquerypb.UndeleteDatasetRequest, opts ...gax.CallOption) (*bigquerypb.Dataset, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1062,6 +1291,10 @@ func (c *datasetRESTClient) UndeleteDataset(ctx context.Context, req *bigquerypb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.DatasetService/UndeleteDataset")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/bigquery/v2/projects/{project_id=*}/datasets/{dataset_id=*}:undelete")
+	}
 	opts = append((*c.CallOptions).UndeleteDataset[0:len((*c.CallOptions).UndeleteDataset):len((*c.CallOptions).UndeleteDataset)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &bigquerypb.Dataset{}

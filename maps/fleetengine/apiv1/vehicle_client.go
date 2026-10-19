@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import (
 
 	fleetenginepb "cloud.google.com/go/maps/fleetengine/apiv1/fleetenginepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -160,7 +161,7 @@ type VehicleClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *VehicleClient) Close() error {
 	return c.internalClient.Close()
@@ -311,6 +312,16 @@ type vehicleGRPCClient struct {
 // Vehicle management service.
 func NewVehicleClient(ctx context.Context, opts ...option.ClientOption) (*VehicleClient, error) {
 	clientOpts := defaultVehicleGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "fleetengine",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/maps/fleetengine/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "fleetengine.googleapis.com",
+		}))
+	}
 	if newVehicleClientHook != nil {
 		hookOpts, err := newVehicleClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -332,6 +343,65 @@ func NewVehicleClient(ctx context.Context, opts ...option.ClientOption) (*Vehicl
 		logger:        internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "fleetengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/fleetengine/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "fleetengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateVehicle = append(client.CallOptions.CreateVehicle, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetVehicle = append(client.CallOptions.GetVehicle, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteVehicle = append(client.CallOptions.DeleteVehicle, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateVehicle = append(client.CallOptions.UpdateVehicle, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateVehicleAttributes = append(client.CallOptions.UpdateVehicleAttributes, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListVehicles = append(client.CallOptions.ListVehicles, gax.WithClientMetrics(metrics))
+		client.CallOptions.SearchVehicles = append(client.CallOptions.SearchVehicles, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "fleetengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/fleetengine/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "fleetengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateVehicle = append(client.CallOptions.CreateVehicle, gax.WithClientTracing(tracing))
+		client.CallOptions.GetVehicle = append(client.CallOptions.GetVehicle, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteVehicle = append(client.CallOptions.DeleteVehicle, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateVehicle = append(client.CallOptions.UpdateVehicle, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateVehicleAttributes = append(client.CallOptions.UpdateVehicleAttributes, gax.WithClientTracing(tracing))
+		client.CallOptions.ListVehicles = append(client.CallOptions.ListVehicles, gax.WithClientTracing(tracing))
+		client.CallOptions.SearchVehicles = append(client.CallOptions.SearchVehicles, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "fleetengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/fleetengine/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "fleetengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateVehicle = append(client.CallOptions.CreateVehicle, gax.WithClientLogging(logging))
+		client.CallOptions.GetVehicle = append(client.CallOptions.GetVehicle, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteVehicle = append(client.CallOptions.DeleteVehicle, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateVehicle = append(client.CallOptions.UpdateVehicle, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateVehicleAttributes = append(client.CallOptions.UpdateVehicleAttributes, gax.WithClientLogging(logging))
+		client.CallOptions.ListVehicles = append(client.CallOptions.ListVehicles, gax.WithClientLogging(logging))
+		client.CallOptions.SearchVehicles = append(client.CallOptions.SearchVehicles, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -357,7 +427,7 @@ func (c *vehicleGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *vehicleGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -377,6 +447,9 @@ func (c *vehicleGRPCClient) CreateVehicle(ctx context.Context, req *fleetenginep
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "maps.fleetengine.v1.VehicleService/CreateVehicle")
+	}
 	opts = append((*c.CallOptions).CreateVehicle[0:len((*c.CallOptions).CreateVehicle):len((*c.CallOptions).CreateVehicle)], opts...)
 	var resp *fleetenginepb.Vehicle
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -404,6 +477,9 @@ func (c *vehicleGRPCClient) GetVehicle(ctx context.Context, req *fleetenginepb.G
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "maps.fleetengine.v1.VehicleService/GetVehicle")
+	}
 	opts = append((*c.CallOptions).GetVehicle[0:len((*c.CallOptions).GetVehicle):len((*c.CallOptions).GetVehicle)], opts...)
 	var resp *fleetenginepb.Vehicle
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -431,6 +507,9 @@ func (c *vehicleGRPCClient) DeleteVehicle(ctx context.Context, req *fleetenginep
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "maps.fleetengine.v1.VehicleService/DeleteVehicle")
+	}
 	opts = append((*c.CallOptions).DeleteVehicle[0:len((*c.CallOptions).DeleteVehicle):len((*c.CallOptions).DeleteVehicle)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -454,6 +533,9 @@ func (c *vehicleGRPCClient) UpdateVehicle(ctx context.Context, req *fleetenginep
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "maps.fleetengine.v1.VehicleService/UpdateVehicle")
+	}
 	opts = append((*c.CallOptions).UpdateVehicle[0:len((*c.CallOptions).UpdateVehicle):len((*c.CallOptions).UpdateVehicle)], opts...)
 	var resp *fleetenginepb.Vehicle
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -481,6 +563,9 @@ func (c *vehicleGRPCClient) UpdateVehicleAttributes(ctx context.Context, req *fl
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "maps.fleetengine.v1.VehicleService/UpdateVehicleAttributes")
+	}
 	opts = append((*c.CallOptions).UpdateVehicleAttributes[0:len((*c.CallOptions).UpdateVehicleAttributes):len((*c.CallOptions).UpdateVehicleAttributes)], opts...)
 	var resp *fleetenginepb.UpdateVehicleAttributesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -508,9 +593,12 @@ func (c *vehicleGRPCClient) ListVehicles(ctx context.Context, req *fleetenginepb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "maps.fleetengine.v1.VehicleService/ListVehicles")
+	}
 	opts = append((*c.CallOptions).ListVehicles[0:len((*c.CallOptions).ListVehicles):len((*c.CallOptions).ListVehicles)], opts...)
 	it := &VehicleIterator{}
-	req = proto.Clone(req).(*fleetenginepb.ListVehiclesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*fleetenginepb.Vehicle, string, error) {
 		resp := &fleetenginepb.ListVehiclesResponse{}
 		if pageToken != "" {
@@ -563,6 +651,9 @@ func (c *vehicleGRPCClient) SearchVehicles(ctx context.Context, req *fleetengine
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "maps.fleetengine.v1.VehicleService/SearchVehicles")
+	}
 	opts = append((*c.CallOptions).SearchVehicles[0:len((*c.CallOptions).SearchVehicles):len((*c.CallOptions).SearchVehicles)], opts...)
 	var resp *fleetenginepb.SearchVehiclesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

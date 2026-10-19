@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import (
 
 	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -94,7 +95,7 @@ func defaultGlobalForwardingRulesRESTCallOptions() *GlobalForwardingRulesCallOpt
 	}
 }
 
-// internalGlobalForwardingRulesClient is an interface that defines the methods available from Google Compute Engine API.
+// internalGlobalForwardingRulesClient is an interface that defines the methods available from Compute Engine API.
 type internalGlobalForwardingRulesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -108,10 +109,12 @@ type internalGlobalForwardingRulesClient interface {
 	SetTarget(context.Context, *computepb.SetTargetGlobalForwardingRuleRequest, ...gax.CallOption) (*Operation, error)
 }
 
-// GlobalForwardingRulesClient is a client for interacting with Google Compute Engine API.
+// GlobalForwardingRulesClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The GlobalForwardingRules API.
+//
+// This client uses GlobalForwardingRules version 2026-09-01.
 type GlobalForwardingRulesClient struct {
 	// The internal transport-dependent client.
 	internalClient internalGlobalForwardingRulesClient
@@ -122,7 +125,7 @@ type GlobalForwardingRulesClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *GlobalForwardingRulesClient) Close() error {
 	return c.internalClient.Close()
@@ -148,32 +151,42 @@ func (c *GlobalForwardingRulesClient) Delete(ctx context.Context, req *computepb
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
-// Get returns the specified GlobalForwardingRule resource. Gets a list of available forwarding rules by making a list() request.
+// Get returns the specified GlobalForwardingRule resource. Gets a list of
+// available forwarding rules by making a list() request.
 func (c *GlobalForwardingRulesClient) Get(ctx context.Context, req *computepb.GetGlobalForwardingRuleRequest, opts ...gax.CallOption) (*computepb.ForwardingRule, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// Insert creates a GlobalForwardingRule resource in the specified project using the data included in the request.
+// Insert creates a GlobalForwardingRule resource in the specified project using
+// the data included in the request.
 func (c *GlobalForwardingRulesClient) Insert(ctx context.Context, req *computepb.InsertGlobalForwardingRuleRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves a list of GlobalForwardingRule resources available to the specified project.
+// List retrieves a list of GlobalForwardingRule resources available to the
+// specified project.
 func (c *GlobalForwardingRulesClient) List(ctx context.Context, req *computepb.ListGlobalForwardingRulesRequest, opts ...gax.CallOption) *ForwardingRuleIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// Patch updates the specified forwarding rule with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules. Currently, you can only patch the network_tier field.
+// Patch updates the specified forwarding rule with the data included in the
+// request. This method supportsPATCH
+// semantics and uses theJSON merge
+// patch format and processing rules. Currently, you can only
+// patch the network_tier field.
 func (c *GlobalForwardingRulesClient) Patch(ctx context.Context, req *computepb.PatchGlobalForwardingRuleRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
 
-// SetLabels sets the labels on the specified resource. To learn more about labels, read the Labeling resources documentation.
+// SetLabels sets the labels on the specified resource. To learn more about labels,
+// read the
+// Labeling resources documentation.
 func (c *GlobalForwardingRulesClient) SetLabels(ctx context.Context, req *computepb.SetLabelsGlobalForwardingRuleRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetLabels(ctx, req, opts...)
 }
 
-// SetTarget changes target URL for the GlobalForwardingRule resource. The new target should be of the same type as the old target.
+// SetTarget changes target URL for the GlobalForwardingRule resource. The new target
+// should be of the same type as the old target.
 func (c *GlobalForwardingRulesClient) SetTarget(ctx context.Context, req *computepb.SetTargetGlobalForwardingRuleRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetTarget(ctx, req, opts...)
 }
@@ -203,6 +216,16 @@ type globalForwardingRulesRESTClient struct {
 // The GlobalForwardingRules API.
 func NewGlobalForwardingRulesRESTClient(ctx context.Context, opts ...option.ClientOption) (*GlobalForwardingRulesClient, error) {
 	clientOpts := append(defaultGlobalForwardingRulesRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "compute",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/compute/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "compute.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -216,6 +239,66 @@ func NewGlobalForwardingRulesRESTClient(ctx context.Context, opts ...option.Clie
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientMetrics(metrics))
+		callOpts.Get = append(callOpts.Get, gax.WithClientMetrics(metrics))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientMetrics(metrics))
+		callOpts.List = append(callOpts.List, gax.WithClientMetrics(metrics))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientMetrics(metrics))
+		callOpts.SetLabels = append(callOpts.SetLabels, gax.WithClientMetrics(metrics))
+		callOpts.SetTarget = append(callOpts.SetTarget, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientTracing(tracing))
+		callOpts.Get = append(callOpts.Get, gax.WithClientTracing(tracing))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientTracing(tracing))
+		callOpts.List = append(callOpts.List, gax.WithClientTracing(tracing))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientTracing(tracing))
+		callOpts.SetLabels = append(callOpts.SetLabels, gax.WithClientTracing(tracing))
+		callOpts.SetTarget = append(callOpts.SetTarget, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientLogging(logging))
+		callOpts.Get = append(callOpts.Get, gax.WithClientLogging(logging))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientLogging(logging))
+		callOpts.List = append(callOpts.List, gax.WithClientLogging(logging))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientLogging(logging))
+		callOpts.SetLabels = append(callOpts.SetLabels, gax.WithClientLogging(logging))
+		callOpts.SetTarget = append(callOpts.SetTarget, gax.WithClientLogging(logging))
+	}
 
 	o := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -250,10 +333,11 @@ func (c *globalForwardingRulesRESTClient) setGoogleClientInfo(keyval ...string) 
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
+		"x-goog-api-version", "2026-09-01",
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *globalForwardingRulesRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -292,6 +376,10 @@ func (c *globalForwardingRulesRESTClient) Delete(ctx context.Context, req *compu
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.GlobalForwardingRules/Delete")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/forwardingRules/{forwarding_rule}")
+	}
 	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -330,7 +418,8 @@ func (c *globalForwardingRulesRESTClient) Delete(ctx context.Context, req *compu
 	return op, nil
 }
 
-// Get returns the specified GlobalForwardingRule resource. Gets a list of available forwarding rules by making a list() request.
+// Get returns the specified GlobalForwardingRule resource. Gets a list of
+// available forwarding rules by making a list() request.
 func (c *globalForwardingRulesRESTClient) Get(ctx context.Context, req *computepb.GetGlobalForwardingRuleRequest, opts ...gax.CallOption) (*computepb.ForwardingRule, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -338,12 +427,23 @@ func (c *globalForwardingRulesRESTClient) Get(ctx context.Context, req *computep
 	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/forwardingRules/%v", req.GetProject(), req.GetForwardingRule())
 
+	params := url.Values{}
+	if req != nil && req.View != nil {
+		params.Add("view", fmt.Sprintf("%v", req.GetView()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "forwarding_rule", url.QueryEscape(req.GetForwardingRule()))}
 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.GlobalForwardingRules/Get")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/forwardingRules/{forwarding_rule}")
+	}
 	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.ForwardingRule{}
@@ -375,7 +475,8 @@ func (c *globalForwardingRulesRESTClient) Get(ctx context.Context, req *computep
 	return resp, nil
 }
 
-// Insert creates a GlobalForwardingRule resource in the specified project using the data included in the request.
+// Insert creates a GlobalForwardingRule resource in the specified project using
+// the data included in the request.
 func (c *globalForwardingRulesRESTClient) Insert(ctx context.Context, req *computepb.InsertGlobalForwardingRuleRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetForwardingRuleResource()
@@ -403,6 +504,10 @@ func (c *globalForwardingRulesRESTClient) Insert(ctx context.Context, req *compu
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.GlobalForwardingRules/Insert")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/forwardingRules")
+	}
 	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -441,10 +546,11 @@ func (c *globalForwardingRulesRESTClient) Insert(ctx context.Context, req *compu
 	return op, nil
 }
 
-// List retrieves a list of GlobalForwardingRule resources available to the specified project.
+// List retrieves a list of GlobalForwardingRule resources available to the
+// specified project.
 func (c *globalForwardingRulesRESTClient) List(ctx context.Context, req *computepb.ListGlobalForwardingRulesRequest, opts ...gax.CallOption) *ForwardingRuleIterator {
 	it := &ForwardingRuleIterator{}
-	req = proto.Clone(req).(*computepb.ListGlobalForwardingRulesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.ForwardingRule, string, error) {
 		resp := &computepb.ForwardingRuleList{}
@@ -474,9 +580,6 @@ func (c *globalForwardingRulesRESTClient) List(ctx context.Context, req *compute
 		}
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -527,7 +630,11 @@ func (c *globalForwardingRulesRESTClient) List(ctx context.Context, req *compute
 	return it
 }
 
-// Patch updates the specified forwarding rule with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules. Currently, you can only patch the network_tier field.
+// Patch updates the specified forwarding rule with the data included in the
+// request. This method supportsPATCH
+// semantics and uses theJSON merge
+// patch format and processing rules. Currently, you can only
+// patch the network_tier field.
 func (c *globalForwardingRulesRESTClient) Patch(ctx context.Context, req *computepb.PatchGlobalForwardingRuleRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetForwardingRuleResource()
@@ -555,6 +662,10 @@ func (c *globalForwardingRulesRESTClient) Patch(ctx context.Context, req *comput
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.GlobalForwardingRules/Patch")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/forwardingRules/{forwarding_rule}")
+	}
 	opts = append((*c.CallOptions).Patch[0:len((*c.CallOptions).Patch):len((*c.CallOptions).Patch)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -593,7 +704,9 @@ func (c *globalForwardingRulesRESTClient) Patch(ctx context.Context, req *comput
 	return op, nil
 }
 
-// SetLabels sets the labels on the specified resource. To learn more about labels, read the Labeling resources documentation.
+// SetLabels sets the labels on the specified resource. To learn more about labels,
+// read the
+// Labeling resources documentation.
 func (c *globalForwardingRulesRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabelsGlobalForwardingRuleRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetGlobalSetLabelsRequestResource()
@@ -614,6 +727,10 @@ func (c *globalForwardingRulesRESTClient) SetLabels(ctx context.Context, req *co
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.GlobalForwardingRules/SetLabels")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/forwardingRules/{resource}/setLabels")
+	}
 	opts = append((*c.CallOptions).SetLabels[0:len((*c.CallOptions).SetLabels):len((*c.CallOptions).SetLabels)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -652,7 +769,8 @@ func (c *globalForwardingRulesRESTClient) SetLabels(ctx context.Context, req *co
 	return op, nil
 }
 
-// SetTarget changes target URL for the GlobalForwardingRule resource. The new target should be of the same type as the old target.
+// SetTarget changes target URL for the GlobalForwardingRule resource. The new target
+// should be of the same type as the old target.
 func (c *globalForwardingRulesRESTClient) SetTarget(ctx context.Context, req *computepb.SetTargetGlobalForwardingRuleRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetReferenceResource()
@@ -680,6 +798,10 @@ func (c *globalForwardingRulesRESTClient) SetTarget(ctx context.Context, req *co
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.GlobalForwardingRules/SetTarget")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/global/forwardingRules/{forwarding_rule}/setTarget")
+	}
 	opts = append((*c.CallOptions).SetTarget[0:len((*c.CallOptions).SetTarget):len((*c.CallOptions).SetTarget)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}

@@ -1,5 +1,74 @@
 # Changes
 
+## [1.31.0](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.30.0...networkmanagement/v1.31.0) (2026-09-23)
+
+
+### Features
+
+* **all:** Update supported go versions ([#20520](https://github.com/googleapis/google-cloud-go/issues/20520)) ([90413d3](https://github.com/googleapis/google-cloud-go/commit/90413d3e9d381ef4b92e3c496d98b023c5b2d8cc))
+
+## [1.30.0](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.29.0...networkmanagement/v1.30.0) (2026-07-13)
+
+
+### Features
+
+* **o11y:** Regenerate clients for LRO tracing ([#20107](https://github.com/googleapis/google-cloud-go/issues/20107)) ([779074e](https://github.com/googleapis/google-cloud-go/commit/779074edd267a26520bae459307660953129eb07))
+
+## [1.29.0](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.28.0...networkmanagement/v1.29.0) (2026-06-26)
+
+
+### Features
+
+* Update API sources and regenerate ([#20047](https://github.com/googleapis/google-cloud-go/issues/20047)) ([e10c9bf](https://github.com/googleapis/google-cloud-go/commit/e10c9bf14d4fc23906d0b369e106420d44915660))
+
+## [1.28.0](https://github.com/googleapis/google-cloud-go/releases/tag/networkmanagement%2Fv1.28.0) (2026-05-07)
+
+## [1.27.0](https://github.com/googleapis/google-cloud-go/releases/tag/networkmanagement%2Fv1.27.0) (2026-04-30)
+
+## [1.26.0](https://github.com/googleapis/google-cloud-go/releases/tag/networkmanagement%2Fv1.26.0) (2026-04-13)
+
+## [1.25.0](https://github.com/googleapis/google-cloud-go/releases/tag/networkmanagement%2Fv1.25.0) (2026-04-09)
+
+## [1.24.0](https://github.com/googleapis/google-cloud-go/releases/tag/networkmanagement%2Fv1.24.0) (2026-04-02)
+
+## [1.23.0](https://github.com/googleapis/google-cloud-go/releases/tag/networkmanagement%2Fv1.23.0) (2026-03-05)
+
+### Features
+
+* Add API fields related to GKE Pods and Network Policies ([9c80b8b](https://github.com/googleapis/google-cloud-go/commit/9c80b8b4442a54c610826c1bb89cec5158b49314))
+
+## [1.22.0](https://github.com/googleapis/google-cloud-go/releases/tag/networkmanagement%2Fv1.22.0) (2026-01-29)
+
+### Features
+
+* add fields and messages for GKE Pods and IP masquerading ([d8ea738](https://github.com/googleapis/google-cloud-go/commit/d8ea738a6e8f0603593d686a44331e7e0a572c27))
+
+## [1.21.0](https://github.com/googleapis/google-cloud-go/releases/tag/networkmanagement%2Fv1.21.0) (2025-11-06)
+
+### Features
+
+* Enable organization-level support for VPC Flow Logs ([4a640b5](https://github.com/googleapis/google-cloud-go/commit/4a640b5d1833b6dc4fc159aa2204ec9d930cc0d7))
+* add enum `DeliverInfo.GoogleServiceType` ([4a640b5](https://github.com/googleapis/google-cloud-go/commit/4a640b5d1833b6dc4fc159aa2204ec9d930cc0d7))
+* add enum `Status` to message `InstanceInfo` ([4a640b5](https://github.com/googleapis/google-cloud-go/commit/4a640b5d1833b6dc4fc159aa2204ec9d930cc0d7))
+* add enum `VpcFlowLogsConfig.CrossProjectMetadata` ([4a640b5](https://github.com/googleapis/google-cloud-go/commit/4a640b5d1833b6dc4fc159aa2204ec9d930cc0d7))
+* add enum `VpcFlowLogsConfig.TargetResourceState` ([4a640b5](https://github.com/googleapis/google-cloud-go/commit/4a640b5d1833b6dc4fc159aa2204ec9d930cc0d7))
+* add enum value `AbortInfo.Cause.GOOGLE_MANAGED_SERVICE_AMBIGUOUS_ENDPOINT` ([4a640b5](https://github.com/googleapis/google-cloud-go/commit/4a640b5d1833b6dc4fc159aa2204ec9d930cc0d7))
+* add enum value `RouteInfo.NextHopType.SECURE_WEB_PROXY_GATEWAY` ([4a640b5](https://github.com/googleapis/google-cloud-go/commit/4a640b5d1833b6dc4fc159aa2204ec9d930cc0d7))
+* add enum values `NO_ROUTE_FROM_EXTERNAL_IPV6_SOURCE_TO_PRIVATE_IPV6_ADDRESS`, `TRAFFIC_FROM_HYBRID_ENDPOINT_TO_INTERNET_DISALLOWED`, `NO_MATCHING_NAT64_GATEWAY`, `LOAD_BALANCER_BACKEND_IP_VERSION_MISMATCH`, and `NO_KNOWN_ROUTE_FROM_NCC_NETWORK_TO_DESTINATION` to `DropInfo.Cause` ([4a640b5](https://github.com/googleapis/google-cloud-go/commit/4a640b5d1833b6dc4fc159aa2204ec9d930cc0d7))
+* add field `google_service_type` to message `DeliverInfo` ([4a640b5](https://github.com/googleapis/google-cloud-go/commit/4a640b5d1833b6dc4fc159aa2204ec9d930cc0d7))
+* add field `policy_priority` to message `NetworkInfo` ([4a640b5](https://github.com/googleapis/google-cloud-go/commit/4a640b5d1833b6dc4fc159aa2204ec9d930cc0d7))
+* add field `running` to message `InstanceInfo` ([4a640b5](https://github.com/googleapis/google-cloud-go/commit/4a640b5d1833b6dc4fc159aa2204ec9d930cc0d7))
+* add field `service_uri` to message `Endpoint.CloudRunRevisionEndpoint` ([4a640b5](https://github.com/googleapis/google-cloud-go/commit/4a640b5d1833b6dc4fc159aa2204ec9d930cc0d7))
+* add fields `cross_project_metadata`, `target_resource_state`, `network`, and `subnet` to message `VpcFlowLogsConfig` ([4a640b5](https://github.com/googleapis/google-cloud-go/commit/4a640b5d1833b6dc4fc159aa2204ec9d930cc0d7))
+* add http additional_bindings ([4a640b5](https://github.com/googleapis/google-cloud-go/commit/4a640b5d1833b6dc4fc159aa2204ec9d930cc0d7))
+* add message `Endpoint.SingleEdgeResponse` ([4a640b5](https://github.com/googleapis/google-cloud-go/commit/4a640b5d1833b6dc4fc159aa2204ec9d930cc0d7))
+* add rpc `VpcFlowLogsService.QueryOrgVpcFlowLogsConfigs` ([4a640b5](https://github.com/googleapis/google-cloud-go/commit/4a640b5d1833b6dc4fc159aa2204ec9d930cc0d7))
+* add service `OrganizationVpcFlowLogsService` ([4a640b5](https://github.com/googleapis/google-cloud-go/commit/4a640b5d1833b6dc4fc159aa2204ec9d930cc0d7))
+
+### Documentation
+
+* Various documentation and comment improvements, Enable organization-level support for VPC Flow Logs ([4a640b5](https://github.com/googleapis/google-cloud-go/commit/4a640b5d1833b6dc4fc159aa2204ec9d930cc0d7))
+
 ## [1.20.1](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.20.0...networkmanagement/v1.20.1) (2025-09-18)
 
 

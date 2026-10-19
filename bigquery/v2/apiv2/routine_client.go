@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import (
 
 	bigquerypb "cloud.google.com/go/bigquery/v2/apiv2/bigquerypb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -47,7 +48,6 @@ type RoutineCallOptions struct {
 	GetRoutine    []gax.CallOption
 	InsertRoutine []gax.CallOption
 	UpdateRoutine []gax.CallOption
-	PatchRoutine  []gax.CallOption
 	DeleteRoutine []gax.CallOption
 	ListRoutines  []gax.CallOption
 }
@@ -98,20 +98,6 @@ func defaultRoutineCallOptions() *RoutineCallOptions {
 			}),
 		},
 		UpdateRoutine: []gax.CallOption{
-			gax.WithTimeout(240000 * time.Millisecond),
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
-					codes.Unavailable,
-					codes.ResourceExhausted,
-				}, gax.Backoff{
-					Initial:    400 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 2.00,
-				})
-			}),
-		},
-		PatchRoutine: []gax.CallOption{
 			gax.WithTimeout(240000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -197,19 +183,6 @@ func defaultRoutineRESTCallOptions() *RoutineCallOptions {
 					http.StatusTooManyRequests)
 			}),
 		},
-		PatchRoutine: []gax.CallOption{
-			gax.WithTimeout(240000 * time.Millisecond),
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    400 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 2.00,
-				},
-					http.StatusGatewayTimeout,
-					http.StatusServiceUnavailable,
-					http.StatusTooManyRequests)
-			}),
-		},
 		DeleteRoutine: []gax.CallOption{
 			gax.WithTimeout(240000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -247,7 +220,6 @@ type internalRoutineClient interface {
 	GetRoutine(context.Context, *bigquerypb.GetRoutineRequest, ...gax.CallOption) (*bigquerypb.Routine, error)
 	InsertRoutine(context.Context, *bigquerypb.InsertRoutineRequest, ...gax.CallOption) (*bigquerypb.Routine, error)
 	UpdateRoutine(context.Context, *bigquerypb.UpdateRoutineRequest, ...gax.CallOption) (*bigquerypb.Routine, error)
-	PatchRoutine(context.Context, *bigquerypb.PatchRoutineRequest, ...gax.CallOption) (*bigquerypb.Routine, error)
 	DeleteRoutine(context.Context, *bigquerypb.DeleteRoutineRequest, ...gax.CallOption) error
 	ListRoutines(context.Context, *bigquerypb.ListRoutinesRequest, ...gax.CallOption) *RoutineIterator
 }
@@ -266,7 +238,7 @@ type RoutineClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *RoutineClient) Close() error {
 	return c.internalClient.Close()
@@ -288,34 +260,38 @@ func (c *RoutineClient) Connection() *grpc.ClientConn {
 }
 
 // GetRoutine gets the specified routine resource by routine ID.
+//
+// IAM PermissionsRequires the bigquery.routines.get permission on the routine.
 func (c *RoutineClient) GetRoutine(ctx context.Context, req *bigquerypb.GetRoutineRequest, opts ...gax.CallOption) (*bigquerypb.Routine, error) {
 	return c.internalClient.GetRoutine(ctx, req, opts...)
 }
 
 // InsertRoutine creates a new routine in the dataset.
+//
+// IAM PermissionsRequires the bigquery.routines.create permission on the dataset.
 func (c *RoutineClient) InsertRoutine(ctx context.Context, req *bigquerypb.InsertRoutineRequest, opts ...gax.CallOption) (*bigquerypb.Routine, error) {
 	return c.internalClient.InsertRoutine(ctx, req, opts...)
 }
 
 // UpdateRoutine updates information in an existing routine. The update method replaces the
 // entire Routine resource.
+//
+// IAM PermissionsRequires the bigquery.routines.update permission on the routine.
 func (c *RoutineClient) UpdateRoutine(ctx context.Context, req *bigquerypb.UpdateRoutineRequest, opts ...gax.CallOption) (*bigquerypb.Routine, error) {
 	return c.internalClient.UpdateRoutine(ctx, req, opts...)
 }
 
-// PatchRoutine patches information in an existing routine. The patch method does a partial
-// update to an existing Routine resource.
-func (c *RoutineClient) PatchRoutine(ctx context.Context, req *bigquerypb.PatchRoutineRequest, opts ...gax.CallOption) (*bigquerypb.Routine, error) {
-	return c.internalClient.PatchRoutine(ctx, req, opts...)
-}
-
 // DeleteRoutine deletes the routine specified by routineId from the dataset.
+//
+// IAM PermissionsRequires the bigquery.routines.delete permission on the routine.
 func (c *RoutineClient) DeleteRoutine(ctx context.Context, req *bigquerypb.DeleteRoutineRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteRoutine(ctx, req, opts...)
 }
 
 // ListRoutines lists all routines in the specified dataset. Requires the READER dataset
 // role.
+//
+// IAM PermissionsRequires the bigquery.routines.list permission on the dataset.
 func (c *RoutineClient) ListRoutines(ctx context.Context, req *bigquerypb.ListRoutinesRequest, opts ...gax.CallOption) *RoutineIterator {
 	return c.internalClient.ListRoutines(ctx, req, opts...)
 }
@@ -345,6 +321,16 @@ type routineGRPCClient struct {
 // RoutineService provides management access to BigQuery routines.
 func NewRoutineClient(ctx context.Context, opts ...option.ClientOption) (*RoutineClient, error) {
 	clientOpts := defaultRoutineGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "bigquery",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/bigquery/v2/apiv2",
+			"gcp.client.language": "go",
+			"url.domain":          "bigquery.googleapis.com",
+		}))
+	}
 	if newRoutineClientHook != nil {
 		hookOpts, err := newRoutineClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -366,6 +352,59 @@ func NewRoutineClient(ctx context.Context, opts ...option.ClientOption) (*Routin
 		logger:        internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "bigquery",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/v2/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "bigquery.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetRoutine = append(client.CallOptions.GetRoutine, gax.WithClientMetrics(metrics))
+		client.CallOptions.InsertRoutine = append(client.CallOptions.InsertRoutine, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateRoutine = append(client.CallOptions.UpdateRoutine, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteRoutine = append(client.CallOptions.DeleteRoutine, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListRoutines = append(client.CallOptions.ListRoutines, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "bigquery",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/v2/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "bigquery.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetRoutine = append(client.CallOptions.GetRoutine, gax.WithClientTracing(tracing))
+		client.CallOptions.InsertRoutine = append(client.CallOptions.InsertRoutine, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateRoutine = append(client.CallOptions.UpdateRoutine, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteRoutine = append(client.CallOptions.DeleteRoutine, gax.WithClientTracing(tracing))
+		client.CallOptions.ListRoutines = append(client.CallOptions.ListRoutines, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "bigquery",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/v2/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "bigquery.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetRoutine = append(client.CallOptions.GetRoutine, gax.WithClientLogging(logging))
+		client.CallOptions.InsertRoutine = append(client.CallOptions.InsertRoutine, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateRoutine = append(client.CallOptions.UpdateRoutine, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteRoutine = append(client.CallOptions.DeleteRoutine, gax.WithClientLogging(logging))
+		client.CallOptions.ListRoutines = append(client.CallOptions.ListRoutines, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -391,7 +430,7 @@ func (c *routineGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *routineGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -419,6 +458,16 @@ type routineRESTClient struct {
 // RoutineService provides management access to BigQuery routines.
 func NewRoutineRESTClient(ctx context.Context, opts ...option.ClientOption) (*RoutineClient, error) {
 	clientOpts := append(defaultRoutineRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "bigquery",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/bigquery/v2/apiv2",
+			"gcp.client.language": "go",
+			"url.domain":          "bigquery.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -432,6 +481,60 @@ func NewRoutineRESTClient(ctx context.Context, opts ...option.ClientOption) (*Ro
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "bigquery",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/v2/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "bigquery.googleapis.com",
+			}),
+		)
+
+		callOpts.GetRoutine = append(callOpts.GetRoutine, gax.WithClientMetrics(metrics))
+		callOpts.InsertRoutine = append(callOpts.InsertRoutine, gax.WithClientMetrics(metrics))
+		callOpts.UpdateRoutine = append(callOpts.UpdateRoutine, gax.WithClientMetrics(metrics))
+		callOpts.DeleteRoutine = append(callOpts.DeleteRoutine, gax.WithClientMetrics(metrics))
+		callOpts.ListRoutines = append(callOpts.ListRoutines, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "bigquery",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/v2/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "bigquery.googleapis.com",
+			}),
+		)
+
+		callOpts.GetRoutine = append(callOpts.GetRoutine, gax.WithClientTracing(tracing))
+		callOpts.InsertRoutine = append(callOpts.InsertRoutine, gax.WithClientTracing(tracing))
+		callOpts.UpdateRoutine = append(callOpts.UpdateRoutine, gax.WithClientTracing(tracing))
+		callOpts.DeleteRoutine = append(callOpts.DeleteRoutine, gax.WithClientTracing(tracing))
+		callOpts.ListRoutines = append(callOpts.ListRoutines, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "bigquery",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/v2/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "bigquery.googleapis.com",
+			}),
+		)
+
+		callOpts.GetRoutine = append(callOpts.GetRoutine, gax.WithClientLogging(logging))
+		callOpts.InsertRoutine = append(callOpts.InsertRoutine, gax.WithClientLogging(logging))
+		callOpts.UpdateRoutine = append(callOpts.UpdateRoutine, gax.WithClientLogging(logging))
+		callOpts.DeleteRoutine = append(callOpts.DeleteRoutine, gax.WithClientLogging(logging))
+		callOpts.ListRoutines = append(callOpts.ListRoutines, gax.WithClientLogging(logging))
+	}
 
 	return &RoutineClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -459,7 +562,7 @@ func (c *routineRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *routineRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -478,6 +581,9 @@ func (c *routineGRPCClient) GetRoutine(ctx context.Context, req *bigquerypb.GetR
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.RoutineService/GetRoutine")
+	}
 	opts = append((*c.CallOptions).GetRoutine[0:len((*c.CallOptions).GetRoutine):len((*c.CallOptions).GetRoutine)], opts...)
 	var resp *bigquerypb.Routine
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -496,6 +602,9 @@ func (c *routineGRPCClient) InsertRoutine(ctx context.Context, req *bigquerypb.I
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.RoutineService/InsertRoutine")
+	}
 	opts = append((*c.CallOptions).InsertRoutine[0:len((*c.CallOptions).InsertRoutine):len((*c.CallOptions).InsertRoutine)], opts...)
 	var resp *bigquerypb.Routine
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -514,6 +623,9 @@ func (c *routineGRPCClient) UpdateRoutine(ctx context.Context, req *bigquerypb.U
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.RoutineService/UpdateRoutine")
+	}
 	opts = append((*c.CallOptions).UpdateRoutine[0:len((*c.CallOptions).UpdateRoutine):len((*c.CallOptions).UpdateRoutine)], opts...)
 	var resp *bigquerypb.Routine
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -527,26 +639,14 @@ func (c *routineGRPCClient) UpdateRoutine(ctx context.Context, req *bigquerypb.U
 	return resp, nil
 }
 
-func (c *routineGRPCClient) PatchRoutine(ctx context.Context, req *bigquerypb.PatchRoutineRequest, opts ...gax.CallOption) (*bigquerypb.Routine, error) {
-	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
-	opts = append((*c.CallOptions).PatchRoutine[0:len((*c.CallOptions).PatchRoutine):len((*c.CallOptions).PatchRoutine)], opts...)
-	var resp *bigquerypb.Routine
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = executeRPC(ctx, c.routineClient.PatchRoutine, req, settings.GRPC, c.logger, "PatchRoutine")
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
 func (c *routineGRPCClient) DeleteRoutine(ctx context.Context, req *bigquerypb.DeleteRoutineRequest, opts ...gax.CallOption) error {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "dataset_id", url.QueryEscape(req.GetDatasetId()), "routine_id", url.QueryEscape(req.GetRoutineId()))}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.RoutineService/DeleteRoutine")
+	}
 	opts = append((*c.CallOptions).DeleteRoutine[0:len((*c.CallOptions).DeleteRoutine):len((*c.CallOptions).DeleteRoutine)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -561,9 +661,12 @@ func (c *routineGRPCClient) ListRoutines(ctx context.Context, req *bigquerypb.Li
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.RoutineService/ListRoutines")
+	}
 	opts = append((*c.CallOptions).ListRoutines[0:len((*c.CallOptions).ListRoutines):len((*c.CallOptions).ListRoutines)], opts...)
 	it := &RoutineIterator{}
-	req = proto.Clone(req).(*bigquerypb.ListRoutinesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*bigquerypb.Routine, string, error) {
 		resp := &bigquerypb.ListRoutinesResponse{}
 		if pageToken != "" {
@@ -605,6 +708,8 @@ func (c *routineGRPCClient) ListRoutines(ctx context.Context, req *bigquerypb.Li
 }
 
 // GetRoutine gets the specified routine resource by routine ID.
+//
+// IAM PermissionsRequires the bigquery.routines.get permission on the routine.
 func (c *routineRESTClient) GetRoutine(ctx context.Context, req *bigquerypb.GetRoutineRequest, opts ...gax.CallOption) (*bigquerypb.Routine, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -618,6 +723,10 @@ func (c *routineRESTClient) GetRoutine(ctx context.Context, req *bigquerypb.GetR
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.RoutineService/GetRoutine")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/bigquery/v2/projects/{project_id=*}/datasets/{dataset_id=*}/routines/{routine_id=*}")
+	}
 	opts = append((*c.CallOptions).GetRoutine[0:len((*c.CallOptions).GetRoutine):len((*c.CallOptions).GetRoutine)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &bigquerypb.Routine{}
@@ -650,6 +759,8 @@ func (c *routineRESTClient) GetRoutine(ctx context.Context, req *bigquerypb.GetR
 }
 
 // InsertRoutine creates a new routine in the dataset.
+//
+// IAM PermissionsRequires the bigquery.routines.create permission on the dataset.
 func (c *routineRESTClient) InsertRoutine(ctx context.Context, req *bigquerypb.InsertRoutineRequest, opts ...gax.CallOption) (*bigquerypb.Routine, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetRoutine()
@@ -670,6 +781,10 @@ func (c *routineRESTClient) InsertRoutine(ctx context.Context, req *bigquerypb.I
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.RoutineService/InsertRoutine")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/bigquery/v2/projects/{project_id=*}/datasets/{dataset_id=*}/routines")
+	}
 	opts = append((*c.CallOptions).InsertRoutine[0:len((*c.CallOptions).InsertRoutine):len((*c.CallOptions).InsertRoutine)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &bigquerypb.Routine{}
@@ -703,6 +818,8 @@ func (c *routineRESTClient) InsertRoutine(ctx context.Context, req *bigquerypb.I
 
 // UpdateRoutine updates information in an existing routine. The update method replaces the
 // entire Routine resource.
+//
+// IAM PermissionsRequires the bigquery.routines.update permission on the routine.
 func (c *routineRESTClient) UpdateRoutine(ctx context.Context, req *bigquerypb.UpdateRoutineRequest, opts ...gax.CallOption) (*bigquerypb.Routine, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetRoutine()
@@ -723,6 +840,10 @@ func (c *routineRESTClient) UpdateRoutine(ctx context.Context, req *bigquerypb.U
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.RoutineService/UpdateRoutine")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/bigquery/v2/projects/{project_id=*}/datasets/{dataset_id=*}/routines/{routine_id=*}")
+	}
 	opts = append((*c.CallOptions).UpdateRoutine[0:len((*c.CallOptions).UpdateRoutine):len((*c.CallOptions).UpdateRoutine)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &bigquerypb.Routine{}
@@ -754,177 +875,9 @@ func (c *routineRESTClient) UpdateRoutine(ctx context.Context, req *bigquerypb.U
 	return resp, nil
 }
 
-// PatchRoutine patches information in an existing routine. The patch method does a partial
-// update to an existing Routine resource.
-func (c *routineRESTClient) PatchRoutine(ctx context.Context, req *bigquerypb.PatchRoutineRequest, opts ...gax.CallOption) (*bigquerypb.Routine, error) {
-	baseUrl, err := url.Parse(c.endpoint)
-	if err != nil {
-		return nil, err
-	}
-	baseUrl.Path += fmt.Sprintf("")
-
-	params := url.Values{}
-	params.Add("datasetId", fmt.Sprintf("%v", req.GetDatasetId()))
-	if req.GetFieldMask() != nil {
-		field, err := protojson.Marshal(req.GetFieldMask())
-		if err != nil {
-			return nil, err
-		}
-		params.Add("fieldMask", string(field[1:len(field)-1]))
-	}
-	params.Add("projectId", fmt.Sprintf("%v", req.GetProjectId()))
-	if req.GetRoutine().GetCreationTime() != 0 {
-		params.Add("routine.creationTime", fmt.Sprintf("%v", req.GetRoutine().GetCreationTime()))
-	}
-	if req.GetRoutine().GetDataGovernanceType() != 0 {
-		params.Add("routine.dataGovernanceType", fmt.Sprintf("%v", req.GetRoutine().GetDataGovernanceType()))
-	}
-	if req.GetRoutine().GetDefinitionBody() != "" {
-		params.Add("routine.definitionBody", fmt.Sprintf("%v", req.GetRoutine().GetDefinitionBody()))
-	}
-	if req.GetRoutine().GetDescription() != "" {
-		params.Add("routine.description", fmt.Sprintf("%v", req.GetRoutine().GetDescription()))
-	}
-	if req.GetRoutine().GetDeterminismLevel() != 0 {
-		params.Add("routine.determinismLevel", fmt.Sprintf("%v", req.GetRoutine().GetDeterminismLevel()))
-	}
-	if req.GetRoutine().GetEtag() != "" {
-		params.Add("routine.etag", fmt.Sprintf("%v", req.GetRoutine().GetEtag()))
-	}
-	if req.GetRoutine().GetExternalRuntimeOptions().GetContainerCpu() != 0 {
-		params.Add("routine.externalRuntimeOptions.containerCpu", fmt.Sprintf("%v", req.GetRoutine().GetExternalRuntimeOptions().GetContainerCpu()))
-	}
-	if req.GetRoutine().GetExternalRuntimeOptions().GetContainerMemory() != "" {
-		params.Add("routine.externalRuntimeOptions.containerMemory", fmt.Sprintf("%v", req.GetRoutine().GetExternalRuntimeOptions().GetContainerMemory()))
-	}
-	if req.GetRoutine().GetExternalRuntimeOptions().GetMaxBatchingRows() != 0 {
-		params.Add("routine.externalRuntimeOptions.maxBatchingRows", fmt.Sprintf("%v", req.GetRoutine().GetExternalRuntimeOptions().GetMaxBatchingRows()))
-	}
-	if req.GetRoutine().GetExternalRuntimeOptions().GetRuntimeConnection() != "" {
-		params.Add("routine.externalRuntimeOptions.runtimeConnection", fmt.Sprintf("%v", req.GetRoutine().GetExternalRuntimeOptions().GetRuntimeConnection()))
-	}
-	if req.GetRoutine().GetExternalRuntimeOptions().GetRuntimeVersion() != "" {
-		params.Add("routine.externalRuntimeOptions.runtimeVersion", fmt.Sprintf("%v", req.GetRoutine().GetExternalRuntimeOptions().GetRuntimeVersion()))
-	}
-	if items := req.GetRoutine().GetImportedLibraries(); len(items) > 0 {
-		for _, item := range items {
-			params.Add("routine.importedLibraries", fmt.Sprintf("%v", item))
-		}
-	}
-	if req.GetRoutine().GetLanguage() != 0 {
-		params.Add("routine.language", fmt.Sprintf("%v", req.GetRoutine().GetLanguage()))
-	}
-	if req.GetRoutine().GetLastModifiedTime() != 0 {
-		params.Add("routine.lastModifiedTime", fmt.Sprintf("%v", req.GetRoutine().GetLastModifiedTime()))
-	}
-	params.Add("routine.pythonOptions.entryPoint", fmt.Sprintf("%v", req.GetRoutine().GetPythonOptions().GetEntryPoint()))
-	if items := req.GetRoutine().GetPythonOptions().GetPackages(); len(items) > 0 {
-		for _, item := range items {
-			params.Add("routine.pythonOptions.packages", fmt.Sprintf("%v", item))
-		}
-	}
-	if req.GetRoutine().GetRemoteFunctionOptions().GetConnection() != "" {
-		params.Add("routine.remoteFunctionOptions.connection", fmt.Sprintf("%v", req.GetRoutine().GetRemoteFunctionOptions().GetConnection()))
-	}
-	if req.GetRoutine().GetRemoteFunctionOptions().GetEndpoint() != "" {
-		params.Add("routine.remoteFunctionOptions.endpoint", fmt.Sprintf("%v", req.GetRoutine().GetRemoteFunctionOptions().GetEndpoint()))
-	}
-	if req.GetRoutine().GetRemoteFunctionOptions().GetMaxBatchingRows() != 0 {
-		params.Add("routine.remoteFunctionOptions.maxBatchingRows", fmt.Sprintf("%v", req.GetRoutine().GetRemoteFunctionOptions().GetMaxBatchingRows()))
-	}
-	params.Add("routine.returnType.arrayElementType.rangeElementType.typeKind", fmt.Sprintf("%v", req.GetRoutine().GetReturnType().GetArrayElementType().GetRangeElementType().GetTypeKind()))
-	params.Add("routine.returnType.arrayElementType.typeKind", fmt.Sprintf("%v", req.GetRoutine().GetReturnType().GetArrayElementType().GetTypeKind()))
-	params.Add("routine.returnType.rangeElementType.arrayElementType.typeKind", fmt.Sprintf("%v", req.GetRoutine().GetReturnType().GetRangeElementType().GetArrayElementType().GetTypeKind()))
-	params.Add("routine.returnType.rangeElementType.typeKind", fmt.Sprintf("%v", req.GetRoutine().GetReturnType().GetRangeElementType().GetTypeKind()))
-	params.Add("routine.returnType.typeKind", fmt.Sprintf("%v", req.GetRoutine().GetReturnType().GetTypeKind()))
-	params.Add("routine.routineReference.datasetId", fmt.Sprintf("%v", req.GetRoutine().GetRoutineReference().GetDatasetId()))
-	params.Add("routine.routineReference.projectId", fmt.Sprintf("%v", req.GetRoutine().GetRoutineReference().GetProjectId()))
-	params.Add("routine.routineReference.routineId", fmt.Sprintf("%v", req.GetRoutine().GetRoutineReference().GetRoutineId()))
-	params.Add("routine.routineType", fmt.Sprintf("%v", req.GetRoutine().GetRoutineType()))
-	if req.GetRoutine().GetSecurityMode() != 0 {
-		params.Add("routine.securityMode", fmt.Sprintf("%v", req.GetRoutine().GetSecurityMode()))
-	}
-	if items := req.GetRoutine().GetSparkOptions().GetArchiveUris(); len(items) > 0 {
-		for _, item := range items {
-			params.Add("routine.sparkOptions.archiveUris", fmt.Sprintf("%v", item))
-		}
-	}
-	if req.GetRoutine().GetSparkOptions().GetConnection() != "" {
-		params.Add("routine.sparkOptions.connection", fmt.Sprintf("%v", req.GetRoutine().GetSparkOptions().GetConnection()))
-	}
-	if req.GetRoutine().GetSparkOptions().GetContainerImage() != "" {
-		params.Add("routine.sparkOptions.containerImage", fmt.Sprintf("%v", req.GetRoutine().GetSparkOptions().GetContainerImage()))
-	}
-	if items := req.GetRoutine().GetSparkOptions().GetFileUris(); len(items) > 0 {
-		for _, item := range items {
-			params.Add("routine.sparkOptions.fileUris", fmt.Sprintf("%v", item))
-		}
-	}
-	if items := req.GetRoutine().GetSparkOptions().GetJarUris(); len(items) > 0 {
-		for _, item := range items {
-			params.Add("routine.sparkOptions.jarUris", fmt.Sprintf("%v", item))
-		}
-	}
-	if req.GetRoutine().GetSparkOptions().GetMainClass() != "" {
-		params.Add("routine.sparkOptions.mainClass", fmt.Sprintf("%v", req.GetRoutine().GetSparkOptions().GetMainClass()))
-	}
-	if req.GetRoutine().GetSparkOptions().GetMainFileUri() != "" {
-		params.Add("routine.sparkOptions.mainFileUri", fmt.Sprintf("%v", req.GetRoutine().GetSparkOptions().GetMainFileUri()))
-	}
-	if items := req.GetRoutine().GetSparkOptions().GetPyFileUris(); len(items) > 0 {
-		for _, item := range items {
-			params.Add("routine.sparkOptions.pyFileUris", fmt.Sprintf("%v", item))
-		}
-	}
-	if req.GetRoutine().GetSparkOptions().GetRuntimeVersion() != "" {
-		params.Add("routine.sparkOptions.runtimeVersion", fmt.Sprintf("%v", req.GetRoutine().GetSparkOptions().GetRuntimeVersion()))
-	}
-	if req.GetRoutine().GetStrictMode() != nil {
-		field, err := protojson.Marshal(req.GetRoutine().GetStrictMode())
-		if err != nil {
-			return nil, err
-		}
-		params.Add("routine.strictMode", string(field))
-	}
-	params.Add("routineId", fmt.Sprintf("%v", req.GetRoutineId()))
-
-	baseUrl.RawQuery = params.Encode()
-
-	// Build HTTP headers from client and context metadata.
-	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
-	headers := gax.BuildHeaders(ctx, hds...)
-	opts = append((*c.CallOptions).PatchRoutine[0:len((*c.CallOptions).PatchRoutine):len((*c.CallOptions).PatchRoutine)], opts...)
-	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &bigquerypb.Routine{}
-	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		if settings.Path != "" {
-			baseUrl.Path = settings.Path
-		}
-		httpReq, err := http.NewRequest("", baseUrl.String(), nil)
-		if err != nil {
-			return err
-		}
-		httpReq = httpReq.WithContext(ctx)
-		httpReq.Header = headers
-
-		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "PatchRoutine")
-		if err != nil {
-			return err
-		}
-
-		if err := unm.Unmarshal(buf, resp); err != nil {
-			return err
-		}
-
-		return nil
-	}, opts...)
-	if e != nil {
-		return nil, e
-	}
-	return resp, nil
-}
-
 // DeleteRoutine deletes the routine specified by routineId from the dataset.
+//
+// IAM PermissionsRequires the bigquery.routines.delete permission on the routine.
 func (c *routineRESTClient) DeleteRoutine(ctx context.Context, req *bigquerypb.DeleteRoutineRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -938,6 +891,10 @@ func (c *routineRESTClient) DeleteRoutine(ctx context.Context, req *bigquerypb.D
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.RoutineService/DeleteRoutine")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/bigquery/v2/projects/{project_id=*}/datasets/{dataset_id=*}/routines/{routine_id=*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -956,9 +913,11 @@ func (c *routineRESTClient) DeleteRoutine(ctx context.Context, req *bigquerypb.D
 
 // ListRoutines lists all routines in the specified dataset. Requires the READER dataset
 // role.
+//
+// IAM PermissionsRequires the bigquery.routines.list permission on the dataset.
 func (c *routineRESTClient) ListRoutines(ctx context.Context, req *bigquerypb.ListRoutinesRequest, opts ...gax.CallOption) *RoutineIterator {
 	it := &RoutineIterator{}
-	req = proto.Clone(req).(*bigquerypb.ListRoutinesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*bigquerypb.Routine, string, error) {
 		resp := &bigquerypb.ListRoutinesResponse{}

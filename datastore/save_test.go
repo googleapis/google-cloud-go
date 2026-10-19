@@ -16,6 +16,8 @@ package datastore
 
 import (
 	"fmt"
+	"reflect"
+	"strings"
 	"testing"
 	"time"
 
@@ -290,6 +292,73 @@ func TestSaveEmptySlice(t *testing.T) {
 	}
 }
 
+func TestSaveSliceOmitempty(t *testing.T) {
+
+	type S struct {
+		G []string `datastore:",noindex,omitempty"`
+	}
+	testCases := []struct {
+		desc string
+		in   []string
+		want []string // Expected values in the saved property
+	}{
+		{
+			desc: "1st-item-is-empty-string",
+			in:   []string{"", "s1", "s2"},
+			want: []string{"s1", "s2"},
+		},
+		{
+			desc: "2nd-item-is-empty-string",
+			in:   []string{"s0", "", "s2"},
+			want: []string{"s0", "s2"},
+		},
+		{
+			desc: "all-empty-strings",
+			in:   []string{"", "", ""},
+			want: nil, // Should not save the property at all
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.desc, func(t *testing.T) {
+			got, err := SaveStruct(&S{G: tc.in})
+			if err != nil {
+				t.Fatalf("SaveStruct failed: %v", err)
+			}
+
+			if len(tc.want) == 0 {
+				if len(got) != 0 {
+					t.Errorf("got %d properties, wanted zero", len(got))
+				}
+				return
+			}
+
+			if len(got) != 1 {
+				t.Fatalf("got %d properties, wanted 1", len(got))
+			}
+
+			prop := got[0]
+			if prop.Name != "G" {
+				t.Errorf("got property name %q, want %q", prop.Name, "G")
+			}
+
+			gotVals, ok := prop.Value.([]interface{})
+			if !ok {
+				t.Fatalf("got value type %T, want []interface{}", prop.Value)
+			}
+
+			wantVals := make([]interface{}, len(tc.want))
+			for i, v := range tc.want {
+				wantVals[i] = v
+			}
+
+			if !reflect.DeepEqual(gotVals, wantVals) {
+				t.Errorf("values do not match:\ngot:  %v\nwant: %v", gotVals, wantVals)
+			}
+		})
+	}
+}
+
 // Map is used by TestSaveFieldsWithInterface
 // to test a custom type property save.
 type Map map[int]int
@@ -490,5 +559,34 @@ func TestSaveFieldsWithInterface(t *testing.T) {
 				t.Fatalf("got - want +\n%s", diff)
 			}
 		})
+	}
+}
+
+type NestedNoIndexChild struct {
+	Value string `datastore:"v"`
+}
+
+type NestedNoIndexParent struct {
+	B []NestedNoIndexChild `datastore:"bs,noindex"`
+}
+
+func (b *NestedNoIndexChild) Load(ps []Property) error {
+	return LoadStruct(b, ps)
+}
+
+func (b *NestedNoIndexChild) Save() ([]Property, error) {
+	return SaveStruct(b)
+}
+
+func TestSaveNestedNoIndexPropertyLoadSaver(t *testing.T) {
+	m := &NestedNoIndexParent{
+		B: []NestedNoIndexChild{
+			{Value: strings.Repeat("a", 2000)},
+		},
+	}
+	key := NameKey("A", "test", nil)
+	_, err := saveEntity(key, m)
+	if err != nil {
+		t.Fatalf("saveEntity failed: %v", err)
 	}
 }

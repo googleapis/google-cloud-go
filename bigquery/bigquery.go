@@ -21,6 +21,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"slices"
 	"strings"
 	"time"
 
@@ -33,6 +34,7 @@ import (
 	bq "google.golang.org/api/bigquery/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 )
 
 const (
@@ -83,6 +85,18 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 		option.WithScopes(Scope),
 		option.WithUserAgent(fmt.Sprintf("%s/%s", userAgentPrefix, internal.Version)),
 	}
+
+	if gax.IsFeatureEnabled("TRACING") {
+		o = append(o, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.version":  internal.Version,
+			"gcp.client.service":  "bigquery.googleapis.com",
+			"gcp.client.artifact": "cloud.google.com/go/bigquery",
+			"gcp.client.language": "go",
+			"url.domain":          "bigquery.googleapis.com",
+		}))
+	}
+
 	o = append(o, opts...)
 	bqs, err := bq.NewService(ctx, o...)
 	if err != nil {
@@ -148,6 +162,7 @@ func (c *Client) Close() error {
 
 // Calls the Jobs.Insert RPC and returns a Job.
 func (c *Client) insertJob(ctx context.Context, job *bq.Job, media io.Reader, mediaOpts ...googleapi.MediaOption) (*Job, error) {
+	ctx = setProjectItemTraceMetadata(ctx, c.projectID, "jobs")
 	call := c.bqs.Jobs.Insert(c.projectID, job).Context(ctx)
 	setClientHeader(call.Header())
 	if media != nil {
@@ -182,6 +197,7 @@ func (c *Client) insertJob(ctx context.Context, job *bq.Job, media io.Reader, me
 // Due to differences in options it supports, it cannot be used for all existing
 // jobs.insert requests that are query jobs.
 func (c *Client) runQuery(ctx context.Context, queryRequest *bq.QueryRequest) (*bq.QueryResponse, error) {
+	ctx = setProjectItemTraceMetadata(ctx, c.projectID, "queries")
 	call := c.bqs.Jobs.Query(c.projectID, queryRequest).Context(ctx)
 	setClientHeader(call.Header())
 
@@ -268,6 +284,9 @@ func retryableError(err error, allowedReasons []string) bool {
 	if err.Error() == "http2: stream closed" {
 		return true
 	}
+	if err.Error() == "http2: client connection lost" {
+		return true
+	}
 
 	switch e := err.(type) {
 	case *googleapi.Error:
@@ -275,16 +294,12 @@ func retryableError(err error, allowedReasons []string) bool {
 		var reason string
 		if len(e.Errors) > 0 {
 			reason = e.Errors[0].Reason
-			for _, r := range allowedReasons {
-				if reason == r {
-					return true
-				}
-			}
-		}
-		for _, code := range retry5xxCodes {
-			if e.Code == code {
+			if slices.Contains(allowedReasons, reason) {
 				return true
 			}
+		}
+		if slices.Contains(retry5xxCodes, e.Code) {
+			return true
 		}
 	case *url.Error:
 		retryable := []string{"connection refused", "connection reset"}
@@ -292,6 +307,10 @@ func retryableError(err error, allowedReasons []string) bool {
 			if strings.Contains(e.Error(), s) {
 				return true
 			}
+		}
+	case interface{ Timeout() bool }:
+		if e.Timeout() {
+			return true
 		}
 	case interface{ Temporary() bool }:
 		if e.Temporary() {

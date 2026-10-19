@@ -70,6 +70,11 @@
                 "FetchBackupPlanAssociationsForResourceType"
               ]
             },
+            "FetchBackupsForResourceType": {
+              "methods": [
+                "FetchBackupsForResourceType"
+              ]
+            },
             "FetchDataSourceReferencesForResourceType": {
               "methods": [
                 "FetchDataSourceReferencesForResourceType"
@@ -163,6 +168,11 @@
             "ListBackups": {
               "methods": [
                 "ListBackups"
+              ]
+            },
+            "ListDataSourceReferences": {
+              "methods": [
+                "ListDataSourceReferences"
               ]
             },
             "ListDataSources": {
@@ -295,6 +305,11 @@
                 "FetchBackupPlanAssociationsForResourceType"
               ]
             },
+            "FetchBackupsForResourceType": {
+              "methods": [
+                "FetchBackupsForResourceType"
+              ]
+            },
             "FetchDataSourceReferencesForResourceType": {
               "methods": [
                 "FetchDataSourceReferencesForResourceType"
@@ -390,6 +405,11 @@
                 "ListBackups"
               ]
             },
+            "ListDataSourceReferences": {
+              "methods": [
+                "ListDataSourceReferences"
+              ]
+            },
             "ListDataSources": {
               "methods": [
                 "ListDataSources"
@@ -453,6 +473,120 @@
             "UpdateDataSource": {
               "methods": [
                 "UpdateDataSource"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "BackupDrProtectionSummary": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "BackupDrProtectionSummaryClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListResourceBackupConfigs": {
+              "methods": [
+                "ListResourceBackupConfigs"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "BackupDrProtectionSummaryClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListResourceBackupConfigs": {
+              "methods": [
+                "ListResourceBackupConfigs"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             }
           }

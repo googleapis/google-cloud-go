@@ -23,6 +23,7 @@ import (
 	"io"
 	"log"
 	"math/rand"
+	"net"
 	"net/http"
 	"net/url"
 	"os"
@@ -30,6 +31,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -812,6 +814,94 @@ func TestOpenReaderEmulated(t *testing.T) {
 		}
 		if err := r.Close(); err != nil {
 			t.Errorf("closing Reader: %v", err)
+		}
+	})
+}
+
+// TestNewRangeReaderRemainEmulated verifies that range readers report the
+// correct number of remaining bytes and do not log spurious over-read warnings
+// for reads at non-zero offsets.
+func TestNewRangeReaderRemainEmulated(t *testing.T) {
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		if _, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{Name: bucket}, nil); err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		content := randomBytes3MiB
+		objName := fmt.Sprintf("remain-object-%d", time.Now().UnixNano())
+		w := veneerClient.Bucket(bucket).Object(objName).NewWriter(ctx)
+		if _, err := w.Write(content); err != nil {
+			t.Fatalf("failed to populate test data: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			t.Fatalf("closing object: %v", err)
+		}
+		size := int64(len(content))
+
+		// Cover both the ReadObject and BidiReadObject paths for gRPC.
+		type readMode struct {
+			desc  string
+			setup func(t *testing.T)
+		}
+		modes := []readMode{{desc: "default", setup: func(*testing.T) {}}}
+		if _, ok := client.(*grpcStorageClient); ok {
+			modes = append(modes, readMode{desc: "bidiReads", setup: func(t *testing.T) { setBidiReads(t, client) }})
+		}
+
+		for _, mode := range modes {
+			t.Run(mode.desc, func(t *testing.T) {
+				mode.setup(t)
+				for _, tc := range []struct {
+					desc           string
+					offset, length int64
+					wantStart      int64
+					wantLen        int64
+				}{
+					{desc: "entire object", offset: 0, length: -1, wantStart: 0, wantLen: size},
+					{desc: "prefix", offset: 0, length: MiB, wantStart: 0, wantLen: MiB},
+					{desc: "middle, offset larger than length", offset: 2 * MiB, length: 256 * 1024, wantStart: 2 * MiB, wantLen: 256 * 1024},
+					{desc: "middle, length larger than offset", offset: 1024, length: MiB, wantStart: 1024, wantLen: MiB},
+					{desc: "length past end of object", offset: 2 * MiB, length: 2 * MiB, wantStart: 2 * MiB, wantLen: size - 2*MiB},
+					{desc: "rest of object", offset: MiB, length: -1, wantStart: MiB, wantLen: size - MiB},
+					{desc: "negative offset", offset: -MiB, length: -1, wantStart: size - MiB, wantLen: MiB},
+				} {
+					t.Run(tc.desc, func(t *testing.T) {
+						var logOutput bytes.Buffer
+						oldOutput := log.Writer()
+						log.SetOutput(&logOutput)
+						t.Cleanup(func() { log.SetOutput(oldOutput) })
+
+						r, err := client.NewRangeReader(ctx, &newRangeReaderParams{
+							bucket: bucket,
+							object: objName,
+							gen:    defaultGen,
+							offset: tc.offset,
+							length: tc.length,
+						})
+						if err != nil {
+							t.Fatalf("NewRangeReader: %v", err)
+						}
+						if got := r.Remain(); got != tc.wantLen {
+							t.Errorf("Remain() before read = %d, want %d", got, tc.wantLen)
+						}
+						got, err := io.ReadAll(r)
+						if err != nil {
+							t.Fatalf("io.ReadAll: %v", err)
+						}
+						if want := content[tc.wantStart : tc.wantStart+tc.wantLen]; !bytes.Equal(got, want) {
+							t.Errorf("content mismatch: got %d bytes, want %d bytes", len(got), len(want))
+						}
+						if got := r.Remain(); got != 0 {
+							t.Errorf("Remain() after read = %d, want 0", got)
+						}
+						if err := r.Close(); err != nil {
+							t.Errorf("Close: %v", err)
+						}
+						if strings.Contains(logOutput.String(), "more bytes than requested") {
+							t.Errorf("unexpected over-read log: %q", logOutput.String())
+						}
+					})
+				}
+			})
 		}
 	})
 }
@@ -1732,6 +1822,7 @@ func (s *customObjSizeReadStream) RecvMsg(m any) error {
 	}
 
 	// Set the message on the pointer to be decoded by the normal read flow.
+	databufs.Free()
 	updatedMsg := mem.BufferSlice{mem.SliceBuffer(marshalled)}
 	if ptr, ok := m.(*mem.BufferSlice); ok {
 		*ptr = updatedMsg
@@ -1757,7 +1848,7 @@ func TestNewRangeReaderUnfinalizedEmulated(t *testing.T) {
 			return clientStream, err
 		})
 
-	client, err := NewGRPCClient(ctx, option.WithGRPCDialOption(streamInterceptor), experimental.WithGRPCBidiReads())
+	client, err := NewGRPCClient(ctx, option.WithGRPCDialOption(streamInterceptor), WithGRPCBidiReads())
 	if err != nil {
 		t.Fatalf("NewGRPCClient: %v", err)
 	}
@@ -1862,6 +1953,440 @@ func TestNewRangeReaderUnfinalizedEmulated(t *testing.T) {
 
 	//	Retries.
 	// metadata.remain is likely inaccurate
+}
+
+// customChunkCRCReadStream intercepts ReadObjectResponse and BidiReadObjectResponse
+// messages and injects an invalid CRC32C checksum on the second data chunk.
+type customChunkCRCReadStream struct {
+	grpc.ClientStream
+	chunkCount int
+	isBidi     bool
+}
+
+func (s *customChunkCRCReadStream) RecvMsg(m any) error {
+	err := s.ClientStream.RecvMsg(m)
+	if err != nil {
+		return err
+	}
+
+	databufs, ok := m.(*mem.BufferSlice)
+	if !ok {
+		return errors.New("unable to cast received message to mem.BufferSlice")
+	}
+
+	var respMsg proto.Message
+	var cs *storagepb.ChecksummedData
+
+	if s.isBidi {
+		resp := &storagepb.BidiReadObjectResponse{}
+		if uErr := proto.Unmarshal(databufs.Materialize(), resp); uErr != nil {
+			return fmt.Errorf("failed to unmarshal BidiReadObjectResponse: %w", uErr)
+		}
+		if len(resp.ObjectDataRanges) > 0 {
+			cs = resp.ObjectDataRanges[0].ChecksummedData
+		}
+		respMsg = resp
+	} else {
+		resp := &storagepb.ReadObjectResponse{}
+		if uErr := proto.Unmarshal(databufs.Materialize(), resp); uErr != nil {
+			return fmt.Errorf("failed to unmarshal ReadObjectResponse: %w", uErr)
+		}
+		cs = resp.ChecksummedData
+		respMsg = resp
+	}
+
+	if cs != nil && len(cs.Content) > 0 {
+		s.chunkCount++
+		if s.chunkCount == 2 {
+			var badCRC uint32 = 12345
+			cs.Crc32C = &badCRC
+		}
+	}
+
+	marshalled, mErr := proto.Marshal(respMsg)
+	if mErr != nil {
+		return fmt.Errorf("failed to marshal modified response: %w", mErr)
+	}
+	databufs.Free()
+	if ptr, ok := m.(*mem.BufferSlice); ok {
+		*ptr = mem.BufferSlice{mem.SliceBuffer(marshalled)}
+	}
+
+	return nil
+}
+
+func TestReadObjectWrongChunkChecksumEmulated(t *testing.T) {
+	checkEmulatorEnvironment(t)
+
+	for _, bidiReads := range []bool{false, true} {
+		for _, disableChecksum := range []bool{false, true} {
+			t.Run(fmt.Sprintf("bidiReads=%v/disableChecksum=%v", bidiReads, disableChecksum), func(t *testing.T) {
+				ctx := context.Background()
+
+				streamInterceptor := grpc.WithStreamInterceptor(
+					func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+						clientStream, err := streamer(ctx, desc, cc, method, opts...)
+
+						switch method {
+						case "/google.storage.v2.Storage/ReadObject":
+							clientStream = &customChunkCRCReadStream{ClientStream: clientStream, isBidi: false}
+						case "/google.storage.v2.Storage/BidiReadObject":
+							clientStream = &customChunkCRCReadStream{ClientStream: clientStream, isBidi: true}
+						}
+						return clientStream, err
+					})
+
+				var clientOpts []option.ClientOption
+				clientOpts = append(clientOpts, option.WithGRPCDialOption(streamInterceptor))
+				if bidiReads {
+					clientOpts = append(clientOpts, WithGRPCBidiReads())
+				}
+
+				client, err := NewGRPCClient(ctx, clientOpts...)
+				if err != nil {
+					t.Fatalf("NewGRPCClient: %v", err)
+				}
+
+				var (
+					contents = randomBytes9MiB
+					prefix   = time.Now().Nanosecond()
+					bucket   = fmt.Sprintf("bucket-%d", prefix)
+					objName  = fmt.Sprintf("%d-object", prefix)
+					o        = client.Bucket(bucket).Object(objName)
+				)
+
+				if err := client.Bucket(bucket).Create(ctx, "project", nil); err != nil {
+					t.Fatalf("creating test bucket: %v", err)
+				}
+				w := o.NewWriter(ctx)
+				if _, err = w.Write(contents); err != nil {
+					t.Fatalf("writing test data: got %v; want ok", err)
+				}
+				if err := w.Close(); err != nil {
+					t.Fatalf("closing test data writer: got %v; want ok", err)
+				}
+
+				var readerOpts []ReaderOption
+				if disableChecksum {
+					readerOpts = append(readerOpts, WithDisableReaderChecksum())
+				}
+
+				// Download content and validate.
+				r, err := o.NewReader(ctx, readerOpts...)
+				if err != nil {
+					t.Fatalf("NewReader: %v", err)
+				}
+
+				if disableChecksum {
+					buf := new(bytes.Buffer)
+					_, err = io.Copy(buf, r)
+					if err != nil {
+						t.Fatalf("expected nil error with checksum disabled, got %v", err)
+					}
+					if got, want := buf.Bytes(), contents; !bytes.Equal(got, want) {
+						t.Errorf("content mismatch: got %v bytes, want %v bytes", len(got), len(want))
+					}
+				} else {
+					_, err = io.Copy(io.Discard, r)
+					if err == nil {
+						t.Fatalf("expected error due to bad chunk CRC, got nil")
+					}
+					if got, want := err.Error(), "bad CRC on chunk read"; !strings.Contains(got, want) {
+						t.Errorf("error mismatch: got %q, want to contain %q", got, want)
+					}
+				}
+			})
+		}
+	}
+}
+
+// customObjectCRCReadStream intercepts ReadObjectResponse and BidiReadObjectResponse
+// messages and injects an invalid object-level CRC32C checksum.
+type customObjectCRCReadStream struct {
+	grpc.ClientStream
+	isBidi bool
+}
+
+func (s *customObjectCRCReadStream) RecvMsg(m any) error {
+	err := s.ClientStream.RecvMsg(m)
+	if err != nil {
+		return err
+	}
+
+	databufs, ok := m.(*mem.BufferSlice)
+	if !ok {
+		return errors.New("unable to cast received message to mem.BufferSlice")
+	}
+
+	var respMsg proto.Message
+	var badCRC uint32 = 12345
+
+	if s.isBidi {
+		resp := &storagepb.BidiReadObjectResponse{}
+		if uErr := proto.Unmarshal(databufs.Materialize(), resp); uErr != nil {
+			return fmt.Errorf("failed to unmarshal BidiReadObjectResponse: %w", uErr)
+		}
+		if resp.Metadata != nil {
+			if resp.Metadata.Checksums == nil {
+				resp.Metadata.Checksums = &storagepb.ObjectChecksums{}
+			}
+			resp.Metadata.Checksums.Crc32C = &badCRC
+		}
+		respMsg = resp
+	} else {
+		resp := &storagepb.ReadObjectResponse{}
+		if uErr := proto.Unmarshal(databufs.Materialize(), resp); uErr != nil {
+			return fmt.Errorf("failed to unmarshal ReadObjectResponse: %w", uErr)
+		}
+		if resp.ObjectChecksums == nil {
+			resp.ObjectChecksums = &storagepb.ObjectChecksums{}
+		}
+		resp.ObjectChecksums.Crc32C = &badCRC
+		respMsg = resp
+	}
+
+	marshalled, mErr := proto.Marshal(respMsg)
+	if mErr != nil {
+		return fmt.Errorf("failed to marshal modified response: %w", mErr)
+	}
+	databufs.Free()
+	if ptr, ok := m.(*mem.BufferSlice); ok {
+		*ptr = mem.BufferSlice{mem.SliceBuffer(marshalled)}
+	}
+
+	return nil
+}
+
+func TestReadObjectWrongChecksumWholeObjectSizeEmulated(t *testing.T) {
+	checkEmulatorEnvironment(t)
+
+	for _, bidiReads := range []bool{false, true} {
+		for _, disableChecksum := range []bool{false, true} {
+			for _, negativeOffset := range []bool{false, true} {
+				t.Run(fmt.Sprintf("bidiReads=%v/disableChecksum=%v/negativeOffset=%v", bidiReads, disableChecksum, negativeOffset), func(t *testing.T) {
+					ctx := context.Background()
+
+					streamInterceptor := grpc.WithStreamInterceptor(
+						func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+							clientStream, err := streamer(ctx, desc, cc, method, opts...)
+
+							switch method {
+							case "/google.storage.v2.Storage/ReadObject":
+								clientStream = &customObjectCRCReadStream{ClientStream: clientStream, isBidi: false}
+							case "/google.storage.v2.Storage/BidiReadObject":
+								clientStream = &customObjectCRCReadStream{ClientStream: clientStream, isBidi: true}
+							}
+							return clientStream, err
+						})
+
+					var clientOpts []option.ClientOption
+					clientOpts = append(clientOpts, option.WithGRPCDialOption(streamInterceptor))
+					if bidiReads {
+						clientOpts = append(clientOpts, WithGRPCBidiReads())
+					}
+
+					client, err := NewGRPCClient(ctx, clientOpts...)
+					if err != nil {
+						t.Fatalf("NewGRPCClient: %v", err)
+					}
+					defer client.Close()
+					var (
+						contents = randomBytes9MiB
+						prefix   = time.Now().Nanosecond()
+						bucket   = fmt.Sprintf("bucket-%d", prefix)
+						objName  = fmt.Sprintf("%d-object", prefix)
+						o        = client.Bucket(bucket).Object(objName)
+					)
+
+					if err := client.Bucket(bucket).Create(ctx, "project", nil); err != nil {
+						t.Fatalf("creating test bucket: %v", err)
+					}
+					w := o.NewWriter(ctx)
+					if _, err = w.Write(contents); err != nil {
+						t.Fatalf("writing test data: got %v; want ok", err)
+					}
+					if err := w.Close(); err != nil {
+						t.Fatalf("closing test data writer: got %v; want ok", err)
+					}
+
+					var readerOpts []ReaderOption
+					if disableChecksum {
+						readerOpts = append(readerOpts, WithDisableReaderChecksum())
+					}
+
+					var offset, length int64
+					if negativeOffset {
+						offset = -int64(len(contents) + 1000)
+						length = -1
+					} else {
+						offset = 0
+						length = int64(len(contents))
+					}
+					r, err := o.NewRangeReader(ctx, offset, length, readerOpts...)
+					if err != nil {
+						t.Fatalf("NewRangeReader: %v", err)
+					}
+					defer r.Close()
+					if disableChecksum {
+						buf := new(bytes.Buffer)
+						_, err = io.Copy(buf, r)
+						if err != nil {
+							t.Fatalf("expected nil error with checksum disabled, got %v", err)
+						}
+						if got, want := buf.Bytes(), contents; !bytes.Equal(got, want) {
+							t.Errorf("content mismatch: got %v bytes, want %v bytes", len(got), len(want))
+						}
+					} else {
+						_, err = io.Copy(io.Discard, r)
+						if err == nil {
+							t.Fatalf("expected error due to bad object CRC, got nil")
+						}
+						if got, want := err.Error(), "bad CRC on read"; !strings.Contains(got, want) {
+							t.Errorf("error mismatch: got %q, want to contain %q", got, want)
+						}
+					}
+				})
+			}
+		}
+	}
+}
+
+func TestReadObjectWrongChecksumUnfinalizedWholeObjectSizeEmulated(t *testing.T) {
+	checkEmulatorEnvironment(t)
+
+	ctx := context.Background()
+
+	streamInterceptor := grpc.WithStreamInterceptor(
+		func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+			clientStream, err := streamer(ctx, desc, cc, method, opts...)
+
+			if method == "/google.storage.v2.Storage/BidiReadObject" {
+				clientStream = &customObjectCRCReadStream{ClientStream: clientStream, isBidi: true}
+			}
+			return clientStream, err
+		})
+
+	client, err := NewGRPCClient(ctx, option.WithGRPCDialOption(streamInterceptor), WithGRPCBidiReads())
+	if err != nil {
+		t.Fatalf("NewGRPCClient: %v", err)
+	}
+	defer client.Close()
+
+	var (
+		contents = randomBytes9MiB
+		prefix   = time.Now().Nanosecond()
+		bucket   = fmt.Sprintf("bucket-%d", prefix)
+		objName  = fmt.Sprintf("%d-object", prefix)
+		o        = client.Bucket(bucket).Object(objName)
+	)
+
+	if err := client.Bucket(bucket).Create(ctx, "project", nil); err != nil {
+		t.Fatalf("creating test bucket: %v", err)
+	}
+	w := o.NewWriter(ctx)
+	w.Append = true
+	if _, err = w.Write(contents); err != nil {
+		t.Fatalf("writing test data: got %v; want ok", err)
+	}
+	if err := w.Close(); err != nil {
+		t.Fatalf("closing test data writer: got %v; want ok", err)
+	}
+
+	// Download content with exact size (whole object size is given) and validate that it succeeds because the object is not finalized.
+	r, err := o.NewRangeReader(ctx, 0, int64(len(contents)))
+	if err != nil {
+		t.Fatalf("NewRangeReader: %v", err)
+	}
+	buf := new(bytes.Buffer)
+	_, err = io.Copy(buf, r)
+	if err != nil {
+		t.Fatalf("expected nil error despite bad checksum since object is unfinalized, got %v", err)
+	}
+	if got, want := buf.Bytes(), contents; !bytes.Equal(got, want) {
+		t.Errorf("content mismatch: got %v bytes, want %v bytes", len(got), len(want))
+	}
+}
+
+func TestMRDWrongChunkChecksumEmulated(t *testing.T) {
+	checkEmulatorEnvironment(t)
+
+	for _, disableChecksum := range []bool{false, true} {
+		t.Run(fmt.Sprintf("disableChecksum=%v", disableChecksum), func(t *testing.T) {
+			ctx := context.Background()
+
+			streamInterceptor := grpc.WithStreamInterceptor(
+				func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+					clientStream, err := streamer(ctx, desc, cc, method, opts...)
+
+					if method == "/google.storage.v2.Storage/BidiReadObject" {
+						clientStream = &customChunkCRCReadStream{ClientStream: clientStream, isBidi: true}
+					}
+					return clientStream, err
+				})
+
+			client, err := NewGRPCClient(ctx, option.WithGRPCDialOption(streamInterceptor), WithGRPCBidiReads())
+			if err != nil {
+				t.Fatalf("NewGRPCClient: %v", err)
+			}
+
+			var (
+				contents = randomBytes9MiB
+				prefix   = time.Now().Nanosecond()
+				bucket   = fmt.Sprintf("bucket-%d", prefix)
+				objName  = fmt.Sprintf("%d-object", prefix)
+				o        = client.Bucket(bucket).Object(objName)
+			)
+
+			if err := client.Bucket(bucket).Create(ctx, "project", nil); err != nil {
+				t.Fatalf("creating test bucket: %v", err)
+			}
+			w := o.NewWriter(ctx)
+			if _, err = w.Write(contents); err != nil {
+				t.Fatalf("writing test data: got %v; want ok", err)
+			}
+			if err := w.Close(); err != nil {
+				t.Fatalf("closing test data writer: got %v; want ok", err)
+			}
+
+			var opts []MRDOption
+			if disableChecksum {
+				opts = append(opts, WithDisableMRDReadChecksum())
+			}
+
+			reader, err := o.NewMultiRangeDownloader(ctx, opts...)
+			if err != nil {
+				t.Fatalf("error opening multirangedownloader: %v", err)
+			}
+
+			buf := new(bytes.Buffer)
+			var callbackErr error
+			callback := func(x, y int64, err error) {
+				callbackErr = err
+			}
+			reader.Add(buf, 0, 5<<20, callback)
+			reader.Wait()
+
+			if disableChecksum {
+				if callbackErr != nil {
+					t.Fatalf("expected nil error with checksum disabled, got %v", callbackErr)
+				}
+				if got, want := buf.Bytes(), contents[:5<<20]; !bytes.Equal(got, want) {
+					t.Errorf("content mismatch: got %v bytes, want %v bytes", len(got), len(want))
+				}
+			} else {
+				if callbackErr == nil {
+					t.Fatalf("expected error due to bad chunk CRC, got nil")
+				}
+				if got, want := callbackErr.Error(), "bad CRC on chunk read"; !strings.Contains(got, want) {
+					t.Errorf("error mismatch: got %q, want to contain %q", got, want)
+				}
+			}
+
+			if err = reader.Close(); err != nil {
+				t.Fatalf("reader.Close() error: %v", err)
+			}
+		})
+	}
 }
 
 func TestListNotificationsEmulated(t *testing.T) {
@@ -2042,16 +2567,73 @@ func TestMRDAddAfterCloseEmulated(t *testing.T) {
 			callbackErr = err
 		}
 		reader.Add(buf, 10, 3000, callback)
+		reader.Wait()
 		if callbackErr == nil {
 			t.Fatalf("Expected error: stream to be closed")
 		}
-		if got, want := callbackErr, "stream is closed"; !strings.Contains(got.Error(), want) {
+		if got, want := callbackErr, "downloader closed"; !strings.Contains(got.Error(), want) {
 			t.Errorf("err: got %q, want err to contain %q", got.Error(), want)
 		}
 	})
 }
 
-func TestMRDAddSanityCheck(t *testing.T) {
+func TestMRDGetHandleAfterCloseEmulated(t *testing.T) {
+	transportClientTest(skipHTTP("mrd is implemented for grpc client"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		setBidiReads(t, client)
+		getHandleTimeout := 5 * time.Second
+		content := make([]byte, 5000)
+		rand.New(rand.NewSource(0)).Read(content)
+		// Populate test data.
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
+			Name: bucket,
+		}, nil)
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		prefix := time.Now().Nanosecond()
+		objectName := fmt.Sprintf("%d-object-%d", prefix, time.Now().Nanosecond())
+		w := veneerClient.Bucket(bucket).Object(objectName).NewWriter(context.Background())
+		if _, err := w.Write(content); err != nil {
+			t.Fatalf("failed to populate test data: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			t.Fatalf("closing object: %v", err)
+		}
+		params := &newMultiRangeDownloaderParams{
+			bucket: bucket,
+			object: objectName,
+			gen:    defaultGen,
+		}
+		reader, err := client.NewMultiRangeDownloader(ctx, params)
+		if err != nil {
+			t.Fatalf("opening reading: %v", err)
+		}
+		err = reader.Close()
+		if err != nil {
+			t.Errorf("Error while closing reader %v", err)
+		}
+		handleCh := make(chan []byte, 1)
+		timer := time.NewTimer(getHandleTimeout)
+		defer timer.Stop()
+		var wg sync.WaitGroup
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			// This call should not block otherwise we fail after getHandleTimeout.
+			handleCh <- reader.GetHandle()
+		}()
+
+		select {
+		case <-handleCh:
+		case <-timer.C:
+			t.Errorf("GetHandle timed out after %v", getHandleTimeout)
+		}
+		reader.Wait()
+		wg.Wait()
+	})
+}
+
+func TestMRDAddSanityCheckEmulated(t *testing.T) {
 	transportClientTest(skipHTTP("mrd is implemented for grpc client"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		setBidiReads(t, client)
 		content := make([]byte, 5000)
@@ -2101,14 +2683,15 @@ func TestMRDAddSanityCheck(t *testing.T) {
 		reader.Add(buf, 10000, 3000, callback1)
 		// Request fails as limit is negative.
 		reader.Add(buf, 10, -1, callback2)
-		if got, want := err1, fmt.Errorf("offset larger than size of object"); got.Error() != want.Error() {
-			t.Errorf("err: got %v, want %v", got.Error(), want.Error())
+		reader.Wait()
+		if status.Code(err1) != codes.OutOfRange {
+			t.Errorf("err1: got %v, want OutOfRange", err1)
 		}
-		if got, want := err2, fmt.Errorf("limit can't be negative"); got.Error() != want.Error() {
-			t.Errorf("err: got %v, want %v", got.Error(), want.Error())
+		if got, want := err2.Error(), "limit cannot be negative"; !strings.Contains(got, want) {
+			t.Errorf("err2: got %v, want to contain %v", got, want)
 		}
-		if err = reader.Close(); err != nil {
-			t.Errorf("Error while closing reader %v", err)
+		if err = reader.Close(); status.Code(err) != codes.OutOfRange {
+			t.Errorf("Unexpected err while closing reader %v", err)
 		}
 	})
 }
@@ -2717,6 +3300,39 @@ func TestRetryMaxAttemptsEmulated(t *testing.T) {
 	})
 }
 
+// Test that errors are wrapped correctly if retry happens until max retry duration is reached.
+func TestRetryMaxDurationEmulated(t *testing.T) {
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{}, nil)
+		if err != nil {
+			t.Fatalf("creating bucket: %v", err)
+		}
+		// Set up many errors to ensure we don't run out during the duration
+		instructions := map[string][]string{"storage.buckets.get": slices.Repeat([]string{"return-503"}, 10)}
+		testID := createRetryTest(t, client, instructions)
+		ctx = callctx.SetHeaders(ctx, "x-retry-test-id", testID)
+		// Set a short max retry duration with a very small backoff to ensure we hit the duration limit
+		config := &retryConfig{maxRetryDuration: 200 * time.Millisecond, backoff: &gax.Backoff{Initial: 10 * time.Millisecond}}
+		_, err = client.GetBucket(ctx, bucket, nil, idempotent(true), withRetryConfig(config))
+
+		var ae *apierror.APIError
+		if errors.As(err, &ae) {
+			// We expect a 503/UNAVAILABLE error. For anything else including a nil
+			// error, the test should fail.
+			if ae.GRPCStatus().Code() != codes.Unavailable && ae.HTTPCode() != 503 {
+				t.Errorf("GetBucket: got unexpected error %v; want 503", err)
+			}
+		}
+		// Error should be wrapped so it indicates that retry deadline has been reached.
+		if got, want := err.Error(), "retry deadline of"; !strings.Contains(got, want) {
+			t.Errorf("got error: %q, want to contain: %q", got, want)
+		}
+		if got, want := err.Error(), "200ms"; !strings.Contains(got, want) {
+			t.Errorf("got error: %q, want to contain duration: %q", got, want)
+		}
+	})
+}
+
 // Test that a timeout returns a DeadlineExceeded error, in spite of DeadlineExceeded being a retryable
 // status when it is returned by the server.
 func TestTimeoutErrorEmulated(t *testing.T) {
@@ -2769,7 +3385,7 @@ func TestRetryReadStallEmulated(t *testing.T) {
 	client, err := NewClient(ctx, experimental.WithReadStallTimeout(
 		&experimental.ReadStallTimeoutConfig{
 			TargetPercentile: 0.99,
-			Min:              10 * time.Millisecond,
+			Min:              250 * time.Millisecond,
 		}))
 	if err != nil {
 		t.Fatalf("storage.NewClient: %v", err)
@@ -2807,10 +3423,210 @@ func TestRetryReadStallEmulated(t *testing.T) {
 	if !bytes.Equal(buf.Bytes(), randomBytes3MiB) {
 		t.Errorf("content does not match, got len %v, want len %v", buf.Len(), len(randomBytes3MiB))
 	}
+	checkRetryTestCompleted(t, testID)
+}
+
+// Test validates the retry for stalled read-requests over gRPC, for both the
+// ReadObject and BidiReadObject read paths, when the client is created with
+// WithReadStallTimeout.
+func TestGRPCRetryReadStallEmulated(t *testing.T) {
+	checkEmulatorEnvironment(t)
+	for _, tc := range []struct {
+		name string
+		opts []option.ClientOption
+	}{
+		{name: "ReadObject"},
+		{name: "BidiReadObject", opts: []option.ClientOption{WithGRPCBidiReads()}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+			defer cancel()
+
+			opts := append([]option.ClientOption{
+				experimental.WithReadStallTimeout(
+					&experimental.ReadStallTimeoutConfig{
+						TargetPercentile: 0.99,
+						Min:              250 * time.Millisecond,
+					}),
+			}, tc.opts...)
+
+			client, err := NewGRPCClient(ctx, opts...)
+			if err != nil {
+				t.Fatalf("storage.NewGRPCClient: %v", err)
+			}
+			defer client.Close()
+			client.SetRetry(WithBackoff(gax.Backoff{Initial: 10 * time.Millisecond}))
+
+			project := "fake-project"
+			bucket := fmt.Sprintf("grpc-bucket-%d", time.Now().UnixNano())
+			if err := client.Bucket(bucket).Create(ctx, project, nil); err != nil {
+				t.Fatalf("client.Bucket.Create: %v", err)
+			}
+
+			name, _, _, err := createObjectWithContent(ctx, bucket, randomBytes3MiB)
+			if err != nil {
+				t.Fatalf("createObject: %v", err)
+			}
+
+			// Plant stall at start for 10s. The ReadStallTimeout should cause the
+			// stalled request to be stopped and retried before hitting the 5s
+			// context deadline.
+			instructions := map[string][]string{"storage.objects.get": {"stall-for-10s-after-0K"}}
+			testID := createRetryTest(t, client.tc, instructions)
+
+			testCtx := callctx.SetHeaders(ctx, "x-retry-test-id", testID)
+
+			r, err := client.Bucket(bucket).Object(name).NewReader(testCtx)
+			if err != nil {
+				t.Fatalf("NewReader: %v", err)
+			}
+			defer r.Close()
+
+			buf := &bytes.Buffer{}
+			if _, err := io.Copy(buf, r); err != nil {
+				t.Fatalf("io.Copy: %v", err)
+			}
+			if !bytes.Equal(buf.Bytes(), randomBytes3MiB) {
+				t.Errorf("content does not match, got len %v, want len %v", buf.Len(), len(randomBytes3MiB))
+			}
+			checkRetryTestCompleted(t, testID)
+		})
+	}
+}
+
+// stallBlackholeConn wraps a net.Conn and, once armed, turns a testbench
+// server-side stall (>200ms with no bytes received) into a full transport
+// blackhole by blocking further Reads until the connection is closed. This
+// suppresses HTTP/2 PING ACKs from the local testbench transport thread so
+// that gRPC client keepalive can be tested end-to-end against testbench.
+type stallBlackholeConn struct {
+	net.Conn
+	armed     *atomic.Bool
+	triggered *atomic.Bool
+	closed    chan struct{}
+	closeOnce sync.Once
+}
+
+func (c *stallBlackholeConn) Read(b []byte) (int, error) {
+	for {
+		if c.armed.Load() && !c.triggered.Load() {
+			_ = c.Conn.SetReadDeadline(time.Now().Add(200 * time.Millisecond))
+		}
+		n, err := c.Conn.Read(b)
+		if c.armed.Load() {
+			_ = c.Conn.SetReadDeadline(time.Time{})
+			if ne, ok := err.(net.Error); ok && ne.Timeout() {
+				if c.triggered.CompareAndSwap(false, true) {
+					<-c.closed
+					return 0, net.ErrClosed
+				}
+				continue
+			}
+		}
+		return n, err
+	}
+}
+
+func (c *stallBlackholeConn) Close() error {
+	c.closeOnce.Do(func() { close(c.closed) })
+	return c.Conn.Close()
+}
+
+// TestGRPCKeepaliveEmulated verifies that experimental.WithGRPCKeepalive
+// detects a connection that stalls mid-stream against the testbench and
+// closes it so the read is retried on a new connection before the testbench
+// stall duration or context deadline expires.
+func TestGRPCKeepaliveEmulated(t *testing.T) {
+	checkEmulatorEnvironment(t)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 16*time.Second)
+	defer cancel()
+
+	var armed, triggered atomic.Bool
+	dialer := grpc.WithContextDialer(func(ctx context.Context, addr string) (net.Conn, error) {
+		var d net.Dialer
+		conn, err := d.DialContext(ctx, "tcp", addr)
+		if err != nil {
+			return nil, err
+		}
+		return &stallBlackholeConn{
+			Conn:      conn,
+			armed:     &armed,
+			triggered: &triggered,
+			closed:    make(chan struct{}),
+		}, nil
+	})
+
+	// Configure WithGRPCKeepalive with Time at the 10s gRPC minimum and a
+	// short 500ms Timeout so an unacknowledged keepalive ping closes the
+	// stalled connection in ~10.5s.
+	client, err := NewGRPCClient(ctx,
+		option.WithGRPCDialOption(dialer),
+		experimental.WithGRPCKeepalive(experimental.GRPCKeepaliveConfig{
+			Time:    10 * time.Second,
+			Timeout: 500 * time.Millisecond,
+		}),
+	)
+	if err != nil {
+		t.Fatalf("storage.NewGRPCClient: %v", err)
+	}
+	defer client.Close()
+	client.SetRetry(WithBackoff(gax.Backoff{Initial: 10 * time.Millisecond}))
+
+	project := "fake-project"
+	bucket := fmt.Sprintf("grpc-keepalive-bucket-%d", time.Now().UnixNano())
+	if err := client.Bucket(bucket).Create(ctx, project, nil); err != nil {
+		t.Fatalf("client.Bucket.Create: %v", err)
+	}
+
+	name, _, _, err := createObjectWithContent(ctx, bucket, randomBytes3MiB)
+	if err != nil {
+		t.Fatalf("createObject: %v", err)
+	}
+
+	// Inject a 25s stall mid-stream after 1024 KiB (past initial response
+	// headers, where WithReadStallTimeout does not apply). Keepalive (~10.5s)
+	// must abort the dead connection and retry the remaining range before the
+	// 16s context deadline.
+	instructions := map[string][]string{"storage.objects.get": {"stall-for-25s-after-1024K"}}
+	testID := createRetryTest(t, client.tc, instructions)
+	testCtx := callctx.SetHeaders(ctx, "x-retry-test-id", testID)
+
+	armed.Store(true)
+
+	r, err := client.Bucket(bucket).Object(name).NewReader(testCtx)
+	if err != nil {
+		t.Fatalf("NewReader: %v", err)
+	}
+	defer r.Close()
+
+	buf := &bytes.Buffer{}
+	if _, err := io.Copy(buf, r); err != nil {
+		t.Fatalf("io.Copy: %v", err)
+	}
+	if !triggered.Load() {
+		t.Fatal("expected mid-stream stall to trigger connection blackhole")
+	}
+	if !bytes.Equal(buf.Bytes(), randomBytes3MiB) {
+		t.Errorf("content does not match, got len %v, want len %v", buf.Len(), len(randomBytes3MiB))
+	}
+	checkRetryTestCompleted(t, testID)
+}
+
+// checkRetryTestCompleted verifies that the testbench consumed all instructions
+// for the given retry test, i.e. that the injected fault actually happened.
+func checkRetryTestCompleted(t *testing.T, testID string) {
+	t.Helper()
+	endpoint, err := url.Parse(os.Getenv("STORAGE_EMULATOR_HOST"))
+	if err != nil {
+		t.Fatalf("parsing endpoint: %v", err)
+	}
+	et := emulatorTest{T: t, name: t.Name(), id: testID, host: endpoint}
+	et.check()
 }
 
 func TestWriterChunkTransferTimeoutEmulated(t *testing.T) {
-	transportClientTest(skipGRPC("service is not implemented"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{}, nil)
 		if err != nil {
 			t.Fatalf("creating bucket: %v", err)
@@ -2827,7 +3643,7 @@ func TestWriterChunkTransferTimeoutEmulated(t *testing.T) {
 			{
 				name: "stall-on-first-chunk-with-chunk-transfer-timeout-zero",
 				instructions: map[string][]string{
-					"storage.objects.insert": {"stall-for-10s-after-1024K"},
+					"storage.objects.insert": {"stall-for-2s-after-1024K"},
 				},
 				chunkTransferTimeout: 0,
 				expectedSuccess:      false,
@@ -2835,7 +3651,7 @@ func TestWriterChunkTransferTimeoutEmulated(t *testing.T) {
 			{
 				name: "stall-on-first-chunk-with-chunk-transfer-timeout-nonzero",
 				instructions: map[string][]string{
-					"storage.objects.insert": {"stall-for-10s-after-1024K"},
+					"storage.objects.insert": {"stall-for-2s-after-1024K"},
 				},
 				chunkTransferTimeout: 100 * time.Millisecond,
 				expectedSuccess:      true,
@@ -2843,7 +3659,7 @@ func TestWriterChunkTransferTimeoutEmulated(t *testing.T) {
 			{
 				name: "stall-on-second-chunk-with-chunk-transfer-timeout-zero",
 				instructions: map[string][]string{
-					"storage.objects.insert": {"stall-for-10s-after-3072K"},
+					"storage.objects.insert": {"stall-for-2s-after-3072K"},
 				},
 				chunkTransferTimeout: 0,
 				expectedSuccess:      false,
@@ -2851,7 +3667,7 @@ func TestWriterChunkTransferTimeoutEmulated(t *testing.T) {
 			{
 				name: "stall-on-second-chunk-with-chunk-transfer-timeout-nonzero",
 				instructions: map[string][]string{
-					"storage.objects.insert": {"stall-for-10s-after-3072K"},
+					"storage.objects.insert": {"stall-for-2s-after-3072K"},
 				},
 				chunkTransferTimeout: 100 * time.Millisecond,
 				expectedSuccess:      true,
@@ -2859,7 +3675,7 @@ func TestWriterChunkTransferTimeoutEmulated(t *testing.T) {
 			{
 				name: "stall-on-first-chunk-twice-with-chunk-transfer-timeout-zero",
 				instructions: map[string][]string{
-					"storage.objects.insert": {"stall-for-10s-after-1024K", "stall-for-10s-after-1024K"},
+					"storage.objects.insert": {"stall-for-2s-after-1024K", "stall-for-2s-after-1024K"},
 				},
 				chunkTransferTimeout: 0,
 				expectedSuccess:      false,
@@ -2867,7 +3683,7 @@ func TestWriterChunkTransferTimeoutEmulated(t *testing.T) {
 			{
 				name: "stall-on-first-chunk-twice-with-chunk-transfer-timeout-nonzero",
 				instructions: map[string][]string{
-					"storage.objects.insert": {"stall-for-10s-after-1024K", "stall-for-10s-after-1024K"},
+					"storage.objects.insert": {"stall-for-2s-after-1024K", "stall-for-2s-after-1024K"},
 				},
 				chunkTransferTimeout: 100 * time.Millisecond,
 				expectedSuccess:      true,
@@ -2931,13 +3747,15 @@ func TestWriterChunkTransferTimeoutEmulated(t *testing.T) {
 						t.Fatalf("opening reading: %v", err)
 					}
 					wantLen := len(buffer)
-					got := make([]byte, wantLen)
-					n, err := r.Read(got)
-					if n != wantLen {
-						t.Fatalf("expected to read %d bytes, but got %d", wantLen, n)
+					got, err := io.ReadAll(r)
+					if err != nil {
+						t.Fatalf("reading bytes: %v", err)
 					}
-					if diff := cmp.Diff(got, buffer); diff != "" {
-						t.Fatalf("checking written content: got(-),want(+):\n%s", diff)
+					if len(got) != wantLen {
+						t.Fatalf("expected to read %d bytes, but got %d", wantLen, len(got))
+					}
+					if !bytes.Equal(got, buffer) {
+						t.Errorf("checking content: bytes did not match")
 					}
 				} else {
 					// Deadlines may come through as a context.DeadlineExceeded (HTTP) or status.DeadlineExceeded (gRPC)
@@ -3047,8 +3865,8 @@ func TestWriterChunkRetryDeadlineEmulated(t *testing.T) {
 		buffer := bytes.Repeat([]byte("A"), fileSize)
 		_, err = pw.Write(buffer)
 		defer pw.Close()
-		if !errorIsStatusCode(err, errCode, codes.Unavailable) {
-			t.Errorf("expected err with status %d, got err: %v", errCode, err)
+		if !errorIsStatusCode(err, errCode, codes.Unavailable) && !strings.Contains(err.Error(), "retry deadline of") {
+			t.Errorf("expected err with status %d or retry deadline reached, got err: %v", errCode, err)
 		}
 
 		// Make sure there was more than one attempt.
@@ -3059,6 +3877,81 @@ func TestWriterChunkRetryDeadlineEmulated(t *testing.T) {
 
 		if got >= len(manyErrs)-1 {
 			t.Errorf("not enough attempts - the request may not have been retried; got %d instructions left, expected at most %d", got, len(manyErrs)-2)
+		}
+	})
+}
+
+// Test that maxRetryDuration does not apply to Writer operations - Writers should
+// only use ChunkRetryDeadline for per-chunk retry timeouts.
+func TestWriterIgnoresMaxRetryDurationEmulated(t *testing.T) {
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		const (
+			// Resumable upload with smallest chunksize.
+			chunkSize = 256 * 1024
+			fileSize  = 600 * 1024
+			// Set a very short maxRetryDuration - if applied, would allow almost no retries
+			maxRetryDuration = 2 * time.Millisecond
+			// Set ChunkRetryDeadline longer to allow all retries to complete
+			chunkRetryDeadline = 10 * time.Second
+			errCode            = 503
+		)
+
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{}, nil)
+		if err != nil {
+			t.Fatalf("creating bucket: %v", err)
+		}
+
+		// Create enough errors that will be exhausted within chunkRetryDeadline.
+		// Error only after the first chunk has been sent.
+		manyErrs := []string{fmt.Sprintf("return-%d-after-%dK", errCode, 257)}
+		// Add more errors to prove maxRetryDuration is not limiting retries
+		// Use fewer errors since gRPC seems to consume them slowly
+		for i := 0; i < 7; i++ {
+			manyErrs = append(manyErrs, fmt.Sprintf("return-%d", errCode))
+		}
+		instructions := map[string][]string{"storage.objects.insert": manyErrs}
+		testID := createRetryTest(t, client, instructions)
+
+		var cancel context.CancelFunc
+		ctx = callctx.SetHeaders(ctx, "x-retry-test-id", testID)
+		// Context deadline must be longer than ChunkRetryDeadline to allow retries to complete
+		ctx, cancel = context.WithTimeout(ctx, 15*time.Second)
+		defer cancel()
+
+		// Create a veneer client with maxRetryDuration set
+		vc := &Client{tc: client}
+		obj := vc.Bucket(bucket).Object(fmt.Sprintf("object-%d", time.Now().Nanosecond()))
+		// Set maxRetryDuration on the object handle with a proper backoff config
+		obj = obj.Retryer(
+			WithPolicy(RetryAlways), // Use RetryAlways since writes without preconditions aren't idempotent
+			WithMaxRetryDuration(maxRetryDuration),
+			WithBackoff(gax.Backoff{
+				Initial:    1 * time.Millisecond,
+				Max:        50 * time.Millisecond,
+				Multiplier: 2,
+			}),
+		)
+
+		w := obj.NewWriter(ctx)
+		w.ChunkSize = chunkSize
+		w.ChunkRetryDeadline = chunkRetryDeadline
+
+		buffer := bytes.Repeat([]byte("A"), fileSize)
+		if _, err := w.Write(buffer); err != nil {
+			// Expected to fail after exhausting retries
+		}
+		w.Close()
+
+		// Verify that all retry instructions were consumed, proving maxRetryDuration was ignored.
+		// If maxRetryDuration (2ms) were applied, only 1 instruction would be consumed.
+		// With backoff (Initial=1ms, Max=50ms) and 10s ChunkRetryDeadline, all instructions
+		// should be consumed since maxRetryDuration is ignored.
+		got, err := numInstructionsLeft(testID, "storage.objects.insert")
+		if err != nil {
+			t.Errorf("getting emulator instructions: %v", err)
+		}
+		if got > 0 {
+			t.Errorf("expected all instructions to be consumed (<=0 left), but got %d instructions left", got)
 		}
 	})
 }
@@ -3099,7 +3992,7 @@ func TestReadCodecLeaksEmulated(t *testing.T) {
 	checkEmulatorEnvironment(t)
 	ctx := context.Background()
 	var bp testBufferPool
-	client, err := NewGRPCClient(ctx, option.WithGRPCDialOption(expgrpc.WithBufferPool(&bp)), experimental.WithZonalBucketAPIs())
+	client, err := NewGRPCClient(ctx, option.WithGRPCDialOption(expgrpc.WithBufferPool(&bp)), WithGRPCBidiReads(), WithAppendableUploads())
 	if err != nil {
 		t.Fatalf("NewGRPCClient: %v", err)
 	}

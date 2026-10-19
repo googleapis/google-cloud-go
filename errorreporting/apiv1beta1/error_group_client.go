@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"log/slog"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,14 +28,13 @@ import (
 
 	errorreportingpb "cloud.google.com/go/errorreporting/apiv1beta1/errorreportingpb"
 	gax "github.com/googleapis/gax-go/v2"
-	"google.golang.org/api/googleapi"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
@@ -52,9 +51,12 @@ func defaultErrorGroupGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultEndpoint("clouderrorreporting.googleapis.com:443"),
 		internaloption.WithDefaultEndpointTemplate("clouderrorreporting.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("clouderrorreporting.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://clouderrorreporting.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.AllowHardBoundTokens("MTLS_S2A"),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -63,6 +65,7 @@ func defaultErrorGroupGRPCClientOptions() []option.ClientOption {
 func defaultErrorGroupCallOptions() *ErrorGroupCallOptions {
 	return &ErrorGroupCallOptions{
 		GetGroup: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -75,6 +78,7 @@ func defaultErrorGroupCallOptions() *ErrorGroupCallOptions {
 			}),
 		},
 		UpdateGroup: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -92,6 +96,7 @@ func defaultErrorGroupCallOptions() *ErrorGroupCallOptions {
 func defaultErrorGroupRESTCallOptions() *ErrorGroupCallOptions {
 	return &ErrorGroupCallOptions{
 		GetGroup: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -103,6 +108,7 @@ func defaultErrorGroupRESTCallOptions() *ErrorGroupCallOptions {
 			}),
 		},
 		UpdateGroup: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -139,7 +145,7 @@ type ErrorGroupClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *ErrorGroupClient) Close() error {
 	return c.internalClient.Close()
@@ -150,6 +156,16 @@ func (c *ErrorGroupClient) Close() error {
 // use by Google-written clients.
 func (c *ErrorGroupClient) setGoogleClientInfo(keyval ...string) {
 	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// SetGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+//
+// SetGoogleClientInfo is not concurrency-safe and should only be invoked
+// sequentially before concurrent operations begin.
+func (c *ErrorGroupClient) SetGoogleClientInfo(keyval ...string) {
+	c.setGoogleClientInfo(keyval...)
 }
 
 // Connection returns a connection to the API service.
@@ -178,9 +194,6 @@ type errorGroupGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing ErrorGroupClient
 	CallOptions **ErrorGroupCallOptions
 
@@ -188,7 +201,9 @@ type errorGroupGRPCClient struct {
 	errorGroupClient errorreportingpb.ErrorGroupServiceClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
+
+	logger *slog.Logger
 }
 
 // NewErrorGroupClient creates a new error group service client based on gRPC.
@@ -197,17 +212,22 @@ type errorGroupGRPCClient struct {
 // Service for retrieving and updating individual error groups.
 func NewErrorGroupClient(ctx context.Context, opts ...option.ClientOption) (*ErrorGroupClient, error) {
 	clientOpts := defaultErrorGroupGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "clouderrorreporting",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/errorreporting/apiv1beta1",
+			"gcp.client.language": "go",
+			"url.domain":          "clouderrorreporting.googleapis.com",
+		}))
+	}
 	if newErrorGroupClientHook != nil {
 		hookOpts, err := newErrorGroupClientHook(ctx, clientHookParams{})
 		if err != nil {
 			return nil, err
 		}
 		clientOpts = append(clientOpts, hookOpts...)
-	}
-
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
 	}
 
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
@@ -218,11 +238,55 @@ func NewErrorGroupClient(ctx context.Context, opts ...option.ClientOption) (*Err
 
 	c := &errorGroupGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		errorGroupClient: errorreportingpb.NewErrorGroupServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "clouderrorreporting",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/errorreporting/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "clouderrorreporting.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetGroup = append(client.CallOptions.GetGroup, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateGroup = append(client.CallOptions.UpdateGroup, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "clouderrorreporting",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/errorreporting/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "clouderrorreporting.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetGroup = append(client.CallOptions.GetGroup, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateGroup = append(client.CallOptions.UpdateGroup, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "clouderrorreporting",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/errorreporting/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "clouderrorreporting.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetGroup = append(client.CallOptions.GetGroup, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateGroup = append(client.CallOptions.UpdateGroup, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -242,11 +306,13 @@ func (c *errorGroupGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *errorGroupGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
-	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version, "pb", protoVersion)
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *errorGroupGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -260,11 +326,13 @@ type errorGroupRESTClient struct {
 	// The http client.
 	httpClient *http.Client
 
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
 
 	// Points back to the CallOptions field of the containing ErrorGroupClient
 	CallOptions **ErrorGroupCallOptions
+
+	logger *slog.Logger
 }
 
 // NewErrorGroupRESTClient creates a new error group service rest client.
@@ -272,6 +340,16 @@ type errorGroupRESTClient struct {
 // Service for retrieving and updating individual error groups.
 func NewErrorGroupRESTClient(ctx context.Context, opts ...option.ClientOption) (*ErrorGroupClient, error) {
 	clientOpts := append(defaultErrorGroupRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "clouderrorreporting",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/errorreporting/apiv1beta1",
+			"gcp.client.language": "go",
+			"url.domain":          "clouderrorreporting.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -282,8 +360,54 @@ func NewErrorGroupRESTClient(ctx context.Context, opts ...option.ClientOption) (
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
+		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "clouderrorreporting",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/errorreporting/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "clouderrorreporting.googleapis.com",
+			}),
+		)
+
+		callOpts.GetGroup = append(callOpts.GetGroup, gax.WithClientMetrics(metrics))
+		callOpts.UpdateGroup = append(callOpts.UpdateGroup, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "clouderrorreporting",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/errorreporting/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "clouderrorreporting.googleapis.com",
+			}),
+		)
+
+		callOpts.GetGroup = append(callOpts.GetGroup, gax.WithClientTracing(tracing))
+		callOpts.UpdateGroup = append(callOpts.UpdateGroup, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "clouderrorreporting",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/errorreporting/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "clouderrorreporting.googleapis.com",
+			}),
+		)
+
+		callOpts.GetGroup = append(callOpts.GetGroup, gax.WithClientLogging(logging))
+		callOpts.UpdateGroup = append(callOpts.UpdateGroup, gax.WithClientLogging(logging))
+	}
 
 	return &ErrorGroupClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -293,8 +417,10 @@ func defaultErrorGroupRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultEndpoint("https://clouderrorreporting.googleapis.com"),
 		internaloption.WithDefaultEndpointTemplate("https://clouderrorreporting.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://clouderrorreporting.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://clouderrorreporting.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -303,11 +429,13 @@ func defaultErrorGroupRESTClientOptions() []option.ClientOption {
 // use by Google-written clients.
 func (c *errorGroupRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
-	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *errorGroupRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -322,19 +450,18 @@ func (c *errorGroupRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *errorGroupGRPCClient) GetGroup(ctx context.Context, req *errorreportingpb.GetGroupRequest, opts ...gax.CallOption) (*errorreportingpb.ErrorGroup, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "group_name", url.QueryEscape(req.GetGroupName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "group_name", url.QueryEscape(req.GetGroupName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.clouderrorreporting.v1beta1.ErrorGroupService/GetGroup")
+	}
 	opts = append((*c.CallOptions).GetGroup[0:len((*c.CallOptions).GetGroup):len((*c.CallOptions).GetGroup)], opts...)
 	var resp *errorreportingpb.ErrorGroup
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.errorGroupClient.GetGroup(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.errorGroupClient.GetGroup, req, settings.GRPC, c.logger, "GetGroup")
 		return err
 	}, opts...)
 	if err != nil {
@@ -344,19 +471,18 @@ func (c *errorGroupGRPCClient) GetGroup(ctx context.Context, req *errorreporting
 }
 
 func (c *errorGroupGRPCClient) UpdateGroup(ctx context.Context, req *errorreportingpb.UpdateGroupRequest, opts ...gax.CallOption) (*errorreportingpb.ErrorGroup, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "group.name", url.QueryEscape(req.GetGroup().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "group.name", url.QueryEscape(req.GetGroup().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.clouderrorreporting.v1beta1.ErrorGroupService/UpdateGroup")
+	}
 	opts = append((*c.CallOptions).UpdateGroup[0:len((*c.CallOptions).UpdateGroup):len((*c.CallOptions).UpdateGroup)], opts...)
 	var resp *errorreportingpb.ErrorGroup
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.errorGroupClient.UpdateGroup(ctx, req, settings.GRPC...)
+		resp, err = executeRPC(ctx, c.errorGroupClient.UpdateGroup, req, settings.GRPC, c.logger, "UpdateGroup")
 		return err
 	}, opts...)
 	if err != nil {
@@ -379,9 +505,15 @@ func (c *errorGroupRESTClient) GetGroup(ctx context.Context, req *errorreporting
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "group_name", url.QueryEscape(req.GetGroupName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "group_name", url.QueryEscape(req.GetGroupName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.clouderrorreporting.v1beta1.ErrorGroupService/GetGroup")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{group_name=projects/*/groups/*}")
+	}
 	opts = append((*c.CallOptions).GetGroup[0:len((*c.CallOptions).GetGroup):len((*c.CallOptions).GetGroup)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &errorreportingpb.ErrorGroup{}
@@ -396,17 +528,7 @@ func (c *errorGroupRESTClient) GetGroup(ctx context.Context, req *errorreporting
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetGroup")
 		if err != nil {
 			return err
 		}
@@ -445,9 +567,15 @@ func (c *errorGroupRESTClient) UpdateGroup(ctx context.Context, req *errorreport
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "group.name", url.QueryEscape(req.GetGroup().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "group.name", url.QueryEscape(req.GetGroup().GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.clouderrorreporting.v1beta1.ErrorGroupService/UpdateGroup")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{group.name=projects/*/groups/*}")
+	}
 	opts = append((*c.CallOptions).UpdateGroup[0:len((*c.CallOptions).UpdateGroup):len((*c.CallOptions).UpdateGroup)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &errorreportingpb.ErrorGroup{}
@@ -462,17 +590,7 @@ func (c *errorGroupRESTClient) UpdateGroup(ctx context.Context, req *errorreport
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateGroup")
 		if err != nil {
 			return err
 		}

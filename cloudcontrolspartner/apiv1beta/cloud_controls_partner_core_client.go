@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import (
 
 	cloudcontrolspartnerpb "cloud.google.com/go/cloudcontrolspartner/apiv1beta/cloudcontrolspartnerpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -282,7 +283,7 @@ type CloudControlsPartnerCoreClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *CloudControlsPartnerCoreClient) Close() error {
 	return c.internalClient.Close()
@@ -386,6 +387,16 @@ type cloudControlsPartnerCoreGRPCClient struct {
 // Service describing handlers for resources
 func NewCloudControlsPartnerCoreClient(ctx context.Context, opts ...option.ClientOption) (*CloudControlsPartnerCoreClient, error) {
 	clientOpts := defaultCloudControlsPartnerCoreGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "cloudcontrolspartner",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/cloudcontrolspartner/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "cloudcontrolspartner.googleapis.com",
+		}))
+	}
 	if newCloudControlsPartnerCoreClientHook != nil {
 		hookOpts, err := newCloudControlsPartnerCoreClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -407,6 +418,77 @@ func NewCloudControlsPartnerCoreClient(ctx context.Context, opts ...option.Clien
 		logger:                         internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "cloudcontrolspartner",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/cloudcontrolspartner/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudcontrolspartner.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetWorkload = append(client.CallOptions.GetWorkload, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListWorkloads = append(client.CallOptions.ListWorkloads, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetCustomer = append(client.CallOptions.GetCustomer, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListCustomers = append(client.CallOptions.ListCustomers, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetEkmConnections = append(client.CallOptions.GetEkmConnections, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetPartnerPermissions = append(client.CallOptions.GetPartnerPermissions, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListAccessApprovalRequests = append(client.CallOptions.ListAccessApprovalRequests, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetPartner = append(client.CallOptions.GetPartner, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateCustomer = append(client.CallOptions.CreateCustomer, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateCustomer = append(client.CallOptions.UpdateCustomer, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteCustomer = append(client.CallOptions.DeleteCustomer, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudcontrolspartner",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/cloudcontrolspartner/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudcontrolspartner.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetWorkload = append(client.CallOptions.GetWorkload, gax.WithClientTracing(tracing))
+		client.CallOptions.ListWorkloads = append(client.CallOptions.ListWorkloads, gax.WithClientTracing(tracing))
+		client.CallOptions.GetCustomer = append(client.CallOptions.GetCustomer, gax.WithClientTracing(tracing))
+		client.CallOptions.ListCustomers = append(client.CallOptions.ListCustomers, gax.WithClientTracing(tracing))
+		client.CallOptions.GetEkmConnections = append(client.CallOptions.GetEkmConnections, gax.WithClientTracing(tracing))
+		client.CallOptions.GetPartnerPermissions = append(client.CallOptions.GetPartnerPermissions, gax.WithClientTracing(tracing))
+		client.CallOptions.ListAccessApprovalRequests = append(client.CallOptions.ListAccessApprovalRequests, gax.WithClientTracing(tracing))
+		client.CallOptions.GetPartner = append(client.CallOptions.GetPartner, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateCustomer = append(client.CallOptions.CreateCustomer, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateCustomer = append(client.CallOptions.UpdateCustomer, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteCustomer = append(client.CallOptions.DeleteCustomer, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudcontrolspartner",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/cloudcontrolspartner/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudcontrolspartner.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetWorkload = append(client.CallOptions.GetWorkload, gax.WithClientLogging(logging))
+		client.CallOptions.ListWorkloads = append(client.CallOptions.ListWorkloads, gax.WithClientLogging(logging))
+		client.CallOptions.GetCustomer = append(client.CallOptions.GetCustomer, gax.WithClientLogging(logging))
+		client.CallOptions.ListCustomers = append(client.CallOptions.ListCustomers, gax.WithClientLogging(logging))
+		client.CallOptions.GetEkmConnections = append(client.CallOptions.GetEkmConnections, gax.WithClientLogging(logging))
+		client.CallOptions.GetPartnerPermissions = append(client.CallOptions.GetPartnerPermissions, gax.WithClientLogging(logging))
+		client.CallOptions.ListAccessApprovalRequests = append(client.CallOptions.ListAccessApprovalRequests, gax.WithClientLogging(logging))
+		client.CallOptions.GetPartner = append(client.CallOptions.GetPartner, gax.WithClientLogging(logging))
+		client.CallOptions.CreateCustomer = append(client.CallOptions.CreateCustomer, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateCustomer = append(client.CallOptions.UpdateCustomer, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteCustomer = append(client.CallOptions.DeleteCustomer, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -432,7 +514,7 @@ func (c *cloudControlsPartnerCoreGRPCClient) setGoogleClientInfo(keyval ...strin
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *cloudControlsPartnerCoreGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -460,6 +542,16 @@ type cloudControlsPartnerCoreRESTClient struct {
 // Service describing handlers for resources
 func NewCloudControlsPartnerCoreRESTClient(ctx context.Context, opts ...option.ClientOption) (*CloudControlsPartnerCoreClient, error) {
 	clientOpts := append(defaultCloudControlsPartnerCoreRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "cloudcontrolspartner",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/cloudcontrolspartner/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "cloudcontrolspartner.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -473,6 +565,78 @@ func NewCloudControlsPartnerCoreRESTClient(ctx context.Context, opts ...option.C
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "cloudcontrolspartner",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/cloudcontrolspartner/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudcontrolspartner.googleapis.com",
+			}),
+		)
+
+		callOpts.GetWorkload = append(callOpts.GetWorkload, gax.WithClientMetrics(metrics))
+		callOpts.ListWorkloads = append(callOpts.ListWorkloads, gax.WithClientMetrics(metrics))
+		callOpts.GetCustomer = append(callOpts.GetCustomer, gax.WithClientMetrics(metrics))
+		callOpts.ListCustomers = append(callOpts.ListCustomers, gax.WithClientMetrics(metrics))
+		callOpts.GetEkmConnections = append(callOpts.GetEkmConnections, gax.WithClientMetrics(metrics))
+		callOpts.GetPartnerPermissions = append(callOpts.GetPartnerPermissions, gax.WithClientMetrics(metrics))
+		callOpts.ListAccessApprovalRequests = append(callOpts.ListAccessApprovalRequests, gax.WithClientMetrics(metrics))
+		callOpts.GetPartner = append(callOpts.GetPartner, gax.WithClientMetrics(metrics))
+		callOpts.CreateCustomer = append(callOpts.CreateCustomer, gax.WithClientMetrics(metrics))
+		callOpts.UpdateCustomer = append(callOpts.UpdateCustomer, gax.WithClientMetrics(metrics))
+		callOpts.DeleteCustomer = append(callOpts.DeleteCustomer, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudcontrolspartner",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/cloudcontrolspartner/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudcontrolspartner.googleapis.com",
+			}),
+		)
+
+		callOpts.GetWorkload = append(callOpts.GetWorkload, gax.WithClientTracing(tracing))
+		callOpts.ListWorkloads = append(callOpts.ListWorkloads, gax.WithClientTracing(tracing))
+		callOpts.GetCustomer = append(callOpts.GetCustomer, gax.WithClientTracing(tracing))
+		callOpts.ListCustomers = append(callOpts.ListCustomers, gax.WithClientTracing(tracing))
+		callOpts.GetEkmConnections = append(callOpts.GetEkmConnections, gax.WithClientTracing(tracing))
+		callOpts.GetPartnerPermissions = append(callOpts.GetPartnerPermissions, gax.WithClientTracing(tracing))
+		callOpts.ListAccessApprovalRequests = append(callOpts.ListAccessApprovalRequests, gax.WithClientTracing(tracing))
+		callOpts.GetPartner = append(callOpts.GetPartner, gax.WithClientTracing(tracing))
+		callOpts.CreateCustomer = append(callOpts.CreateCustomer, gax.WithClientTracing(tracing))
+		callOpts.UpdateCustomer = append(callOpts.UpdateCustomer, gax.WithClientTracing(tracing))
+		callOpts.DeleteCustomer = append(callOpts.DeleteCustomer, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudcontrolspartner",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/cloudcontrolspartner/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudcontrolspartner.googleapis.com",
+			}),
+		)
+
+		callOpts.GetWorkload = append(callOpts.GetWorkload, gax.WithClientLogging(logging))
+		callOpts.ListWorkloads = append(callOpts.ListWorkloads, gax.WithClientLogging(logging))
+		callOpts.GetCustomer = append(callOpts.GetCustomer, gax.WithClientLogging(logging))
+		callOpts.ListCustomers = append(callOpts.ListCustomers, gax.WithClientLogging(logging))
+		callOpts.GetEkmConnections = append(callOpts.GetEkmConnections, gax.WithClientLogging(logging))
+		callOpts.GetPartnerPermissions = append(callOpts.GetPartnerPermissions, gax.WithClientLogging(logging))
+		callOpts.ListAccessApprovalRequests = append(callOpts.ListAccessApprovalRequests, gax.WithClientLogging(logging))
+		callOpts.GetPartner = append(callOpts.GetPartner, gax.WithClientLogging(logging))
+		callOpts.CreateCustomer = append(callOpts.CreateCustomer, gax.WithClientLogging(logging))
+		callOpts.UpdateCustomer = append(callOpts.UpdateCustomer, gax.WithClientLogging(logging))
+		callOpts.DeleteCustomer = append(callOpts.DeleteCustomer, gax.WithClientLogging(logging))
+	}
 
 	return &CloudControlsPartnerCoreClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -500,7 +664,7 @@ func (c *cloudControlsPartnerCoreRESTClient) setGoogleClientInfo(keyval ...strin
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *cloudControlsPartnerCoreRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -519,6 +683,9 @@ func (c *cloudControlsPartnerCoreGRPCClient) GetWorkload(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCore/GetWorkload")
+	}
 	opts = append((*c.CallOptions).GetWorkload[0:len((*c.CallOptions).GetWorkload):len((*c.CallOptions).GetWorkload)], opts...)
 	var resp *cloudcontrolspartnerpb.Workload
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -537,9 +704,12 @@ func (c *cloudControlsPartnerCoreGRPCClient) ListWorkloads(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCore/ListWorkloads")
+	}
 	opts = append((*c.CallOptions).ListWorkloads[0:len((*c.CallOptions).ListWorkloads):len((*c.CallOptions).ListWorkloads)], opts...)
 	it := &WorkloadIterator{}
-	req = proto.Clone(req).(*cloudcontrolspartnerpb.ListWorkloadsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudcontrolspartnerpb.Workload, string, error) {
 		resp := &cloudcontrolspartnerpb.ListWorkloadsResponse{}
 		if pageToken != "" {
@@ -583,6 +753,9 @@ func (c *cloudControlsPartnerCoreGRPCClient) GetCustomer(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCore/GetCustomer")
+	}
 	opts = append((*c.CallOptions).GetCustomer[0:len((*c.CallOptions).GetCustomer):len((*c.CallOptions).GetCustomer)], opts...)
 	var resp *cloudcontrolspartnerpb.Customer
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -601,9 +774,12 @@ func (c *cloudControlsPartnerCoreGRPCClient) ListCustomers(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCore/ListCustomers")
+	}
 	opts = append((*c.CallOptions).ListCustomers[0:len((*c.CallOptions).ListCustomers):len((*c.CallOptions).ListCustomers)], opts...)
 	it := &CustomerIterator{}
-	req = proto.Clone(req).(*cloudcontrolspartnerpb.ListCustomersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudcontrolspartnerpb.Customer, string, error) {
 		resp := &cloudcontrolspartnerpb.ListCustomersResponse{}
 		if pageToken != "" {
@@ -647,6 +823,9 @@ func (c *cloudControlsPartnerCoreGRPCClient) GetEkmConnections(ctx context.Conte
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCore/GetEkmConnections")
+	}
 	opts = append((*c.CallOptions).GetEkmConnections[0:len((*c.CallOptions).GetEkmConnections):len((*c.CallOptions).GetEkmConnections)], opts...)
 	var resp *cloudcontrolspartnerpb.EkmConnections
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -665,6 +844,9 @@ func (c *cloudControlsPartnerCoreGRPCClient) GetPartnerPermissions(ctx context.C
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCore/GetPartnerPermissions")
+	}
 	opts = append((*c.CallOptions).GetPartnerPermissions[0:len((*c.CallOptions).GetPartnerPermissions):len((*c.CallOptions).GetPartnerPermissions)], opts...)
 	var resp *cloudcontrolspartnerpb.PartnerPermissions
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -683,9 +865,12 @@ func (c *cloudControlsPartnerCoreGRPCClient) ListAccessApprovalRequests(ctx cont
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCore/ListAccessApprovalRequests")
+	}
 	opts = append((*c.CallOptions).ListAccessApprovalRequests[0:len((*c.CallOptions).ListAccessApprovalRequests):len((*c.CallOptions).ListAccessApprovalRequests)], opts...)
 	it := &AccessApprovalRequestIterator{}
-	req = proto.Clone(req).(*cloudcontrolspartnerpb.ListAccessApprovalRequestsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudcontrolspartnerpb.AccessApprovalRequest, string, error) {
 		resp := &cloudcontrolspartnerpb.ListAccessApprovalRequestsResponse{}
 		if pageToken != "" {
@@ -729,6 +914,9 @@ func (c *cloudControlsPartnerCoreGRPCClient) GetPartner(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCore/GetPartner")
+	}
 	opts = append((*c.CallOptions).GetPartner[0:len((*c.CallOptions).GetPartner):len((*c.CallOptions).GetPartner)], opts...)
 	var resp *cloudcontrolspartnerpb.Partner
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -747,6 +935,9 @@ func (c *cloudControlsPartnerCoreGRPCClient) CreateCustomer(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCore/CreateCustomer")
+	}
 	opts = append((*c.CallOptions).CreateCustomer[0:len((*c.CallOptions).CreateCustomer):len((*c.CallOptions).CreateCustomer)], opts...)
 	var resp *cloudcontrolspartnerpb.Customer
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -765,6 +956,9 @@ func (c *cloudControlsPartnerCoreGRPCClient) UpdateCustomer(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCore/UpdateCustomer")
+	}
 	opts = append((*c.CallOptions).UpdateCustomer[0:len((*c.CallOptions).UpdateCustomer):len((*c.CallOptions).UpdateCustomer)], opts...)
 	var resp *cloudcontrolspartnerpb.Customer
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -783,6 +977,9 @@ func (c *cloudControlsPartnerCoreGRPCClient) DeleteCustomer(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCore/DeleteCustomer")
+	}
 	opts = append((*c.CallOptions).DeleteCustomer[0:len((*c.CallOptions).DeleteCustomer):len((*c.CallOptions).DeleteCustomer)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -811,6 +1008,10 @@ func (c *cloudControlsPartnerCoreRESTClient) GetWorkload(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCore/GetWorkload")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=organizations/*/locations/*/customers/*/workloads/*}")
+	}
 	opts = append((*c.CallOptions).GetWorkload[0:len((*c.CallOptions).GetWorkload):len((*c.CallOptions).GetWorkload)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cloudcontrolspartnerpb.Workload{}
@@ -845,7 +1046,7 @@ func (c *cloudControlsPartnerCoreRESTClient) GetWorkload(ctx context.Context, re
 // ListWorkloads lists customer workloads for a given customer org id
 func (c *cloudControlsPartnerCoreRESTClient) ListWorkloads(ctx context.Context, req *cloudcontrolspartnerpb.ListWorkloadsRequest, opts ...gax.CallOption) *WorkloadIterator {
 	it := &WorkloadIterator{}
-	req = proto.Clone(req).(*cloudcontrolspartnerpb.ListWorkloadsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudcontrolspartnerpb.Workload, string, error) {
 		resp := &cloudcontrolspartnerpb.ListWorkloadsResponse{}
@@ -945,6 +1146,10 @@ func (c *cloudControlsPartnerCoreRESTClient) GetCustomer(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCore/GetCustomer")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=organizations/*/locations/*/customers/*}")
+	}
 	opts = append((*c.CallOptions).GetCustomer[0:len((*c.CallOptions).GetCustomer):len((*c.CallOptions).GetCustomer)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cloudcontrolspartnerpb.Customer{}
@@ -979,7 +1184,7 @@ func (c *cloudControlsPartnerCoreRESTClient) GetCustomer(ctx context.Context, re
 // ListCustomers lists customers of a partner identified by its Google Cloud organization ID
 func (c *cloudControlsPartnerCoreRESTClient) ListCustomers(ctx context.Context, req *cloudcontrolspartnerpb.ListCustomersRequest, opts ...gax.CallOption) *CustomerIterator {
 	it := &CustomerIterator{}
-	req = proto.Clone(req).(*cloudcontrolspartnerpb.ListCustomersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudcontrolspartnerpb.Customer, string, error) {
 		resp := &cloudcontrolspartnerpb.ListCustomersResponse{}
@@ -1079,6 +1284,10 @@ func (c *cloudControlsPartnerCoreRESTClient) GetEkmConnections(ctx context.Conte
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCore/GetEkmConnections")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=organizations/*/locations/*/customers/*/workloads/*/ekmConnections}")
+	}
 	opts = append((*c.CallOptions).GetEkmConnections[0:len((*c.CallOptions).GetEkmConnections):len((*c.CallOptions).GetEkmConnections)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cloudcontrolspartnerpb.EkmConnections{}
@@ -1129,6 +1338,10 @@ func (c *cloudControlsPartnerCoreRESTClient) GetPartnerPermissions(ctx context.C
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCore/GetPartnerPermissions")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=organizations/*/locations/*/customers/*/workloads/*/partnerPermissions}")
+	}
 	opts = append((*c.CallOptions).GetPartnerPermissions[0:len((*c.CallOptions).GetPartnerPermissions):len((*c.CallOptions).GetPartnerPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cloudcontrolspartnerpb.PartnerPermissions{}
@@ -1166,7 +1379,7 @@ func (c *cloudControlsPartnerCoreRESTClient) GetPartnerPermissions(ctx context.C
 // Deprecated: ListAccessApprovalRequests may be removed in a future version.
 func (c *cloudControlsPartnerCoreRESTClient) ListAccessApprovalRequests(ctx context.Context, req *cloudcontrolspartnerpb.ListAccessApprovalRequestsRequest, opts ...gax.CallOption) *AccessApprovalRequestIterator {
 	it := &AccessApprovalRequestIterator{}
-	req = proto.Clone(req).(*cloudcontrolspartnerpb.ListAccessApprovalRequestsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudcontrolspartnerpb.AccessApprovalRequest, string, error) {
 		resp := &cloudcontrolspartnerpb.ListAccessApprovalRequestsResponse{}
@@ -1266,6 +1479,10 @@ func (c *cloudControlsPartnerCoreRESTClient) GetPartner(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCore/GetPartner")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=organizations/*/locations/*/partner}")
+	}
 	opts = append((*c.CallOptions).GetPartner[0:len((*c.CallOptions).GetPartner):len((*c.CallOptions).GetPartner)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cloudcontrolspartnerpb.Partner{}
@@ -1324,6 +1541,10 @@ func (c *cloudControlsPartnerCoreRESTClient) CreateCustomer(ctx context.Context,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCore/CreateCustomer")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=organizations/*/locations/*}/customers")
+	}
 	opts = append((*c.CallOptions).CreateCustomer[0:len((*c.CallOptions).CreateCustomer):len((*c.CallOptions).CreateCustomer)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cloudcontrolspartnerpb.Customer{}
@@ -1388,6 +1609,10 @@ func (c *cloudControlsPartnerCoreRESTClient) UpdateCustomer(ctx context.Context,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCore/UpdateCustomer")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{customer.name=organizations/*/locations/*/customers/*}")
+	}
 	opts = append((*c.CallOptions).UpdateCustomer[0:len((*c.CallOptions).UpdateCustomer):len((*c.CallOptions).UpdateCustomer)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cloudcontrolspartnerpb.Customer{}
@@ -1438,6 +1663,10 @@ func (c *cloudControlsPartnerCoreRESTClient) DeleteCustomer(ctx context.Context,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCore/DeleteCustomer")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=organizations/*/locations/*/customers/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path

@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import (
 
 	accountspb "cloud.google.com/go/shopping/merchant/accounts/apiv1/accountspb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -48,6 +49,7 @@ type UserCallOptions struct {
 	DeleteUser []gax.CallOption
 	UpdateUser []gax.CallOption
 	ListUsers  []gax.CallOption
+	VerifySelf []gax.CallOption
 }
 
 func defaultUserGRPCClientOptions() []option.ClientOption {
@@ -127,6 +129,18 @@ func defaultUserCallOptions() *UserCallOptions {
 				})
 			}),
 		},
+		VerifySelf: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 	}
 }
 
@@ -187,6 +201,17 @@ func defaultUserRESTCallOptions() *UserCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		VerifySelf: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 	}
 }
 
@@ -200,6 +225,7 @@ type internalUserClient interface {
 	DeleteUser(context.Context, *accountspb.DeleteUserRequest, ...gax.CallOption) error
 	UpdateUser(context.Context, *accountspb.UpdateUserRequest, ...gax.CallOption) (*accountspb.User, error)
 	ListUsers(context.Context, *accountspb.ListUsersRequest, ...gax.CallOption) *UserIterator
+	VerifySelf(context.Context, *accountspb.VerifySelfRequest, ...gax.CallOption) (*accountspb.User, error)
 }
 
 // UserClient is a client for interacting with Merchant API.
@@ -216,7 +242,7 @@ type UserClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *UserClient) Close() error {
 	return c.internalClient.Close()
@@ -250,8 +276,7 @@ func (c *UserClient) CreateUser(ctx context.Context, req *accountspb.CreateUserR
 
 // DeleteUser deletes a Merchant Center account user. Executing this method requires
 // admin access. The user to be deleted can’t be the last admin user of that
-// account. Also a user is protected from deletion if it
-// is managed by Business Manager"
+// account.
 func (c *UserClient) DeleteUser(ctx context.Context, req *accountspb.DeleteUserRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteUser(ctx, req, opts...)
 }
@@ -265,6 +290,12 @@ func (c *UserClient) UpdateUser(ctx context.Context, req *accountspb.UpdateUserR
 // ListUsers lists all users of a Merchant Center account.
 func (c *UserClient) ListUsers(ctx context.Context, req *accountspb.ListUsersRequest, opts ...gax.CallOption) *UserIterator {
 	return c.internalClient.ListUsers(ctx, req, opts...)
+}
+
+// VerifySelf updates the user that is represented by the caller from pending to
+// verified.
+func (c *UserClient) VerifySelf(ctx context.Context, req *accountspb.VerifySelfRequest, opts ...gax.CallOption) (*accountspb.User, error) {
+	return c.internalClient.VerifySelf(ctx, req, opts...)
 }
 
 // userGRPCClient is a client for interacting with Merchant API over gRPC transport.
@@ -292,6 +323,16 @@ type userGRPCClient struct {
 // Service to support user API.
 func NewUserClient(ctx context.Context, opts ...option.ClientOption) (*UserClient, error) {
 	clientOpts := defaultUserGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "merchantapi",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/merchant/accounts/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "merchantapi.googleapis.com",
+		}))
+	}
 	if newUserClientHook != nil {
 		hookOpts, err := newUserClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -313,6 +354,62 @@ func NewUserClient(ctx context.Context, opts ...option.ClientOption) (*UserClien
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetUser = append(client.CallOptions.GetUser, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateUser = append(client.CallOptions.CreateUser, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteUser = append(client.CallOptions.DeleteUser, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateUser = append(client.CallOptions.UpdateUser, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListUsers = append(client.CallOptions.ListUsers, gax.WithClientMetrics(metrics))
+		client.CallOptions.VerifySelf = append(client.CallOptions.VerifySelf, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetUser = append(client.CallOptions.GetUser, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateUser = append(client.CallOptions.CreateUser, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteUser = append(client.CallOptions.DeleteUser, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateUser = append(client.CallOptions.UpdateUser, gax.WithClientTracing(tracing))
+		client.CallOptions.ListUsers = append(client.CallOptions.ListUsers, gax.WithClientTracing(tracing))
+		client.CallOptions.VerifySelf = append(client.CallOptions.VerifySelf, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetUser = append(client.CallOptions.GetUser, gax.WithClientLogging(logging))
+		client.CallOptions.CreateUser = append(client.CallOptions.CreateUser, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteUser = append(client.CallOptions.DeleteUser, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateUser = append(client.CallOptions.UpdateUser, gax.WithClientLogging(logging))
+		client.CallOptions.ListUsers = append(client.CallOptions.ListUsers, gax.WithClientLogging(logging))
+		client.CallOptions.VerifySelf = append(client.CallOptions.VerifySelf, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -338,7 +435,7 @@ func (c *userGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *userGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -366,6 +463,16 @@ type userRESTClient struct {
 // Service to support user API.
 func NewUserRESTClient(ctx context.Context, opts ...option.ClientOption) (*UserClient, error) {
 	clientOpts := append(defaultUserRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "merchantapi",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/merchant/accounts/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "merchantapi.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -379,6 +486,63 @@ func NewUserRESTClient(ctx context.Context, opts ...option.ClientOption) (*UserC
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.GetUser = append(callOpts.GetUser, gax.WithClientMetrics(metrics))
+		callOpts.CreateUser = append(callOpts.CreateUser, gax.WithClientMetrics(metrics))
+		callOpts.DeleteUser = append(callOpts.DeleteUser, gax.WithClientMetrics(metrics))
+		callOpts.UpdateUser = append(callOpts.UpdateUser, gax.WithClientMetrics(metrics))
+		callOpts.ListUsers = append(callOpts.ListUsers, gax.WithClientMetrics(metrics))
+		callOpts.VerifySelf = append(callOpts.VerifySelf, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.GetUser = append(callOpts.GetUser, gax.WithClientTracing(tracing))
+		callOpts.CreateUser = append(callOpts.CreateUser, gax.WithClientTracing(tracing))
+		callOpts.DeleteUser = append(callOpts.DeleteUser, gax.WithClientTracing(tracing))
+		callOpts.UpdateUser = append(callOpts.UpdateUser, gax.WithClientTracing(tracing))
+		callOpts.ListUsers = append(callOpts.ListUsers, gax.WithClientTracing(tracing))
+		callOpts.VerifySelf = append(callOpts.VerifySelf, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.GetUser = append(callOpts.GetUser, gax.WithClientLogging(logging))
+		callOpts.CreateUser = append(callOpts.CreateUser, gax.WithClientLogging(logging))
+		callOpts.DeleteUser = append(callOpts.DeleteUser, gax.WithClientLogging(logging))
+		callOpts.UpdateUser = append(callOpts.UpdateUser, gax.WithClientLogging(logging))
+		callOpts.ListUsers = append(callOpts.ListUsers, gax.WithClientLogging(logging))
+		callOpts.VerifySelf = append(callOpts.VerifySelf, gax.WithClientLogging(logging))
+	}
 
 	return &UserClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -406,7 +570,7 @@ func (c *userRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *userRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -425,6 +589,9 @@ func (c *userGRPCClient) GetUser(ctx context.Context, req *accountspb.GetUserReq
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1.UserService/GetUser")
+	}
 	opts = append((*c.CallOptions).GetUser[0:len((*c.CallOptions).GetUser):len((*c.CallOptions).GetUser)], opts...)
 	var resp *accountspb.User
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -443,6 +610,9 @@ func (c *userGRPCClient) CreateUser(ctx context.Context, req *accountspb.CreateU
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1.UserService/CreateUser")
+	}
 	opts = append((*c.CallOptions).CreateUser[0:len((*c.CallOptions).CreateUser):len((*c.CallOptions).CreateUser)], opts...)
 	var resp *accountspb.User
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -461,6 +631,9 @@ func (c *userGRPCClient) DeleteUser(ctx context.Context, req *accountspb.DeleteU
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1.UserService/DeleteUser")
+	}
 	opts = append((*c.CallOptions).DeleteUser[0:len((*c.CallOptions).DeleteUser):len((*c.CallOptions).DeleteUser)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -475,6 +648,9 @@ func (c *userGRPCClient) UpdateUser(ctx context.Context, req *accountspb.UpdateU
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1.UserService/UpdateUser")
+	}
 	opts = append((*c.CallOptions).UpdateUser[0:len((*c.CallOptions).UpdateUser):len((*c.CallOptions).UpdateUser)], opts...)
 	var resp *accountspb.User
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -493,9 +669,12 @@ func (c *userGRPCClient) ListUsers(ctx context.Context, req *accountspb.ListUser
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1.UserService/ListUsers")
+	}
 	opts = append((*c.CallOptions).ListUsers[0:len((*c.CallOptions).ListUsers):len((*c.CallOptions).ListUsers)], opts...)
 	it := &UserIterator{}
-	req = proto.Clone(req).(*accountspb.ListUsersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*accountspb.User, string, error) {
 		resp := &accountspb.ListUsersResponse{}
 		if pageToken != "" {
@@ -534,6 +713,27 @@ func (c *userGRPCClient) ListUsers(ctx context.Context, req *accountspb.ListUser
 	return it
 }
 
+func (c *userGRPCClient) VerifySelf(ctx context.Context, req *accountspb.VerifySelfRequest, opts ...gax.CallOption) (*accountspb.User, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "account", url.QueryEscape(req.GetAccount()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1.UserService/VerifySelf")
+	}
+	opts = append((*c.CallOptions).VerifySelf[0:len((*c.CallOptions).VerifySelf):len((*c.CallOptions).VerifySelf)], opts...)
+	var resp *accountspb.User
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.userClient.VerifySelf, req, settings.GRPC, c.logger, "VerifySelf")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 // GetUser retrieves a Merchant Center account user.
 func (c *userRESTClient) GetUser(ctx context.Context, req *accountspb.GetUserRequest, opts ...gax.CallOption) (*accountspb.User, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -553,6 +753,10 @@ func (c *userRESTClient) GetUser(ctx context.Context, req *accountspb.GetUserReq
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1.UserService/GetUser")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/accounts/v1/{name=accounts/*/users/*}")
+	}
 	opts = append((*c.CallOptions).GetUser[0:len((*c.CallOptions).GetUser):len((*c.CallOptions).GetUser)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &accountspb.User{}
@@ -612,6 +816,10 @@ func (c *userRESTClient) CreateUser(ctx context.Context, req *accountspb.CreateU
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1.UserService/CreateUser")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/accounts/v1/{parent=accounts/*}/users")
+	}
 	opts = append((*c.CallOptions).CreateUser[0:len((*c.CallOptions).CreateUser):len((*c.CallOptions).CreateUser)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &accountspb.User{}
@@ -645,8 +853,7 @@ func (c *userRESTClient) CreateUser(ctx context.Context, req *accountspb.CreateU
 
 // DeleteUser deletes a Merchant Center account user. Executing this method requires
 // admin access. The user to be deleted can’t be the last admin user of that
-// account. Also a user is protected from deletion if it
-// is managed by Business Manager"
+// account.
 func (c *userRESTClient) DeleteUser(ctx context.Context, req *accountspb.DeleteUserRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -665,6 +872,10 @@ func (c *userRESTClient) DeleteUser(ctx context.Context, req *accountspb.DeleteU
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1.UserService/DeleteUser")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/accounts/v1/{name=accounts/*/users/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -715,6 +926,10 @@ func (c *userRESTClient) UpdateUser(ctx context.Context, req *accountspb.UpdateU
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1.UserService/UpdateUser")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/accounts/v1/{user.name=accounts/*/users/*}")
+	}
 	opts = append((*c.CallOptions).UpdateUser[0:len((*c.CallOptions).UpdateUser):len((*c.CallOptions).UpdateUser)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &accountspb.User{}
@@ -749,7 +964,7 @@ func (c *userRESTClient) UpdateUser(ctx context.Context, req *accountspb.UpdateU
 // ListUsers lists all users of a Merchant Center account.
 func (c *userRESTClient) ListUsers(ctx context.Context, req *accountspb.ListUsersRequest, opts ...gax.CallOption) *UserIterator {
 	it := &UserIterator{}
-	req = proto.Clone(req).(*accountspb.ListUsersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*accountspb.User, string, error) {
 		resp := &accountspb.ListUsersResponse{}
@@ -822,4 +1037,65 @@ func (c *userRESTClient) ListUsers(ctx context.Context, req *accountspb.ListUser
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// VerifySelf updates the user that is represented by the caller from pending to
+// verified.
+func (c *userRESTClient) VerifySelf(ctx context.Context, req *accountspb.VerifySelfRequest, opts ...gax.CallOption) (*accountspb.User, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/accounts/v1/%v/users/me:verifySelf", req.GetAccount())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "account", url.QueryEscape(req.GetAccount()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1.UserService/VerifySelf")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/accounts/v1/{account=accounts/*}/users/me:verifySelf")
+	}
+	opts = append((*c.CallOptions).VerifySelf[0:len((*c.CallOptions).VerifySelf):len((*c.CallOptions).VerifySelf)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &accountspb.User{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "VerifySelf")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }

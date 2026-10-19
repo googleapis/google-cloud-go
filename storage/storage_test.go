@@ -18,6 +18,7 @@ import (
 	"context"
 	"crypto/tls"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -987,6 +988,7 @@ func TestObjectRetryer(t *testing.T) {
 						Multiplier: 3,
 					}),
 					WithMaxAttempts(5),
+					WithMaxRetryDuration(90*time.Second),
 					WithPolicy(RetryAlways),
 					WithErrorFunc(func(err error) bool { return false }))
 			},
@@ -996,9 +998,10 @@ func TestObjectRetryer(t *testing.T) {
 					Max:        30 * time.Second,
 					Multiplier: 3,
 				},
-				maxAttempts: intPointer(5),
-				policy:      RetryAlways,
-				shouldRetry: func(err error) bool { return false },
+				maxAttempts:      intPointer(5),
+				maxRetryDuration: 90 * time.Second,
+				policy:           RetryAlways,
+				shouldRetry:      func(err error, retryCtx *RetryContext) bool { return false },
 			},
 		},
 		{
@@ -1039,7 +1042,16 @@ func TestObjectRetryer(t *testing.T) {
 					WithErrorFunc(func(err error) bool { return false }))
 			},
 			want: &retryConfig{
-				shouldRetry: func(err error) bool { return false },
+				shouldRetry: func(err error, retryCtx *RetryContext) bool { return false },
+			},
+		},
+		{
+			name: "set max retry duration only",
+			call: func(o *ObjectHandle) *ObjectHandle {
+				return o.Retryer(WithMaxRetryDuration(45 * time.Second))
+			},
+			want: &retryConfig{
+				maxRetryDuration: 45 * time.Second,
 			},
 		},
 	}
@@ -1052,7 +1064,7 @@ func TestObjectRetryer(t *testing.T) {
 				cmp.AllowUnexported(retryConfig{}, gax.Backoff{}),
 				// ErrorFunc cannot be compared directly, but we check if both are
 				// either nil or non-nil.
-				cmp.Comparer(func(a, b func(err error) bool) bool {
+				cmp.Comparer(func(a, b func(err error, retryCtx *RetryContext) bool) bool {
 					return (a == nil && b == nil) || (a != nil && b != nil)
 				}),
 			); diff != "" {
@@ -1084,6 +1096,7 @@ func TestClientSetRetry(t *testing.T) {
 					Multiplier: 3,
 				}),
 				WithMaxAttempts(5),
+				WithMaxRetryDuration(60 * time.Second),
 				WithPolicy(RetryAlways),
 				WithErrorFunc(func(err error) bool { return false }),
 			},
@@ -1093,9 +1106,10 @@ func TestClientSetRetry(t *testing.T) {
 					Max:        30 * time.Second,
 					Multiplier: 3,
 				},
-				maxAttempts: intPointer(5),
-				policy:      RetryAlways,
-				shouldRetry: func(err error) bool { return false },
+				maxAttempts:      intPointer(5),
+				maxRetryDuration: 60 * time.Second,
+				policy:           RetryAlways,
+				shouldRetry:      func(err error, retryCtx *RetryContext) bool { return false },
 			},
 		},
 		{
@@ -1134,7 +1148,16 @@ func TestClientSetRetry(t *testing.T) {
 				WithErrorFunc(func(err error) bool { return false }),
 			},
 			want: &retryConfig{
-				shouldRetry: func(err error) bool { return false },
+				shouldRetry: func(err error, retryCtx *RetryContext) bool { return false },
+			},
+		},
+		{
+			name: "set max retry duration only",
+			clientOptions: []RetryOption{
+				WithMaxRetryDuration(30 * time.Second),
+			},
+			want: &retryConfig{
+				maxRetryDuration: 30 * time.Second,
 			},
 		},
 	}
@@ -1153,7 +1176,7 @@ func TestClientSetRetry(t *testing.T) {
 				cmp.AllowUnexported(retryConfig{}, gax.Backoff{}),
 				// ErrorFunc cannot be compared directly, but we check if both are
 				// either nil or non-nil.
-				cmp.Comparer(func(a, b func(err error) bool) bool {
+				cmp.Comparer(func(a, b func(err error, retryCtx *RetryContext) bool) bool {
 					return (a == nil && b == nil) || (a != nil && b != nil)
 				}),
 			); diff != "" {
@@ -1182,10 +1205,10 @@ func TestRetryer(t *testing.T) {
 			objectOptions: []RetryOption{
 				WithPolicy(RetryAlways),
 				WithMaxAttempts(5),
-				WithErrorFunc(ShouldRetry),
+				WithErrorFunc(func(err error) bool { return ShouldRetry(err) }),
 			},
 			want: &retryConfig{
-				shouldRetry: ShouldRetry,
+				shouldRetry: func(err error, retryCtx *RetryContext) bool { return ShouldRetry(err) },
 				maxAttempts: intPointer(5),
 				policy:      RetryAlways,
 			},
@@ -1200,7 +1223,7 @@ func TestRetryer(t *testing.T) {
 				}),
 				WithPolicy(RetryAlways),
 				WithMaxAttempts(11),
-				WithErrorFunc(ShouldRetry),
+				WithErrorFunc(func(err error) bool { return ShouldRetry(err) }),
 			},
 			want: &retryConfig{
 				backoff: &gax.Backoff{
@@ -1208,7 +1231,7 @@ func TestRetryer(t *testing.T) {
 					Max:        time.Hour,
 					Multiplier: 6,
 				},
-				shouldRetry: ShouldRetry,
+				shouldRetry: func(err error, retryCtx *RetryContext) bool { return ShouldRetry(err) },
 				maxAttempts: intPointer(11),
 				policy:      RetryAlways,
 			},
@@ -1223,7 +1246,7 @@ func TestRetryer(t *testing.T) {
 				}),
 				WithPolicy(RetryAlways),
 				WithMaxAttempts(7),
-				WithErrorFunc(ShouldRetry),
+				WithErrorFunc(func(err error) bool { return ShouldRetry(err) }),
 			},
 			want: &retryConfig{
 				backoff: &gax.Backoff{
@@ -1231,7 +1254,7 @@ func TestRetryer(t *testing.T) {
 					Max:        time.Hour,
 					Multiplier: 6,
 				},
-				shouldRetry: ShouldRetry,
+				shouldRetry: func(err error, retryCtx *RetryContext) bool { return ShouldRetry(err) },
 				maxAttempts: intPointer(7),
 				policy:      RetryAlways,
 			},
@@ -1244,12 +1267,26 @@ func TestRetryer(t *testing.T) {
 			objectOptions: []RetryOption{
 				WithPolicy(RetryNever),
 				WithMaxAttempts(5),
-				WithErrorFunc(ShouldRetry),
+				WithErrorFunc(func(err error) bool { return ShouldRetry(err) }),
 			},
 			want: &retryConfig{
 				policy:      RetryNever,
 				maxAttempts: intPointer(5),
-				shouldRetry: ShouldRetry,
+				shouldRetry: func(err error, retryCtx *RetryContext) bool { return ShouldRetry(err) },
+			},
+		},
+		{
+			name: "object retryer overrides bucket maxRetryDuration",
+			bucketOptions: []RetryOption{
+				WithMaxRetryDuration(30 * time.Second),
+				WithPolicy(RetryAlways),
+			},
+			objectOptions: []RetryOption{
+				WithMaxRetryDuration(60 * time.Second),
+			},
+			want: &retryConfig{
+				policy:           RetryAlways,
+				maxRetryDuration: 60 * time.Second,
 			},
 		},
 		{
@@ -1260,12 +1297,12 @@ func TestRetryer(t *testing.T) {
 			objectOptions: []RetryOption{
 				WithPolicy(RetryNever),
 				WithMaxAttempts(11),
-				WithErrorFunc(ShouldRetry),
+				WithErrorFunc(func(err error) bool { return ShouldRetry(err) }),
 			},
 			want: &retryConfig{
 				policy:      RetryNever,
 				maxAttempts: intPointer(11),
-				shouldRetry: ShouldRetry,
+				shouldRetry: func(err error, retryCtx *RetryContext) bool { return ShouldRetry(err) },
 			},
 		},
 		{
@@ -1283,13 +1320,13 @@ func TestRetryer(t *testing.T) {
 					Initial: time.Nanosecond,
 					Max:     time.Microsecond,
 				}),
-				WithErrorFunc(ShouldRetry),
+				WithErrorFunc(func(err error) bool { return ShouldRetry(err) }),
 				WithMaxAttempts(5),
 			},
 			want: &retryConfig{
 				policy:      RetryAlways,
 				maxAttempts: intPointer(5),
-				shouldRetry: ShouldRetry,
+				shouldRetry: func(err error, retryCtx *RetryContext) bool { return ShouldRetry(err) },
 				backoff: &gax.Backoff{
 					Initial: time.Nanosecond,
 					Max:     time.Microsecond,
@@ -1322,7 +1359,7 @@ func TestRetryer(t *testing.T) {
 			name: "object retryer does not override bucket retryer if option is not set",
 			bucketOptions: []RetryOption{
 				WithPolicy(RetryNever),
-				WithErrorFunc(ShouldRetry),
+				WithErrorFunc(func(err error) bool { return ShouldRetry(err) }),
 				WithMaxAttempts(5),
 			},
 			objectOptions: []RetryOption{
@@ -1334,7 +1371,7 @@ func TestRetryer(t *testing.T) {
 			want: &retryConfig{
 				policy:      RetryNever,
 				maxAttempts: intPointer(5),
-				shouldRetry: ShouldRetry,
+				shouldRetry: func(err error, retryCtx *RetryContext) bool { return ShouldRetry(err) },
 				backoff: &gax.Backoff{
 					Initial: time.Nanosecond,
 					Max:     time.Second,
@@ -1419,7 +1456,7 @@ func TestRetryer(t *testing.T) {
 						cmp.AllowUnexported(retryConfig{}, gax.Backoff{}),
 						// ErrorFunc cannot be compared directly, but we check if both are
 						// either nil or non-nil.
-						cmp.Comparer(func(a, b func(err error) bool) bool {
+						cmp.Comparer(func(a, b func(err error, retryCtx *RetryContext) bool) bool {
 							return (a == nil && b == nil) || (a != nil && b != nil)
 						}),
 					); diff != "" {
@@ -1427,6 +1464,214 @@ func TestRetryer(t *testing.T) {
 					}
 				})
 			}
+		})
+	}
+}
+
+// Test WithErrorFuncWithContext that uses RetryContext parameters.
+func TestWithErrorFuncWithContext(t *testing.T) {
+	t.Parallel()
+	testCases := []struct {
+		name          string
+		retryOptions  []RetryOption
+		expectAttempt int
+		expectOp      string
+		expectBucket  string
+		expectObject  string
+	}{
+		{
+			name: "context with attempt check",
+			retryOptions: []RetryOption{
+				WithErrorFuncWithContext(func(err error, retryCtx *RetryContext) bool {
+					// Only retry on first attempt
+					return retryCtx.Attempt == 1
+				}),
+			},
+			expectAttempt: 1,
+		},
+		{
+			name: "context with multiple field checks",
+			retryOptions: []RetryOption{
+				WithErrorFuncWithContext(func(err error, retryCtx *RetryContext) bool {
+					// Verify all fields are accessible
+					return retryCtx.Attempt > 0 &&
+						retryCtx.InvocationID != "" &&
+						retryCtx.Operation != "" &&
+						retryCtx.Bucket != "" &&
+						retryCtx.Object != ""
+				}),
+			},
+			expectAttempt: 1,
+		},
+		{
+			name: "context-aware retry based on operation",
+			retryOptions: []RetryOption{
+				WithErrorFuncWithContext(func(err error, retryCtx *RetryContext) bool {
+					// Only retry specific operations
+					return retryCtx.Operation == "GetObject" || retryCtx.Operation == "UpdateObject"
+				}),
+			},
+			expectAttempt: 1,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			ctx := context.Background()
+			c, err := NewClient(ctx, option.WithoutAuthentication())
+			if err != nil {
+				t.Fatalf("NewClient: %v", err)
+			}
+			defer c.Close()
+
+			o := c.Bucket("test-bucket").Object("test-object").Retryer(tc.retryOptions...)
+
+			// Verify shouldRetry is set
+			if o.retry == nil || o.retry.shouldRetry == nil {
+				t.Fatal("shouldRetry function not set")
+			}
+
+			// Test the shouldRetry function with a mock RetryContext.
+			retryCtx := &RetryContext{
+				Attempt:      tc.expectAttempt,
+				InvocationID: "test-invocation-123",
+				Operation:    "GetObject",
+				Bucket:       "test-bucket",
+				Object:       "test-object",
+			}
+
+			// Call the shouldRetry function (simulating an error scenario).
+			testErr := errors.New("test error")
+			result := o.retry.shouldRetry(testErr, retryCtx)
+
+			// For these tests, we just verify the function can access the context.
+			// The actual retry logic is tested in invoke_test.go.
+			_ = result
+		})
+	}
+}
+
+// Test ObjectHandle and BucketHandle Retryer methods with WithErrorFuncWithContext.
+func TestRetryerWithContext(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+	c, err := NewClient(ctx, option.WithoutAuthentication())
+	if err != nil {
+		t.Fatalf("NewClient: %v", err)
+	}
+	defer c.Close()
+
+	// Test ObjectHandle.Retryer with context-aware function
+	o := c.Bucket("bucket").Object("object").Retryer(
+		WithErrorFuncWithContext(func(err error, retryCtx *RetryContext) bool {
+			// Retry only if attempt is less than 3 and it's a GetObject operation
+			return retryCtx.Attempt < 3 && retryCtx.Operation == "GetObject"
+		}),
+	)
+
+	if o.retry == nil || o.retry.shouldRetry == nil {
+		t.Fatal("shouldRetry not set on ObjectHandle")
+	}
+
+	// Verify the function works correctly
+	ctxAttempt1 := &RetryContext{Attempt: 1, Operation: "GetObject"}
+	ctxAttempt3 := &RetryContext{Attempt: 3, Operation: "GetObject"}
+	ctxDifferentOp := &RetryContext{Attempt: 1, Operation: "DeleteObject"}
+
+	testErr := errors.New("test")
+	if !o.retry.shouldRetry(testErr, ctxAttempt1) {
+		t.Error("expected retry on attempt 1 with GetObject")
+	}
+	if o.retry.shouldRetry(testErr, ctxAttempt3) {
+		t.Error("expected no retry on attempt 3")
+	}
+	if o.retry.shouldRetry(testErr, ctxDifferentOp) {
+		t.Error("expected no retry for DeleteObject operation")
+	}
+
+	// Test BucketHandle.Retryer with context-aware function
+	b := c.Bucket("bucket").Retryer(
+		WithErrorFuncWithContext(func(err error, retryCtx *RetryContext) bool {
+			// Retry based on bucket name and attempt
+			return retryCtx.Bucket == "bucket" && retryCtx.Attempt <= 2
+		}),
+	)
+
+	if b.retry == nil || b.retry.shouldRetry == nil {
+		t.Fatal("shouldRetry not set on BucketHandle")
+	}
+
+	ctxBucket1 := &RetryContext{Attempt: 1, Bucket: "bucket"}
+	ctxBucket3 := &RetryContext{Attempt: 3, Bucket: "bucket"}
+
+	if !b.retry.shouldRetry(testErr, ctxBucket1) {
+		t.Error("expected retry on attempt 1 for correct bucket")
+	}
+	if b.retry.shouldRetry(testErr, ctxBucket3) {
+		t.Error("expected no retry on attempt 3")
+	}
+}
+
+// Test Client.SetRetry with WithErrorFuncWithContext.
+func TestClientSetRetryWithContext(t *testing.T) {
+	t.Parallel()
+
+	testCases := []struct {
+		name    string
+		options []RetryOption
+	}{
+		{
+			name: "context-aware retry on client",
+			options: []RetryOption{
+				WithErrorFuncWithContext(func(err error, retryCtx *RetryContext) bool {
+					// Custom retry logic using all context fields
+					return retryCtx.Attempt < 5 &&
+						retryCtx.InvocationID != "" &&
+						(retryCtx.Operation == "GetObject" || retryCtx.Operation == "ListObjects")
+				}),
+				WithPolicy(RetryAlways),
+			},
+		},
+		{
+			name: "invocation ID tracking",
+			options: []RetryOption{
+				WithErrorFuncWithContext(func(err error, retryCtx *RetryContext) bool {
+					// Verify InvocationID is present
+					if retryCtx.InvocationID == "" {
+						return false
+					}
+					return retryCtx.Attempt <= 3
+				}),
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			ctx := context.Background()
+			c, err := NewClient(ctx, option.WithoutAuthentication())
+			if err != nil {
+				t.Fatalf("NewClient: %v", err)
+			}
+			defer c.Close()
+
+			c.SetRetry(tc.options...)
+
+			if c.retry == nil || c.retry.shouldRetry == nil {
+				t.Fatal("shouldRetry not set on Client")
+			}
+
+			// Verify the function can be called with RetryContext
+			testCtx := &RetryContext{
+				Attempt:      2,
+				InvocationID: "test-id-456",
+				Operation:    "GetObject",
+				Bucket:       "test-bucket",
+				Object:       "test-object",
+			}
+			testErr := errors.New("test error")
+			_ = c.retry.shouldRetry(testErr, testCtx)
 		})
 	}
 }
@@ -1450,14 +1695,15 @@ func TestObjectCompose(t *testing.T) {
 	}
 
 	testCases := []struct {
-		desc       string
-		dst        *ObjectHandle
-		srcs       []*ObjectHandle
-		attrs      *ObjectAttrs
-		sendCRC32C bool
-		wantReq    raw.ComposeRequest
-		wantURL    string
-		wantErr    bool
+		desc                string
+		dst                 *ObjectHandle
+		srcs                []*ObjectHandle
+		attrs               *ObjectAttrs
+		sendCRC32C          bool
+		deleteSourceObjects bool
+		wantReq             raw.ComposeRequest
+		wantURL             string
+		wantErr             bool
 	}{
 		{
 			desc: "basic case",
@@ -1547,6 +1793,24 @@ func TestObjectCompose(t *testing.T) {
 			},
 		},
 		{
+			desc: "with delete source objects",
+			dst:  c.Bucket("foo").Object("bar"),
+			srcs: []*ObjectHandle{
+				c.Bucket("foo").Object("baz"),
+				c.Bucket("foo").Object("quux"),
+			},
+			deleteSourceObjects: true,
+			wantURL:             "/storage/v1/b/foo/o/bar/compose?alt=json&prettyPrint=false",
+			wantReq: raw.ComposeRequest{
+				Destination:         &raw.Object{Bucket: "foo"},
+				DeleteSourceObjects: true,
+				SourceObjects: []*raw.ComposeRequestSourceObjects{
+					{Name: "baz"},
+					{Name: "quux"},
+				},
+			},
+		},
+		{
 			desc:    "no sources",
 			dst:     c.Bucket("foo").Object("bar"),
 			wantErr: true,
@@ -1607,6 +1871,7 @@ func TestObjectCompose(t *testing.T) {
 			composer.ObjectAttrs = *tt.attrs
 		}
 		composer.SendCRC32C = tt.sendCRC32C
+		composer.DeleteSourceObjects = tt.deleteSourceObjects
 		_, err := composer.Run(ctx)
 		if gotErr := err != nil; gotErr != tt.wantErr {
 			t.Errorf("%s: got error %v; want err %t", tt.desc, err, tt.wantErr)

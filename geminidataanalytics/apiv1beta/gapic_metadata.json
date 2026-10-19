@@ -5,6 +5,110 @@
   "protoPackage": "google.cloud.geminidataanalytics.v1beta",
   "libraryPackage": "cloud.google.com/go/geminidataanalytics/apiv1beta",
   "services": {
+    "DataA2AService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "DataA2AClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetAgentCard": {
+              "methods": [
+                "GetAgentCard"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SendMessage": {
+              "methods": [
+                "SendMessage"
+              ]
+            },
+            "SendStreamingMessage": {
+              "methods": [
+                "SendStreamingMessage"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "DataA2AClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetAgentCard": {
+              "methods": [
+                "GetAgentCard"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SendMessage": {
+              "methods": [
+                "SendMessage"
+              ]
+            },
+            "SendStreamingMessage": {
+              "methods": [
+                "SendStreamingMessage"
+              ]
+            }
+          }
+        }
+      }
+    },
     "DataAgentService": {
       "clients": {
         "grpc": {
@@ -20,9 +124,19 @@
                 "CreateDataAgent"
               ]
             },
+            "CreateDataAgentSync": {
+              "methods": [
+                "CreateDataAgentSync"
+              ]
+            },
             "DeleteDataAgent": {
               "methods": [
                 "DeleteDataAgent"
+              ]
+            },
+            "DeleteDataAgentSync": {
+              "methods": [
+                "DeleteDataAgentSync"
               ]
             },
             "DeleteOperation": {
@@ -70,6 +184,16 @@
                 "ListOperations"
               ]
             },
+            "RetrieveAgentOpsObservability": {
+              "methods": [
+                "RetrieveAgentOpsObservability"
+              ]
+            },
+            "SetAgentOpsObservability": {
+              "methods": [
+                "SetAgentOpsObservability"
+              ]
+            },
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
@@ -78,6 +202,11 @@
             "UpdateDataAgent": {
               "methods": [
                 "UpdateDataAgent"
+              ]
+            },
+            "UpdateDataAgentSync": {
+              "methods": [
+                "UpdateDataAgentSync"
               ]
             }
           }
@@ -95,9 +224,19 @@
                 "CreateDataAgent"
               ]
             },
+            "CreateDataAgentSync": {
+              "methods": [
+                "CreateDataAgentSync"
+              ]
+            },
             "DeleteDataAgent": {
               "methods": [
                 "DeleteDataAgent"
+              ]
+            },
+            "DeleteDataAgentSync": {
+              "methods": [
+                "DeleteDataAgentSync"
               ]
             },
             "DeleteOperation": {
@@ -145,6 +284,16 @@
                 "ListOperations"
               ]
             },
+            "RetrieveAgentOpsObservability": {
+              "methods": [
+                "RetrieveAgentOpsObservability"
+              ]
+            },
+            "SetAgentOpsObservability": {
+              "methods": [
+                "SetAgentOpsObservability"
+              ]
+            },
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
@@ -153,6 +302,11 @@
             "UpdateDataAgent": {
               "methods": [
                 "UpdateDataAgent"
+              ]
+            },
+            "UpdateDataAgentSync": {
+              "methods": [
+                "UpdateDataAgentSync"
               ]
             }
           }
@@ -179,6 +333,11 @@
                 "CreateConversation"
               ]
             },
+            "DeleteConversation": {
+              "methods": [
+                "DeleteConversation"
+              ]
+            },
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
@@ -217,6 +376,16 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "QueryData": {
+              "methods": [
+                "QueryData"
+              ]
+            },
+            "UpdateConversation": {
+              "methods": [
+                "UpdateConversation"
               ]
             }
           }
@@ -239,6 +408,11 @@
                 "CreateConversation"
               ]
             },
+            "DeleteConversation": {
+              "methods": [
+                "DeleteConversation"
+              ]
+            },
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
@@ -277,6 +451,16 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "QueryData": {
+              "methods": [
+                "QueryData"
+              ]
+            },
+            "UpdateConversation": {
+              "methods": [
+                "UpdateConversation"
               ]
             }
           }

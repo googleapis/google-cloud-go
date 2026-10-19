@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import (
 
 	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -82,7 +83,7 @@ func defaultRegionSslCertificatesRESTCallOptions() *RegionSslCertificatesCallOpt
 	}
 }
 
-// internalRegionSslCertificatesClient is an interface that defines the methods available from Google Compute Engine API.
+// internalRegionSslCertificatesClient is an interface that defines the methods available from Compute Engine API.
 type internalRegionSslCertificatesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -93,10 +94,12 @@ type internalRegionSslCertificatesClient interface {
 	List(context.Context, *computepb.ListRegionSslCertificatesRequest, ...gax.CallOption) *SslCertificateIterator
 }
 
-// RegionSslCertificatesClient is a client for interacting with Google Compute Engine API.
+// RegionSslCertificatesClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The RegionSslCertificates API.
+//
+// This client uses RegionSslCertificates version 2026-09-01.
 type RegionSslCertificatesClient struct {
 	// The internal transport-dependent client.
 	internalClient internalRegionSslCertificatesClient
@@ -107,7 +110,7 @@ type RegionSslCertificatesClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *RegionSslCertificatesClient) Close() error {
 	return c.internalClient.Close()
@@ -133,17 +136,21 @@ func (c *RegionSslCertificatesClient) Delete(ctx context.Context, req *computepb
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
-// Get returns the specified SslCertificate resource in the specified region. Get a list of available SSL certificates by making a list() request.
+// Get returns the specified SslCertificate resource in the specified region. Get
+// a list of available SSL certificates by making a list()
+// request.
 func (c *RegionSslCertificatesClient) Get(ctx context.Context, req *computepb.GetRegionSslCertificateRequest, opts ...gax.CallOption) (*computepb.SslCertificate, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// Insert creates a SslCertificate resource in the specified project and region using the data included in the request
+// Insert creates a SslCertificate resource in the specified project and region using
+// the data included in the request
 func (c *RegionSslCertificatesClient) Insert(ctx context.Context, req *computepb.InsertRegionSslCertificateRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves the list of SslCertificate resources available to the specified project in the specified region.
+// List retrieves the list of SslCertificate resources available to the specified
+// project in the specified region.
 func (c *RegionSslCertificatesClient) List(ctx context.Context, req *computepb.ListRegionSslCertificatesRequest, opts ...gax.CallOption) *SslCertificateIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
@@ -173,6 +180,16 @@ type regionSslCertificatesRESTClient struct {
 // The RegionSslCertificates API.
 func NewRegionSslCertificatesRESTClient(ctx context.Context, opts ...option.ClientOption) (*RegionSslCertificatesClient, error) {
 	clientOpts := append(defaultRegionSslCertificatesRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "compute",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/compute/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "compute.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -186,6 +203,57 @@ func NewRegionSslCertificatesRESTClient(ctx context.Context, opts ...option.Clie
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientMetrics(metrics))
+		callOpts.Get = append(callOpts.Get, gax.WithClientMetrics(metrics))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientMetrics(metrics))
+		callOpts.List = append(callOpts.List, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientTracing(tracing))
+		callOpts.Get = append(callOpts.Get, gax.WithClientTracing(tracing))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientTracing(tracing))
+		callOpts.List = append(callOpts.List, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientLogging(logging))
+		callOpts.Get = append(callOpts.Get, gax.WithClientLogging(logging))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientLogging(logging))
+		callOpts.List = append(callOpts.List, gax.WithClientLogging(logging))
+	}
 
 	o := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -220,10 +288,11 @@ func (c *regionSslCertificatesRESTClient) setGoogleClientInfo(keyval ...string) 
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
+		"x-goog-api-version", "2026-09-01",
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *regionSslCertificatesRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -262,6 +331,10 @@ func (c *regionSslCertificatesRESTClient) Delete(ctx context.Context, req *compu
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionSslCertificates/Delete")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/sslCertificates/{ssl_certificate}")
+	}
 	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -301,7 +374,9 @@ func (c *regionSslCertificatesRESTClient) Delete(ctx context.Context, req *compu
 	return op, nil
 }
 
-// Get returns the specified SslCertificate resource in the specified region. Get a list of available SSL certificates by making a list() request.
+// Get returns the specified SslCertificate resource in the specified region. Get
+// a list of available SSL certificates by making a list()
+// request.
 func (c *regionSslCertificatesRESTClient) Get(ctx context.Context, req *computepb.GetRegionSslCertificateRequest, opts ...gax.CallOption) (*computepb.SslCertificate, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -315,6 +390,10 @@ func (c *regionSslCertificatesRESTClient) Get(ctx context.Context, req *computep
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionSslCertificates/Get")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/sslCertificates/{ssl_certificate}")
+	}
 	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.SslCertificate{}
@@ -346,7 +425,8 @@ func (c *regionSslCertificatesRESTClient) Get(ctx context.Context, req *computep
 	return resp, nil
 }
 
-// Insert creates a SslCertificate resource in the specified project and region using the data included in the request
+// Insert creates a SslCertificate resource in the specified project and region using
+// the data included in the request
 func (c *regionSslCertificatesRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionSslCertificateRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSslCertificateResource()
@@ -374,6 +454,10 @@ func (c *regionSslCertificatesRESTClient) Insert(ctx context.Context, req *compu
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionSslCertificates/Insert")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/sslCertificates")
+	}
 	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -413,10 +497,11 @@ func (c *regionSslCertificatesRESTClient) Insert(ctx context.Context, req *compu
 	return op, nil
 }
 
-// List retrieves the list of SslCertificate resources available to the specified project in the specified region.
+// List retrieves the list of SslCertificate resources available to the specified
+// project in the specified region.
 func (c *regionSslCertificatesRESTClient) List(ctx context.Context, req *computepb.ListRegionSslCertificatesRequest, opts ...gax.CallOption) *SslCertificateIterator {
 	it := &SslCertificateIterator{}
-	req = proto.Clone(req).(*computepb.ListRegionSslCertificatesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.SslCertificate, string, error) {
 		resp := &computepb.SslCertificateList{}
@@ -446,9 +531,6 @@ func (c *regionSslCertificatesRESTClient) List(ctx context.Context, req *compute
 		}
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()

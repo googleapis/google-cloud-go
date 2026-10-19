@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,8 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	metricsscopepb "cloud.google.com/go/monitoring/metricsscope/apiv1/metricsscopepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -53,6 +55,7 @@ func defaultMetricsScopesGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://monitoring.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.AllowHardBoundTokens("MTLS_S2A"),
 		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -101,7 +104,7 @@ type MetricsScopesClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *MetricsScopesClient) Close() error {
 	return c.internalClient.Close()
@@ -188,6 +191,16 @@ type metricsScopesGRPCClient struct {
 // projects and AWS accounts.
 func NewMetricsScopesClient(ctx context.Context, opts ...option.ClientOption) (*MetricsScopesClient, error) {
 	clientOpts := defaultMetricsScopesGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "monitoring",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/monitoring/metricsscope/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "monitoring.googleapis.com",
+		}))
+	}
 	if newMetricsScopesClientHook != nil {
 		hookOpts, err := newMetricsScopesClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -209,6 +222,56 @@ func NewMetricsScopesClient(ctx context.Context, opts ...option.ClientOption) (*
 		logger:              internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "monitoring",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/monitoring/metricsscope/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "monitoring.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetMetricsScope = append(client.CallOptions.GetMetricsScope, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListMetricsScopesByMonitoredProject = append(client.CallOptions.ListMetricsScopesByMonitoredProject, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateMonitoredProject = append(client.CallOptions.CreateMonitoredProject, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteMonitoredProject = append(client.CallOptions.DeleteMonitoredProject, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "monitoring",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/monitoring/metricsscope/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "monitoring.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetMetricsScope = append(client.CallOptions.GetMetricsScope, gax.WithClientTracing(tracing))
+		client.CallOptions.ListMetricsScopesByMonitoredProject = append(client.CallOptions.ListMetricsScopesByMonitoredProject, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateMonitoredProject = append(client.CallOptions.CreateMonitoredProject, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteMonitoredProject = append(client.CallOptions.DeleteMonitoredProject, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "monitoring",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/monitoring/metricsscope/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "monitoring.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetMetricsScope = append(client.CallOptions.GetMetricsScope, gax.WithClientLogging(logging))
+		client.CallOptions.ListMetricsScopesByMonitoredProject = append(client.CallOptions.ListMetricsScopesByMonitoredProject, gax.WithClientLogging(logging))
+		client.CallOptions.CreateMonitoredProject = append(client.CallOptions.CreateMonitoredProject, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteMonitoredProject = append(client.CallOptions.DeleteMonitoredProject, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -245,7 +308,7 @@ func (c *metricsScopesGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *metricsScopesGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -256,6 +319,9 @@ func (c *metricsScopesGRPCClient) GetMetricsScope(ctx context.Context, req *metr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.monitoring.metricsscope.v1.MetricsScopes/GetMetricsScope")
+	}
 	opts = append((*c.CallOptions).GetMetricsScope[0:len((*c.CallOptions).GetMetricsScope):len((*c.CallOptions).GetMetricsScope)], opts...)
 	var resp *metricsscopepb.MetricsScope
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -271,6 +337,9 @@ func (c *metricsScopesGRPCClient) GetMetricsScope(ctx context.Context, req *metr
 
 func (c *metricsScopesGRPCClient) ListMetricsScopesByMonitoredProject(ctx context.Context, req *metricsscopepb.ListMetricsScopesByMonitoredProjectRequest, opts ...gax.CallOption) (*metricsscopepb.ListMetricsScopesByMonitoredProjectResponse, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.monitoring.metricsscope.v1.MetricsScopes/ListMetricsScopesByMonitoredProject")
+	}
 	opts = append((*c.CallOptions).ListMetricsScopesByMonitoredProject[0:len((*c.CallOptions).ListMetricsScopesByMonitoredProject):len((*c.CallOptions).ListMetricsScopesByMonitoredProject)], opts...)
 	var resp *metricsscopepb.ListMetricsScopesByMonitoredProjectResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -289,6 +358,9 @@ func (c *metricsScopesGRPCClient) CreateMonitoredProject(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.monitoring.metricsscope.v1.MetricsScopes/CreateMonitoredProject")
+	}
 	opts = append((*c.CallOptions).CreateMonitoredProject[0:len((*c.CallOptions).CreateMonitoredProject):len((*c.CallOptions).CreateMonitoredProject)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -299,8 +371,12 @@ func (c *metricsScopesGRPCClient) CreateMonitoredProject(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metricsscope.CreateMonitoredProjectOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateMonitoredProjectOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -309,6 +385,9 @@ func (c *metricsScopesGRPCClient) DeleteMonitoredProject(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.monitoring.metricsscope.v1.MetricsScopes/DeleteMonitoredProject")
+	}
 	opts = append((*c.CallOptions).DeleteMonitoredProject[0:len((*c.CallOptions).DeleteMonitoredProject):len((*c.CallOptions).DeleteMonitoredProject)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -319,8 +398,12 @@ func (c *metricsScopesGRPCClient) DeleteMonitoredProject(ctx context.Context, re
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*metricsscope.DeleteMonitoredProjectOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteMonitoredProjectOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -328,7 +411,7 @@ func (c *metricsScopesGRPCClient) DeleteMonitoredProject(ctx context.Context, re
 // The name must be that of a previously created CreateMonitoredProjectOperation, possibly from a different process.
 func (c *metricsScopesGRPCClient) CreateMonitoredProjectOperation(name string) *CreateMonitoredProjectOperation {
 	return &CreateMonitoredProjectOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metricsscope.CreateMonitoredProjectOperation"),
 	}
 }
 
@@ -336,6 +419,6 @@ func (c *metricsScopesGRPCClient) CreateMonitoredProjectOperation(name string) *
 // The name must be that of a previously created DeleteMonitoredProjectOperation, possibly from a different process.
 func (c *metricsScopesGRPCClient) DeleteMonitoredProjectOperation(name string) *DeleteMonitoredProjectOperation {
 	return &DeleteMonitoredProjectOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*metricsscope.DeleteMonitoredProjectOperation"),
 	}
 }

@@ -1,0 +1,75 @@
+// Copyright 2026 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+package spanner.cloud.location;
+
+import "google/spanner/v1/location.proto";
+import "google/spanner/v1/spanner.proto";
+
+option java_multiple_files = true;
+
+message RangeCacheTestCases {
+  repeated RangeCacheTestCase test_case = 1;
+}
+
+message RangeCacheTestCase {
+  // Name of the test case, for diagnostic purposes.
+  string name = 1;
+
+  // A single step in the test case. Each test starts with a newly constructed
+  // empty RangeCache, and runs one step at a time.
+  message Step {
+    // If present, the cache is updated with this CacheUpdate before running
+    // the tests below.
+    google.spanner.v1.CacheUpdate update = 1;
+
+    // The tests then run one at a time.
+    message Test {
+      // If true, the test will be run with prefer_leader=true. Otherwise,
+      // prefer_leader will be false.
+      bool leader = 1;
+
+      // If non-empty, the test will be run with this directed read options.
+      google.spanner.v1.DirectedReadOptions directed_read_options = 2;
+
+      // key and limit_key are both optional, and if present, are copied into
+      // the routing hint passed to FillRoutingHint.
+      bytes key = 3;
+      bytes limit_key = 4;
+
+      // The mode for RangeCache::RangeMode.
+      enum RangeMode {
+        COVERING_SPLIT = 0;
+        PICK_RANDOM = 1;
+      }
+      RangeMode range_mode = 5;
+
+      // If set, overrides the default value of the
+      // --spanner_cloud_location_range_cache_min_entries_for_random_pick flag.
+      int32 min_cache_entries_for_random_pick = 6;
+
+      // `result` should exactly match the routing hint after FillRoutingHint
+      // is called.
+
+      google.spanner.v1.RoutingHint result = 7;
+      // If non-empty, then FillRoutingHint should return a server with this
+      // address. If empty, then FillRoutingHint should return nullptr.
+      string server = 8;
+    }
+    repeated Test test = 2;
+  }
+  repeated Step step = 2;
+}

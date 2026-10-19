@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -31,6 +31,8 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	networkconnectivitypb "cloud.google.com/go/networkconnectivity/apiv1alpha1/networkconnectivitypb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -256,7 +258,7 @@ type HubClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *HubClient) Close() error {
 	return c.internalClient.Close()
@@ -396,6 +398,16 @@ type hubGRPCClient struct {
 // model.
 func NewHubClient(ctx context.Context, opts ...option.ClientOption) (*HubClient, error) {
 	clientOpts := defaultHubGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "networkconnectivity",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/networkconnectivity/apiv1alpha1",
+			"gcp.client.language": "go",
+			"url.domain":          "networkconnectivity.googleapis.com",
+		}))
+	}
 	if newHubClientHook != nil {
 		hookOpts, err := newHubClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -417,6 +429,74 @@ func NewHubClient(ctx context.Context, opts ...option.ClientOption) (*HubClient,
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "networkconnectivity",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/networkconnectivity/apiv1alpha1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "networkconnectivity.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListHubs = append(client.CallOptions.ListHubs, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetHub = append(client.CallOptions.GetHub, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateHub = append(client.CallOptions.CreateHub, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateHub = append(client.CallOptions.UpdateHub, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteHub = append(client.CallOptions.DeleteHub, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListSpokes = append(client.CallOptions.ListSpokes, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetSpoke = append(client.CallOptions.GetSpoke, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateSpoke = append(client.CallOptions.CreateSpoke, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateSpoke = append(client.CallOptions.UpdateSpoke, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteSpoke = append(client.CallOptions.DeleteSpoke, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "networkconnectivity",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/networkconnectivity/apiv1alpha1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "networkconnectivity.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListHubs = append(client.CallOptions.ListHubs, gax.WithClientTracing(tracing))
+		client.CallOptions.GetHub = append(client.CallOptions.GetHub, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateHub = append(client.CallOptions.CreateHub, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateHub = append(client.CallOptions.UpdateHub, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteHub = append(client.CallOptions.DeleteHub, gax.WithClientTracing(tracing))
+		client.CallOptions.ListSpokes = append(client.CallOptions.ListSpokes, gax.WithClientTracing(tracing))
+		client.CallOptions.GetSpoke = append(client.CallOptions.GetSpoke, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateSpoke = append(client.CallOptions.CreateSpoke, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateSpoke = append(client.CallOptions.UpdateSpoke, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteSpoke = append(client.CallOptions.DeleteSpoke, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "networkconnectivity",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/networkconnectivity/apiv1alpha1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "networkconnectivity.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListHubs = append(client.CallOptions.ListHubs, gax.WithClientLogging(logging))
+		client.CallOptions.GetHub = append(client.CallOptions.GetHub, gax.WithClientLogging(logging))
+		client.CallOptions.CreateHub = append(client.CallOptions.CreateHub, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateHub = append(client.CallOptions.UpdateHub, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteHub = append(client.CallOptions.DeleteHub, gax.WithClientLogging(logging))
+		client.CallOptions.ListSpokes = append(client.CallOptions.ListSpokes, gax.WithClientLogging(logging))
+		client.CallOptions.GetSpoke = append(client.CallOptions.GetSpoke, gax.WithClientLogging(logging))
+		client.CallOptions.CreateSpoke = append(client.CallOptions.CreateSpoke, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateSpoke = append(client.CallOptions.UpdateSpoke, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteSpoke = append(client.CallOptions.DeleteSpoke, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -453,7 +533,7 @@ func (c *hubGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *hubGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -489,6 +569,16 @@ type hubRESTClient struct {
 // model.
 func NewHubRESTClient(ctx context.Context, opts ...option.ClientOption) (*HubClient, error) {
 	clientOpts := append(defaultHubRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "networkconnectivity",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/networkconnectivity/apiv1alpha1",
+			"gcp.client.language": "go",
+			"url.domain":          "networkconnectivity.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -502,6 +592,75 @@ func NewHubRESTClient(ctx context.Context, opts ...option.ClientOption) (*HubCli
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "networkconnectivity",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/networkconnectivity/apiv1alpha1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "networkconnectivity.googleapis.com",
+			}),
+		)
+
+		callOpts.ListHubs = append(callOpts.ListHubs, gax.WithClientMetrics(metrics))
+		callOpts.GetHub = append(callOpts.GetHub, gax.WithClientMetrics(metrics))
+		callOpts.CreateHub = append(callOpts.CreateHub, gax.WithClientMetrics(metrics))
+		callOpts.UpdateHub = append(callOpts.UpdateHub, gax.WithClientMetrics(metrics))
+		callOpts.DeleteHub = append(callOpts.DeleteHub, gax.WithClientMetrics(metrics))
+		callOpts.ListSpokes = append(callOpts.ListSpokes, gax.WithClientMetrics(metrics))
+		callOpts.GetSpoke = append(callOpts.GetSpoke, gax.WithClientMetrics(metrics))
+		callOpts.CreateSpoke = append(callOpts.CreateSpoke, gax.WithClientMetrics(metrics))
+		callOpts.UpdateSpoke = append(callOpts.UpdateSpoke, gax.WithClientMetrics(metrics))
+		callOpts.DeleteSpoke = append(callOpts.DeleteSpoke, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "networkconnectivity",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/networkconnectivity/apiv1alpha1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "networkconnectivity.googleapis.com",
+			}),
+		)
+
+		callOpts.ListHubs = append(callOpts.ListHubs, gax.WithClientTracing(tracing))
+		callOpts.GetHub = append(callOpts.GetHub, gax.WithClientTracing(tracing))
+		callOpts.CreateHub = append(callOpts.CreateHub, gax.WithClientTracing(tracing))
+		callOpts.UpdateHub = append(callOpts.UpdateHub, gax.WithClientTracing(tracing))
+		callOpts.DeleteHub = append(callOpts.DeleteHub, gax.WithClientTracing(tracing))
+		callOpts.ListSpokes = append(callOpts.ListSpokes, gax.WithClientTracing(tracing))
+		callOpts.GetSpoke = append(callOpts.GetSpoke, gax.WithClientTracing(tracing))
+		callOpts.CreateSpoke = append(callOpts.CreateSpoke, gax.WithClientTracing(tracing))
+		callOpts.UpdateSpoke = append(callOpts.UpdateSpoke, gax.WithClientTracing(tracing))
+		callOpts.DeleteSpoke = append(callOpts.DeleteSpoke, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "networkconnectivity",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/networkconnectivity/apiv1alpha1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "networkconnectivity.googleapis.com",
+			}),
+		)
+
+		callOpts.ListHubs = append(callOpts.ListHubs, gax.WithClientLogging(logging))
+		callOpts.GetHub = append(callOpts.GetHub, gax.WithClientLogging(logging))
+		callOpts.CreateHub = append(callOpts.CreateHub, gax.WithClientLogging(logging))
+		callOpts.UpdateHub = append(callOpts.UpdateHub, gax.WithClientLogging(logging))
+		callOpts.DeleteHub = append(callOpts.DeleteHub, gax.WithClientLogging(logging))
+		callOpts.ListSpokes = append(callOpts.ListSpokes, gax.WithClientLogging(logging))
+		callOpts.GetSpoke = append(callOpts.GetSpoke, gax.WithClientLogging(logging))
+		callOpts.CreateSpoke = append(callOpts.CreateSpoke, gax.WithClientLogging(logging))
+		callOpts.UpdateSpoke = append(callOpts.UpdateSpoke, gax.WithClientLogging(logging))
+		callOpts.DeleteSpoke = append(callOpts.DeleteSpoke, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -539,7 +698,7 @@ func (c *hubRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *hubRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -558,9 +717,12 @@ func (c *hubGRPCClient) ListHubs(ctx context.Context, req *networkconnectivitypb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1alpha1.HubService/ListHubs")
+	}
 	opts = append((*c.CallOptions).ListHubs[0:len((*c.CallOptions).ListHubs):len((*c.CallOptions).ListHubs)], opts...)
 	it := &HubIterator{}
-	req = proto.Clone(req).(*networkconnectivitypb.ListHubsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkconnectivitypb.Hub, string, error) {
 		resp := &networkconnectivitypb.ListHubsResponse{}
 		if pageToken != "" {
@@ -604,6 +766,9 @@ func (c *hubGRPCClient) GetHub(ctx context.Context, req *networkconnectivitypb.G
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1alpha1.HubService/GetHub")
+	}
 	opts = append((*c.CallOptions).GetHub[0:len((*c.CallOptions).GetHub):len((*c.CallOptions).GetHub)], opts...)
 	var resp *networkconnectivitypb.Hub
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -622,6 +787,9 @@ func (c *hubGRPCClient) CreateHub(ctx context.Context, req *networkconnectivityp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1alpha1.HubService/CreateHub")
+	}
 	opts = append((*c.CallOptions).CreateHub[0:len((*c.CallOptions).CreateHub):len((*c.CallOptions).CreateHub)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -632,8 +800,12 @@ func (c *hubGRPCClient) CreateHub(ctx context.Context, req *networkconnectivityp
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkconnectivity.CreateHubOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateHubOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -642,6 +814,9 @@ func (c *hubGRPCClient) UpdateHub(ctx context.Context, req *networkconnectivityp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1alpha1.HubService/UpdateHub")
+	}
 	opts = append((*c.CallOptions).UpdateHub[0:len((*c.CallOptions).UpdateHub):len((*c.CallOptions).UpdateHub)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -652,8 +827,12 @@ func (c *hubGRPCClient) UpdateHub(ctx context.Context, req *networkconnectivityp
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkconnectivity.UpdateHubOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateHubOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -662,6 +841,9 @@ func (c *hubGRPCClient) DeleteHub(ctx context.Context, req *networkconnectivityp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1alpha1.HubService/DeleteHub")
+	}
 	opts = append((*c.CallOptions).DeleteHub[0:len((*c.CallOptions).DeleteHub):len((*c.CallOptions).DeleteHub)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -672,8 +854,12 @@ func (c *hubGRPCClient) DeleteHub(ctx context.Context, req *networkconnectivityp
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkconnectivity.DeleteHubOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteHubOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -682,9 +868,12 @@ func (c *hubGRPCClient) ListSpokes(ctx context.Context, req *networkconnectivity
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1alpha1.HubService/ListSpokes")
+	}
 	opts = append((*c.CallOptions).ListSpokes[0:len((*c.CallOptions).ListSpokes):len((*c.CallOptions).ListSpokes)], opts...)
 	it := &SpokeIterator{}
-	req = proto.Clone(req).(*networkconnectivitypb.ListSpokesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkconnectivitypb.Spoke, string, error) {
 		resp := &networkconnectivitypb.ListSpokesResponse{}
 		if pageToken != "" {
@@ -728,6 +917,9 @@ func (c *hubGRPCClient) GetSpoke(ctx context.Context, req *networkconnectivitypb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1alpha1.HubService/GetSpoke")
+	}
 	opts = append((*c.CallOptions).GetSpoke[0:len((*c.CallOptions).GetSpoke):len((*c.CallOptions).GetSpoke)], opts...)
 	var resp *networkconnectivitypb.Spoke
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -746,6 +938,9 @@ func (c *hubGRPCClient) CreateSpoke(ctx context.Context, req *networkconnectivit
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1alpha1.HubService/CreateSpoke")
+	}
 	opts = append((*c.CallOptions).CreateSpoke[0:len((*c.CallOptions).CreateSpoke):len((*c.CallOptions).CreateSpoke)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -756,8 +951,12 @@ func (c *hubGRPCClient) CreateSpoke(ctx context.Context, req *networkconnectivit
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkconnectivity.CreateSpokeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateSpokeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -766,6 +965,9 @@ func (c *hubGRPCClient) UpdateSpoke(ctx context.Context, req *networkconnectivit
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1alpha1.HubService/UpdateSpoke")
+	}
 	opts = append((*c.CallOptions).UpdateSpoke[0:len((*c.CallOptions).UpdateSpoke):len((*c.CallOptions).UpdateSpoke)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -776,8 +978,12 @@ func (c *hubGRPCClient) UpdateSpoke(ctx context.Context, req *networkconnectivit
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkconnectivity.UpdateSpokeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateSpokeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -786,6 +992,9 @@ func (c *hubGRPCClient) DeleteSpoke(ctx context.Context, req *networkconnectivit
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1alpha1.HubService/DeleteSpoke")
+	}
 	opts = append((*c.CallOptions).DeleteSpoke[0:len((*c.CallOptions).DeleteSpoke):len((*c.CallOptions).DeleteSpoke)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -796,15 +1005,19 @@ func (c *hubGRPCClient) DeleteSpoke(ctx context.Context, req *networkconnectivit
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkconnectivity.DeleteSpokeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteSpokeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
 // ListHubs lists Hubs in a given project and location.
 func (c *hubRESTClient) ListHubs(ctx context.Context, req *networkconnectivitypb.ListHubsRequest, opts ...gax.CallOption) *HubIterator {
 	it := &HubIterator{}
-	req = proto.Clone(req).(*networkconnectivitypb.ListHubsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkconnectivitypb.Hub, string, error) {
 		resp := &networkconnectivitypb.ListHubsResponse{}
@@ -904,6 +1117,10 @@ func (c *hubRESTClient) GetHub(ctx context.Context, req *networkconnectivitypb.G
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1alpha1.HubService/GetHub")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha1/{name=projects/*/locations/global/hubs/*}")
+	}
 	opts = append((*c.CallOptions).GetHub[0:len((*c.CallOptions).GetHub):len((*c.CallOptions).GetHub)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &networkconnectivitypb.Hub{}
@@ -967,6 +1184,10 @@ func (c *hubRESTClient) CreateHub(ctx context.Context, req *networkconnectivityp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1alpha1.HubService/CreateHub")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha1/{parent=projects/*/locations/global}/hubs")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -995,8 +1216,12 @@ func (c *hubRESTClient) CreateHub(ctx context.Context, req *networkconnectivityp
 	}
 
 	override := fmt.Sprintf("/v1alpha1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkconnectivity.CreateHubOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateHubOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1037,6 +1262,10 @@ func (c *hubRESTClient) UpdateHub(ctx context.Context, req *networkconnectivityp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1alpha1.HubService/UpdateHub")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha1/{hub.name=projects/*/locations/global/hubs/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1065,8 +1294,12 @@ func (c *hubRESTClient) UpdateHub(ctx context.Context, req *networkconnectivityp
 	}
 
 	override := fmt.Sprintf("/v1alpha1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkconnectivity.UpdateHubOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateHubOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1093,6 +1326,10 @@ func (c *hubRESTClient) DeleteHub(ctx context.Context, req *networkconnectivityp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1alpha1.HubService/DeleteHub")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha1/{name=projects/*/locations/global/hubs/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1121,8 +1358,12 @@ func (c *hubRESTClient) DeleteHub(ctx context.Context, req *networkconnectivityp
 	}
 
 	override := fmt.Sprintf("/v1alpha1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkconnectivity.DeleteHubOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteHubOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1130,7 +1371,7 @@ func (c *hubRESTClient) DeleteHub(ctx context.Context, req *networkconnectivityp
 // ListSpokes lists Spokes in a given project and location.
 func (c *hubRESTClient) ListSpokes(ctx context.Context, req *networkconnectivitypb.ListSpokesRequest, opts ...gax.CallOption) *SpokeIterator {
 	it := &SpokeIterator{}
-	req = proto.Clone(req).(*networkconnectivitypb.ListSpokesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkconnectivitypb.Spoke, string, error) {
 		resp := &networkconnectivitypb.ListSpokesResponse{}
@@ -1230,6 +1471,10 @@ func (c *hubRESTClient) GetSpoke(ctx context.Context, req *networkconnectivitypb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1alpha1.HubService/GetSpoke")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha1/{name=projects/*/locations/*/spokes/*}")
+	}
 	opts = append((*c.CallOptions).GetSpoke[0:len((*c.CallOptions).GetSpoke):len((*c.CallOptions).GetSpoke)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &networkconnectivitypb.Spoke{}
@@ -1293,6 +1538,10 @@ func (c *hubRESTClient) CreateSpoke(ctx context.Context, req *networkconnectivit
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1alpha1.HubService/CreateSpoke")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha1/{parent=projects/*/locations/*}/spokes")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1321,8 +1570,12 @@ func (c *hubRESTClient) CreateSpoke(ctx context.Context, req *networkconnectivit
 	}
 
 	override := fmt.Sprintf("/v1alpha1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkconnectivity.CreateSpokeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateSpokeOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1363,6 +1616,10 @@ func (c *hubRESTClient) UpdateSpoke(ctx context.Context, req *networkconnectivit
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1alpha1.HubService/UpdateSpoke")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha1/{spoke.name=projects/*/locations/*/spokes/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1391,8 +1648,12 @@ func (c *hubRESTClient) UpdateSpoke(ctx context.Context, req *networkconnectivit
 	}
 
 	override := fmt.Sprintf("/v1alpha1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkconnectivity.UpdateSpokeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateSpokeOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1419,6 +1680,10 @@ func (c *hubRESTClient) DeleteSpoke(ctx context.Context, req *networkconnectivit
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1alpha1.HubService/DeleteSpoke")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha1/{name=projects/*/locations/*/spokes/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1447,8 +1712,12 @@ func (c *hubRESTClient) DeleteSpoke(ctx context.Context, req *networkconnectivit
 	}
 
 	override := fmt.Sprintf("/v1alpha1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*networkconnectivity.DeleteSpokeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteSpokeOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1457,7 +1726,7 @@ func (c *hubRESTClient) DeleteSpoke(ctx context.Context, req *networkconnectivit
 // The name must be that of a previously created CreateHubOperation, possibly from a different process.
 func (c *hubGRPCClient) CreateHubOperation(name string) *CreateHubOperation {
 	return &CreateHubOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkconnectivity.CreateHubOperation"),
 	}
 }
 
@@ -1466,7 +1735,7 @@ func (c *hubGRPCClient) CreateHubOperation(name string) *CreateHubOperation {
 func (c *hubRESTClient) CreateHubOperation(name string) *CreateHubOperation {
 	override := fmt.Sprintf("/v1alpha1/%s", name)
 	return &CreateHubOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkconnectivity.CreateHubOperation"),
 		pollPath: override,
 	}
 }
@@ -1475,7 +1744,7 @@ func (c *hubRESTClient) CreateHubOperation(name string) *CreateHubOperation {
 // The name must be that of a previously created CreateSpokeOperation, possibly from a different process.
 func (c *hubGRPCClient) CreateSpokeOperation(name string) *CreateSpokeOperation {
 	return &CreateSpokeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkconnectivity.CreateSpokeOperation"),
 	}
 }
 
@@ -1484,7 +1753,7 @@ func (c *hubGRPCClient) CreateSpokeOperation(name string) *CreateSpokeOperation 
 func (c *hubRESTClient) CreateSpokeOperation(name string) *CreateSpokeOperation {
 	override := fmt.Sprintf("/v1alpha1/%s", name)
 	return &CreateSpokeOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkconnectivity.CreateSpokeOperation"),
 		pollPath: override,
 	}
 }
@@ -1493,7 +1762,7 @@ func (c *hubRESTClient) CreateSpokeOperation(name string) *CreateSpokeOperation 
 // The name must be that of a previously created DeleteHubOperation, possibly from a different process.
 func (c *hubGRPCClient) DeleteHubOperation(name string) *DeleteHubOperation {
 	return &DeleteHubOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkconnectivity.DeleteHubOperation"),
 	}
 }
 
@@ -1502,7 +1771,7 @@ func (c *hubGRPCClient) DeleteHubOperation(name string) *DeleteHubOperation {
 func (c *hubRESTClient) DeleteHubOperation(name string) *DeleteHubOperation {
 	override := fmt.Sprintf("/v1alpha1/%s", name)
 	return &DeleteHubOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkconnectivity.DeleteHubOperation"),
 		pollPath: override,
 	}
 }
@@ -1511,7 +1780,7 @@ func (c *hubRESTClient) DeleteHubOperation(name string) *DeleteHubOperation {
 // The name must be that of a previously created DeleteSpokeOperation, possibly from a different process.
 func (c *hubGRPCClient) DeleteSpokeOperation(name string) *DeleteSpokeOperation {
 	return &DeleteSpokeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkconnectivity.DeleteSpokeOperation"),
 	}
 }
 
@@ -1520,7 +1789,7 @@ func (c *hubGRPCClient) DeleteSpokeOperation(name string) *DeleteSpokeOperation 
 func (c *hubRESTClient) DeleteSpokeOperation(name string) *DeleteSpokeOperation {
 	override := fmt.Sprintf("/v1alpha1/%s", name)
 	return &DeleteSpokeOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkconnectivity.DeleteSpokeOperation"),
 		pollPath: override,
 	}
 }
@@ -1529,7 +1798,7 @@ func (c *hubRESTClient) DeleteSpokeOperation(name string) *DeleteSpokeOperation 
 // The name must be that of a previously created UpdateHubOperation, possibly from a different process.
 func (c *hubGRPCClient) UpdateHubOperation(name string) *UpdateHubOperation {
 	return &UpdateHubOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkconnectivity.UpdateHubOperation"),
 	}
 }
 
@@ -1538,7 +1807,7 @@ func (c *hubGRPCClient) UpdateHubOperation(name string) *UpdateHubOperation {
 func (c *hubRESTClient) UpdateHubOperation(name string) *UpdateHubOperation {
 	override := fmt.Sprintf("/v1alpha1/%s", name)
 	return &UpdateHubOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkconnectivity.UpdateHubOperation"),
 		pollPath: override,
 	}
 }
@@ -1547,7 +1816,7 @@ func (c *hubRESTClient) UpdateHubOperation(name string) *UpdateHubOperation {
 // The name must be that of a previously created UpdateSpokeOperation, possibly from a different process.
 func (c *hubGRPCClient) UpdateSpokeOperation(name string) *UpdateSpokeOperation {
 	return &UpdateSpokeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkconnectivity.UpdateSpokeOperation"),
 	}
 }
 
@@ -1556,7 +1825,7 @@ func (c *hubGRPCClient) UpdateSpokeOperation(name string) *UpdateSpokeOperation 
 func (c *hubRESTClient) UpdateSpokeOperation(name string) *UpdateSpokeOperation {
 	override := fmt.Sprintf("/v1alpha1/%s", name)
 	return &UpdateSpokeOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*networkconnectivity.UpdateSpokeOperation"),
 		pollPath: override,
 	}
 }

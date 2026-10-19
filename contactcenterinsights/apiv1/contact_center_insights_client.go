@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -31,6 +31,8 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -2041,7 +2043,7 @@ type Client struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *Client) Close() error {
 	return c.internalClient.Close()
@@ -2593,6 +2595,16 @@ type gRPCClient struct {
 // An API that lets users analyze and explore their business conversation data.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "contactcenterinsights",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/contactcenterinsights/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "contactcenterinsights.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -2615,6 +2627,275 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "contactcenterinsights",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/contactcenterinsights/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "contactcenterinsights.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateConversation = append(client.CallOptions.CreateConversation, gax.WithClientMetrics(metrics))
+		client.CallOptions.UploadConversation = append(client.CallOptions.UploadConversation, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateConversation = append(client.CallOptions.UpdateConversation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetConversation = append(client.CallOptions.GetConversation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListConversations = append(client.CallOptions.ListConversations, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteConversation = append(client.CallOptions.DeleteConversation, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateAnalysis = append(client.CallOptions.CreateAnalysis, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetAnalysis = append(client.CallOptions.GetAnalysis, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListAnalyses = append(client.CallOptions.ListAnalyses, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteAnalysis = append(client.CallOptions.DeleteAnalysis, gax.WithClientMetrics(metrics))
+		client.CallOptions.BulkAnalyzeConversations = append(client.CallOptions.BulkAnalyzeConversations, gax.WithClientMetrics(metrics))
+		client.CallOptions.BulkDeleteConversations = append(client.CallOptions.BulkDeleteConversations, gax.WithClientMetrics(metrics))
+		client.CallOptions.IngestConversations = append(client.CallOptions.IngestConversations, gax.WithClientMetrics(metrics))
+		client.CallOptions.ExportInsightsData = append(client.CallOptions.ExportInsightsData, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateIssueModel = append(client.CallOptions.CreateIssueModel, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateIssueModel = append(client.CallOptions.UpdateIssueModel, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetIssueModel = append(client.CallOptions.GetIssueModel, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListIssueModels = append(client.CallOptions.ListIssueModels, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteIssueModel = append(client.CallOptions.DeleteIssueModel, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeployIssueModel = append(client.CallOptions.DeployIssueModel, gax.WithClientMetrics(metrics))
+		client.CallOptions.UndeployIssueModel = append(client.CallOptions.UndeployIssueModel, gax.WithClientMetrics(metrics))
+		client.CallOptions.ExportIssueModel = append(client.CallOptions.ExportIssueModel, gax.WithClientMetrics(metrics))
+		client.CallOptions.ImportIssueModel = append(client.CallOptions.ImportIssueModel, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetIssue = append(client.CallOptions.GetIssue, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListIssues = append(client.CallOptions.ListIssues, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateIssue = append(client.CallOptions.UpdateIssue, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteIssue = append(client.CallOptions.DeleteIssue, gax.WithClientMetrics(metrics))
+		client.CallOptions.CalculateIssueModelStats = append(client.CallOptions.CalculateIssueModelStats, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreatePhraseMatcher = append(client.CallOptions.CreatePhraseMatcher, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetPhraseMatcher = append(client.CallOptions.GetPhraseMatcher, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListPhraseMatchers = append(client.CallOptions.ListPhraseMatchers, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeletePhraseMatcher = append(client.CallOptions.DeletePhraseMatcher, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdatePhraseMatcher = append(client.CallOptions.UpdatePhraseMatcher, gax.WithClientMetrics(metrics))
+		client.CallOptions.CalculateStats = append(client.CallOptions.CalculateStats, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetSettings = append(client.CallOptions.GetSettings, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateSettings = append(client.CallOptions.UpdateSettings, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateAnalysisRule = append(client.CallOptions.CreateAnalysisRule, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetAnalysisRule = append(client.CallOptions.GetAnalysisRule, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListAnalysisRules = append(client.CallOptions.ListAnalysisRules, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateAnalysisRule = append(client.CallOptions.UpdateAnalysisRule, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteAnalysisRule = append(client.CallOptions.DeleteAnalysisRule, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetEncryptionSpec = append(client.CallOptions.GetEncryptionSpec, gax.WithClientMetrics(metrics))
+		client.CallOptions.InitializeEncryptionSpec = append(client.CallOptions.InitializeEncryptionSpec, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateView = append(client.CallOptions.CreateView, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetView = append(client.CallOptions.GetView, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListViews = append(client.CallOptions.ListViews, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateView = append(client.CallOptions.UpdateView, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteView = append(client.CallOptions.DeleteView, gax.WithClientMetrics(metrics))
+		client.CallOptions.QueryMetrics = append(client.CallOptions.QueryMetrics, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateQaQuestion = append(client.CallOptions.CreateQaQuestion, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetQaQuestion = append(client.CallOptions.GetQaQuestion, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateQaQuestion = append(client.CallOptions.UpdateQaQuestion, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteQaQuestion = append(client.CallOptions.DeleteQaQuestion, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListQaQuestions = append(client.CallOptions.ListQaQuestions, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateQaScorecard = append(client.CallOptions.CreateQaScorecard, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetQaScorecard = append(client.CallOptions.GetQaScorecard, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateQaScorecard = append(client.CallOptions.UpdateQaScorecard, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteQaScorecard = append(client.CallOptions.DeleteQaScorecard, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListQaScorecards = append(client.CallOptions.ListQaScorecards, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateQaScorecardRevision = append(client.CallOptions.CreateQaScorecardRevision, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetQaScorecardRevision = append(client.CallOptions.GetQaScorecardRevision, gax.WithClientMetrics(metrics))
+		client.CallOptions.TuneQaScorecardRevision = append(client.CallOptions.TuneQaScorecardRevision, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeployQaScorecardRevision = append(client.CallOptions.DeployQaScorecardRevision, gax.WithClientMetrics(metrics))
+		client.CallOptions.UndeployQaScorecardRevision = append(client.CallOptions.UndeployQaScorecardRevision, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteQaScorecardRevision = append(client.CallOptions.DeleteQaScorecardRevision, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListQaScorecardRevisions = append(client.CallOptions.ListQaScorecardRevisions, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateFeedbackLabel = append(client.CallOptions.CreateFeedbackLabel, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListFeedbackLabels = append(client.CallOptions.ListFeedbackLabels, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetFeedbackLabel = append(client.CallOptions.GetFeedbackLabel, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateFeedbackLabel = append(client.CallOptions.UpdateFeedbackLabel, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteFeedbackLabel = append(client.CallOptions.DeleteFeedbackLabel, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListAllFeedbackLabels = append(client.CallOptions.ListAllFeedbackLabels, gax.WithClientMetrics(metrics))
+		client.CallOptions.BulkUploadFeedbackLabels = append(client.CallOptions.BulkUploadFeedbackLabels, gax.WithClientMetrics(metrics))
+		client.CallOptions.BulkDownloadFeedbackLabels = append(client.CallOptions.BulkDownloadFeedbackLabels, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "contactcenterinsights",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/contactcenterinsights/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "contactcenterinsights.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateConversation = append(client.CallOptions.CreateConversation, gax.WithClientTracing(tracing))
+		client.CallOptions.UploadConversation = append(client.CallOptions.UploadConversation, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateConversation = append(client.CallOptions.UpdateConversation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetConversation = append(client.CallOptions.GetConversation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListConversations = append(client.CallOptions.ListConversations, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteConversation = append(client.CallOptions.DeleteConversation, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateAnalysis = append(client.CallOptions.CreateAnalysis, gax.WithClientTracing(tracing))
+		client.CallOptions.GetAnalysis = append(client.CallOptions.GetAnalysis, gax.WithClientTracing(tracing))
+		client.CallOptions.ListAnalyses = append(client.CallOptions.ListAnalyses, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteAnalysis = append(client.CallOptions.DeleteAnalysis, gax.WithClientTracing(tracing))
+		client.CallOptions.BulkAnalyzeConversations = append(client.CallOptions.BulkAnalyzeConversations, gax.WithClientTracing(tracing))
+		client.CallOptions.BulkDeleteConversations = append(client.CallOptions.BulkDeleteConversations, gax.WithClientTracing(tracing))
+		client.CallOptions.IngestConversations = append(client.CallOptions.IngestConversations, gax.WithClientTracing(tracing))
+		client.CallOptions.ExportInsightsData = append(client.CallOptions.ExportInsightsData, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateIssueModel = append(client.CallOptions.CreateIssueModel, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateIssueModel = append(client.CallOptions.UpdateIssueModel, gax.WithClientTracing(tracing))
+		client.CallOptions.GetIssueModel = append(client.CallOptions.GetIssueModel, gax.WithClientTracing(tracing))
+		client.CallOptions.ListIssueModels = append(client.CallOptions.ListIssueModels, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteIssueModel = append(client.CallOptions.DeleteIssueModel, gax.WithClientTracing(tracing))
+		client.CallOptions.DeployIssueModel = append(client.CallOptions.DeployIssueModel, gax.WithClientTracing(tracing))
+		client.CallOptions.UndeployIssueModel = append(client.CallOptions.UndeployIssueModel, gax.WithClientTracing(tracing))
+		client.CallOptions.ExportIssueModel = append(client.CallOptions.ExportIssueModel, gax.WithClientTracing(tracing))
+		client.CallOptions.ImportIssueModel = append(client.CallOptions.ImportIssueModel, gax.WithClientTracing(tracing))
+		client.CallOptions.GetIssue = append(client.CallOptions.GetIssue, gax.WithClientTracing(tracing))
+		client.CallOptions.ListIssues = append(client.CallOptions.ListIssues, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateIssue = append(client.CallOptions.UpdateIssue, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteIssue = append(client.CallOptions.DeleteIssue, gax.WithClientTracing(tracing))
+		client.CallOptions.CalculateIssueModelStats = append(client.CallOptions.CalculateIssueModelStats, gax.WithClientTracing(tracing))
+		client.CallOptions.CreatePhraseMatcher = append(client.CallOptions.CreatePhraseMatcher, gax.WithClientTracing(tracing))
+		client.CallOptions.GetPhraseMatcher = append(client.CallOptions.GetPhraseMatcher, gax.WithClientTracing(tracing))
+		client.CallOptions.ListPhraseMatchers = append(client.CallOptions.ListPhraseMatchers, gax.WithClientTracing(tracing))
+		client.CallOptions.DeletePhraseMatcher = append(client.CallOptions.DeletePhraseMatcher, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdatePhraseMatcher = append(client.CallOptions.UpdatePhraseMatcher, gax.WithClientTracing(tracing))
+		client.CallOptions.CalculateStats = append(client.CallOptions.CalculateStats, gax.WithClientTracing(tracing))
+		client.CallOptions.GetSettings = append(client.CallOptions.GetSettings, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateSettings = append(client.CallOptions.UpdateSettings, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateAnalysisRule = append(client.CallOptions.CreateAnalysisRule, gax.WithClientTracing(tracing))
+		client.CallOptions.GetAnalysisRule = append(client.CallOptions.GetAnalysisRule, gax.WithClientTracing(tracing))
+		client.CallOptions.ListAnalysisRules = append(client.CallOptions.ListAnalysisRules, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateAnalysisRule = append(client.CallOptions.UpdateAnalysisRule, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteAnalysisRule = append(client.CallOptions.DeleteAnalysisRule, gax.WithClientTracing(tracing))
+		client.CallOptions.GetEncryptionSpec = append(client.CallOptions.GetEncryptionSpec, gax.WithClientTracing(tracing))
+		client.CallOptions.InitializeEncryptionSpec = append(client.CallOptions.InitializeEncryptionSpec, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateView = append(client.CallOptions.CreateView, gax.WithClientTracing(tracing))
+		client.CallOptions.GetView = append(client.CallOptions.GetView, gax.WithClientTracing(tracing))
+		client.CallOptions.ListViews = append(client.CallOptions.ListViews, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateView = append(client.CallOptions.UpdateView, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteView = append(client.CallOptions.DeleteView, gax.WithClientTracing(tracing))
+		client.CallOptions.QueryMetrics = append(client.CallOptions.QueryMetrics, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateQaQuestion = append(client.CallOptions.CreateQaQuestion, gax.WithClientTracing(tracing))
+		client.CallOptions.GetQaQuestion = append(client.CallOptions.GetQaQuestion, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateQaQuestion = append(client.CallOptions.UpdateQaQuestion, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteQaQuestion = append(client.CallOptions.DeleteQaQuestion, gax.WithClientTracing(tracing))
+		client.CallOptions.ListQaQuestions = append(client.CallOptions.ListQaQuestions, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateQaScorecard = append(client.CallOptions.CreateQaScorecard, gax.WithClientTracing(tracing))
+		client.CallOptions.GetQaScorecard = append(client.CallOptions.GetQaScorecard, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateQaScorecard = append(client.CallOptions.UpdateQaScorecard, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteQaScorecard = append(client.CallOptions.DeleteQaScorecard, gax.WithClientTracing(tracing))
+		client.CallOptions.ListQaScorecards = append(client.CallOptions.ListQaScorecards, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateQaScorecardRevision = append(client.CallOptions.CreateQaScorecardRevision, gax.WithClientTracing(tracing))
+		client.CallOptions.GetQaScorecardRevision = append(client.CallOptions.GetQaScorecardRevision, gax.WithClientTracing(tracing))
+		client.CallOptions.TuneQaScorecardRevision = append(client.CallOptions.TuneQaScorecardRevision, gax.WithClientTracing(tracing))
+		client.CallOptions.DeployQaScorecardRevision = append(client.CallOptions.DeployQaScorecardRevision, gax.WithClientTracing(tracing))
+		client.CallOptions.UndeployQaScorecardRevision = append(client.CallOptions.UndeployQaScorecardRevision, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteQaScorecardRevision = append(client.CallOptions.DeleteQaScorecardRevision, gax.WithClientTracing(tracing))
+		client.CallOptions.ListQaScorecardRevisions = append(client.CallOptions.ListQaScorecardRevisions, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateFeedbackLabel = append(client.CallOptions.CreateFeedbackLabel, gax.WithClientTracing(tracing))
+		client.CallOptions.ListFeedbackLabels = append(client.CallOptions.ListFeedbackLabels, gax.WithClientTracing(tracing))
+		client.CallOptions.GetFeedbackLabel = append(client.CallOptions.GetFeedbackLabel, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateFeedbackLabel = append(client.CallOptions.UpdateFeedbackLabel, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteFeedbackLabel = append(client.CallOptions.DeleteFeedbackLabel, gax.WithClientTracing(tracing))
+		client.CallOptions.ListAllFeedbackLabels = append(client.CallOptions.ListAllFeedbackLabels, gax.WithClientTracing(tracing))
+		client.CallOptions.BulkUploadFeedbackLabels = append(client.CallOptions.BulkUploadFeedbackLabels, gax.WithClientTracing(tracing))
+		client.CallOptions.BulkDownloadFeedbackLabels = append(client.CallOptions.BulkDownloadFeedbackLabels, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "contactcenterinsights",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/contactcenterinsights/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "contactcenterinsights.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateConversation = append(client.CallOptions.CreateConversation, gax.WithClientLogging(logging))
+		client.CallOptions.UploadConversation = append(client.CallOptions.UploadConversation, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateConversation = append(client.CallOptions.UpdateConversation, gax.WithClientLogging(logging))
+		client.CallOptions.GetConversation = append(client.CallOptions.GetConversation, gax.WithClientLogging(logging))
+		client.CallOptions.ListConversations = append(client.CallOptions.ListConversations, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteConversation = append(client.CallOptions.DeleteConversation, gax.WithClientLogging(logging))
+		client.CallOptions.CreateAnalysis = append(client.CallOptions.CreateAnalysis, gax.WithClientLogging(logging))
+		client.CallOptions.GetAnalysis = append(client.CallOptions.GetAnalysis, gax.WithClientLogging(logging))
+		client.CallOptions.ListAnalyses = append(client.CallOptions.ListAnalyses, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteAnalysis = append(client.CallOptions.DeleteAnalysis, gax.WithClientLogging(logging))
+		client.CallOptions.BulkAnalyzeConversations = append(client.CallOptions.BulkAnalyzeConversations, gax.WithClientLogging(logging))
+		client.CallOptions.BulkDeleteConversations = append(client.CallOptions.BulkDeleteConversations, gax.WithClientLogging(logging))
+		client.CallOptions.IngestConversations = append(client.CallOptions.IngestConversations, gax.WithClientLogging(logging))
+		client.CallOptions.ExportInsightsData = append(client.CallOptions.ExportInsightsData, gax.WithClientLogging(logging))
+		client.CallOptions.CreateIssueModel = append(client.CallOptions.CreateIssueModel, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateIssueModel = append(client.CallOptions.UpdateIssueModel, gax.WithClientLogging(logging))
+		client.CallOptions.GetIssueModel = append(client.CallOptions.GetIssueModel, gax.WithClientLogging(logging))
+		client.CallOptions.ListIssueModels = append(client.CallOptions.ListIssueModels, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteIssueModel = append(client.CallOptions.DeleteIssueModel, gax.WithClientLogging(logging))
+		client.CallOptions.DeployIssueModel = append(client.CallOptions.DeployIssueModel, gax.WithClientLogging(logging))
+		client.CallOptions.UndeployIssueModel = append(client.CallOptions.UndeployIssueModel, gax.WithClientLogging(logging))
+		client.CallOptions.ExportIssueModel = append(client.CallOptions.ExportIssueModel, gax.WithClientLogging(logging))
+		client.CallOptions.ImportIssueModel = append(client.CallOptions.ImportIssueModel, gax.WithClientLogging(logging))
+		client.CallOptions.GetIssue = append(client.CallOptions.GetIssue, gax.WithClientLogging(logging))
+		client.CallOptions.ListIssues = append(client.CallOptions.ListIssues, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateIssue = append(client.CallOptions.UpdateIssue, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteIssue = append(client.CallOptions.DeleteIssue, gax.WithClientLogging(logging))
+		client.CallOptions.CalculateIssueModelStats = append(client.CallOptions.CalculateIssueModelStats, gax.WithClientLogging(logging))
+		client.CallOptions.CreatePhraseMatcher = append(client.CallOptions.CreatePhraseMatcher, gax.WithClientLogging(logging))
+		client.CallOptions.GetPhraseMatcher = append(client.CallOptions.GetPhraseMatcher, gax.WithClientLogging(logging))
+		client.CallOptions.ListPhraseMatchers = append(client.CallOptions.ListPhraseMatchers, gax.WithClientLogging(logging))
+		client.CallOptions.DeletePhraseMatcher = append(client.CallOptions.DeletePhraseMatcher, gax.WithClientLogging(logging))
+		client.CallOptions.UpdatePhraseMatcher = append(client.CallOptions.UpdatePhraseMatcher, gax.WithClientLogging(logging))
+		client.CallOptions.CalculateStats = append(client.CallOptions.CalculateStats, gax.WithClientLogging(logging))
+		client.CallOptions.GetSettings = append(client.CallOptions.GetSettings, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateSettings = append(client.CallOptions.UpdateSettings, gax.WithClientLogging(logging))
+		client.CallOptions.CreateAnalysisRule = append(client.CallOptions.CreateAnalysisRule, gax.WithClientLogging(logging))
+		client.CallOptions.GetAnalysisRule = append(client.CallOptions.GetAnalysisRule, gax.WithClientLogging(logging))
+		client.CallOptions.ListAnalysisRules = append(client.CallOptions.ListAnalysisRules, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateAnalysisRule = append(client.CallOptions.UpdateAnalysisRule, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteAnalysisRule = append(client.CallOptions.DeleteAnalysisRule, gax.WithClientLogging(logging))
+		client.CallOptions.GetEncryptionSpec = append(client.CallOptions.GetEncryptionSpec, gax.WithClientLogging(logging))
+		client.CallOptions.InitializeEncryptionSpec = append(client.CallOptions.InitializeEncryptionSpec, gax.WithClientLogging(logging))
+		client.CallOptions.CreateView = append(client.CallOptions.CreateView, gax.WithClientLogging(logging))
+		client.CallOptions.GetView = append(client.CallOptions.GetView, gax.WithClientLogging(logging))
+		client.CallOptions.ListViews = append(client.CallOptions.ListViews, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateView = append(client.CallOptions.UpdateView, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteView = append(client.CallOptions.DeleteView, gax.WithClientLogging(logging))
+		client.CallOptions.QueryMetrics = append(client.CallOptions.QueryMetrics, gax.WithClientLogging(logging))
+		client.CallOptions.CreateQaQuestion = append(client.CallOptions.CreateQaQuestion, gax.WithClientLogging(logging))
+		client.CallOptions.GetQaQuestion = append(client.CallOptions.GetQaQuestion, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateQaQuestion = append(client.CallOptions.UpdateQaQuestion, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteQaQuestion = append(client.CallOptions.DeleteQaQuestion, gax.WithClientLogging(logging))
+		client.CallOptions.ListQaQuestions = append(client.CallOptions.ListQaQuestions, gax.WithClientLogging(logging))
+		client.CallOptions.CreateQaScorecard = append(client.CallOptions.CreateQaScorecard, gax.WithClientLogging(logging))
+		client.CallOptions.GetQaScorecard = append(client.CallOptions.GetQaScorecard, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateQaScorecard = append(client.CallOptions.UpdateQaScorecard, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteQaScorecard = append(client.CallOptions.DeleteQaScorecard, gax.WithClientLogging(logging))
+		client.CallOptions.ListQaScorecards = append(client.CallOptions.ListQaScorecards, gax.WithClientLogging(logging))
+		client.CallOptions.CreateQaScorecardRevision = append(client.CallOptions.CreateQaScorecardRevision, gax.WithClientLogging(logging))
+		client.CallOptions.GetQaScorecardRevision = append(client.CallOptions.GetQaScorecardRevision, gax.WithClientLogging(logging))
+		client.CallOptions.TuneQaScorecardRevision = append(client.CallOptions.TuneQaScorecardRevision, gax.WithClientLogging(logging))
+		client.CallOptions.DeployQaScorecardRevision = append(client.CallOptions.DeployQaScorecardRevision, gax.WithClientLogging(logging))
+		client.CallOptions.UndeployQaScorecardRevision = append(client.CallOptions.UndeployQaScorecardRevision, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteQaScorecardRevision = append(client.CallOptions.DeleteQaScorecardRevision, gax.WithClientLogging(logging))
+		client.CallOptions.ListQaScorecardRevisions = append(client.CallOptions.ListQaScorecardRevisions, gax.WithClientLogging(logging))
+		client.CallOptions.CreateFeedbackLabel = append(client.CallOptions.CreateFeedbackLabel, gax.WithClientLogging(logging))
+		client.CallOptions.ListFeedbackLabels = append(client.CallOptions.ListFeedbackLabels, gax.WithClientLogging(logging))
+		client.CallOptions.GetFeedbackLabel = append(client.CallOptions.GetFeedbackLabel, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateFeedbackLabel = append(client.CallOptions.UpdateFeedbackLabel, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteFeedbackLabel = append(client.CallOptions.DeleteFeedbackLabel, gax.WithClientLogging(logging))
+		client.CallOptions.ListAllFeedbackLabels = append(client.CallOptions.ListAllFeedbackLabels, gax.WithClientLogging(logging))
+		client.CallOptions.BulkUploadFeedbackLabels = append(client.CallOptions.BulkUploadFeedbackLabels, gax.WithClientLogging(logging))
+		client.CallOptions.BulkDownloadFeedbackLabels = append(client.CallOptions.BulkDownloadFeedbackLabels, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -2651,7 +2932,7 @@ func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *gRPCClient) Close() error {
 	return c.connPool.Close()
@@ -2684,6 +2965,16 @@ type restClient struct {
 // An API that lets users analyze and explore their business conversation data.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "contactcenterinsights",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/contactcenterinsights/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "contactcenterinsights.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -2697,6 +2988,276 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "contactcenterinsights",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/contactcenterinsights/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "contactcenterinsights.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateConversation = append(callOpts.CreateConversation, gax.WithClientMetrics(metrics))
+		callOpts.UploadConversation = append(callOpts.UploadConversation, gax.WithClientMetrics(metrics))
+		callOpts.UpdateConversation = append(callOpts.UpdateConversation, gax.WithClientMetrics(metrics))
+		callOpts.GetConversation = append(callOpts.GetConversation, gax.WithClientMetrics(metrics))
+		callOpts.ListConversations = append(callOpts.ListConversations, gax.WithClientMetrics(metrics))
+		callOpts.DeleteConversation = append(callOpts.DeleteConversation, gax.WithClientMetrics(metrics))
+		callOpts.CreateAnalysis = append(callOpts.CreateAnalysis, gax.WithClientMetrics(metrics))
+		callOpts.GetAnalysis = append(callOpts.GetAnalysis, gax.WithClientMetrics(metrics))
+		callOpts.ListAnalyses = append(callOpts.ListAnalyses, gax.WithClientMetrics(metrics))
+		callOpts.DeleteAnalysis = append(callOpts.DeleteAnalysis, gax.WithClientMetrics(metrics))
+		callOpts.BulkAnalyzeConversations = append(callOpts.BulkAnalyzeConversations, gax.WithClientMetrics(metrics))
+		callOpts.BulkDeleteConversations = append(callOpts.BulkDeleteConversations, gax.WithClientMetrics(metrics))
+		callOpts.IngestConversations = append(callOpts.IngestConversations, gax.WithClientMetrics(metrics))
+		callOpts.ExportInsightsData = append(callOpts.ExportInsightsData, gax.WithClientMetrics(metrics))
+		callOpts.CreateIssueModel = append(callOpts.CreateIssueModel, gax.WithClientMetrics(metrics))
+		callOpts.UpdateIssueModel = append(callOpts.UpdateIssueModel, gax.WithClientMetrics(metrics))
+		callOpts.GetIssueModel = append(callOpts.GetIssueModel, gax.WithClientMetrics(metrics))
+		callOpts.ListIssueModels = append(callOpts.ListIssueModels, gax.WithClientMetrics(metrics))
+		callOpts.DeleteIssueModel = append(callOpts.DeleteIssueModel, gax.WithClientMetrics(metrics))
+		callOpts.DeployIssueModel = append(callOpts.DeployIssueModel, gax.WithClientMetrics(metrics))
+		callOpts.UndeployIssueModel = append(callOpts.UndeployIssueModel, gax.WithClientMetrics(metrics))
+		callOpts.ExportIssueModel = append(callOpts.ExportIssueModel, gax.WithClientMetrics(metrics))
+		callOpts.ImportIssueModel = append(callOpts.ImportIssueModel, gax.WithClientMetrics(metrics))
+		callOpts.GetIssue = append(callOpts.GetIssue, gax.WithClientMetrics(metrics))
+		callOpts.ListIssues = append(callOpts.ListIssues, gax.WithClientMetrics(metrics))
+		callOpts.UpdateIssue = append(callOpts.UpdateIssue, gax.WithClientMetrics(metrics))
+		callOpts.DeleteIssue = append(callOpts.DeleteIssue, gax.WithClientMetrics(metrics))
+		callOpts.CalculateIssueModelStats = append(callOpts.CalculateIssueModelStats, gax.WithClientMetrics(metrics))
+		callOpts.CreatePhraseMatcher = append(callOpts.CreatePhraseMatcher, gax.WithClientMetrics(metrics))
+		callOpts.GetPhraseMatcher = append(callOpts.GetPhraseMatcher, gax.WithClientMetrics(metrics))
+		callOpts.ListPhraseMatchers = append(callOpts.ListPhraseMatchers, gax.WithClientMetrics(metrics))
+		callOpts.DeletePhraseMatcher = append(callOpts.DeletePhraseMatcher, gax.WithClientMetrics(metrics))
+		callOpts.UpdatePhraseMatcher = append(callOpts.UpdatePhraseMatcher, gax.WithClientMetrics(metrics))
+		callOpts.CalculateStats = append(callOpts.CalculateStats, gax.WithClientMetrics(metrics))
+		callOpts.GetSettings = append(callOpts.GetSettings, gax.WithClientMetrics(metrics))
+		callOpts.UpdateSettings = append(callOpts.UpdateSettings, gax.WithClientMetrics(metrics))
+		callOpts.CreateAnalysisRule = append(callOpts.CreateAnalysisRule, gax.WithClientMetrics(metrics))
+		callOpts.GetAnalysisRule = append(callOpts.GetAnalysisRule, gax.WithClientMetrics(metrics))
+		callOpts.ListAnalysisRules = append(callOpts.ListAnalysisRules, gax.WithClientMetrics(metrics))
+		callOpts.UpdateAnalysisRule = append(callOpts.UpdateAnalysisRule, gax.WithClientMetrics(metrics))
+		callOpts.DeleteAnalysisRule = append(callOpts.DeleteAnalysisRule, gax.WithClientMetrics(metrics))
+		callOpts.GetEncryptionSpec = append(callOpts.GetEncryptionSpec, gax.WithClientMetrics(metrics))
+		callOpts.InitializeEncryptionSpec = append(callOpts.InitializeEncryptionSpec, gax.WithClientMetrics(metrics))
+		callOpts.CreateView = append(callOpts.CreateView, gax.WithClientMetrics(metrics))
+		callOpts.GetView = append(callOpts.GetView, gax.WithClientMetrics(metrics))
+		callOpts.ListViews = append(callOpts.ListViews, gax.WithClientMetrics(metrics))
+		callOpts.UpdateView = append(callOpts.UpdateView, gax.WithClientMetrics(metrics))
+		callOpts.DeleteView = append(callOpts.DeleteView, gax.WithClientMetrics(metrics))
+		callOpts.QueryMetrics = append(callOpts.QueryMetrics, gax.WithClientMetrics(metrics))
+		callOpts.CreateQaQuestion = append(callOpts.CreateQaQuestion, gax.WithClientMetrics(metrics))
+		callOpts.GetQaQuestion = append(callOpts.GetQaQuestion, gax.WithClientMetrics(metrics))
+		callOpts.UpdateQaQuestion = append(callOpts.UpdateQaQuestion, gax.WithClientMetrics(metrics))
+		callOpts.DeleteQaQuestion = append(callOpts.DeleteQaQuestion, gax.WithClientMetrics(metrics))
+		callOpts.ListQaQuestions = append(callOpts.ListQaQuestions, gax.WithClientMetrics(metrics))
+		callOpts.CreateQaScorecard = append(callOpts.CreateQaScorecard, gax.WithClientMetrics(metrics))
+		callOpts.GetQaScorecard = append(callOpts.GetQaScorecard, gax.WithClientMetrics(metrics))
+		callOpts.UpdateQaScorecard = append(callOpts.UpdateQaScorecard, gax.WithClientMetrics(metrics))
+		callOpts.DeleteQaScorecard = append(callOpts.DeleteQaScorecard, gax.WithClientMetrics(metrics))
+		callOpts.ListQaScorecards = append(callOpts.ListQaScorecards, gax.WithClientMetrics(metrics))
+		callOpts.CreateQaScorecardRevision = append(callOpts.CreateQaScorecardRevision, gax.WithClientMetrics(metrics))
+		callOpts.GetQaScorecardRevision = append(callOpts.GetQaScorecardRevision, gax.WithClientMetrics(metrics))
+		callOpts.TuneQaScorecardRevision = append(callOpts.TuneQaScorecardRevision, gax.WithClientMetrics(metrics))
+		callOpts.DeployQaScorecardRevision = append(callOpts.DeployQaScorecardRevision, gax.WithClientMetrics(metrics))
+		callOpts.UndeployQaScorecardRevision = append(callOpts.UndeployQaScorecardRevision, gax.WithClientMetrics(metrics))
+		callOpts.DeleteQaScorecardRevision = append(callOpts.DeleteQaScorecardRevision, gax.WithClientMetrics(metrics))
+		callOpts.ListQaScorecardRevisions = append(callOpts.ListQaScorecardRevisions, gax.WithClientMetrics(metrics))
+		callOpts.CreateFeedbackLabel = append(callOpts.CreateFeedbackLabel, gax.WithClientMetrics(metrics))
+		callOpts.ListFeedbackLabels = append(callOpts.ListFeedbackLabels, gax.WithClientMetrics(metrics))
+		callOpts.GetFeedbackLabel = append(callOpts.GetFeedbackLabel, gax.WithClientMetrics(metrics))
+		callOpts.UpdateFeedbackLabel = append(callOpts.UpdateFeedbackLabel, gax.WithClientMetrics(metrics))
+		callOpts.DeleteFeedbackLabel = append(callOpts.DeleteFeedbackLabel, gax.WithClientMetrics(metrics))
+		callOpts.ListAllFeedbackLabels = append(callOpts.ListAllFeedbackLabels, gax.WithClientMetrics(metrics))
+		callOpts.BulkUploadFeedbackLabels = append(callOpts.BulkUploadFeedbackLabels, gax.WithClientMetrics(metrics))
+		callOpts.BulkDownloadFeedbackLabels = append(callOpts.BulkDownloadFeedbackLabels, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "contactcenterinsights",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/contactcenterinsights/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "contactcenterinsights.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateConversation = append(callOpts.CreateConversation, gax.WithClientTracing(tracing))
+		callOpts.UploadConversation = append(callOpts.UploadConversation, gax.WithClientTracing(tracing))
+		callOpts.UpdateConversation = append(callOpts.UpdateConversation, gax.WithClientTracing(tracing))
+		callOpts.GetConversation = append(callOpts.GetConversation, gax.WithClientTracing(tracing))
+		callOpts.ListConversations = append(callOpts.ListConversations, gax.WithClientTracing(tracing))
+		callOpts.DeleteConversation = append(callOpts.DeleteConversation, gax.WithClientTracing(tracing))
+		callOpts.CreateAnalysis = append(callOpts.CreateAnalysis, gax.WithClientTracing(tracing))
+		callOpts.GetAnalysis = append(callOpts.GetAnalysis, gax.WithClientTracing(tracing))
+		callOpts.ListAnalyses = append(callOpts.ListAnalyses, gax.WithClientTracing(tracing))
+		callOpts.DeleteAnalysis = append(callOpts.DeleteAnalysis, gax.WithClientTracing(tracing))
+		callOpts.BulkAnalyzeConversations = append(callOpts.BulkAnalyzeConversations, gax.WithClientTracing(tracing))
+		callOpts.BulkDeleteConversations = append(callOpts.BulkDeleteConversations, gax.WithClientTracing(tracing))
+		callOpts.IngestConversations = append(callOpts.IngestConversations, gax.WithClientTracing(tracing))
+		callOpts.ExportInsightsData = append(callOpts.ExportInsightsData, gax.WithClientTracing(tracing))
+		callOpts.CreateIssueModel = append(callOpts.CreateIssueModel, gax.WithClientTracing(tracing))
+		callOpts.UpdateIssueModel = append(callOpts.UpdateIssueModel, gax.WithClientTracing(tracing))
+		callOpts.GetIssueModel = append(callOpts.GetIssueModel, gax.WithClientTracing(tracing))
+		callOpts.ListIssueModels = append(callOpts.ListIssueModels, gax.WithClientTracing(tracing))
+		callOpts.DeleteIssueModel = append(callOpts.DeleteIssueModel, gax.WithClientTracing(tracing))
+		callOpts.DeployIssueModel = append(callOpts.DeployIssueModel, gax.WithClientTracing(tracing))
+		callOpts.UndeployIssueModel = append(callOpts.UndeployIssueModel, gax.WithClientTracing(tracing))
+		callOpts.ExportIssueModel = append(callOpts.ExportIssueModel, gax.WithClientTracing(tracing))
+		callOpts.ImportIssueModel = append(callOpts.ImportIssueModel, gax.WithClientTracing(tracing))
+		callOpts.GetIssue = append(callOpts.GetIssue, gax.WithClientTracing(tracing))
+		callOpts.ListIssues = append(callOpts.ListIssues, gax.WithClientTracing(tracing))
+		callOpts.UpdateIssue = append(callOpts.UpdateIssue, gax.WithClientTracing(tracing))
+		callOpts.DeleteIssue = append(callOpts.DeleteIssue, gax.WithClientTracing(tracing))
+		callOpts.CalculateIssueModelStats = append(callOpts.CalculateIssueModelStats, gax.WithClientTracing(tracing))
+		callOpts.CreatePhraseMatcher = append(callOpts.CreatePhraseMatcher, gax.WithClientTracing(tracing))
+		callOpts.GetPhraseMatcher = append(callOpts.GetPhraseMatcher, gax.WithClientTracing(tracing))
+		callOpts.ListPhraseMatchers = append(callOpts.ListPhraseMatchers, gax.WithClientTracing(tracing))
+		callOpts.DeletePhraseMatcher = append(callOpts.DeletePhraseMatcher, gax.WithClientTracing(tracing))
+		callOpts.UpdatePhraseMatcher = append(callOpts.UpdatePhraseMatcher, gax.WithClientTracing(tracing))
+		callOpts.CalculateStats = append(callOpts.CalculateStats, gax.WithClientTracing(tracing))
+		callOpts.GetSettings = append(callOpts.GetSettings, gax.WithClientTracing(tracing))
+		callOpts.UpdateSettings = append(callOpts.UpdateSettings, gax.WithClientTracing(tracing))
+		callOpts.CreateAnalysisRule = append(callOpts.CreateAnalysisRule, gax.WithClientTracing(tracing))
+		callOpts.GetAnalysisRule = append(callOpts.GetAnalysisRule, gax.WithClientTracing(tracing))
+		callOpts.ListAnalysisRules = append(callOpts.ListAnalysisRules, gax.WithClientTracing(tracing))
+		callOpts.UpdateAnalysisRule = append(callOpts.UpdateAnalysisRule, gax.WithClientTracing(tracing))
+		callOpts.DeleteAnalysisRule = append(callOpts.DeleteAnalysisRule, gax.WithClientTracing(tracing))
+		callOpts.GetEncryptionSpec = append(callOpts.GetEncryptionSpec, gax.WithClientTracing(tracing))
+		callOpts.InitializeEncryptionSpec = append(callOpts.InitializeEncryptionSpec, gax.WithClientTracing(tracing))
+		callOpts.CreateView = append(callOpts.CreateView, gax.WithClientTracing(tracing))
+		callOpts.GetView = append(callOpts.GetView, gax.WithClientTracing(tracing))
+		callOpts.ListViews = append(callOpts.ListViews, gax.WithClientTracing(tracing))
+		callOpts.UpdateView = append(callOpts.UpdateView, gax.WithClientTracing(tracing))
+		callOpts.DeleteView = append(callOpts.DeleteView, gax.WithClientTracing(tracing))
+		callOpts.QueryMetrics = append(callOpts.QueryMetrics, gax.WithClientTracing(tracing))
+		callOpts.CreateQaQuestion = append(callOpts.CreateQaQuestion, gax.WithClientTracing(tracing))
+		callOpts.GetQaQuestion = append(callOpts.GetQaQuestion, gax.WithClientTracing(tracing))
+		callOpts.UpdateQaQuestion = append(callOpts.UpdateQaQuestion, gax.WithClientTracing(tracing))
+		callOpts.DeleteQaQuestion = append(callOpts.DeleteQaQuestion, gax.WithClientTracing(tracing))
+		callOpts.ListQaQuestions = append(callOpts.ListQaQuestions, gax.WithClientTracing(tracing))
+		callOpts.CreateQaScorecard = append(callOpts.CreateQaScorecard, gax.WithClientTracing(tracing))
+		callOpts.GetQaScorecard = append(callOpts.GetQaScorecard, gax.WithClientTracing(tracing))
+		callOpts.UpdateQaScorecard = append(callOpts.UpdateQaScorecard, gax.WithClientTracing(tracing))
+		callOpts.DeleteQaScorecard = append(callOpts.DeleteQaScorecard, gax.WithClientTracing(tracing))
+		callOpts.ListQaScorecards = append(callOpts.ListQaScorecards, gax.WithClientTracing(tracing))
+		callOpts.CreateQaScorecardRevision = append(callOpts.CreateQaScorecardRevision, gax.WithClientTracing(tracing))
+		callOpts.GetQaScorecardRevision = append(callOpts.GetQaScorecardRevision, gax.WithClientTracing(tracing))
+		callOpts.TuneQaScorecardRevision = append(callOpts.TuneQaScorecardRevision, gax.WithClientTracing(tracing))
+		callOpts.DeployQaScorecardRevision = append(callOpts.DeployQaScorecardRevision, gax.WithClientTracing(tracing))
+		callOpts.UndeployQaScorecardRevision = append(callOpts.UndeployQaScorecardRevision, gax.WithClientTracing(tracing))
+		callOpts.DeleteQaScorecardRevision = append(callOpts.DeleteQaScorecardRevision, gax.WithClientTracing(tracing))
+		callOpts.ListQaScorecardRevisions = append(callOpts.ListQaScorecardRevisions, gax.WithClientTracing(tracing))
+		callOpts.CreateFeedbackLabel = append(callOpts.CreateFeedbackLabel, gax.WithClientTracing(tracing))
+		callOpts.ListFeedbackLabels = append(callOpts.ListFeedbackLabels, gax.WithClientTracing(tracing))
+		callOpts.GetFeedbackLabel = append(callOpts.GetFeedbackLabel, gax.WithClientTracing(tracing))
+		callOpts.UpdateFeedbackLabel = append(callOpts.UpdateFeedbackLabel, gax.WithClientTracing(tracing))
+		callOpts.DeleteFeedbackLabel = append(callOpts.DeleteFeedbackLabel, gax.WithClientTracing(tracing))
+		callOpts.ListAllFeedbackLabels = append(callOpts.ListAllFeedbackLabels, gax.WithClientTracing(tracing))
+		callOpts.BulkUploadFeedbackLabels = append(callOpts.BulkUploadFeedbackLabels, gax.WithClientTracing(tracing))
+		callOpts.BulkDownloadFeedbackLabels = append(callOpts.BulkDownloadFeedbackLabels, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "contactcenterinsights",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/contactcenterinsights/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "contactcenterinsights.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateConversation = append(callOpts.CreateConversation, gax.WithClientLogging(logging))
+		callOpts.UploadConversation = append(callOpts.UploadConversation, gax.WithClientLogging(logging))
+		callOpts.UpdateConversation = append(callOpts.UpdateConversation, gax.WithClientLogging(logging))
+		callOpts.GetConversation = append(callOpts.GetConversation, gax.WithClientLogging(logging))
+		callOpts.ListConversations = append(callOpts.ListConversations, gax.WithClientLogging(logging))
+		callOpts.DeleteConversation = append(callOpts.DeleteConversation, gax.WithClientLogging(logging))
+		callOpts.CreateAnalysis = append(callOpts.CreateAnalysis, gax.WithClientLogging(logging))
+		callOpts.GetAnalysis = append(callOpts.GetAnalysis, gax.WithClientLogging(logging))
+		callOpts.ListAnalyses = append(callOpts.ListAnalyses, gax.WithClientLogging(logging))
+		callOpts.DeleteAnalysis = append(callOpts.DeleteAnalysis, gax.WithClientLogging(logging))
+		callOpts.BulkAnalyzeConversations = append(callOpts.BulkAnalyzeConversations, gax.WithClientLogging(logging))
+		callOpts.BulkDeleteConversations = append(callOpts.BulkDeleteConversations, gax.WithClientLogging(logging))
+		callOpts.IngestConversations = append(callOpts.IngestConversations, gax.WithClientLogging(logging))
+		callOpts.ExportInsightsData = append(callOpts.ExportInsightsData, gax.WithClientLogging(logging))
+		callOpts.CreateIssueModel = append(callOpts.CreateIssueModel, gax.WithClientLogging(logging))
+		callOpts.UpdateIssueModel = append(callOpts.UpdateIssueModel, gax.WithClientLogging(logging))
+		callOpts.GetIssueModel = append(callOpts.GetIssueModel, gax.WithClientLogging(logging))
+		callOpts.ListIssueModels = append(callOpts.ListIssueModels, gax.WithClientLogging(logging))
+		callOpts.DeleteIssueModel = append(callOpts.DeleteIssueModel, gax.WithClientLogging(logging))
+		callOpts.DeployIssueModel = append(callOpts.DeployIssueModel, gax.WithClientLogging(logging))
+		callOpts.UndeployIssueModel = append(callOpts.UndeployIssueModel, gax.WithClientLogging(logging))
+		callOpts.ExportIssueModel = append(callOpts.ExportIssueModel, gax.WithClientLogging(logging))
+		callOpts.ImportIssueModel = append(callOpts.ImportIssueModel, gax.WithClientLogging(logging))
+		callOpts.GetIssue = append(callOpts.GetIssue, gax.WithClientLogging(logging))
+		callOpts.ListIssues = append(callOpts.ListIssues, gax.WithClientLogging(logging))
+		callOpts.UpdateIssue = append(callOpts.UpdateIssue, gax.WithClientLogging(logging))
+		callOpts.DeleteIssue = append(callOpts.DeleteIssue, gax.WithClientLogging(logging))
+		callOpts.CalculateIssueModelStats = append(callOpts.CalculateIssueModelStats, gax.WithClientLogging(logging))
+		callOpts.CreatePhraseMatcher = append(callOpts.CreatePhraseMatcher, gax.WithClientLogging(logging))
+		callOpts.GetPhraseMatcher = append(callOpts.GetPhraseMatcher, gax.WithClientLogging(logging))
+		callOpts.ListPhraseMatchers = append(callOpts.ListPhraseMatchers, gax.WithClientLogging(logging))
+		callOpts.DeletePhraseMatcher = append(callOpts.DeletePhraseMatcher, gax.WithClientLogging(logging))
+		callOpts.UpdatePhraseMatcher = append(callOpts.UpdatePhraseMatcher, gax.WithClientLogging(logging))
+		callOpts.CalculateStats = append(callOpts.CalculateStats, gax.WithClientLogging(logging))
+		callOpts.GetSettings = append(callOpts.GetSettings, gax.WithClientLogging(logging))
+		callOpts.UpdateSettings = append(callOpts.UpdateSettings, gax.WithClientLogging(logging))
+		callOpts.CreateAnalysisRule = append(callOpts.CreateAnalysisRule, gax.WithClientLogging(logging))
+		callOpts.GetAnalysisRule = append(callOpts.GetAnalysisRule, gax.WithClientLogging(logging))
+		callOpts.ListAnalysisRules = append(callOpts.ListAnalysisRules, gax.WithClientLogging(logging))
+		callOpts.UpdateAnalysisRule = append(callOpts.UpdateAnalysisRule, gax.WithClientLogging(logging))
+		callOpts.DeleteAnalysisRule = append(callOpts.DeleteAnalysisRule, gax.WithClientLogging(logging))
+		callOpts.GetEncryptionSpec = append(callOpts.GetEncryptionSpec, gax.WithClientLogging(logging))
+		callOpts.InitializeEncryptionSpec = append(callOpts.InitializeEncryptionSpec, gax.WithClientLogging(logging))
+		callOpts.CreateView = append(callOpts.CreateView, gax.WithClientLogging(logging))
+		callOpts.GetView = append(callOpts.GetView, gax.WithClientLogging(logging))
+		callOpts.ListViews = append(callOpts.ListViews, gax.WithClientLogging(logging))
+		callOpts.UpdateView = append(callOpts.UpdateView, gax.WithClientLogging(logging))
+		callOpts.DeleteView = append(callOpts.DeleteView, gax.WithClientLogging(logging))
+		callOpts.QueryMetrics = append(callOpts.QueryMetrics, gax.WithClientLogging(logging))
+		callOpts.CreateQaQuestion = append(callOpts.CreateQaQuestion, gax.WithClientLogging(logging))
+		callOpts.GetQaQuestion = append(callOpts.GetQaQuestion, gax.WithClientLogging(logging))
+		callOpts.UpdateQaQuestion = append(callOpts.UpdateQaQuestion, gax.WithClientLogging(logging))
+		callOpts.DeleteQaQuestion = append(callOpts.DeleteQaQuestion, gax.WithClientLogging(logging))
+		callOpts.ListQaQuestions = append(callOpts.ListQaQuestions, gax.WithClientLogging(logging))
+		callOpts.CreateQaScorecard = append(callOpts.CreateQaScorecard, gax.WithClientLogging(logging))
+		callOpts.GetQaScorecard = append(callOpts.GetQaScorecard, gax.WithClientLogging(logging))
+		callOpts.UpdateQaScorecard = append(callOpts.UpdateQaScorecard, gax.WithClientLogging(logging))
+		callOpts.DeleteQaScorecard = append(callOpts.DeleteQaScorecard, gax.WithClientLogging(logging))
+		callOpts.ListQaScorecards = append(callOpts.ListQaScorecards, gax.WithClientLogging(logging))
+		callOpts.CreateQaScorecardRevision = append(callOpts.CreateQaScorecardRevision, gax.WithClientLogging(logging))
+		callOpts.GetQaScorecardRevision = append(callOpts.GetQaScorecardRevision, gax.WithClientLogging(logging))
+		callOpts.TuneQaScorecardRevision = append(callOpts.TuneQaScorecardRevision, gax.WithClientLogging(logging))
+		callOpts.DeployQaScorecardRevision = append(callOpts.DeployQaScorecardRevision, gax.WithClientLogging(logging))
+		callOpts.UndeployQaScorecardRevision = append(callOpts.UndeployQaScorecardRevision, gax.WithClientLogging(logging))
+		callOpts.DeleteQaScorecardRevision = append(callOpts.DeleteQaScorecardRevision, gax.WithClientLogging(logging))
+		callOpts.ListQaScorecardRevisions = append(callOpts.ListQaScorecardRevisions, gax.WithClientLogging(logging))
+		callOpts.CreateFeedbackLabel = append(callOpts.CreateFeedbackLabel, gax.WithClientLogging(logging))
+		callOpts.ListFeedbackLabels = append(callOpts.ListFeedbackLabels, gax.WithClientLogging(logging))
+		callOpts.GetFeedbackLabel = append(callOpts.GetFeedbackLabel, gax.WithClientLogging(logging))
+		callOpts.UpdateFeedbackLabel = append(callOpts.UpdateFeedbackLabel, gax.WithClientLogging(logging))
+		callOpts.DeleteFeedbackLabel = append(callOpts.DeleteFeedbackLabel, gax.WithClientLogging(logging))
+		callOpts.ListAllFeedbackLabels = append(callOpts.ListAllFeedbackLabels, gax.WithClientLogging(logging))
+		callOpts.BulkUploadFeedbackLabels = append(callOpts.BulkUploadFeedbackLabels, gax.WithClientLogging(logging))
+		callOpts.BulkDownloadFeedbackLabels = append(callOpts.BulkDownloadFeedbackLabels, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -2734,7 +3295,7 @@ func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *restClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -2753,6 +3314,9 @@ func (c *gRPCClient) CreateConversation(ctx context.Context, req *contactcenteri
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/CreateConversation")
+	}
 	opts = append((*c.CallOptions).CreateConversation[0:len((*c.CallOptions).CreateConversation):len((*c.CallOptions).CreateConversation)], opts...)
 	var resp *contactcenterinsightspb.Conversation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2771,6 +3335,9 @@ func (c *gRPCClient) UploadConversation(ctx context.Context, req *contactcenteri
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/UploadConversation")
+	}
 	opts = append((*c.CallOptions).UploadConversation[0:len((*c.CallOptions).UploadConversation):len((*c.CallOptions).UploadConversation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2781,8 +3348,12 @@ func (c *gRPCClient) UploadConversation(ctx context.Context, req *contactcenteri
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.UploadConversationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UploadConversationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2791,6 +3362,9 @@ func (c *gRPCClient) UpdateConversation(ctx context.Context, req *contactcenteri
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/UpdateConversation")
+	}
 	opts = append((*c.CallOptions).UpdateConversation[0:len((*c.CallOptions).UpdateConversation):len((*c.CallOptions).UpdateConversation)], opts...)
 	var resp *contactcenterinsightspb.Conversation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2809,6 +3383,9 @@ func (c *gRPCClient) GetConversation(ctx context.Context, req *contactcenterinsi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/GetConversation")
+	}
 	opts = append((*c.CallOptions).GetConversation[0:len((*c.CallOptions).GetConversation):len((*c.CallOptions).GetConversation)], opts...)
 	var resp *contactcenterinsightspb.Conversation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2827,9 +3404,12 @@ func (c *gRPCClient) ListConversations(ctx context.Context, req *contactcenterin
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/ListConversations")
+	}
 	opts = append((*c.CallOptions).ListConversations[0:len((*c.CallOptions).ListConversations):len((*c.CallOptions).ListConversations)], opts...)
 	it := &ConversationIterator{}
-	req = proto.Clone(req).(*contactcenterinsightspb.ListConversationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*contactcenterinsightspb.Conversation, string, error) {
 		resp := &contactcenterinsightspb.ListConversationsResponse{}
 		if pageToken != "" {
@@ -2873,6 +3453,9 @@ func (c *gRPCClient) DeleteConversation(ctx context.Context, req *contactcenteri
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/DeleteConversation")
+	}
 	opts = append((*c.CallOptions).DeleteConversation[0:len((*c.CallOptions).DeleteConversation):len((*c.CallOptions).DeleteConversation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -2887,6 +3470,9 @@ func (c *gRPCClient) CreateAnalysis(ctx context.Context, req *contactcenterinsig
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/CreateAnalysis")
+	}
 	opts = append((*c.CallOptions).CreateAnalysis[0:len((*c.CallOptions).CreateAnalysis):len((*c.CallOptions).CreateAnalysis)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2897,8 +3483,12 @@ func (c *gRPCClient) CreateAnalysis(ctx context.Context, req *contactcenterinsig
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.CreateAnalysisOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateAnalysisOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2907,6 +3497,9 @@ func (c *gRPCClient) GetAnalysis(ctx context.Context, req *contactcenterinsights
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/GetAnalysis")
+	}
 	opts = append((*c.CallOptions).GetAnalysis[0:len((*c.CallOptions).GetAnalysis):len((*c.CallOptions).GetAnalysis)], opts...)
 	var resp *contactcenterinsightspb.Analysis
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2925,9 +3518,12 @@ func (c *gRPCClient) ListAnalyses(ctx context.Context, req *contactcenterinsight
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/ListAnalyses")
+	}
 	opts = append((*c.CallOptions).ListAnalyses[0:len((*c.CallOptions).ListAnalyses):len((*c.CallOptions).ListAnalyses)], opts...)
 	it := &AnalysisIterator{}
-	req = proto.Clone(req).(*contactcenterinsightspb.ListAnalysesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*contactcenterinsightspb.Analysis, string, error) {
 		resp := &contactcenterinsightspb.ListAnalysesResponse{}
 		if pageToken != "" {
@@ -2971,6 +3567,9 @@ func (c *gRPCClient) DeleteAnalysis(ctx context.Context, req *contactcenterinsig
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/DeleteAnalysis")
+	}
 	opts = append((*c.CallOptions).DeleteAnalysis[0:len((*c.CallOptions).DeleteAnalysis):len((*c.CallOptions).DeleteAnalysis)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -2985,6 +3584,9 @@ func (c *gRPCClient) BulkAnalyzeConversations(ctx context.Context, req *contactc
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/BulkAnalyzeConversations")
+	}
 	opts = append((*c.CallOptions).BulkAnalyzeConversations[0:len((*c.CallOptions).BulkAnalyzeConversations):len((*c.CallOptions).BulkAnalyzeConversations)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2995,8 +3597,12 @@ func (c *gRPCClient) BulkAnalyzeConversations(ctx context.Context, req *contactc
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.BulkAnalyzeConversationsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &BulkAnalyzeConversationsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -3005,6 +3611,9 @@ func (c *gRPCClient) BulkDeleteConversations(ctx context.Context, req *contactce
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/BulkDeleteConversations")
+	}
 	opts = append((*c.CallOptions).BulkDeleteConversations[0:len((*c.CallOptions).BulkDeleteConversations):len((*c.CallOptions).BulkDeleteConversations)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3015,8 +3624,12 @@ func (c *gRPCClient) BulkDeleteConversations(ctx context.Context, req *contactce
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.BulkDeleteConversationsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &BulkDeleteConversationsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -3025,6 +3638,9 @@ func (c *gRPCClient) IngestConversations(ctx context.Context, req *contactcenter
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/IngestConversations")
+	}
 	opts = append((*c.CallOptions).IngestConversations[0:len((*c.CallOptions).IngestConversations):len((*c.CallOptions).IngestConversations)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3035,8 +3651,12 @@ func (c *gRPCClient) IngestConversations(ctx context.Context, req *contactcenter
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.IngestConversationsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &IngestConversationsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -3045,6 +3665,9 @@ func (c *gRPCClient) ExportInsightsData(ctx context.Context, req *contactcenteri
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/ExportInsightsData")
+	}
 	opts = append((*c.CallOptions).ExportInsightsData[0:len((*c.CallOptions).ExportInsightsData):len((*c.CallOptions).ExportInsightsData)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3055,8 +3678,12 @@ func (c *gRPCClient) ExportInsightsData(ctx context.Context, req *contactcenteri
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.ExportInsightsDataOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportInsightsDataOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -3065,6 +3692,9 @@ func (c *gRPCClient) CreateIssueModel(ctx context.Context, req *contactcenterins
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/CreateIssueModel")
+	}
 	opts = append((*c.CallOptions).CreateIssueModel[0:len((*c.CallOptions).CreateIssueModel):len((*c.CallOptions).CreateIssueModel)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3075,8 +3705,12 @@ func (c *gRPCClient) CreateIssueModel(ctx context.Context, req *contactcenterins
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.CreateIssueModelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateIssueModelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -3085,6 +3719,9 @@ func (c *gRPCClient) UpdateIssueModel(ctx context.Context, req *contactcenterins
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/UpdateIssueModel")
+	}
 	opts = append((*c.CallOptions).UpdateIssueModel[0:len((*c.CallOptions).UpdateIssueModel):len((*c.CallOptions).UpdateIssueModel)], opts...)
 	var resp *contactcenterinsightspb.IssueModel
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3103,6 +3740,9 @@ func (c *gRPCClient) GetIssueModel(ctx context.Context, req *contactcenterinsigh
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/GetIssueModel")
+	}
 	opts = append((*c.CallOptions).GetIssueModel[0:len((*c.CallOptions).GetIssueModel):len((*c.CallOptions).GetIssueModel)], opts...)
 	var resp *contactcenterinsightspb.IssueModel
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3121,6 +3761,9 @@ func (c *gRPCClient) ListIssueModels(ctx context.Context, req *contactcenterinsi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/ListIssueModels")
+	}
 	opts = append((*c.CallOptions).ListIssueModels[0:len((*c.CallOptions).ListIssueModels):len((*c.CallOptions).ListIssueModels)], opts...)
 	var resp *contactcenterinsightspb.ListIssueModelsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3139,6 +3782,9 @@ func (c *gRPCClient) DeleteIssueModel(ctx context.Context, req *contactcenterins
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/DeleteIssueModel")
+	}
 	opts = append((*c.CallOptions).DeleteIssueModel[0:len((*c.CallOptions).DeleteIssueModel):len((*c.CallOptions).DeleteIssueModel)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3149,8 +3795,12 @@ func (c *gRPCClient) DeleteIssueModel(ctx context.Context, req *contactcenterins
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.DeleteIssueModelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteIssueModelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -3159,6 +3809,9 @@ func (c *gRPCClient) DeployIssueModel(ctx context.Context, req *contactcenterins
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/DeployIssueModel")
+	}
 	opts = append((*c.CallOptions).DeployIssueModel[0:len((*c.CallOptions).DeployIssueModel):len((*c.CallOptions).DeployIssueModel)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3169,8 +3822,12 @@ func (c *gRPCClient) DeployIssueModel(ctx context.Context, req *contactcenterins
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.DeployIssueModelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeployIssueModelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -3179,6 +3836,9 @@ func (c *gRPCClient) UndeployIssueModel(ctx context.Context, req *contactcenteri
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/UndeployIssueModel")
+	}
 	opts = append((*c.CallOptions).UndeployIssueModel[0:len((*c.CallOptions).UndeployIssueModel):len((*c.CallOptions).UndeployIssueModel)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3189,8 +3849,12 @@ func (c *gRPCClient) UndeployIssueModel(ctx context.Context, req *contactcenteri
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.UndeployIssueModelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UndeployIssueModelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -3199,6 +3863,9 @@ func (c *gRPCClient) ExportIssueModel(ctx context.Context, req *contactcenterins
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/ExportIssueModel")
+	}
 	opts = append((*c.CallOptions).ExportIssueModel[0:len((*c.CallOptions).ExportIssueModel):len((*c.CallOptions).ExportIssueModel)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3209,8 +3876,12 @@ func (c *gRPCClient) ExportIssueModel(ctx context.Context, req *contactcenterins
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.ExportIssueModelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportIssueModelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -3219,6 +3890,9 @@ func (c *gRPCClient) ImportIssueModel(ctx context.Context, req *contactcenterins
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/ImportIssueModel")
+	}
 	opts = append((*c.CallOptions).ImportIssueModel[0:len((*c.CallOptions).ImportIssueModel):len((*c.CallOptions).ImportIssueModel)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3229,8 +3903,12 @@ func (c *gRPCClient) ImportIssueModel(ctx context.Context, req *contactcenterins
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.ImportIssueModelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportIssueModelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -3239,6 +3917,9 @@ func (c *gRPCClient) GetIssue(ctx context.Context, req *contactcenterinsightspb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/GetIssue")
+	}
 	opts = append((*c.CallOptions).GetIssue[0:len((*c.CallOptions).GetIssue):len((*c.CallOptions).GetIssue)], opts...)
 	var resp *contactcenterinsightspb.Issue
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3257,6 +3938,9 @@ func (c *gRPCClient) ListIssues(ctx context.Context, req *contactcenterinsightsp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/ListIssues")
+	}
 	opts = append((*c.CallOptions).ListIssues[0:len((*c.CallOptions).ListIssues):len((*c.CallOptions).ListIssues)], opts...)
 	var resp *contactcenterinsightspb.ListIssuesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3275,6 +3959,9 @@ func (c *gRPCClient) UpdateIssue(ctx context.Context, req *contactcenterinsights
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/UpdateIssue")
+	}
 	opts = append((*c.CallOptions).UpdateIssue[0:len((*c.CallOptions).UpdateIssue):len((*c.CallOptions).UpdateIssue)], opts...)
 	var resp *contactcenterinsightspb.Issue
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3293,6 +3980,9 @@ func (c *gRPCClient) DeleteIssue(ctx context.Context, req *contactcenterinsights
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/DeleteIssue")
+	}
 	opts = append((*c.CallOptions).DeleteIssue[0:len((*c.CallOptions).DeleteIssue):len((*c.CallOptions).DeleteIssue)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -3307,6 +3997,9 @@ func (c *gRPCClient) CalculateIssueModelStats(ctx context.Context, req *contactc
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/CalculateIssueModelStats")
+	}
 	opts = append((*c.CallOptions).CalculateIssueModelStats[0:len((*c.CallOptions).CalculateIssueModelStats):len((*c.CallOptions).CalculateIssueModelStats)], opts...)
 	var resp *contactcenterinsightspb.CalculateIssueModelStatsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3325,6 +4018,9 @@ func (c *gRPCClient) CreatePhraseMatcher(ctx context.Context, req *contactcenter
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/CreatePhraseMatcher")
+	}
 	opts = append((*c.CallOptions).CreatePhraseMatcher[0:len((*c.CallOptions).CreatePhraseMatcher):len((*c.CallOptions).CreatePhraseMatcher)], opts...)
 	var resp *contactcenterinsightspb.PhraseMatcher
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3343,6 +4039,9 @@ func (c *gRPCClient) GetPhraseMatcher(ctx context.Context, req *contactcenterins
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/GetPhraseMatcher")
+	}
 	opts = append((*c.CallOptions).GetPhraseMatcher[0:len((*c.CallOptions).GetPhraseMatcher):len((*c.CallOptions).GetPhraseMatcher)], opts...)
 	var resp *contactcenterinsightspb.PhraseMatcher
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3361,9 +4060,12 @@ func (c *gRPCClient) ListPhraseMatchers(ctx context.Context, req *contactcenteri
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/ListPhraseMatchers")
+	}
 	opts = append((*c.CallOptions).ListPhraseMatchers[0:len((*c.CallOptions).ListPhraseMatchers):len((*c.CallOptions).ListPhraseMatchers)], opts...)
 	it := &PhraseMatcherIterator{}
-	req = proto.Clone(req).(*contactcenterinsightspb.ListPhraseMatchersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*contactcenterinsightspb.PhraseMatcher, string, error) {
 		resp := &contactcenterinsightspb.ListPhraseMatchersResponse{}
 		if pageToken != "" {
@@ -3407,6 +4109,9 @@ func (c *gRPCClient) DeletePhraseMatcher(ctx context.Context, req *contactcenter
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/DeletePhraseMatcher")
+	}
 	opts = append((*c.CallOptions).DeletePhraseMatcher[0:len((*c.CallOptions).DeletePhraseMatcher):len((*c.CallOptions).DeletePhraseMatcher)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -3421,6 +4126,9 @@ func (c *gRPCClient) UpdatePhraseMatcher(ctx context.Context, req *contactcenter
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/UpdatePhraseMatcher")
+	}
 	opts = append((*c.CallOptions).UpdatePhraseMatcher[0:len((*c.CallOptions).UpdatePhraseMatcher):len((*c.CallOptions).UpdatePhraseMatcher)], opts...)
 	var resp *contactcenterinsightspb.PhraseMatcher
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3439,6 +4147,9 @@ func (c *gRPCClient) CalculateStats(ctx context.Context, req *contactcenterinsig
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/CalculateStats")
+	}
 	opts = append((*c.CallOptions).CalculateStats[0:len((*c.CallOptions).CalculateStats):len((*c.CallOptions).CalculateStats)], opts...)
 	var resp *contactcenterinsightspb.CalculateStatsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3457,6 +4168,9 @@ func (c *gRPCClient) GetSettings(ctx context.Context, req *contactcenterinsights
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/GetSettings")
+	}
 	opts = append((*c.CallOptions).GetSettings[0:len((*c.CallOptions).GetSettings):len((*c.CallOptions).GetSettings)], opts...)
 	var resp *contactcenterinsightspb.Settings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3475,6 +4189,9 @@ func (c *gRPCClient) UpdateSettings(ctx context.Context, req *contactcenterinsig
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/UpdateSettings")
+	}
 	opts = append((*c.CallOptions).UpdateSettings[0:len((*c.CallOptions).UpdateSettings):len((*c.CallOptions).UpdateSettings)], opts...)
 	var resp *contactcenterinsightspb.Settings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3493,6 +4210,9 @@ func (c *gRPCClient) CreateAnalysisRule(ctx context.Context, req *contactcenteri
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/CreateAnalysisRule")
+	}
 	opts = append((*c.CallOptions).CreateAnalysisRule[0:len((*c.CallOptions).CreateAnalysisRule):len((*c.CallOptions).CreateAnalysisRule)], opts...)
 	var resp *contactcenterinsightspb.AnalysisRule
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3511,6 +4231,9 @@ func (c *gRPCClient) GetAnalysisRule(ctx context.Context, req *contactcenterinsi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/GetAnalysisRule")
+	}
 	opts = append((*c.CallOptions).GetAnalysisRule[0:len((*c.CallOptions).GetAnalysisRule):len((*c.CallOptions).GetAnalysisRule)], opts...)
 	var resp *contactcenterinsightspb.AnalysisRule
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3529,9 +4252,12 @@ func (c *gRPCClient) ListAnalysisRules(ctx context.Context, req *contactcenterin
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/ListAnalysisRules")
+	}
 	opts = append((*c.CallOptions).ListAnalysisRules[0:len((*c.CallOptions).ListAnalysisRules):len((*c.CallOptions).ListAnalysisRules)], opts...)
 	it := &AnalysisRuleIterator{}
-	req = proto.Clone(req).(*contactcenterinsightspb.ListAnalysisRulesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*contactcenterinsightspb.AnalysisRule, string, error) {
 		resp := &contactcenterinsightspb.ListAnalysisRulesResponse{}
 		if pageToken != "" {
@@ -3575,6 +4301,9 @@ func (c *gRPCClient) UpdateAnalysisRule(ctx context.Context, req *contactcenteri
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/UpdateAnalysisRule")
+	}
 	opts = append((*c.CallOptions).UpdateAnalysisRule[0:len((*c.CallOptions).UpdateAnalysisRule):len((*c.CallOptions).UpdateAnalysisRule)], opts...)
 	var resp *contactcenterinsightspb.AnalysisRule
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3593,6 +4322,9 @@ func (c *gRPCClient) DeleteAnalysisRule(ctx context.Context, req *contactcenteri
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/DeleteAnalysisRule")
+	}
 	opts = append((*c.CallOptions).DeleteAnalysisRule[0:len((*c.CallOptions).DeleteAnalysisRule):len((*c.CallOptions).DeleteAnalysisRule)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -3607,6 +4339,9 @@ func (c *gRPCClient) GetEncryptionSpec(ctx context.Context, req *contactcenterin
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/GetEncryptionSpec")
+	}
 	opts = append((*c.CallOptions).GetEncryptionSpec[0:len((*c.CallOptions).GetEncryptionSpec):len((*c.CallOptions).GetEncryptionSpec)], opts...)
 	var resp *contactcenterinsightspb.EncryptionSpec
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3625,6 +4360,9 @@ func (c *gRPCClient) InitializeEncryptionSpec(ctx context.Context, req *contactc
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/InitializeEncryptionSpec")
+	}
 	opts = append((*c.CallOptions).InitializeEncryptionSpec[0:len((*c.CallOptions).InitializeEncryptionSpec):len((*c.CallOptions).InitializeEncryptionSpec)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3635,8 +4373,12 @@ func (c *gRPCClient) InitializeEncryptionSpec(ctx context.Context, req *contactc
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.InitializeEncryptionSpecOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &InitializeEncryptionSpecOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -3645,6 +4387,9 @@ func (c *gRPCClient) CreateView(ctx context.Context, req *contactcenterinsightsp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/CreateView")
+	}
 	opts = append((*c.CallOptions).CreateView[0:len((*c.CallOptions).CreateView):len((*c.CallOptions).CreateView)], opts...)
 	var resp *contactcenterinsightspb.View
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3663,6 +4408,9 @@ func (c *gRPCClient) GetView(ctx context.Context, req *contactcenterinsightspb.G
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/GetView")
+	}
 	opts = append((*c.CallOptions).GetView[0:len((*c.CallOptions).GetView):len((*c.CallOptions).GetView)], opts...)
 	var resp *contactcenterinsightspb.View
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3681,9 +4429,12 @@ func (c *gRPCClient) ListViews(ctx context.Context, req *contactcenterinsightspb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/ListViews")
+	}
 	opts = append((*c.CallOptions).ListViews[0:len((*c.CallOptions).ListViews):len((*c.CallOptions).ListViews)], opts...)
 	it := &ViewIterator{}
-	req = proto.Clone(req).(*contactcenterinsightspb.ListViewsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*contactcenterinsightspb.View, string, error) {
 		resp := &contactcenterinsightspb.ListViewsResponse{}
 		if pageToken != "" {
@@ -3727,6 +4478,9 @@ func (c *gRPCClient) UpdateView(ctx context.Context, req *contactcenterinsightsp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/UpdateView")
+	}
 	opts = append((*c.CallOptions).UpdateView[0:len((*c.CallOptions).UpdateView):len((*c.CallOptions).UpdateView)], opts...)
 	var resp *contactcenterinsightspb.View
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3745,6 +4499,9 @@ func (c *gRPCClient) DeleteView(ctx context.Context, req *contactcenterinsightsp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/DeleteView")
+	}
 	opts = append((*c.CallOptions).DeleteView[0:len((*c.CallOptions).DeleteView):len((*c.CallOptions).DeleteView)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -3759,6 +4516,9 @@ func (c *gRPCClient) QueryMetrics(ctx context.Context, req *contactcenterinsight
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/QueryMetrics")
+	}
 	opts = append((*c.CallOptions).QueryMetrics[0:len((*c.CallOptions).QueryMetrics):len((*c.CallOptions).QueryMetrics)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3769,8 +4529,12 @@ func (c *gRPCClient) QueryMetrics(ctx context.Context, req *contactcenterinsight
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.QueryMetricsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &QueryMetricsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -3779,6 +4543,9 @@ func (c *gRPCClient) CreateQaQuestion(ctx context.Context, req *contactcenterins
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/CreateQaQuestion")
+	}
 	opts = append((*c.CallOptions).CreateQaQuestion[0:len((*c.CallOptions).CreateQaQuestion):len((*c.CallOptions).CreateQaQuestion)], opts...)
 	var resp *contactcenterinsightspb.QaQuestion
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3797,6 +4564,9 @@ func (c *gRPCClient) GetQaQuestion(ctx context.Context, req *contactcenterinsigh
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/GetQaQuestion")
+	}
 	opts = append((*c.CallOptions).GetQaQuestion[0:len((*c.CallOptions).GetQaQuestion):len((*c.CallOptions).GetQaQuestion)], opts...)
 	var resp *contactcenterinsightspb.QaQuestion
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3815,6 +4585,9 @@ func (c *gRPCClient) UpdateQaQuestion(ctx context.Context, req *contactcenterins
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/UpdateQaQuestion")
+	}
 	opts = append((*c.CallOptions).UpdateQaQuestion[0:len((*c.CallOptions).UpdateQaQuestion):len((*c.CallOptions).UpdateQaQuestion)], opts...)
 	var resp *contactcenterinsightspb.QaQuestion
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3833,6 +4606,9 @@ func (c *gRPCClient) DeleteQaQuestion(ctx context.Context, req *contactcenterins
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/DeleteQaQuestion")
+	}
 	opts = append((*c.CallOptions).DeleteQaQuestion[0:len((*c.CallOptions).DeleteQaQuestion):len((*c.CallOptions).DeleteQaQuestion)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -3847,9 +4623,12 @@ func (c *gRPCClient) ListQaQuestions(ctx context.Context, req *contactcenterinsi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/ListQaQuestions")
+	}
 	opts = append((*c.CallOptions).ListQaQuestions[0:len((*c.CallOptions).ListQaQuestions):len((*c.CallOptions).ListQaQuestions)], opts...)
 	it := &QaQuestionIterator{}
-	req = proto.Clone(req).(*contactcenterinsightspb.ListQaQuestionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*contactcenterinsightspb.QaQuestion, string, error) {
 		resp := &contactcenterinsightspb.ListQaQuestionsResponse{}
 		if pageToken != "" {
@@ -3893,6 +4672,9 @@ func (c *gRPCClient) CreateQaScorecard(ctx context.Context, req *contactcenterin
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/CreateQaScorecard")
+	}
 	opts = append((*c.CallOptions).CreateQaScorecard[0:len((*c.CallOptions).CreateQaScorecard):len((*c.CallOptions).CreateQaScorecard)], opts...)
 	var resp *contactcenterinsightspb.QaScorecard
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3911,6 +4693,9 @@ func (c *gRPCClient) GetQaScorecard(ctx context.Context, req *contactcenterinsig
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/GetQaScorecard")
+	}
 	opts = append((*c.CallOptions).GetQaScorecard[0:len((*c.CallOptions).GetQaScorecard):len((*c.CallOptions).GetQaScorecard)], opts...)
 	var resp *contactcenterinsightspb.QaScorecard
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3929,6 +4714,9 @@ func (c *gRPCClient) UpdateQaScorecard(ctx context.Context, req *contactcenterin
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/UpdateQaScorecard")
+	}
 	opts = append((*c.CallOptions).UpdateQaScorecard[0:len((*c.CallOptions).UpdateQaScorecard):len((*c.CallOptions).UpdateQaScorecard)], opts...)
 	var resp *contactcenterinsightspb.QaScorecard
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3947,6 +4735,9 @@ func (c *gRPCClient) DeleteQaScorecard(ctx context.Context, req *contactcenterin
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/DeleteQaScorecard")
+	}
 	opts = append((*c.CallOptions).DeleteQaScorecard[0:len((*c.CallOptions).DeleteQaScorecard):len((*c.CallOptions).DeleteQaScorecard)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -3961,9 +4752,12 @@ func (c *gRPCClient) ListQaScorecards(ctx context.Context, req *contactcenterins
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/ListQaScorecards")
+	}
 	opts = append((*c.CallOptions).ListQaScorecards[0:len((*c.CallOptions).ListQaScorecards):len((*c.CallOptions).ListQaScorecards)], opts...)
 	it := &QaScorecardIterator{}
-	req = proto.Clone(req).(*contactcenterinsightspb.ListQaScorecardsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*contactcenterinsightspb.QaScorecard, string, error) {
 		resp := &contactcenterinsightspb.ListQaScorecardsResponse{}
 		if pageToken != "" {
@@ -4007,6 +4801,9 @@ func (c *gRPCClient) CreateQaScorecardRevision(ctx context.Context, req *contact
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/CreateQaScorecardRevision")
+	}
 	opts = append((*c.CallOptions).CreateQaScorecardRevision[0:len((*c.CallOptions).CreateQaScorecardRevision):len((*c.CallOptions).CreateQaScorecardRevision)], opts...)
 	var resp *contactcenterinsightspb.QaScorecardRevision
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4025,6 +4822,9 @@ func (c *gRPCClient) GetQaScorecardRevision(ctx context.Context, req *contactcen
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/GetQaScorecardRevision")
+	}
 	opts = append((*c.CallOptions).GetQaScorecardRevision[0:len((*c.CallOptions).GetQaScorecardRevision):len((*c.CallOptions).GetQaScorecardRevision)], opts...)
 	var resp *contactcenterinsightspb.QaScorecardRevision
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4043,6 +4843,9 @@ func (c *gRPCClient) TuneQaScorecardRevision(ctx context.Context, req *contactce
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/TuneQaScorecardRevision")
+	}
 	opts = append((*c.CallOptions).TuneQaScorecardRevision[0:len((*c.CallOptions).TuneQaScorecardRevision):len((*c.CallOptions).TuneQaScorecardRevision)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4053,8 +4856,12 @@ func (c *gRPCClient) TuneQaScorecardRevision(ctx context.Context, req *contactce
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.TuneQaScorecardRevisionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &TuneQaScorecardRevisionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -4063,6 +4870,9 @@ func (c *gRPCClient) DeployQaScorecardRevision(ctx context.Context, req *contact
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/DeployQaScorecardRevision")
+	}
 	opts = append((*c.CallOptions).DeployQaScorecardRevision[0:len((*c.CallOptions).DeployQaScorecardRevision):len((*c.CallOptions).DeployQaScorecardRevision)], opts...)
 	var resp *contactcenterinsightspb.QaScorecardRevision
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4081,6 +4891,9 @@ func (c *gRPCClient) UndeployQaScorecardRevision(ctx context.Context, req *conta
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/UndeployQaScorecardRevision")
+	}
 	opts = append((*c.CallOptions).UndeployQaScorecardRevision[0:len((*c.CallOptions).UndeployQaScorecardRevision):len((*c.CallOptions).UndeployQaScorecardRevision)], opts...)
 	var resp *contactcenterinsightspb.QaScorecardRevision
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4099,6 +4912,9 @@ func (c *gRPCClient) DeleteQaScorecardRevision(ctx context.Context, req *contact
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/DeleteQaScorecardRevision")
+	}
 	opts = append((*c.CallOptions).DeleteQaScorecardRevision[0:len((*c.CallOptions).DeleteQaScorecardRevision):len((*c.CallOptions).DeleteQaScorecardRevision)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -4113,9 +4929,12 @@ func (c *gRPCClient) ListQaScorecardRevisions(ctx context.Context, req *contactc
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/ListQaScorecardRevisions")
+	}
 	opts = append((*c.CallOptions).ListQaScorecardRevisions[0:len((*c.CallOptions).ListQaScorecardRevisions):len((*c.CallOptions).ListQaScorecardRevisions)], opts...)
 	it := &QaScorecardRevisionIterator{}
-	req = proto.Clone(req).(*contactcenterinsightspb.ListQaScorecardRevisionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*contactcenterinsightspb.QaScorecardRevision, string, error) {
 		resp := &contactcenterinsightspb.ListQaScorecardRevisionsResponse{}
 		if pageToken != "" {
@@ -4159,6 +4978,9 @@ func (c *gRPCClient) CreateFeedbackLabel(ctx context.Context, req *contactcenter
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/CreateFeedbackLabel")
+	}
 	opts = append((*c.CallOptions).CreateFeedbackLabel[0:len((*c.CallOptions).CreateFeedbackLabel):len((*c.CallOptions).CreateFeedbackLabel)], opts...)
 	var resp *contactcenterinsightspb.FeedbackLabel
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4177,9 +4999,12 @@ func (c *gRPCClient) ListFeedbackLabels(ctx context.Context, req *contactcenteri
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/ListFeedbackLabels")
+	}
 	opts = append((*c.CallOptions).ListFeedbackLabels[0:len((*c.CallOptions).ListFeedbackLabels):len((*c.CallOptions).ListFeedbackLabels)], opts...)
 	it := &FeedbackLabelIterator{}
-	req = proto.Clone(req).(*contactcenterinsightspb.ListFeedbackLabelsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*contactcenterinsightspb.FeedbackLabel, string, error) {
 		resp := &contactcenterinsightspb.ListFeedbackLabelsResponse{}
 		if pageToken != "" {
@@ -4223,6 +5048,9 @@ func (c *gRPCClient) GetFeedbackLabel(ctx context.Context, req *contactcenterins
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/GetFeedbackLabel")
+	}
 	opts = append((*c.CallOptions).GetFeedbackLabel[0:len((*c.CallOptions).GetFeedbackLabel):len((*c.CallOptions).GetFeedbackLabel)], opts...)
 	var resp *contactcenterinsightspb.FeedbackLabel
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4241,6 +5069,9 @@ func (c *gRPCClient) UpdateFeedbackLabel(ctx context.Context, req *contactcenter
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/UpdateFeedbackLabel")
+	}
 	opts = append((*c.CallOptions).UpdateFeedbackLabel[0:len((*c.CallOptions).UpdateFeedbackLabel):len((*c.CallOptions).UpdateFeedbackLabel)], opts...)
 	var resp *contactcenterinsightspb.FeedbackLabel
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4259,6 +5090,9 @@ func (c *gRPCClient) DeleteFeedbackLabel(ctx context.Context, req *contactcenter
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/DeleteFeedbackLabel")
+	}
 	opts = append((*c.CallOptions).DeleteFeedbackLabel[0:len((*c.CallOptions).DeleteFeedbackLabel):len((*c.CallOptions).DeleteFeedbackLabel)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -4273,9 +5107,12 @@ func (c *gRPCClient) ListAllFeedbackLabels(ctx context.Context, req *contactcent
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/ListAllFeedbackLabels")
+	}
 	opts = append((*c.CallOptions).ListAllFeedbackLabels[0:len((*c.CallOptions).ListAllFeedbackLabels):len((*c.CallOptions).ListAllFeedbackLabels)], opts...)
 	it := &FeedbackLabelIterator{}
-	req = proto.Clone(req).(*contactcenterinsightspb.ListAllFeedbackLabelsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*contactcenterinsightspb.FeedbackLabel, string, error) {
 		resp := &contactcenterinsightspb.ListAllFeedbackLabelsResponse{}
 		if pageToken != "" {
@@ -4319,6 +5156,9 @@ func (c *gRPCClient) BulkUploadFeedbackLabels(ctx context.Context, req *contactc
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/BulkUploadFeedbackLabels")
+	}
 	opts = append((*c.CallOptions).BulkUploadFeedbackLabels[0:len((*c.CallOptions).BulkUploadFeedbackLabels):len((*c.CallOptions).BulkUploadFeedbackLabels)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4329,8 +5169,12 @@ func (c *gRPCClient) BulkUploadFeedbackLabels(ctx context.Context, req *contactc
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.BulkUploadFeedbackLabelsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &BulkUploadFeedbackLabelsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -4339,6 +5183,9 @@ func (c *gRPCClient) BulkDownloadFeedbackLabels(ctx context.Context, req *contac
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/BulkDownloadFeedbackLabels")
+	}
 	opts = append((*c.CallOptions).BulkDownloadFeedbackLabels[0:len((*c.CallOptions).BulkDownloadFeedbackLabels):len((*c.CallOptions).BulkDownloadFeedbackLabels)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4349,8 +5196,12 @@ func (c *gRPCClient) BulkDownloadFeedbackLabels(ctx context.Context, req *contac
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.BulkDownloadFeedbackLabelsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &BulkDownloadFeedbackLabelsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -4359,6 +5210,9 @@ func (c *gRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -4373,6 +5227,9 @@ func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4391,9 +5248,12 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -4463,6 +5323,10 @@ func (c *restClient) CreateConversation(ctx context.Context, req *contactcenteri
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/CreateConversation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/conversations")
+	}
 	opts = append((*c.CallOptions).CreateConversation[0:len((*c.CallOptions).CreateConversation):len((*c.CallOptions).CreateConversation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &contactcenterinsightspb.Conversation{}
@@ -4521,6 +5385,10 @@ func (c *restClient) UploadConversation(ctx context.Context, req *contactcenteri
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/UploadConversation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/conversations:upload")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4549,8 +5417,12 @@ func (c *restClient) UploadConversation(ctx context.Context, req *contactcenteri
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.UploadConversationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UploadConversationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4588,6 +5460,10 @@ func (c *restClient) UpdateConversation(ctx context.Context, req *contactcenteri
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/UpdateConversation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{conversation.name=projects/*/locations/*/conversations/*}")
+	}
 	opts = append((*c.CallOptions).UpdateConversation[0:len((*c.CallOptions).UpdateConversation):len((*c.CallOptions).UpdateConversation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &contactcenterinsightspb.Conversation{}
@@ -4641,6 +5517,10 @@ func (c *restClient) GetConversation(ctx context.Context, req *contactcenterinsi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/GetConversation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/conversations/*}")
+	}
 	opts = append((*c.CallOptions).GetConversation[0:len((*c.CallOptions).GetConversation):len((*c.CallOptions).GetConversation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &contactcenterinsightspb.Conversation{}
@@ -4675,7 +5555,7 @@ func (c *restClient) GetConversation(ctx context.Context, req *contactcenterinsi
 // ListConversations lists conversations.
 func (c *restClient) ListConversations(ctx context.Context, req *contactcenterinsightspb.ListConversationsRequest, opts ...gax.CallOption) *ConversationIterator {
 	it := &ConversationIterator{}
-	req = proto.Clone(req).(*contactcenterinsightspb.ListConversationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*contactcenterinsightspb.Conversation, string, error) {
 		resp := &contactcenterinsightspb.ListConversationsResponse{}
@@ -4781,6 +5661,10 @@ func (c *restClient) DeleteConversation(ctx context.Context, req *contactcenteri
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/DeleteConversation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/conversations/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -4824,6 +5708,10 @@ func (c *restClient) CreateAnalysis(ctx context.Context, req *contactcenterinsig
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/CreateAnalysis")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/conversations/*}/analyses")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4852,8 +5740,12 @@ func (c *restClient) CreateAnalysis(ctx context.Context, req *contactcenterinsig
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.CreateAnalysisOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateAnalysisOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4877,6 +5769,10 @@ func (c *restClient) GetAnalysis(ctx context.Context, req *contactcenterinsights
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/GetAnalysis")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/conversations/*/analyses/*}")
+	}
 	opts = append((*c.CallOptions).GetAnalysis[0:len((*c.CallOptions).GetAnalysis):len((*c.CallOptions).GetAnalysis)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &contactcenterinsightspb.Analysis{}
@@ -4911,7 +5807,7 @@ func (c *restClient) GetAnalysis(ctx context.Context, req *contactcenterinsights
 // ListAnalyses lists analyses.
 func (c *restClient) ListAnalyses(ctx context.Context, req *contactcenterinsightspb.ListAnalysesRequest, opts ...gax.CallOption) *AnalysisIterator {
 	it := &AnalysisIterator{}
-	req = proto.Clone(req).(*contactcenterinsightspb.ListAnalysesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*contactcenterinsightspb.Analysis, string, error) {
 		resp := &contactcenterinsightspb.ListAnalysesResponse{}
@@ -5008,6 +5904,10 @@ func (c *restClient) DeleteAnalysis(ctx context.Context, req *contactcenterinsig
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/DeleteAnalysis")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/conversations/*/analyses/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -5049,6 +5949,10 @@ func (c *restClient) BulkAnalyzeConversations(ctx context.Context, req *contactc
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/BulkAnalyzeConversations")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/conversations:bulkAnalyze")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5077,8 +5981,12 @@ func (c *restClient) BulkAnalyzeConversations(ctx context.Context, req *contactc
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.BulkAnalyzeConversationsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &BulkAnalyzeConversationsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5108,6 +6016,10 @@ func (c *restClient) BulkDeleteConversations(ctx context.Context, req *contactce
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/BulkDeleteConversations")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/conversations:bulkDelete")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5136,8 +6048,12 @@ func (c *restClient) BulkDeleteConversations(ctx context.Context, req *contactce
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.BulkDeleteConversationsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &BulkDeleteConversationsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5168,6 +6084,10 @@ func (c *restClient) IngestConversations(ctx context.Context, req *contactcenter
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/IngestConversations")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/conversations:ingest")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5196,8 +6116,12 @@ func (c *restClient) IngestConversations(ctx context.Context, req *contactcenter
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.IngestConversationsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &IngestConversationsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5227,6 +6151,10 @@ func (c *restClient) ExportInsightsData(ctx context.Context, req *contactcenteri
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/ExportInsightsData")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/insightsdata:export")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5255,8 +6183,12 @@ func (c *restClient) ExportInsightsData(ctx context.Context, req *contactcenteri
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.ExportInsightsDataOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportInsightsDataOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5287,6 +6219,10 @@ func (c *restClient) CreateIssueModel(ctx context.Context, req *contactcenterins
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/CreateIssueModel")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/issueModels")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5315,8 +6251,12 @@ func (c *restClient) CreateIssueModel(ctx context.Context, req *contactcenterins
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.CreateIssueModelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateIssueModelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5354,6 +6294,10 @@ func (c *restClient) UpdateIssueModel(ctx context.Context, req *contactcenterins
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/UpdateIssueModel")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{issue_model.name=projects/*/locations/*/issueModels/*}")
+	}
 	opts = append((*c.CallOptions).UpdateIssueModel[0:len((*c.CallOptions).UpdateIssueModel):len((*c.CallOptions).UpdateIssueModel)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &contactcenterinsightspb.IssueModel{}
@@ -5404,6 +6348,10 @@ func (c *restClient) GetIssueModel(ctx context.Context, req *contactcenterinsigh
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/GetIssueModel")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/issueModels/*}")
+	}
 	opts = append((*c.CallOptions).GetIssueModel[0:len((*c.CallOptions).GetIssueModel):len((*c.CallOptions).GetIssueModel)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &contactcenterinsightspb.IssueModel{}
@@ -5454,6 +6402,10 @@ func (c *restClient) ListIssueModels(ctx context.Context, req *contactcenterinsi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/ListIssueModels")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/issueModels")
+	}
 	opts = append((*c.CallOptions).ListIssueModels[0:len((*c.CallOptions).ListIssueModels):len((*c.CallOptions).ListIssueModels)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &contactcenterinsightspb.ListIssueModelsResponse{}
@@ -5504,6 +6456,10 @@ func (c *restClient) DeleteIssueModel(ctx context.Context, req *contactcenterins
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/DeleteIssueModel")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/issueModels/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5532,8 +6488,12 @@ func (c *restClient) DeleteIssueModel(ctx context.Context, req *contactcenterins
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.DeleteIssueModelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteIssueModelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5564,6 +6524,10 @@ func (c *restClient) DeployIssueModel(ctx context.Context, req *contactcenterins
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/DeployIssueModel")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/issueModels/*}:deploy")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5592,8 +6556,12 @@ func (c *restClient) DeployIssueModel(ctx context.Context, req *contactcenterins
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.DeployIssueModelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeployIssueModelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5624,6 +6592,10 @@ func (c *restClient) UndeployIssueModel(ctx context.Context, req *contactcenteri
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/UndeployIssueModel")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/issueModels/*}:undeploy")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5652,8 +6624,12 @@ func (c *restClient) UndeployIssueModel(ctx context.Context, req *contactcenteri
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.UndeployIssueModelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UndeployIssueModelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5683,6 +6659,10 @@ func (c *restClient) ExportIssueModel(ctx context.Context, req *contactcenterins
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/ExportIssueModel")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/issueModels/*}:export")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5711,8 +6691,12 @@ func (c *restClient) ExportIssueModel(ctx context.Context, req *contactcenterins
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.ExportIssueModelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ExportIssueModelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5742,6 +6726,10 @@ func (c *restClient) ImportIssueModel(ctx context.Context, req *contactcenterins
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/ImportIssueModel")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/issueModels:import")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5770,8 +6758,12 @@ func (c *restClient) ImportIssueModel(ctx context.Context, req *contactcenterins
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.ImportIssueModelOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ImportIssueModelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5795,6 +6787,10 @@ func (c *restClient) GetIssue(ctx context.Context, req *contactcenterinsightspb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/GetIssue")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/issueModels/*/issues/*}")
+	}
 	opts = append((*c.CallOptions).GetIssue[0:len((*c.CallOptions).GetIssue):len((*c.CallOptions).GetIssue)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &contactcenterinsightspb.Issue{}
@@ -5845,6 +6841,10 @@ func (c *restClient) ListIssues(ctx context.Context, req *contactcenterinsightsp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/ListIssues")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/issueModels/*}/issues")
+	}
 	opts = append((*c.CallOptions).ListIssues[0:len((*c.CallOptions).ListIssues):len((*c.CallOptions).ListIssues)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &contactcenterinsightspb.ListIssuesResponse{}
@@ -5909,6 +6909,10 @@ func (c *restClient) UpdateIssue(ctx context.Context, req *contactcenterinsights
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/UpdateIssue")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{issue.name=projects/*/locations/*/issueModels/*/issues/*}")
+	}
 	opts = append((*c.CallOptions).UpdateIssue[0:len((*c.CallOptions).UpdateIssue):len((*c.CallOptions).UpdateIssue)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &contactcenterinsightspb.Issue{}
@@ -5959,6 +6963,10 @@ func (c *restClient) DeleteIssue(ctx context.Context, req *contactcenterinsights
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/DeleteIssue")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/issueModels/*/issues/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -5994,6 +7002,10 @@ func (c *restClient) CalculateIssueModelStats(ctx context.Context, req *contactc
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/CalculateIssueModelStats")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{issue_model=projects/*/locations/*/issueModels/*}:calculateIssueModelStats")
+	}
 	opts = append((*c.CallOptions).CalculateIssueModelStats[0:len((*c.CallOptions).CalculateIssueModelStats):len((*c.CallOptions).CalculateIssueModelStats)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &contactcenterinsightspb.CalculateIssueModelStatsResponse{}
@@ -6051,6 +7063,10 @@ func (c *restClient) CreatePhraseMatcher(ctx context.Context, req *contactcenter
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/CreatePhraseMatcher")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/phraseMatchers")
+	}
 	opts = append((*c.CallOptions).CreatePhraseMatcher[0:len((*c.CallOptions).CreatePhraseMatcher):len((*c.CallOptions).CreatePhraseMatcher)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &contactcenterinsightspb.PhraseMatcher{}
@@ -6101,6 +7117,10 @@ func (c *restClient) GetPhraseMatcher(ctx context.Context, req *contactcenterins
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/GetPhraseMatcher")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/phraseMatchers/*}")
+	}
 	opts = append((*c.CallOptions).GetPhraseMatcher[0:len((*c.CallOptions).GetPhraseMatcher):len((*c.CallOptions).GetPhraseMatcher)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &contactcenterinsightspb.PhraseMatcher{}
@@ -6135,7 +7155,7 @@ func (c *restClient) GetPhraseMatcher(ctx context.Context, req *contactcenterins
 // ListPhraseMatchers lists phrase matchers.
 func (c *restClient) ListPhraseMatchers(ctx context.Context, req *contactcenterinsightspb.ListPhraseMatchersRequest, opts ...gax.CallOption) *PhraseMatcherIterator {
 	it := &PhraseMatcherIterator{}
-	req = proto.Clone(req).(*contactcenterinsightspb.ListPhraseMatchersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*contactcenterinsightspb.PhraseMatcher, string, error) {
 		resp := &contactcenterinsightspb.ListPhraseMatchersResponse{}
@@ -6232,6 +7252,10 @@ func (c *restClient) DeletePhraseMatcher(ctx context.Context, req *contactcenter
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/DeletePhraseMatcher")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/phraseMatchers/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -6281,6 +7305,10 @@ func (c *restClient) UpdatePhraseMatcher(ctx context.Context, req *contactcenter
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/UpdatePhraseMatcher")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{phrase_matcher.name=projects/*/locations/*/phraseMatchers/*}")
+	}
 	opts = append((*c.CallOptions).UpdatePhraseMatcher[0:len((*c.CallOptions).UpdatePhraseMatcher):len((*c.CallOptions).UpdatePhraseMatcher)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &contactcenterinsightspb.PhraseMatcher{}
@@ -6334,6 +7362,10 @@ func (c *restClient) CalculateStats(ctx context.Context, req *contactcenterinsig
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/CalculateStats")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{location=projects/*/locations/*}/conversations:calculateStats")
+	}
 	opts = append((*c.CallOptions).CalculateStats[0:len((*c.CallOptions).CalculateStats):len((*c.CallOptions).CalculateStats)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &contactcenterinsightspb.CalculateStatsResponse{}
@@ -6384,6 +7416,10 @@ func (c *restClient) GetSettings(ctx context.Context, req *contactcenterinsights
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/GetSettings")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/settings}")
+	}
 	opts = append((*c.CallOptions).GetSettings[0:len((*c.CallOptions).GetSettings):len((*c.CallOptions).GetSettings)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &contactcenterinsightspb.Settings{}
@@ -6448,6 +7484,10 @@ func (c *restClient) UpdateSettings(ctx context.Context, req *contactcenterinsig
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/UpdateSettings")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{settings.name=projects/*/locations/*/settings}")
+	}
 	opts = append((*c.CallOptions).UpdateSettings[0:len((*c.CallOptions).UpdateSettings):len((*c.CallOptions).UpdateSettings)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &contactcenterinsightspb.Settings{}
@@ -6505,6 +7545,10 @@ func (c *restClient) CreateAnalysisRule(ctx context.Context, req *contactcenteri
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/CreateAnalysisRule")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/analysisRules")
+	}
 	opts = append((*c.CallOptions).CreateAnalysisRule[0:len((*c.CallOptions).CreateAnalysisRule):len((*c.CallOptions).CreateAnalysisRule)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &contactcenterinsightspb.AnalysisRule{}
@@ -6555,6 +7599,10 @@ func (c *restClient) GetAnalysisRule(ctx context.Context, req *contactcenterinsi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/GetAnalysisRule")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/analysisRules/*}")
+	}
 	opts = append((*c.CallOptions).GetAnalysisRule[0:len((*c.CallOptions).GetAnalysisRule):len((*c.CallOptions).GetAnalysisRule)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &contactcenterinsightspb.AnalysisRule{}
@@ -6589,7 +7637,7 @@ func (c *restClient) GetAnalysisRule(ctx context.Context, req *contactcenterinsi
 // ListAnalysisRules lists analysis rules.
 func (c *restClient) ListAnalysisRules(ctx context.Context, req *contactcenterinsightspb.ListAnalysisRulesRequest, opts ...gax.CallOption) *AnalysisRuleIterator {
 	it := &AnalysisRuleIterator{}
-	req = proto.Clone(req).(*contactcenterinsightspb.ListAnalysisRulesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*contactcenterinsightspb.AnalysisRule, string, error) {
 		resp := &contactcenterinsightspb.ListAnalysisRulesResponse{}
@@ -6697,6 +7745,10 @@ func (c *restClient) UpdateAnalysisRule(ctx context.Context, req *contactcenteri
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/UpdateAnalysisRule")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{analysis_rule.name=projects/*/locations/*/analysisRules/*}")
+	}
 	opts = append((*c.CallOptions).UpdateAnalysisRule[0:len((*c.CallOptions).UpdateAnalysisRule):len((*c.CallOptions).UpdateAnalysisRule)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &contactcenterinsightspb.AnalysisRule{}
@@ -6747,6 +7799,10 @@ func (c *restClient) DeleteAnalysisRule(ctx context.Context, req *contactcenteri
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/DeleteAnalysisRule")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/analysisRules/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -6782,6 +7838,10 @@ func (c *restClient) GetEncryptionSpec(ctx context.Context, req *contactcenterin
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/GetEncryptionSpec")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/encryptionSpec}")
+	}
 	opts = append((*c.CallOptions).GetEncryptionSpec[0:len((*c.CallOptions).GetEncryptionSpec):len((*c.CallOptions).GetEncryptionSpec)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &contactcenterinsightspb.EncryptionSpec{}
@@ -6842,6 +7902,10 @@ func (c *restClient) InitializeEncryptionSpec(ctx context.Context, req *contactc
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/InitializeEncryptionSpec")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{encryption_spec.name=projects/*/locations/*/encryptionSpec}:initialize")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -6870,8 +7934,12 @@ func (c *restClient) InitializeEncryptionSpec(ctx context.Context, req *contactc
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.InitializeEncryptionSpecOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &InitializeEncryptionSpecOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -6902,6 +7970,10 @@ func (c *restClient) CreateView(ctx context.Context, req *contactcenterinsightsp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/CreateView")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/views")
+	}
 	opts = append((*c.CallOptions).CreateView[0:len((*c.CallOptions).CreateView):len((*c.CallOptions).CreateView)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &contactcenterinsightspb.View{}
@@ -6952,6 +8024,10 @@ func (c *restClient) GetView(ctx context.Context, req *contactcenterinsightspb.G
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/GetView")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/views/*}")
+	}
 	opts = append((*c.CallOptions).GetView[0:len((*c.CallOptions).GetView):len((*c.CallOptions).GetView)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &contactcenterinsightspb.View{}
@@ -6986,7 +8062,7 @@ func (c *restClient) GetView(ctx context.Context, req *contactcenterinsightspb.G
 // ListViews lists views.
 func (c *restClient) ListViews(ctx context.Context, req *contactcenterinsightspb.ListViewsRequest, opts ...gax.CallOption) *ViewIterator {
 	it := &ViewIterator{}
-	req = proto.Clone(req).(*contactcenterinsightspb.ListViewsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*contactcenterinsightspb.View, string, error) {
 		resp := &contactcenterinsightspb.ListViewsResponse{}
@@ -7094,6 +8170,10 @@ func (c *restClient) UpdateView(ctx context.Context, req *contactcenterinsightsp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/UpdateView")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{view.name=projects/*/locations/*/views/*}")
+	}
 	opts = append((*c.CallOptions).UpdateView[0:len((*c.CallOptions).UpdateView):len((*c.CallOptions).UpdateView)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &contactcenterinsightspb.View{}
@@ -7144,6 +8224,10 @@ func (c *restClient) DeleteView(ctx context.Context, req *contactcenterinsightsp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/DeleteView")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/views/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -7185,6 +8269,10 @@ func (c *restClient) QueryMetrics(ctx context.Context, req *contactcenterinsight
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/QueryMetrics")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{location=projects/*/locations/*}:queryMetrics")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -7213,8 +8301,12 @@ func (c *restClient) QueryMetrics(ctx context.Context, req *contactcenterinsight
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.QueryMetricsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &QueryMetricsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -7248,6 +8340,10 @@ func (c *restClient) CreateQaQuestion(ctx context.Context, req *contactcenterins
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/CreateQaQuestion")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/qaScorecards/*/revisions/*}/qaQuestions")
+	}
 	opts = append((*c.CallOptions).CreateQaQuestion[0:len((*c.CallOptions).CreateQaQuestion):len((*c.CallOptions).CreateQaQuestion)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &contactcenterinsightspb.QaQuestion{}
@@ -7298,6 +8394,10 @@ func (c *restClient) GetQaQuestion(ctx context.Context, req *contactcenterinsigh
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/GetQaQuestion")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/qaScorecards/*/revisions/*/qaQuestions/*}")
+	}
 	opts = append((*c.CallOptions).GetQaQuestion[0:len((*c.CallOptions).GetQaQuestion):len((*c.CallOptions).GetQaQuestion)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &contactcenterinsightspb.QaQuestion{}
@@ -7362,6 +8462,10 @@ func (c *restClient) UpdateQaQuestion(ctx context.Context, req *contactcenterins
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/UpdateQaQuestion")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{qa_question.name=projects/*/locations/*/qaScorecards/*/revisions/*/qaQuestions/*}")
+	}
 	opts = append((*c.CallOptions).UpdateQaQuestion[0:len((*c.CallOptions).UpdateQaQuestion):len((*c.CallOptions).UpdateQaQuestion)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &contactcenterinsightspb.QaQuestion{}
@@ -7412,6 +8516,10 @@ func (c *restClient) DeleteQaQuestion(ctx context.Context, req *contactcenterins
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/DeleteQaQuestion")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/qaScorecards/*/revisions/*/qaQuestions/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -7431,7 +8539,7 @@ func (c *restClient) DeleteQaQuestion(ctx context.Context, req *contactcenterins
 // ListQaQuestions lists QaQuestions.
 func (c *restClient) ListQaQuestions(ctx context.Context, req *contactcenterinsightspb.ListQaQuestionsRequest, opts ...gax.CallOption) *QaQuestionIterator {
 	it := &QaQuestionIterator{}
-	req = proto.Clone(req).(*contactcenterinsightspb.ListQaQuestionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*contactcenterinsightspb.QaQuestion, string, error) {
 		resp := &contactcenterinsightspb.ListQaQuestionsResponse{}
@@ -7535,6 +8643,10 @@ func (c *restClient) CreateQaScorecard(ctx context.Context, req *contactcenterin
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/CreateQaScorecard")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/qaScorecards")
+	}
 	opts = append((*c.CallOptions).CreateQaScorecard[0:len((*c.CallOptions).CreateQaScorecard):len((*c.CallOptions).CreateQaScorecard)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &contactcenterinsightspb.QaScorecard{}
@@ -7585,6 +8697,10 @@ func (c *restClient) GetQaScorecard(ctx context.Context, req *contactcenterinsig
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/GetQaScorecard")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/qaScorecards/*}")
+	}
 	opts = append((*c.CallOptions).GetQaScorecard[0:len((*c.CallOptions).GetQaScorecard):len((*c.CallOptions).GetQaScorecard)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &contactcenterinsightspb.QaScorecard{}
@@ -7649,6 +8765,10 @@ func (c *restClient) UpdateQaScorecard(ctx context.Context, req *contactcenterin
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/UpdateQaScorecard")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{qa_scorecard.name=projects/*/locations/*/qaScorecards/*}")
+	}
 	opts = append((*c.CallOptions).UpdateQaScorecard[0:len((*c.CallOptions).UpdateQaScorecard):len((*c.CallOptions).UpdateQaScorecard)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &contactcenterinsightspb.QaScorecard{}
@@ -7702,6 +8822,10 @@ func (c *restClient) DeleteQaScorecard(ctx context.Context, req *contactcenterin
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/DeleteQaScorecard")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/qaScorecards/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -7721,7 +8845,7 @@ func (c *restClient) DeleteQaScorecard(ctx context.Context, req *contactcenterin
 // ListQaScorecards lists QaScorecards.
 func (c *restClient) ListQaScorecards(ctx context.Context, req *contactcenterinsightspb.ListQaScorecardsRequest, opts ...gax.CallOption) *QaScorecardIterator {
 	it := &QaScorecardIterator{}
-	req = proto.Clone(req).(*contactcenterinsightspb.ListQaScorecardsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*contactcenterinsightspb.QaScorecard, string, error) {
 		resp := &contactcenterinsightspb.ListQaScorecardsResponse{}
@@ -7825,6 +8949,10 @@ func (c *restClient) CreateQaScorecardRevision(ctx context.Context, req *contact
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/CreateQaScorecardRevision")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/qaScorecards/*}/revisions")
+	}
 	opts = append((*c.CallOptions).CreateQaScorecardRevision[0:len((*c.CallOptions).CreateQaScorecardRevision):len((*c.CallOptions).CreateQaScorecardRevision)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &contactcenterinsightspb.QaScorecardRevision{}
@@ -7875,6 +9003,10 @@ func (c *restClient) GetQaScorecardRevision(ctx context.Context, req *contactcen
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/GetQaScorecardRevision")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/qaScorecards/*/revisions/*}")
+	}
 	opts = append((*c.CallOptions).GetQaScorecardRevision[0:len((*c.CallOptions).GetQaScorecardRevision):len((*c.CallOptions).GetQaScorecardRevision)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &contactcenterinsightspb.QaScorecardRevision{}
@@ -7931,6 +9063,10 @@ func (c *restClient) TuneQaScorecardRevision(ctx context.Context, req *contactce
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/TuneQaScorecardRevision")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/qaScorecards/*/revisions/*}:tuneQaScorecardRevision")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -7959,8 +9095,12 @@ func (c *restClient) TuneQaScorecardRevision(ctx context.Context, req *contactce
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.TuneQaScorecardRevisionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &TuneQaScorecardRevisionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -7990,6 +9130,10 @@ func (c *restClient) DeployQaScorecardRevision(ctx context.Context, req *contact
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/DeployQaScorecardRevision")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/qaScorecards/*/revisions/*}:deploy")
+	}
 	opts = append((*c.CallOptions).DeployQaScorecardRevision[0:len((*c.CallOptions).DeployQaScorecardRevision):len((*c.CallOptions).DeployQaScorecardRevision)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &contactcenterinsightspb.QaScorecardRevision{}
@@ -8046,6 +9190,10 @@ func (c *restClient) UndeployQaScorecardRevision(ctx context.Context, req *conta
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/UndeployQaScorecardRevision")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/qaScorecards/*/revisions/*}:undeploy")
+	}
 	opts = append((*c.CallOptions).UndeployQaScorecardRevision[0:len((*c.CallOptions).UndeployQaScorecardRevision):len((*c.CallOptions).UndeployQaScorecardRevision)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &contactcenterinsightspb.QaScorecardRevision{}
@@ -8099,6 +9247,10 @@ func (c *restClient) DeleteQaScorecardRevision(ctx context.Context, req *contact
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/DeleteQaScorecardRevision")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/qaScorecards/*/revisions/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -8118,7 +9270,7 @@ func (c *restClient) DeleteQaScorecardRevision(ctx context.Context, req *contact
 // ListQaScorecardRevisions lists all revisions under the parent QaScorecard.
 func (c *restClient) ListQaScorecardRevisions(ctx context.Context, req *contactcenterinsightspb.ListQaScorecardRevisionsRequest, opts ...gax.CallOption) *QaScorecardRevisionIterator {
 	it := &QaScorecardRevisionIterator{}
-	req = proto.Clone(req).(*contactcenterinsightspb.ListQaScorecardRevisionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*contactcenterinsightspb.QaScorecardRevision, string, error) {
 		resp := &contactcenterinsightspb.ListQaScorecardRevisionsResponse{}
@@ -8225,6 +9377,10 @@ func (c *restClient) CreateFeedbackLabel(ctx context.Context, req *contactcenter
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/CreateFeedbackLabel")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/conversations/*}/feedbackLabels")
+	}
 	opts = append((*c.CallOptions).CreateFeedbackLabel[0:len((*c.CallOptions).CreateFeedbackLabel):len((*c.CallOptions).CreateFeedbackLabel)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &contactcenterinsightspb.FeedbackLabel{}
@@ -8259,7 +9415,7 @@ func (c *restClient) CreateFeedbackLabel(ctx context.Context, req *contactcenter
 // ListFeedbackLabels list feedback labels.
 func (c *restClient) ListFeedbackLabels(ctx context.Context, req *contactcenterinsightspb.ListFeedbackLabelsRequest, opts ...gax.CallOption) *FeedbackLabelIterator {
 	it := &FeedbackLabelIterator{}
-	req = proto.Clone(req).(*contactcenterinsightspb.ListFeedbackLabelsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*contactcenterinsightspb.FeedbackLabel, string, error) {
 		resp := &contactcenterinsightspb.ListFeedbackLabelsResponse{}
@@ -8356,6 +9512,10 @@ func (c *restClient) GetFeedbackLabel(ctx context.Context, req *contactcenterins
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/GetFeedbackLabel")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/conversations/*/feedbackLabels/*}")
+	}
 	opts = append((*c.CallOptions).GetFeedbackLabel[0:len((*c.CallOptions).GetFeedbackLabel):len((*c.CallOptions).GetFeedbackLabel)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &contactcenterinsightspb.FeedbackLabel{}
@@ -8420,6 +9580,10 @@ func (c *restClient) UpdateFeedbackLabel(ctx context.Context, req *contactcenter
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/UpdateFeedbackLabel")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{feedback_label.name=projects/*/locations/*/conversations/*/feedbackLabels/*}")
+	}
 	opts = append((*c.CallOptions).UpdateFeedbackLabel[0:len((*c.CallOptions).UpdateFeedbackLabel):len((*c.CallOptions).UpdateFeedbackLabel)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &contactcenterinsightspb.FeedbackLabel{}
@@ -8470,6 +9634,10 @@ func (c *restClient) DeleteFeedbackLabel(ctx context.Context, req *contactcenter
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/DeleteFeedbackLabel")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/conversations/*/feedbackLabels/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -8489,7 +9657,7 @@ func (c *restClient) DeleteFeedbackLabel(ctx context.Context, req *contactcenter
 // ListAllFeedbackLabels list all feedback labels by project number.
 func (c *restClient) ListAllFeedbackLabels(ctx context.Context, req *contactcenterinsightspb.ListAllFeedbackLabelsRequest, opts ...gax.CallOption) *FeedbackLabelIterator {
 	it := &FeedbackLabelIterator{}
-	req = proto.Clone(req).(*contactcenterinsightspb.ListAllFeedbackLabelsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*contactcenterinsightspb.FeedbackLabel, string, error) {
 		resp := &contactcenterinsightspb.ListAllFeedbackLabelsResponse{}
@@ -8592,6 +9760,10 @@ func (c *restClient) BulkUploadFeedbackLabels(ctx context.Context, req *contactc
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/BulkUploadFeedbackLabels")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}:bulkUploadFeedbackLabels")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -8620,8 +9792,12 @@ func (c *restClient) BulkUploadFeedbackLabels(ctx context.Context, req *contactc
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.BulkUploadFeedbackLabelsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &BulkUploadFeedbackLabelsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -8651,6 +9827,10 @@ func (c *restClient) BulkDownloadFeedbackLabels(ctx context.Context, req *contac
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.contactcenterinsights.v1.ContactCenterInsights/BulkDownloadFeedbackLabels")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}:bulkDownloadFeedbackLabels")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -8679,8 +9859,12 @@ func (c *restClient) BulkDownloadFeedbackLabels(ctx context.Context, req *contac
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*contactcenterinsights.BulkDownloadFeedbackLabelsOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &BulkDownloadFeedbackLabelsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -8704,6 +9888,10 @@ func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -8739,6 +9927,10 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -8773,7 +9965,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
@@ -8801,6 +9993,9 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 		}
 		if req.GetPageToken() != "" {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req.GetReturnPartialSuccess() {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -8855,7 +10050,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created BulkAnalyzeConversationsOperation, possibly from a different process.
 func (c *gRPCClient) BulkAnalyzeConversationsOperation(name string) *BulkAnalyzeConversationsOperation {
 	return &BulkAnalyzeConversationsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.BulkAnalyzeConversationsOperation"),
 	}
 }
 
@@ -8864,7 +10059,7 @@ func (c *gRPCClient) BulkAnalyzeConversationsOperation(name string) *BulkAnalyze
 func (c *restClient) BulkAnalyzeConversationsOperation(name string) *BulkAnalyzeConversationsOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &BulkAnalyzeConversationsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.BulkAnalyzeConversationsOperation"),
 		pollPath: override,
 	}
 }
@@ -8873,7 +10068,7 @@ func (c *restClient) BulkAnalyzeConversationsOperation(name string) *BulkAnalyze
 // The name must be that of a previously created BulkDeleteConversationsOperation, possibly from a different process.
 func (c *gRPCClient) BulkDeleteConversationsOperation(name string) *BulkDeleteConversationsOperation {
 	return &BulkDeleteConversationsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.BulkDeleteConversationsOperation"),
 	}
 }
 
@@ -8882,7 +10077,7 @@ func (c *gRPCClient) BulkDeleteConversationsOperation(name string) *BulkDeleteCo
 func (c *restClient) BulkDeleteConversationsOperation(name string) *BulkDeleteConversationsOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &BulkDeleteConversationsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.BulkDeleteConversationsOperation"),
 		pollPath: override,
 	}
 }
@@ -8891,7 +10086,7 @@ func (c *restClient) BulkDeleteConversationsOperation(name string) *BulkDeleteCo
 // The name must be that of a previously created BulkDownloadFeedbackLabelsOperation, possibly from a different process.
 func (c *gRPCClient) BulkDownloadFeedbackLabelsOperation(name string) *BulkDownloadFeedbackLabelsOperation {
 	return &BulkDownloadFeedbackLabelsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.BulkDownloadFeedbackLabelsOperation"),
 	}
 }
 
@@ -8900,7 +10095,7 @@ func (c *gRPCClient) BulkDownloadFeedbackLabelsOperation(name string) *BulkDownl
 func (c *restClient) BulkDownloadFeedbackLabelsOperation(name string) *BulkDownloadFeedbackLabelsOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &BulkDownloadFeedbackLabelsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.BulkDownloadFeedbackLabelsOperation"),
 		pollPath: override,
 	}
 }
@@ -8909,7 +10104,7 @@ func (c *restClient) BulkDownloadFeedbackLabelsOperation(name string) *BulkDownl
 // The name must be that of a previously created BulkUploadFeedbackLabelsOperation, possibly from a different process.
 func (c *gRPCClient) BulkUploadFeedbackLabelsOperation(name string) *BulkUploadFeedbackLabelsOperation {
 	return &BulkUploadFeedbackLabelsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.BulkUploadFeedbackLabelsOperation"),
 	}
 }
 
@@ -8918,7 +10113,7 @@ func (c *gRPCClient) BulkUploadFeedbackLabelsOperation(name string) *BulkUploadF
 func (c *restClient) BulkUploadFeedbackLabelsOperation(name string) *BulkUploadFeedbackLabelsOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &BulkUploadFeedbackLabelsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.BulkUploadFeedbackLabelsOperation"),
 		pollPath: override,
 	}
 }
@@ -8927,7 +10122,7 @@ func (c *restClient) BulkUploadFeedbackLabelsOperation(name string) *BulkUploadF
 // The name must be that of a previously created CreateAnalysisOperation, possibly from a different process.
 func (c *gRPCClient) CreateAnalysisOperation(name string) *CreateAnalysisOperation {
 	return &CreateAnalysisOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.CreateAnalysisOperation"),
 	}
 }
 
@@ -8936,7 +10131,7 @@ func (c *gRPCClient) CreateAnalysisOperation(name string) *CreateAnalysisOperati
 func (c *restClient) CreateAnalysisOperation(name string) *CreateAnalysisOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateAnalysisOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.CreateAnalysisOperation"),
 		pollPath: override,
 	}
 }
@@ -8945,7 +10140,7 @@ func (c *restClient) CreateAnalysisOperation(name string) *CreateAnalysisOperati
 // The name must be that of a previously created CreateIssueModelOperation, possibly from a different process.
 func (c *gRPCClient) CreateIssueModelOperation(name string) *CreateIssueModelOperation {
 	return &CreateIssueModelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.CreateIssueModelOperation"),
 	}
 }
 
@@ -8954,7 +10149,7 @@ func (c *gRPCClient) CreateIssueModelOperation(name string) *CreateIssueModelOpe
 func (c *restClient) CreateIssueModelOperation(name string) *CreateIssueModelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateIssueModelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.CreateIssueModelOperation"),
 		pollPath: override,
 	}
 }
@@ -8963,7 +10158,7 @@ func (c *restClient) CreateIssueModelOperation(name string) *CreateIssueModelOpe
 // The name must be that of a previously created DeleteIssueModelOperation, possibly from a different process.
 func (c *gRPCClient) DeleteIssueModelOperation(name string) *DeleteIssueModelOperation {
 	return &DeleteIssueModelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.DeleteIssueModelOperation"),
 	}
 }
 
@@ -8972,7 +10167,7 @@ func (c *gRPCClient) DeleteIssueModelOperation(name string) *DeleteIssueModelOpe
 func (c *restClient) DeleteIssueModelOperation(name string) *DeleteIssueModelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteIssueModelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.DeleteIssueModelOperation"),
 		pollPath: override,
 	}
 }
@@ -8981,7 +10176,7 @@ func (c *restClient) DeleteIssueModelOperation(name string) *DeleteIssueModelOpe
 // The name must be that of a previously created DeployIssueModelOperation, possibly from a different process.
 func (c *gRPCClient) DeployIssueModelOperation(name string) *DeployIssueModelOperation {
 	return &DeployIssueModelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.DeployIssueModelOperation"),
 	}
 }
 
@@ -8990,7 +10185,7 @@ func (c *gRPCClient) DeployIssueModelOperation(name string) *DeployIssueModelOpe
 func (c *restClient) DeployIssueModelOperation(name string) *DeployIssueModelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeployIssueModelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.DeployIssueModelOperation"),
 		pollPath: override,
 	}
 }
@@ -8999,7 +10194,7 @@ func (c *restClient) DeployIssueModelOperation(name string) *DeployIssueModelOpe
 // The name must be that of a previously created ExportInsightsDataOperation, possibly from a different process.
 func (c *gRPCClient) ExportInsightsDataOperation(name string) *ExportInsightsDataOperation {
 	return &ExportInsightsDataOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.ExportInsightsDataOperation"),
 	}
 }
 
@@ -9008,7 +10203,7 @@ func (c *gRPCClient) ExportInsightsDataOperation(name string) *ExportInsightsDat
 func (c *restClient) ExportInsightsDataOperation(name string) *ExportInsightsDataOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ExportInsightsDataOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.ExportInsightsDataOperation"),
 		pollPath: override,
 	}
 }
@@ -9017,7 +10212,7 @@ func (c *restClient) ExportInsightsDataOperation(name string) *ExportInsightsDat
 // The name must be that of a previously created ExportIssueModelOperation, possibly from a different process.
 func (c *gRPCClient) ExportIssueModelOperation(name string) *ExportIssueModelOperation {
 	return &ExportIssueModelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.ExportIssueModelOperation"),
 	}
 }
 
@@ -9026,7 +10221,7 @@ func (c *gRPCClient) ExportIssueModelOperation(name string) *ExportIssueModelOpe
 func (c *restClient) ExportIssueModelOperation(name string) *ExportIssueModelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ExportIssueModelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.ExportIssueModelOperation"),
 		pollPath: override,
 	}
 }
@@ -9035,7 +10230,7 @@ func (c *restClient) ExportIssueModelOperation(name string) *ExportIssueModelOpe
 // The name must be that of a previously created ImportIssueModelOperation, possibly from a different process.
 func (c *gRPCClient) ImportIssueModelOperation(name string) *ImportIssueModelOperation {
 	return &ImportIssueModelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.ImportIssueModelOperation"),
 	}
 }
 
@@ -9044,7 +10239,7 @@ func (c *gRPCClient) ImportIssueModelOperation(name string) *ImportIssueModelOpe
 func (c *restClient) ImportIssueModelOperation(name string) *ImportIssueModelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ImportIssueModelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.ImportIssueModelOperation"),
 		pollPath: override,
 	}
 }
@@ -9053,7 +10248,7 @@ func (c *restClient) ImportIssueModelOperation(name string) *ImportIssueModelOpe
 // The name must be that of a previously created IngestConversationsOperation, possibly from a different process.
 func (c *gRPCClient) IngestConversationsOperation(name string) *IngestConversationsOperation {
 	return &IngestConversationsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.IngestConversationsOperation"),
 	}
 }
 
@@ -9062,7 +10257,7 @@ func (c *gRPCClient) IngestConversationsOperation(name string) *IngestConversati
 func (c *restClient) IngestConversationsOperation(name string) *IngestConversationsOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &IngestConversationsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.IngestConversationsOperation"),
 		pollPath: override,
 	}
 }
@@ -9071,7 +10266,7 @@ func (c *restClient) IngestConversationsOperation(name string) *IngestConversati
 // The name must be that of a previously created InitializeEncryptionSpecOperation, possibly from a different process.
 func (c *gRPCClient) InitializeEncryptionSpecOperation(name string) *InitializeEncryptionSpecOperation {
 	return &InitializeEncryptionSpecOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.InitializeEncryptionSpecOperation"),
 	}
 }
 
@@ -9080,7 +10275,7 @@ func (c *gRPCClient) InitializeEncryptionSpecOperation(name string) *InitializeE
 func (c *restClient) InitializeEncryptionSpecOperation(name string) *InitializeEncryptionSpecOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &InitializeEncryptionSpecOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.InitializeEncryptionSpecOperation"),
 		pollPath: override,
 	}
 }
@@ -9089,7 +10284,7 @@ func (c *restClient) InitializeEncryptionSpecOperation(name string) *InitializeE
 // The name must be that of a previously created QueryMetricsOperation, possibly from a different process.
 func (c *gRPCClient) QueryMetricsOperation(name string) *QueryMetricsOperation {
 	return &QueryMetricsOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.QueryMetricsOperation"),
 	}
 }
 
@@ -9098,7 +10293,7 @@ func (c *gRPCClient) QueryMetricsOperation(name string) *QueryMetricsOperation {
 func (c *restClient) QueryMetricsOperation(name string) *QueryMetricsOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &QueryMetricsOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.QueryMetricsOperation"),
 		pollPath: override,
 	}
 }
@@ -9107,7 +10302,7 @@ func (c *restClient) QueryMetricsOperation(name string) *QueryMetricsOperation {
 // The name must be that of a previously created TuneQaScorecardRevisionOperation, possibly from a different process.
 func (c *gRPCClient) TuneQaScorecardRevisionOperation(name string) *TuneQaScorecardRevisionOperation {
 	return &TuneQaScorecardRevisionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.TuneQaScorecardRevisionOperation"),
 	}
 }
 
@@ -9116,7 +10311,7 @@ func (c *gRPCClient) TuneQaScorecardRevisionOperation(name string) *TuneQaScorec
 func (c *restClient) TuneQaScorecardRevisionOperation(name string) *TuneQaScorecardRevisionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &TuneQaScorecardRevisionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.TuneQaScorecardRevisionOperation"),
 		pollPath: override,
 	}
 }
@@ -9125,7 +10320,7 @@ func (c *restClient) TuneQaScorecardRevisionOperation(name string) *TuneQaScorec
 // The name must be that of a previously created UndeployIssueModelOperation, possibly from a different process.
 func (c *gRPCClient) UndeployIssueModelOperation(name string) *UndeployIssueModelOperation {
 	return &UndeployIssueModelOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.UndeployIssueModelOperation"),
 	}
 }
 
@@ -9134,7 +10329,7 @@ func (c *gRPCClient) UndeployIssueModelOperation(name string) *UndeployIssueMode
 func (c *restClient) UndeployIssueModelOperation(name string) *UndeployIssueModelOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UndeployIssueModelOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.UndeployIssueModelOperation"),
 		pollPath: override,
 	}
 }
@@ -9143,7 +10338,7 @@ func (c *restClient) UndeployIssueModelOperation(name string) *UndeployIssueMode
 // The name must be that of a previously created UploadConversationOperation, possibly from a different process.
 func (c *gRPCClient) UploadConversationOperation(name string) *UploadConversationOperation {
 	return &UploadConversationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.UploadConversationOperation"),
 	}
 }
 
@@ -9152,7 +10347,7 @@ func (c *gRPCClient) UploadConversationOperation(name string) *UploadConversatio
 func (c *restClient) UploadConversationOperation(name string) *UploadConversationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UploadConversationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*contactcenterinsights.UploadConversationOperation"),
 		pollPath: override,
 	}
 }

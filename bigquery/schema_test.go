@@ -250,6 +250,26 @@ func TestSchemaConversion(t *testing.T) {
 			},
 		},
 		{
+			// Timestamp with precision
+			bqSchema: &bq.TableSchema{
+				Fields: []*bq.TableFieldSchema{
+					{
+						Description:        "desc",
+						Name:               "name",
+						Type:               "TIMESTAMP",
+						TimestampPrecision: int64ptr(12),
+					},
+				}},
+			schema: Schema{
+				{
+					Description:        "desc",
+					Name:               "name",
+					Type:               "TIMESTAMP",
+					TimestampPrecision: 12,
+				},
+			},
+		},
+		{
 			// civil times
 			bqSchema: &bq.TableSchema{
 				Fields: []*bq.TableFieldSchema{
@@ -549,7 +569,7 @@ type jsonFields struct {
 
 func TestSimpleInference(t *testing.T) {
 	testCases := []struct {
-		in   interface{}
+		in   any
 		want Schema
 	}{
 		{
@@ -659,7 +679,7 @@ type dup struct { // more than one field of the same struct type
 
 func TestNestedInference(t *testing.T) {
 	testCases := []struct {
-		in   interface{}
+		in   any
 		want Schema
 	}{
 		{
@@ -760,7 +780,7 @@ func repField(name, typ string) *FieldSchema {
 
 func TestRepeatedInference(t *testing.T) {
 	testCases := []struct {
-		in   interface{}
+		in   any
 		want Schema
 	}{
 		{
@@ -923,7 +943,7 @@ var withTagsSchema = Schema{
 
 func TestTagInference(t *testing.T) {
 	testCases := []struct {
-		in   interface{}
+		in   any
 		want Schema
 	}{
 		{
@@ -994,7 +1014,7 @@ func TestTagInference(t *testing.T) {
 }
 
 func TestTagInferenceErrors(t *testing.T) {
-	testCases := []interface{}{
+	testCases := []any{
 		struct {
 			LongTag int `bigquery:"abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxy"`
 		}{},
@@ -1032,8 +1052,8 @@ func TestTagInferenceErrors(t *testing.T) {
 
 func TestSchemaErrors(t *testing.T) {
 	testCases := []struct {
-		in   interface{}
-		want interface{}
+		in   any
+		want any
 	}{
 		{
 			in:   []byte{},
@@ -1068,7 +1088,7 @@ func TestSchemaErrors(t *testing.T) {
 			want: unsupportedFieldTypeError{},
 		},
 		{
-			in:   struct{ Interface interface{} }{},
+			in:   struct{ Interface any }{},
 			want: unsupportedFieldTypeError{},
 		},
 		{
@@ -1138,7 +1158,7 @@ func TestSchemaErrors(t *testing.T) {
 			want: unsupportedFieldTypeError{},
 		},
 		{
-			in:   struct{ X map[struct{}]interface{} }{},
+			in:   struct{ X map[struct{}]any }{},
 			want: unsupportedFieldTypeError{},
 		},
 	}
@@ -1171,7 +1191,7 @@ func TestHasRecursiveType(t *testing.T) {
 		}
 	)
 	for _, test := range []struct {
-		in   interface{}
+		in   any
 		want bool
 	}{
 		{nonStruct(0), false},
@@ -1376,7 +1396,7 @@ func TestSchemaToJSONFields(t *testing.T) {
 	// courtesy of https://github.com/google/go-cmp/issues/224
 	normalizeJSON := cmp.FilterValues(func(x, y []byte) bool {
 		return json.Valid(x) && json.Valid(y)
-	}, cmp.Transformer("ParseJSON", func(in []byte) (out interface{}) {
+	}, cmp.Transformer("ParseJSON", func(in []byte) (out any) {
 		if err := json.Unmarshal(in, &out); err != nil {
 			panic(err)
 		}

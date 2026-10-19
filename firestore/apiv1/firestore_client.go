@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,11 +25,14 @@ import (
 	"math"
 	"net/http"
 	"net/url"
+	"regexp"
+	"strings"
 	"time"
 
 	firestorepb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -55,6 +58,7 @@ type CallOptions struct {
 	Commit              []gax.CallOption
 	Rollback            []gax.CallOption
 	RunQuery            []gax.CallOption
+	ExecutePipeline     []gax.CallOption
 	RunAggregationQuery []gax.CallOption
 	PartitionQuery      []gax.CallOption
 	Write               []gax.CallOption
@@ -77,6 +81,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://firestore.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.AllowHardBoundTokens("MTLS_S2A"),
 		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -146,7 +151,6 @@ func defaultCallOptions() *CallOptions {
 		BatchGetDocuments: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.ResourceExhausted,
 					codes.Unavailable,
 					codes.Internal,
 					codes.DeadlineExceeded,
@@ -203,7 +207,6 @@ func defaultCallOptions() *CallOptions {
 		RunQuery: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.ResourceExhausted,
 					codes.Unavailable,
 					codes.Internal,
 					codes.DeadlineExceeded,
@@ -214,10 +217,21 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		ExecutePipeline: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Internal,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		RunAggregationQuery: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.ResourceExhausted,
 					codes.Unavailable,
 					codes.Internal,
 					codes.DeadlineExceeded,
@@ -232,7 +246,6 @@ func defaultCallOptions() *CallOptions {
 			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.ResourceExhausted,
 					codes.Unavailable,
 					codes.Internal,
 					codes.DeadlineExceeded,
@@ -371,7 +384,6 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusTooManyRequests,
 					http.StatusServiceUnavailable,
 					http.StatusInternalServerError,
 					http.StatusGatewayTimeout)
@@ -425,10 +437,21 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusTooManyRequests,
 					http.StatusServiceUnavailable,
 					http.StatusInternalServerError,
 					http.StatusGatewayTimeout)
+			}),
+		},
+		ExecutePipeline: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
 			}),
 		},
 		RunAggregationQuery: []gax.CallOption{
@@ -439,7 +462,6 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusTooManyRequests,
 					http.StatusServiceUnavailable,
 					http.StatusInternalServerError,
 					http.StatusGatewayTimeout)
@@ -453,7 +475,6 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusTooManyRequests,
 					http.StatusServiceUnavailable,
 					http.StatusInternalServerError,
 					http.StatusGatewayTimeout)
@@ -536,6 +557,7 @@ type internalClient interface {
 	Commit(context.Context, *firestorepb.CommitRequest, ...gax.CallOption) (*firestorepb.CommitResponse, error)
 	Rollback(context.Context, *firestorepb.RollbackRequest, ...gax.CallOption) error
 	RunQuery(context.Context, *firestorepb.RunQueryRequest, ...gax.CallOption) (firestorepb.Firestore_RunQueryClient, error)
+	ExecutePipeline(context.Context, *firestorepb.ExecutePipelineRequest, ...gax.CallOption) (firestorepb.Firestore_ExecutePipelineClient, error)
 	RunAggregationQuery(context.Context, *firestorepb.RunAggregationQueryRequest, ...gax.CallOption) (firestorepb.Firestore_RunAggregationQueryClient, error)
 	PartitionQuery(context.Context, *firestorepb.PartitionQueryRequest, ...gax.CallOption) *CursorIterator
 	Write(context.Context, ...gax.CallOption) (firestorepb.Firestore_WriteClient, error)
@@ -570,7 +592,7 @@ type Client struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *Client) Close() error {
 	return c.internalClient.Close()
@@ -581,6 +603,16 @@ func (c *Client) Close() error {
 // use by Google-written clients.
 func (c *Client) setGoogleClientInfo(keyval ...string) {
 	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// SetGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+//
+// SetGoogleClientInfo is not concurrency-safe and should only be invoked
+// sequentially before concurrent operations begin.
+func (c *Client) SetGoogleClientInfo(keyval ...string) {
+	c.setGoogleClientInfo(keyval...)
 }
 
 // Connection returns a connection to the API service.
@@ -637,6 +669,11 @@ func (c *Client) Rollback(ctx context.Context, req *firestorepb.RollbackRequest,
 // RunQuery runs a query.
 func (c *Client) RunQuery(ctx context.Context, req *firestorepb.RunQueryRequest, opts ...gax.CallOption) (firestorepb.Firestore_RunQueryClient, error) {
 	return c.internalClient.RunQuery(ctx, req, opts...)
+}
+
+// ExecutePipeline executes a pipeline query.
+func (c *Client) ExecutePipeline(ctx context.Context, req *firestorepb.ExecutePipelineRequest, opts ...gax.CallOption) (firestorepb.Firestore_ExecutePipelineClient, error) {
+	return c.internalClient.ExecutePipeline(ctx, req, opts...)
 }
 
 // RunAggregationQuery runs an aggregation query.
@@ -752,6 +789,16 @@ type gRPCClient struct {
 // truly serverless apps.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "firestore",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/firestore/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "firestore.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -774,6 +821,107 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "firestore",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/firestore/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "firestore.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetDocument = append(client.CallOptions.GetDocument, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListDocuments = append(client.CallOptions.ListDocuments, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateDocument = append(client.CallOptions.UpdateDocument, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteDocument = append(client.CallOptions.DeleteDocument, gax.WithClientMetrics(metrics))
+		client.CallOptions.BatchGetDocuments = append(client.CallOptions.BatchGetDocuments, gax.WithClientMetrics(metrics))
+		client.CallOptions.BeginTransaction = append(client.CallOptions.BeginTransaction, gax.WithClientMetrics(metrics))
+		client.CallOptions.Commit = append(client.CallOptions.Commit, gax.WithClientMetrics(metrics))
+		client.CallOptions.Rollback = append(client.CallOptions.Rollback, gax.WithClientMetrics(metrics))
+		client.CallOptions.RunQuery = append(client.CallOptions.RunQuery, gax.WithClientMetrics(metrics))
+		client.CallOptions.ExecutePipeline = append(client.CallOptions.ExecutePipeline, gax.WithClientMetrics(metrics))
+		client.CallOptions.RunAggregationQuery = append(client.CallOptions.RunAggregationQuery, gax.WithClientMetrics(metrics))
+		client.CallOptions.PartitionQuery = append(client.CallOptions.PartitionQuery, gax.WithClientMetrics(metrics))
+		client.CallOptions.Write = append(client.CallOptions.Write, gax.WithClientMetrics(metrics))
+		client.CallOptions.Listen = append(client.CallOptions.Listen, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListCollectionIds = append(client.CallOptions.ListCollectionIds, gax.WithClientMetrics(metrics))
+		client.CallOptions.BatchWrite = append(client.CallOptions.BatchWrite, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateDocument = append(client.CallOptions.CreateDocument, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "firestore",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/firestore/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "firestore.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetDocument = append(client.CallOptions.GetDocument, gax.WithClientTracing(tracing))
+		client.CallOptions.ListDocuments = append(client.CallOptions.ListDocuments, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateDocument = append(client.CallOptions.UpdateDocument, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteDocument = append(client.CallOptions.DeleteDocument, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchGetDocuments = append(client.CallOptions.BatchGetDocuments, gax.WithClientTracing(tracing))
+		client.CallOptions.BeginTransaction = append(client.CallOptions.BeginTransaction, gax.WithClientTracing(tracing))
+		client.CallOptions.Commit = append(client.CallOptions.Commit, gax.WithClientTracing(tracing))
+		client.CallOptions.Rollback = append(client.CallOptions.Rollback, gax.WithClientTracing(tracing))
+		client.CallOptions.RunQuery = append(client.CallOptions.RunQuery, gax.WithClientTracing(tracing))
+		client.CallOptions.ExecutePipeline = append(client.CallOptions.ExecutePipeline, gax.WithClientTracing(tracing))
+		client.CallOptions.RunAggregationQuery = append(client.CallOptions.RunAggregationQuery, gax.WithClientTracing(tracing))
+		client.CallOptions.PartitionQuery = append(client.CallOptions.PartitionQuery, gax.WithClientTracing(tracing))
+		client.CallOptions.Write = append(client.CallOptions.Write, gax.WithClientTracing(tracing))
+		client.CallOptions.Listen = append(client.CallOptions.Listen, gax.WithClientTracing(tracing))
+		client.CallOptions.ListCollectionIds = append(client.CallOptions.ListCollectionIds, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchWrite = append(client.CallOptions.BatchWrite, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateDocument = append(client.CallOptions.CreateDocument, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "firestore",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/firestore/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "firestore.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetDocument = append(client.CallOptions.GetDocument, gax.WithClientLogging(logging))
+		client.CallOptions.ListDocuments = append(client.CallOptions.ListDocuments, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateDocument = append(client.CallOptions.UpdateDocument, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteDocument = append(client.CallOptions.DeleteDocument, gax.WithClientLogging(logging))
+		client.CallOptions.BatchGetDocuments = append(client.CallOptions.BatchGetDocuments, gax.WithClientLogging(logging))
+		client.CallOptions.BeginTransaction = append(client.CallOptions.BeginTransaction, gax.WithClientLogging(logging))
+		client.CallOptions.Commit = append(client.CallOptions.Commit, gax.WithClientLogging(logging))
+		client.CallOptions.Rollback = append(client.CallOptions.Rollback, gax.WithClientLogging(logging))
+		client.CallOptions.RunQuery = append(client.CallOptions.RunQuery, gax.WithClientLogging(logging))
+		client.CallOptions.ExecutePipeline = append(client.CallOptions.ExecutePipeline, gax.WithClientLogging(logging))
+		client.CallOptions.RunAggregationQuery = append(client.CallOptions.RunAggregationQuery, gax.WithClientLogging(logging))
+		client.CallOptions.PartitionQuery = append(client.CallOptions.PartitionQuery, gax.WithClientLogging(logging))
+		client.CallOptions.Write = append(client.CallOptions.Write, gax.WithClientLogging(logging))
+		client.CallOptions.Listen = append(client.CallOptions.Listen, gax.WithClientLogging(logging))
+		client.CallOptions.ListCollectionIds = append(client.CallOptions.ListCollectionIds, gax.WithClientLogging(logging))
+		client.CallOptions.BatchWrite = append(client.CallOptions.BatchWrite, gax.WithClientLogging(logging))
+		client.CallOptions.CreateDocument = append(client.CallOptions.CreateDocument, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -799,7 +947,7 @@ func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *gRPCClient) Close() error {
 	return c.connPool.Close()
@@ -834,6 +982,16 @@ type restClient struct {
 // truly serverless apps.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "firestore",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/firestore/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "firestore.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -847,6 +1005,108 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "firestore",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/firestore/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "firestore.googleapis.com",
+			}),
+		)
+
+		callOpts.GetDocument = append(callOpts.GetDocument, gax.WithClientMetrics(metrics))
+		callOpts.ListDocuments = append(callOpts.ListDocuments, gax.WithClientMetrics(metrics))
+		callOpts.UpdateDocument = append(callOpts.UpdateDocument, gax.WithClientMetrics(metrics))
+		callOpts.DeleteDocument = append(callOpts.DeleteDocument, gax.WithClientMetrics(metrics))
+		callOpts.BatchGetDocuments = append(callOpts.BatchGetDocuments, gax.WithClientMetrics(metrics))
+		callOpts.BeginTransaction = append(callOpts.BeginTransaction, gax.WithClientMetrics(metrics))
+		callOpts.Commit = append(callOpts.Commit, gax.WithClientMetrics(metrics))
+		callOpts.Rollback = append(callOpts.Rollback, gax.WithClientMetrics(metrics))
+		callOpts.RunQuery = append(callOpts.RunQuery, gax.WithClientMetrics(metrics))
+		callOpts.ExecutePipeline = append(callOpts.ExecutePipeline, gax.WithClientMetrics(metrics))
+		callOpts.RunAggregationQuery = append(callOpts.RunAggregationQuery, gax.WithClientMetrics(metrics))
+		callOpts.PartitionQuery = append(callOpts.PartitionQuery, gax.WithClientMetrics(metrics))
+		callOpts.Write = append(callOpts.Write, gax.WithClientMetrics(metrics))
+		callOpts.Listen = append(callOpts.Listen, gax.WithClientMetrics(metrics))
+		callOpts.ListCollectionIds = append(callOpts.ListCollectionIds, gax.WithClientMetrics(metrics))
+		callOpts.BatchWrite = append(callOpts.BatchWrite, gax.WithClientMetrics(metrics))
+		callOpts.CreateDocument = append(callOpts.CreateDocument, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "firestore",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/firestore/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "firestore.googleapis.com",
+			}),
+		)
+
+		callOpts.GetDocument = append(callOpts.GetDocument, gax.WithClientTracing(tracing))
+		callOpts.ListDocuments = append(callOpts.ListDocuments, gax.WithClientTracing(tracing))
+		callOpts.UpdateDocument = append(callOpts.UpdateDocument, gax.WithClientTracing(tracing))
+		callOpts.DeleteDocument = append(callOpts.DeleteDocument, gax.WithClientTracing(tracing))
+		callOpts.BatchGetDocuments = append(callOpts.BatchGetDocuments, gax.WithClientTracing(tracing))
+		callOpts.BeginTransaction = append(callOpts.BeginTransaction, gax.WithClientTracing(tracing))
+		callOpts.Commit = append(callOpts.Commit, gax.WithClientTracing(tracing))
+		callOpts.Rollback = append(callOpts.Rollback, gax.WithClientTracing(tracing))
+		callOpts.RunQuery = append(callOpts.RunQuery, gax.WithClientTracing(tracing))
+		callOpts.ExecutePipeline = append(callOpts.ExecutePipeline, gax.WithClientTracing(tracing))
+		callOpts.RunAggregationQuery = append(callOpts.RunAggregationQuery, gax.WithClientTracing(tracing))
+		callOpts.PartitionQuery = append(callOpts.PartitionQuery, gax.WithClientTracing(tracing))
+		callOpts.Write = append(callOpts.Write, gax.WithClientTracing(tracing))
+		callOpts.Listen = append(callOpts.Listen, gax.WithClientTracing(tracing))
+		callOpts.ListCollectionIds = append(callOpts.ListCollectionIds, gax.WithClientTracing(tracing))
+		callOpts.BatchWrite = append(callOpts.BatchWrite, gax.WithClientTracing(tracing))
+		callOpts.CreateDocument = append(callOpts.CreateDocument, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "firestore",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/firestore/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "firestore.googleapis.com",
+			}),
+		)
+
+		callOpts.GetDocument = append(callOpts.GetDocument, gax.WithClientLogging(logging))
+		callOpts.ListDocuments = append(callOpts.ListDocuments, gax.WithClientLogging(logging))
+		callOpts.UpdateDocument = append(callOpts.UpdateDocument, gax.WithClientLogging(logging))
+		callOpts.DeleteDocument = append(callOpts.DeleteDocument, gax.WithClientLogging(logging))
+		callOpts.BatchGetDocuments = append(callOpts.BatchGetDocuments, gax.WithClientLogging(logging))
+		callOpts.BeginTransaction = append(callOpts.BeginTransaction, gax.WithClientLogging(logging))
+		callOpts.Commit = append(callOpts.Commit, gax.WithClientLogging(logging))
+		callOpts.Rollback = append(callOpts.Rollback, gax.WithClientLogging(logging))
+		callOpts.RunQuery = append(callOpts.RunQuery, gax.WithClientLogging(logging))
+		callOpts.ExecutePipeline = append(callOpts.ExecutePipeline, gax.WithClientLogging(logging))
+		callOpts.RunAggregationQuery = append(callOpts.RunAggregationQuery, gax.WithClientLogging(logging))
+		callOpts.PartitionQuery = append(callOpts.PartitionQuery, gax.WithClientLogging(logging))
+		callOpts.Write = append(callOpts.Write, gax.WithClientLogging(logging))
+		callOpts.Listen = append(callOpts.Listen, gax.WithClientLogging(logging))
+		callOpts.ListCollectionIds = append(callOpts.ListCollectionIds, gax.WithClientLogging(logging))
+		callOpts.BatchWrite = append(callOpts.BatchWrite, gax.WithClientLogging(logging))
+		callOpts.CreateDocument = append(callOpts.CreateDocument, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -874,7 +1134,7 @@ func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *restClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -893,6 +1153,9 @@ func (c *gRPCClient) GetDocument(ctx context.Context, req *firestorepb.GetDocume
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.v1.Firestore/GetDocument")
+	}
 	opts = append((*c.CallOptions).GetDocument[0:len((*c.CallOptions).GetDocument):len((*c.CallOptions).GetDocument)], opts...)
 	var resp *firestorepb.Document
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -911,9 +1174,12 @@ func (c *gRPCClient) ListDocuments(ctx context.Context, req *firestorepb.ListDoc
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.v1.Firestore/ListDocuments")
+	}
 	opts = append((*c.CallOptions).ListDocuments[0:len((*c.CallOptions).ListDocuments):len((*c.CallOptions).ListDocuments)], opts...)
 	it := &DocumentIterator{}
-	req = proto.Clone(req).(*firestorepb.ListDocumentsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*firestorepb.Document, string, error) {
 		resp := &firestorepb.ListDocumentsResponse{}
 		if pageToken != "" {
@@ -957,6 +1223,9 @@ func (c *gRPCClient) UpdateDocument(ctx context.Context, req *firestorepb.Update
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.v1.Firestore/UpdateDocument")
+	}
 	opts = append((*c.CallOptions).UpdateDocument[0:len((*c.CallOptions).UpdateDocument):len((*c.CallOptions).UpdateDocument)], opts...)
 	var resp *firestorepb.Document
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -975,6 +1244,9 @@ func (c *gRPCClient) DeleteDocument(ctx context.Context, req *firestorepb.Delete
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.v1.Firestore/DeleteDocument")
+	}
 	opts = append((*c.CallOptions).DeleteDocument[0:len((*c.CallOptions).DeleteDocument):len((*c.CallOptions).DeleteDocument)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -989,6 +1261,9 @@ func (c *gRPCClient) BatchGetDocuments(ctx context.Context, req *firestorepb.Bat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.v1.Firestore/BatchGetDocuments")
+	}
 	opts = append((*c.CallOptions).BatchGetDocuments[0:len((*c.CallOptions).BatchGetDocuments):len((*c.CallOptions).BatchGetDocuments)], opts...)
 	var resp firestorepb.Firestore_BatchGetDocumentsClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1009,6 +1284,9 @@ func (c *gRPCClient) BeginTransaction(ctx context.Context, req *firestorepb.Begi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.v1.Firestore/BeginTransaction")
+	}
 	opts = append((*c.CallOptions).BeginTransaction[0:len((*c.CallOptions).BeginTransaction):len((*c.CallOptions).BeginTransaction)], opts...)
 	var resp *firestorepb.BeginTransactionResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1027,6 +1305,9 @@ func (c *gRPCClient) Commit(ctx context.Context, req *firestorepb.CommitRequest,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.v1.Firestore/Commit")
+	}
 	opts = append((*c.CallOptions).Commit[0:len((*c.CallOptions).Commit):len((*c.CallOptions).Commit)], opts...)
 	var resp *firestorepb.CommitResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1045,6 +1326,9 @@ func (c *gRPCClient) Rollback(ctx context.Context, req *firestorepb.RollbackRequ
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.v1.Firestore/Rollback")
+	}
 	opts = append((*c.CallOptions).Rollback[0:len((*c.CallOptions).Rollback):len((*c.CallOptions).Rollback)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1059,6 +1343,9 @@ func (c *gRPCClient) RunQuery(ctx context.Context, req *firestorepb.RunQueryRequ
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.v1.Firestore/RunQuery")
+	}
 	opts = append((*c.CallOptions).RunQuery[0:len((*c.CallOptions).RunQuery):len((*c.CallOptions).RunQuery)], opts...)
 	var resp firestorepb.Firestore_RunQueryClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1074,11 +1361,54 @@ func (c *gRPCClient) RunQuery(ctx context.Context, req *firestorepb.RunQueryRequ
 	return resp, nil
 }
 
+func (c *gRPCClient) ExecutePipeline(ctx context.Context, req *firestorepb.ExecutePipelineRequest, opts ...gax.CallOption) (firestorepb.Firestore_ExecutePipelineClient, error) {
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("projects/(?P<project_id>[^/]+)(?:/.*)?"); reg.MatchString(req.GetDatabase()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetDatabase())[1])) > 0 {
+		routingHeadersMap["project_id"] = url.QueryEscape(reg.FindStringSubmatch(req.GetDatabase())[1])
+	}
+	if reg := regexp.MustCompile("projects/[^/]+/databases/(?P<database_id>[^/]+)(?:/.*)?"); reg.MatchString(req.GetDatabase()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetDatabase())[1])) > 0 {
+		routingHeadersMap["database_id"] = url.QueryEscape(reg.FindStringSubmatch(req.GetDatabase())[1])
+	}
+	if headerValue, ok := routingHeadersMap["project_id"]; ok {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, "project_id", headerValue)
+		delete(routingHeadersMap, "project_id")
+	}
+	if headerValue, ok := routingHeadersMap["database_id"]; ok {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, "database_id", headerValue)
+		delete(routingHeadersMap, "database_id")
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.v1.Firestore/ExecutePipeline")
+	}
+	opts = append((*c.CallOptions).ExecutePipeline[0:len((*c.CallOptions).ExecutePipeline):len((*c.CallOptions).ExecutePipeline)], opts...)
+	var resp firestorepb.Firestore_ExecutePipelineClient
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		c.logger.DebugContext(ctx, "api streaming client request", "serviceName", serviceName, "rpcName", "ExecutePipeline")
+		resp, err = c.client.ExecutePipeline(ctx, req, settings.GRPC...)
+		c.logger.DebugContext(ctx, "api streaming client response", "serviceName", serviceName, "rpcName", "ExecutePipeline")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *gRPCClient) RunAggregationQuery(ctx context.Context, req *firestorepb.RunAggregationQueryRequest, opts ...gax.CallOption) (firestorepb.Firestore_RunAggregationQueryClient, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.v1.Firestore/RunAggregationQuery")
+	}
 	opts = append((*c.CallOptions).RunAggregationQuery[0:len((*c.CallOptions).RunAggregationQuery):len((*c.CallOptions).RunAggregationQuery)], opts...)
 	var resp firestorepb.Firestore_RunAggregationQueryClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1099,9 +1429,12 @@ func (c *gRPCClient) PartitionQuery(ctx context.Context, req *firestorepb.Partit
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.v1.Firestore/PartitionQuery")
+	}
 	opts = append((*c.CallOptions).PartitionQuery[0:len((*c.CallOptions).PartitionQuery):len((*c.CallOptions).PartitionQuery)], opts...)
 	it := &CursorIterator{}
-	req = proto.Clone(req).(*firestorepb.PartitionQueryRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*firestorepb.Cursor, string, error) {
 		resp := &firestorepb.PartitionQueryResponse{}
 		if pageToken != "" {
@@ -1142,6 +1475,9 @@ func (c *gRPCClient) PartitionQuery(ctx context.Context, req *firestorepb.Partit
 
 func (c *gRPCClient) Write(ctx context.Context, opts ...gax.CallOption) (firestorepb.Firestore_WriteClient, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.v1.Firestore/Write")
+	}
 	var resp firestorepb.Firestore_WriteClient
 	opts = append((*c.CallOptions).Write[0:len((*c.CallOptions).Write):len((*c.CallOptions).Write)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1159,6 +1495,9 @@ func (c *gRPCClient) Write(ctx context.Context, opts ...gax.CallOption) (firesto
 
 func (c *gRPCClient) Listen(ctx context.Context, opts ...gax.CallOption) (firestorepb.Firestore_ListenClient, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.v1.Firestore/Listen")
+	}
 	var resp firestorepb.Firestore_ListenClient
 	opts = append((*c.CallOptions).Listen[0:len((*c.CallOptions).Listen):len((*c.CallOptions).Listen)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1179,9 +1518,12 @@ func (c *gRPCClient) ListCollectionIds(ctx context.Context, req *firestorepb.Lis
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.v1.Firestore/ListCollectionIds")
+	}
 	opts = append((*c.CallOptions).ListCollectionIds[0:len((*c.CallOptions).ListCollectionIds):len((*c.CallOptions).ListCollectionIds)], opts...)
 	it := &StringIterator{}
-	req = proto.Clone(req).(*firestorepb.ListCollectionIdsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]string, string, error) {
 		resp := &firestorepb.ListCollectionIdsResponse{}
 		if pageToken != "" {
@@ -1225,6 +1567,9 @@ func (c *gRPCClient) BatchWrite(ctx context.Context, req *firestorepb.BatchWrite
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.v1.Firestore/BatchWrite")
+	}
 	opts = append((*c.CallOptions).BatchWrite[0:len((*c.CallOptions).BatchWrite):len((*c.CallOptions).BatchWrite)], opts...)
 	var resp *firestorepb.BatchWriteResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1243,6 +1588,9 @@ func (c *gRPCClient) CreateDocument(ctx context.Context, req *firestorepb.Create
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.v1.Firestore/CreateDocument")
+	}
 	opts = append((*c.CallOptions).CreateDocument[0:len((*c.CallOptions).CreateDocument):len((*c.CallOptions).CreateDocument)], opts...)
 	var resp *firestorepb.Document
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1261,6 +1609,9 @@ func (c *gRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1275,6 +1626,9 @@ func (c *gRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+	}
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1289,6 +1643,9 @@ func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1307,9 +1664,12 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1370,6 +1730,11 @@ func (c *restClient) GetDocument(ctx context.Context, req *firestorepb.GetDocume
 		}
 		params.Add("readTime", string(field[1:len(field)-1]))
 	}
+	if items := req.GetRequestOptions().GetRequestTags(); len(items) > 0 {
+		for _, item := range items {
+			params.Add("requestOptions.requestTags", fmt.Sprintf("%v", item))
+		}
+	}
 	if req.GetTransaction() != nil {
 		params.Add("transaction", fmt.Sprintf("%v", req.GetTransaction()))
 	}
@@ -1382,6 +1747,10 @@ func (c *restClient) GetDocument(ctx context.Context, req *firestorepb.GetDocume
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.v1.Firestore/GetDocument")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/databases/*/documents/*/**}")
+	}
 	opts = append((*c.CallOptions).GetDocument[0:len((*c.CallOptions).GetDocument):len((*c.CallOptions).GetDocument)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &firestorepb.Document{}
@@ -1416,7 +1785,7 @@ func (c *restClient) GetDocument(ctx context.Context, req *firestorepb.GetDocume
 // ListDocuments lists documents.
 func (c *restClient) ListDocuments(ctx context.Context, req *firestorepb.ListDocumentsRequest, opts ...gax.CallOption) *DocumentIterator {
 	it := &DocumentIterator{}
-	req = proto.Clone(req).(*firestorepb.ListDocumentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*firestorepb.Document, string, error) {
 		resp := &firestorepb.ListDocumentsResponse{}
@@ -1456,6 +1825,11 @@ func (c *restClient) ListDocuments(ctx context.Context, req *firestorepb.ListDoc
 				return nil, "", err
 			}
 			params.Add("readTime", string(field[1:len(field)-1]))
+		}
+		if items := req.GetRequestOptions().GetRequestTags(); len(items) > 0 {
+			for _, item := range items {
+				params.Add("requestOptions.requestTags", fmt.Sprintf("%v", item))
+			}
 		}
 		if req.GetShowMissing() {
 			params.Add("showMissing", fmt.Sprintf("%v", req.GetShowMissing()))
@@ -1544,6 +1918,11 @@ func (c *restClient) UpdateDocument(ctx context.Context, req *firestorepb.Update
 			params.Add("mask.fieldPaths", fmt.Sprintf("%v", item))
 		}
 	}
+	if items := req.GetRequestOptions().GetRequestTags(); len(items) > 0 {
+		for _, item := range items {
+			params.Add("requestOptions.requestTags", fmt.Sprintf("%v", item))
+		}
+	}
 	if items := req.GetUpdateMask().GetFieldPaths(); len(items) > 0 {
 		for _, item := range items {
 			params.Add("updateMask.fieldPaths", fmt.Sprintf("%v", item))
@@ -1558,6 +1937,10 @@ func (c *restClient) UpdateDocument(ctx context.Context, req *firestorepb.Update
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.v1.Firestore/UpdateDocument")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{document.name=projects/*/databases/*/documents/*/**}")
+	}
 	opts = append((*c.CallOptions).UpdateDocument[0:len((*c.CallOptions).UpdateDocument):len((*c.CallOptions).UpdateDocument)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &firestorepb.Document{}
@@ -1609,6 +1992,11 @@ func (c *restClient) DeleteDocument(ctx context.Context, req *firestorepb.Delete
 		}
 		params.Add("currentDocument.updateTime", string(field[1:len(field)-1]))
 	}
+	if items := req.GetRequestOptions().GetRequestTags(); len(items) > 0 {
+		for _, item := range items {
+			params.Add("requestOptions.requestTags", fmt.Sprintf("%v", item))
+		}
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -1618,6 +2006,10 @@ func (c *restClient) DeleteDocument(ctx context.Context, req *firestorepb.Delete
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.v1.Firestore/DeleteDocument")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/databases/*/documents/*/**}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1662,6 +2054,10 @@ func (c *restClient) BatchGetDocuments(ctx context.Context, req *firestorepb.Bat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.v1.Firestore/BatchGetDocuments")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{database=projects/*/databases/*}/documents:batchGet")
+	}
 	var streamClient *batchGetDocumentsRESTStreamClient
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
@@ -1764,6 +2160,10 @@ func (c *restClient) BeginTransaction(ctx context.Context, req *firestorepb.Begi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.v1.Firestore/BeginTransaction")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{database=projects/*/databases/*}/documents:beginTransaction")
+	}
 	opts = append((*c.CallOptions).BeginTransaction[0:len((*c.CallOptions).BeginTransaction):len((*c.CallOptions).BeginTransaction)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &firestorepb.BeginTransactionResponse{}
@@ -1820,6 +2220,10 @@ func (c *restClient) Commit(ctx context.Context, req *firestorepb.CommitRequest,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.v1.Firestore/Commit")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{database=projects/*/databases/*}/documents:commit")
+	}
 	opts = append((*c.CallOptions).Commit[0:len((*c.CallOptions).Commit):len((*c.CallOptions).Commit)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &firestorepb.CommitResponse{}
@@ -1876,6 +2280,10 @@ func (c *restClient) Rollback(ctx context.Context, req *firestorepb.RollbackRequ
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.v1.Firestore/Rollback")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{database=projects/*/databases/*}/documents:rollback")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1917,6 +2325,10 @@ func (c *restClient) RunQuery(ctx context.Context, req *firestorepb.RunQueryRequ
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.v1.Firestore/RunQuery")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/databases/*/documents}:runQuery")
+	}
 	var streamClient *runQueryRESTStreamClient
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
@@ -1994,6 +2406,129 @@ func (c *runQueryRESTStreamClient) RecvMsg(m interface{}) error {
 	return errors.New("this method is not implemented, use Recv")
 }
 
+// ExecutePipeline executes a pipeline query.
+func (c *restClient) ExecutePipeline(ctx context.Context, req *firestorepb.ExecutePipelineRequest, opts ...gax.CallOption) (firestorepb.Firestore_ExecutePipelineClient, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/documents:executePipeline", req.GetDatabase())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("projects/(?P<project_id>[^/]+)(?:/.*)?"); reg.MatchString(req.GetDatabase()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetDatabase())[1])) > 0 {
+		routingHeadersMap["project_id"] = url.QueryEscape(reg.FindStringSubmatch(req.GetDatabase())[1])
+	}
+	if reg := regexp.MustCompile("projects/[^/]+/databases/(?P<database_id>[^/]+)(?:/.*)?"); reg.MatchString(req.GetDatabase()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetDatabase())[1])) > 0 {
+		routingHeadersMap["database_id"] = url.QueryEscape(reg.FindStringSubmatch(req.GetDatabase())[1])
+	}
+	if headerValue, ok := routingHeadersMap["project_id"]; ok {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, "project_id", headerValue)
+		delete(routingHeadersMap, "project_id")
+	}
+	if headerValue, ok := routingHeadersMap["database_id"]; ok {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, "database_id", headerValue)
+		delete(routingHeadersMap, "database_id")
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.v1.Firestore/ExecutePipeline")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{database=projects/*/databases/*}/documents:executePipeline")
+	}
+	var streamClient *executePipelineRESTStreamClient
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := executeStreamingHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ExecutePipeline")
+		if err != nil {
+			return err
+		}
+
+		streamClient = &executePipelineRESTStreamClient{
+			ctx:    ctx,
+			md:     metadata.MD(httpRsp.Header),
+			stream: gax.NewProtoJSONStreamReader(httpRsp.Body, (&firestorepb.ExecutePipelineResponse{}).ProtoReflect().Type()),
+		}
+		return nil
+	}, opts...)
+
+	return streamClient, e
+}
+
+// executePipelineRESTStreamClient is the stream client used to consume the server stream created by
+// the REST implementation of ExecutePipeline.
+type executePipelineRESTStreamClient struct {
+	ctx    context.Context
+	md     metadata.MD
+	stream *gax.ProtoJSONStream
+}
+
+func (c *executePipelineRESTStreamClient) Recv() (*firestorepb.ExecutePipelineResponse, error) {
+	if err := c.ctx.Err(); err != nil {
+		defer c.stream.Close()
+		return nil, err
+	}
+	msg, err := c.stream.Recv()
+	if err != nil {
+		defer c.stream.Close()
+		return nil, err
+	}
+	res := msg.(*firestorepb.ExecutePipelineResponse)
+	return res, nil
+}
+
+func (c *executePipelineRESTStreamClient) Header() (metadata.MD, error) {
+	return c.md, nil
+}
+
+func (c *executePipelineRESTStreamClient) Trailer() metadata.MD {
+	return c.md
+}
+
+func (c *executePipelineRESTStreamClient) CloseSend() error {
+	// This is a no-op to fulfill the interface.
+	return errors.New("this method is not implemented for a server-stream")
+}
+
+func (c *executePipelineRESTStreamClient) Context() context.Context {
+	return c.ctx
+}
+
+func (c *executePipelineRESTStreamClient) SendMsg(m interface{}) error {
+	// This is a no-op to fulfill the interface.
+	return errors.New("this method is not implemented for a server-stream")
+}
+
+func (c *executePipelineRESTStreamClient) RecvMsg(m interface{}) error {
+	// This is a no-op to fulfill the interface.
+	return errors.New("this method is not implemented, use Recv")
+}
+
 // RunAggregationQuery runs an aggregation query.
 //
 // Rather than producing Document results like
@@ -2026,6 +2561,10 @@ func (c *restClient) RunAggregationQuery(ctx context.Context, req *firestorepb.R
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.v1.Firestore/RunAggregationQuery")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/databases/*/documents}:runAggregationQuery")
+	}
 	var streamClient *runAggregationQueryRESTStreamClient
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
@@ -2108,7 +2647,7 @@ func (c *runAggregationQueryRESTStreamClient) RecvMsg(m interface{}) error {
 // can be used by RunQuery as starting/end points for the query results.
 func (c *restClient) PartitionQuery(ctx context.Context, req *firestorepb.PartitionQueryRequest, opts ...gax.CallOption) *CursorIterator {
 	it := &CursorIterator{}
-	req = proto.Clone(req).(*firestorepb.PartitionQueryRequest)
+	req = proto.CloneOf(req)
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*firestorepb.Cursor, string, error) {
@@ -2202,7 +2741,7 @@ func (c *restClient) Listen(ctx context.Context, opts ...gax.CallOption) (firest
 // ListCollectionIds lists all the collection IDs underneath a document.
 func (c *restClient) ListCollectionIds(ctx context.Context, req *firestorepb.ListCollectionIdsRequest, opts ...gax.CallOption) *StringIterator {
 	it := &StringIterator{}
-	req = proto.Clone(req).(*firestorepb.ListCollectionIdsRequest)
+	req = proto.CloneOf(req)
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]string, string, error) {
@@ -2311,6 +2850,10 @@ func (c *restClient) BatchWrite(ctx context.Context, req *firestorepb.BatchWrite
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.v1.Firestore/BatchWrite")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{database=projects/*/databases/*}/documents:batchWrite")
+	}
 	opts = append((*c.CallOptions).BatchWrite[0:len((*c.CallOptions).BatchWrite):len((*c.CallOptions).BatchWrite)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &firestorepb.BatchWriteResponse{}
@@ -2367,6 +2910,11 @@ func (c *restClient) CreateDocument(ctx context.Context, req *firestorepb.Create
 			params.Add("mask.fieldPaths", fmt.Sprintf("%v", item))
 		}
 	}
+	if items := req.GetRequestOptions().GetRequestTags(); len(items) > 0 {
+		for _, item := range items {
+			params.Add("requestOptions.requestTags", fmt.Sprintf("%v", item))
+		}
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -2376,6 +2924,10 @@ func (c *restClient) CreateDocument(ctx context.Context, req *firestorepb.Create
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.firestore.v1.Firestore/CreateDocument")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/databases/*/documents/**}/{collection_id}")
+	}
 	opts = append((*c.CallOptions).CreateDocument[0:len((*c.CallOptions).CreateDocument):len((*c.CallOptions).CreateDocument)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &firestorepb.Document{}
@@ -2432,6 +2984,10 @@ func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/databases/*/operations/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2467,6 +3023,10 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/databases/*/operations/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2502,6 +3062,10 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/databases/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -2536,7 +3100,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
@@ -2564,6 +3128,9 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 		}
 		if req.GetPageToken() != "" {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req.GetReturnPartialSuccess() {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()

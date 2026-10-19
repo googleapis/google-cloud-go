@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import (
 
 	bigquerypb "cloud.google.com/go/bigquery/v2/apiv2/bigquerypb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -293,7 +294,7 @@ type JobClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *JobClient) Close() error {
 	return c.internalClient.Close()
@@ -317,6 +318,10 @@ func (c *JobClient) Connection() *grpc.ClientConn {
 // CancelJob requests that a job be cancelled. This call will return immediately, and
 // the client will need to poll for the job status to see if the cancel
 // completed successfully. Cancelled jobs may still incur costs.
+//
+// IAM PermissionsRequires the bigquery.jobs.update permission on the job resource.
+// If the user matches the creator of the job, the bigquery.jobs.create
+// permission on the project is required instead.
 func (c *JobClient) CancelJob(ctx context.Context, req *bigquerypb.CancelJobRequest, opts ...gax.CallOption) (*bigquerypb.JobCancelResponse, error) {
 	return c.internalClient.CancelJob(ctx, req, opts...)
 }
@@ -324,6 +329,10 @@ func (c *JobClient) CancelJob(ctx context.Context, req *bigquerypb.CancelJobRequ
 // GetJob returns information about a specific job. Job information is available for
 // a six month period after creation. Requires that you’re the person who ran
 // the job, or have the Is Owner project role.
+//
+// IAM PermissionsRequires the bigquery.jobs.get permission on the job resource.
+// If the user matches the creator of the job, the bigquery.jobs.create
+// permission on the project is required instead.
 func (c *JobClient) GetJob(ctx context.Context, req *bigquerypb.GetJobRequest, opts ...gax.CallOption) (*bigquerypb.Job, error) {
 	return c.internalClient.GetJob(ctx, req, opts...)
 }
@@ -340,12 +349,26 @@ func (c *JobClient) GetJob(ctx context.Context, req *bigquerypb.GetJobRequest, o
 //	configuration and a data stream together.  In this case, the Upload URI
 //	accepts the job configuration and the data as two distinct multipart MIME
 //	parts.
+//
+// IAM PermissionsRequires the bigquery.jobs.create permission on the project resource.
+//
+// Additional permissions are required depending on the job type:
+//
+//	Load, Export, and Copy jobs: Generally require data-level
+//	permissions such as bigquery.tables.export or access to external
+//	storage.
+//
+//	Query jobs: Permissions are dependent on the SQL statement.
+//	Complex queries (DDL, DCL) may require additional permissions to
+//	create reservations, modify IAM policies, or update project settings.
 func (c *JobClient) InsertJob(ctx context.Context, req *bigquerypb.InsertJobRequest, opts ...gax.CallOption) (*bigquerypb.Job, error) {
 	return c.internalClient.InsertJob(ctx, req, opts...)
 }
 
 // DeleteJob requests the deletion of the metadata of a job. This call returns when the
 // job’s metadata is deleted.
+//
+// IAM PermissionsRequires the bigquery.jobs.delete permission on the job resource.
 func (c *JobClient) DeleteJob(ctx context.Context, req *bigquerypb.DeleteJobRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteJob(ctx, req, opts...)
 }
@@ -355,17 +378,48 @@ func (c *JobClient) DeleteJob(ctx context.Context, req *bigquerypb.DeleteJobRequ
 // in reverse chronological order, by job creation time. Requires the Can View
 // project role, or the Is Owner project role if you set the allUsers
 // property.
+//
+// IAM PermissionsRequires no specific IAM permission(s) to use this method. Users are able
+// to list the jobs they created.
+//
+// Additional access is granted based on the following permissions:
+//
+//	Users with the bigquery.jobs.listAll permission can list all jobs with
+//	all metadata.
+//
+//	Users with the bigquery.jobs.list permission can list all jobs, but
+//	with redacted information for jobs they did not create.
 func (c *JobClient) ListJobs(ctx context.Context, req *bigquerypb.ListJobsRequest, opts ...gax.CallOption) *ListFormatJobIterator {
 	return c.internalClient.ListJobs(ctx, req, opts...)
 }
 
 // GetQueryResults rPC to get the results of a query job.
+//
+// IAM PermissionsRequires the following IAM permission(s) to use this method:
+//
+//	bigquery.jobs.get on the job.
+//
+//	bigquery.tables.getData on the destination table.
+//
+// If the user matches the creator of the job, the following IAM permission(s)
+// are required instead:
+//
+//	bigquery.jobs.create on the project.
+//
+//	bigquery.tables.getData on the destination table.
 func (c *JobClient) GetQueryResults(ctx context.Context, req *bigquerypb.GetQueryResultsRequest, opts ...gax.CallOption) (*bigquerypb.GetQueryResultsResponse, error) {
 	return c.internalClient.GetQueryResults(ctx, req, opts...)
 }
 
 // Query runs a BigQuery SQL query synchronously and returns query results if the
 // query completes within a specified timeout.
+//
+// IAM PermissionsRequires the bigquery.jobs.create permission on the project resource.
+//
+// Data-level permissions are highly dependent on the SQL statement being
+// executed. While standard queries require data access (such as
+// bigquery.tables.getData), complex operations like DDL or DCL may require
+// permissions to manage reservations, IAM policies, or project settings.
 func (c *JobClient) Query(ctx context.Context, req *bigquerypb.PostQueryRequest, opts ...gax.CallOption) (*bigquerypb.QueryResponse, error) {
 	return c.internalClient.Query(ctx, req, opts...)
 }
@@ -393,6 +447,16 @@ type jobGRPCClient struct {
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 func NewJobClient(ctx context.Context, opts ...option.ClientOption) (*JobClient, error) {
 	clientOpts := defaultJobGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "bigquery",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/bigquery/v2/apiv2",
+			"gcp.client.language": "go",
+			"url.domain":          "bigquery.googleapis.com",
+		}))
+	}
 	if newJobClientHook != nil {
 		hookOpts, err := newJobClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -414,6 +478,65 @@ func NewJobClient(ctx context.Context, opts ...option.ClientOption) (*JobClient,
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "bigquery",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/v2/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "bigquery.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CancelJob = append(client.CallOptions.CancelJob, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetJob = append(client.CallOptions.GetJob, gax.WithClientMetrics(metrics))
+		client.CallOptions.InsertJob = append(client.CallOptions.InsertJob, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteJob = append(client.CallOptions.DeleteJob, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListJobs = append(client.CallOptions.ListJobs, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetQueryResults = append(client.CallOptions.GetQueryResults, gax.WithClientMetrics(metrics))
+		client.CallOptions.Query = append(client.CallOptions.Query, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "bigquery",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/v2/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "bigquery.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CancelJob = append(client.CallOptions.CancelJob, gax.WithClientTracing(tracing))
+		client.CallOptions.GetJob = append(client.CallOptions.GetJob, gax.WithClientTracing(tracing))
+		client.CallOptions.InsertJob = append(client.CallOptions.InsertJob, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteJob = append(client.CallOptions.DeleteJob, gax.WithClientTracing(tracing))
+		client.CallOptions.ListJobs = append(client.CallOptions.ListJobs, gax.WithClientTracing(tracing))
+		client.CallOptions.GetQueryResults = append(client.CallOptions.GetQueryResults, gax.WithClientTracing(tracing))
+		client.CallOptions.Query = append(client.CallOptions.Query, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "bigquery",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/v2/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "bigquery.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CancelJob = append(client.CallOptions.CancelJob, gax.WithClientLogging(logging))
+		client.CallOptions.GetJob = append(client.CallOptions.GetJob, gax.WithClientLogging(logging))
+		client.CallOptions.InsertJob = append(client.CallOptions.InsertJob, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteJob = append(client.CallOptions.DeleteJob, gax.WithClientLogging(logging))
+		client.CallOptions.ListJobs = append(client.CallOptions.ListJobs, gax.WithClientLogging(logging))
+		client.CallOptions.GetQueryResults = append(client.CallOptions.GetQueryResults, gax.WithClientLogging(logging))
+		client.CallOptions.Query = append(client.CallOptions.Query, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -439,7 +562,7 @@ func (c *jobGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *jobGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -465,6 +588,16 @@ type jobRESTClient struct {
 // NewJobRESTClient creates a new job service rest client.
 func NewJobRESTClient(ctx context.Context, opts ...option.ClientOption) (*JobClient, error) {
 	clientOpts := append(defaultJobRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "bigquery",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/bigquery/v2/apiv2",
+			"gcp.client.language": "go",
+			"url.domain":          "bigquery.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -478,6 +611,66 @@ func NewJobRESTClient(ctx context.Context, opts ...option.ClientOption) (*JobCli
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "bigquery",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/v2/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "bigquery.googleapis.com",
+			}),
+		)
+
+		callOpts.CancelJob = append(callOpts.CancelJob, gax.WithClientMetrics(metrics))
+		callOpts.GetJob = append(callOpts.GetJob, gax.WithClientMetrics(metrics))
+		callOpts.InsertJob = append(callOpts.InsertJob, gax.WithClientMetrics(metrics))
+		callOpts.DeleteJob = append(callOpts.DeleteJob, gax.WithClientMetrics(metrics))
+		callOpts.ListJobs = append(callOpts.ListJobs, gax.WithClientMetrics(metrics))
+		callOpts.GetQueryResults = append(callOpts.GetQueryResults, gax.WithClientMetrics(metrics))
+		callOpts.Query = append(callOpts.Query, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "bigquery",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/v2/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "bigquery.googleapis.com",
+			}),
+		)
+
+		callOpts.CancelJob = append(callOpts.CancelJob, gax.WithClientTracing(tracing))
+		callOpts.GetJob = append(callOpts.GetJob, gax.WithClientTracing(tracing))
+		callOpts.InsertJob = append(callOpts.InsertJob, gax.WithClientTracing(tracing))
+		callOpts.DeleteJob = append(callOpts.DeleteJob, gax.WithClientTracing(tracing))
+		callOpts.ListJobs = append(callOpts.ListJobs, gax.WithClientTracing(tracing))
+		callOpts.GetQueryResults = append(callOpts.GetQueryResults, gax.WithClientTracing(tracing))
+		callOpts.Query = append(callOpts.Query, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "bigquery",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/v2/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "bigquery.googleapis.com",
+			}),
+		)
+
+		callOpts.CancelJob = append(callOpts.CancelJob, gax.WithClientLogging(logging))
+		callOpts.GetJob = append(callOpts.GetJob, gax.WithClientLogging(logging))
+		callOpts.InsertJob = append(callOpts.InsertJob, gax.WithClientLogging(logging))
+		callOpts.DeleteJob = append(callOpts.DeleteJob, gax.WithClientLogging(logging))
+		callOpts.ListJobs = append(callOpts.ListJobs, gax.WithClientLogging(logging))
+		callOpts.GetQueryResults = append(callOpts.GetQueryResults, gax.WithClientLogging(logging))
+		callOpts.Query = append(callOpts.Query, gax.WithClientLogging(logging))
+	}
 
 	return &JobClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -505,7 +698,7 @@ func (c *jobRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *jobRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -524,6 +717,9 @@ func (c *jobGRPCClient) CancelJob(ctx context.Context, req *bigquerypb.CancelJob
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.JobService/CancelJob")
+	}
 	opts = append((*c.CallOptions).CancelJob[0:len((*c.CallOptions).CancelJob):len((*c.CallOptions).CancelJob)], opts...)
 	var resp *bigquerypb.JobCancelResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -542,6 +738,9 @@ func (c *jobGRPCClient) GetJob(ctx context.Context, req *bigquerypb.GetJobReques
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.JobService/GetJob")
+	}
 	opts = append((*c.CallOptions).GetJob[0:len((*c.CallOptions).GetJob):len((*c.CallOptions).GetJob)], opts...)
 	var resp *bigquerypb.Job
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -560,6 +759,9 @@ func (c *jobGRPCClient) InsertJob(ctx context.Context, req *bigquerypb.InsertJob
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.JobService/InsertJob")
+	}
 	opts = append((*c.CallOptions).InsertJob[0:len((*c.CallOptions).InsertJob):len((*c.CallOptions).InsertJob)], opts...)
 	var resp *bigquerypb.Job
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -578,6 +780,9 @@ func (c *jobGRPCClient) DeleteJob(ctx context.Context, req *bigquerypb.DeleteJob
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.JobService/DeleteJob")
+	}
 	opts = append((*c.CallOptions).DeleteJob[0:len((*c.CallOptions).DeleteJob):len((*c.CallOptions).DeleteJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -592,9 +797,12 @@ func (c *jobGRPCClient) ListJobs(ctx context.Context, req *bigquerypb.ListJobsRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.JobService/ListJobs")
+	}
 	opts = append((*c.CallOptions).ListJobs[0:len((*c.CallOptions).ListJobs):len((*c.CallOptions).ListJobs)], opts...)
 	it := &ListFormatJobIterator{}
-	req = proto.Clone(req).(*bigquerypb.ListJobsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*bigquerypb.ListFormatJob, string, error) {
 		resp := &bigquerypb.JobList{}
 		if pageToken != "" {
@@ -640,6 +848,9 @@ func (c *jobGRPCClient) GetQueryResults(ctx context.Context, req *bigquerypb.Get
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.JobService/GetQueryResults")
+	}
 	opts = append((*c.CallOptions).GetQueryResults[0:len((*c.CallOptions).GetQueryResults):len((*c.CallOptions).GetQueryResults)], opts...)
 	var resp *bigquerypb.GetQueryResultsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -658,6 +869,9 @@ func (c *jobGRPCClient) Query(ctx context.Context, req *bigquerypb.PostQueryRequ
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.JobService/Query")
+	}
 	opts = append((*c.CallOptions).Query[0:len((*c.CallOptions).Query):len((*c.CallOptions).Query)], opts...)
 	var resp *bigquerypb.QueryResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -674,6 +888,10 @@ func (c *jobGRPCClient) Query(ctx context.Context, req *bigquerypb.PostQueryRequ
 // CancelJob requests that a job be cancelled. This call will return immediately, and
 // the client will need to poll for the job status to see if the cancel
 // completed successfully. Cancelled jobs may still incur costs.
+//
+// IAM PermissionsRequires the bigquery.jobs.update permission on the job resource.
+// If the user matches the creator of the job, the bigquery.jobs.create
+// permission on the project is required instead.
 func (c *jobRESTClient) CancelJob(ctx context.Context, req *bigquerypb.CancelJobRequest, opts ...gax.CallOption) (*bigquerypb.JobCancelResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -694,6 +912,10 @@ func (c *jobRESTClient) CancelJob(ctx context.Context, req *bigquerypb.CancelJob
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.JobService/CancelJob")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/bigquery/v2/projects/{project_id=*}/jobs/{job_id=*}/cancel")
+	}
 	opts = append((*c.CallOptions).CancelJob[0:len((*c.CallOptions).CancelJob):len((*c.CallOptions).CancelJob)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &bigquerypb.JobCancelResponse{}
@@ -728,6 +950,10 @@ func (c *jobRESTClient) CancelJob(ctx context.Context, req *bigquerypb.CancelJob
 // GetJob returns information about a specific job. Job information is available for
 // a six month period after creation. Requires that you’re the person who ran
 // the job, or have the Is Owner project role.
+//
+// IAM PermissionsRequires the bigquery.jobs.get permission on the job resource.
+// If the user matches the creator of the job, the bigquery.jobs.create
+// permission on the project is required instead.
 func (c *jobRESTClient) GetJob(ctx context.Context, req *bigquerypb.GetJobRequest, opts ...gax.CallOption) (*bigquerypb.Job, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -748,6 +974,10 @@ func (c *jobRESTClient) GetJob(ctx context.Context, req *bigquerypb.GetJobReques
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.JobService/GetJob")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/bigquery/v2/projects/{project_id=*}/jobs/{job_id=*}")
+	}
 	opts = append((*c.CallOptions).GetJob[0:len((*c.CallOptions).GetJob):len((*c.CallOptions).GetJob)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &bigquerypb.Job{}
@@ -791,6 +1021,18 @@ func (c *jobRESTClient) GetJob(ctx context.Context, req *bigquerypb.GetJobReques
 //	configuration and a data stream together.  In this case, the Upload URI
 //	accepts the job configuration and the data as two distinct multipart MIME
 //	parts.
+//
+// IAM PermissionsRequires the bigquery.jobs.create permission on the project resource.
+//
+// Additional permissions are required depending on the job type:
+//
+//	Load, Export, and Copy jobs: Generally require data-level
+//	permissions such as bigquery.tables.export or access to external
+//	storage.
+//
+//	Query jobs: Permissions are dependent on the SQL statement.
+//	Complex queries (DDL, DCL) may require additional permissions to
+//	create reservations, modify IAM policies, or update project settings.
 func (c *jobRESTClient) InsertJob(ctx context.Context, req *bigquerypb.InsertJobRequest, opts ...gax.CallOption) (*bigquerypb.Job, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetJob()
@@ -811,6 +1053,10 @@ func (c *jobRESTClient) InsertJob(ctx context.Context, req *bigquerypb.InsertJob
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.JobService/InsertJob")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/bigquery/v2/projects/{project_id=*}/jobs")
+	}
 	opts = append((*c.CallOptions).InsertJob[0:len((*c.CallOptions).InsertJob):len((*c.CallOptions).InsertJob)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &bigquerypb.Job{}
@@ -844,6 +1090,8 @@ func (c *jobRESTClient) InsertJob(ctx context.Context, req *bigquerypb.InsertJob
 
 // DeleteJob requests the deletion of the metadata of a job. This call returns when the
 // job’s metadata is deleted.
+//
+// IAM PermissionsRequires the bigquery.jobs.delete permission on the job resource.
 func (c *jobRESTClient) DeleteJob(ctx context.Context, req *bigquerypb.DeleteJobRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -864,6 +1112,10 @@ func (c *jobRESTClient) DeleteJob(ctx context.Context, req *bigquerypb.DeleteJob
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.JobService/DeleteJob")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/bigquery/v2/projects/{project_id=*}/jobs/{job_id=*}/delete")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -885,9 +1137,20 @@ func (c *jobRESTClient) DeleteJob(ctx context.Context, req *bigquerypb.DeleteJob
 // in reverse chronological order, by job creation time. Requires the Can View
 // project role, or the Is Owner project role if you set the allUsers
 // property.
+//
+// IAM PermissionsRequires no specific IAM permission(s) to use this method. Users are able
+// to list the jobs they created.
+//
+// Additional access is granted based on the following permissions:
+//
+//	Users with the bigquery.jobs.listAll permission can list all jobs with
+//	all metadata.
+//
+//	Users with the bigquery.jobs.list permission can list all jobs, but
+//	with redacted information for jobs they did not create.
 func (c *jobRESTClient) ListJobs(ctx context.Context, req *bigquerypb.ListJobsRequest, opts ...gax.CallOption) *ListFormatJobIterator {
 	it := &ListFormatJobIterator{}
-	req = proto.Clone(req).(*bigquerypb.ListJobsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*bigquerypb.ListFormatJob, string, error) {
 		resp := &bigquerypb.JobList{}
@@ -992,6 +1255,19 @@ func (c *jobRESTClient) ListJobs(ctx context.Context, req *bigquerypb.ListJobsRe
 }
 
 // GetQueryResults rPC to get the results of a query job.
+//
+// IAM PermissionsRequires the following IAM permission(s) to use this method:
+//
+//	bigquery.jobs.get on the job.
+//
+//	bigquery.tables.getData on the destination table.
+//
+// If the user matches the creator of the job, the following IAM permission(s)
+// are required instead:
+//
+//	bigquery.jobs.create on the project.
+//
+//	bigquery.tables.getData on the destination table.
 func (c *jobRESTClient) GetQueryResults(ctx context.Context, req *bigquerypb.GetQueryResultsRequest, opts ...gax.CallOption) (*bigquerypb.GetQueryResultsResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1042,6 +1318,10 @@ func (c *jobRESTClient) GetQueryResults(ctx context.Context, req *bigquerypb.Get
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.JobService/GetQueryResults")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/bigquery/v2/projects/{project_id=*}/queries/{job_id=*}")
+	}
 	opts = append((*c.CallOptions).GetQueryResults[0:len((*c.CallOptions).GetQueryResults):len((*c.CallOptions).GetQueryResults)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &bigquerypb.GetQueryResultsResponse{}
@@ -1075,6 +1355,13 @@ func (c *jobRESTClient) GetQueryResults(ctx context.Context, req *bigquerypb.Get
 
 // Query runs a BigQuery SQL query synchronously and returns query results if the
 // query completes within a specified timeout.
+//
+// IAM PermissionsRequires the bigquery.jobs.create permission on the project resource.
+//
+// Data-level permissions are highly dependent on the SQL statement being
+// executed. While standard queries require data access (such as
+// bigquery.tables.getData), complex operations like DDL or DCL may require
+// permissions to manage reservations, IAM policies, or project settings.
 func (c *jobRESTClient) Query(ctx context.Context, req *bigquerypb.PostQueryRequest, opts ...gax.CallOption) (*bigquerypb.QueryResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetQueryRequest()
@@ -1095,6 +1382,10 @@ func (c *jobRESTClient) Query(ctx context.Context, req *bigquerypb.PostQueryRequ
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.JobService/Query")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/bigquery/v2/projects/{project_id=*}/queries")
+	}
 	opts = append((*c.CallOptions).Query[0:len((*c.CallOptions).Query):len((*c.CallOptions).Query)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &bigquerypb.QueryResponse{}

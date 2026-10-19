@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import (
 
 	containerpb "cloud.google.com/go/container/apiv1/containerpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -79,6 +80,7 @@ type ClusterManagerCallOptions struct {
 	CheckAutopilotCompatibility []gax.CallOption
 	FetchClusterUpgradeInfo     []gax.CallOption
 	FetchNodePoolUpgradeInfo    []gax.CallOption
+	CompleteControlPlaneUpgrade []gax.CallOption
 }
 
 func defaultClusterManagerGRPCClientOptions() []option.ClientOption {
@@ -284,6 +286,7 @@ func defaultClusterManagerCallOptions() *ClusterManagerCallOptions {
 		CheckAutopilotCompatibility: []gax.CallOption{},
 		FetchClusterUpgradeInfo:     []gax.CallOption{},
 		FetchNodePoolUpgradeInfo:    []gax.CallOption{},
+		CompleteControlPlaneUpgrade: []gax.CallOption{},
 	}
 }
 
@@ -466,6 +469,7 @@ func defaultClusterManagerRESTCallOptions() *ClusterManagerCallOptions {
 		CheckAutopilotCompatibility: []gax.CallOption{},
 		FetchClusterUpgradeInfo:     []gax.CallOption{},
 		FetchNodePoolUpgradeInfo:    []gax.CallOption{},
+		CompleteControlPlaneUpgrade: []gax.CallOption{},
 	}
 }
 
@@ -510,6 +514,7 @@ type internalClusterManagerClient interface {
 	CheckAutopilotCompatibility(context.Context, *containerpb.CheckAutopilotCompatibilityRequest, ...gax.CallOption) (*containerpb.CheckAutopilotCompatibilityResponse, error)
 	FetchClusterUpgradeInfo(context.Context, *containerpb.FetchClusterUpgradeInfoRequest, ...gax.CallOption) (*containerpb.ClusterUpgradeInfo, error)
 	FetchNodePoolUpgradeInfo(context.Context, *containerpb.FetchNodePoolUpgradeInfoRequest, ...gax.CallOption) (*containerpb.NodePoolUpgradeInfo, error)
+	CompleteControlPlaneUpgrade(context.Context, *containerpb.CompleteControlPlaneUpgradeRequest, ...gax.CallOption) (*containerpb.Operation, error)
 }
 
 // ClusterManagerClient is a client for interacting with Kubernetes Engine API.
@@ -526,7 +531,7 @@ type ClusterManagerClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *ClusterManagerClient) Close() error {
 	return c.internalClient.Close()
@@ -757,9 +762,15 @@ func (c *ClusterManagerClient) FetchClusterUpgradeInfo(ctx context.Context, req 
 	return c.internalClient.FetchClusterUpgradeInfo(ctx, req, opts...)
 }
 
-// FetchNodePoolUpgradeInfo fetch upgrade information of a specific nodepool.
+// FetchNodePoolUpgradeInfo fetch upgrade information of a specific node pool.
 func (c *ClusterManagerClient) FetchNodePoolUpgradeInfo(ctx context.Context, req *containerpb.FetchNodePoolUpgradeInfoRequest, opts ...gax.CallOption) (*containerpb.NodePoolUpgradeInfo, error) {
 	return c.internalClient.FetchNodePoolUpgradeInfo(ctx, req, opts...)
+}
+
+// CompleteControlPlaneUpgrade completeControlPlaneUpgrade completes the rollback-safe upgrade by
+// performing the step two upgrade for a specific cluster.
+func (c *ClusterManagerClient) CompleteControlPlaneUpgrade(ctx context.Context, req *containerpb.CompleteControlPlaneUpgradeRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
+	return c.internalClient.CompleteControlPlaneUpgrade(ctx, req, opts...)
 }
 
 // clusterManagerGRPCClient is a client for interacting with Kubernetes Engine API over gRPC transport.
@@ -787,6 +798,16 @@ type clusterManagerGRPCClient struct {
 // Google Kubernetes Engine Cluster Manager v1
 func NewClusterManagerClient(ctx context.Context, opts ...option.ClientOption) (*ClusterManagerClient, error) {
 	clientOpts := defaultClusterManagerGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "container",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/container/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "container.googleapis.com",
+		}))
+	}
 	if newClusterManagerClientHook != nil {
 		hookOpts, err := newClusterManagerClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -808,6 +829,155 @@ func NewClusterManagerClient(ctx context.Context, opts ...option.ClientOption) (
 		logger:               internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "container",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/container/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "container.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListClusters = append(client.CallOptions.ListClusters, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetCluster = append(client.CallOptions.GetCluster, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateCluster = append(client.CallOptions.CreateCluster, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateCluster = append(client.CallOptions.UpdateCluster, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateNodePool = append(client.CallOptions.UpdateNodePool, gax.WithClientMetrics(metrics))
+		client.CallOptions.SetNodePoolAutoscaling = append(client.CallOptions.SetNodePoolAutoscaling, gax.WithClientMetrics(metrics))
+		client.CallOptions.SetLoggingService = append(client.CallOptions.SetLoggingService, gax.WithClientMetrics(metrics))
+		client.CallOptions.SetMonitoringService = append(client.CallOptions.SetMonitoringService, gax.WithClientMetrics(metrics))
+		client.CallOptions.SetAddonsConfig = append(client.CallOptions.SetAddonsConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.SetLocations = append(client.CallOptions.SetLocations, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateMaster = append(client.CallOptions.UpdateMaster, gax.WithClientMetrics(metrics))
+		client.CallOptions.SetMasterAuth = append(client.CallOptions.SetMasterAuth, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteCluster = append(client.CallOptions.DeleteCluster, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetServerConfig = append(client.CallOptions.GetServerConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetJSONWebKeys = append(client.CallOptions.GetJSONWebKeys, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListNodePools = append(client.CallOptions.ListNodePools, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetNodePool = append(client.CallOptions.GetNodePool, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateNodePool = append(client.CallOptions.CreateNodePool, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteNodePool = append(client.CallOptions.DeleteNodePool, gax.WithClientMetrics(metrics))
+		client.CallOptions.CompleteNodePoolUpgrade = append(client.CallOptions.CompleteNodePoolUpgrade, gax.WithClientMetrics(metrics))
+		client.CallOptions.RollbackNodePoolUpgrade = append(client.CallOptions.RollbackNodePoolUpgrade, gax.WithClientMetrics(metrics))
+		client.CallOptions.SetNodePoolManagement = append(client.CallOptions.SetNodePoolManagement, gax.WithClientMetrics(metrics))
+		client.CallOptions.SetLabels = append(client.CallOptions.SetLabels, gax.WithClientMetrics(metrics))
+		client.CallOptions.SetLegacyAbac = append(client.CallOptions.SetLegacyAbac, gax.WithClientMetrics(metrics))
+		client.CallOptions.StartIPRotation = append(client.CallOptions.StartIPRotation, gax.WithClientMetrics(metrics))
+		client.CallOptions.CompleteIPRotation = append(client.CallOptions.CompleteIPRotation, gax.WithClientMetrics(metrics))
+		client.CallOptions.SetNodePoolSize = append(client.CallOptions.SetNodePoolSize, gax.WithClientMetrics(metrics))
+		client.CallOptions.SetNetworkPolicy = append(client.CallOptions.SetNetworkPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.SetMaintenancePolicy = append(client.CallOptions.SetMaintenancePolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListUsableSubnetworks = append(client.CallOptions.ListUsableSubnetworks, gax.WithClientMetrics(metrics))
+		client.CallOptions.CheckAutopilotCompatibility = append(client.CallOptions.CheckAutopilotCompatibility, gax.WithClientMetrics(metrics))
+		client.CallOptions.FetchClusterUpgradeInfo = append(client.CallOptions.FetchClusterUpgradeInfo, gax.WithClientMetrics(metrics))
+		client.CallOptions.FetchNodePoolUpgradeInfo = append(client.CallOptions.FetchNodePoolUpgradeInfo, gax.WithClientMetrics(metrics))
+		client.CallOptions.CompleteControlPlaneUpgrade = append(client.CallOptions.CompleteControlPlaneUpgrade, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "container",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/container/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "container.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListClusters = append(client.CallOptions.ListClusters, gax.WithClientTracing(tracing))
+		client.CallOptions.GetCluster = append(client.CallOptions.GetCluster, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateCluster = append(client.CallOptions.CreateCluster, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateCluster = append(client.CallOptions.UpdateCluster, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateNodePool = append(client.CallOptions.UpdateNodePool, gax.WithClientTracing(tracing))
+		client.CallOptions.SetNodePoolAutoscaling = append(client.CallOptions.SetNodePoolAutoscaling, gax.WithClientTracing(tracing))
+		client.CallOptions.SetLoggingService = append(client.CallOptions.SetLoggingService, gax.WithClientTracing(tracing))
+		client.CallOptions.SetMonitoringService = append(client.CallOptions.SetMonitoringService, gax.WithClientTracing(tracing))
+		client.CallOptions.SetAddonsConfig = append(client.CallOptions.SetAddonsConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.SetLocations = append(client.CallOptions.SetLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateMaster = append(client.CallOptions.UpdateMaster, gax.WithClientTracing(tracing))
+		client.CallOptions.SetMasterAuth = append(client.CallOptions.SetMasterAuth, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteCluster = append(client.CallOptions.DeleteCluster, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetServerConfig = append(client.CallOptions.GetServerConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.GetJSONWebKeys = append(client.CallOptions.GetJSONWebKeys, gax.WithClientTracing(tracing))
+		client.CallOptions.ListNodePools = append(client.CallOptions.ListNodePools, gax.WithClientTracing(tracing))
+		client.CallOptions.GetNodePool = append(client.CallOptions.GetNodePool, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateNodePool = append(client.CallOptions.CreateNodePool, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteNodePool = append(client.CallOptions.DeleteNodePool, gax.WithClientTracing(tracing))
+		client.CallOptions.CompleteNodePoolUpgrade = append(client.CallOptions.CompleteNodePoolUpgrade, gax.WithClientTracing(tracing))
+		client.CallOptions.RollbackNodePoolUpgrade = append(client.CallOptions.RollbackNodePoolUpgrade, gax.WithClientTracing(tracing))
+		client.CallOptions.SetNodePoolManagement = append(client.CallOptions.SetNodePoolManagement, gax.WithClientTracing(tracing))
+		client.CallOptions.SetLabels = append(client.CallOptions.SetLabels, gax.WithClientTracing(tracing))
+		client.CallOptions.SetLegacyAbac = append(client.CallOptions.SetLegacyAbac, gax.WithClientTracing(tracing))
+		client.CallOptions.StartIPRotation = append(client.CallOptions.StartIPRotation, gax.WithClientTracing(tracing))
+		client.CallOptions.CompleteIPRotation = append(client.CallOptions.CompleteIPRotation, gax.WithClientTracing(tracing))
+		client.CallOptions.SetNodePoolSize = append(client.CallOptions.SetNodePoolSize, gax.WithClientTracing(tracing))
+		client.CallOptions.SetNetworkPolicy = append(client.CallOptions.SetNetworkPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.SetMaintenancePolicy = append(client.CallOptions.SetMaintenancePolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.ListUsableSubnetworks = append(client.CallOptions.ListUsableSubnetworks, gax.WithClientTracing(tracing))
+		client.CallOptions.CheckAutopilotCompatibility = append(client.CallOptions.CheckAutopilotCompatibility, gax.WithClientTracing(tracing))
+		client.CallOptions.FetchClusterUpgradeInfo = append(client.CallOptions.FetchClusterUpgradeInfo, gax.WithClientTracing(tracing))
+		client.CallOptions.FetchNodePoolUpgradeInfo = append(client.CallOptions.FetchNodePoolUpgradeInfo, gax.WithClientTracing(tracing))
+		client.CallOptions.CompleteControlPlaneUpgrade = append(client.CallOptions.CompleteControlPlaneUpgrade, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "container",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/container/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "container.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListClusters = append(client.CallOptions.ListClusters, gax.WithClientLogging(logging))
+		client.CallOptions.GetCluster = append(client.CallOptions.GetCluster, gax.WithClientLogging(logging))
+		client.CallOptions.CreateCluster = append(client.CallOptions.CreateCluster, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateCluster = append(client.CallOptions.UpdateCluster, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateNodePool = append(client.CallOptions.UpdateNodePool, gax.WithClientLogging(logging))
+		client.CallOptions.SetNodePoolAutoscaling = append(client.CallOptions.SetNodePoolAutoscaling, gax.WithClientLogging(logging))
+		client.CallOptions.SetLoggingService = append(client.CallOptions.SetLoggingService, gax.WithClientLogging(logging))
+		client.CallOptions.SetMonitoringService = append(client.CallOptions.SetMonitoringService, gax.WithClientLogging(logging))
+		client.CallOptions.SetAddonsConfig = append(client.CallOptions.SetAddonsConfig, gax.WithClientLogging(logging))
+		client.CallOptions.SetLocations = append(client.CallOptions.SetLocations, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateMaster = append(client.CallOptions.UpdateMaster, gax.WithClientLogging(logging))
+		client.CallOptions.SetMasterAuth = append(client.CallOptions.SetMasterAuth, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteCluster = append(client.CallOptions.DeleteCluster, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetServerConfig = append(client.CallOptions.GetServerConfig, gax.WithClientLogging(logging))
+		client.CallOptions.GetJSONWebKeys = append(client.CallOptions.GetJSONWebKeys, gax.WithClientLogging(logging))
+		client.CallOptions.ListNodePools = append(client.CallOptions.ListNodePools, gax.WithClientLogging(logging))
+		client.CallOptions.GetNodePool = append(client.CallOptions.GetNodePool, gax.WithClientLogging(logging))
+		client.CallOptions.CreateNodePool = append(client.CallOptions.CreateNodePool, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteNodePool = append(client.CallOptions.DeleteNodePool, gax.WithClientLogging(logging))
+		client.CallOptions.CompleteNodePoolUpgrade = append(client.CallOptions.CompleteNodePoolUpgrade, gax.WithClientLogging(logging))
+		client.CallOptions.RollbackNodePoolUpgrade = append(client.CallOptions.RollbackNodePoolUpgrade, gax.WithClientLogging(logging))
+		client.CallOptions.SetNodePoolManagement = append(client.CallOptions.SetNodePoolManagement, gax.WithClientLogging(logging))
+		client.CallOptions.SetLabels = append(client.CallOptions.SetLabels, gax.WithClientLogging(logging))
+		client.CallOptions.SetLegacyAbac = append(client.CallOptions.SetLegacyAbac, gax.WithClientLogging(logging))
+		client.CallOptions.StartIPRotation = append(client.CallOptions.StartIPRotation, gax.WithClientLogging(logging))
+		client.CallOptions.CompleteIPRotation = append(client.CallOptions.CompleteIPRotation, gax.WithClientLogging(logging))
+		client.CallOptions.SetNodePoolSize = append(client.CallOptions.SetNodePoolSize, gax.WithClientLogging(logging))
+		client.CallOptions.SetNetworkPolicy = append(client.CallOptions.SetNetworkPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.SetMaintenancePolicy = append(client.CallOptions.SetMaintenancePolicy, gax.WithClientLogging(logging))
+		client.CallOptions.ListUsableSubnetworks = append(client.CallOptions.ListUsableSubnetworks, gax.WithClientLogging(logging))
+		client.CallOptions.CheckAutopilotCompatibility = append(client.CallOptions.CheckAutopilotCompatibility, gax.WithClientLogging(logging))
+		client.CallOptions.FetchClusterUpgradeInfo = append(client.CallOptions.FetchClusterUpgradeInfo, gax.WithClientLogging(logging))
+		client.CallOptions.FetchNodePoolUpgradeInfo = append(client.CallOptions.FetchNodePoolUpgradeInfo, gax.WithClientLogging(logging))
+		client.CallOptions.CompleteControlPlaneUpgrade = append(client.CallOptions.CompleteControlPlaneUpgrade, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -833,7 +1003,7 @@ func (c *clusterManagerGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *clusterManagerGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -861,6 +1031,16 @@ type clusterManagerRESTClient struct {
 // Google Kubernetes Engine Cluster Manager v1
 func NewClusterManagerRESTClient(ctx context.Context, opts ...option.ClientOption) (*ClusterManagerClient, error) {
 	clientOpts := append(defaultClusterManagerRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "container",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/container/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "container.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -874,6 +1054,156 @@ func NewClusterManagerRESTClient(ctx context.Context, opts ...option.ClientOptio
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "container",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/container/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "container.googleapis.com",
+			}),
+		)
+
+		callOpts.ListClusters = append(callOpts.ListClusters, gax.WithClientMetrics(metrics))
+		callOpts.GetCluster = append(callOpts.GetCluster, gax.WithClientMetrics(metrics))
+		callOpts.CreateCluster = append(callOpts.CreateCluster, gax.WithClientMetrics(metrics))
+		callOpts.UpdateCluster = append(callOpts.UpdateCluster, gax.WithClientMetrics(metrics))
+		callOpts.UpdateNodePool = append(callOpts.UpdateNodePool, gax.WithClientMetrics(metrics))
+		callOpts.SetNodePoolAutoscaling = append(callOpts.SetNodePoolAutoscaling, gax.WithClientMetrics(metrics))
+		callOpts.SetLoggingService = append(callOpts.SetLoggingService, gax.WithClientMetrics(metrics))
+		callOpts.SetMonitoringService = append(callOpts.SetMonitoringService, gax.WithClientMetrics(metrics))
+		callOpts.SetAddonsConfig = append(callOpts.SetAddonsConfig, gax.WithClientMetrics(metrics))
+		callOpts.SetLocations = append(callOpts.SetLocations, gax.WithClientMetrics(metrics))
+		callOpts.UpdateMaster = append(callOpts.UpdateMaster, gax.WithClientMetrics(metrics))
+		callOpts.SetMasterAuth = append(callOpts.SetMasterAuth, gax.WithClientMetrics(metrics))
+		callOpts.DeleteCluster = append(callOpts.DeleteCluster, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetServerConfig = append(callOpts.GetServerConfig, gax.WithClientMetrics(metrics))
+		callOpts.GetJSONWebKeys = append(callOpts.GetJSONWebKeys, gax.WithClientMetrics(metrics))
+		callOpts.ListNodePools = append(callOpts.ListNodePools, gax.WithClientMetrics(metrics))
+		callOpts.GetNodePool = append(callOpts.GetNodePool, gax.WithClientMetrics(metrics))
+		callOpts.CreateNodePool = append(callOpts.CreateNodePool, gax.WithClientMetrics(metrics))
+		callOpts.DeleteNodePool = append(callOpts.DeleteNodePool, gax.WithClientMetrics(metrics))
+		callOpts.CompleteNodePoolUpgrade = append(callOpts.CompleteNodePoolUpgrade, gax.WithClientMetrics(metrics))
+		callOpts.RollbackNodePoolUpgrade = append(callOpts.RollbackNodePoolUpgrade, gax.WithClientMetrics(metrics))
+		callOpts.SetNodePoolManagement = append(callOpts.SetNodePoolManagement, gax.WithClientMetrics(metrics))
+		callOpts.SetLabels = append(callOpts.SetLabels, gax.WithClientMetrics(metrics))
+		callOpts.SetLegacyAbac = append(callOpts.SetLegacyAbac, gax.WithClientMetrics(metrics))
+		callOpts.StartIPRotation = append(callOpts.StartIPRotation, gax.WithClientMetrics(metrics))
+		callOpts.CompleteIPRotation = append(callOpts.CompleteIPRotation, gax.WithClientMetrics(metrics))
+		callOpts.SetNodePoolSize = append(callOpts.SetNodePoolSize, gax.WithClientMetrics(metrics))
+		callOpts.SetNetworkPolicy = append(callOpts.SetNetworkPolicy, gax.WithClientMetrics(metrics))
+		callOpts.SetMaintenancePolicy = append(callOpts.SetMaintenancePolicy, gax.WithClientMetrics(metrics))
+		callOpts.ListUsableSubnetworks = append(callOpts.ListUsableSubnetworks, gax.WithClientMetrics(metrics))
+		callOpts.CheckAutopilotCompatibility = append(callOpts.CheckAutopilotCompatibility, gax.WithClientMetrics(metrics))
+		callOpts.FetchClusterUpgradeInfo = append(callOpts.FetchClusterUpgradeInfo, gax.WithClientMetrics(metrics))
+		callOpts.FetchNodePoolUpgradeInfo = append(callOpts.FetchNodePoolUpgradeInfo, gax.WithClientMetrics(metrics))
+		callOpts.CompleteControlPlaneUpgrade = append(callOpts.CompleteControlPlaneUpgrade, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "container",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/container/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "container.googleapis.com",
+			}),
+		)
+
+		callOpts.ListClusters = append(callOpts.ListClusters, gax.WithClientTracing(tracing))
+		callOpts.GetCluster = append(callOpts.GetCluster, gax.WithClientTracing(tracing))
+		callOpts.CreateCluster = append(callOpts.CreateCluster, gax.WithClientTracing(tracing))
+		callOpts.UpdateCluster = append(callOpts.UpdateCluster, gax.WithClientTracing(tracing))
+		callOpts.UpdateNodePool = append(callOpts.UpdateNodePool, gax.WithClientTracing(tracing))
+		callOpts.SetNodePoolAutoscaling = append(callOpts.SetNodePoolAutoscaling, gax.WithClientTracing(tracing))
+		callOpts.SetLoggingService = append(callOpts.SetLoggingService, gax.WithClientTracing(tracing))
+		callOpts.SetMonitoringService = append(callOpts.SetMonitoringService, gax.WithClientTracing(tracing))
+		callOpts.SetAddonsConfig = append(callOpts.SetAddonsConfig, gax.WithClientTracing(tracing))
+		callOpts.SetLocations = append(callOpts.SetLocations, gax.WithClientTracing(tracing))
+		callOpts.UpdateMaster = append(callOpts.UpdateMaster, gax.WithClientTracing(tracing))
+		callOpts.SetMasterAuth = append(callOpts.SetMasterAuth, gax.WithClientTracing(tracing))
+		callOpts.DeleteCluster = append(callOpts.DeleteCluster, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.GetServerConfig = append(callOpts.GetServerConfig, gax.WithClientTracing(tracing))
+		callOpts.GetJSONWebKeys = append(callOpts.GetJSONWebKeys, gax.WithClientTracing(tracing))
+		callOpts.ListNodePools = append(callOpts.ListNodePools, gax.WithClientTracing(tracing))
+		callOpts.GetNodePool = append(callOpts.GetNodePool, gax.WithClientTracing(tracing))
+		callOpts.CreateNodePool = append(callOpts.CreateNodePool, gax.WithClientTracing(tracing))
+		callOpts.DeleteNodePool = append(callOpts.DeleteNodePool, gax.WithClientTracing(tracing))
+		callOpts.CompleteNodePoolUpgrade = append(callOpts.CompleteNodePoolUpgrade, gax.WithClientTracing(tracing))
+		callOpts.RollbackNodePoolUpgrade = append(callOpts.RollbackNodePoolUpgrade, gax.WithClientTracing(tracing))
+		callOpts.SetNodePoolManagement = append(callOpts.SetNodePoolManagement, gax.WithClientTracing(tracing))
+		callOpts.SetLabels = append(callOpts.SetLabels, gax.WithClientTracing(tracing))
+		callOpts.SetLegacyAbac = append(callOpts.SetLegacyAbac, gax.WithClientTracing(tracing))
+		callOpts.StartIPRotation = append(callOpts.StartIPRotation, gax.WithClientTracing(tracing))
+		callOpts.CompleteIPRotation = append(callOpts.CompleteIPRotation, gax.WithClientTracing(tracing))
+		callOpts.SetNodePoolSize = append(callOpts.SetNodePoolSize, gax.WithClientTracing(tracing))
+		callOpts.SetNetworkPolicy = append(callOpts.SetNetworkPolicy, gax.WithClientTracing(tracing))
+		callOpts.SetMaintenancePolicy = append(callOpts.SetMaintenancePolicy, gax.WithClientTracing(tracing))
+		callOpts.ListUsableSubnetworks = append(callOpts.ListUsableSubnetworks, gax.WithClientTracing(tracing))
+		callOpts.CheckAutopilotCompatibility = append(callOpts.CheckAutopilotCompatibility, gax.WithClientTracing(tracing))
+		callOpts.FetchClusterUpgradeInfo = append(callOpts.FetchClusterUpgradeInfo, gax.WithClientTracing(tracing))
+		callOpts.FetchNodePoolUpgradeInfo = append(callOpts.FetchNodePoolUpgradeInfo, gax.WithClientTracing(tracing))
+		callOpts.CompleteControlPlaneUpgrade = append(callOpts.CompleteControlPlaneUpgrade, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "container",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/container/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "container.googleapis.com",
+			}),
+		)
+
+		callOpts.ListClusters = append(callOpts.ListClusters, gax.WithClientLogging(logging))
+		callOpts.GetCluster = append(callOpts.GetCluster, gax.WithClientLogging(logging))
+		callOpts.CreateCluster = append(callOpts.CreateCluster, gax.WithClientLogging(logging))
+		callOpts.UpdateCluster = append(callOpts.UpdateCluster, gax.WithClientLogging(logging))
+		callOpts.UpdateNodePool = append(callOpts.UpdateNodePool, gax.WithClientLogging(logging))
+		callOpts.SetNodePoolAutoscaling = append(callOpts.SetNodePoolAutoscaling, gax.WithClientLogging(logging))
+		callOpts.SetLoggingService = append(callOpts.SetLoggingService, gax.WithClientLogging(logging))
+		callOpts.SetMonitoringService = append(callOpts.SetMonitoringService, gax.WithClientLogging(logging))
+		callOpts.SetAddonsConfig = append(callOpts.SetAddonsConfig, gax.WithClientLogging(logging))
+		callOpts.SetLocations = append(callOpts.SetLocations, gax.WithClientLogging(logging))
+		callOpts.UpdateMaster = append(callOpts.UpdateMaster, gax.WithClientLogging(logging))
+		callOpts.SetMasterAuth = append(callOpts.SetMasterAuth, gax.WithClientLogging(logging))
+		callOpts.DeleteCluster = append(callOpts.DeleteCluster, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.GetServerConfig = append(callOpts.GetServerConfig, gax.WithClientLogging(logging))
+		callOpts.GetJSONWebKeys = append(callOpts.GetJSONWebKeys, gax.WithClientLogging(logging))
+		callOpts.ListNodePools = append(callOpts.ListNodePools, gax.WithClientLogging(logging))
+		callOpts.GetNodePool = append(callOpts.GetNodePool, gax.WithClientLogging(logging))
+		callOpts.CreateNodePool = append(callOpts.CreateNodePool, gax.WithClientLogging(logging))
+		callOpts.DeleteNodePool = append(callOpts.DeleteNodePool, gax.WithClientLogging(logging))
+		callOpts.CompleteNodePoolUpgrade = append(callOpts.CompleteNodePoolUpgrade, gax.WithClientLogging(logging))
+		callOpts.RollbackNodePoolUpgrade = append(callOpts.RollbackNodePoolUpgrade, gax.WithClientLogging(logging))
+		callOpts.SetNodePoolManagement = append(callOpts.SetNodePoolManagement, gax.WithClientLogging(logging))
+		callOpts.SetLabels = append(callOpts.SetLabels, gax.WithClientLogging(logging))
+		callOpts.SetLegacyAbac = append(callOpts.SetLegacyAbac, gax.WithClientLogging(logging))
+		callOpts.StartIPRotation = append(callOpts.StartIPRotation, gax.WithClientLogging(logging))
+		callOpts.CompleteIPRotation = append(callOpts.CompleteIPRotation, gax.WithClientLogging(logging))
+		callOpts.SetNodePoolSize = append(callOpts.SetNodePoolSize, gax.WithClientLogging(logging))
+		callOpts.SetNetworkPolicy = append(callOpts.SetNetworkPolicy, gax.WithClientLogging(logging))
+		callOpts.SetMaintenancePolicy = append(callOpts.SetMaintenancePolicy, gax.WithClientLogging(logging))
+		callOpts.ListUsableSubnetworks = append(callOpts.ListUsableSubnetworks, gax.WithClientLogging(logging))
+		callOpts.CheckAutopilotCompatibility = append(callOpts.CheckAutopilotCompatibility, gax.WithClientLogging(logging))
+		callOpts.FetchClusterUpgradeInfo = append(callOpts.FetchClusterUpgradeInfo, gax.WithClientLogging(logging))
+		callOpts.FetchNodePoolUpgradeInfo = append(callOpts.FetchNodePoolUpgradeInfo, gax.WithClientLogging(logging))
+		callOpts.CompleteControlPlaneUpgrade = append(callOpts.CompleteControlPlaneUpgrade, gax.WithClientLogging(logging))
+	}
 
 	return &ClusterManagerClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -901,7 +1231,7 @@ func (c *clusterManagerRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *clusterManagerRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -920,6 +1250,9 @@ func (c *clusterManagerGRPCClient) ListClusters(ctx context.Context, req *contai
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/ListClusters")
+	}
 	opts = append((*c.CallOptions).ListClusters[0:len((*c.CallOptions).ListClusters):len((*c.CallOptions).ListClusters)], opts...)
 	var resp *containerpb.ListClustersResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -938,6 +1271,9 @@ func (c *clusterManagerGRPCClient) GetCluster(ctx context.Context, req *containe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/GetCluster")
+	}
 	opts = append((*c.CallOptions).GetCluster[0:len((*c.CallOptions).GetCluster):len((*c.CallOptions).GetCluster)], opts...)
 	var resp *containerpb.Cluster
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -956,6 +1292,9 @@ func (c *clusterManagerGRPCClient) CreateCluster(ctx context.Context, req *conta
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/CreateCluster")
+	}
 	opts = append((*c.CallOptions).CreateCluster[0:len((*c.CallOptions).CreateCluster):len((*c.CallOptions).CreateCluster)], opts...)
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -974,6 +1313,9 @@ func (c *clusterManagerGRPCClient) UpdateCluster(ctx context.Context, req *conta
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/UpdateCluster")
+	}
 	opts = append((*c.CallOptions).UpdateCluster[0:len((*c.CallOptions).UpdateCluster):len((*c.CallOptions).UpdateCluster)], opts...)
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -992,6 +1334,9 @@ func (c *clusterManagerGRPCClient) UpdateNodePool(ctx context.Context, req *cont
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/UpdateNodePool")
+	}
 	opts = append((*c.CallOptions).UpdateNodePool[0:len((*c.CallOptions).UpdateNodePool):len((*c.CallOptions).UpdateNodePool)], opts...)
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1010,6 +1355,9 @@ func (c *clusterManagerGRPCClient) SetNodePoolAutoscaling(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/SetNodePoolAutoscaling")
+	}
 	opts = append((*c.CallOptions).SetNodePoolAutoscaling[0:len((*c.CallOptions).SetNodePoolAutoscaling):len((*c.CallOptions).SetNodePoolAutoscaling)], opts...)
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1028,6 +1376,9 @@ func (c *clusterManagerGRPCClient) SetLoggingService(ctx context.Context, req *c
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/SetLoggingService")
+	}
 	opts = append((*c.CallOptions).SetLoggingService[0:len((*c.CallOptions).SetLoggingService):len((*c.CallOptions).SetLoggingService)], opts...)
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1046,6 +1397,9 @@ func (c *clusterManagerGRPCClient) SetMonitoringService(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/SetMonitoringService")
+	}
 	opts = append((*c.CallOptions).SetMonitoringService[0:len((*c.CallOptions).SetMonitoringService):len((*c.CallOptions).SetMonitoringService)], opts...)
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1064,6 +1418,9 @@ func (c *clusterManagerGRPCClient) SetAddonsConfig(ctx context.Context, req *con
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/SetAddonsConfig")
+	}
 	opts = append((*c.CallOptions).SetAddonsConfig[0:len((*c.CallOptions).SetAddonsConfig):len((*c.CallOptions).SetAddonsConfig)], opts...)
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1082,6 +1439,9 @@ func (c *clusterManagerGRPCClient) SetLocations(ctx context.Context, req *contai
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/SetLocations")
+	}
 	opts = append((*c.CallOptions).SetLocations[0:len((*c.CallOptions).SetLocations):len((*c.CallOptions).SetLocations)], opts...)
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1100,6 +1460,9 @@ func (c *clusterManagerGRPCClient) UpdateMaster(ctx context.Context, req *contai
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/UpdateMaster")
+	}
 	opts = append((*c.CallOptions).UpdateMaster[0:len((*c.CallOptions).UpdateMaster):len((*c.CallOptions).UpdateMaster)], opts...)
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1118,6 +1481,9 @@ func (c *clusterManagerGRPCClient) SetMasterAuth(ctx context.Context, req *conta
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/SetMasterAuth")
+	}
 	opts = append((*c.CallOptions).SetMasterAuth[0:len((*c.CallOptions).SetMasterAuth):len((*c.CallOptions).SetMasterAuth)], opts...)
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1136,6 +1502,9 @@ func (c *clusterManagerGRPCClient) DeleteCluster(ctx context.Context, req *conta
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/DeleteCluster")
+	}
 	opts = append((*c.CallOptions).DeleteCluster[0:len((*c.CallOptions).DeleteCluster):len((*c.CallOptions).DeleteCluster)], opts...)
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1154,6 +1523,9 @@ func (c *clusterManagerGRPCClient) ListOperations(ctx context.Context, req *cont
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	var resp *containerpb.ListOperationsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1172,6 +1544,9 @@ func (c *clusterManagerGRPCClient) GetOperation(ctx context.Context, req *contai
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1190,6 +1565,9 @@ func (c *clusterManagerGRPCClient) CancelOperation(ctx context.Context, req *con
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1204,6 +1582,9 @@ func (c *clusterManagerGRPCClient) GetServerConfig(ctx context.Context, req *con
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/GetServerConfig")
+	}
 	opts = append((*c.CallOptions).GetServerConfig[0:len((*c.CallOptions).GetServerConfig):len((*c.CallOptions).GetServerConfig)], opts...)
 	var resp *containerpb.ServerConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1222,6 +1603,9 @@ func (c *clusterManagerGRPCClient) GetJSONWebKeys(ctx context.Context, req *cont
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/GetJSONWebKeys")
+	}
 	opts = append((*c.CallOptions).GetJSONWebKeys[0:len((*c.CallOptions).GetJSONWebKeys):len((*c.CallOptions).GetJSONWebKeys)], opts...)
 	var resp *containerpb.GetJSONWebKeysResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1240,6 +1624,9 @@ func (c *clusterManagerGRPCClient) ListNodePools(ctx context.Context, req *conta
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/ListNodePools")
+	}
 	opts = append((*c.CallOptions).ListNodePools[0:len((*c.CallOptions).ListNodePools):len((*c.CallOptions).ListNodePools)], opts...)
 	var resp *containerpb.ListNodePoolsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1258,6 +1645,9 @@ func (c *clusterManagerGRPCClient) GetNodePool(ctx context.Context, req *contain
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/GetNodePool")
+	}
 	opts = append((*c.CallOptions).GetNodePool[0:len((*c.CallOptions).GetNodePool):len((*c.CallOptions).GetNodePool)], opts...)
 	var resp *containerpb.NodePool
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1276,6 +1666,9 @@ func (c *clusterManagerGRPCClient) CreateNodePool(ctx context.Context, req *cont
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/CreateNodePool")
+	}
 	opts = append((*c.CallOptions).CreateNodePool[0:len((*c.CallOptions).CreateNodePool):len((*c.CallOptions).CreateNodePool)], opts...)
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1294,6 +1687,9 @@ func (c *clusterManagerGRPCClient) DeleteNodePool(ctx context.Context, req *cont
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/DeleteNodePool")
+	}
 	opts = append((*c.CallOptions).DeleteNodePool[0:len((*c.CallOptions).DeleteNodePool):len((*c.CallOptions).DeleteNodePool)], opts...)
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1312,6 +1708,9 @@ func (c *clusterManagerGRPCClient) CompleteNodePoolUpgrade(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/CompleteNodePoolUpgrade")
+	}
 	opts = append((*c.CallOptions).CompleteNodePoolUpgrade[0:len((*c.CallOptions).CompleteNodePoolUpgrade):len((*c.CallOptions).CompleteNodePoolUpgrade)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1326,6 +1725,9 @@ func (c *clusterManagerGRPCClient) RollbackNodePoolUpgrade(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/RollbackNodePoolUpgrade")
+	}
 	opts = append((*c.CallOptions).RollbackNodePoolUpgrade[0:len((*c.CallOptions).RollbackNodePoolUpgrade):len((*c.CallOptions).RollbackNodePoolUpgrade)], opts...)
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1344,6 +1746,9 @@ func (c *clusterManagerGRPCClient) SetNodePoolManagement(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/SetNodePoolManagement")
+	}
 	opts = append((*c.CallOptions).SetNodePoolManagement[0:len((*c.CallOptions).SetNodePoolManagement):len((*c.CallOptions).SetNodePoolManagement)], opts...)
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1362,6 +1767,9 @@ func (c *clusterManagerGRPCClient) SetLabels(ctx context.Context, req *container
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/SetLabels")
+	}
 	opts = append((*c.CallOptions).SetLabels[0:len((*c.CallOptions).SetLabels):len((*c.CallOptions).SetLabels)], opts...)
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1380,6 +1788,9 @@ func (c *clusterManagerGRPCClient) SetLegacyAbac(ctx context.Context, req *conta
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/SetLegacyAbac")
+	}
 	opts = append((*c.CallOptions).SetLegacyAbac[0:len((*c.CallOptions).SetLegacyAbac):len((*c.CallOptions).SetLegacyAbac)], opts...)
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1398,6 +1809,9 @@ func (c *clusterManagerGRPCClient) StartIPRotation(ctx context.Context, req *con
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/StartIPRotation")
+	}
 	opts = append((*c.CallOptions).StartIPRotation[0:len((*c.CallOptions).StartIPRotation):len((*c.CallOptions).StartIPRotation)], opts...)
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1416,6 +1830,9 @@ func (c *clusterManagerGRPCClient) CompleteIPRotation(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/CompleteIPRotation")
+	}
 	opts = append((*c.CallOptions).CompleteIPRotation[0:len((*c.CallOptions).CompleteIPRotation):len((*c.CallOptions).CompleteIPRotation)], opts...)
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1434,6 +1851,9 @@ func (c *clusterManagerGRPCClient) SetNodePoolSize(ctx context.Context, req *con
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/SetNodePoolSize")
+	}
 	opts = append((*c.CallOptions).SetNodePoolSize[0:len((*c.CallOptions).SetNodePoolSize):len((*c.CallOptions).SetNodePoolSize)], opts...)
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1452,6 +1872,9 @@ func (c *clusterManagerGRPCClient) SetNetworkPolicy(ctx context.Context, req *co
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/SetNetworkPolicy")
+	}
 	opts = append((*c.CallOptions).SetNetworkPolicy[0:len((*c.CallOptions).SetNetworkPolicy):len((*c.CallOptions).SetNetworkPolicy)], opts...)
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1470,6 +1893,9 @@ func (c *clusterManagerGRPCClient) SetMaintenancePolicy(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/SetMaintenancePolicy")
+	}
 	opts = append((*c.CallOptions).SetMaintenancePolicy[0:len((*c.CallOptions).SetMaintenancePolicy):len((*c.CallOptions).SetMaintenancePolicy)], opts...)
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1488,9 +1914,12 @@ func (c *clusterManagerGRPCClient) ListUsableSubnetworks(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/ListUsableSubnetworks")
+	}
 	opts = append((*c.CallOptions).ListUsableSubnetworks[0:len((*c.CallOptions).ListUsableSubnetworks):len((*c.CallOptions).ListUsableSubnetworks)], opts...)
 	it := &UsableSubnetworkIterator{}
-	req = proto.Clone(req).(*containerpb.ListUsableSubnetworksRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*containerpb.UsableSubnetwork, string, error) {
 		resp := &containerpb.ListUsableSubnetworksResponse{}
 		if pageToken != "" {
@@ -1534,6 +1963,9 @@ func (c *clusterManagerGRPCClient) CheckAutopilotCompatibility(ctx context.Conte
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/CheckAutopilotCompatibility")
+	}
 	opts = append((*c.CallOptions).CheckAutopilotCompatibility[0:len((*c.CallOptions).CheckAutopilotCompatibility):len((*c.CallOptions).CheckAutopilotCompatibility)], opts...)
 	var resp *containerpb.CheckAutopilotCompatibilityResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1552,6 +1984,9 @@ func (c *clusterManagerGRPCClient) FetchClusterUpgradeInfo(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/FetchClusterUpgradeInfo")
+	}
 	opts = append((*c.CallOptions).FetchClusterUpgradeInfo[0:len((*c.CallOptions).FetchClusterUpgradeInfo):len((*c.CallOptions).FetchClusterUpgradeInfo)], opts...)
 	var resp *containerpb.ClusterUpgradeInfo
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1570,11 +2005,35 @@ func (c *clusterManagerGRPCClient) FetchNodePoolUpgradeInfo(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/FetchNodePoolUpgradeInfo")
+	}
 	opts = append((*c.CallOptions).FetchNodePoolUpgradeInfo[0:len((*c.CallOptions).FetchNodePoolUpgradeInfo):len((*c.CallOptions).FetchNodePoolUpgradeInfo)], opts...)
 	var resp *containerpb.NodePoolUpgradeInfo
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = executeRPC(ctx, c.clusterManagerClient.FetchNodePoolUpgradeInfo, req, settings.GRPC, c.logger, "FetchNodePoolUpgradeInfo")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *clusterManagerGRPCClient) CompleteControlPlaneUpgrade(ctx context.Context, req *containerpb.CompleteControlPlaneUpgradeRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/CompleteControlPlaneUpgrade")
+	}
+	opts = append((*c.CallOptions).CompleteControlPlaneUpgrade[0:len((*c.CallOptions).CompleteControlPlaneUpgrade):len((*c.CallOptions).CompleteControlPlaneUpgrade)], opts...)
+	var resp *containerpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.clusterManagerClient.CompleteControlPlaneUpgrade, req, settings.GRPC, c.logger, "CompleteControlPlaneUpgrade")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1609,6 +2068,10 @@ func (c *clusterManagerRESTClient) ListClusters(ctx context.Context, req *contai
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/ListClusters")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/clusters")
+	}
 	opts = append((*c.CallOptions).ListClusters[0:len((*c.CallOptions).ListClusters):len((*c.CallOptions).ListClusters)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &containerpb.ListClustersResponse{}
@@ -1668,6 +2131,10 @@ func (c *clusterManagerRESTClient) GetCluster(ctx context.Context, req *containe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/GetCluster")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/clusters/*}")
+	}
 	opts = append((*c.CallOptions).GetCluster[0:len((*c.CallOptions).GetCluster):len((*c.CallOptions).GetCluster)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &containerpb.Cluster{}
@@ -1737,6 +2204,10 @@ func (c *clusterManagerRESTClient) CreateCluster(ctx context.Context, req *conta
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/CreateCluster")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/clusters")
+	}
 	opts = append((*c.CallOptions).CreateCluster[0:len((*c.CallOptions).CreateCluster):len((*c.CallOptions).CreateCluster)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &containerpb.Operation{}
@@ -1793,6 +2264,10 @@ func (c *clusterManagerRESTClient) UpdateCluster(ctx context.Context, req *conta
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/UpdateCluster")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/clusters/*}")
+	}
 	opts = append((*c.CallOptions).UpdateCluster[0:len((*c.CallOptions).UpdateCluster):len((*c.CallOptions).UpdateCluster)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &containerpb.Operation{}
@@ -1849,6 +2324,10 @@ func (c *clusterManagerRESTClient) UpdateNodePool(ctx context.Context, req *cont
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/UpdateNodePool")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/clusters/*/nodePools/*}")
+	}
 	opts = append((*c.CallOptions).UpdateNodePool[0:len((*c.CallOptions).UpdateNodePool):len((*c.CallOptions).UpdateNodePool)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &containerpb.Operation{}
@@ -1905,6 +2384,10 @@ func (c *clusterManagerRESTClient) SetNodePoolAutoscaling(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/SetNodePoolAutoscaling")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/clusters/*/nodePools/*}:setAutoscaling")
+	}
 	opts = append((*c.CallOptions).SetNodePoolAutoscaling[0:len((*c.CallOptions).SetNodePoolAutoscaling):len((*c.CallOptions).SetNodePoolAutoscaling)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &containerpb.Operation{}
@@ -1961,6 +2444,10 @@ func (c *clusterManagerRESTClient) SetLoggingService(ctx context.Context, req *c
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/SetLoggingService")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/clusters/*}:setLogging")
+	}
 	opts = append((*c.CallOptions).SetLoggingService[0:len((*c.CallOptions).SetLoggingService):len((*c.CallOptions).SetLoggingService)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &containerpb.Operation{}
@@ -2017,6 +2504,10 @@ func (c *clusterManagerRESTClient) SetMonitoringService(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/SetMonitoringService")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/clusters/*}:setMonitoring")
+	}
 	opts = append((*c.CallOptions).SetMonitoringService[0:len((*c.CallOptions).SetMonitoringService):len((*c.CallOptions).SetMonitoringService)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &containerpb.Operation{}
@@ -2073,6 +2564,10 @@ func (c *clusterManagerRESTClient) SetAddonsConfig(ctx context.Context, req *con
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/SetAddonsConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/clusters/*}:setAddons")
+	}
 	opts = append((*c.CallOptions).SetAddonsConfig[0:len((*c.CallOptions).SetAddonsConfig):len((*c.CallOptions).SetAddonsConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &containerpb.Operation{}
@@ -2134,6 +2629,10 @@ func (c *clusterManagerRESTClient) SetLocations(ctx context.Context, req *contai
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/SetLocations")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/clusters/*}:setLocations")
+	}
 	opts = append((*c.CallOptions).SetLocations[0:len((*c.CallOptions).SetLocations):len((*c.CallOptions).SetLocations)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &containerpb.Operation{}
@@ -2190,6 +2689,10 @@ func (c *clusterManagerRESTClient) UpdateMaster(ctx context.Context, req *contai
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/UpdateMaster")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/clusters/*}:updateMaster")
+	}
 	opts = append((*c.CallOptions).UpdateMaster[0:len((*c.CallOptions).UpdateMaster):len((*c.CallOptions).UpdateMaster)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &containerpb.Operation{}
@@ -2248,6 +2751,10 @@ func (c *clusterManagerRESTClient) SetMasterAuth(ctx context.Context, req *conta
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/SetMasterAuth")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/clusters/*}:setMasterAuth")
+	}
 	opts = append((*c.CallOptions).SetMasterAuth[0:len((*c.CallOptions).SetMasterAuth):len((*c.CallOptions).SetMasterAuth)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &containerpb.Operation{}
@@ -2315,6 +2822,10 @@ func (c *clusterManagerRESTClient) DeleteCluster(ctx context.Context, req *conta
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/DeleteCluster")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/clusters/*}")
+	}
 	opts = append((*c.CallOptions).DeleteCluster[0:len((*c.CallOptions).DeleteCluster):len((*c.CallOptions).DeleteCluster)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &containerpb.Operation{}
@@ -2371,6 +2882,10 @@ func (c *clusterManagerRESTClient) ListOperations(ctx context.Context, req *cont
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/ListOperations")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/operations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &containerpb.ListOperationsResponse{}
@@ -2430,6 +2945,10 @@ func (c *clusterManagerRESTClient) GetOperation(ctx context.Context, req *contai
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &containerpb.Operation{}
@@ -2486,6 +3005,10 @@ func (c *clusterManagerRESTClient) CancelOperation(ctx context.Context, req *con
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2527,6 +3050,10 @@ func (c *clusterManagerRESTClient) GetServerConfig(ctx context.Context, req *con
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/GetServerConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*}/serverConfig")
+	}
 	opts = append((*c.CallOptions).GetServerConfig[0:len((*c.CallOptions).GetServerConfig):len((*c.CallOptions).GetServerConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &containerpb.ServerConfig{}
@@ -2578,6 +3105,10 @@ func (c *clusterManagerRESTClient) GetJSONWebKeys(ctx context.Context, req *cont
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/GetJSONWebKeys")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/clusters/*}/jwks")
+	}
 	opts = append((*c.CallOptions).GetJSONWebKeys[0:len((*c.CallOptions).GetJSONWebKeys):len((*c.CallOptions).GetJSONWebKeys)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &containerpb.GetJSONWebKeysResponse{}
@@ -2637,6 +3168,10 @@ func (c *clusterManagerRESTClient) ListNodePools(ctx context.Context, req *conta
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/ListNodePools")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/clusters/*}/nodePools")
+	}
 	opts = append((*c.CallOptions).ListNodePools[0:len((*c.CallOptions).ListNodePools):len((*c.CallOptions).ListNodePools)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &containerpb.ListNodePoolsResponse{}
@@ -2699,6 +3234,10 @@ func (c *clusterManagerRESTClient) GetNodePool(ctx context.Context, req *contain
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/GetNodePool")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/clusters/*/nodePools/*}")
+	}
 	opts = append((*c.CallOptions).GetNodePool[0:len((*c.CallOptions).GetNodePool):len((*c.CallOptions).GetNodePool)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &containerpb.NodePool{}
@@ -2755,6 +3294,10 @@ func (c *clusterManagerRESTClient) CreateNodePool(ctx context.Context, req *cont
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/CreateNodePool")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/clusters/*}/nodePools")
+	}
 	opts = append((*c.CallOptions).CreateNodePool[0:len((*c.CallOptions).CreateNodePool):len((*c.CallOptions).CreateNodePool)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &containerpb.Operation{}
@@ -2817,6 +3360,10 @@ func (c *clusterManagerRESTClient) DeleteNodePool(ctx context.Context, req *cont
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/DeleteNodePool")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/clusters/*/nodePools/*}")
+	}
 	opts = append((*c.CallOptions).DeleteNodePool[0:len((*c.CallOptions).DeleteNodePool):len((*c.CallOptions).DeleteNodePool)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &containerpb.Operation{}
@@ -2874,6 +3421,10 @@ func (c *clusterManagerRESTClient) CompleteNodePoolUpgrade(ctx context.Context, 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/CompleteNodePoolUpgrade")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/clusters/*/nodePools/*}:completeUpgrade")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2916,6 +3467,10 @@ func (c *clusterManagerRESTClient) RollbackNodePoolUpgrade(ctx context.Context, 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/RollbackNodePoolUpgrade")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/clusters/*/nodePools/*}:rollback")
+	}
 	opts = append((*c.CallOptions).RollbackNodePoolUpgrade[0:len((*c.CallOptions).RollbackNodePoolUpgrade):len((*c.CallOptions).RollbackNodePoolUpgrade)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &containerpb.Operation{}
@@ -2972,6 +3527,10 @@ func (c *clusterManagerRESTClient) SetNodePoolManagement(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/SetNodePoolManagement")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/clusters/*/nodePools/*}:setManagement")
+	}
 	opts = append((*c.CallOptions).SetNodePoolManagement[0:len((*c.CallOptions).SetNodePoolManagement):len((*c.CallOptions).SetNodePoolManagement)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &containerpb.Operation{}
@@ -3028,6 +3587,10 @@ func (c *clusterManagerRESTClient) SetLabels(ctx context.Context, req *container
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/SetLabels")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/clusters/*}:setResourceLabels")
+	}
 	opts = append((*c.CallOptions).SetLabels[0:len((*c.CallOptions).SetLabels):len((*c.CallOptions).SetLabels)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &containerpb.Operation{}
@@ -3084,6 +3647,10 @@ func (c *clusterManagerRESTClient) SetLegacyAbac(ctx context.Context, req *conta
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/SetLegacyAbac")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/clusters/*}:setLegacyAbac")
+	}
 	opts = append((*c.CallOptions).SetLegacyAbac[0:len((*c.CallOptions).SetLegacyAbac):len((*c.CallOptions).SetLegacyAbac)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &containerpb.Operation{}
@@ -3140,6 +3707,10 @@ func (c *clusterManagerRESTClient) StartIPRotation(ctx context.Context, req *con
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/StartIPRotation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/clusters/*}:startIpRotation")
+	}
 	opts = append((*c.CallOptions).StartIPRotation[0:len((*c.CallOptions).StartIPRotation):len((*c.CallOptions).StartIPRotation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &containerpb.Operation{}
@@ -3196,6 +3767,10 @@ func (c *clusterManagerRESTClient) CompleteIPRotation(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/CompleteIPRotation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/clusters/*}:completeIpRotation")
+	}
 	opts = append((*c.CallOptions).CompleteIPRotation[0:len((*c.CallOptions).CompleteIPRotation):len((*c.CallOptions).CompleteIPRotation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &containerpb.Operation{}
@@ -3254,6 +3829,10 @@ func (c *clusterManagerRESTClient) SetNodePoolSize(ctx context.Context, req *con
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/SetNodePoolSize")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/clusters/*/nodePools/*}:setSize")
+	}
 	opts = append((*c.CallOptions).SetNodePoolSize[0:len((*c.CallOptions).SetNodePoolSize):len((*c.CallOptions).SetNodePoolSize)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &containerpb.Operation{}
@@ -3310,6 +3889,10 @@ func (c *clusterManagerRESTClient) SetNetworkPolicy(ctx context.Context, req *co
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/SetNetworkPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/clusters/*}:setNetworkPolicy")
+	}
 	opts = append((*c.CallOptions).SetNetworkPolicy[0:len((*c.CallOptions).SetNetworkPolicy):len((*c.CallOptions).SetNetworkPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &containerpb.Operation{}
@@ -3366,6 +3949,10 @@ func (c *clusterManagerRESTClient) SetMaintenancePolicy(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/SetMaintenancePolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/clusters/*}:setMaintenancePolicy")
+	}
 	opts = append((*c.CallOptions).SetMaintenancePolicy[0:len((*c.CallOptions).SetMaintenancePolicy):len((*c.CallOptions).SetMaintenancePolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &containerpb.Operation{}
@@ -3400,7 +3987,7 @@ func (c *clusterManagerRESTClient) SetMaintenancePolicy(ctx context.Context, req
 // ListUsableSubnetworks lists subnetworks that are usable for creating clusters in a project.
 func (c *clusterManagerRESTClient) ListUsableSubnetworks(ctx context.Context, req *containerpb.ListUsableSubnetworksRequest, opts ...gax.CallOption) *UsableSubnetworkIterator {
 	it := &UsableSubnetworkIterator{}
-	req = proto.Clone(req).(*containerpb.ListUsableSubnetworksRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*containerpb.UsableSubnetwork, string, error) {
 		resp := &containerpb.ListUsableSubnetworksResponse{}
@@ -3498,6 +4085,10 @@ func (c *clusterManagerRESTClient) CheckAutopilotCompatibility(ctx context.Conte
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/CheckAutopilotCompatibility")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/clusters/*}:checkAutopilotCompatibility")
+	}
 	opts = append((*c.CallOptions).CheckAutopilotCompatibility[0:len((*c.CallOptions).CheckAutopilotCompatibility):len((*c.CallOptions).CheckAutopilotCompatibility)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &containerpb.CheckAutopilotCompatibilityResponse{}
@@ -3551,6 +4142,10 @@ func (c *clusterManagerRESTClient) FetchClusterUpgradeInfo(ctx context.Context, 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/FetchClusterUpgradeInfo")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/clusters/*}:fetchClusterUpgradeInfo")
+	}
 	opts = append((*c.CallOptions).FetchClusterUpgradeInfo[0:len((*c.CallOptions).FetchClusterUpgradeInfo):len((*c.CallOptions).FetchClusterUpgradeInfo)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &containerpb.ClusterUpgradeInfo{}
@@ -3582,7 +4177,7 @@ func (c *clusterManagerRESTClient) FetchClusterUpgradeInfo(ctx context.Context, 
 	return resp, nil
 }
 
-// FetchNodePoolUpgradeInfo fetch upgrade information of a specific nodepool.
+// FetchNodePoolUpgradeInfo fetch upgrade information of a specific node pool.
 func (c *clusterManagerRESTClient) FetchNodePoolUpgradeInfo(ctx context.Context, req *containerpb.FetchNodePoolUpgradeInfoRequest, opts ...gax.CallOption) (*containerpb.NodePoolUpgradeInfo, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -3604,6 +4199,10 @@ func (c *clusterManagerRESTClient) FetchNodePoolUpgradeInfo(ctx context.Context,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/FetchNodePoolUpgradeInfo")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/clusters/*/nodePools/*}:fetchNodePoolUpgradeInfo")
+	}
 	opts = append((*c.CallOptions).FetchNodePoolUpgradeInfo[0:len((*c.CallOptions).FetchNodePoolUpgradeInfo):len((*c.CallOptions).FetchNodePoolUpgradeInfo)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &containerpb.NodePoolUpgradeInfo{}
@@ -3619,6 +4218,67 @@ func (c *clusterManagerRESTClient) FetchNodePoolUpgradeInfo(ctx context.Context,
 		httpReq.Header = headers
 
 		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "FetchNodePoolUpgradeInfo")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CompleteControlPlaneUpgrade completeControlPlaneUpgrade completes the rollback-safe upgrade by
+// performing the step two upgrade for a specific cluster.
+func (c *clusterManagerRESTClient) CompleteControlPlaneUpgrade(ctx context.Context, req *containerpb.CompleteControlPlaneUpgradeRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:completeControlPlaneUpgrade", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/CompleteControlPlaneUpgrade")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/clusters/*}:completeControlPlaneUpgrade")
+	}
+	opts = append((*c.CallOptions).CompleteControlPlaneUpgrade[0:len((*c.CallOptions).CompleteControlPlaneUpgrade):len((*c.CallOptions).CompleteControlPlaneUpgrade)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &containerpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CompleteControlPlaneUpgrade")
 		if err != nil {
 			return err
 		}

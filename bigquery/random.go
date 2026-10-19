@@ -15,42 +15,24 @@
 package bigquery
 
 import (
-	"math/rand"
-	"os"
-	"sync"
-	"time"
+	"crypto/rand"
+	"encoding/hex"
 )
 
 // Support for random values (typically job IDs and insert IDs).
 
-const alphanum = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-
-var (
-	rngMu sync.Mutex
-	rng   = rand.New(rand.NewSource(time.Now().UnixNano() ^ int64(os.Getpid())))
-)
-
 // For testing.
 var randomIDFn = randomID
 
-// As of August 2017, the BigQuery service uses 27 alphanumeric characters for
-// suffixes.
-const randomIDLen = 27
-
 func randomID() string {
-	// This is used for both job IDs and insert IDs.
-	var b [randomIDLen]byte
-	rngMu.Lock()
-	for i := 0; i < len(b); i++ {
-		b[i] = alphanum[rng.Intn(len(alphanum))]
+	var b [16]byte
+	if _, err := rand.Read(b[:]); err != nil {
+		panic("bigquery: failed to generate random ID: " + err.Error())
 	}
-	rngMu.Unlock()
-	return string(b[:])
+	return hex.EncodeToString(b[:]) // 32 alphanumeric hex characters (e.g. "4a7f9c2d1e8b3a0f...")
 }
 
-// Seed seeds this package's random number generator, used for generating job and
-// insert IDs. Use Seed to obtain repeatable, deterministic behavior from bigquery
-// clients. Seed should be called before any clients are created.
-func Seed(s int64) {
-	rng = rand.New(rand.NewSource(s))
-}
+// Seed is a no-op.
+//
+// Deprecated: Seed is no longer supported as random IDs are now cryptographically secure.
+func Seed(s int64) {}

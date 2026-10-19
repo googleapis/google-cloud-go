@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import (
 
 	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -94,7 +95,7 @@ func defaultRegionNetworkEndpointGroupsRESTCallOptions() *RegionNetworkEndpointG
 	}
 }
 
-// internalRegionNetworkEndpointGroupsClient is an interface that defines the methods available from Google Compute Engine API.
+// internalRegionNetworkEndpointGroupsClient is an interface that defines the methods available from Compute Engine API.
 type internalRegionNetworkEndpointGroupsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -108,10 +109,12 @@ type internalRegionNetworkEndpointGroupsClient interface {
 	ListNetworkEndpoints(context.Context, *computepb.ListNetworkEndpointsRegionNetworkEndpointGroupsRequest, ...gax.CallOption) *NetworkEndpointWithHealthStatusIterator
 }
 
-// RegionNetworkEndpointGroupsClient is a client for interacting with Google Compute Engine API.
+// RegionNetworkEndpointGroupsClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The RegionNetworkEndpointGroups API.
+//
+// This client uses RegionNetworkEndpointGroups version 2026-09-01.
 type RegionNetworkEndpointGroupsClient struct {
 	// The internal transport-dependent client.
 	internalClient internalRegionNetworkEndpointGroupsClient
@@ -122,7 +125,7 @@ type RegionNetworkEndpointGroupsClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *RegionNetworkEndpointGroupsClient) Close() error {
 	return c.internalClient.Close()
@@ -148,7 +151,8 @@ func (c *RegionNetworkEndpointGroupsClient) AttachNetworkEndpoints(ctx context.C
 	return c.internalClient.AttachNetworkEndpoints(ctx, req, opts...)
 }
 
-// Delete deletes the specified network endpoint group. Note that the NEG cannot be deleted if it is configured as a backend of a backend service.
+// Delete deletes the specified network endpoint group. Note that the NEG cannot be
+// deleted if it is configured as a backend of a backend service.
 func (c *RegionNetworkEndpointGroupsClient) Delete(ctx context.Context, req *computepb.DeleteRegionNetworkEndpointGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
@@ -163,12 +167,16 @@ func (c *RegionNetworkEndpointGroupsClient) Get(ctx context.Context, req *comput
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// Insert creates a network endpoint group in the specified project using the parameters that are included in the request.
+// Insert creates a network endpoint group in the specified project using the
+// parameters that are included in the request.
+//
+// Note: Use the following APIs to manage network endpoint groups:
 func (c *RegionNetworkEndpointGroupsClient) Insert(ctx context.Context, req *computepb.InsertRegionNetworkEndpointGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves the list of regional network endpoint groups available to the specified project in the given region.
+// List retrieves the list of regional network endpoint groups available to the
+// specified project in the given region.
 func (c *RegionNetworkEndpointGroupsClient) List(ctx context.Context, req *computepb.ListRegionNetworkEndpointGroupsRequest, opts ...gax.CallOption) *NetworkEndpointGroupIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
@@ -203,6 +211,16 @@ type regionNetworkEndpointGroupsRESTClient struct {
 // The RegionNetworkEndpointGroups API.
 func NewRegionNetworkEndpointGroupsRESTClient(ctx context.Context, opts ...option.ClientOption) (*RegionNetworkEndpointGroupsClient, error) {
 	clientOpts := append(defaultRegionNetworkEndpointGroupsRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "compute",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/compute/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "compute.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -216,6 +234,66 @@ func NewRegionNetworkEndpointGroupsRESTClient(ctx context.Context, opts ...optio
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AttachNetworkEndpoints = append(callOpts.AttachNetworkEndpoints, gax.WithClientMetrics(metrics))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientMetrics(metrics))
+		callOpts.DetachNetworkEndpoints = append(callOpts.DetachNetworkEndpoints, gax.WithClientMetrics(metrics))
+		callOpts.Get = append(callOpts.Get, gax.WithClientMetrics(metrics))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientMetrics(metrics))
+		callOpts.List = append(callOpts.List, gax.WithClientMetrics(metrics))
+		callOpts.ListNetworkEndpoints = append(callOpts.ListNetworkEndpoints, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AttachNetworkEndpoints = append(callOpts.AttachNetworkEndpoints, gax.WithClientTracing(tracing))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientTracing(tracing))
+		callOpts.DetachNetworkEndpoints = append(callOpts.DetachNetworkEndpoints, gax.WithClientTracing(tracing))
+		callOpts.Get = append(callOpts.Get, gax.WithClientTracing(tracing))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientTracing(tracing))
+		callOpts.List = append(callOpts.List, gax.WithClientTracing(tracing))
+		callOpts.ListNetworkEndpoints = append(callOpts.ListNetworkEndpoints, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.AttachNetworkEndpoints = append(callOpts.AttachNetworkEndpoints, gax.WithClientLogging(logging))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientLogging(logging))
+		callOpts.DetachNetworkEndpoints = append(callOpts.DetachNetworkEndpoints, gax.WithClientLogging(logging))
+		callOpts.Get = append(callOpts.Get, gax.WithClientLogging(logging))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientLogging(logging))
+		callOpts.List = append(callOpts.List, gax.WithClientLogging(logging))
+		callOpts.ListNetworkEndpoints = append(callOpts.ListNetworkEndpoints, gax.WithClientLogging(logging))
+	}
 
 	o := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -250,10 +328,11 @@ func (c *regionNetworkEndpointGroupsRESTClient) setGoogleClientInfo(keyval ...st
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
+		"x-goog-api-version", "2026-09-01",
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *regionNetworkEndpointGroupsRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -299,6 +378,10 @@ func (c *regionNetworkEndpointGroupsRESTClient) AttachNetworkEndpoints(ctx conte
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionNetworkEndpointGroups/AttachNetworkEndpoints")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/networkEndpointGroups/{network_endpoint_group}/attachNetworkEndpoints")
+	}
 	opts = append((*c.CallOptions).AttachNetworkEndpoints[0:len((*c.CallOptions).AttachNetworkEndpoints):len((*c.CallOptions).AttachNetworkEndpoints)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -338,7 +421,8 @@ func (c *regionNetworkEndpointGroupsRESTClient) AttachNetworkEndpoints(ctx conte
 	return op, nil
 }
 
-// Delete deletes the specified network endpoint group. Note that the NEG cannot be deleted if it is configured as a backend of a backend service.
+// Delete deletes the specified network endpoint group. Note that the NEG cannot be
+// deleted if it is configured as a backend of a backend service.
 func (c *regionNetworkEndpointGroupsRESTClient) Delete(ctx context.Context, req *computepb.DeleteRegionNetworkEndpointGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -359,6 +443,10 @@ func (c *regionNetworkEndpointGroupsRESTClient) Delete(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionNetworkEndpointGroups/Delete")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/networkEndpointGroups/{network_endpoint_group}")
+	}
 	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -426,6 +514,10 @@ func (c *regionNetworkEndpointGroupsRESTClient) DetachNetworkEndpoints(ctx conte
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionNetworkEndpointGroups/DetachNetworkEndpoints")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/networkEndpointGroups/{network_endpoint_group}/detachNetworkEndpoints")
+	}
 	opts = append((*c.CallOptions).DetachNetworkEndpoints[0:len((*c.CallOptions).DetachNetworkEndpoints):len((*c.CallOptions).DetachNetworkEndpoints)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -479,6 +571,10 @@ func (c *regionNetworkEndpointGroupsRESTClient) Get(ctx context.Context, req *co
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionNetworkEndpointGroups/Get")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/networkEndpointGroups/{network_endpoint_group}")
+	}
 	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.NetworkEndpointGroup{}
@@ -510,7 +606,10 @@ func (c *regionNetworkEndpointGroupsRESTClient) Get(ctx context.Context, req *co
 	return resp, nil
 }
 
-// Insert creates a network endpoint group in the specified project using the parameters that are included in the request.
+// Insert creates a network endpoint group in the specified project using the
+// parameters that are included in the request.
+//
+// Note: Use the following APIs to manage network endpoint groups:
 func (c *regionNetworkEndpointGroupsRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionNetworkEndpointGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNetworkEndpointGroupResource()
@@ -538,6 +637,10 @@ func (c *regionNetworkEndpointGroupsRESTClient) Insert(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.RegionNetworkEndpointGroups/Insert")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/regions/{region}/networkEndpointGroups")
+	}
 	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
@@ -577,10 +680,11 @@ func (c *regionNetworkEndpointGroupsRESTClient) Insert(ctx context.Context, req 
 	return op, nil
 }
 
-// List retrieves the list of regional network endpoint groups available to the specified project in the given region.
+// List retrieves the list of regional network endpoint groups available to the
+// specified project in the given region.
 func (c *regionNetworkEndpointGroupsRESTClient) List(ctx context.Context, req *computepb.ListRegionNetworkEndpointGroupsRequest, opts ...gax.CallOption) *NetworkEndpointGroupIterator {
 	it := &NetworkEndpointGroupIterator{}
-	req = proto.Clone(req).(*computepb.ListRegionNetworkEndpointGroupsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.NetworkEndpointGroup, string, error) {
 		resp := &computepb.NetworkEndpointGroupList{}
@@ -610,9 +714,6 @@ func (c *regionNetworkEndpointGroupsRESTClient) List(ctx context.Context, req *c
 		}
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -666,7 +767,7 @@ func (c *regionNetworkEndpointGroupsRESTClient) List(ctx context.Context, req *c
 // ListNetworkEndpoints lists the network endpoints in the specified network endpoint group.
 func (c *regionNetworkEndpointGroupsRESTClient) ListNetworkEndpoints(ctx context.Context, req *computepb.ListNetworkEndpointsRegionNetworkEndpointGroupsRequest, opts ...gax.CallOption) *NetworkEndpointWithHealthStatusIterator {
 	it := &NetworkEndpointWithHealthStatusIterator{}
-	req = proto.Clone(req).(*computepb.ListNetworkEndpointsRegionNetworkEndpointGroupsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.NetworkEndpointWithHealthStatus, string, error) {
 		resp := &computepb.NetworkEndpointGroupsListNetworkEndpoints{}
@@ -696,9 +797,6 @@ func (c *regionNetworkEndpointGroupsRESTClient) ListNetworkEndpoints(ctx context
 		}
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()

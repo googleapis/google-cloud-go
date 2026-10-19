@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,9 +17,18 @@
 package iap
 
 import (
+	"iter"
+
 	iappb "cloud.google.com/go/iap/apiv1/iappb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *IdentityAwareProxyClientIterator) All() iter.Seq2[*iappb.IdentityAwareProxyClient, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // IdentityAwareProxyClientIterator manages a stream of *iappb.IdentityAwareProxyClient.
 type IdentityAwareProxyClientIterator struct {
@@ -66,6 +75,12 @@ func (it *IdentityAwareProxyClientIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TunnelDestGroupIterator) All() iter.Seq2[*iappb.TunnelDestGroup, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // TunnelDestGroupIterator manages a stream of *iappb.TunnelDestGroup.

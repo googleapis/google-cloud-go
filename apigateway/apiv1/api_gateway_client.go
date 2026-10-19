@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -31,6 +31,8 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -375,7 +377,7 @@ type Client struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *Client) Close() error {
 	return c.internalClient.Close()
@@ -555,6 +557,16 @@ type gRPCClient struct {
 // The API Gateway Service is the interface for managing API Gateways.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "apigateway",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/apigateway/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "apigateway.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -576,6 +588,89 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "apigateway",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/apigateway/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "apigateway.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListGateways = append(client.CallOptions.ListGateways, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetGateway = append(client.CallOptions.GetGateway, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateGateway = append(client.CallOptions.CreateGateway, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateGateway = append(client.CallOptions.UpdateGateway, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteGateway = append(client.CallOptions.DeleteGateway, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListApis = append(client.CallOptions.ListApis, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetApi = append(client.CallOptions.GetApi, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateApi = append(client.CallOptions.CreateApi, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateApi = append(client.CallOptions.UpdateApi, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteApi = append(client.CallOptions.DeleteApi, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListApiConfigs = append(client.CallOptions.ListApiConfigs, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetApiConfig = append(client.CallOptions.GetApiConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateApiConfig = append(client.CallOptions.CreateApiConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateApiConfig = append(client.CallOptions.UpdateApiConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteApiConfig = append(client.CallOptions.DeleteApiConfig, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "apigateway",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/apigateway/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "apigateway.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListGateways = append(client.CallOptions.ListGateways, gax.WithClientTracing(tracing))
+		client.CallOptions.GetGateway = append(client.CallOptions.GetGateway, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateGateway = append(client.CallOptions.CreateGateway, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateGateway = append(client.CallOptions.UpdateGateway, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteGateway = append(client.CallOptions.DeleteGateway, gax.WithClientTracing(tracing))
+		client.CallOptions.ListApis = append(client.CallOptions.ListApis, gax.WithClientTracing(tracing))
+		client.CallOptions.GetApi = append(client.CallOptions.GetApi, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateApi = append(client.CallOptions.CreateApi, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateApi = append(client.CallOptions.UpdateApi, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteApi = append(client.CallOptions.DeleteApi, gax.WithClientTracing(tracing))
+		client.CallOptions.ListApiConfigs = append(client.CallOptions.ListApiConfigs, gax.WithClientTracing(tracing))
+		client.CallOptions.GetApiConfig = append(client.CallOptions.GetApiConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateApiConfig = append(client.CallOptions.CreateApiConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateApiConfig = append(client.CallOptions.UpdateApiConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteApiConfig = append(client.CallOptions.DeleteApiConfig, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "apigateway",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/apigateway/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "apigateway.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListGateways = append(client.CallOptions.ListGateways, gax.WithClientLogging(logging))
+		client.CallOptions.GetGateway = append(client.CallOptions.GetGateway, gax.WithClientLogging(logging))
+		client.CallOptions.CreateGateway = append(client.CallOptions.CreateGateway, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateGateway = append(client.CallOptions.UpdateGateway, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteGateway = append(client.CallOptions.DeleteGateway, gax.WithClientLogging(logging))
+		client.CallOptions.ListApis = append(client.CallOptions.ListApis, gax.WithClientLogging(logging))
+		client.CallOptions.GetApi = append(client.CallOptions.GetApi, gax.WithClientLogging(logging))
+		client.CallOptions.CreateApi = append(client.CallOptions.CreateApi, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateApi = append(client.CallOptions.UpdateApi, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteApi = append(client.CallOptions.DeleteApi, gax.WithClientLogging(logging))
+		client.CallOptions.ListApiConfigs = append(client.CallOptions.ListApiConfigs, gax.WithClientLogging(logging))
+		client.CallOptions.GetApiConfig = append(client.CallOptions.GetApiConfig, gax.WithClientLogging(logging))
+		client.CallOptions.CreateApiConfig = append(client.CallOptions.CreateApiConfig, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateApiConfig = append(client.CallOptions.UpdateApiConfig, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteApiConfig = append(client.CallOptions.DeleteApiConfig, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -612,7 +707,7 @@ func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *gRPCClient) Close() error {
 	return c.connPool.Close()
@@ -645,6 +740,16 @@ type restClient struct {
 // The API Gateway Service is the interface for managing API Gateways.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "apigateway",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/apigateway/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "apigateway.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -658,6 +763,90 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "apigateway",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/apigateway/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "apigateway.googleapis.com",
+			}),
+		)
+
+		callOpts.ListGateways = append(callOpts.ListGateways, gax.WithClientMetrics(metrics))
+		callOpts.GetGateway = append(callOpts.GetGateway, gax.WithClientMetrics(metrics))
+		callOpts.CreateGateway = append(callOpts.CreateGateway, gax.WithClientMetrics(metrics))
+		callOpts.UpdateGateway = append(callOpts.UpdateGateway, gax.WithClientMetrics(metrics))
+		callOpts.DeleteGateway = append(callOpts.DeleteGateway, gax.WithClientMetrics(metrics))
+		callOpts.ListApis = append(callOpts.ListApis, gax.WithClientMetrics(metrics))
+		callOpts.GetApi = append(callOpts.GetApi, gax.WithClientMetrics(metrics))
+		callOpts.CreateApi = append(callOpts.CreateApi, gax.WithClientMetrics(metrics))
+		callOpts.UpdateApi = append(callOpts.UpdateApi, gax.WithClientMetrics(metrics))
+		callOpts.DeleteApi = append(callOpts.DeleteApi, gax.WithClientMetrics(metrics))
+		callOpts.ListApiConfigs = append(callOpts.ListApiConfigs, gax.WithClientMetrics(metrics))
+		callOpts.GetApiConfig = append(callOpts.GetApiConfig, gax.WithClientMetrics(metrics))
+		callOpts.CreateApiConfig = append(callOpts.CreateApiConfig, gax.WithClientMetrics(metrics))
+		callOpts.UpdateApiConfig = append(callOpts.UpdateApiConfig, gax.WithClientMetrics(metrics))
+		callOpts.DeleteApiConfig = append(callOpts.DeleteApiConfig, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "apigateway",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/apigateway/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "apigateway.googleapis.com",
+			}),
+		)
+
+		callOpts.ListGateways = append(callOpts.ListGateways, gax.WithClientTracing(tracing))
+		callOpts.GetGateway = append(callOpts.GetGateway, gax.WithClientTracing(tracing))
+		callOpts.CreateGateway = append(callOpts.CreateGateway, gax.WithClientTracing(tracing))
+		callOpts.UpdateGateway = append(callOpts.UpdateGateway, gax.WithClientTracing(tracing))
+		callOpts.DeleteGateway = append(callOpts.DeleteGateway, gax.WithClientTracing(tracing))
+		callOpts.ListApis = append(callOpts.ListApis, gax.WithClientTracing(tracing))
+		callOpts.GetApi = append(callOpts.GetApi, gax.WithClientTracing(tracing))
+		callOpts.CreateApi = append(callOpts.CreateApi, gax.WithClientTracing(tracing))
+		callOpts.UpdateApi = append(callOpts.UpdateApi, gax.WithClientTracing(tracing))
+		callOpts.DeleteApi = append(callOpts.DeleteApi, gax.WithClientTracing(tracing))
+		callOpts.ListApiConfigs = append(callOpts.ListApiConfigs, gax.WithClientTracing(tracing))
+		callOpts.GetApiConfig = append(callOpts.GetApiConfig, gax.WithClientTracing(tracing))
+		callOpts.CreateApiConfig = append(callOpts.CreateApiConfig, gax.WithClientTracing(tracing))
+		callOpts.UpdateApiConfig = append(callOpts.UpdateApiConfig, gax.WithClientTracing(tracing))
+		callOpts.DeleteApiConfig = append(callOpts.DeleteApiConfig, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "apigateway",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/apigateway/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "apigateway.googleapis.com",
+			}),
+		)
+
+		callOpts.ListGateways = append(callOpts.ListGateways, gax.WithClientLogging(logging))
+		callOpts.GetGateway = append(callOpts.GetGateway, gax.WithClientLogging(logging))
+		callOpts.CreateGateway = append(callOpts.CreateGateway, gax.WithClientLogging(logging))
+		callOpts.UpdateGateway = append(callOpts.UpdateGateway, gax.WithClientLogging(logging))
+		callOpts.DeleteGateway = append(callOpts.DeleteGateway, gax.WithClientLogging(logging))
+		callOpts.ListApis = append(callOpts.ListApis, gax.WithClientLogging(logging))
+		callOpts.GetApi = append(callOpts.GetApi, gax.WithClientLogging(logging))
+		callOpts.CreateApi = append(callOpts.CreateApi, gax.WithClientLogging(logging))
+		callOpts.UpdateApi = append(callOpts.UpdateApi, gax.WithClientLogging(logging))
+		callOpts.DeleteApi = append(callOpts.DeleteApi, gax.WithClientLogging(logging))
+		callOpts.ListApiConfigs = append(callOpts.ListApiConfigs, gax.WithClientLogging(logging))
+		callOpts.GetApiConfig = append(callOpts.GetApiConfig, gax.WithClientLogging(logging))
+		callOpts.CreateApiConfig = append(callOpts.CreateApiConfig, gax.WithClientLogging(logging))
+		callOpts.UpdateApiConfig = append(callOpts.UpdateApiConfig, gax.WithClientLogging(logging))
+		callOpts.DeleteApiConfig = append(callOpts.DeleteApiConfig, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -695,7 +884,7 @@ func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *restClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -714,9 +903,12 @@ func (c *gRPCClient) ListGateways(ctx context.Context, req *apigatewaypb.ListGat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigateway.v1.ApiGatewayService/ListGateways")
+	}
 	opts = append((*c.CallOptions).ListGateways[0:len((*c.CallOptions).ListGateways):len((*c.CallOptions).ListGateways)], opts...)
 	it := &GatewayIterator{}
-	req = proto.Clone(req).(*apigatewaypb.ListGatewaysRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apigatewaypb.Gateway, string, error) {
 		resp := &apigatewaypb.ListGatewaysResponse{}
 		if pageToken != "" {
@@ -760,6 +952,9 @@ func (c *gRPCClient) GetGateway(ctx context.Context, req *apigatewaypb.GetGatewa
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigateway.v1.ApiGatewayService/GetGateway")
+	}
 	opts = append((*c.CallOptions).GetGateway[0:len((*c.CallOptions).GetGateway):len((*c.CallOptions).GetGateway)], opts...)
 	var resp *apigatewaypb.Gateway
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -778,6 +973,9 @@ func (c *gRPCClient) CreateGateway(ctx context.Context, req *apigatewaypb.Create
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigateway.v1.ApiGatewayService/CreateGateway")
+	}
 	opts = append((*c.CallOptions).CreateGateway[0:len((*c.CallOptions).CreateGateway):len((*c.CallOptions).CreateGateway)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -788,8 +986,12 @@ func (c *gRPCClient) CreateGateway(ctx context.Context, req *apigatewaypb.Create
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apigateway.CreateGatewayOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateGatewayOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -798,6 +1000,9 @@ func (c *gRPCClient) UpdateGateway(ctx context.Context, req *apigatewaypb.Update
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigateway.v1.ApiGatewayService/UpdateGateway")
+	}
 	opts = append((*c.CallOptions).UpdateGateway[0:len((*c.CallOptions).UpdateGateway):len((*c.CallOptions).UpdateGateway)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -808,8 +1013,12 @@ func (c *gRPCClient) UpdateGateway(ctx context.Context, req *apigatewaypb.Update
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apigateway.UpdateGatewayOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateGatewayOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -818,6 +1027,9 @@ func (c *gRPCClient) DeleteGateway(ctx context.Context, req *apigatewaypb.Delete
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigateway.v1.ApiGatewayService/DeleteGateway")
+	}
 	opts = append((*c.CallOptions).DeleteGateway[0:len((*c.CallOptions).DeleteGateway):len((*c.CallOptions).DeleteGateway)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -828,8 +1040,12 @@ func (c *gRPCClient) DeleteGateway(ctx context.Context, req *apigatewaypb.Delete
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apigateway.DeleteGatewayOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteGatewayOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -838,9 +1054,12 @@ func (c *gRPCClient) ListApis(ctx context.Context, req *apigatewaypb.ListApisReq
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigateway.v1.ApiGatewayService/ListApis")
+	}
 	opts = append((*c.CallOptions).ListApis[0:len((*c.CallOptions).ListApis):len((*c.CallOptions).ListApis)], opts...)
 	it := &ApiIterator{}
-	req = proto.Clone(req).(*apigatewaypb.ListApisRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apigatewaypb.Api, string, error) {
 		resp := &apigatewaypb.ListApisResponse{}
 		if pageToken != "" {
@@ -884,6 +1103,9 @@ func (c *gRPCClient) GetApi(ctx context.Context, req *apigatewaypb.GetApiRequest
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigateway.v1.ApiGatewayService/GetApi")
+	}
 	opts = append((*c.CallOptions).GetApi[0:len((*c.CallOptions).GetApi):len((*c.CallOptions).GetApi)], opts...)
 	var resp *apigatewaypb.Api
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -902,6 +1124,9 @@ func (c *gRPCClient) CreateApi(ctx context.Context, req *apigatewaypb.CreateApiR
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigateway.v1.ApiGatewayService/CreateApi")
+	}
 	opts = append((*c.CallOptions).CreateApi[0:len((*c.CallOptions).CreateApi):len((*c.CallOptions).CreateApi)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -912,8 +1137,12 @@ func (c *gRPCClient) CreateApi(ctx context.Context, req *apigatewaypb.CreateApiR
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apigateway.CreateApiOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateApiOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -922,6 +1151,9 @@ func (c *gRPCClient) UpdateApi(ctx context.Context, req *apigatewaypb.UpdateApiR
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigateway.v1.ApiGatewayService/UpdateApi")
+	}
 	opts = append((*c.CallOptions).UpdateApi[0:len((*c.CallOptions).UpdateApi):len((*c.CallOptions).UpdateApi)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -932,8 +1164,12 @@ func (c *gRPCClient) UpdateApi(ctx context.Context, req *apigatewaypb.UpdateApiR
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apigateway.UpdateApiOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateApiOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -942,6 +1178,9 @@ func (c *gRPCClient) DeleteApi(ctx context.Context, req *apigatewaypb.DeleteApiR
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigateway.v1.ApiGatewayService/DeleteApi")
+	}
 	opts = append((*c.CallOptions).DeleteApi[0:len((*c.CallOptions).DeleteApi):len((*c.CallOptions).DeleteApi)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -952,8 +1191,12 @@ func (c *gRPCClient) DeleteApi(ctx context.Context, req *apigatewaypb.DeleteApiR
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apigateway.DeleteApiOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteApiOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -962,9 +1205,12 @@ func (c *gRPCClient) ListApiConfigs(ctx context.Context, req *apigatewaypb.ListA
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigateway.v1.ApiGatewayService/ListApiConfigs")
+	}
 	opts = append((*c.CallOptions).ListApiConfigs[0:len((*c.CallOptions).ListApiConfigs):len((*c.CallOptions).ListApiConfigs)], opts...)
 	it := &ApiConfigIterator{}
-	req = proto.Clone(req).(*apigatewaypb.ListApiConfigsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apigatewaypb.ApiConfig, string, error) {
 		resp := &apigatewaypb.ListApiConfigsResponse{}
 		if pageToken != "" {
@@ -1008,6 +1254,9 @@ func (c *gRPCClient) GetApiConfig(ctx context.Context, req *apigatewaypb.GetApiC
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigateway.v1.ApiGatewayService/GetApiConfig")
+	}
 	opts = append((*c.CallOptions).GetApiConfig[0:len((*c.CallOptions).GetApiConfig):len((*c.CallOptions).GetApiConfig)], opts...)
 	var resp *apigatewaypb.ApiConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1026,6 +1275,9 @@ func (c *gRPCClient) CreateApiConfig(ctx context.Context, req *apigatewaypb.Crea
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigateway.v1.ApiGatewayService/CreateApiConfig")
+	}
 	opts = append((*c.CallOptions).CreateApiConfig[0:len((*c.CallOptions).CreateApiConfig):len((*c.CallOptions).CreateApiConfig)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1036,8 +1288,12 @@ func (c *gRPCClient) CreateApiConfig(ctx context.Context, req *apigatewaypb.Crea
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apigateway.CreateApiConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateApiConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1046,6 +1302,9 @@ func (c *gRPCClient) UpdateApiConfig(ctx context.Context, req *apigatewaypb.Upda
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigateway.v1.ApiGatewayService/UpdateApiConfig")
+	}
 	opts = append((*c.CallOptions).UpdateApiConfig[0:len((*c.CallOptions).UpdateApiConfig):len((*c.CallOptions).UpdateApiConfig)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1056,8 +1315,12 @@ func (c *gRPCClient) UpdateApiConfig(ctx context.Context, req *apigatewaypb.Upda
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apigateway.UpdateApiConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateApiConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1066,6 +1329,9 @@ func (c *gRPCClient) DeleteApiConfig(ctx context.Context, req *apigatewaypb.Dele
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigateway.v1.ApiGatewayService/DeleteApiConfig")
+	}
 	opts = append((*c.CallOptions).DeleteApiConfig[0:len((*c.CallOptions).DeleteApiConfig):len((*c.CallOptions).DeleteApiConfig)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1076,15 +1342,19 @@ func (c *gRPCClient) DeleteApiConfig(ctx context.Context, req *apigatewaypb.Dele
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apigateway.DeleteApiConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteApiConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
 // ListGateways lists Gateways in a given project and location.
 func (c *restClient) ListGateways(ctx context.Context, req *apigatewaypb.ListGatewaysRequest, opts ...gax.CallOption) *GatewayIterator {
 	it := &GatewayIterator{}
-	req = proto.Clone(req).(*apigatewaypb.ListGatewaysRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apigatewaypb.Gateway, string, error) {
 		resp := &apigatewaypb.ListGatewaysResponse{}
@@ -1184,6 +1454,10 @@ func (c *restClient) GetGateway(ctx context.Context, req *apigatewaypb.GetGatewa
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigateway.v1.ApiGatewayService/GetGateway")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/gateways/*}")
+	}
 	opts = append((*c.CallOptions).GetGateway[0:len((*c.CallOptions).GetGateway):len((*c.CallOptions).GetGateway)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &apigatewaypb.Gateway{}
@@ -1242,6 +1516,10 @@ func (c *restClient) CreateGateway(ctx context.Context, req *apigatewaypb.Create
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigateway.v1.ApiGatewayService/CreateGateway")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/gateways")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1270,8 +1548,12 @@ func (c *restClient) CreateGateway(ctx context.Context, req *apigatewaypb.Create
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apigateway.CreateGatewayOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateGatewayOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1309,6 +1591,10 @@ func (c *restClient) UpdateGateway(ctx context.Context, req *apigatewaypb.Update
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigateway.v1.ApiGatewayService/UpdateGateway")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{gateway.name=projects/*/locations/*/gateways/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1337,8 +1623,12 @@ func (c *restClient) UpdateGateway(ctx context.Context, req *apigatewaypb.Update
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apigateway.UpdateGatewayOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateGatewayOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1362,6 +1652,10 @@ func (c *restClient) DeleteGateway(ctx context.Context, req *apigatewaypb.Delete
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigateway.v1.ApiGatewayService/DeleteGateway")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/gateways/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1390,8 +1684,12 @@ func (c *restClient) DeleteGateway(ctx context.Context, req *apigatewaypb.Delete
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apigateway.DeleteGatewayOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteGatewayOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1399,7 +1697,7 @@ func (c *restClient) DeleteGateway(ctx context.Context, req *apigatewaypb.Delete
 // ListApis lists Apis in a given project and location.
 func (c *restClient) ListApis(ctx context.Context, req *apigatewaypb.ListApisRequest, opts ...gax.CallOption) *ApiIterator {
 	it := &ApiIterator{}
-	req = proto.Clone(req).(*apigatewaypb.ListApisRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apigatewaypb.Api, string, error) {
 		resp := &apigatewaypb.ListApisResponse{}
@@ -1499,6 +1797,10 @@ func (c *restClient) GetApi(ctx context.Context, req *apigatewaypb.GetApiRequest
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigateway.v1.ApiGatewayService/GetApi")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/apis/*}")
+	}
 	opts = append((*c.CallOptions).GetApi[0:len((*c.CallOptions).GetApi):len((*c.CallOptions).GetApi)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &apigatewaypb.Api{}
@@ -1557,6 +1859,10 @@ func (c *restClient) CreateApi(ctx context.Context, req *apigatewaypb.CreateApiR
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigateway.v1.ApiGatewayService/CreateApi")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/apis")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1585,8 +1891,12 @@ func (c *restClient) CreateApi(ctx context.Context, req *apigatewaypb.CreateApiR
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apigateway.CreateApiOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateApiOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1624,6 +1934,10 @@ func (c *restClient) UpdateApi(ctx context.Context, req *apigatewaypb.UpdateApiR
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigateway.v1.ApiGatewayService/UpdateApi")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{api.name=projects/*/locations/*/apis/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1652,8 +1966,12 @@ func (c *restClient) UpdateApi(ctx context.Context, req *apigatewaypb.UpdateApiR
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apigateway.UpdateApiOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateApiOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1677,6 +1995,10 @@ func (c *restClient) DeleteApi(ctx context.Context, req *apigatewaypb.DeleteApiR
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigateway.v1.ApiGatewayService/DeleteApi")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/apis/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1705,8 +2027,12 @@ func (c *restClient) DeleteApi(ctx context.Context, req *apigatewaypb.DeleteApiR
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apigateway.DeleteApiOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteApiOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1714,7 +2040,7 @@ func (c *restClient) DeleteApi(ctx context.Context, req *apigatewaypb.DeleteApiR
 // ListApiConfigs lists ApiConfigs in a given project and location.
 func (c *restClient) ListApiConfigs(ctx context.Context, req *apigatewaypb.ListApiConfigsRequest, opts ...gax.CallOption) *ApiConfigIterator {
 	it := &ApiConfigIterator{}
-	req = proto.Clone(req).(*apigatewaypb.ListApiConfigsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apigatewaypb.ApiConfig, string, error) {
 		resp := &apigatewaypb.ListApiConfigsResponse{}
@@ -1817,6 +2143,10 @@ func (c *restClient) GetApiConfig(ctx context.Context, req *apigatewaypb.GetApiC
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigateway.v1.ApiGatewayService/GetApiConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/apis/*/configs/*}")
+	}
 	opts = append((*c.CallOptions).GetApiConfig[0:len((*c.CallOptions).GetApiConfig):len((*c.CallOptions).GetApiConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &apigatewaypb.ApiConfig{}
@@ -1875,6 +2205,10 @@ func (c *restClient) CreateApiConfig(ctx context.Context, req *apigatewaypb.Crea
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigateway.v1.ApiGatewayService/CreateApiConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/apis/*}/configs")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1903,8 +2237,12 @@ func (c *restClient) CreateApiConfig(ctx context.Context, req *apigatewaypb.Crea
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apigateway.CreateApiConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateApiConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1942,6 +2280,10 @@ func (c *restClient) UpdateApiConfig(ctx context.Context, req *apigatewaypb.Upda
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigateway.v1.ApiGatewayService/UpdateApiConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{api_config.name=projects/*/locations/*/apis/*/configs/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1970,8 +2312,12 @@ func (c *restClient) UpdateApiConfig(ctx context.Context, req *apigatewaypb.Upda
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apigateway.UpdateApiConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateApiConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1995,6 +2341,10 @@ func (c *restClient) DeleteApiConfig(ctx context.Context, req *apigatewaypb.Dele
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apigateway.v1.ApiGatewayService/DeleteApiConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/apis/*/configs/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2023,8 +2373,12 @@ func (c *restClient) DeleteApiConfig(ctx context.Context, req *apigatewaypb.Dele
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*apigateway.DeleteApiConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteApiConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2033,7 +2387,7 @@ func (c *restClient) DeleteApiConfig(ctx context.Context, req *apigatewaypb.Dele
 // The name must be that of a previously created CreateApiOperation, possibly from a different process.
 func (c *gRPCClient) CreateApiOperation(name string) *CreateApiOperation {
 	return &CreateApiOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apigateway.CreateApiOperation"),
 	}
 }
 
@@ -2042,7 +2396,7 @@ func (c *gRPCClient) CreateApiOperation(name string) *CreateApiOperation {
 func (c *restClient) CreateApiOperation(name string) *CreateApiOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateApiOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apigateway.CreateApiOperation"),
 		pollPath: override,
 	}
 }
@@ -2051,7 +2405,7 @@ func (c *restClient) CreateApiOperation(name string) *CreateApiOperation {
 // The name must be that of a previously created CreateApiConfigOperation, possibly from a different process.
 func (c *gRPCClient) CreateApiConfigOperation(name string) *CreateApiConfigOperation {
 	return &CreateApiConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apigateway.CreateApiConfigOperation"),
 	}
 }
 
@@ -2060,7 +2414,7 @@ func (c *gRPCClient) CreateApiConfigOperation(name string) *CreateApiConfigOpera
 func (c *restClient) CreateApiConfigOperation(name string) *CreateApiConfigOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateApiConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apigateway.CreateApiConfigOperation"),
 		pollPath: override,
 	}
 }
@@ -2069,7 +2423,7 @@ func (c *restClient) CreateApiConfigOperation(name string) *CreateApiConfigOpera
 // The name must be that of a previously created CreateGatewayOperation, possibly from a different process.
 func (c *gRPCClient) CreateGatewayOperation(name string) *CreateGatewayOperation {
 	return &CreateGatewayOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apigateway.CreateGatewayOperation"),
 	}
 }
 
@@ -2078,7 +2432,7 @@ func (c *gRPCClient) CreateGatewayOperation(name string) *CreateGatewayOperation
 func (c *restClient) CreateGatewayOperation(name string) *CreateGatewayOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateGatewayOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apigateway.CreateGatewayOperation"),
 		pollPath: override,
 	}
 }
@@ -2087,7 +2441,7 @@ func (c *restClient) CreateGatewayOperation(name string) *CreateGatewayOperation
 // The name must be that of a previously created DeleteApiOperation, possibly from a different process.
 func (c *gRPCClient) DeleteApiOperation(name string) *DeleteApiOperation {
 	return &DeleteApiOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apigateway.DeleteApiOperation"),
 	}
 }
 
@@ -2096,7 +2450,7 @@ func (c *gRPCClient) DeleteApiOperation(name string) *DeleteApiOperation {
 func (c *restClient) DeleteApiOperation(name string) *DeleteApiOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteApiOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apigateway.DeleteApiOperation"),
 		pollPath: override,
 	}
 }
@@ -2105,7 +2459,7 @@ func (c *restClient) DeleteApiOperation(name string) *DeleteApiOperation {
 // The name must be that of a previously created DeleteApiConfigOperation, possibly from a different process.
 func (c *gRPCClient) DeleteApiConfigOperation(name string) *DeleteApiConfigOperation {
 	return &DeleteApiConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apigateway.DeleteApiConfigOperation"),
 	}
 }
 
@@ -2114,7 +2468,7 @@ func (c *gRPCClient) DeleteApiConfigOperation(name string) *DeleteApiConfigOpera
 func (c *restClient) DeleteApiConfigOperation(name string) *DeleteApiConfigOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteApiConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apigateway.DeleteApiConfigOperation"),
 		pollPath: override,
 	}
 }
@@ -2123,7 +2477,7 @@ func (c *restClient) DeleteApiConfigOperation(name string) *DeleteApiConfigOpera
 // The name must be that of a previously created DeleteGatewayOperation, possibly from a different process.
 func (c *gRPCClient) DeleteGatewayOperation(name string) *DeleteGatewayOperation {
 	return &DeleteGatewayOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apigateway.DeleteGatewayOperation"),
 	}
 }
 
@@ -2132,7 +2486,7 @@ func (c *gRPCClient) DeleteGatewayOperation(name string) *DeleteGatewayOperation
 func (c *restClient) DeleteGatewayOperation(name string) *DeleteGatewayOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteGatewayOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apigateway.DeleteGatewayOperation"),
 		pollPath: override,
 	}
 }
@@ -2141,7 +2495,7 @@ func (c *restClient) DeleteGatewayOperation(name string) *DeleteGatewayOperation
 // The name must be that of a previously created UpdateApiOperation, possibly from a different process.
 func (c *gRPCClient) UpdateApiOperation(name string) *UpdateApiOperation {
 	return &UpdateApiOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apigateway.UpdateApiOperation"),
 	}
 }
 
@@ -2150,7 +2504,7 @@ func (c *gRPCClient) UpdateApiOperation(name string) *UpdateApiOperation {
 func (c *restClient) UpdateApiOperation(name string) *UpdateApiOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateApiOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apigateway.UpdateApiOperation"),
 		pollPath: override,
 	}
 }
@@ -2159,7 +2513,7 @@ func (c *restClient) UpdateApiOperation(name string) *UpdateApiOperation {
 // The name must be that of a previously created UpdateApiConfigOperation, possibly from a different process.
 func (c *gRPCClient) UpdateApiConfigOperation(name string) *UpdateApiConfigOperation {
 	return &UpdateApiConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apigateway.UpdateApiConfigOperation"),
 	}
 }
 
@@ -2168,7 +2522,7 @@ func (c *gRPCClient) UpdateApiConfigOperation(name string) *UpdateApiConfigOpera
 func (c *restClient) UpdateApiConfigOperation(name string) *UpdateApiConfigOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateApiConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apigateway.UpdateApiConfigOperation"),
 		pollPath: override,
 	}
 }
@@ -2177,7 +2531,7 @@ func (c *restClient) UpdateApiConfigOperation(name string) *UpdateApiConfigOpera
 // The name must be that of a previously created UpdateGatewayOperation, possibly from a different process.
 func (c *gRPCClient) UpdateGatewayOperation(name string) *UpdateGatewayOperation {
 	return &UpdateGatewayOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apigateway.UpdateGatewayOperation"),
 	}
 }
 
@@ -2186,7 +2540,7 @@ func (c *gRPCClient) UpdateGatewayOperation(name string) *UpdateGatewayOperation
 func (c *restClient) UpdateGatewayOperation(name string) *UpdateGatewayOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateGatewayOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*apigateway.UpdateGatewayOperation"),
 		pollPath: override,
 	}
 }

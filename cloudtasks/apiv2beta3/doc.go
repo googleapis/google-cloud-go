@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -58,11 +58,16 @@
 //
 // The following is an example of making an API call with the newly created client, mentioned above.
 //
-//	req := &cloudtaskspb.CreateQueueRequest{
+//	req := &cloudtaskspb.BatchCreateTasksRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/cloudtasks/apiv2beta3/cloudtaskspb#CreateQueueRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/cloudtasks/apiv2beta3/cloudtaskspb#BatchCreateTasksRequest.
 //	}
-//	resp, err := c.CreateQueue(ctx, req)
+//	op, err := c.BatchCreateTasks(ctx, req)
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
+//
+//	resp, err := op.Wait(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

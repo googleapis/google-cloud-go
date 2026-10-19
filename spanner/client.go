@@ -51,6 +51,7 @@ import (
 
 	vkit "cloud.google.com/go/spanner/apiv1"
 	"cloud.google.com/go/spanner/internal"
+	"cloud.google.com/go/spanner/omni"
 )
 
 const (
@@ -117,19 +118,24 @@ func parseDatabaseName(db string) (project, instance, database string, err error
 // Client is a client for reading and writing data to a Cloud Spanner database.
 // A client is safe to use concurrently, except for its Close method.
 type Client struct {
-	sc                   *sessionClient
-	idleSessions         *sessionPool
-	logger               *log.Logger
-	qo                   QueryOptions
-	ro                   ReadOptions
-	ao                   []ApplyOption
-	txo                  TransactionOptions
-	bwo                  BatchWriteOptions
-	ct                   *commonTags
-	disableRouteToLeader bool
-	dro                  *sppb.DirectedReadOptions
-	otConfig             *openTelemetryConfig
-	metricsTracerFactory *builtinMetricsTracerFactory
+	sc                     *sessionClient
+	sm                     *sessionManager
+	logger                 *log.Logger
+	qo                     QueryOptions
+	ro                     ReadOptions
+	ao                     []ApplyOption
+	txo                    TransactionOptions
+	bwo                    BatchWriteOptions
+	ct                     *commonTags
+	disableRouteToLeader   bool
+	dro                    *sppb.DirectedReadOptions
+	otConfig               *openTelemetryConfig
+	metricsTracerFactory   *builtinMetricsTracerFactory
+	clientContext          *sppb.RequestOptions_ClientContext
+	locationRouter         *locationRouter
+	enableAutoTagging      bool
+	autoTaggingPackages    []string
+	autoTaggingTracerLimit int
 }
 
 // DatabaseName returns the full name of a database, e.g.,
@@ -232,7 +238,7 @@ func createGCPMultiEndpoint(cfg *grpcgcp.GCPMultiEndpointOptions, config ClientC
 			copts = append(copts, option.WithGRPCDialOption(do))
 		}
 
-		allOpts := allClientOpts(1, config.Compression, copts...)
+		allOpts := allClientOpts(1, config.Compression, config.EnableDirectAccess, copts...)
 
 		// Overwrite endpoint and pool config.
 		allOpts = append(allOpts,
@@ -269,6 +275,16 @@ func (gw *gmeWrapper) Num() int {
 	return int(gw.GCPMultiEndpoint.GCPConfig().GetChannelPool().GetMaxSize())
 }
 
+// InstanceType specifies the type of Spanner instance to connect to.
+type InstanceType string
+
+const (
+	// CLOUD represents a Cloud Spanner instance.
+	CLOUD InstanceType = "CLOUD"
+	// OMNI represents a Spanner Omni instance.
+	OMNI InstanceType = "OMNI"
+)
+
 // ClientConfig has configurations for the client.
 type ClientConfig struct {
 	// NumChannels is the number of gRPC channels.
@@ -282,6 +298,9 @@ type ClientConfig struct {
 
 	// SessionPoolConfig is the configuration for session pool.
 	SessionPoolConfig
+
+	// DynamicChannelPoolConfig is the opt-in configuration for dynamic gRPC channel pooling.
+	DynamicChannelPoolConfig DynamicChannelPoolConfig
 
 	// SessionLabels for the sessions created by this client.
 	// See https://cloud.google.com/spanner/docs/reference/rpc/google.spanner.v1#session
@@ -352,6 +371,14 @@ type ClientConfig struct {
 
 	OpenTelemetryMeterProvider metric.MeterProvider
 
+	// ClientMetricsProvider exports Spanner built-in client metrics to a
+	// caller-owned OpenTelemetry pipeline. Metrics use the spanner/client/
+	// instrument namespace. This provider is independent of the native Cloud
+	// Monitoring export controlled by DisableNativeMetrics and
+	// SPANNER_DISABLE_BUILTIN_METRICS. A nil provider disables this export.
+	// The caller owns the provider lifecycle.
+	ClientMetricsProvider metric.MeterProvider
+
 	// EnableEndToEndTracing indicates whether end to end tracing is enabled or not. If
 	// it is enabled, trace spans will be created at Spanner layer. Enabling end to end
 	// tracing requires OpenTelemetry to be set up. Simply enabling this option won't
@@ -360,33 +387,117 @@ type ClientConfig struct {
 	// Default: false
 	EnableEndToEndTracing bool
 
-	// DisableNativeMetrics indicates whether native metrics should be disabled or not.
-	// If true, native metrics will not be emitted.
+	// DisableNativeMetrics disables the native Cloud Monitoring export. It does
+	// not affect the caller-owned export configured by ClientMetricsProvider.
 	//
 	// Default: false
 	DisableNativeMetrics bool
 
-	// Default: false
+	// Type specifies the type of Spanner instance to connect to (CLOUD or OMNI).
+	// CLOUD is a no-op and for connecting to Spanner Omni it's mandatory to set Type to OMNI.
+	// If unspecified, it defaults to CLOUD.
+	Type InstanceType
+
+	// Username is the username for logging into Spanner Omni.
+	// Note: This field is only applicable when Type is OMNI.
+	Username string
+
+	// Password is the password for logging into Spanner Omni.
+	// Note: This field is only applicable when Type is OMNI.
+	Password []byte
+
+	// UsePlainText specifies whether to use plain text for the connection.
+	UsePlainText bool
+
+	// CaCertificateFile is the path to the CA certificate file.
+	CaCertificateFile string
+
+	// ClientCertificateFile is the path to the client certificate file.
+	ClientCertificateFile string
+
+	// ClientKeyFile is the path to the client key file.
+	ClientKeyFile string
+
+	// IsExperimentalHost is deprecated. Use Type = OMNI instead.
+	//
+	// Deprecated: Use Type = OMNI instead.
 	IsExperimentalHost bool
+
+	// ClientContext is the default context for all requests made by the client.
+	ClientContext *sppb.RequestOptions_ClientContext
+
+	// EnableDirectAccess option is used to enable the directpath.
+	// This setting is overridden by the GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS
+	// environment variable if it is set.
+	//
+	// Default: false
+	EnableDirectAccess bool
+
+	// EnableAutoTagging is an opt-in flag that automatically adds transaction tags to all
+	// read/write transactions and request tags to all statements in read-only transactions
+	// based on the name of the method that started the transaction.
+	EnableAutoTagging bool
+
+	// AutoTaggingPackages is an optional list of target package name prefixes.
+	// Use this to indicate which package names are part of the application.
+	// A tag name will be based on the first method that is found in the call stack
+	// that is part of the application. If no package names are specified in this option,
+	// auto-tagging will look for the first method that it can find that is not part of the
+	// Spanner client or a system package.
+	AutoTaggingPackages []string
+
+	// AutoTaggingTracerLimit specifies depth limit for stack-trace walking.
+	AutoTaggingTracerLimit int
+}
+
+// GetInstanceType returns the instance type.
+func (c ClientConfig) GetInstanceType() string {
+	return string(c.Type)
+}
+
+// GetUsePlainText returns whether plain text is used.
+func (c ClientConfig) GetUsePlainText() bool {
+	return c.UsePlainText
+}
+
+// GetUsername returns the username for OPAQUE login.
+func (c ClientConfig) GetUsername() string {
+	return c.Username
+}
+
+// GetPassword returns the password for OPAQUE login.
+func (c ClientConfig) GetPassword() []byte {
+	return c.Password
+}
+
+// GetCaCertificateFile returns the CA certificate file path.
+func (c ClientConfig) GetCaCertificateFile() string {
+	return c.CaCertificateFile
+}
+
+// GetClientCertificateFile returns the client certificate file path.
+func (c ClientConfig) GetClientCertificateFile() string {
+	return c.ClientCertificateFile
+}
+
+// GetClientKeyFile returns the client key file path.
+func (c ClientConfig) GetClientKeyFile() string {
+	return c.ClientKeyFile
 }
 
 type openTelemetryConfig struct {
-	enabled                        bool
-	meterProvider                  metric.MeterProvider
-	commonTraceStartOptions        []otrace.SpanStartOption
-	attributeMap                   []attribute.KeyValue
-	attributeMapWithMultiplexed    []attribute.KeyValue
-	attributeMapWithoutMultiplexed []attribute.KeyValue
-	otMetricRegistration           metric.Registration
-	openSessionCount               metric.Int64ObservableGauge
-	maxAllowedSessionsCount        metric.Int64ObservableGauge
-	sessionsCount                  metric.Int64ObservableGauge
-	maxInUseSessionsCount          metric.Int64ObservableGauge
-	getSessionTimeoutsCount        metric.Int64Counter
-	acquiredSessionsCount          metric.Int64Counter
-	releasedSessionsCount          metric.Int64Counter
-	gfeLatency                     metric.Int64Histogram
-	gfeHeaderMissingCount          metric.Int64Counter
+	enabled                     bool
+	meterProvider               metric.MeterProvider
+	commonTraceStartOptions     []otrace.SpanStartOption
+	attributeMap                []attribute.KeyValue
+	attributeMapWithMultiplexed []attribute.KeyValue
+	otMetricRegistration        metric.Registration
+	openSessionCount            metric.Int64ObservableGauge
+	getSessionTimeoutsCount     metric.Int64Counter
+	acquiredSessionsCount       metric.Int64Counter
+	releasedSessionsCount       metric.Int64Counter
+	gfeLatency                  metric.Int64Histogram
+	gfeHeaderMissingCount       metric.Int64Counter
 }
 
 func contextWithOutgoingMetadata(ctx context.Context, md metadata.MD, disableRouteToLeader bool) context.Context {
@@ -415,7 +526,149 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 	return newClientWithConfig(ctx, database, config, nil, opts...)
 }
 
+type fallbackWrapper struct {
+	*grpcgcp.GCPFallback
+	primaryConn  gtransport.ConnPool
+	fallbackConn gtransport.ConnPool
+}
+
+// Conn returns nil because GCPFallback hides the underlying ClientConn.
+// The Spanner client handles this by using the interface methods (Invoke/NewStream).
+func (fw *fallbackWrapper) Conn() *grpc.ClientConn {
+	return nil
+}
+
+func (fw *fallbackWrapper) Num() int {
+	return fw.primaryConn.Num()
+}
+
+func (fw *fallbackWrapper) Close() error {
+	fw.GCPFallback.Close()
+	err1 := fw.primaryConn.Close()
+	err2 := fw.fallbackConn.Close()
+	if err1 != nil {
+		return err1
+	}
+	return err2
+}
+
+func isDCPEnabledForConfig(config ClientConfig, gme *grpcgcp.GCPMultiEndpoint) bool {
+	return config.DynamicChannelPoolConfig.DCPEnabled &&
+		gme == nil &&
+		!isExperimentalLocationAPIEnabledForConfig(config) &&
+		os.Getenv("SPANNER_EMULATOR_HOST") == ""
+}
+
+// isSpannerEmulatorEnabled is the shared metrics gate for emulator clients.
+func isSpannerEmulatorEnabled() bool {
+	return os.Getenv("SPANNER_EMULATOR_HOST") != ""
+}
+
+func createDCPConnPool(
+	ctx context.Context,
+	database string,
+	config ClientConfig,
+	sessionLabels map[string]string,
+	md metadata.MD,
+	metricsTracerFactory *builtinMetricsTracerFactory,
+	opts ...option.ClientOption,
+) (gtransport.ConnPool, *sessionClient, error) {
+	reqIDInjector := new(requestIDHeaderInjector)
+	dcpOpts := append([]option.ClientOption{}, opts...)
+	dcpOpts = append(dcpOpts,
+		option.WithGRPCDialOption(grpc.WithChainStreamInterceptor(reqIDInjector.interceptStream)),
+		option.WithGRPCDialOption(grpc.WithChainUnaryInterceptor(reqIDInjector.interceptUnary)),
+	)
+	sc := newSessionClient(nil, database, config.UserAgent, sessionLabels, config.DatabaseRole, config.DisableRouteToLeader, md, config.BatchTimeout, config.Logger, config.CallOptions)
+	sc.metricsTracerFactory = metricsTracerFactory
+	dial := func(dialCtx context.Context) (gtransport.ConnPool, error) {
+		return gtransport.DialPool(dialCtx, allClientOpts(1, config.Compression, config.EnableDirectAccess, dcpOpts...)...)
+	}
+	dcp, err := newDynamicChannelPool(ctx, sc, config.DynamicChannelPoolConfig, config.OpenTelemetryMeterProvider, dial)
+	if err != nil {
+		return nil, nil, err
+	}
+	sc.connPool = dcp
+	sc.dynamicPool = dcp
+	return dcp, sc, nil
+}
+
+func createFallbackConnPool(
+	ctx context.Context,
+	config ClientConfig,
+	hasNumChannelsConfig bool,
+	metricsTracerFactory *builtinMetricsTracerFactory,
+	opts ...option.ClientOption,
+) (gtransport.ConnPool, []option.ClientOption, error) {
+	reqIDInjector := new(requestIDHeaderInjector)
+	opts = append(opts,
+		option.WithGRPCDialOption(grpc.WithChainStreamInterceptor(reqIDInjector.interceptStream)),
+		option.WithGRPCDialOption(grpc.WithChainUnaryInterceptor(reqIDInjector.interceptUnary)),
+	)
+	allOpts := allClientOpts(config.NumChannels, config.Compression, config.EnableDirectAccess, opts...)
+	primaryConn, err := gtransport.DialPool(ctx, allOpts...)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	fallbackConnOpts := append(allOpts, internaloption.EnableDirectPath(false))
+	fallbackConn, err := gtransport.DialPool(ctx, fallbackConnOpts...)
+	if err != nil {
+		primaryConn.Close()
+		return nil, nil, err
+	}
+
+	if hasNumChannelsConfig && ((primaryConn.Num() != config.NumChannels) || (fallbackConn.Num() != config.NumChannels)) {
+		primaryConn.Close()
+		fallbackConn.Close()
+		return nil, nil, spannerErrorf(codes.InvalidArgument, "Connection pool mismatch: NumChannels=%v, primaryConn.Num()=%v, fallbackConn.Num()=%v", config.NumChannels, primaryConn.Num(), fallbackConn.Num())
+	}
+
+	fbOpts := grpcgcp.NewGCPFallbackOptions()
+	fbOpts.EnableFallback = true
+	fbOpts.ErrorRateThreshold = 1
+	fbOpts.MinFailedCalls = 1
+	fbOpts.Period = time.Minute * 3
+
+	if metricsTracerFactory != nil && metricsTracerFactory.meterProvider != nil {
+		fbOpts.MeterProvider = metricsTracerFactory.meterProvider
+	}
+
+	gcpFallback, err := grpcgcp.NewGCPFallback(ctx, primaryConn, fallbackConn, fbOpts)
+	if err != nil {
+		primaryConn.Close()
+		fallbackConn.Close()
+		return nil, nil, err
+	}
+
+	return &fallbackWrapper{gcpFallback, primaryConn, fallbackConn}, allOpts, nil
+}
+
 func newClientWithConfig(ctx context.Context, database string, config ClientConfig, gme *grpcgcp.GCPMultiEndpoint, opts ...option.ClientOption) (c *Client, err error) {
+	if config.Type != OMNI && (config.UsePlainText || config.CaCertificateFile != "" || config.ClientCertificateFile != "" || config.ClientKeyFile != "") {
+		return nil, spannerErrorf(codes.InvalidArgument, "UsePlainText, CaCertificateFile, ClientCertificateFile, and ClientKeyFile can only be set when Type is OMNI")
+	}
+
+	if config.Type == OMNI {
+		omniOpts, err := omni.ConnectionOptions(config.UsePlainText, config.CaCertificateFile, config.ClientCertificateFile, config.ClientKeyFile)
+		if err != nil {
+			return nil, err
+		}
+		opts = append(opts, omniOpts...)
+
+		hasUsername := config.Username != ""
+		hasPassword := len(config.Password) > 0
+		if hasUsername != hasPassword {
+			return nil, spannerErrorf(codes.InvalidArgument, "both Username and Password must be specified for Omni authentication")
+		}
+		if hasUsername && hasPassword {
+			tsOpts := append([]option.ClientOption(nil), opts...)
+			opts = append(opts, option.WithTokenSource(omni.NewTokenSource(ctx, config.Username, config.Password, tsOpts)))
+		} else {
+			opts = append(opts, option.WithoutAuthentication())
+		}
+	}
+
 	// Validate database path.
 	if err := validDatabaseName(database); err != nil {
 		return nil, err
@@ -451,23 +704,27 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 		config.NumChannels = numChannels
 	}
 
+	emulatorEnabled := isSpannerEmulatorEnabled()
 	var metricsProvider metric.MeterProvider
-	if emulatorAddr := os.Getenv("SPANNER_EMULATOR_HOST"); emulatorAddr != "" {
-		// Do not emit native metrics when emulator is being used
-		metricsProvider = noop.NewMeterProvider()
-	}
 	// Check if native metrics are disabled via env.
 	if disableNativeMetrics, _ := strconv.ParseBool(os.Getenv("SPANNER_DISABLE_BUILTIN_METRICS")); disableNativeMetrics {
 		config.DisableNativeMetrics = true
 	}
-	if config.DisableNativeMetrics {
-		// Do not emit native metrics when DisableNativeMetrics is set
+	if config.DisableNativeMetrics || config.Type == OMNI || config.IsExperimentalHost || emulatorEnabled {
+		// Do not emit native metrics when the Cloud Monitoring sink is unavailable or disabled.
 		metricsProvider = noop.NewMeterProvider()
+	}
+	clientMetricsProvider := config.ClientMetricsProvider
+	if emulatorEnabled {
+		clientMetricsProvider = nil
 	}
 	isAFEBuiltInMetricEnabled := strings.EqualFold("false", os.Getenv("SPANNER_DISABLE_AFE_SERVER_TIMING"))
 	isGRPCBuiltInMetricsEnabled := strings.EqualFold("false", os.Getenv("SPANNER_DISABLE_DIRECT_ACCESS_GRPC_BUILTIN_METRICS"))
 	// enable the AFE/GRPC built-in metrics if direct-path is enabled
-	isDirectPathEnabled, _ := strconv.ParseBool(os.Getenv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS"))
+	isDirectPathEnabled := config.EnableDirectAccess
+	if enableDirectPathXdsString := os.Getenv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS"); enableDirectPathXdsString != "" {
+		isDirectPathEnabled, _ = strconv.ParseBool(enableDirectPathXdsString)
+	}
 	if isDirectPathEnabled {
 		isAFEBuiltInMetricEnabled = true
 		isGRPCBuiltInMetricsEnabled = true
@@ -480,7 +737,7 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 		isGRPCBuiltInMetricsEnabled = false
 	}
 
-	metricsTracerFactory, err := newBuiltinMetricsTracerFactory(ctx, database, config.Compression, isAFEBuiltInMetricEnabled, isGRPCBuiltInMetricsEnabled, metricsProvider, opts...)
+	metricsTracerFactory, err := newBuiltinMetricsTracerFactory(ctx, database, config.Compression, isAFEBuiltInMetricEnabled, isGRPCBuiltInMetricsEnabled, metricsProvider, clientMetricsProvider, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -489,30 +746,18 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	}
 
 	var pool gtransport.ConnPool
+	var endpointClientOpts []option.ClientOption
+	var sc *sessionClient
 
-	if gme != nil {
-		// Use GCPMultiEndpoint if provided.
-		pool = &gmeWrapper{gme}
-	} else {
-		// Create gtransport ConnPool as usual if MultiEndpoint is not used.
-		// gRPC options.
-
-		// Add a unaryClientInterceptor and streamClientInterceptor.
-		reqIDInjector := new(requestIDHeaderInjector)
-		opts = append(opts,
-			option.WithGRPCDialOption(grpc.WithChainStreamInterceptor(reqIDInjector.interceptStream)),
-			option.WithGRPCDialOption(grpc.WithChainUnaryInterceptor(reqIDInjector.interceptUnary)),
-		)
-
-		allOpts := allClientOpts(config.NumChannels, config.Compression, opts...)
-		pool, err = gtransport.DialPool(ctx, allOpts...)
-		if err != nil {
-			return nil, err
-		}
-
-		if hasNumChannelsConfig && pool.Num() != config.NumChannels {
-			pool.Close()
-			return nil, spannerErrorf(codes.InvalidArgument, "Connection pool mismatch: NumChannels=%v, WithGRPCConnectionPool=%v. Only set one of these options, or set both to the same value.", config.NumChannels, pool.Num())
+	// DirectPath to CloudPath fallback is disabled by default, because the
+	// fallback connection pool does not keep the requests of a read-write
+	// transaction on the same channel. Set GOOGLE_SPANNER_ENABLE_GCP_FALLBACK=true
+	// to enable it. See https://github.com/googleapis/google-cloud-go/pull/14414,
+	// which originally enabled it by default.
+	isFallbackEnabled := false
+	if val, ok := os.LookupEnv("GOOGLE_SPANNER_ENABLE_GCP_FALLBACK"); ok {
+		if b, err := strconv.ParseBool(val); err == nil {
+			isFallbackEnabled = b
 		}
 	}
 
@@ -524,20 +769,6 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 		sessionLabels[k] = v
 	}
 
-	// Default configs for session pool.
-	if config.MaxOpened == 0 {
-		config.MaxOpened = uint64(pool.Num() * 100)
-	}
-	if config.MaxBurst == 0 {
-		config.MaxBurst = DefaultSessionPoolConfig.MaxBurst
-	}
-	if config.incStep == 0 {
-		config.incStep = DefaultSessionPoolConfig.incStep
-	}
-	if config.BatchTimeout == 0 {
-		config.BatchTimeout = time.Minute
-	}
-
 	md := metadata.Pairs(resourcePrefixHeader, database)
 	if config.Compression == gzip.Name {
 		md.Append(requestsCompressionHeader, gzip.Name)
@@ -546,53 +777,69 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	// environment variable has been set or client has passed the opt-in
 	// option in ClientConfig.
 	endToEndTracingEnvironmentVariable := os.Getenv("SPANNER_ENABLE_END_TO_END_TRACING")
-	if config.EnableEndToEndTracing || endToEndTracingEnvironmentVariable == "true" {
+	if config.EnableEndToEndTracing || strings.EqualFold(endToEndTracingEnvironmentVariable, "true") {
 		md.Append(endToEndTracingHeader, "true")
 	}
 
 	if isAFEBuiltInMetricEnabled {
 		md.Append(afeMetricHeader, "true")
 	}
+	if config.BatchTimeout == 0 {
+		config.BatchTimeout = time.Minute
+	}
 
-	if isMultiplexed, found := os.LookupEnv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS"); found {
-		config.enableMultiplexSession, err = strconv.ParseBool(strings.ToLower(isMultiplexed))
+	if isDCPEnabledForConfig(config, gme) {
+		pool, sc, err = createDCPConnPool(ctx, database, config, sessionLabels, md, metricsTracerFactory, opts...)
 		if err != nil {
-			return nil, spannerErrorf(codes.InvalidArgument, "GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS must be either true or false")
+			return nil, err
+		}
+	} else if gme != nil {
+		// Use GCPMultiEndpoint if provided.
+		pool = &gmeWrapper{gme}
+		endpointClientOpts = append(endpointClientOpts, opts...)
+	} else if isFallbackEnabled && isDirectPathEnabled {
+		pool, endpointClientOpts, err = createFallbackConnPool(ctx, config, hasNumChannelsConfig, metricsTracerFactory, opts...)
+		if err != nil {
+			return nil, err
 		}
 	} else {
-		config.enableMultiplexSession = true
-	}
+		// Create gtransport ConnPool as usual if MultiEndpoint is not used.
+		// gRPC options.
 
-	if isMultiplexForRW, found := os.LookupEnv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS_FOR_RW"); found {
-		config.enableMultiplexedSessionForRW, err = strconv.ParseBool(strings.ToLower(isMultiplexForRW))
+		// Add a unaryClientInterceptor and streamClientInterceptor.
+		reqIDInjector := new(requestIDHeaderInjector)
+		opts = append(opts,
+			option.WithGRPCDialOption(grpc.WithChainStreamInterceptor(reqIDInjector.interceptStream)),
+			option.WithGRPCDialOption(grpc.WithChainUnaryInterceptor(reqIDInjector.interceptUnary)),
+		)
+
+		allOpts := allClientOpts(config.NumChannels, config.Compression, config.EnableDirectAccess, opts...)
+		endpointClientOpts = append(endpointClientOpts, allOpts...)
+		pool, err = gtransport.DialPool(ctx, allOpts...)
 		if err != nil {
-			return nil, spannerErrorf(codes.InvalidArgument, "GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS_FOR_RW must be either true or false")
+			return nil, err
 		}
-	} else {
-		config.enableMultiplexedSessionForRW = true
-	}
 
-	if isMultiplexForPartitionOps, found := os.LookupEnv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS_PARTITIONED_OPS"); found {
-		config.enableMultiplexedSessionForPartitionedOps, err = strconv.ParseBool(strings.ToLower(isMultiplexForPartitionOps))
-		if err != nil {
-			return nil, spannerErrorf(codes.InvalidArgument, "GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS_PARTITIONED_OPS must be either true or false")
+		if hasNumChannelsConfig && pool.Num() != config.NumChannels {
+			pool.Close()
+			return nil, spannerErrorf(codes.InvalidArgument, "Connection pool mismatch: NumChannels=%v, WithGRPCConnectionPool=%v. Only set one of these options, or set both to the same value.", config.NumChannels, pool.Num())
 		}
-	} else {
-		config.enableMultiplexedSessionForPartitionedOps = true
 	}
 
-	config.enableMultiplexedSessionForRW = config.SessionPoolConfig.enableMultiplexSession && config.enableMultiplexedSessionForRW
-	config.enableMultiplexedSessionForPartitionedOps = config.SessionPoolConfig.enableMultiplexSession && config.enableMultiplexedSessionForPartitionedOps
-
-	if config.IsExperimentalHost {
-		config.SessionPoolConfig.enableMultiplexSession = true
-		config.enableMultiplexedSessionForRW = true
-		config.enableMultiplexedSessionForPartitionedOps = true
-		config.SessionPoolConfig.MinOpened = experimentalHostMinSessions
+	// Default configs for session pool.
+	if config.MaxOpened == 0 {
+		config.MaxOpened = uint64(pool.Num() * 100)
 	}
+	if config.MaxBurst == 0 {
+		config.MaxBurst = DefaultSessionPoolConfig.MaxBurst
+	}
+
+	// Multiplexed sessions are always enabled as the session pool has been removed.
 
 	// Create a session client.
-	sc := newSessionClient(pool, database, config.UserAgent, sessionLabels, config.DatabaseRole, config.DisableRouteToLeader, md, config.BatchTimeout, config.Logger, config.CallOptions)
+	if sc == nil {
+		sc = newSessionClient(pool, database, config.UserAgent, sessionLabels, config.DatabaseRole, config.DisableRouteToLeader, md, config.BatchTimeout, config.Logger, config.CallOptions)
+	}
 
 	// Create an OpenTelemetry configuration
 	otConfig, err := createOpenTelemetryConfig(ctx, config.OpenTelemetryMeterProvider, config.Logger, sc.id, database)
@@ -606,30 +853,94 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	sc.metricsTracerFactory = metricsTracerFactory
 	sc.mu.Unlock()
 
-	// Create a session pool.
-	config.SessionPoolConfig.sessionLabels = sessionLabels
-	sp, err := newSessionPool(sc, config.SessionPoolConfig)
+	var locationRouter *locationRouter
+	var sharedLocationAwareState *locationAwareState
+	if isExperimentalLocationAPIEnabledForConfig(config) {
+		sc.baseClientOpts = endpointClientOpts
+		defaultEndpointAddress := ""
+		if conn := pool.Conn(); conn != nil {
+			sc.endpointAuthority = normalizeAuthorityTarget(conn.Target())
+			defaultEndpointAddress = sc.endpointAuthority
+		}
+		// Some transport wrappers, such as GCPMultiEndpoint and GCPFallback,
+		// intentionally do not expose a concrete default *grpc.ClientConn and
+		// return nil from Conn(). In that case location-aware routing remains
+		// enabled; we only skip deriving the default endpoint metadata used for
+		// authority preservation and default-endpoint diagnostics.
+		epCache := newEndpointClientCacheWithDefaultAddress(sc.createEndpointClient, defaultEndpointAddress)
+		locationRouter = newLocationRouter(epCache)
+		locationRouter.lifecycleManager = newEndpointLifecycleManager(epCache)
+		locationRouter.finder.setLifecycleManager(locationRouter.lifecycleManager)
+		sharedLocationAwareState = newLocationAwareState(
+			nil,
+			locationRouter,
+			epCache,
+			newEndpointOverloadCooldownTracker(),
+		)
+	}
+
+	// Create a session manager.
+	sp, err := newSessionManager(sc, config.SessionPoolConfig, sharedLocationAwareState)
 	if err != nil {
 		sc.close()
 		return nil, err
 	}
 
+	if enableLogClientOptions() {
+		projectID, _, _, _ := parseDatabaseName(database)
+		logf(config.Logger, `
+-----Client Options--------
+Project ID: %v
+Num of gRPC channels: %v
+LAR enabled: %v
+Directpath enabled: %v
+End To End Tracing enabled: %v
+Built-in metrics enabled: %v
+gRPC metrics enabled: %v
+Multiplexed session enabled: true
+-----------------------------`,
+			projectID, config.NumChannels, !config.DisableRouteToLeader, isDirectPathEnabled,
+			config.EnableEndToEndTracing, !config.DisableNativeMetrics, isGRPCBuiltInMetricsEnabled)
+	}
+	if strings.EqualFold(os.Getenv("SPANNER_DISABLE_AUTO_TAGGING"), "true") {
+		config.EnableAutoTagging = false
+	} else if strings.EqualFold(os.Getenv("SPANNER_ENABLE_AUTO_TAGGING"), "true") {
+		config.EnableAutoTagging = true
+	}
+	if config.EnableAutoTagging && config.AutoTaggingTracerLimit == 0 {
+		config.AutoTaggingTracerLimit = 50
+	}
 	c = &Client{
-		sc:                   sc,
-		idleSessions:         sp,
-		logger:               config.Logger,
-		qo:                   getQueryOptions(config.QueryOptions),
-		ro:                   config.ReadOptions,
-		ao:                   config.ApplyOptions,
-		txo:                  config.TransactionOptions,
-		bwo:                  config.BatchWriteOptions,
-		ct:                   getCommonTags(sc),
-		disableRouteToLeader: config.DisableRouteToLeader,
-		dro:                  config.DirectedReadOptions,
-		otConfig:             otConfig,
-		metricsTracerFactory: metricsTracerFactory,
+		sc:                     sc,
+		sm:                     sp,
+		logger:                 config.Logger,
+		qo:                     getQueryOptions(config.QueryOptions),
+		ro:                     config.ReadOptions,
+		ao:                     config.ApplyOptions,
+		txo:                    config.TransactionOptions,
+		bwo:                    config.BatchWriteOptions,
+		ct:                     getCommonTags(sc),
+		disableRouteToLeader:   config.DisableRouteToLeader,
+		dro:                    config.DirectedReadOptions,
+		otConfig:               otConfig,
+		metricsTracerFactory:   metricsTracerFactory,
+		clientContext:          config.ClientContext,
+		locationRouter:         locationRouter,
+		enableAutoTagging:      config.EnableAutoTagging,
+		autoTaggingPackages:    config.AutoTaggingPackages,
+		autoTaggingTracerLimit: config.AutoTaggingTracerLimit,
 	}
 	return c, nil
+}
+
+func normalizeAuthorityTarget(target string) string {
+	if idx := strings.Index(target, ":///"); idx >= 0 {
+		return strings.TrimSuffix(target[idx+4:], "/")
+	}
+	if idx := strings.Index(target, "://"); idx >= 0 {
+		return strings.TrimSuffix(target[idx+3:], "/")
+	}
+	return strings.TrimSuffix(target, "/")
 }
 
 // NewMultiEndpointClient is the same as NewMultiEndpointClientWithConfig with
@@ -677,7 +988,7 @@ func NewMultiEndpointClientWithConfig(ctx context.Context, database string, conf
 // Combines the default options from the generated client, the default options
 // of the hand-written client and the user options to one list of options.
 // Precedence: userOpts > clientDefaultOpts > generatedDefaultOpts
-func allClientOpts(numChannels int, compression string, userOpts ...option.ClientOption) []option.ClientOption {
+func allClientOpts(numChannels int, compression string, enableDirectAccess bool, userOpts ...option.ClientOption) []option.ClientOption {
 	generatedDefaultOpts := vkit.DefaultClientOptions()
 	clientDefaultOpts := []option.ClientOption{
 		option.WithGRPCConnectionPool(numChannels),
@@ -686,10 +997,17 @@ func allClientOpts(numChannels int, compression string, userOpts ...option.Clien
 		option.WithGRPCDialOption(grpc.WithChainStreamInterceptor(addStreamNativeMetricsInterceptor()...)),
 		option.WithGRPCDialOption(grpc.WithKeepaliveParams(keepalive.ClientParameters{Time: 120 * time.Second})),
 	}
-	if enableDirectPathXds, _ := strconv.ParseBool(os.Getenv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS")); enableDirectPathXds {
+	enableDirectPathXds := enableDirectAccess
+	if enableDirectPathXdsString := os.Getenv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS"); enableDirectPathXdsString != "" {
+		enableDirectPathXds, _ = strconv.ParseBool(enableDirectPathXdsString)
+	}
+
+	if enableDirectPathXds {
 		clientDefaultOpts = append(clientDefaultOpts, internaloption.AllowNonDefaultServiceAccount(true))
 		clientDefaultOpts = append(clientDefaultOpts, internaloption.EnableDirectPath(true), internaloption.EnableDirectPathXds())
-		clientDefaultOpts = append(clientDefaultOpts, internaloption.AllowHardBoundTokens("ALTS"))
+		if disableBoundToken, _ := strconv.ParseBool(os.Getenv("GOOGLE_SPANNER_DISABLE_DIRECT_ACCESS_BOUND_TOKEN")); !disableBoundToken {
+			clientDefaultOpts = append(clientDefaultOpts, internaloption.AllowHardBoundTokens("ALTS"))
+		}
 	}
 	if compression == "gzip" {
 		userOpts = append(userOpts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
@@ -711,8 +1029,17 @@ func metricsInterceptor() grpc.UnaryClientInterceptor {
 		opts ...grpc.CallOption,
 	) error {
 		mt, ok := ctx.Value(metricsTracerKey).(*builtinMetricsTracer)
-		if !ok {
-			return invoker(ctx, method, req, reply, cc, opts...)
+		if !ok || mt == nil {
+			span := otrace.SpanFromContext(ctx)
+			if !span.IsRecording() {
+				return invoker(ctx, method, req, reply, cc, opts...)
+			}
+			// Built-in metrics are disabled, but the server timing span
+			// attributes are still recorded for traced calls.
+			var md metadata.MD
+			err := invoker(ctx, method, req, reply, cc, append(opts, grpc.Header(&md))...)
+			setGFEAndAFESpanAttributes(span, parseServerTimingHeader(md))
+			return err
 		}
 
 		mt.method = method
@@ -750,16 +1077,21 @@ func metricsStreamInterceptor() grpc.StreamClientInterceptor {
 		streamer grpc.Streamer,
 		opts ...grpc.CallOption,
 	) (grpc.ClientStream, error) {
-		s, err := streamer(ctx, desc, cc, method, opts...)
-		if err != nil {
-			return nil, err
-		}
+		// Set the method before creating the stream, so that a stream that
+		// fails to open is recorded for its method.
 		mt, ok := ctx.Value(metricsTracerKey).(*builtinMetricsTracer)
 		if ok && mt != nil {
 			mt.method = method
 			if strings.HasPrefix(cc.Target(), "google-c2p") {
 				mt.currOp.setDirectPathEnabled(true)
 			}
+			if mt.currOp.currAttempt != nil {
+				mt.currOp.currAttempt.rpcStarted = true
+			}
+		}
+		s, err := streamer(ctx, desc, cc, method, opts...)
+		if err != nil {
+			return nil, err
 		}
 		return s, nil
 	}
@@ -803,10 +1135,13 @@ func (c *Client) Close() {
 	if c.metricsTracerFactory != nil {
 		c.metricsTracerFactory.shutdown(context.Background())
 	}
-	if c.idleSessions != nil {
+	if c.sm != nil {
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
-		c.idleSessions.close(ctx)
+		c.sm.close(ctx)
+	}
+	if c.locationRouter != nil {
+		c.locationRouter.Close()
 	}
 	c.sc.close()
 }
@@ -822,29 +1157,19 @@ func (c *Client) Close() {
 // TimestampBound for details.
 func (c *Client) Single() *ReadOnlyTransaction {
 	t := &ReadOnlyTransaction{singleUse: true}
-	t.txReadOnly.sp = c.idleSessions
+	t.txReadOnly.sm = c.sm
 	t.txReadOnly.txReadEnv = t
 	t.txReadOnly.qo = c.qo
 	t.txReadOnly.ro = c.ro
 	t.txReadOnly.disableRouteToLeader = true
-	t.txReadOnly.replaceSessionFunc = func(ctx context.Context) error {
-		if t.sh == nil {
-			return spannerErrorf(codes.InvalidArgument, "missing session handle on transaction")
-		}
-		// Remove the session that returned 'Session not found' from the pool.
-		t.sh.destroy()
-		// Reset the transaction, acquire a new session and retry.
-		t.state = txNew
-		sh, _, err := t.acquire(ctx)
-		if err != nil {
-			return err
-		}
-		t.sh = sh
-		return nil
-	}
 	t.txReadOnly.qo.DirectedReadOptions = c.dro
 	t.txReadOnly.ro.DirectedReadOptions = c.dro
 	t.txReadOnly.ro.LockHint = sppb.ReadRequest_LOCK_HINT_UNSPECIFIED
+	t.txReadOnly.clientContext = c.clientContext
+	if c.enableAutoTagging {
+		t.cachedRequestTag = getCallStackTag(c.autoTaggingPackages, c.autoTaggingTracerLimit)
+	}
+
 	t.ct = c.ct
 	t.otConfig = c.otConfig
 	return t
@@ -864,7 +1189,7 @@ func (c *Client) ReadOnlyTransaction() *ReadOnlyTransaction {
 		singleUse:       false,
 		txReadyOrClosed: make(chan struct{}),
 	}
-	t.txReadOnly.sp = c.idleSessions
+	t.txReadOnly.sm = c.sm
 	t.txReadOnly.txReadEnv = t
 	t.txReadOnly.qo = c.qo
 	t.txReadOnly.ro = c.ro
@@ -872,6 +1197,11 @@ func (c *Client) ReadOnlyTransaction() *ReadOnlyTransaction {
 	t.txReadOnly.qo.DirectedReadOptions = c.dro
 	t.txReadOnly.ro.DirectedReadOptions = c.dro
 	t.txReadOnly.ro.LockHint = sppb.ReadRequest_LOCK_HINT_UNSPECIFIED
+	t.txReadOnly.clientContext = c.clientContext
+	if c.enableAutoTagging {
+		t.cachedRequestTag = getCallStackTag(c.autoTaggingPackages, c.autoTaggingTracerLimit)
+	}
+
 	t.ct = c.ct
 	t.otConfig = c.otConfig
 	return t
@@ -892,24 +1222,14 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 	var (
 		tx  transactionID
 		rts time.Time
-		s   *session
 		sh  *sessionHandle
 		err error
 	)
 
-	if c.idleSessions.isMultiplexedSessionForPartitionedOpsEnabled() {
-		sh, err = c.idleSessions.takeMultiplexed(ctx)
-		if err != nil {
-			return nil, err
-		}
-	} else {
-		// Create session.
-		s, err = c.sc.createSession(ctx)
-		if err != nil {
-			return nil, err
-		}
-		sh = &sessionHandle{session: s}
-		sh.updateLastUseTime()
+	// Always use multiplexed sessions for batch read operations.
+	sh, err = c.sm.takeMultiplexed(ctx)
+	if err != nil {
+		return nil, err
 	}
 
 	// Begin transaction.
@@ -920,11 +1240,9 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 				ReadOnly: buildTransactionOptionsReadOnly(tb, true),
 			},
 		},
+		RequestOptions: createRequestOptions(sppb.RequestOptions_PRIORITY_UNSPECIFIED, "", "", c.clientContext),
 	})
 	if err != nil {
-		if isUnimplementedErrorForMultiplexedPartitionedDML(err) && c.idleSessions.isMultiplexedSessionForPartitionedOpsEnabled() {
-			c.idleSessions.disableMultiplexedSessionForRW()
-		}
 		return nil, ToSpannerError(err)
 	}
 	tx = res.Id
@@ -946,7 +1264,7 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 			rts: rts,
 		},
 	}
-	t.txReadOnly.sp = c.idleSessions
+	t.txReadOnly.sm = c.sm
 	t.txReadOnly.sh = sh
 	t.txReadOnly.txReadEnv = t
 	t.txReadOnly.qo = c.qo
@@ -955,6 +1273,11 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 	t.txReadOnly.qo.DirectedReadOptions = c.dro
 	t.txReadOnly.ro.DirectedReadOptions = c.dro
 	t.txReadOnly.ro.LockHint = sppb.ReadRequest_LOCK_HINT_UNSPECIFIED
+	t.txReadOnly.clientContext = c.clientContext
+	if c.enableAutoTagging {
+		t.cachedRequestTag = getCallStackTag(c.autoTaggingPackages, c.autoTaggingTracerLimit)
+	}
+
 	t.ct = c.ct
 	t.otConfig = c.otConfig
 	return t, nil
@@ -982,7 +1305,7 @@ func (c *Client) BatchReadOnlyTransactionFromID(tid BatchReadOnlyTransactionID) 
 		},
 		ID: tid,
 	}
-	t.txReadOnly.sp = c.idleSessions
+	t.txReadOnly.sm = c.sm
 	t.txReadOnly.sh = sh
 	t.txReadOnly.txReadEnv = t
 	t.txReadOnly.qo = c.qo
@@ -991,6 +1314,11 @@ func (c *Client) BatchReadOnlyTransactionFromID(tid BatchReadOnlyTransactionID) 
 	t.txReadOnly.qo.DirectedReadOptions = c.dro
 	t.txReadOnly.ro.DirectedReadOptions = c.dro
 	t.txReadOnly.ro.LockHint = sppb.ReadRequest_LOCK_HINT_UNSPECIFIED
+	t.txReadOnly.clientContext = c.clientContext
+	if c.enableAutoTagging {
+		t.cachedRequestTag = getCallStackTag(c.autoTaggingPackages, c.autoTaggingTracerLimit)
+	}
+
 	t.ct = c.ct
 	t.otConfig = c.otConfig
 	return t
@@ -1011,10 +1339,14 @@ func checkNestedTxn(ctx context.Context) error {
 // The function f will be called one or more times. It must not maintain
 // any state between calls.
 //
-// If the transaction cannot be committed or if f returns an ABORTED error,
-// ReadWriteTransaction will call f again. It will continue to call f until the
-// transaction can be committed or the Context times out or is cancelled.  If f
-// returns an error other than ABORTED, ReadWriteTransaction will abort the
+// If Spanner aborts the transaction or f returns an ABORTED error,
+// ReadWriteTransaction will call f again. If f returns ABORTED while the
+// server-side transaction is still active, ReadWriteTransaction rolls back the
+// transaction before retrying. If that rollback fails, ReadWriteTransaction
+// returns a FAILED_PRECONDITION error instead of retrying because the
+// transaction may still hold locks. Otherwise, it will continue to call f until
+// the transaction can be committed or the Context times out or is cancelled.
+// If f returns an error other than ABORTED, ReadWriteTransaction will abort the
 // transaction and return the error.
 //
 // To limit the number of retries, set a deadline on the Context rather than
@@ -1048,6 +1380,9 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 	if err := checkNestedTxn(ctx); err != nil {
 		return resp, err
 	}
+	if c.enableAutoTagging && options.TransactionTag == "" {
+		options.TransactionTag = getCallStackTag(c.autoTaggingPackages, c.autoTaggingTracerLimit)
+	}
 	var (
 		sh      *sessionHandle
 		t       *ReadWriteTransaction
@@ -1058,41 +1393,45 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 			sh.recycle()
 		}
 	}()
-	err = runWithRetryOnAbortedOrFailedInlineBeginOrSessionNotFound(ctx, func(ctx context.Context) error {
+	err = runWithRetryOnAbortedOrFailedInlineBegin(ctx, func(ctx context.Context) error {
 		var (
 			err error
 		)
 		if sh == nil || sh.getID() == "" || sh.getClient() == nil {
-			if c.idleSessions.isMultiplexedSessionForRWEnabled() {
-				sh, err = c.idleSessions.takeMultiplexed(ctx)
-			} else {
-				// Session handle hasn't been allocated or has been destroyed.
-				sh, err = c.idleSessions.take(ctx)
-			}
+			sh, err = c.sm.takeMultiplexed(ctx)
 			if err != nil {
-				// If session retrieval fails, just fail the transaction.
 				return err
 			}
-
-			// Some operations (for ex BatchUpdate) can be long-running. For such operations set the isLongRunningTransaction flag to be true
-			t.setSessionEligibilityForLongRunning(sh)
 		}
 		initTx := func(t *ReadWriteTransaction) {
-			t.txReadOnly.sp = c.idleSessions
+			t.txReadOnly.sm = c.sm
 			t.txReadOnly.txReadEnv = t
 			t.txReadOnly.qo = c.qo
 			t.txReadOnly.ro = c.ro
 			t.txReadOnly.disableRouteToLeader = c.disableRouteToLeader
+			t.txReadOnly.clientContext = c.clientContext
+			// Track server-initiated aborts so runInTransaction can distinguish
+			// them from application-fabricated codes.Aborted errors.
+			t.txReadOnly.updateTxStateFunc = t.markTxAbortedOnError
 			t.wb = []*Mutation{}
 			t.txOpts = c.txo.merge(options)
+			t.txReadOnly.clientContext = mergeClientContext(c.clientContext, t.txOpts.ClientContext)
+
 			t.ct = c.ct
 			t.otConfig = c.otConfig
 		}
 		if t.shouldExplicitBegin(attempt, options) {
-			if t == nil {
-				t = &ReadWriteTransaction{
-					txReadyOrClosed: make(chan struct{}),
-				}
+			// Always allocate a fresh transaction object for explicit begin.
+			// Retries must not reuse a rolled-back or aborted transaction id
+			// still stored on a previous attempt's object; only previousTx is
+			// carried for wound-wait after a genuine server abort.
+			var previousTx transactionID
+			if t != nil {
+				previousTx = t.previousTx
+			}
+			t = &ReadWriteTransaction{
+				txReadyOrClosed: make(chan struct{}),
+				previousTx:      previousTx,
 			}
 			initTx(t)
 			// Make sure we set the current session handle before calling BeginTransaction.
@@ -1127,9 +1466,6 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 		resp, err = t.runInTransaction(ctx, f)
 		return err
 	})
-	if isUnimplementedErrorForMultiplexedRW(err) {
-		c.idleSessions.disableMultiplexedSessionForRW()
-	}
 	return resp, err
 }
 
@@ -1230,7 +1566,10 @@ func (c *Client) Apply(ctx context.Context, ms []*Mutation, opts ...ApplyOption)
 		}, TransactionOptions{CommitPriority: ao.priority, TransactionTag: ao.transactionTag, ExcludeTxnFromChangeStreams: ao.excludeTxnFromChangeStreams, CommitOptions: ao.commitOptions, IsolationLevel: ao.isolationLevel})
 		return resp.CommitTs, err
 	}
-	t := &writeOnlyTransaction{sp: c.idleSessions, commitPriority: ao.priority, transactionTag: ao.transactionTag, disableRouteToLeader: c.disableRouteToLeader, excludeTxnFromChangeStreams: ao.excludeTxnFromChangeStreams, commitOptions: ao.commitOptions, isolationLevel: ao.isolationLevel}
+	if c.enableAutoTagging && ao.transactionTag == "" {
+		ao.transactionTag = getCallStackTag(c.autoTaggingPackages, c.autoTaggingTracerLimit)
+	}
+	t := &writeOnlyTransaction{sm: c.sm, commitPriority: ao.priority, transactionTag: ao.transactionTag, disableRouteToLeader: c.disableRouteToLeader, excludeTxnFromChangeStreams: ao.excludeTxnFromChangeStreams, commitOptions: ao.commitOptions, isolationLevel: ao.isolationLevel, clientContext: c.clientContext}
 	return t.applyAtLeastOnce(ctx, ms...)
 }
 
@@ -1246,6 +1585,9 @@ type BatchWriteOptions struct {
 	// in this batch write request will not be recorded in allowed tracking
 	// change treams with DDL option allow_txn_exclusion=true.
 	ExcludeTxnFromChangeStreams bool
+
+	// ClientContext contains client-owned context information to be passed with the batch write request.
+	ClientContext *sppb.RequestOptions_ClientContext
 }
 
 // merge combines two BatchWriteOptions such that the input parameter will have higher
@@ -1255,6 +1597,7 @@ func (bwo BatchWriteOptions) merge(opts BatchWriteOptions) BatchWriteOptions {
 		TransactionTag:              bwo.TransactionTag,
 		Priority:                    bwo.Priority,
 		ExcludeTxnFromChangeStreams: bwo.ExcludeTxnFromChangeStreams || opts.ExcludeTxnFromChangeStreams,
+		ClientContext:               mergeClientContext(bwo.ClientContext, opts.ClientContext),
 	}
 	if opts.TransactionTag != "" {
 		merged.TransactionTag = opts.TransactionTag
@@ -1266,70 +1609,187 @@ func (bwo BatchWriteOptions) merge(opts BatchWriteOptions) BatchWriteOptions {
 }
 
 // BatchWriteResponseIterator is an iterator over BatchWriteResponse structures returned from BatchWrite RPC.
+//
+// If the stream fails with a retryable error, or ends before every mutation
+// group has been acknowledged, the iterator opens a new stream that contains
+// only the mutation groups that have not yet been acknowledged. The indexes in
+// each returned BatchWriteResponse always refer to the positions of the
+// mutation groups in the original request. Mutation groups that have been
+// acknowledged are never sent again, so a retry does not return the index of
+// a mutation group that an earlier response already returned. As for streaming
+// reads and queries, retries continue until the request succeeds, fails with
+// an error that cannot be retried, or the context is canceled or its deadline
+// passes.
 type BatchWriteResponseIterator struct {
-	ctx                context.Context
-	stream             sppb.Spanner_BatchWriteClient
-	err                error
-	dataReceived       bool
-	meterTracerFactory *builtinMetricsTracerFactory
-	replaceSession     func(ctx context.Context) error
-	rpc                func(ctx context.Context) (sppb.Spanner_BatchWriteClient, error)
-	release            func(error)
-	cancel             func()
+	ctx     context.Context
+	stream  sppb.Spanner_BatchWriteClient
+	err     error
+	rpc     func(ctx context.Context, mgs []*sppb.BatchWriteRequest_MutationGroup) (sppb.Spanner_BatchWriteClient, error)
+	release func(error)
+	cancel  func()
+
+	// streamOperationMetrics records the built-in metrics operation of the
+	// BatchWrite request. Every stream that is opened for it is an attempt.
+	streamOperationMetrics
+
+	// pending holds the mutation groups of the original request. An entry is
+	// set to nil once a response has acknowledged it, so that it is not sent
+	// again on retry.
+	pending []*sppb.BatchWriteRequest_MutationGroup
+	// remaining is the number of non-nil entries in pending.
+	remaining int
+	// streamIndexes maps the indexes of the mutation groups sent on the
+	// current stream to their indexes in pending.
+	streamIndexes []int
+	retryer       gax.Retryer
+}
+
+func newBatchWriteResponseIterator(ctx context.Context, mgs []*sppb.BatchWriteRequest_MutationGroup, rpc func(context.Context, []*sppb.BatchWriteRequest_MutationGroup) (sppb.Spanner_BatchWriteClient, error), backoff gax.Backoff) *BatchWriteResponseIterator {
+	return &BatchWriteResponseIterator{
+		ctx:       ctx,
+		rpc:       rpc,
+		pending:   append([]*sppb.BatchWriteRequest_MutationGroup(nil), mgs...),
+		remaining: len(mgs),
+		retryer:   onCodes(backoff, codes.Unavailable),
+	}
 }
 
 // Next returns the next result. Its second return value is iterator.Done if
 // there are no more results. Once Next returns Done, all subsequent calls
 // will return Done.
 func (r *BatchWriteResponseIterator) Next() (*sppb.BatchWriteResponse, error) {
-	mt := r.meterTracerFactory.createBuiltinMetricsTracer(r.ctx)
-	defer func() {
-		if mt.method != "" {
-			statusCode, _ := convertToGrpcStatusErr(r.err)
-			mt.currOp.setStatus(statusCode.String())
-			recordOperationCompletion(&mt)
+	response, err := r.next()
+	if err != nil && r.mt != nil {
+		// The built-in metrics operation of the BatchWrite request ends when
+		// Next first returns an error or iterator.Done.
+		code := codes.OK
+		if err != iterator.Done {
+			code, _ = convertToGrpcStatusErr(err)
 		}
-	}()
+		r.finishOperation(code)
+	}
+	return response, err
+}
+
+func (r *BatchWriteResponseIterator) next() (*sppb.BatchWriteResponse, error) {
 	for {
 		// Stream finished or in error state.
 		if r.err != nil {
 			return nil, r.err
 		}
 
-		// RPC not made yet.
+		// No stream is open, so open one for the mutation groups that have not
+		// been acknowledged yet.
 		if r.stream == nil {
-			r.stream, r.err = r.rpc(r.ctx)
+			r.startAttempt(r.ctx)
+			stream, err := r.rpc(contextWithBuiltinMetricsTracer(r.ctx, r.mt), r.unacknowledgedMutationGroups())
+			if err != nil {
+				if r.mt != nil {
+					r.endAttempt(status.Code(err))
+				}
+				r.retryOrFail(err)
+				continue
+			}
+			r.stream = stream
 			continue
 		}
 
 		// Read from the stream.
-		var response *sppb.BatchWriteResponse
-		response, r.err = r.stream.Recv()
-
-		// Return an item.
-		if r.err == nil {
-			r.dataReceived = true
+		response, err := r.stream.Recv()
+		switch {
+		case err == nil:
+			if ackErr := r.acknowledge(response); ackErr != nil {
+				r.stream = nil
+				r.err = ackErr
+				return nil, r.err
+			}
 			return response, nil
-		}
-
-		// Stream finished.
-		if r.err == io.EOF {
-			r.err = iterator.Done
-			return nil, r.err
-		}
-
-		// Retry request on session not found error only if no data has been received before.
-		if !r.dataReceived && r.replaceSession != nil && isSessionNotFoundError(r.err) {
-			r.err = r.replaceSession(r.ctx)
+		case err == io.EOF:
 			r.stream = nil
+			r.endAttempt(codes.OK)
+			if r.remaining > 0 {
+				r.retryOrFail(spannerErrorf(codes.Unavailable, "BatchWrite stream closed prematurely with %d unprocessed mutation groups", r.remaining))
+			}
+		default:
+			r.stream = nil
+			if r.mt != nil {
+				r.endAttempt(status.Code(err))
+			}
+			r.retryOrFail(err)
 		}
+		if r.err == nil && r.remaining == 0 {
+			r.err = iterator.Done
+		}
+	}
+}
+
+// unacknowledgedMutationGroups returns the mutation groups that have not been
+// acknowledged yet and records their original indexes in streamIndexes.
+func (r *BatchWriteResponseIterator) unacknowledgedMutationGroups() []*sppb.BatchWriteRequest_MutationGroup {
+	r.streamIndexes = r.streamIndexes[:0]
+	mgs := make([]*sppb.BatchWriteRequest_MutationGroup, 0, r.remaining)
+	for i, mg := range r.pending {
+		if mg == nil {
+			continue
+		}
+		r.streamIndexes = append(r.streamIndexes, i)
+		mgs = append(mgs, mg)
+	}
+	return mgs
+}
+
+// acknowledge translates the indexes in response from positions in the current
+// stream request to positions in the original request, and marks the mutation
+// groups as acknowledged. A mutation group is acknowledged regardless of the
+// status in the response, as that status has been delivered to the caller.
+func (r *BatchWriteResponseIterator) acknowledge(response *sppb.BatchWriteResponse) error {
+	for _, index := range response.GetIndexes() {
+		if index < 0 || int(index) >= len(r.streamIndexes) {
+			return spannerErrorf(codes.Internal, "Spanner returned mutation group index %d out of bounds for BatchWrite stream with %d mutation groups", index, len(r.streamIndexes))
+		}
+	}
+	for i, index := range response.GetIndexes() {
+		original := r.streamIndexes[index]
+		if r.pending[original] != nil {
+			r.pending[original] = nil
+			r.remaining--
+		}
+		response.Indexes[i] = int32(original)
+	}
+	return nil
+}
+
+// retryOrFail waits for the retry delay if err can be retried. Otherwise, or if
+// the context ends while waiting, it sets the error as the terminal error of
+// the iterator. All mutation groups that have been acknowledged are excluded
+// from the retried request.
+func (r *BatchWriteResponseIterator) retryOrFail(err error) {
+	if r.remaining == 0 && len(r.pending) > 0 {
+		// Every mutation group has been acknowledged, so the error does not
+		// affect the outcome of the request.
+		return
+	}
+	delay, shouldRetry := r.retryer.Retry(err)
+	if !shouldRetry {
+		r.err = err
+		return
+	}
+	trace.TracePrintf(r.ctx, nil, "Backing off BatchWrite stream for %s", delay)
+	if sleepErr := gax.Sleep(r.ctx, delay); sleepErr != nil {
+		r.err = sleepErr
 	}
 }
 
 // Stop terminates the iteration. It should be called after you finish using the
 // iterator.
 func (r *BatchWriteResponseIterator) Stop() {
-	if r.stream != nil {
+	if r.err == nil {
+		// Stop before Next returned an error or iterator.Done ends the built-in
+		// metrics operation without an error, as the caller chose to stop
+		// reading.
+		r.finishOperation(codes.OK)
+	}
+	if r.ctx != nil {
 		err := r.err
 		if err == iterator.Done {
 			err = nil
@@ -1388,6 +1848,11 @@ func (r *BatchWriteResponseIterator) Do(f func(r *sppb.BatchWriteResponse) error
 // timestamp-based keys, it may result in additional rows being added to the
 // mutation's table. We recommend structuring your mutation groups to be
 // idempotent to avoid this issue.
+//
+// If the response stream fails with an UNAVAILABLE error, or ends before all
+// mutation groups have been acknowledged, the client retries the request with
+// only the mutation groups that have not been acknowledged yet. The indexes in
+// the returned responses always refer to the positions in mgs.
 func (c *Client) BatchWrite(ctx context.Context, mgs []*MutationGroup) *BatchWriteResponseIterator {
 	return c.BatchWriteWithOptions(ctx, mgs, BatchWriteOptions{})
 }
@@ -1402,68 +1867,46 @@ func (c *Client) BatchWriteWithOptions(ctx context.Context, mgs []*MutationGroup
 	}()
 
 	opts = c.bwo.merge(opts)
+	if c.enableAutoTagging && opts.TransactionTag == "" {
+		opts.TransactionTag = getCallStackTag(c.autoTaggingPackages, c.autoTaggingTracerLimit)
+	}
 
 	mgsPb, err := mutationGroupsProto(mgs)
 	if err != nil {
-		return &BatchWriteResponseIterator{meterTracerFactory: c.metricsTracerFactory, err: err}
+		return &BatchWriteResponseIterator{err: err}
 	}
 
 	var sh *sessionHandle
-	sh, err = c.idleSessions.take(ctx)
+	sh, err = c.sm.takeMultiplexed(ctx)
 	if err != nil {
-		return &BatchWriteResponseIterator{meterTracerFactory: c.metricsTracerFactory, err: err}
+		return &BatchWriteResponseIterator{err: err}
 	}
 
-	rpc := func(ct context.Context) (sppb.Spanner_BatchWriteClient, error) {
-		var md metadata.MD
-		sh.updateLastUseTime()
-		stream, rpcErr := sh.getClient().BatchWrite(contextWithOutgoingMetadata(ct, sh.getMetadata(), c.disableRouteToLeader), &sppb.BatchWriteRequest{
+	rpc := func(ct context.Context, mgs []*sppb.BatchWriteRequest_MutationGroup) (sppb.Spanner_BatchWriteClient, error) {
+		return sh.getClient().BatchWrite(contextWithOutgoingMetadata(ct, sh.getMetadata(), c.disableRouteToLeader), &sppb.BatchWriteRequest{
 			Session:                     sh.getID(),
-			MutationGroups:              mgsPb,
-			RequestOptions:              createRequestOptions(opts.Priority, "", opts.TransactionTag),
+			MutationGroups:              mgs,
+			RequestOptions:              createRequestOptions(opts.Priority, "", opts.TransactionTag, mergeClientContext(c.clientContext, opts.ClientContext)),
 			ExcludeTxnFromChangeStreams: opts.ExcludeTxnFromChangeStreams,
-		}, gax.WithGRPCOptions(grpc.Header(&md)))
-
-		if getGFELatencyMetricsFlag() && md != nil && c.ct != nil {
-			if metricErr := createContextAndCaptureGFELatencyMetrics(ct, c.ct, md, "BatchWrite"); metricErr != nil {
-				trace.TracePrintf(ct, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", err)
-			}
-		}
-		if metricErr := recordGFELatencyMetricsOT(ct, md, "BatchWrite", c.otConfig); metricErr != nil {
-			trace.TracePrintf(ct, nil, "Error in recording GFE Latency through OpenTelemetry. Error: %v", err)
-		}
-		return stream, rpcErr
-	}
-
-	replaceSession := func(ct context.Context) error {
-		if sh != nil {
-			sh.destroy()
-		}
-		var sessionErr error
-		sh, sessionErr = c.idleSessions.take(ct)
-		return sessionErr
+		})
 	}
 
 	release := func(err error) {
 		if sh == nil {
 			return
 		}
-		if isSessionNotFoundError(err) {
-			sh.destroy()
-		}
 		sh.recycle()
 	}
 
-	ctx, cancel := context.WithCancel(ctx)
-	ctx, _ = startSpan(ctx, "BatchWriteResponseIterator", c.otConfig.commonTraceStartOptions...)
-	return &BatchWriteResponseIterator{
-		ctx:                ctx,
-		meterTracerFactory: c.metricsTracerFactory,
-		rpc:                rpc,
-		replaceSession:     replaceSession,
-		release:            release,
-		cancel:             cancel,
-	}
+	// The iterator uses its own context, so that the deferred EndSpan above
+	// ends the BatchWrite span and not the span of the iterator.
+	iterCtx, cancel := context.WithCancel(ctx)
+	iterCtx, _ = startSpan(iterCtx, "BatchWriteResponseIterator", c.otConfig.commonTraceStartOptions...)
+	iter := newBatchWriteResponseIterator(iterCtx, mgsPb, rpc, DefaultRetryBackoff)
+	iter.meterTracerFactory = c.metricsTracerFactory
+	iter.release = release
+	iter.cancel = cancel
+	return iter
 }
 
 // logf logs the given message to the given logger, or the standard logger if
@@ -1501,4 +1944,22 @@ func parseServerTimingHeader(md metadata.MD) map[string]time.Duration {
 		}
 	}
 	return metrics
+}
+
+// enableLogClientOptions returns true if the environment variable for enabling has been set to true, or if the
+// environment variable for disabling has been set to false. It returns false by default if no env var has been set.
+// The function uses two environment variables because this function was initially added with a default return value of
+// true, which caused the config to always be logged. This again caused unnecessary log spamming.
+func enableLogClientOptions() bool {
+	if enableLogString, found := os.LookupEnv("GOOGLE_CLOUD_SPANNER_ENABLE_LOG_CLIENT_OPTIONS"); found {
+		if enableLog, err := strconv.ParseBool(enableLogString); err == nil {
+			return enableLog
+		}
+	}
+	if disableLogString, found := os.LookupEnv("GOOGLE_CLOUD_SPANNER_DISABLE_LOG_CLIENT_OPTIONS"); found {
+		if disableLog, err := strconv.ParseBool(disableLogString); err == nil {
+			return !disableLog
+		}
+	}
+	return false
 }

@@ -18,6 +18,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"slices"
 	"strings"
 	"testing"
 	"time"
@@ -95,6 +96,7 @@ func TestIntegration_TableCreateWithConstraints(t *testing.T) {
 		{Name: "bytes_col", Type: BytesFieldType, MaxLength: 150},
 		{Name: "num_col", Type: NumericFieldType, Precision: 20},
 		{Name: "bignumeric_col", Type: BigNumericFieldType, Precision: 30, Scale: 5},
+		{Name: "timestamp_col", Type: TimestampFieldType, TimestampPrecision: 12},
 	}
 	err := table.Create(context.Background(), &TableMetadata{
 		Schema:         schema,
@@ -320,6 +322,43 @@ func TestIntegration_TableMetadata(t *testing.T) {
 	}
 }
 
+func TestIntegration_ResetTableClustering(t *testing.T) {
+	// https://github.com/googleapis/google-cloud-go/issues/14451
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	startClustering := &Clustering{Fields: []string{"name"}}
+	endClustering := &Clustering{Fields: []string{}}
+	targetTable := dataset.Table("reset_table_clustering")
+	err := targetTable.Create(ctx, &TableMetadata{
+		Schema:     schema,
+		Clustering: startClustering,
+	})
+	if err != nil {
+		t.Fatalf("create table failed: %v", err)
+	}
+	meta, err := targetTable.Metadata(ctx)
+	if err != nil {
+		t.Fatalf("metadata get failed: %v", err)
+	}
+	if diff := testutil.Diff(meta.Clustering, startClustering); diff != "" {
+		t.Fatalf("clustering start difference, got=-, want=+:\n%s", diff)
+	}
+	// Reset clustering to an empty list.
+	updated, err := targetTable.Update(ctx, TableMetadataToUpdate{
+		Clustering: endClustering,
+	}, meta.ETag)
+	if err != nil {
+		t.Fatalf("update failed: %v", err)
+	}
+	if updated.Clustering != nil {
+		t.Errorf("expected clustering to be cleared, but was present with %d fields", len(updated.Clustering.Fields))
+	}
+
+}
+
 func TestIntegration_TableMetadataOptions(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
@@ -413,10 +452,8 @@ func TestIntegration_Tables(t *testing.T) {
 		// Other tests may be running with this dataset, so there might be more
 		// than just our table in the list. So don't try for an exact match; just
 		// make sure that our table is there somewhere.
-		for _, tn := range tableNames {
-			if tn == wantName {
-				return true, nil
-			}
+		if slices.Contains(tableNames, wantName) {
+			return true, nil
 		}
 		return false, fmt.Errorf("got %v\nwant %s in the list", tableNames, wantName)
 	})
@@ -429,6 +466,7 @@ func TestIntegration_TableIAM(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
 	}
+	skipOnEnvEnabled(t, skipBigQueryPublicIAMTestEnv)
 	ctx := context.Background()
 	table := newTable(t, schema)
 	defer table.Delete(ctx)
@@ -461,25 +499,13 @@ func TestIntegration_TableIAM(t *testing.T) {
 	if err != nil {
 		t.Fatalf("IAM.Policy (after update): %v", err)
 	}
-	foundRole := false
-	for _, r := range updatedPolicy.Roles() {
-		if r == wantedRole {
-			foundRole = true
-			break
-		}
-	}
+	foundRole := slices.Contains(updatedPolicy.Roles(), wantedRole)
 	if !foundRole {
 		t.Errorf("Did not find added role %s in the set of %d roles.",
 			wantedRole, len(updatedPolicy.Roles()))
 	}
 	members := updatedPolicy.Members(wantedRole)
-	foundMember := false
-	for _, m := range members {
-		if m == wantedMember {
-			foundMember = true
-			break
-		}
-	}
+	foundMember := slices.Contains(members, wantedMember)
 	if !foundMember {
 		t.Errorf("Did not find member %s in role %s", wantedMember, wantedRole)
 	}
@@ -607,21 +633,14 @@ func TestIntegration_TableUseLegacySQL(t *testing.T) {
 		t.Skip("Integration tests skipped")
 	}
 	ctx := context.Background()
-	table := newTable(t, schema)
-	defer table.Delete(ctx)
-	for i, test := range useLegacySQLTests {
+	for i, isLegacy := range []bool{true, false} {
 		view := dataset.Table(fmt.Sprintf("t_view_%d", i))
 		tm := &TableMetadata{
-			ViewQuery:      fmt.Sprintf("SELECT word from %s", test.t),
-			UseStandardSQL: test.std,
-			UseLegacySQL:   test.legacy,
+			ViewQuery:    "SELECT 17 as foo",
+			UseLegacySQL: isLegacy,
 		}
-		err := view.Create(ctx, tm)
-		gotErr := err != nil
-		if gotErr && !test.err {
-			t.Errorf("%+v:\nunexpected error: %v", test, err)
-		} else if !gotErr && test.err {
-			t.Errorf("%+v:\nsucceeded, but want error", test)
+		if err := view.Create(ctx, tm); err != nil {
+			t.Errorf("view creation for %q failed with legacy %t", view.FullyQualifiedName(), isLegacy)
 		}
 		_ = view.Delete(ctx)
 	}

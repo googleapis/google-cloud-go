@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,10 +17,10 @@
 // Package retail is an auto-generated package for the
 // Vertex AI Search for commerce API.
 //
-// Vertex AI Search for commerce API is made up of Retail Search, Browse and
-// Recommendations. These discovery AI solutions help you implement
-// personalized search, browse and recommendations, based on machine learning
-// models, across your websites and mobile applications.
+// AI Commerce Search API is made up of Search, Browse and Recommendations.
+// These discovery AI solutions help you implement personalized search,
+// browse and recommendations, based on machine learning models, across your
+// websites and mobile applications.
 //
 // # General documentation
 //

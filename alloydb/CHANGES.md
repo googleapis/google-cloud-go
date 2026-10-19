@@ -3,6 +3,69 @@
 
 
 
+## [1.32.0](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.31.0...alloydb/v1.32.0) (2026-10-15)
+
+
+### Features
+
+* Update API sources and regenerate ([#20683](https://github.com/googleapis/google-cloud-go/issues/20683)) ([005d7ce](https://github.com/googleapis/google-cloud-go/commit/005d7ce4872f1cf1ad269cd5d0ce8da7a844d3c8))
+
+## [1.31.0](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.30.0...alloydb/v1.31.0) (2026-09-23)
+
+
+### Features
+
+* **all:** Update supported go versions ([#20520](https://github.com/googleapis/google-cloud-go/issues/20520)) ([90413d3](https://github.com/googleapis/google-cloud-go/commit/90413d3e9d381ef4b92e3c496d98b023c5b2d8cc))
+
+## [1.30.0](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.29.0...alloydb/v1.30.0) (2026-09-10)
+
+
+### Features
+
+* Update API sources and regenerate ([#20502](https://github.com/googleapis/google-cloud-go/issues/20502)) ([95479e9](https://github.com/googleapis/google-cloud-go/commit/95479e9b74215f969b04d3ebfd01b8f98f11f5ed))
+
+## [1.29.0](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.28.0...alloydb/v1.29.0) (2026-08-20)
+
+
+### Features
+
+* Update sources and regenerate ([#20399](https://github.com/googleapis/google-cloud-go/issues/20399)) ([a6b5cdb](https://github.com/googleapis/google-cloud-go/commit/a6b5cdb4eec5e66fb6bb4a00f9ec89c088826e26))
+
+## [1.28.0](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.27.0...alloydb/v1.28.0) (2026-07-13)
+
+
+### Features
+
+* **o11y:** Regenerate clients for LRO tracing ([#20107](https://github.com/googleapis/google-cloud-go/issues/20107)) ([779074e](https://github.com/googleapis/google-cloud-go/commit/779074edd267a26520bae459307660953129eb07))
+
+## [1.27.0](https://github.com/googleapis/google-cloud-go/releases/tag/alloydb%2Fv1.27.0) (2026-06-11)
+
+### Features
+
+* update API sources and regenerate (#19950) ([c7607be](https://github.com/googleapis/google-cloud-go/commit/c7607be52757b803df345670b5d0621c2bb9ba30))
+
+## [1.26.0](https://github.com/googleapis/google-cloud-go/releases/tag/alloydb%2Fv1.26.0) (2026-05-07)
+
+## [1.25.0](https://github.com/googleapis/google-cloud-go/releases/tag/alloydb%2Fv1.25.0) (2026-04-30)
+
+## [1.24.0](https://github.com/googleapis/google-cloud-go/releases/tag/alloydb%2Fv1.24.0) (2026-04-13)
+
+## [1.23.0](https://github.com/googleapis/google-cloud-go/releases/tag/alloydb%2Fv1.23.0) (2026-04-09)
+
+## [1.22.0](https://github.com/googleapis/google-cloud-go/releases/tag/alloydb%2Fv1.22.0) (2026-04-02)
+
+## [1.21.0](https://github.com/googleapis/google-cloud-go/releases/tag/alloydb%2Fv1.21.0) (2026-03-05)
+
+### Features
+
+* Add a new field to support Dataplex integration configuration ([9c80b8b](https://github.com/googleapis/google-cloud-go/commit/9c80b8b4442a54c610826c1bb89cec5158b49314))
+
+## [1.20.0](https://github.com/googleapis/google-cloud-go/releases/tag/alloydb%2Fv1.20.0) (2026-01-08)
+
+### Features
+
+* add POSTGRES_18 to DatabaseVersion ([db65e79](https://github.com/googleapis/google-cloud-go/commit/db65e7927e54b21a39a54f685810495d2885cb33))
+
 ## [1.19.0](https://github.com/googleapis/google-cloud-go/releases/tag/alloydb%2Fv1.19.0) (2025-10-10)
 
 ### Features

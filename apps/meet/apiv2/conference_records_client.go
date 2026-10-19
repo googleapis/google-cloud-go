@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import (
 
 	meetpb "cloud.google.com/go/apps/meet/apiv2/meetpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -54,6 +55,8 @@ type ConferenceRecordsCallOptions struct {
 	ListTranscripts         []gax.CallOption
 	GetTranscriptEntry      []gax.CallOption
 	ListTranscriptEntries   []gax.CallOption
+	GetSmartNote            []gax.CallOption
+	ListSmartNotes          []gax.CallOption
 }
 
 func defaultConferenceRecordsGRPCClientOptions() []option.ClientOption {
@@ -217,6 +220,30 @@ func defaultConferenceRecordsCallOptions() *ConferenceRecordsCallOptions {
 				})
 			}),
 		},
+		GetSmartNote: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListSmartNotes: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 	}
 }
 
@@ -354,6 +381,28 @@ func defaultConferenceRecordsRESTCallOptions() *ConferenceRecordsCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		GetSmartNote: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListSmartNotes: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 	}
 }
 
@@ -374,6 +423,8 @@ type internalConferenceRecordsClient interface {
 	ListTranscripts(context.Context, *meetpb.ListTranscriptsRequest, ...gax.CallOption) *TranscriptIterator
 	GetTranscriptEntry(context.Context, *meetpb.GetTranscriptEntryRequest, ...gax.CallOption) (*meetpb.TranscriptEntry, error)
 	ListTranscriptEntries(context.Context, *meetpb.ListTranscriptEntriesRequest, ...gax.CallOption) *TranscriptEntryIterator
+	GetSmartNote(context.Context, *meetpb.GetSmartNoteRequest, ...gax.CallOption) (*meetpb.SmartNote, error)
+	ListSmartNotes(context.Context, *meetpb.ListSmartNotesRequest, ...gax.CallOption) *SmartNoteIterator
 }
 
 // ConferenceRecordsClient is a client for interacting with Google Meet API.
@@ -390,7 +441,7 @@ type ConferenceRecordsClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *ConferenceRecordsClient) Close() error {
 	return c.internalClient.Close()
@@ -475,7 +526,8 @@ func (c *ConferenceRecordsClient) ListTranscripts(ctx context.Context, req *meet
 //
 // Note: The transcript entries returned by the Google Meet API might not
 // match the transcription found in the Google Docs transcript file. This can
-// occur when the Google Docs transcript file is modified after generation.
+// occur when 1) we have interleaved speakers within milliseconds, or
+// 2) the Google Docs transcript file is modified after generation.
 func (c *ConferenceRecordsClient) GetTranscriptEntry(ctx context.Context, req *meetpb.GetTranscriptEntryRequest, opts ...gax.CallOption) (*meetpb.TranscriptEntry, error) {
 	return c.internalClient.GetTranscriptEntry(ctx, req, opts...)
 }
@@ -485,9 +537,21 @@ func (c *ConferenceRecordsClient) GetTranscriptEntry(ctx context.Context, req *m
 //
 // Note: The transcript entries returned by the Google Meet API might not
 // match the transcription found in the Google Docs transcript file. This can
-// occur when the Google Docs transcript file is modified after generation.
+// occur when 1) we have interleaved speakers within milliseconds, or
+// 2) the Google Docs transcript file is modified after generation.
 func (c *ConferenceRecordsClient) ListTranscriptEntries(ctx context.Context, req *meetpb.ListTranscriptEntriesRequest, opts ...gax.CallOption) *TranscriptEntryIterator {
 	return c.internalClient.ListTranscriptEntries(ctx, req, opts...)
+}
+
+// GetSmartNote gets smart notes by smart note ID.
+func (c *ConferenceRecordsClient) GetSmartNote(ctx context.Context, req *meetpb.GetSmartNoteRequest, opts ...gax.CallOption) (*meetpb.SmartNote, error) {
+	return c.internalClient.GetSmartNote(ctx, req, opts...)
+}
+
+// ListSmartNotes lists the set of smart notes from the conference record. By default,
+// ordered by start time and in ascending order.
+func (c *ConferenceRecordsClient) ListSmartNotes(ctx context.Context, req *meetpb.ListSmartNotesRequest, opts ...gax.CallOption) *SmartNoteIterator {
+	return c.internalClient.ListSmartNotes(ctx, req, opts...)
 }
 
 // conferenceRecordsGRPCClient is a client for interacting with Google Meet API over gRPC transport.
@@ -515,6 +579,16 @@ type conferenceRecordsGRPCClient struct {
 // REST API for services dealing with conference records.
 func NewConferenceRecordsClient(ctx context.Context, opts ...option.ClientOption) (*ConferenceRecordsClient, error) {
 	clientOpts := defaultConferenceRecordsGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "meet",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/apps/meet/apiv2",
+			"gcp.client.language": "go",
+			"url.domain":          "meet.googleapis.com",
+		}))
+	}
 	if newConferenceRecordsClientHook != nil {
 		hookOpts, err := newConferenceRecordsClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -536,6 +610,86 @@ func NewConferenceRecordsClient(ctx context.Context, opts ...option.ClientOption
 		logger:                  internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "meet",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/apps/meet/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "meet.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetConferenceRecord = append(client.CallOptions.GetConferenceRecord, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListConferenceRecords = append(client.CallOptions.ListConferenceRecords, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetParticipant = append(client.CallOptions.GetParticipant, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListParticipants = append(client.CallOptions.ListParticipants, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetParticipantSession = append(client.CallOptions.GetParticipantSession, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListParticipantSessions = append(client.CallOptions.ListParticipantSessions, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetRecording = append(client.CallOptions.GetRecording, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListRecordings = append(client.CallOptions.ListRecordings, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetTranscript = append(client.CallOptions.GetTranscript, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListTranscripts = append(client.CallOptions.ListTranscripts, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetTranscriptEntry = append(client.CallOptions.GetTranscriptEntry, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListTranscriptEntries = append(client.CallOptions.ListTranscriptEntries, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetSmartNote = append(client.CallOptions.GetSmartNote, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListSmartNotes = append(client.CallOptions.ListSmartNotes, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "meet",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/apps/meet/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "meet.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetConferenceRecord = append(client.CallOptions.GetConferenceRecord, gax.WithClientTracing(tracing))
+		client.CallOptions.ListConferenceRecords = append(client.CallOptions.ListConferenceRecords, gax.WithClientTracing(tracing))
+		client.CallOptions.GetParticipant = append(client.CallOptions.GetParticipant, gax.WithClientTracing(tracing))
+		client.CallOptions.ListParticipants = append(client.CallOptions.ListParticipants, gax.WithClientTracing(tracing))
+		client.CallOptions.GetParticipantSession = append(client.CallOptions.GetParticipantSession, gax.WithClientTracing(tracing))
+		client.CallOptions.ListParticipantSessions = append(client.CallOptions.ListParticipantSessions, gax.WithClientTracing(tracing))
+		client.CallOptions.GetRecording = append(client.CallOptions.GetRecording, gax.WithClientTracing(tracing))
+		client.CallOptions.ListRecordings = append(client.CallOptions.ListRecordings, gax.WithClientTracing(tracing))
+		client.CallOptions.GetTranscript = append(client.CallOptions.GetTranscript, gax.WithClientTracing(tracing))
+		client.CallOptions.ListTranscripts = append(client.CallOptions.ListTranscripts, gax.WithClientTracing(tracing))
+		client.CallOptions.GetTranscriptEntry = append(client.CallOptions.GetTranscriptEntry, gax.WithClientTracing(tracing))
+		client.CallOptions.ListTranscriptEntries = append(client.CallOptions.ListTranscriptEntries, gax.WithClientTracing(tracing))
+		client.CallOptions.GetSmartNote = append(client.CallOptions.GetSmartNote, gax.WithClientTracing(tracing))
+		client.CallOptions.ListSmartNotes = append(client.CallOptions.ListSmartNotes, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "meet",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/apps/meet/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "meet.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetConferenceRecord = append(client.CallOptions.GetConferenceRecord, gax.WithClientLogging(logging))
+		client.CallOptions.ListConferenceRecords = append(client.CallOptions.ListConferenceRecords, gax.WithClientLogging(logging))
+		client.CallOptions.GetParticipant = append(client.CallOptions.GetParticipant, gax.WithClientLogging(logging))
+		client.CallOptions.ListParticipants = append(client.CallOptions.ListParticipants, gax.WithClientLogging(logging))
+		client.CallOptions.GetParticipantSession = append(client.CallOptions.GetParticipantSession, gax.WithClientLogging(logging))
+		client.CallOptions.ListParticipantSessions = append(client.CallOptions.ListParticipantSessions, gax.WithClientLogging(logging))
+		client.CallOptions.GetRecording = append(client.CallOptions.GetRecording, gax.WithClientLogging(logging))
+		client.CallOptions.ListRecordings = append(client.CallOptions.ListRecordings, gax.WithClientLogging(logging))
+		client.CallOptions.GetTranscript = append(client.CallOptions.GetTranscript, gax.WithClientLogging(logging))
+		client.CallOptions.ListTranscripts = append(client.CallOptions.ListTranscripts, gax.WithClientLogging(logging))
+		client.CallOptions.GetTranscriptEntry = append(client.CallOptions.GetTranscriptEntry, gax.WithClientLogging(logging))
+		client.CallOptions.ListTranscriptEntries = append(client.CallOptions.ListTranscriptEntries, gax.WithClientLogging(logging))
+		client.CallOptions.GetSmartNote = append(client.CallOptions.GetSmartNote, gax.WithClientLogging(logging))
+		client.CallOptions.ListSmartNotes = append(client.CallOptions.ListSmartNotes, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -561,7 +715,7 @@ func (c *conferenceRecordsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *conferenceRecordsGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -589,6 +743,16 @@ type conferenceRecordsRESTClient struct {
 // REST API for services dealing with conference records.
 func NewConferenceRecordsRESTClient(ctx context.Context, opts ...option.ClientOption) (*ConferenceRecordsClient, error) {
 	clientOpts := append(defaultConferenceRecordsRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "meet",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/apps/meet/apiv2",
+			"gcp.client.language": "go",
+			"url.domain":          "meet.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -602,6 +766,87 @@ func NewConferenceRecordsRESTClient(ctx context.Context, opts ...option.ClientOp
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "meet",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/apps/meet/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "meet.googleapis.com",
+			}),
+		)
+
+		callOpts.GetConferenceRecord = append(callOpts.GetConferenceRecord, gax.WithClientMetrics(metrics))
+		callOpts.ListConferenceRecords = append(callOpts.ListConferenceRecords, gax.WithClientMetrics(metrics))
+		callOpts.GetParticipant = append(callOpts.GetParticipant, gax.WithClientMetrics(metrics))
+		callOpts.ListParticipants = append(callOpts.ListParticipants, gax.WithClientMetrics(metrics))
+		callOpts.GetParticipantSession = append(callOpts.GetParticipantSession, gax.WithClientMetrics(metrics))
+		callOpts.ListParticipantSessions = append(callOpts.ListParticipantSessions, gax.WithClientMetrics(metrics))
+		callOpts.GetRecording = append(callOpts.GetRecording, gax.WithClientMetrics(metrics))
+		callOpts.ListRecordings = append(callOpts.ListRecordings, gax.WithClientMetrics(metrics))
+		callOpts.GetTranscript = append(callOpts.GetTranscript, gax.WithClientMetrics(metrics))
+		callOpts.ListTranscripts = append(callOpts.ListTranscripts, gax.WithClientMetrics(metrics))
+		callOpts.GetTranscriptEntry = append(callOpts.GetTranscriptEntry, gax.WithClientMetrics(metrics))
+		callOpts.ListTranscriptEntries = append(callOpts.ListTranscriptEntries, gax.WithClientMetrics(metrics))
+		callOpts.GetSmartNote = append(callOpts.GetSmartNote, gax.WithClientMetrics(metrics))
+		callOpts.ListSmartNotes = append(callOpts.ListSmartNotes, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "meet",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/apps/meet/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "meet.googleapis.com",
+			}),
+		)
+
+		callOpts.GetConferenceRecord = append(callOpts.GetConferenceRecord, gax.WithClientTracing(tracing))
+		callOpts.ListConferenceRecords = append(callOpts.ListConferenceRecords, gax.WithClientTracing(tracing))
+		callOpts.GetParticipant = append(callOpts.GetParticipant, gax.WithClientTracing(tracing))
+		callOpts.ListParticipants = append(callOpts.ListParticipants, gax.WithClientTracing(tracing))
+		callOpts.GetParticipantSession = append(callOpts.GetParticipantSession, gax.WithClientTracing(tracing))
+		callOpts.ListParticipantSessions = append(callOpts.ListParticipantSessions, gax.WithClientTracing(tracing))
+		callOpts.GetRecording = append(callOpts.GetRecording, gax.WithClientTracing(tracing))
+		callOpts.ListRecordings = append(callOpts.ListRecordings, gax.WithClientTracing(tracing))
+		callOpts.GetTranscript = append(callOpts.GetTranscript, gax.WithClientTracing(tracing))
+		callOpts.ListTranscripts = append(callOpts.ListTranscripts, gax.WithClientTracing(tracing))
+		callOpts.GetTranscriptEntry = append(callOpts.GetTranscriptEntry, gax.WithClientTracing(tracing))
+		callOpts.ListTranscriptEntries = append(callOpts.ListTranscriptEntries, gax.WithClientTracing(tracing))
+		callOpts.GetSmartNote = append(callOpts.GetSmartNote, gax.WithClientTracing(tracing))
+		callOpts.ListSmartNotes = append(callOpts.ListSmartNotes, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "meet",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/apps/meet/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "meet.googleapis.com",
+			}),
+		)
+
+		callOpts.GetConferenceRecord = append(callOpts.GetConferenceRecord, gax.WithClientLogging(logging))
+		callOpts.ListConferenceRecords = append(callOpts.ListConferenceRecords, gax.WithClientLogging(logging))
+		callOpts.GetParticipant = append(callOpts.GetParticipant, gax.WithClientLogging(logging))
+		callOpts.ListParticipants = append(callOpts.ListParticipants, gax.WithClientLogging(logging))
+		callOpts.GetParticipantSession = append(callOpts.GetParticipantSession, gax.WithClientLogging(logging))
+		callOpts.ListParticipantSessions = append(callOpts.ListParticipantSessions, gax.WithClientLogging(logging))
+		callOpts.GetRecording = append(callOpts.GetRecording, gax.WithClientLogging(logging))
+		callOpts.ListRecordings = append(callOpts.ListRecordings, gax.WithClientLogging(logging))
+		callOpts.GetTranscript = append(callOpts.GetTranscript, gax.WithClientLogging(logging))
+		callOpts.ListTranscripts = append(callOpts.ListTranscripts, gax.WithClientLogging(logging))
+		callOpts.GetTranscriptEntry = append(callOpts.GetTranscriptEntry, gax.WithClientLogging(logging))
+		callOpts.ListTranscriptEntries = append(callOpts.ListTranscriptEntries, gax.WithClientLogging(logging))
+		callOpts.GetSmartNote = append(callOpts.GetSmartNote, gax.WithClientLogging(logging))
+		callOpts.ListSmartNotes = append(callOpts.ListSmartNotes, gax.WithClientLogging(logging))
+	}
 
 	return &ConferenceRecordsClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -629,7 +874,7 @@ func (c *conferenceRecordsRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *conferenceRecordsRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -648,6 +893,9 @@ func (c *conferenceRecordsGRPCClient) GetConferenceRecord(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.apps.meet.v2.ConferenceRecordsService/GetConferenceRecord")
+	}
 	opts = append((*c.CallOptions).GetConferenceRecord[0:len((*c.CallOptions).GetConferenceRecord):len((*c.CallOptions).GetConferenceRecord)], opts...)
 	var resp *meetpb.ConferenceRecord
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -663,9 +911,12 @@ func (c *conferenceRecordsGRPCClient) GetConferenceRecord(ctx context.Context, r
 
 func (c *conferenceRecordsGRPCClient) ListConferenceRecords(ctx context.Context, req *meetpb.ListConferenceRecordsRequest, opts ...gax.CallOption) *ConferenceRecordIterator {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.apps.meet.v2.ConferenceRecordsService/ListConferenceRecords")
+	}
 	opts = append((*c.CallOptions).ListConferenceRecords[0:len((*c.CallOptions).ListConferenceRecords):len((*c.CallOptions).ListConferenceRecords)], opts...)
 	it := &ConferenceRecordIterator{}
-	req = proto.Clone(req).(*meetpb.ListConferenceRecordsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*meetpb.ConferenceRecord, string, error) {
 		resp := &meetpb.ListConferenceRecordsResponse{}
 		if pageToken != "" {
@@ -709,6 +960,9 @@ func (c *conferenceRecordsGRPCClient) GetParticipant(ctx context.Context, req *m
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.apps.meet.v2.ConferenceRecordsService/GetParticipant")
+	}
 	opts = append((*c.CallOptions).GetParticipant[0:len((*c.CallOptions).GetParticipant):len((*c.CallOptions).GetParticipant)], opts...)
 	var resp *meetpb.Participant
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -727,9 +981,12 @@ func (c *conferenceRecordsGRPCClient) ListParticipants(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.apps.meet.v2.ConferenceRecordsService/ListParticipants")
+	}
 	opts = append((*c.CallOptions).ListParticipants[0:len((*c.CallOptions).ListParticipants):len((*c.CallOptions).ListParticipants)], opts...)
 	it := &ParticipantIterator{}
-	req = proto.Clone(req).(*meetpb.ListParticipantsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*meetpb.Participant, string, error) {
 		resp := &meetpb.ListParticipantsResponse{}
 		if pageToken != "" {
@@ -773,6 +1030,9 @@ func (c *conferenceRecordsGRPCClient) GetParticipantSession(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.apps.meet.v2.ConferenceRecordsService/GetParticipantSession")
+	}
 	opts = append((*c.CallOptions).GetParticipantSession[0:len((*c.CallOptions).GetParticipantSession):len((*c.CallOptions).GetParticipantSession)], opts...)
 	var resp *meetpb.ParticipantSession
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -791,9 +1051,12 @@ func (c *conferenceRecordsGRPCClient) ListParticipantSessions(ctx context.Contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.apps.meet.v2.ConferenceRecordsService/ListParticipantSessions")
+	}
 	opts = append((*c.CallOptions).ListParticipantSessions[0:len((*c.CallOptions).ListParticipantSessions):len((*c.CallOptions).ListParticipantSessions)], opts...)
 	it := &ParticipantSessionIterator{}
-	req = proto.Clone(req).(*meetpb.ListParticipantSessionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*meetpb.ParticipantSession, string, error) {
 		resp := &meetpb.ListParticipantSessionsResponse{}
 		if pageToken != "" {
@@ -837,6 +1100,9 @@ func (c *conferenceRecordsGRPCClient) GetRecording(ctx context.Context, req *mee
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.apps.meet.v2.ConferenceRecordsService/GetRecording")
+	}
 	opts = append((*c.CallOptions).GetRecording[0:len((*c.CallOptions).GetRecording):len((*c.CallOptions).GetRecording)], opts...)
 	var resp *meetpb.Recording
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -855,9 +1121,12 @@ func (c *conferenceRecordsGRPCClient) ListRecordings(ctx context.Context, req *m
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.apps.meet.v2.ConferenceRecordsService/ListRecordings")
+	}
 	opts = append((*c.CallOptions).ListRecordings[0:len((*c.CallOptions).ListRecordings):len((*c.CallOptions).ListRecordings)], opts...)
 	it := &RecordingIterator{}
-	req = proto.Clone(req).(*meetpb.ListRecordingsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*meetpb.Recording, string, error) {
 		resp := &meetpb.ListRecordingsResponse{}
 		if pageToken != "" {
@@ -901,6 +1170,9 @@ func (c *conferenceRecordsGRPCClient) GetTranscript(ctx context.Context, req *me
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.apps.meet.v2.ConferenceRecordsService/GetTranscript")
+	}
 	opts = append((*c.CallOptions).GetTranscript[0:len((*c.CallOptions).GetTranscript):len((*c.CallOptions).GetTranscript)], opts...)
 	var resp *meetpb.Transcript
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -919,9 +1191,12 @@ func (c *conferenceRecordsGRPCClient) ListTranscripts(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.apps.meet.v2.ConferenceRecordsService/ListTranscripts")
+	}
 	opts = append((*c.CallOptions).ListTranscripts[0:len((*c.CallOptions).ListTranscripts):len((*c.CallOptions).ListTranscripts)], opts...)
 	it := &TranscriptIterator{}
-	req = proto.Clone(req).(*meetpb.ListTranscriptsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*meetpb.Transcript, string, error) {
 		resp := &meetpb.ListTranscriptsResponse{}
 		if pageToken != "" {
@@ -965,6 +1240,9 @@ func (c *conferenceRecordsGRPCClient) GetTranscriptEntry(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.apps.meet.v2.ConferenceRecordsService/GetTranscriptEntry")
+	}
 	opts = append((*c.CallOptions).GetTranscriptEntry[0:len((*c.CallOptions).GetTranscriptEntry):len((*c.CallOptions).GetTranscriptEntry)], opts...)
 	var resp *meetpb.TranscriptEntry
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -983,9 +1261,12 @@ func (c *conferenceRecordsGRPCClient) ListTranscriptEntries(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.apps.meet.v2.ConferenceRecordsService/ListTranscriptEntries")
+	}
 	opts = append((*c.CallOptions).ListTranscriptEntries[0:len((*c.CallOptions).ListTranscriptEntries):len((*c.CallOptions).ListTranscriptEntries)], opts...)
 	it := &TranscriptEntryIterator{}
-	req = proto.Clone(req).(*meetpb.ListTranscriptEntriesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*meetpb.TranscriptEntry, string, error) {
 		resp := &meetpb.ListTranscriptEntriesResponse{}
 		if pageToken != "" {
@@ -1024,6 +1305,76 @@ func (c *conferenceRecordsGRPCClient) ListTranscriptEntries(ctx context.Context,
 	return it
 }
 
+func (c *conferenceRecordsGRPCClient) GetSmartNote(ctx context.Context, req *meetpb.GetSmartNoteRequest, opts ...gax.CallOption) (*meetpb.SmartNote, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.apps.meet.v2.ConferenceRecordsService/GetSmartNote")
+	}
+	opts = append((*c.CallOptions).GetSmartNote[0:len((*c.CallOptions).GetSmartNote):len((*c.CallOptions).GetSmartNote)], opts...)
+	var resp *meetpb.SmartNote
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.conferenceRecordsClient.GetSmartNote, req, settings.GRPC, c.logger, "GetSmartNote")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *conferenceRecordsGRPCClient) ListSmartNotes(ctx context.Context, req *meetpb.ListSmartNotesRequest, opts ...gax.CallOption) *SmartNoteIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.apps.meet.v2.ConferenceRecordsService/ListSmartNotes")
+	}
+	opts = append((*c.CallOptions).ListSmartNotes[0:len((*c.CallOptions).ListSmartNotes):len((*c.CallOptions).ListSmartNotes)], opts...)
+	it := &SmartNoteIterator{}
+	req = proto.CloneOf(req)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*meetpb.SmartNote, string, error) {
+		resp := &meetpb.ListSmartNotesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.conferenceRecordsClient.ListSmartNotes, req, settings.GRPC, c.logger, "ListSmartNotes")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetSmartNotes(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 // GetConferenceRecord gets a conference record by conference ID.
 func (c *conferenceRecordsRESTClient) GetConferenceRecord(ctx context.Context, req *meetpb.GetConferenceRecordRequest, opts ...gax.CallOption) (*meetpb.ConferenceRecord, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -1043,6 +1394,10 @@ func (c *conferenceRecordsRESTClient) GetConferenceRecord(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.apps.meet.v2.ConferenceRecordsService/GetConferenceRecord")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=conferenceRecords/*}")
+	}
 	opts = append((*c.CallOptions).GetConferenceRecord[0:len((*c.CallOptions).GetConferenceRecord):len((*c.CallOptions).GetConferenceRecord)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &meetpb.ConferenceRecord{}
@@ -1078,7 +1433,7 @@ func (c *conferenceRecordsRESTClient) GetConferenceRecord(ctx context.Context, r
 // descending order.
 func (c *conferenceRecordsRESTClient) ListConferenceRecords(ctx context.Context, req *meetpb.ListConferenceRecordsRequest, opts ...gax.CallOption) *ConferenceRecordIterator {
 	it := &ConferenceRecordIterator{}
-	req = proto.Clone(req).(*meetpb.ListConferenceRecordsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*meetpb.ConferenceRecord, string, error) {
 		resp := &meetpb.ListConferenceRecordsResponse{}
@@ -1175,6 +1530,10 @@ func (c *conferenceRecordsRESTClient) GetParticipant(ctx context.Context, req *m
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.apps.meet.v2.ConferenceRecordsService/GetParticipant")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=conferenceRecords/*/participants/*}")
+	}
 	opts = append((*c.CallOptions).GetParticipant[0:len((*c.CallOptions).GetParticipant):len((*c.CallOptions).GetParticipant)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &meetpb.Participant{}
@@ -1212,7 +1571,7 @@ func (c *conferenceRecordsRESTClient) GetParticipant(ctx context.Context, req *m
 // parameter is omitted, this API defaults to 'participants/*, next_page_token'.
 func (c *conferenceRecordsRESTClient) ListParticipants(ctx context.Context, req *meetpb.ListParticipantsRequest, opts ...gax.CallOption) *ParticipantIterator {
 	it := &ParticipantIterator{}
-	req = proto.Clone(req).(*meetpb.ListParticipantsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*meetpb.Participant, string, error) {
 		resp := &meetpb.ListParticipantsResponse{}
@@ -1309,6 +1668,10 @@ func (c *conferenceRecordsRESTClient) GetParticipantSession(ctx context.Context,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.apps.meet.v2.ConferenceRecordsService/GetParticipantSession")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=conferenceRecords/*/participants/*/participantSessions/*}")
+	}
 	opts = append((*c.CallOptions).GetParticipantSession[0:len((*c.CallOptions).GetParticipantSession):len((*c.CallOptions).GetParticipantSession)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &meetpb.ParticipantSession{}
@@ -1347,7 +1710,7 @@ func (c *conferenceRecordsRESTClient) GetParticipantSession(ctx context.Context,
 // 'participantsessions/*, next_page_token'.
 func (c *conferenceRecordsRESTClient) ListParticipantSessions(ctx context.Context, req *meetpb.ListParticipantSessionsRequest, opts ...gax.CallOption) *ParticipantSessionIterator {
 	it := &ParticipantSessionIterator{}
-	req = proto.Clone(req).(*meetpb.ListParticipantSessionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*meetpb.ParticipantSession, string, error) {
 		resp := &meetpb.ListParticipantSessionsResponse{}
@@ -1444,6 +1807,10 @@ func (c *conferenceRecordsRESTClient) GetRecording(ctx context.Context, req *mee
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.apps.meet.v2.ConferenceRecordsService/GetRecording")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=conferenceRecords/*/recordings/*}")
+	}
 	opts = append((*c.CallOptions).GetRecording[0:len((*c.CallOptions).GetRecording):len((*c.CallOptions).GetRecording)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &meetpb.Recording{}
@@ -1479,7 +1846,7 @@ func (c *conferenceRecordsRESTClient) GetRecording(ctx context.Context, req *mee
 // ordered by start time and in ascending order.
 func (c *conferenceRecordsRESTClient) ListRecordings(ctx context.Context, req *meetpb.ListRecordingsRequest, opts ...gax.CallOption) *RecordingIterator {
 	it := &RecordingIterator{}
-	req = proto.Clone(req).(*meetpb.ListRecordingsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*meetpb.Recording, string, error) {
 		resp := &meetpb.ListRecordingsResponse{}
@@ -1573,6 +1940,10 @@ func (c *conferenceRecordsRESTClient) GetTranscript(ctx context.Context, req *me
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.apps.meet.v2.ConferenceRecordsService/GetTranscript")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=conferenceRecords/*/transcripts/*}")
+	}
 	opts = append((*c.CallOptions).GetTranscript[0:len((*c.CallOptions).GetTranscript):len((*c.CallOptions).GetTranscript)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &meetpb.Transcript{}
@@ -1608,7 +1979,7 @@ func (c *conferenceRecordsRESTClient) GetTranscript(ctx context.Context, req *me
 // ordered by start time and in ascending order.
 func (c *conferenceRecordsRESTClient) ListTranscripts(ctx context.Context, req *meetpb.ListTranscriptsRequest, opts ...gax.CallOption) *TranscriptIterator {
 	it := &TranscriptIterator{}
-	req = proto.Clone(req).(*meetpb.ListTranscriptsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*meetpb.Transcript, string, error) {
 		resp := &meetpb.ListTranscriptsResponse{}
@@ -1687,7 +2058,8 @@ func (c *conferenceRecordsRESTClient) ListTranscripts(ctx context.Context, req *
 //
 // Note: The transcript entries returned by the Google Meet API might not
 // match the transcription found in the Google Docs transcript file. This can
-// occur when the Google Docs transcript file is modified after generation.
+// occur when 1) we have interleaved speakers within milliseconds, or
+// 2) the Google Docs transcript file is modified after generation.
 func (c *conferenceRecordsRESTClient) GetTranscriptEntry(ctx context.Context, req *meetpb.GetTranscriptEntryRequest, opts ...gax.CallOption) (*meetpb.TranscriptEntry, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1706,6 +2078,10 @@ func (c *conferenceRecordsRESTClient) GetTranscriptEntry(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.apps.meet.v2.ConferenceRecordsService/GetTranscriptEntry")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=conferenceRecords/*/transcripts/*/entries/*}")
+	}
 	opts = append((*c.CallOptions).GetTranscriptEntry[0:len((*c.CallOptions).GetTranscriptEntry):len((*c.CallOptions).GetTranscriptEntry)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &meetpb.TranscriptEntry{}
@@ -1742,10 +2118,11 @@ func (c *conferenceRecordsRESTClient) GetTranscriptEntry(ctx context.Context, re
 //
 // Note: The transcript entries returned by the Google Meet API might not
 // match the transcription found in the Google Docs transcript file. This can
-// occur when the Google Docs transcript file is modified after generation.
+// occur when 1) we have interleaved speakers within milliseconds, or
+// 2) the Google Docs transcript file is modified after generation.
 func (c *conferenceRecordsRESTClient) ListTranscriptEntries(ctx context.Context, req *meetpb.ListTranscriptEntriesRequest, opts ...gax.CallOption) *TranscriptEntryIterator {
 	it := &TranscriptEntryIterator{}
-	req = proto.Clone(req).(*meetpb.ListTranscriptEntriesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*meetpb.TranscriptEntry, string, error) {
 		resp := &meetpb.ListTranscriptEntriesResponse{}
@@ -1802,6 +2179,139 @@ func (c *conferenceRecordsRESTClient) ListTranscriptEntries(ctx context.Context,
 		}
 		it.Response = resp
 		return resp.GetTranscriptEntries(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetSmartNote gets smart notes by smart note ID.
+func (c *conferenceRecordsRESTClient) GetSmartNote(ctx context.Context, req *meetpb.GetSmartNoteRequest, opts ...gax.CallOption) (*meetpb.SmartNote, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.apps.meet.v2.ConferenceRecordsService/GetSmartNote")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=conferenceRecords/*/smartNotes/*}")
+	}
+	opts = append((*c.CallOptions).GetSmartNote[0:len((*c.CallOptions).GetSmartNote):len((*c.CallOptions).GetSmartNote)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &meetpb.SmartNote{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetSmartNote")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListSmartNotes lists the set of smart notes from the conference record. By default,
+// ordered by start time and in ascending order.
+func (c *conferenceRecordsRESTClient) ListSmartNotes(ctx context.Context, req *meetpb.ListSmartNotesRequest, opts ...gax.CallOption) *SmartNoteIterator {
+	it := &SmartNoteIterator{}
+	req = proto.CloneOf(req)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*meetpb.SmartNote, string, error) {
+		resp := &meetpb.ListSmartNotesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v2/%v/smartNotes", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListSmartNotes")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetSmartNotes(), resp.GetNextPageToken(), nil
 	}
 
 	fetch := func(pageSize int, pageToken string) (string, error) {

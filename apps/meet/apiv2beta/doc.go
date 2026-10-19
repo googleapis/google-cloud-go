@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -58,11 +58,11 @@
 //
 // The following is an example of making an API call with the newly created client, mentioned above.
 //
-//	req := &meetpb.ConnectActiveConferenceRequest{
+//	req := &meetpb.BatchUpdateMembersRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/apps/meet/apiv2beta/meetpb#ConnectActiveConferenceRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/apps/meet/apiv2beta/meetpb#BatchUpdateMembersRequest.
 //	}
-//	resp, err := c.ConnectActiveConference(ctx, req)
+//	resp, err := c.BatchUpdateMembers(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

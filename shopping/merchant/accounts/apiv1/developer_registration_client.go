@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import (
 
 	accountspb "cloud.google.com/go/shopping/merchant/accounts/apiv1/accountspb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -35,15 +36,17 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/protobuf/encoding/protojson"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 var newDeveloperRegistrationClientHook clientHook
 
 // DeveloperRegistrationCallOptions contains the retry settings for each method of DeveloperRegistrationClient.
 type DeveloperRegistrationCallOptions struct {
-	RegisterGcp              []gax.CallOption
-	GetDeveloperRegistration []gax.CallOption
-	UnregisterGcp            []gax.CallOption
+	RegisterGcp                  []gax.CallOption
+	GetDeveloperRegistration     []gax.CallOption
+	UnregisterGcp                []gax.CallOption
+	GetAccountForGcpRegistration []gax.CallOption
 }
 
 func defaultDeveloperRegistrationGRPCClientOptions() []option.ClientOption {
@@ -99,6 +102,18 @@ func defaultDeveloperRegistrationCallOptions() *DeveloperRegistrationCallOptions
 				})
 			}),
 		},
+		GetAccountForGcpRegistration: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 	}
 }
 
@@ -137,6 +152,17 @@ func defaultDeveloperRegistrationRESTCallOptions() *DeveloperRegistrationCallOpt
 					http.StatusServiceUnavailable)
 			}),
 		},
+		GetAccountForGcpRegistration: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 	}
 }
 
@@ -148,6 +174,7 @@ type internalDeveloperRegistrationClient interface {
 	RegisterGcp(context.Context, *accountspb.RegisterGcpRequest, ...gax.CallOption) (*accountspb.DeveloperRegistration, error)
 	GetDeveloperRegistration(context.Context, *accountspb.GetDeveloperRegistrationRequest, ...gax.CallOption) (*accountspb.DeveloperRegistration, error)
 	UnregisterGcp(context.Context, *accountspb.UnregisterGcpRequest, ...gax.CallOption) error
+	GetAccountForGcpRegistration(context.Context, *emptypb.Empty, ...gax.CallOption) (*accountspb.GetAccountForGcpRegistrationResponse, error)
 }
 
 // DeveloperRegistrationClient is a client for interacting with Merchant API.
@@ -164,7 +191,7 @@ type DeveloperRegistrationClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *DeveloperRegistrationClient) Close() error {
 	return c.internalClient.Close()
@@ -205,6 +232,11 @@ func (c *DeveloperRegistrationClient) UnregisterGcp(ctx context.Context, req *ac
 	return c.internalClient.UnregisterGcp(ctx, req, opts...)
 }
 
+// GetAccountForGcpRegistration retrieves the merchant account that the calling GCP is registered with.
+func (c *DeveloperRegistrationClient) GetAccountForGcpRegistration(ctx context.Context, req *emptypb.Empty, opts ...gax.CallOption) (*accountspb.GetAccountForGcpRegistrationResponse, error) {
+	return c.internalClient.GetAccountForGcpRegistration(ctx, req, opts...)
+}
+
 // developerRegistrationGRPCClient is a client for interacting with Merchant API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -230,6 +262,16 @@ type developerRegistrationGRPCClient struct {
 // Service to access Developer Registration.
 func NewDeveloperRegistrationClient(ctx context.Context, opts ...option.ClientOption) (*DeveloperRegistrationClient, error) {
 	clientOpts := defaultDeveloperRegistrationGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "merchantapi",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/merchant/accounts/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "merchantapi.googleapis.com",
+		}))
+	}
 	if newDeveloperRegistrationClientHook != nil {
 		hookOpts, err := newDeveloperRegistrationClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -251,6 +293,56 @@ func NewDeveloperRegistrationClient(ctx context.Context, opts ...option.ClientOp
 		logger:                      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.RegisterGcp = append(client.CallOptions.RegisterGcp, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetDeveloperRegistration = append(client.CallOptions.GetDeveloperRegistration, gax.WithClientMetrics(metrics))
+		client.CallOptions.UnregisterGcp = append(client.CallOptions.UnregisterGcp, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetAccountForGcpRegistration = append(client.CallOptions.GetAccountForGcpRegistration, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.RegisterGcp = append(client.CallOptions.RegisterGcp, gax.WithClientTracing(tracing))
+		client.CallOptions.GetDeveloperRegistration = append(client.CallOptions.GetDeveloperRegistration, gax.WithClientTracing(tracing))
+		client.CallOptions.UnregisterGcp = append(client.CallOptions.UnregisterGcp, gax.WithClientTracing(tracing))
+		client.CallOptions.GetAccountForGcpRegistration = append(client.CallOptions.GetAccountForGcpRegistration, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.RegisterGcp = append(client.CallOptions.RegisterGcp, gax.WithClientLogging(logging))
+		client.CallOptions.GetDeveloperRegistration = append(client.CallOptions.GetDeveloperRegistration, gax.WithClientLogging(logging))
+		client.CallOptions.UnregisterGcp = append(client.CallOptions.UnregisterGcp, gax.WithClientLogging(logging))
+		client.CallOptions.GetAccountForGcpRegistration = append(client.CallOptions.GetAccountForGcpRegistration, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -276,7 +368,7 @@ func (c *developerRegistrationGRPCClient) setGoogleClientInfo(keyval ...string) 
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *developerRegistrationGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -304,6 +396,16 @@ type developerRegistrationRESTClient struct {
 // Service to access Developer Registration.
 func NewDeveloperRegistrationRESTClient(ctx context.Context, opts ...option.ClientOption) (*DeveloperRegistrationClient, error) {
 	clientOpts := append(defaultDeveloperRegistrationRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "merchantapi",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/merchant/accounts/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "merchantapi.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -317,6 +419,57 @@ func NewDeveloperRegistrationRESTClient(ctx context.Context, opts ...option.Clie
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.RegisterGcp = append(callOpts.RegisterGcp, gax.WithClientMetrics(metrics))
+		callOpts.GetDeveloperRegistration = append(callOpts.GetDeveloperRegistration, gax.WithClientMetrics(metrics))
+		callOpts.UnregisterGcp = append(callOpts.UnregisterGcp, gax.WithClientMetrics(metrics))
+		callOpts.GetAccountForGcpRegistration = append(callOpts.GetAccountForGcpRegistration, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.RegisterGcp = append(callOpts.RegisterGcp, gax.WithClientTracing(tracing))
+		callOpts.GetDeveloperRegistration = append(callOpts.GetDeveloperRegistration, gax.WithClientTracing(tracing))
+		callOpts.UnregisterGcp = append(callOpts.UnregisterGcp, gax.WithClientTracing(tracing))
+		callOpts.GetAccountForGcpRegistration = append(callOpts.GetAccountForGcpRegistration, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.RegisterGcp = append(callOpts.RegisterGcp, gax.WithClientLogging(logging))
+		callOpts.GetDeveloperRegistration = append(callOpts.GetDeveloperRegistration, gax.WithClientLogging(logging))
+		callOpts.UnregisterGcp = append(callOpts.UnregisterGcp, gax.WithClientLogging(logging))
+		callOpts.GetAccountForGcpRegistration = append(callOpts.GetAccountForGcpRegistration, gax.WithClientLogging(logging))
+	}
 
 	return &DeveloperRegistrationClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -344,7 +497,7 @@ func (c *developerRegistrationRESTClient) setGoogleClientInfo(keyval ...string) 
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *developerRegistrationRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -363,6 +516,9 @@ func (c *developerRegistrationGRPCClient) RegisterGcp(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1.DeveloperRegistrationService/RegisterGcp")
+	}
 	opts = append((*c.CallOptions).RegisterGcp[0:len((*c.CallOptions).RegisterGcp):len((*c.CallOptions).RegisterGcp)], opts...)
 	var resp *accountspb.DeveloperRegistration
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -381,6 +537,9 @@ func (c *developerRegistrationGRPCClient) GetDeveloperRegistration(ctx context.C
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1.DeveloperRegistrationService/GetDeveloperRegistration")
+	}
 	opts = append((*c.CallOptions).GetDeveloperRegistration[0:len((*c.CallOptions).GetDeveloperRegistration):len((*c.CallOptions).GetDeveloperRegistration)], opts...)
 	var resp *accountspb.DeveloperRegistration
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -399,6 +558,9 @@ func (c *developerRegistrationGRPCClient) UnregisterGcp(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1.DeveloperRegistrationService/UnregisterGcp")
+	}
 	opts = append((*c.CallOptions).UnregisterGcp[0:len((*c.CallOptions).UnregisterGcp):len((*c.CallOptions).UnregisterGcp)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -406,6 +568,24 @@ func (c *developerRegistrationGRPCClient) UnregisterGcp(ctx context.Context, req
 		return err
 	}, opts...)
 	return err
+}
+
+func (c *developerRegistrationGRPCClient) GetAccountForGcpRegistration(ctx context.Context, req *emptypb.Empty, opts ...gax.CallOption) (*accountspb.GetAccountForGcpRegistrationResponse, error) {
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1.DeveloperRegistrationService/GetAccountForGcpRegistration")
+	}
+	opts = append((*c.CallOptions).GetAccountForGcpRegistration[0:len((*c.CallOptions).GetAccountForGcpRegistration):len((*c.CallOptions).GetAccountForGcpRegistration)], opts...)
+	var resp *accountspb.GetAccountForGcpRegistrationResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.developerRegistrationClient.GetAccountForGcpRegistration, req, settings.GRPC, c.logger, "GetAccountForGcpRegistration")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 // RegisterGcp registers the GCP used for the API call to the shopping account passed in
@@ -436,6 +616,10 @@ func (c *developerRegistrationRESTClient) RegisterGcp(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1.DeveloperRegistrationService/RegisterGcp")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/accounts/v1/{name=accounts/*/developerRegistration}:registerGcp")
+	}
 	opts = append((*c.CallOptions).RegisterGcp[0:len((*c.CallOptions).RegisterGcp):len((*c.CallOptions).RegisterGcp)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &accountspb.DeveloperRegistration{}
@@ -486,6 +670,10 @@ func (c *developerRegistrationRESTClient) GetDeveloperRegistration(ctx context.C
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1.DeveloperRegistrationService/GetDeveloperRegistration")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/accounts/v1/{name=accounts/*/developerRegistration}")
+	}
 	opts = append((*c.CallOptions).GetDeveloperRegistration[0:len((*c.CallOptions).GetDeveloperRegistration):len((*c.CallOptions).GetDeveloperRegistration)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &accountspb.DeveloperRegistration{}
@@ -544,6 +732,10 @@ func (c *developerRegistrationRESTClient) UnregisterGcp(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1.DeveloperRegistrationService/UnregisterGcp")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/accounts/v1/{name=accounts/*/developerRegistration}:unregisterGcp")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -558,4 +750,55 @@ func (c *developerRegistrationRESTClient) UnregisterGcp(ctx context.Context, req
 		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UnregisterGcp")
 		return err
 	}, opts...)
+}
+
+// GetAccountForGcpRegistration retrieves the merchant account that the calling GCP is registered with.
+func (c *developerRegistrationRESTClient) GetAccountForGcpRegistration(ctx context.Context, req *emptypb.Empty, opts ...gax.CallOption) (*accountspb.GetAccountForGcpRegistrationResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/accounts/v1/accounts:getAccountForGcpRegistration")
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1.DeveloperRegistrationService/GetAccountForGcpRegistration")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/accounts/v1/accounts:getAccountForGcpRegistration")
+	}
+	opts = append((*c.CallOptions).GetAccountForGcpRegistration[0:len((*c.CallOptions).GetAccountForGcpRegistration):len((*c.CallOptions).GetAccountForGcpRegistration)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &accountspb.GetAccountForGcpRegistrationResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetAccountForGcpRegistration")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }

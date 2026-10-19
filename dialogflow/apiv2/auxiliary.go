@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,12 +18,14 @@ package dialogflow
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	dialogflowpb "cloud.google.com/go/dialogflow/apiv2/dialogflowpb"
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	structpb "google.golang.org/protobuf/types/known/structpb"
@@ -739,6 +741,70 @@ func (op *CreateDocumentOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *CreateDocumentOperation) Name() string {
+	return op.lro.Name()
+}
+
+// CreateGeneratorEvaluationOperation manages a long-running operation from CreateGeneratorEvaluation.
+type CreateGeneratorEvaluationOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *CreateGeneratorEvaluationOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*dialogflowpb.GeneratorEvaluation, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp dialogflowpb.GeneratorEvaluation
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *CreateGeneratorEvaluationOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*dialogflowpb.GeneratorEvaluation, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp dialogflowpb.GeneratorEvaluation
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *CreateGeneratorEvaluationOperation) Metadata() (*dialogflowpb.GeneratorEvaluationOperationMetadata, error) {
+	var meta dialogflowpb.GeneratorEvaluationOperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *CreateGeneratorEvaluationOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *CreateGeneratorEvaluationOperation) Name() string {
 	return op.lro.Name()
 }
 
@@ -1678,6 +1744,12 @@ func (op *UpdateDocumentOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AgentIterator) All() iter.Seq2[*dialogflowpb.Agent, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // AgentIterator manages a stream of *dialogflowpb.Agent.
 type AgentIterator struct {
 	items    []*dialogflowpb.Agent
@@ -1723,6 +1795,12 @@ func (it *AgentIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AnswerRecordIterator) All() iter.Seq2[*dialogflowpb.AnswerRecord, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // AnswerRecordIterator manages a stream of *dialogflowpb.AnswerRecord.
@@ -1772,6 +1850,65 @@ func (it *AnswerRecordIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CompanionAgentIterator) All() iter.Seq2[*dialogflowpb.CompanionAgent, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
+// CompanionAgentIterator manages a stream of *dialogflowpb.CompanionAgent.
+type CompanionAgentIterator struct {
+	items    []*dialogflowpb.CompanionAgent
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*dialogflowpb.CompanionAgent, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *CompanionAgentIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *CompanionAgentIterator) Next() (*dialogflowpb.CompanionAgent, error) {
+	var item *dialogflowpb.CompanionAgent
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *CompanionAgentIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *CompanionAgentIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ContextIterator) All() iter.Seq2[*dialogflowpb.Context, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ContextIterator manages a stream of *dialogflowpb.Context.
 type ContextIterator struct {
 	items    []*dialogflowpb.Context
@@ -1817,6 +1954,12 @@ func (it *ContextIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ConversationDatasetIterator) All() iter.Seq2[*dialogflowpb.ConversationDataset, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ConversationDatasetIterator manages a stream of *dialogflowpb.ConversationDataset.
@@ -1866,6 +2009,12 @@ func (it *ConversationDatasetIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ConversationIterator) All() iter.Seq2[*dialogflowpb.Conversation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ConversationIterator manages a stream of *dialogflowpb.Conversation.
 type ConversationIterator struct {
 	items    []*dialogflowpb.Conversation
@@ -1911,6 +2060,12 @@ func (it *ConversationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ConversationModelEvaluationIterator) All() iter.Seq2[*dialogflowpb.ConversationModelEvaluation, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ConversationModelEvaluationIterator manages a stream of *dialogflowpb.ConversationModelEvaluation.
@@ -1960,6 +2115,12 @@ func (it *ConversationModelEvaluationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ConversationModelIterator) All() iter.Seq2[*dialogflowpb.ConversationModel, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ConversationModelIterator manages a stream of *dialogflowpb.ConversationModel.
 type ConversationModelIterator struct {
 	items    []*dialogflowpb.ConversationModel
@@ -2005,6 +2166,12 @@ func (it *ConversationModelIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ConversationProfileIterator) All() iter.Seq2[*dialogflowpb.ConversationProfile, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ConversationProfileIterator manages a stream of *dialogflowpb.ConversationProfile.
@@ -2054,6 +2221,12 @@ func (it *ConversationProfileIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DocumentIterator) All() iter.Seq2[*dialogflowpb.Document, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // DocumentIterator manages a stream of *dialogflowpb.Document.
 type DocumentIterator struct {
 	items    []*dialogflowpb.Document
@@ -2099,6 +2272,12 @@ func (it *DocumentIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *EntityTypeIterator) All() iter.Seq2[*dialogflowpb.EntityType, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // EntityTypeIterator manages a stream of *dialogflowpb.EntityType.
@@ -2148,6 +2327,12 @@ func (it *EntityTypeIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *EnvironmentHistory_EntryIterator) All() iter.Seq2[*dialogflowpb.EnvironmentHistory_Entry, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // EnvironmentHistory_EntryIterator manages a stream of *dialogflowpb.EnvironmentHistory_Entry.
 type EnvironmentHistory_EntryIterator struct {
 	items    []*dialogflowpb.EnvironmentHistory_Entry
@@ -2193,6 +2378,12 @@ func (it *EnvironmentHistory_EntryIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *EnvironmentIterator) All() iter.Seq2[*dialogflowpb.Environment, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // EnvironmentIterator manages a stream of *dialogflowpb.Environment.
@@ -2242,6 +2433,65 @@ func (it *EnvironmentIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *GeneratorEvaluationIterator) All() iter.Seq2[*dialogflowpb.GeneratorEvaluation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
+// GeneratorEvaluationIterator manages a stream of *dialogflowpb.GeneratorEvaluation.
+type GeneratorEvaluationIterator struct {
+	items    []*dialogflowpb.GeneratorEvaluation
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*dialogflowpb.GeneratorEvaluation, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *GeneratorEvaluationIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *GeneratorEvaluationIterator) Next() (*dialogflowpb.GeneratorEvaluation, error) {
+	var item *dialogflowpb.GeneratorEvaluation
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *GeneratorEvaluationIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *GeneratorEvaluationIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *GeneratorIterator) All() iter.Seq2[*dialogflowpb.Generator, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // GeneratorIterator manages a stream of *dialogflowpb.Generator.
 type GeneratorIterator struct {
 	items    []*dialogflowpb.Generator
@@ -2287,6 +2537,12 @@ func (it *GeneratorIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *IntentIterator) All() iter.Seq2[*dialogflowpb.Intent, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // IntentIterator manages a stream of *dialogflowpb.Intent.
@@ -2336,6 +2592,12 @@ func (it *IntentIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *KnowledgeBaseIterator) All() iter.Seq2[*dialogflowpb.KnowledgeBase, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // KnowledgeBaseIterator manages a stream of *dialogflowpb.KnowledgeBase.
 type KnowledgeBaseIterator struct {
 	items    []*dialogflowpb.KnowledgeBase
@@ -2381,6 +2643,12 @@ func (it *KnowledgeBaseIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // LocationIterator manages a stream of *locationpb.Location.
@@ -2430,6 +2698,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *MessageIterator) All() iter.Seq2[*dialogflowpb.Message, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // MessageIterator manages a stream of *dialogflowpb.Message.
 type MessageIterator struct {
 	items    []*dialogflowpb.Message
@@ -2475,6 +2749,12 @@ func (it *MessageIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // OperationIterator manages a stream of *longrunningpb.Operation.
@@ -2524,6 +2804,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ParticipantIterator) All() iter.Seq2[*dialogflowpb.Participant, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ParticipantIterator manages a stream of *dialogflowpb.Participant.
 type ParticipantIterator struct {
 	items    []*dialogflowpb.Participant
@@ -2571,6 +2857,12 @@ func (it *ParticipantIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SessionEntityTypeIterator) All() iter.Seq2[*dialogflowpb.SessionEntityType, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // SessionEntityTypeIterator manages a stream of *dialogflowpb.SessionEntityType.
 type SessionEntityTypeIterator struct {
 	items    []*dialogflowpb.SessionEntityType
@@ -2616,6 +2908,118 @@ func (it *SessionEntityTypeIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SipTrunkIterator) All() iter.Seq2[*dialogflowpb.SipTrunk, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
+// SipTrunkIterator manages a stream of *dialogflowpb.SipTrunk.
+type SipTrunkIterator struct {
+	items    []*dialogflowpb.SipTrunk
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*dialogflowpb.SipTrunk, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *SipTrunkIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *SipTrunkIterator) Next() (*dialogflowpb.SipTrunk, error) {
+	var item *dialogflowpb.SipTrunk
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *SipTrunkIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *SipTrunkIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ToolIterator) All() iter.Seq2[*dialogflowpb.Tool, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
+// ToolIterator manages a stream of *dialogflowpb.Tool.
+type ToolIterator struct {
+	items    []*dialogflowpb.Tool
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*dialogflowpb.Tool, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *ToolIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *ToolIterator) Next() (*dialogflowpb.Tool, error) {
+	var item *dialogflowpb.Tool
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *ToolIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *ToolIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *VersionIterator) All() iter.Seq2[*dialogflowpb.Version, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // VersionIterator manages a stream of *dialogflowpb.Version.

@@ -1,5 +1,37 @@
 # Changes
 
+## [0.10.0](https://github.com/googleapis/google-cloud-go/compare/errorreporting/v0.9.0...errorreporting/v0.10.0) (2026-09-23)
+
+
+### Features
+
+* **all:** Update supported go versions ([#20520](https://github.com/googleapis/google-cloud-go/issues/20520)) ([90413d3](https://github.com/googleapis/google-cloud-go/commit/90413d3e9d381ef4b92e3c496d98b023c5b2d8cc))
+
+## [0.9.0](https://github.com/googleapis/google-cloud-go/releases/tag/errorreporting%2Fv0.9.0) (2026-05-07)
+
+## [0.8.0](https://github.com/googleapis/google-cloud-go/releases/tag/errorreporting%2Fv0.8.0) (2026-04-30)
+
+## [0.7.0](https://github.com/googleapis/google-cloud-go/releases/tag/errorreporting%2Fv0.7.0) (2026-04-13)
+
+## [0.6.0](https://github.com/googleapis/google-cloud-go/releases/tag/errorreporting%2Fv0.6.0) (2026-04-09)
+
+## [0.5.0](https://github.com/googleapis/google-cloud-go/releases/tag/errorreporting%2Fv0.5.0) (2026-04-02)
+
+## [0.4.0](https://github.com/googleapis/google-cloud-go/releases/tag/errorreporting%2Fv0.4.0) (2026-01-08)
+
+### Bug Fixes
+
+* update golang.org/x/net to 0.37.0 ([1144978](https://github.com/googleapis/google-cloud-go/commit/11449782c7fb4896bf8b8b9cde8e7441c84fb2fd))
+* update golang.org/x/net to v0.33.0 ([e9b0b69](https://github.com/googleapis/google-cloud-go/commit/e9b0b69644ea5b276cacff0a707e8a5e87efafc9))
+* update google.golang.org/api to 0.229.0 ([3319672](https://github.com/googleapis/google-cloud-go/commit/3319672f3dba84a7150772ccb5433e02dab7e201))
+* upgrade gRPC service registration func An update to Go gRPC Protobuf generation will change service registration function signatures to use an interface instead of a concrete type in generated .pb.go service files. This change should affect very few client library users. See release notes advisories in https://github.com/googleapis/google-cloud-go/pull/11025. ([a33d766](https://github.com/googleapis/google-cloud-go/commit/a33d766617dd6977a1179d58d9168177af4e1821))
+
+### Documentation
+
+* Removes references as a &#34;global-only&#34; service ([a33d766](https://github.com/googleapis/google-cloud-go/commit/a33d766617dd6977a1179d58d9168177af4e1821))
+* Updates documentation with regional resource names for multiple requests ([a33d766](https://github.com/googleapis/google-cloud-go/commit/a33d766617dd6977a1179d58d9168177af4e1821))
+* automated code change ([a33d766](https://github.com/googleapis/google-cloud-go/commit/a33d766617dd6977a1179d58d9168177af4e1821))
+
 ## [0.3.2](https://github.com/googleapis/google-cloud-go/compare/errorreporting/v0.3.1...errorreporting/v0.3.2) (2024-12-10)
 
 

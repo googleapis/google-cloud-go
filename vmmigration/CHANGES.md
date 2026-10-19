@@ -1,6 +1,42 @@
 # Changes
 
 
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/vmmigration/v1.16.0...vmmigration/v1.17.0) (2026-09-23)
+
+
+### Features
+
+* **all:** Update supported go versions ([#20520](https://github.com/googleapis/google-cloud-go/issues/20520)) ([90413d3](https://github.com/googleapis/google-cloud-go/commit/90413d3e9d381ef4b92e3c496d98b023c5b2d8cc))
+
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/vmmigration/v1.15.0...vmmigration/v1.16.0) (2026-07-13)
+
+
+### Features
+
+* **o11y:** Regenerate clients for LRO tracing ([#20107](https://github.com/googleapis/google-cloud-go/issues/20107)) ([779074e](https://github.com/googleapis/google-cloud-go/commit/779074edd267a26520bae459307660953129eb07))
+
+## [1.15.0](https://github.com/googleapis/google-cloud-go/releases/tag/vmmigration%2Fv1.15.0) (2026-05-07)
+
+## [1.14.0](https://github.com/googleapis/google-cloud-go/releases/tag/vmmigration%2Fv1.14.0) (2026-04-30)
+
+## [1.13.0](https://github.com/googleapis/google-cloud-go/releases/tag/vmmigration%2Fv1.13.0) (2026-04-13)
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/releases/tag/vmmigration%2Fv1.12.0) (2026-04-09)
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/releases/tag/vmmigration%2Fv1.11.0) (2026-04-02)
+
+## [1.10.0](https://github.com/googleapis/google-cloud-go/releases/tag/vmmigration%2Fv1.10.0) (2025-12-04)
+
+### Features
+
+* add adaptation modifiers and guest OS features to ImageImport target details ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* add adaptation modifiers and storage pools to MigratingVM target defaults ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+
+### Documentation
+
+* A comment for message `DataDiskImageImport` is changed ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+* A comment for method `CancelImageImportJob` in service `VmMigration` is changed ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
+
 ## [1.9.1](https://github.com/googleapis/google-cloud-go/compare/vmmigration/v1.9.0...vmmigration/v1.9.1) (2025-09-22)
 
 

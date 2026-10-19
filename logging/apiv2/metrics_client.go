@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import (
 	loggingpb "cloud.google.com/go/logging/apiv2/loggingpb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -63,6 +64,7 @@ func defaultMetricsGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://logging.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.AllowHardBoundTokens("MTLS_S2A"),
 		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -228,7 +230,7 @@ type MetricsClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *MetricsClient) Close() error {
 	return c.internalClient.Close()
@@ -239,6 +241,16 @@ func (c *MetricsClient) Close() error {
 // use by Google-written clients.
 func (c *MetricsClient) setGoogleClientInfo(keyval ...string) {
 	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// SetGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+//
+// SetGoogleClientInfo is not concurrency-safe and should only be invoked
+// sequentially before concurrent operations begin.
+func (c *MetricsClient) SetGoogleClientInfo(keyval ...string) {
+	c.setGoogleClientInfo(keyval...)
 }
 
 // Connection returns a connection to the API service.
@@ -316,6 +328,16 @@ type metricsGRPCClient struct {
 // Service for configuring logs-based metrics.
 func NewMetricsClient(ctx context.Context, opts ...option.ClientOption) (*MetricsClient, error) {
 	clientOpts := defaultMetricsGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "logging",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/logging/apiv2",
+			"gcp.client.language": "go",
+			"url.domain":          "logging.googleapis.com",
+		}))
+	}
 	if newMetricsClientHook != nil {
 		hookOpts, err := newMetricsClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -338,6 +360,68 @@ func NewMetricsClient(ctx context.Context, opts ...option.ClientOption) (*Metric
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "logging",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/logging/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "logging.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListLogMetrics = append(client.CallOptions.ListLogMetrics, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLogMetric = append(client.CallOptions.GetLogMetric, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateLogMetric = append(client.CallOptions.CreateLogMetric, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateLogMetric = append(client.CallOptions.UpdateLogMetric, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteLogMetric = append(client.CallOptions.DeleteLogMetric, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "logging",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/logging/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "logging.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListLogMetrics = append(client.CallOptions.ListLogMetrics, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLogMetric = append(client.CallOptions.GetLogMetric, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateLogMetric = append(client.CallOptions.CreateLogMetric, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateLogMetric = append(client.CallOptions.UpdateLogMetric, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteLogMetric = append(client.CallOptions.DeleteLogMetric, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "logging",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/logging/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "logging.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListLogMetrics = append(client.CallOptions.ListLogMetrics, gax.WithClientLogging(logging))
+		client.CallOptions.GetLogMetric = append(client.CallOptions.GetLogMetric, gax.WithClientLogging(logging))
+		client.CallOptions.CreateLogMetric = append(client.CallOptions.CreateLogMetric, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateLogMetric = append(client.CallOptions.UpdateLogMetric, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteLogMetric = append(client.CallOptions.DeleteLogMetric, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -363,7 +447,7 @@ func (c *metricsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *metricsGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -391,6 +475,16 @@ type metricsRESTClient struct {
 // Service for configuring logs-based metrics.
 func NewMetricsRESTClient(ctx context.Context, opts ...option.ClientOption) (*MetricsClient, error) {
 	clientOpts := append(defaultMetricsRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "logging",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/logging/apiv2",
+			"gcp.client.language": "go",
+			"url.domain":          "logging.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -404,6 +498,69 @@ func NewMetricsRESTClient(ctx context.Context, opts ...option.ClientOption) (*Me
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "logging",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/logging/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "logging.googleapis.com",
+			}),
+		)
+
+		callOpts.ListLogMetrics = append(callOpts.ListLogMetrics, gax.WithClientMetrics(metrics))
+		callOpts.GetLogMetric = append(callOpts.GetLogMetric, gax.WithClientMetrics(metrics))
+		callOpts.CreateLogMetric = append(callOpts.CreateLogMetric, gax.WithClientMetrics(metrics))
+		callOpts.UpdateLogMetric = append(callOpts.UpdateLogMetric, gax.WithClientMetrics(metrics))
+		callOpts.DeleteLogMetric = append(callOpts.DeleteLogMetric, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "logging",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/logging/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "logging.googleapis.com",
+			}),
+		)
+
+		callOpts.ListLogMetrics = append(callOpts.ListLogMetrics, gax.WithClientTracing(tracing))
+		callOpts.GetLogMetric = append(callOpts.GetLogMetric, gax.WithClientTracing(tracing))
+		callOpts.CreateLogMetric = append(callOpts.CreateLogMetric, gax.WithClientTracing(tracing))
+		callOpts.UpdateLogMetric = append(callOpts.UpdateLogMetric, gax.WithClientTracing(tracing))
+		callOpts.DeleteLogMetric = append(callOpts.DeleteLogMetric, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "logging",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/logging/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "logging.googleapis.com",
+			}),
+		)
+
+		callOpts.ListLogMetrics = append(callOpts.ListLogMetrics, gax.WithClientLogging(logging))
+		callOpts.GetLogMetric = append(callOpts.GetLogMetric, gax.WithClientLogging(logging))
+		callOpts.CreateLogMetric = append(callOpts.CreateLogMetric, gax.WithClientLogging(logging))
+		callOpts.UpdateLogMetric = append(callOpts.UpdateLogMetric, gax.WithClientLogging(logging))
+		callOpts.DeleteLogMetric = append(callOpts.DeleteLogMetric, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	return &MetricsClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -431,7 +588,7 @@ func (c *metricsRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *metricsRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -450,9 +607,12 @@ func (c *metricsGRPCClient) ListLogMetrics(ctx context.Context, req *loggingpb.L
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.logging.v2.MetricsServiceV2/ListLogMetrics")
+	}
 	opts = append((*c.CallOptions).ListLogMetrics[0:len((*c.CallOptions).ListLogMetrics):len((*c.CallOptions).ListLogMetrics)], opts...)
 	it := &LogMetricIterator{}
-	req = proto.Clone(req).(*loggingpb.ListLogMetricsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*loggingpb.LogMetric, string, error) {
 		resp := &loggingpb.ListLogMetricsResponse{}
 		if pageToken != "" {
@@ -496,6 +656,9 @@ func (c *metricsGRPCClient) GetLogMetric(ctx context.Context, req *loggingpb.Get
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.logging.v2.MetricsServiceV2/GetLogMetric")
+	}
 	opts = append((*c.CallOptions).GetLogMetric[0:len((*c.CallOptions).GetLogMetric):len((*c.CallOptions).GetLogMetric)], opts...)
 	var resp *loggingpb.LogMetric
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -514,6 +677,9 @@ func (c *metricsGRPCClient) CreateLogMetric(ctx context.Context, req *loggingpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.logging.v2.MetricsServiceV2/CreateLogMetric")
+	}
 	opts = append((*c.CallOptions).CreateLogMetric[0:len((*c.CallOptions).CreateLogMetric):len((*c.CallOptions).CreateLogMetric)], opts...)
 	var resp *loggingpb.LogMetric
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -532,6 +698,9 @@ func (c *metricsGRPCClient) UpdateLogMetric(ctx context.Context, req *loggingpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.logging.v2.MetricsServiceV2/UpdateLogMetric")
+	}
 	opts = append((*c.CallOptions).UpdateLogMetric[0:len((*c.CallOptions).UpdateLogMetric):len((*c.CallOptions).UpdateLogMetric)], opts...)
 	var resp *loggingpb.LogMetric
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -550,6 +719,9 @@ func (c *metricsGRPCClient) DeleteLogMetric(ctx context.Context, req *loggingpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.logging.v2.MetricsServiceV2/DeleteLogMetric")
+	}
 	opts = append((*c.CallOptions).DeleteLogMetric[0:len((*c.CallOptions).DeleteLogMetric):len((*c.CallOptions).DeleteLogMetric)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -564,6 +736,9 @@ func (c *metricsGRPCClient) CancelOperation(ctx context.Context, req *longrunnin
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -578,6 +753,9 @@ func (c *metricsGRPCClient) GetOperation(ctx context.Context, req *longrunningpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -596,9 +774,12 @@ func (c *metricsGRPCClient) ListOperations(ctx context.Context, req *longrunning
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -640,7 +821,7 @@ func (c *metricsGRPCClient) ListOperations(ctx context.Context, req *longrunning
 // ListLogMetrics lists logs-based metrics.
 func (c *metricsRESTClient) ListLogMetrics(ctx context.Context, req *loggingpb.ListLogMetricsRequest, opts ...gax.CallOption) *LogMetricIterator {
 	it := &LogMetricIterator{}
-	req = proto.Clone(req).(*loggingpb.ListLogMetricsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*loggingpb.LogMetric, string, error) {
 		resp := &loggingpb.ListLogMetricsResponse{}
@@ -734,6 +915,10 @@ func (c *metricsRESTClient) GetLogMetric(ctx context.Context, req *loggingpb.Get
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.logging.v2.MetricsServiceV2/GetLogMetric")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{metric_name=projects/*/metrics/*}")
+	}
 	opts = append((*c.CallOptions).GetLogMetric[0:len((*c.CallOptions).GetLogMetric):len((*c.CallOptions).GetLogMetric)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &loggingpb.LogMetric{}
@@ -791,6 +976,10 @@ func (c *metricsRESTClient) CreateLogMetric(ctx context.Context, req *loggingpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.logging.v2.MetricsServiceV2/CreateLogMetric")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{parent=projects/*}/metrics")
+	}
 	opts = append((*c.CallOptions).CreateLogMetric[0:len((*c.CallOptions).CreateLogMetric):len((*c.CallOptions).CreateLogMetric)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &loggingpb.LogMetric{}
@@ -848,6 +1037,10 @@ func (c *metricsRESTClient) UpdateLogMetric(ctx context.Context, req *loggingpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.logging.v2.MetricsServiceV2/UpdateLogMetric")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{metric_name=projects/*/metrics/*}")
+	}
 	opts = append((*c.CallOptions).UpdateLogMetric[0:len((*c.CallOptions).UpdateLogMetric):len((*c.CallOptions).UpdateLogMetric)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &loggingpb.LogMetric{}
@@ -898,6 +1091,10 @@ func (c *metricsRESTClient) DeleteLogMetric(ctx context.Context, req *loggingpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.logging.v2.MetricsServiceV2/DeleteLogMetric")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{metric_name=projects/*/metrics/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -939,6 +1136,10 @@ func (c *metricsRESTClient) CancelOperation(ctx context.Context, req *longrunnin
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=*/*/locations/*/operations/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -974,6 +1175,10 @@ func (c *metricsRESTClient) GetOperation(ctx context.Context, req *longrunningpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=*/*/locations/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -1008,7 +1213,7 @@ func (c *metricsRESTClient) GetOperation(ctx context.Context, req *longrunningpb
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *metricsRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
@@ -1036,6 +1241,9 @@ func (c *metricsRESTClient) ListOperations(ctx context.Context, req *longrunning
 		}
 		if req.GetPageToken() != "" {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req.GetReturnPartialSuccess() {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()

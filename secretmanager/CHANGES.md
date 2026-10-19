@@ -2,6 +2,28 @@
 
 
 
+## [1.22.0](https://github.com/googleapis/google-cloud-go/compare/secretmanager/v1.21.0...secretmanager/v1.22.0) (2026-09-23)
+
+
+### Features
+
+* **all:** Update supported go versions ([#20520](https://github.com/googleapis/google-cloud-go/issues/20520)) ([90413d3](https://github.com/googleapis/google-cloud-go/commit/90413d3e9d381ef4b92e3c496d98b023c5b2d8cc))
+
+## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/secretmanager/v1.20.0...secretmanager/v1.21.0) (2026-07-20)
+
+
+### Features
+
+* Update API sources and regenerate ([#20159](https://github.com/googleapis/google-cloud-go/issues/20159)) ([6395ba5](https://github.com/googleapis/google-cloud-go/commit/6395ba5d059d7e0d6ccfbf57b15d8d5ffcd70d0e))
+
+## [1.20.0](https://github.com/googleapis/google-cloud-go/releases/tag/secretmanager%2Fv1.20.0) (2026-04-30)
+
+## [1.19.0](https://github.com/googleapis/google-cloud-go/releases/tag/secretmanager%2Fv1.19.0) (2026-04-13)
+
+## [1.18.0](https://github.com/googleapis/google-cloud-go/releases/tag/secretmanager%2Fv1.18.0) (2026-04-08)
+
+## [1.17.0](https://github.com/googleapis/google-cloud-go/releases/tag/secretmanager%2Fv1.17.0) (2026-04-02)
+
 ## [1.16.0](https://github.com/googleapis/google-cloud-go/releases/tag/secretmanager%2Fv1.16.0) (2025-10-16)
 
 ### Features

@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,10 +26,13 @@ import (
 	"net/url"
 
 	dataplexpb "cloud.google.com/go/dataplex/apiv1/dataplexpb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -62,6 +65,9 @@ type BusinessGlossaryCallOptions struct {
 	ListGlossaryTerms      []gax.CallOption
 	GetLocation            []gax.CallOption
 	ListLocations          []gax.CallOption
+	GetIamPolicy           []gax.CallOption
+	SetIamPolicy           []gax.CallOption
+	TestIamPermissions     []gax.CallOption
 	CancelOperation        []gax.CallOption
 	DeleteOperation        []gax.CallOption
 	GetOperation           []gax.CallOption
@@ -102,6 +108,9 @@ func defaultBusinessGlossaryCallOptions() *BusinessGlossaryCallOptions {
 		ListGlossaryTerms:      []gax.CallOption{},
 		GetLocation:            []gax.CallOption{},
 		ListLocations:          []gax.CallOption{},
+		GetIamPolicy:           []gax.CallOption{},
+		SetIamPolicy:           []gax.CallOption{},
+		TestIamPermissions:     []gax.CallOption{},
 		CancelOperation:        []gax.CallOption{},
 		DeleteOperation:        []gax.CallOption{},
 		GetOperation:           []gax.CallOption{},
@@ -128,6 +137,9 @@ func defaultBusinessGlossaryRESTCallOptions() *BusinessGlossaryCallOptions {
 		ListGlossaryTerms:      []gax.CallOption{},
 		GetLocation:            []gax.CallOption{},
 		ListLocations:          []gax.CallOption{},
+		GetIamPolicy:           []gax.CallOption{},
+		SetIamPolicy:           []gax.CallOption{},
+		TestIamPermissions:     []gax.CallOption{},
 		CancelOperation:        []gax.CallOption{},
 		DeleteOperation:        []gax.CallOption{},
 		GetOperation:           []gax.CallOption{},
@@ -160,6 +172,9 @@ type internalBusinessGlossaryClient interface {
 	ListGlossaryTerms(context.Context, *dataplexpb.ListGlossaryTermsRequest, ...gax.CallOption) *GlossaryTermIterator
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
+	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
+	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
+	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
 	DeleteOperation(context.Context, *longrunningpb.DeleteOperationRequest, ...gax.CallOption) error
 	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
@@ -193,7 +208,7 @@ type BusinessGlossaryClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *BusinessGlossaryClient) Close() error {
 	return c.internalClient.Close()
@@ -316,8 +331,49 @@ func (c *BusinessGlossaryClient) GetLocation(ctx context.Context, req *locationp
 }
 
 // ListLocations lists information about the supported locations for this service.
+//
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
+//
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *BusinessGlossaryClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	return c.internalClient.ListLocations(ctx, req, opts...)
+}
+
+// GetIamPolicy gets the access control policy for a resource. Returns an empty policy
+// if the resource exists and does not have a policy set.
+func (c *BusinessGlossaryClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	return c.internalClient.GetIamPolicy(ctx, req, opts...)
+}
+
+// SetIamPolicy sets the access control policy on the specified resource. Replaces
+// any existing policy.
+//
+// Can return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED
+// errors.
+func (c *BusinessGlossaryClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	return c.internalClient.SetIamPolicy(ctx, req, opts...)
+}
+
+// TestIamPermissions returns permissions that a caller has on the specified resource. If the
+// resource does not exist, this will return an empty set of
+// permissions, not a NOT_FOUND error.
+//
+// Note: This operation is designed to be used for building
+// permission-aware UIs and command-line tools, not for authorization
+// checking. This operation may “fail open” without warning.
+func (c *BusinessGlossaryClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	return c.internalClient.TestIamPermissions(ctx, req, opts...)
 }
 
 // CancelOperation is a utility method from google.longrunning.Operations.
@@ -360,6 +416,8 @@ type businessGlossaryGRPCClient struct {
 
 	operationsClient longrunningpb.OperationsClient
 
+	iamPolicyClient iampb.IAMPolicyClient
+
 	locationsClient locationpb.LocationsClient
 
 	// The x-goog-* metadata to be sent with each request.
@@ -382,6 +440,16 @@ type businessGlossaryGRPCClient struct {
 // GlossaryTerm
 func NewBusinessGlossaryClient(ctx context.Context, opts ...option.ClientOption) (*BusinessGlossaryClient, error) {
 	clientOpts := defaultBusinessGlossaryGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "dataplex",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/dataplex/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "dataplex.googleapis.com",
+		}))
+	}
 	if newBusinessGlossaryClientHook != nil {
 		hookOpts, err := newBusinessGlossaryClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -402,9 +470,120 @@ func NewBusinessGlossaryClient(ctx context.Context, opts ...option.ClientOption)
 		CallOptions:            &client.CallOptions,
 		logger:                 internaloption.GetLogger(opts),
 		operationsClient:       longrunningpb.NewOperationsClient(connPool),
+		iamPolicyClient:        iampb.NewIAMPolicyClient(connPool),
 		locationsClient:        locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "dataplex",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dataplex/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "dataplex.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateGlossary = append(client.CallOptions.CreateGlossary, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateGlossary = append(client.CallOptions.UpdateGlossary, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteGlossary = append(client.CallOptions.DeleteGlossary, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetGlossary = append(client.CallOptions.GetGlossary, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListGlossaries = append(client.CallOptions.ListGlossaries, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateGlossaryCategory = append(client.CallOptions.CreateGlossaryCategory, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateGlossaryCategory = append(client.CallOptions.UpdateGlossaryCategory, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteGlossaryCategory = append(client.CallOptions.DeleteGlossaryCategory, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetGlossaryCategory = append(client.CallOptions.GetGlossaryCategory, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListGlossaryCategories = append(client.CallOptions.ListGlossaryCategories, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateGlossaryTerm = append(client.CallOptions.CreateGlossaryTerm, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateGlossaryTerm = append(client.CallOptions.UpdateGlossaryTerm, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteGlossaryTerm = append(client.CallOptions.DeleteGlossaryTerm, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetGlossaryTerm = append(client.CallOptions.GetGlossaryTerm, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListGlossaryTerms = append(client.CallOptions.ListGlossaryTerms, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "dataplex",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dataplex/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "dataplex.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateGlossary = append(client.CallOptions.CreateGlossary, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateGlossary = append(client.CallOptions.UpdateGlossary, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteGlossary = append(client.CallOptions.DeleteGlossary, gax.WithClientTracing(tracing))
+		client.CallOptions.GetGlossary = append(client.CallOptions.GetGlossary, gax.WithClientTracing(tracing))
+		client.CallOptions.ListGlossaries = append(client.CallOptions.ListGlossaries, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateGlossaryCategory = append(client.CallOptions.CreateGlossaryCategory, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateGlossaryCategory = append(client.CallOptions.UpdateGlossaryCategory, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteGlossaryCategory = append(client.CallOptions.DeleteGlossaryCategory, gax.WithClientTracing(tracing))
+		client.CallOptions.GetGlossaryCategory = append(client.CallOptions.GetGlossaryCategory, gax.WithClientTracing(tracing))
+		client.CallOptions.ListGlossaryCategories = append(client.CallOptions.ListGlossaryCategories, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateGlossaryTerm = append(client.CallOptions.CreateGlossaryTerm, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateGlossaryTerm = append(client.CallOptions.UpdateGlossaryTerm, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteGlossaryTerm = append(client.CallOptions.DeleteGlossaryTerm, gax.WithClientTracing(tracing))
+		client.CallOptions.GetGlossaryTerm = append(client.CallOptions.GetGlossaryTerm, gax.WithClientTracing(tracing))
+		client.CallOptions.ListGlossaryTerms = append(client.CallOptions.ListGlossaryTerms, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "dataplex",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dataplex/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "dataplex.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateGlossary = append(client.CallOptions.CreateGlossary, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateGlossary = append(client.CallOptions.UpdateGlossary, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteGlossary = append(client.CallOptions.DeleteGlossary, gax.WithClientLogging(logging))
+		client.CallOptions.GetGlossary = append(client.CallOptions.GetGlossary, gax.WithClientLogging(logging))
+		client.CallOptions.ListGlossaries = append(client.CallOptions.ListGlossaries, gax.WithClientLogging(logging))
+		client.CallOptions.CreateGlossaryCategory = append(client.CallOptions.CreateGlossaryCategory, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateGlossaryCategory = append(client.CallOptions.UpdateGlossaryCategory, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteGlossaryCategory = append(client.CallOptions.DeleteGlossaryCategory, gax.WithClientLogging(logging))
+		client.CallOptions.GetGlossaryCategory = append(client.CallOptions.GetGlossaryCategory, gax.WithClientLogging(logging))
+		client.CallOptions.ListGlossaryCategories = append(client.CallOptions.ListGlossaryCategories, gax.WithClientLogging(logging))
+		client.CallOptions.CreateGlossaryTerm = append(client.CallOptions.CreateGlossaryTerm, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateGlossaryTerm = append(client.CallOptions.UpdateGlossaryTerm, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteGlossaryTerm = append(client.CallOptions.DeleteGlossaryTerm, gax.WithClientLogging(logging))
+		client.CallOptions.GetGlossaryTerm = append(client.CallOptions.GetGlossaryTerm, gax.WithClientLogging(logging))
+		client.CallOptions.ListGlossaryTerms = append(client.CallOptions.ListGlossaryTerms, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -441,7 +620,7 @@ func (c *businessGlossaryGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *businessGlossaryGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -482,6 +661,16 @@ type businessGlossaryRESTClient struct {
 // GlossaryTerm
 func NewBusinessGlossaryRESTClient(ctx context.Context, opts ...option.ClientOption) (*BusinessGlossaryClient, error) {
 	clientOpts := append(defaultBusinessGlossaryRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "dataplex",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/dataplex/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "dataplex.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -495,6 +684,117 @@ func NewBusinessGlossaryRESTClient(ctx context.Context, opts ...option.ClientOpt
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "dataplex",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dataplex/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "dataplex.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateGlossary = append(callOpts.CreateGlossary, gax.WithClientMetrics(metrics))
+		callOpts.UpdateGlossary = append(callOpts.UpdateGlossary, gax.WithClientMetrics(metrics))
+		callOpts.DeleteGlossary = append(callOpts.DeleteGlossary, gax.WithClientMetrics(metrics))
+		callOpts.GetGlossary = append(callOpts.GetGlossary, gax.WithClientMetrics(metrics))
+		callOpts.ListGlossaries = append(callOpts.ListGlossaries, gax.WithClientMetrics(metrics))
+		callOpts.CreateGlossaryCategory = append(callOpts.CreateGlossaryCategory, gax.WithClientMetrics(metrics))
+		callOpts.UpdateGlossaryCategory = append(callOpts.UpdateGlossaryCategory, gax.WithClientMetrics(metrics))
+		callOpts.DeleteGlossaryCategory = append(callOpts.DeleteGlossaryCategory, gax.WithClientMetrics(metrics))
+		callOpts.GetGlossaryCategory = append(callOpts.GetGlossaryCategory, gax.WithClientMetrics(metrics))
+		callOpts.ListGlossaryCategories = append(callOpts.ListGlossaryCategories, gax.WithClientMetrics(metrics))
+		callOpts.CreateGlossaryTerm = append(callOpts.CreateGlossaryTerm, gax.WithClientMetrics(metrics))
+		callOpts.UpdateGlossaryTerm = append(callOpts.UpdateGlossaryTerm, gax.WithClientMetrics(metrics))
+		callOpts.DeleteGlossaryTerm = append(callOpts.DeleteGlossaryTerm, gax.WithClientMetrics(metrics))
+		callOpts.GetGlossaryTerm = append(callOpts.GetGlossaryTerm, gax.WithClientMetrics(metrics))
+		callOpts.ListGlossaryTerms = append(callOpts.ListGlossaryTerms, gax.WithClientMetrics(metrics))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "dataplex",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dataplex/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "dataplex.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateGlossary = append(callOpts.CreateGlossary, gax.WithClientTracing(tracing))
+		callOpts.UpdateGlossary = append(callOpts.UpdateGlossary, gax.WithClientTracing(tracing))
+		callOpts.DeleteGlossary = append(callOpts.DeleteGlossary, gax.WithClientTracing(tracing))
+		callOpts.GetGlossary = append(callOpts.GetGlossary, gax.WithClientTracing(tracing))
+		callOpts.ListGlossaries = append(callOpts.ListGlossaries, gax.WithClientTracing(tracing))
+		callOpts.CreateGlossaryCategory = append(callOpts.CreateGlossaryCategory, gax.WithClientTracing(tracing))
+		callOpts.UpdateGlossaryCategory = append(callOpts.UpdateGlossaryCategory, gax.WithClientTracing(tracing))
+		callOpts.DeleteGlossaryCategory = append(callOpts.DeleteGlossaryCategory, gax.WithClientTracing(tracing))
+		callOpts.GetGlossaryCategory = append(callOpts.GetGlossaryCategory, gax.WithClientTracing(tracing))
+		callOpts.ListGlossaryCategories = append(callOpts.ListGlossaryCategories, gax.WithClientTracing(tracing))
+		callOpts.CreateGlossaryTerm = append(callOpts.CreateGlossaryTerm, gax.WithClientTracing(tracing))
+		callOpts.UpdateGlossaryTerm = append(callOpts.UpdateGlossaryTerm, gax.WithClientTracing(tracing))
+		callOpts.DeleteGlossaryTerm = append(callOpts.DeleteGlossaryTerm, gax.WithClientTracing(tracing))
+		callOpts.GetGlossaryTerm = append(callOpts.GetGlossaryTerm, gax.WithClientTracing(tracing))
+		callOpts.ListGlossaryTerms = append(callOpts.ListGlossaryTerms, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "dataplex",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dataplex/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "dataplex.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateGlossary = append(callOpts.CreateGlossary, gax.WithClientLogging(logging))
+		callOpts.UpdateGlossary = append(callOpts.UpdateGlossary, gax.WithClientLogging(logging))
+		callOpts.DeleteGlossary = append(callOpts.DeleteGlossary, gax.WithClientLogging(logging))
+		callOpts.GetGlossary = append(callOpts.GetGlossary, gax.WithClientLogging(logging))
+		callOpts.ListGlossaries = append(callOpts.ListGlossaries, gax.WithClientLogging(logging))
+		callOpts.CreateGlossaryCategory = append(callOpts.CreateGlossaryCategory, gax.WithClientLogging(logging))
+		callOpts.UpdateGlossaryCategory = append(callOpts.UpdateGlossaryCategory, gax.WithClientLogging(logging))
+		callOpts.DeleteGlossaryCategory = append(callOpts.DeleteGlossaryCategory, gax.WithClientLogging(logging))
+		callOpts.GetGlossaryCategory = append(callOpts.GetGlossaryCategory, gax.WithClientLogging(logging))
+		callOpts.ListGlossaryCategories = append(callOpts.ListGlossaryCategories, gax.WithClientLogging(logging))
+		callOpts.CreateGlossaryTerm = append(callOpts.CreateGlossaryTerm, gax.WithClientLogging(logging))
+		callOpts.UpdateGlossaryTerm = append(callOpts.UpdateGlossaryTerm, gax.WithClientLogging(logging))
+		callOpts.DeleteGlossaryTerm = append(callOpts.DeleteGlossaryTerm, gax.WithClientLogging(logging))
+		callOpts.GetGlossaryTerm = append(callOpts.GetGlossaryTerm, gax.WithClientLogging(logging))
+		callOpts.ListGlossaryTerms = append(callOpts.ListGlossaryTerms, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -532,7 +832,7 @@ func (c *businessGlossaryRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *businessGlossaryRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -551,6 +851,9 @@ func (c *businessGlossaryGRPCClient) CreateGlossary(ctx context.Context, req *da
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataplex.v1.BusinessGlossaryService/CreateGlossary")
+	}
 	opts = append((*c.CallOptions).CreateGlossary[0:len((*c.CallOptions).CreateGlossary):len((*c.CallOptions).CreateGlossary)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -561,8 +864,12 @@ func (c *businessGlossaryGRPCClient) CreateGlossary(ctx context.Context, req *da
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.CreateGlossaryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateGlossaryOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -571,6 +878,9 @@ func (c *businessGlossaryGRPCClient) UpdateGlossary(ctx context.Context, req *da
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataplex.v1.BusinessGlossaryService/UpdateGlossary")
+	}
 	opts = append((*c.CallOptions).UpdateGlossary[0:len((*c.CallOptions).UpdateGlossary):len((*c.CallOptions).UpdateGlossary)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -581,8 +891,12 @@ func (c *businessGlossaryGRPCClient) UpdateGlossary(ctx context.Context, req *da
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.UpdateGlossaryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateGlossaryOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -591,6 +905,9 @@ func (c *businessGlossaryGRPCClient) DeleteGlossary(ctx context.Context, req *da
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataplex.v1.BusinessGlossaryService/DeleteGlossary")
+	}
 	opts = append((*c.CallOptions).DeleteGlossary[0:len((*c.CallOptions).DeleteGlossary):len((*c.CallOptions).DeleteGlossary)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -601,8 +918,12 @@ func (c *businessGlossaryGRPCClient) DeleteGlossary(ctx context.Context, req *da
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.DeleteGlossaryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteGlossaryOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -611,6 +932,9 @@ func (c *businessGlossaryGRPCClient) GetGlossary(ctx context.Context, req *datap
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataplex.v1.BusinessGlossaryService/GetGlossary")
+	}
 	opts = append((*c.CallOptions).GetGlossary[0:len((*c.CallOptions).GetGlossary):len((*c.CallOptions).GetGlossary)], opts...)
 	var resp *dataplexpb.Glossary
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -629,9 +953,12 @@ func (c *businessGlossaryGRPCClient) ListGlossaries(ctx context.Context, req *da
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataplex.v1.BusinessGlossaryService/ListGlossaries")
+	}
 	opts = append((*c.CallOptions).ListGlossaries[0:len((*c.CallOptions).ListGlossaries):len((*c.CallOptions).ListGlossaries)], opts...)
 	it := &GlossaryIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListGlossariesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.Glossary, string, error) {
 		resp := &dataplexpb.ListGlossariesResponse{}
 		if pageToken != "" {
@@ -675,6 +1002,9 @@ func (c *businessGlossaryGRPCClient) CreateGlossaryCategory(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataplex.v1.BusinessGlossaryService/CreateGlossaryCategory")
+	}
 	opts = append((*c.CallOptions).CreateGlossaryCategory[0:len((*c.CallOptions).CreateGlossaryCategory):len((*c.CallOptions).CreateGlossaryCategory)], opts...)
 	var resp *dataplexpb.GlossaryCategory
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -693,6 +1023,9 @@ func (c *businessGlossaryGRPCClient) UpdateGlossaryCategory(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataplex.v1.BusinessGlossaryService/UpdateGlossaryCategory")
+	}
 	opts = append((*c.CallOptions).UpdateGlossaryCategory[0:len((*c.CallOptions).UpdateGlossaryCategory):len((*c.CallOptions).UpdateGlossaryCategory)], opts...)
 	var resp *dataplexpb.GlossaryCategory
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -711,6 +1044,9 @@ func (c *businessGlossaryGRPCClient) DeleteGlossaryCategory(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataplex.v1.BusinessGlossaryService/DeleteGlossaryCategory")
+	}
 	opts = append((*c.CallOptions).DeleteGlossaryCategory[0:len((*c.CallOptions).DeleteGlossaryCategory):len((*c.CallOptions).DeleteGlossaryCategory)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -725,6 +1061,9 @@ func (c *businessGlossaryGRPCClient) GetGlossaryCategory(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataplex.v1.BusinessGlossaryService/GetGlossaryCategory")
+	}
 	opts = append((*c.CallOptions).GetGlossaryCategory[0:len((*c.CallOptions).GetGlossaryCategory):len((*c.CallOptions).GetGlossaryCategory)], opts...)
 	var resp *dataplexpb.GlossaryCategory
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -743,9 +1082,12 @@ func (c *businessGlossaryGRPCClient) ListGlossaryCategories(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataplex.v1.BusinessGlossaryService/ListGlossaryCategories")
+	}
 	opts = append((*c.CallOptions).ListGlossaryCategories[0:len((*c.CallOptions).ListGlossaryCategories):len((*c.CallOptions).ListGlossaryCategories)], opts...)
 	it := &GlossaryCategoryIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListGlossaryCategoriesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.GlossaryCategory, string, error) {
 		resp := &dataplexpb.ListGlossaryCategoriesResponse{}
 		if pageToken != "" {
@@ -789,6 +1131,9 @@ func (c *businessGlossaryGRPCClient) CreateGlossaryTerm(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataplex.v1.BusinessGlossaryService/CreateGlossaryTerm")
+	}
 	opts = append((*c.CallOptions).CreateGlossaryTerm[0:len((*c.CallOptions).CreateGlossaryTerm):len((*c.CallOptions).CreateGlossaryTerm)], opts...)
 	var resp *dataplexpb.GlossaryTerm
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -807,6 +1152,9 @@ func (c *businessGlossaryGRPCClient) UpdateGlossaryTerm(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataplex.v1.BusinessGlossaryService/UpdateGlossaryTerm")
+	}
 	opts = append((*c.CallOptions).UpdateGlossaryTerm[0:len((*c.CallOptions).UpdateGlossaryTerm):len((*c.CallOptions).UpdateGlossaryTerm)], opts...)
 	var resp *dataplexpb.GlossaryTerm
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -825,6 +1173,9 @@ func (c *businessGlossaryGRPCClient) DeleteGlossaryTerm(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataplex.v1.BusinessGlossaryService/DeleteGlossaryTerm")
+	}
 	opts = append((*c.CallOptions).DeleteGlossaryTerm[0:len((*c.CallOptions).DeleteGlossaryTerm):len((*c.CallOptions).DeleteGlossaryTerm)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -839,6 +1190,9 @@ func (c *businessGlossaryGRPCClient) GetGlossaryTerm(ctx context.Context, req *d
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataplex.v1.BusinessGlossaryService/GetGlossaryTerm")
+	}
 	opts = append((*c.CallOptions).GetGlossaryTerm[0:len((*c.CallOptions).GetGlossaryTerm):len((*c.CallOptions).GetGlossaryTerm)], opts...)
 	var resp *dataplexpb.GlossaryTerm
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -857,9 +1211,12 @@ func (c *businessGlossaryGRPCClient) ListGlossaryTerms(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataplex.v1.BusinessGlossaryService/ListGlossaryTerms")
+	}
 	opts = append((*c.CallOptions).ListGlossaryTerms[0:len((*c.CallOptions).ListGlossaryTerms):len((*c.CallOptions).ListGlossaryTerms)], opts...)
 	it := &GlossaryTermIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListGlossaryTermsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.GlossaryTerm, string, error) {
 		resp := &dataplexpb.ListGlossaryTermsResponse{}
 		if pageToken != "" {
@@ -903,6 +1260,9 @@ func (c *businessGlossaryGRPCClient) GetLocation(ctx context.Context, req *locat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -921,9 +1281,12 @@ func (c *businessGlossaryGRPCClient) ListLocations(ctx context.Context, req *loc
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/ListLocations")
+	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -962,11 +1325,77 @@ func (c *businessGlossaryGRPCClient) ListLocations(ctx context.Context, req *loc
 	return it
 }
 
+func (c *businessGlossaryGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
+	}
+	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
+	var resp *iampb.Policy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.iamPolicyClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *businessGlossaryGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
+	}
+	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
+	var resp *iampb.Policy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.iamPolicyClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *businessGlossaryGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
+	}
+	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
+	var resp *iampb.TestIamPermissionsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.iamPolicyClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *businessGlossaryGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -981,6 +1410,9 @@ func (c *businessGlossaryGRPCClient) DeleteOperation(ctx context.Context, req *l
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+	}
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -995,6 +1427,9 @@ func (c *businessGlossaryGRPCClient) GetOperation(ctx context.Context, req *long
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1013,9 +1448,12 @@ func (c *businessGlossaryGRPCClient) ListOperations(ctx context.Context, req *lo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1084,6 +1522,10 @@ func (c *businessGlossaryRESTClient) CreateGlossary(ctx context.Context, req *da
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataplex.v1.BusinessGlossaryService/CreateGlossary")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/glossaries")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1112,8 +1554,12 @@ func (c *businessGlossaryRESTClient) CreateGlossary(ctx context.Context, req *da
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.CreateGlossaryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateGlossaryOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1154,6 +1600,10 @@ func (c *businessGlossaryRESTClient) UpdateGlossary(ctx context.Context, req *da
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataplex.v1.BusinessGlossaryService/UpdateGlossary")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{glossary.name=projects/*/locations/*/glossaries/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1182,8 +1632,12 @@ func (c *businessGlossaryRESTClient) UpdateGlossary(ctx context.Context, req *da
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.UpdateGlossaryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateGlossaryOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1211,6 +1665,10 @@ func (c *businessGlossaryRESTClient) DeleteGlossary(ctx context.Context, req *da
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataplex.v1.BusinessGlossaryService/DeleteGlossary")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/glossaries/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1239,8 +1697,12 @@ func (c *businessGlossaryRESTClient) DeleteGlossary(ctx context.Context, req *da
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataplex.DeleteGlossaryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteGlossaryOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1264,6 +1726,10 @@ func (c *businessGlossaryRESTClient) GetGlossary(ctx context.Context, req *datap
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataplex.v1.BusinessGlossaryService/GetGlossary")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/glossaries/*}")
+	}
 	opts = append((*c.CallOptions).GetGlossary[0:len((*c.CallOptions).GetGlossary):len((*c.CallOptions).GetGlossary)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataplexpb.Glossary{}
@@ -1298,7 +1764,7 @@ func (c *businessGlossaryRESTClient) GetGlossary(ctx context.Context, req *datap
 // ListGlossaries lists Glossary resources in a project and location.
 func (c *businessGlossaryRESTClient) ListGlossaries(ctx context.Context, req *dataplexpb.ListGlossariesRequest, opts ...gax.CallOption) *GlossaryIterator {
 	it := &GlossaryIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListGlossariesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.Glossary, string, error) {
 		resp := &dataplexpb.ListGlossariesResponse{}
@@ -1406,6 +1872,10 @@ func (c *businessGlossaryRESTClient) CreateGlossaryCategory(ctx context.Context,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataplex.v1.BusinessGlossaryService/CreateGlossaryCategory")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/glossaries/*}/categories")
+	}
 	opts = append((*c.CallOptions).CreateGlossaryCategory[0:len((*c.CallOptions).CreateGlossaryCategory):len((*c.CallOptions).CreateGlossaryCategory)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataplexpb.GlossaryCategory{}
@@ -1470,6 +1940,10 @@ func (c *businessGlossaryRESTClient) UpdateGlossaryCategory(ctx context.Context,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataplex.v1.BusinessGlossaryService/UpdateGlossaryCategory")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{category.name=projects/*/locations/*/glossaries/*/categories/*}")
+	}
 	opts = append((*c.CallOptions).UpdateGlossaryCategory[0:len((*c.CallOptions).UpdateGlossaryCategory):len((*c.CallOptions).UpdateGlossaryCategory)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataplexpb.GlossaryCategory{}
@@ -1522,6 +1996,10 @@ func (c *businessGlossaryRESTClient) DeleteGlossaryCategory(ctx context.Context,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataplex.v1.BusinessGlossaryService/DeleteGlossaryCategory")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/glossaries/*/categories/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1557,6 +2035,10 @@ func (c *businessGlossaryRESTClient) GetGlossaryCategory(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataplex.v1.BusinessGlossaryService/GetGlossaryCategory")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/glossaries/*/categories/*}")
+	}
 	opts = append((*c.CallOptions).GetGlossaryCategory[0:len((*c.CallOptions).GetGlossaryCategory):len((*c.CallOptions).GetGlossaryCategory)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataplexpb.GlossaryCategory{}
@@ -1591,7 +2073,7 @@ func (c *businessGlossaryRESTClient) GetGlossaryCategory(ctx context.Context, re
 // ListGlossaryCategories lists GlossaryCategory resources in a Glossary.
 func (c *businessGlossaryRESTClient) ListGlossaryCategories(ctx context.Context, req *dataplexpb.ListGlossaryCategoriesRequest, opts ...gax.CallOption) *GlossaryCategoryIterator {
 	it := &GlossaryCategoryIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListGlossaryCategoriesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.GlossaryCategory, string, error) {
 		resp := &dataplexpb.ListGlossaryCategoriesResponse{}
@@ -1699,6 +2181,10 @@ func (c *businessGlossaryRESTClient) CreateGlossaryTerm(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataplex.v1.BusinessGlossaryService/CreateGlossaryTerm")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/glossaries/*}/terms")
+	}
 	opts = append((*c.CallOptions).CreateGlossaryTerm[0:len((*c.CallOptions).CreateGlossaryTerm):len((*c.CallOptions).CreateGlossaryTerm)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataplexpb.GlossaryTerm{}
@@ -1763,6 +2249,10 @@ func (c *businessGlossaryRESTClient) UpdateGlossaryTerm(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataplex.v1.BusinessGlossaryService/UpdateGlossaryTerm")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{term.name=projects/*/locations/*/glossaries/*/terms/*}")
+	}
 	opts = append((*c.CallOptions).UpdateGlossaryTerm[0:len((*c.CallOptions).UpdateGlossaryTerm):len((*c.CallOptions).UpdateGlossaryTerm)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataplexpb.GlossaryTerm{}
@@ -1813,6 +2303,10 @@ func (c *businessGlossaryRESTClient) DeleteGlossaryTerm(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataplex.v1.BusinessGlossaryService/DeleteGlossaryTerm")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/glossaries/*/terms/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1848,6 +2342,10 @@ func (c *businessGlossaryRESTClient) GetGlossaryTerm(ctx context.Context, req *d
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataplex.v1.BusinessGlossaryService/GetGlossaryTerm")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/glossaries/*/terms/*}")
+	}
 	opts = append((*c.CallOptions).GetGlossaryTerm[0:len((*c.CallOptions).GetGlossaryTerm):len((*c.CallOptions).GetGlossaryTerm)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataplexpb.GlossaryTerm{}
@@ -1882,7 +2380,7 @@ func (c *businessGlossaryRESTClient) GetGlossaryTerm(ctx context.Context, req *d
 // ListGlossaryTerms lists GlossaryTerm resources in a Glossary.
 func (c *businessGlossaryRESTClient) ListGlossaryTerms(ctx context.Context, req *dataplexpb.ListGlossaryTermsRequest, opts ...gax.CallOption) *GlossaryTermIterator {
 	it := &GlossaryTermIterator{}
-	req = proto.Clone(req).(*dataplexpb.ListGlossaryTermsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.GlossaryTerm, string, error) {
 		resp := &dataplexpb.ListGlossaryTermsResponse{}
@@ -1982,6 +2480,10 @@ func (c *businessGlossaryRESTClient) GetLocation(ctx context.Context, req *locat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*}")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &locationpb.Location{}
@@ -2014,9 +2516,24 @@ func (c *businessGlossaryRESTClient) GetLocation(ctx context.Context, req *locat
 }
 
 // ListLocations lists information about the supported locations for this service.
+//
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
+//
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *businessGlossaryRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -2094,6 +2611,194 @@ func (c *businessGlossaryRESTClient) ListLocations(ctx context.Context, req *loc
 	return it
 }
 
+// GetIamPolicy gets the access control policy for a resource. Returns an empty policy
+// if the resource exists and does not have a policy set.
+func (c *businessGlossaryRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:getIamPolicy", req.GetResource())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetOptions().GetRequestedPolicyVersion() != 0 {
+		params.Add("options.requestedPolicyVersion", fmt.Sprintf("%v", req.GetOptions().GetRequestedPolicyVersion()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/lakes/*}:getIamPolicy")
+	}
+	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &iampb.Policy{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetIamPolicy")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// SetIamPolicy sets the access control policy on the specified resource. Replaces
+// any existing policy.
+//
+// Can return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED
+// errors.
+func (c *businessGlossaryRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:setIamPolicy", req.GetResource())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/lakes/*}:setIamPolicy")
+	}
+	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &iampb.Policy{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetIamPolicy")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// TestIamPermissions returns permissions that a caller has on the specified resource. If the
+// resource does not exist, this will return an empty set of
+// permissions, not a NOT_FOUND error.
+//
+// Note: This operation is designed to be used for building
+// permission-aware UIs and command-line tools, not for authorization
+// checking. This operation may “fail open” without warning.
+func (c *businessGlossaryRESTClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:testIamPermissions", req.GetResource())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/lakes/*}:testIamPermissions")
+	}
+	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &iampb.TestIamPermissionsResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TestIamPermissions")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // CancelOperation is a utility method from google.longrunning.Operations.
 func (c *businessGlossaryRESTClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -2119,6 +2824,10 @@ func (c *businessGlossaryRESTClient) CancelOperation(ctx context.Context, req *l
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2154,6 +2863,10 @@ func (c *businessGlossaryRESTClient) DeleteOperation(ctx context.Context, req *l
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2189,6 +2902,10 @@ func (c *businessGlossaryRESTClient) GetOperation(ctx context.Context, req *long
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -2223,7 +2940,7 @@ func (c *businessGlossaryRESTClient) GetOperation(ctx context.Context, req *long
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *businessGlossaryRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
@@ -2251,6 +2968,9 @@ func (c *businessGlossaryRESTClient) ListOperations(ctx context.Context, req *lo
 		}
 		if req.GetPageToken() != "" {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req.GetReturnPartialSuccess() {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -2305,7 +3025,7 @@ func (c *businessGlossaryRESTClient) ListOperations(ctx context.Context, req *lo
 // The name must be that of a previously created CreateGlossaryOperation, possibly from a different process.
 func (c *businessGlossaryGRPCClient) CreateGlossaryOperation(name string) *CreateGlossaryOperation {
 	return &CreateGlossaryOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.CreateGlossaryOperation"),
 	}
 }
 
@@ -2314,7 +3034,7 @@ func (c *businessGlossaryGRPCClient) CreateGlossaryOperation(name string) *Creat
 func (c *businessGlossaryRESTClient) CreateGlossaryOperation(name string) *CreateGlossaryOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateGlossaryOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.CreateGlossaryOperation"),
 		pollPath: override,
 	}
 }
@@ -2323,7 +3043,7 @@ func (c *businessGlossaryRESTClient) CreateGlossaryOperation(name string) *Creat
 // The name must be that of a previously created DeleteGlossaryOperation, possibly from a different process.
 func (c *businessGlossaryGRPCClient) DeleteGlossaryOperation(name string) *DeleteGlossaryOperation {
 	return &DeleteGlossaryOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.DeleteGlossaryOperation"),
 	}
 }
 
@@ -2332,7 +3052,7 @@ func (c *businessGlossaryGRPCClient) DeleteGlossaryOperation(name string) *Delet
 func (c *businessGlossaryRESTClient) DeleteGlossaryOperation(name string) *DeleteGlossaryOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteGlossaryOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.DeleteGlossaryOperation"),
 		pollPath: override,
 	}
 }
@@ -2341,7 +3061,7 @@ func (c *businessGlossaryRESTClient) DeleteGlossaryOperation(name string) *Delet
 // The name must be that of a previously created UpdateGlossaryOperation, possibly from a different process.
 func (c *businessGlossaryGRPCClient) UpdateGlossaryOperation(name string) *UpdateGlossaryOperation {
 	return &UpdateGlossaryOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.UpdateGlossaryOperation"),
 	}
 }
 
@@ -2350,7 +3070,7 @@ func (c *businessGlossaryGRPCClient) UpdateGlossaryOperation(name string) *Updat
 func (c *businessGlossaryRESTClient) UpdateGlossaryOperation(name string) *UpdateGlossaryOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateGlossaryOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataplex.UpdateGlossaryOperation"),
 		pollPath: override,
 	}
 }

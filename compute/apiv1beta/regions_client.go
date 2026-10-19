@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import (
 
 	computepb "cloud.google.com/go/compute/apiv1beta/computepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -73,7 +74,7 @@ func defaultRegionsRESTCallOptions() *RegionsCallOptions {
 	}
 }
 
-// internalRegionsClient is an interface that defines the methods available from Google Compute Engine API.
+// internalRegionsClient is an interface that defines the methods available from Compute Engine API.
 type internalRegionsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -82,7 +83,7 @@ type internalRegionsClient interface {
 	List(context.Context, *computepb.ListRegionsRequest, ...gax.CallOption) *RegionIterator
 }
 
-// RegionsClient is a client for interacting with Google Compute Engine API.
+// RegionsClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The Regions API.
@@ -96,7 +97,7 @@ type RegionsClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *RegionsClient) Close() error {
 	return c.internalClient.Close()
@@ -117,12 +118,47 @@ func (c *RegionsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// Get returns the specified Region resource. To decrease latency for this method, you can optionally omit any unneeded information from the response by using a field mask. This practice is especially recommended for unused quota information (the quotas field). To exclude one or more fields, set your request’s fields query parameter to only include the fields you need. For example, to only include the id and selfLink fields, add the query parameter ?fields=id,selfLink to your request. This method fails if the quota information is unavailable for the region and if the organization policy constraint compute.requireBasicQuotaInResponse is enforced. This constraint, when enforced, disables the fail-open behaviour when quota information (the items.quotas field) is unavailable for the region. It is recommended to use the default setting for the constraint unless your application requires the fail-closed behaviour for this method.
+// Get returns the specified Region resource.
+//
+// To decrease latency for this method, you can optionally omit any unneeded
+// information from the response by using a field mask. This practice is
+// especially recommended for unused quota information (the quotas field).
+// To exclude one or more fields, set your request’s fields query parameter
+// to only include the fields you need. For example, to only include the id
+// and selfLink fields, add the query parameter ?fields=id,selfLink to
+// your request.
+//
+// This method fails if the quota information is unavailable for the region
+// and if the organization policy constraint
+// compute.requireBasicQuotaInResponse is enforced. This
+// constraint, when enforced, disables the fail-open behaviour when quota
+// information (the items.quotas field) is unavailable for the region.
+// It is recommended to use the default setting
+// for the constraint unless your application requires the fail-closed
+// behaviour for this method.
 func (c *RegionsClient) Get(ctx context.Context, req *computepb.GetRegionRequest, opts ...gax.CallOption) (*computepb.Region, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// List retrieves the list of region resources available to the specified project. To decrease latency for this method, you can optionally omit any unneeded information from the response by using a field mask. This practice is especially recommended for unused quota information (the items.quotas field). To exclude one or more fields, set your request’s fields query parameter to only include the fields you need. For example, to only include the id and selfLink fields, add the query parameter ?fields=id,selfLink to your request. This method fails if the quota information is unavailable for the region and if the organization policy constraint compute.requireBasicQuotaInResponse is enforced. This constraint, when enforced, disables the fail-open behaviour when quota information (the items.quotas field) is unavailable for the region. It is recommended to use the default setting for the constraint unless your application requires the fail-closed behaviour for this method.
+// List retrieves the list of region resources available to the specified project.
+//
+// To decrease latency for this method, you can optionally omit any unneeded
+// information from the response by using a field mask. This practice is
+// especially recommended for unused quota information
+// (the items.quotas field).
+// To exclude one or more fields, set your request’s fields query parameter
+// to only include the fields you need. For example, to only include the id
+// and selfLink fields, add the query parameter ?fields=id,selfLink to
+// your request.
+//
+// This method fails if the quota information is unavailable for the region
+// and if the organization policy constraint
+// compute.requireBasicQuotaInResponse is enforced. This
+// constraint, when enforced, disables the fail-open behaviour when quota
+// information (the items.quotas field) is unavailable for the region.
+// It is recommended to use the default setting
+// for the constraint unless your application requires the fail-closed
+// behaviour for this method.
 func (c *RegionsClient) List(ctx context.Context, req *computepb.ListRegionsRequest, opts ...gax.CallOption) *RegionIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
@@ -149,6 +185,16 @@ type regionsRESTClient struct {
 // The Regions API.
 func NewRegionsRESTClient(ctx context.Context, opts ...option.ClientOption) (*RegionsClient, error) {
 	clientOpts := append(defaultRegionsRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "compute",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/compute/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "compute.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -162,6 +208,51 @@ func NewRegionsRESTClient(ctx context.Context, opts ...option.ClientOption) (*Re
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Get = append(callOpts.Get, gax.WithClientMetrics(metrics))
+		callOpts.List = append(callOpts.List, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Get = append(callOpts.Get, gax.WithClientTracing(tracing))
+		callOpts.List = append(callOpts.List, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Get = append(callOpts.Get, gax.WithClientLogging(logging))
+		callOpts.List = append(callOpts.List, gax.WithClientLogging(logging))
+	}
 
 	return &RegionsClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -189,7 +280,7 @@ func (c *regionsRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *regionsRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -204,7 +295,24 @@ func (c *regionsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// Get returns the specified Region resource. To decrease latency for this method, you can optionally omit any unneeded information from the response by using a field mask. This practice is especially recommended for unused quota information (the quotas field). To exclude one or more fields, set your request’s fields query parameter to only include the fields you need. For example, to only include the id and selfLink fields, add the query parameter ?fields=id,selfLink to your request. This method fails if the quota information is unavailable for the region and if the organization policy constraint compute.requireBasicQuotaInResponse is enforced. This constraint, when enforced, disables the fail-open behaviour when quota information (the items.quotas field) is unavailable for the region. It is recommended to use the default setting for the constraint unless your application requires the fail-closed behaviour for this method.
+// Get returns the specified Region resource.
+//
+// To decrease latency for this method, you can optionally omit any unneeded
+// information from the response by using a field mask. This practice is
+// especially recommended for unused quota information (the quotas field).
+// To exclude one or more fields, set your request’s fields query parameter
+// to only include the fields you need. For example, to only include the id
+// and selfLink fields, add the query parameter ?fields=id,selfLink to
+// your request.
+//
+// This method fails if the quota information is unavailable for the region
+// and if the organization policy constraint
+// compute.requireBasicQuotaInResponse is enforced. This
+// constraint, when enforced, disables the fail-open behaviour when quota
+// information (the items.quotas field) is unavailable for the region.
+// It is recommended to use the default setting
+// for the constraint unless your application requires the fail-closed
+// behaviour for this method.
 func (c *regionsRESTClient) Get(ctx context.Context, req *computepb.GetRegionRequest, opts ...gax.CallOption) (*computepb.Region, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -218,6 +326,10 @@ func (c *regionsRESTClient) Get(ctx context.Context, req *computepb.GetRegionReq
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.Regions/Get")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}")
+	}
 	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Region{}
@@ -249,10 +361,28 @@ func (c *regionsRESTClient) Get(ctx context.Context, req *computepb.GetRegionReq
 	return resp, nil
 }
 
-// List retrieves the list of region resources available to the specified project. To decrease latency for this method, you can optionally omit any unneeded information from the response by using a field mask. This practice is especially recommended for unused quota information (the items.quotas field). To exclude one or more fields, set your request’s fields query parameter to only include the fields you need. For example, to only include the id and selfLink fields, add the query parameter ?fields=id,selfLink to your request. This method fails if the quota information is unavailable for the region and if the organization policy constraint compute.requireBasicQuotaInResponse is enforced. This constraint, when enforced, disables the fail-open behaviour when quota information (the items.quotas field) is unavailable for the region. It is recommended to use the default setting for the constraint unless your application requires the fail-closed behaviour for this method.
+// List retrieves the list of region resources available to the specified project.
+//
+// To decrease latency for this method, you can optionally omit any unneeded
+// information from the response by using a field mask. This practice is
+// especially recommended for unused quota information
+// (the items.quotas field).
+// To exclude one or more fields, set your request’s fields query parameter
+// to only include the fields you need. For example, to only include the id
+// and selfLink fields, add the query parameter ?fields=id,selfLink to
+// your request.
+//
+// This method fails if the quota information is unavailable for the region
+// and if the organization policy constraint
+// compute.requireBasicQuotaInResponse is enforced. This
+// constraint, when enforced, disables the fail-open behaviour when quota
+// information (the items.quotas field) is unavailable for the region.
+// It is recommended to use the default setting
+// for the constraint unless your application requires the fail-closed
+// behaviour for this method.
 func (c *regionsRESTClient) List(ctx context.Context, req *computepb.ListRegionsRequest, opts ...gax.CallOption) *RegionIterator {
 	it := &RegionIterator{}
-	req = proto.Clone(req).(*computepb.ListRegionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.Region, string, error) {
 		resp := &computepb.RegionList{}

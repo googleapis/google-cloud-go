@@ -1,0 +1,203 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.workloadmanager.v1",
+  "libraryPackage": "cloud.google.com/go/workloadmanager/apiv1",
+  "services": {
+    "WorkloadManager": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateEvaluation": {
+              "methods": [
+                "CreateEvaluation"
+              ]
+            },
+            "DeleteEvaluation": {
+              "methods": [
+                "DeleteEvaluation"
+              ]
+            },
+            "DeleteExecution": {
+              "methods": [
+                "DeleteExecution"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetEvaluation": {
+              "methods": [
+                "GetEvaluation"
+              ]
+            },
+            "GetExecution": {
+              "methods": [
+                "GetExecution"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListEvaluations": {
+              "methods": [
+                "ListEvaluations"
+              ]
+            },
+            "ListExecutionResults": {
+              "methods": [
+                "ListExecutionResults"
+              ]
+            },
+            "ListExecutions": {
+              "methods": [
+                "ListExecutions"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListRules": {
+              "methods": [
+                "ListRules"
+              ]
+            },
+            "ListScannedResources": {
+              "methods": [
+                "ListScannedResources"
+              ]
+            },
+            "RunEvaluation": {
+              "methods": [
+                "RunEvaluation"
+              ]
+            },
+            "UpdateEvaluation": {
+              "methods": [
+                "UpdateEvaluation"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateEvaluation": {
+              "methods": [
+                "CreateEvaluation"
+              ]
+            },
+            "DeleteEvaluation": {
+              "methods": [
+                "DeleteEvaluation"
+              ]
+            },
+            "DeleteExecution": {
+              "methods": [
+                "DeleteExecution"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetEvaluation": {
+              "methods": [
+                "GetEvaluation"
+              ]
+            },
+            "GetExecution": {
+              "methods": [
+                "GetExecution"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListEvaluations": {
+              "methods": [
+                "ListEvaluations"
+              ]
+            },
+            "ListExecutionResults": {
+              "methods": [
+                "ListExecutionResults"
+              ]
+            },
+            "ListExecutions": {
+              "methods": [
+                "ListExecutions"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListRules": {
+              "methods": [
+                "ListRules"
+              ]
+            },
+            "ListScannedResources": {
+              "methods": [
+                "ListScannedResources"
+              ]
+            },
+            "RunEvaluation": {
+              "methods": [
+                "RunEvaluation"
+              ]
+            },
+            "UpdateEvaluation": {
+              "methods": [
+                "UpdateEvaluation"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

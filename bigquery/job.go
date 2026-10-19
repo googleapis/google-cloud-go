@@ -37,6 +37,7 @@ type Job struct {
 	email      string
 	config     *bq.JobConfiguration
 	lastStatus *JobStatus
+	queryID    string
 }
 
 // JobFromID creates a Job which refers to an existing BigQuery job. The job
@@ -239,6 +240,7 @@ func (j *Job) Cancel(ctx context.Context) error {
 	// docs: "This call will return immediately, and the client will need
 	// to poll for the job status to see if the cancel completed
 	// successfully".  So it would be misleading to return a status.
+	ctx = setJobItemTraceMetadata(ctx, j.projectID, j.jobID, "cancel")
 	call := j.c.bqs.Jobs.Cancel(j.projectID, j.jobID).
 		Location(j.location).
 		Fields(). // We don't need any of the response data.
@@ -257,6 +259,7 @@ func (j *Job) Delete(ctx context.Context) (err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.Job.Delete")
 	defer func() { trace.EndSpan(ctx, err) }()
 
+	ctx = setJobTraceMetadata(ctx, j.projectID, j.jobID)
 	call := j.c.bqs.Jobs.Delete(j.projectID, j.jobID).Context(ctx)
 	if j.location != "" {
 		call = call.Location(j.location)
@@ -340,9 +343,12 @@ func (j *Job) read(ctx context.Context, waitForQuery func(context.Context, strin
 			projectID: j.projectID,
 			jobID:     j.jobID,
 			location:  j.location,
+			queryID:   j.queryID,
 		}
-		it = newRowIterator(ctx, &rowSource{j: itJob}, pf)
+		it = newRowIterator(ctx, &rowSource{j: itJob, queryID: j.queryID}, pf)
 		it.TotalRows = totalRows
+	} else {
+		it.src.queryID = j.queryID
 	}
 	it.Schema = schema
 	return it, nil
@@ -352,8 +358,9 @@ func (j *Job) read(ctx context.Context, waitForQuery func(context.Context, strin
 // returns the total number of rows in the result set.
 func (j *Job) waitForQuery(ctx context.Context, projectID string) (Schema, uint64, error) {
 	// Use GetQueryResults only to wait for completion, not to read results.
+	ctx = setJobItemTraceMetadata(ctx, projectID, j.jobID, "getQueryResults")
 	call := j.c.bqs.Jobs.GetQueryResults(projectID, j.jobID).Location(j.location).Context(ctx).MaxResults(0)
-	call = call.FormatOptionsUseInt64Timestamp(true)
+	call = call.FormatOptionsUseInt64Timestamp(defaultUseInt64Timestamp)
 	setClientHeader(call.Header())
 	backoff := gax.Backoff{
 		Initial:    50 * time.Millisecond,
@@ -523,6 +530,10 @@ type QueryStatistics struct {
 
 	// Slot-milliseconds consumed by this query job.
 	SlotMillis int64
+
+	// Total slot milliseconds for the job that runs on external services and is
+	// billed on the services SKU.
+	TotalServicesSkuSlotMillis int64
 
 	// Standard SQL: list of undeclared query parameter names detected during a
 	// dry run validation.
@@ -1043,14 +1054,14 @@ func (*QueryStatistics) implementsStatistics()   {}
 // Jobs lists jobs within a project.
 func (c *Client) Jobs(ctx context.Context) *JobIterator {
 	it := &JobIterator{
-		ctx:       ctx,
+		ctx:       setProjectItemTraceMetadata(ctx, c.projectID, "jobs"),
 		c:         c,
 		ProjectID: c.projectID,
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(
 		it.fetch,
 		func() int { return len(it.items) },
-		func() interface{} { b := it.items; it.items = nil; return b })
+		func() any { b := it.items; it.items = nil; return b })
 	return it
 }
 
@@ -1152,6 +1163,7 @@ func (c *Client) getJobInternal(ctx context.Context, jobID, location, projectID 
 	if proj == "" {
 		proj = c.projectID
 	}
+	ctx = setJobTraceMetadata(ctx, proj, jobID)
 	call := c.bqs.Jobs.Get(proj, jobID).Context(ctx)
 	if location != "" {
 		call = call.Location(location)
@@ -1307,6 +1319,7 @@ func (j *Job) setStatistics(s *bq.JobStatistics, c *Client) {
 			QueryPlan:                     queryPlanFromProto(s.Query.QueryPlan),
 			Schema:                        bqToSchema(s.Query.Schema),
 			SlotMillis:                    s.Query.TotalSlotMs,
+			TotalServicesSkuSlotMillis:    s.Query.TotalServicesSkuSlotMs,
 			Timeline:                      timelineFromProto(s.Query.Timeline),
 			ReferencedTables:              tables,
 			UndeclaredQueryParameterNames: names,
