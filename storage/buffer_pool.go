@@ -30,11 +30,6 @@ const (
 	// number of blocks.
 	defaultBufferPoolBlockSize = 8 << 20
 
-	// defaultBufferPoolMaxBlocks bounds the number of blocks the default pool
-	// will hand out through TryGet (512 MiB). Get ignores this limit so that
-	// every upload can always make progress.
-	defaultBufferPoolMaxBlocks = 64
-
 	// defaultBufferPoolCleanInterval is how often the background cleaner
 	// checks whether the pool has been idle.
 	defaultBufferPoolCleanInterval = 15 * time.Second
@@ -54,14 +49,18 @@ var _ experimental.BufferPool = (*defaultBufferPool)(nil)
 // application does not provide one through experimental.WithBufferPool.
 //
 // It manages uniform 8 MiB blocks that are shared across all writers of a
-// client, and provides:
+// client. The pool has no memory limit; the memory in use is bounded by the
+// writers' PartSize and Concurrency settings. It provides:
 //
-//   - Bounded admission: TryGet refuses to grow the pool past maxBlocks live
-//     blocks; Get always succeeds so the first buffer of an upload is
-//     guaranteed.
-//   - Async pre-allocation: when the number of spare blocks falls below what
-//     the caller is likely to need next, replacement blocks are allocated in
-//     the background, overlapping allocation with network I/O.
+//   - Guaranteed progress: Get always returns a block, allocating one inline
+//     if none is cached, so the first segment of every upload can proceed.
+//   - Cache-only admission: TryGet only vends blocks that are already cached
+//     and never allocates inline. When the cache is empty it returns false,
+//     and the uploader continues with the segments it already holds.
+//   - Async pre-allocation: when the number of cached blocks falls below what
+//     a request needs, replacement blocks are allocated in the background,
+//     overlapping allocation with network I/O. This is how the cache, and
+//     therefore TryGet concurrency, ramps up on a cold pool.
 //   - Staged idle eviction: after idleTimeout without activity, half of the
 //     cached blocks are released to the GC; this repeats every idleTimeout
 //     until the pool is empty, at which point the cleaner goroutine exits
@@ -70,16 +69,18 @@ var _ experimental.BufferPool = (*defaultBufferPool)(nil)
 // All methods are safe for concurrent use.
 type defaultBufferPool struct {
 	blockSize     int
-	maxBlocks     int64
 	cleanInterval time.Duration
 	idleTimeout   time.Duration
 	now           func() time.Time
 
-	// free holds cached blocks ready to be vended. Its capacity is maxBlocks.
-	free chan []byte
+	// freeMu guards free.
+	freeMu sync.Mutex
+	// free is a LIFO stack of cached blocks ready to be vended. LIFO hands
+	// out the most recently used (and most likely CPU-cache-warm) block.
+	free [][]byte
 
 	// live is the number of blocks currently owned by the pool, either cached
-	// in free or handed out to callers.
+	// in free or handed out to callers. It is used for tests and diagnostics.
 	live atomic.Int64
 
 	// lastActive is the UnixNano timestamp of the last Get/TryGet/Put.
@@ -88,6 +89,9 @@ type defaultBufferPool struct {
 	// refilling is set while a background pre-allocation goroutine is running.
 	refilling atomic.Bool
 
+	// shut is set once close has been called; checked lock-free on hot paths.
+	shut atomic.Bool
+
 	mu sync.Mutex
 	// cleanerRunning reports whether the cleaner goroutine is active.
 	cleanerRunning bool
@@ -95,8 +99,6 @@ type defaultBufferPool struct {
 	lastEvict time.Time
 	// closed is set once close has been called.
 	closed bool
-	// shut mirrors closed for lock-free checks on the Put path.
-	shut atomic.Bool
 	// stop is closed to terminate the cleaner goroutine.
 	stop chan struct{}
 	// wg tracks background goroutines; used by close and tests.
@@ -105,36 +107,32 @@ type defaultBufferPool struct {
 
 // newDefaultBufferPool returns a defaultBufferPool with the SDK defaults.
 func newDefaultBufferPool() *defaultBufferPool {
-	return newDefaultBufferPoolWithConfig(defaultBufferPoolBlockSize, defaultBufferPoolMaxBlocks,
+	return newDefaultBufferPoolWithConfig(defaultBufferPoolBlockSize,
 		defaultBufferPoolCleanInterval, defaultBufferPoolIdleTimeout)
 }
 
-func newDefaultBufferPoolWithConfig(blockSize, maxBlocks int, cleanInterval, idleTimeout time.Duration) *defaultBufferPool {
+func newDefaultBufferPoolWithConfig(blockSize int, cleanInterval, idleTimeout time.Duration) *defaultBufferPool {
 	p := &defaultBufferPool{
 		blockSize:     blockSize,
-		maxBlocks:     int64(maxBlocks),
 		cleanInterval: cleanInterval,
 		idleTimeout:   idleTimeout,
 		now:           time.Now,
-		free:          make(chan []byte, maxBlocks),
 		stop:          make(chan struct{}),
 	}
 	p.touch()
 	return p
 }
 
-// Get returns a buffer of min(maxSize, blockSize) bytes. It ignores the pool
-// limit, never blocks waiting for another caller, and only fails if maxSize is
-// not positive.
+// Get returns a buffer of min(maxSize, blockSize) bytes. It reuses a cached
+// block if one is available and otherwise allocates one inline. It never
+// blocks waiting for another caller and only fails if maxSize is not positive.
 func (p *defaultBufferPool) Get(maxSize int) ([]byte, error) {
 	if maxSize <= 0 {
 		return nil, errInvalidBufferSize
 	}
 	p.touch()
-	var b []byte
-	select {
-	case b = <-p.free:
-	default:
+	b, ok := p.pop()
+	if !ok {
 		p.live.Add(1)
 		b = p.allocate()
 	}
@@ -142,24 +140,20 @@ func (p *defaultBufferPool) Get(maxSize int) ([]byte, error) {
 	return b[:min(maxSize, p.blockSize)], nil
 }
 
-// TryGet returns a buffer of min(maxSize, blockSize) bytes if one is cached or
-// if the pool is below its limit. It returns false, with a nil error, if the
-// pool is exhausted. It never blocks.
+// TryGet returns a cached buffer of min(maxSize, blockSize) bytes. It never
+// allocates inline: if no block is cached it returns false, with a nil error,
+// and starts background pre-allocation so that a later call can succeed. It
+// never blocks.
 func (p *defaultBufferPool) TryGet(maxSize int) ([]byte, bool, error) {
 	if maxSize <= 0 {
 		return nil, false, errInvalidBufferSize
 	}
 	p.touch()
-	var b []byte
-	select {
-	case b = <-p.free:
-	default:
-		if !p.reserve() {
-			return nil, false, nil
-		}
-		b = p.allocate()
-	}
+	b, ok := p.pop()
 	p.maybeRefill(maxSize)
+	if !ok {
+		return nil, false, nil
+	}
 	return b[:min(maxSize, p.blockSize)], true, nil
 }
 
@@ -170,36 +164,53 @@ func (p *defaultBufferPool) Put(buf []byte) {
 		return
 	}
 	p.touch()
-	p.cache(buf[:p.blockSize])
+	p.push(buf[:p.blockSize])
 }
 
-// cache stores b in the free list, or drops it if the free list is full (which
-// can happen when Get grew the pool past maxBlocks). It (re)starts the cleaner
-// so cached memory is eventually reclaimed.
-func (p *defaultBufferPool) cache(b []byte) {
+// pop removes and returns the most recently cached block, if any.
+func (p *defaultBufferPool) pop() ([]byte, bool) {
+	p.freeMu.Lock()
+	defer p.freeMu.Unlock()
+	n := len(p.free)
+	if n == 0 {
+		return nil, false
+	}
+	b := p.free[n-1]
+	p.free[n-1] = nil // Do not retain the block via the backing array.
+	p.free = p.free[:n-1]
+	return b, true
+}
+
+// push caches b, or drops it if the pool has been closed. It (re)starts the
+// cleaner so that cached memory is eventually reclaimed.
+func (p *defaultBufferPool) push(b []byte) {
 	if p.shut.Load() {
 		p.live.Add(-1)
 		return
 	}
-	select {
-	case p.free <- b:
-		p.ensureCleaner()
-	default:
-		p.live.Add(-1)
-	}
+	p.freeMu.Lock()
+	p.free = append(p.free, b)
+	p.freeMu.Unlock()
+	p.ensureCleaner()
 }
 
-// reserve increments live if doing so keeps it within maxBlocks.
-func (p *defaultBufferPool) reserve() bool {
-	for {
-		n := p.live.Load()
-		if n >= p.maxBlocks {
-			return false
-		}
-		if p.live.CompareAndSwap(n, n+1) {
-			return true
-		}
-	}
+// cached returns the number of cached blocks.
+func (p *defaultBufferPool) cached() int {
+	p.freeMu.Lock()
+	defer p.freeMu.Unlock()
+	return len(p.free)
+}
+
+// evict drops up to n cached blocks and returns how many were dropped.
+func (p *defaultBufferPool) evict(n int) int {
+	p.freeMu.Lock()
+	defer p.freeMu.Unlock()
+	n = min(n, len(p.free))
+	keep := len(p.free) - n
+	clear(p.free[keep:])
+	p.free = p.free[:keep]
+	p.live.Add(-int64(n))
+	return n
 }
 
 func (p *defaultBufferPool) allocate() []byte {
@@ -212,10 +223,12 @@ func (p *defaultBufferPool) blocksFor(size int) int {
 }
 
 // maybeRefill starts a background goroutine that pre-allocates blocks when
-// fewer spare blocks are cached than a request of maxSize bytes would need.
+// fewer blocks are cached than a request of maxSize bytes would need. At most
+// one refill runs at a time; requests that arrive while one is running are
+// served by it or trigger a new refill on their next call.
 func (p *defaultBufferPool) maybeRefill(maxSize int) {
 	want := p.blocksFor(maxSize)
-	if len(p.free) >= want {
+	if p.cached() >= want {
 		return
 	}
 	if !p.refilling.CompareAndSwap(false, true) {
@@ -232,8 +245,9 @@ func (p *defaultBufferPool) maybeRefill(maxSize int) {
 	go func() {
 		defer p.wg.Done()
 		defer p.refilling.Store(false)
-		for len(p.free) < want && p.reserve() {
-			p.cache(p.allocate())
+		for p.cached() < want && !p.shut.Load() {
+			p.live.Add(1)
+			p.push(p.allocate())
 		}
 	}()
 }
@@ -274,8 +288,8 @@ func (p *defaultBufferPool) runCleaner() {
 
 // evictIfIdle halves the number of cached blocks if the pool has been idle for
 // at least idleTimeout and no eviction has happened in the last idleTimeout.
-// It returns true, after marking the cleaner as stopped, once the free list is
-// empty; the cleaner is restarted by the next cache.
+// It returns true, after marking the cleaner as stopped, once the cache is
+// empty; the cleaner is restarted by the next push.
 func (p *defaultBufferPool) evictIfIdle() (stopped bool) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
@@ -283,19 +297,13 @@ func (p *defaultBufferPool) evictIfIdle() (stopped bool) {
 	now := p.now()
 	idleSince := time.Unix(0, p.lastActive.Load())
 	if now.Sub(idleSince) >= p.idleTimeout && now.Sub(p.lastEvict) >= p.idleTimeout {
-		n := len(p.free)
+		n := p.cached()
 		// Evict ceil(n/2) so that a single cached block is eventually freed.
-		for i := 0; i < n-n/2; i++ {
-			select {
-			case <-p.free:
-				p.live.Add(-1)
-			default:
-			}
-		}
+		p.evict(n - n/2)
 		p.lastEvict = now
 	}
 
-	if len(p.free) == 0 {
+	if p.cached() == 0 {
 		p.cleanerRunning = false
 		return true
 	}
@@ -315,12 +323,5 @@ func (p *defaultBufferPool) close() {
 	close(p.stop)
 	p.mu.Unlock()
 	p.wg.Wait()
-	for {
-		select {
-		case <-p.free:
-			p.live.Add(-1)
-		default:
-			return
-		}
-	}
+	p.evict(p.cached())
 }
