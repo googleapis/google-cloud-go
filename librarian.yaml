@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 language: go
-version: v0.48.0
+version: v0.49.0
 repo: googleapis/google-cloud-go
 sources:
   discovery:
@@ -631,7 +631,7 @@ libraries:
     apis:
       - path: google/cloud/dataqna/v1alpha
   - name: datastore
-    version: 1.27.0
+    version: 1.27.1
     apis:
       - path: google/datastore/v1
         go:
@@ -741,7 +741,7 @@ libraries:
     apis:
       - path: google/cloud/financialservices/v1
   - name: firestore
-    version: 1.26.0
+    version: 1.27.0
     apis:
       - path: google/firestore/v1
         go:
