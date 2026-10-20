@@ -1,5 +1,24 @@
 # Changes
 
+## [1.27.0](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.26.0...firestore/v1.27.0) (2026-10-20)
+
+
+### Features
+
+* **firestore:** Add CommitResponse.WriteResults for transactions ([#20671](https://github.com/googleapis/google-cloud-go/issues/20671)) ([4f031f1](https://github.com/googleapis/google-cloud-go/commit/4f031f1f4bd1249fb525dcfd8e8cfe5841ec5a6d))
+* **firestore:** Add support for FSPQ Insert and Upsert stages ([#20698](https://github.com/googleapis/google-cloud-go/issues/20698)) ([a4e871c](https://github.com/googleapis/google-cloud-go/commit/a4e871cfe5be54f7b89452bcfee40a1c96da9762))
+* **firestore:** Add WithAtomic and WithIndexMode pipeline execute options ([#20712](https://github.com/googleapis/google-cloud-go/issues/20712)) ([76f91bc](https://github.com/googleapis/google-cloud-go/commit/76f91bc0f4de1fa5e4087311d493433398c2cf80)), refs [#20711](https://github.com/googleapis/google-cloud-go/issues/20711)
+
+
+### Bug Fixes
+
+* **firestore:** Roll back transaction on Commit errors ([#20670](https://github.com/googleapis/google-cloud-go/issues/20670)) ([71f9fcf](https://github.com/googleapis/google-cloud-go/commit/71f9fcf3b1f795bb295d268c5ce1243b721625c8))
+
+
+### Performance Improvements
+
+* **firestore:** Modernize sorting, string building, and path comparisons ([#20692](https://github.com/googleapis/google-cloud-go/issues/20692)) ([39da6d0](https://github.com/googleapis/google-cloud-go/commit/39da6d0cf35454310524fafa6f08bcf315de41a5))
+
 ## [1.26.0](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.25.0...firestore/v1.26.0) (2026-09-23)
 
 
