@@ -1,7 +1,7 @@
 cloud.google.com/go/longrunning v1.2.0 h1:WjYH3YHBGCxGJP9M4dWGHBfXr/cFIjMkNgWcJj7/iMM=
 cloud.google.com/go/longrunning v1.2.0/go.mod h1:5KMQALFGOCtFoi2xSOA1u3H7WKlhmckgiyFw7+LGQp0=
-cloud.google.com/go/translate v1.17.0 h1:6ecjspRHAOHU+x+e4HOK/2o+bzw7KHwu//eyLVf4TuM=
-cloud.google.com/go/translate v1.17.0/go.mod h1:3mErnHTQBu9yeLiL35K0HBBuaM6Vk2fD/vyWFz790VU=
+cloud.google.com/go/translate v1.19.0 h1:i/4DdcMwkhBSvLpEl1VTeomnAH22DCOBKGR9JeS6Oa4=
+cloud.google.com/go/translate v1.19.0/go.mod h1:EplRfl91m+ssTjgmGhT+DgI9e7mkHcsrTt5LSTMNTo8=
 github.com/cespare/xxhash/v2 v2.3.0 h1:UL815xU9SqsFlibzuggzjXhog7bL6oX9BbNZnL2UFvs=
 github.com/cespare/xxhash/v2 v2.3.0/go.mod h1:VGX0DQ3Q6kWi7AoAeZDth3/j3BFtOZR5XLFGgcrjCOs=
 github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc h1:U9qPSI2PIWSS1VwoXQT9A3Wy9MM3WgvqSxFWenqJduM=
